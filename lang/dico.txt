@@ -38,7 +38,7 @@ ConfigWriteProblem;Problème d'écriture d'un fichier de configuration;Problem w
 RunProblem;Problème d'exécution;Problem running the executable;Problema de ejecución;Problem beim Ausführen;Problema di esecuzione;Erro com a execução
 UnidentifiedProblem;Problème non identifié;Unidentified problem;Problema no identificado;Problem nicht gefunden;Problema non identificato;Erro não identificado
 OpenProblem;Problème lors de l'ouverture du fichier;Problem opening the file;Problema al abrir el archivo;Problem beim Öffnen der Datei;Problema di apertura del file;Erro ao abrir o arquivo
-SaveProblem;Problème lors de la sauvergarde;Saving problem;Problema al guardar;Problem beim Speichern;Problema durante il salvataggio;Erro ao salvar
+SaveProblem;Problème lors de la sauvegarde;Saving problem;Problema al guardar;Problem beim Speichern;Problema durante il salvataggio;Erro ao salvar
 ExeAborted;L'exécutable a planté;Executable aborted;Ejecución abortada;Die ausführbare Datei ist abgestürzt;L'eseguibile si è bloccato;Execução abortada
 Graph;Graphique;Graph;Gráfico;Grafik;Grafico;Gráfico
 Active;Actif;Active;Activo;Aktiv;Attivo;Ativo
