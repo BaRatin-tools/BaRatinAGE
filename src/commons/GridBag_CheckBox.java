@@ -1,5 +1,6 @@
 package commons;
 
+import java.awt.Color;
 import java.awt.GridBagConstraints;
 import java.awt.event.ActionListener;
 
@@ -51,6 +52,7 @@ public class GridBag_CheckBox extends JCheckBox{
 		if(xExpand && yExpand) {gbc.fill = GridBagConstraints.BOTH;}
 		else if(xExpand){gbc.fill = GridBagConstraints.HORIZONTAL;}
 		else if(yExpand){gbc.fill = GridBagConstraints.VERTICAL;}
+		this.setOpaque(true);
 		container.add(this, gbc);
 	}
 
