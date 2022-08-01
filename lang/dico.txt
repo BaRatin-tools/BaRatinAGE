@@ -1,0 +1,221 @@
+﻿key DO NOT MODIFY;fr;en;es;de;it;br
+Open;Ouvrir;Open;Abrir;Öffnen;Aprire;Abrir
+Save;Enregistrer;Save;Guardar;Speichern;Salva;Salvar
+SaveAs;Enregistrer sous;Save as;Guardar como;Speichern unter;Salva con nome;Salvar como
+New;Nouveau;New;Nuevo;Neu;Nuovo;Novo
+Quit;Quitter;Quit;Salir;Beenden;Uscita;Sair
+File;Fichier;File;Archivo;Datei;File;Arquivo
+Browse;Parcourir;Browse;Navegar;Durchsuchen;Sfogliare;Navegar
+Help;Aide;Help;Ayuda;Hilfe;Aiuto;Ajuda
+About;A propos;About;Acerca de;Über;Informazioni su;Sobre
+Apply;Appliquer;Apply;Aplicar;Anwenden;Applica;Aplicar
+Cancel;Annuler;Cancel;Cancelar;Abbrechen;Cancella;Cancelar
+Add;Ajouter;Add;Añadir;Hinzufügen;Aggiungi;Adicionar
+Delete;Effacer;Delete;Borrar;Löschen;Cancellare;Excluir
+DeleteItem;Effacer l'objet sélectionné;Delete selected item;Eliminar el objeto seleccionado;Löscht das ausgewählte Objekt.;Elimina l'oggetto selezionato;Excluir item selecionado
+DeleteAll;Tout effacer;Delete all;Borrar todo;Alle löschen;Cancellare tutto;Excluir tudo
+Rename;Renommer;Rename;Renombrar;Umbenennen;Rinominare;Renomear
+Export;Exporter;Export;Exportar;Exportieren;Esportazione;Exportar
+ExportValues;Exporter les valeurs;Export values;Exportar valores;Werte exportieren;Valori di esportazione;Exportar valores
+Error;Erreur;Error;Error;Fehler;Errore;Erro
+Message;Message;Message;Mensaje;Nachricht;Messaggio;Mensagem
+Unknown;Inconnu;Unknown;Desconocido;Unbekannt;Sconosciuto;Desconhecido
+Warning;Attention;Warning;Atención;Achtung;Attenzione;Atenção
+Information;Information;Information;Información;Information;Informazioni;Informações
+Options;Options;Options;Opciones;Optionen;Opzioni;Opções
+AdvancedOptions;Options avancées;Advanced options;Opciones avanzadas;Erweiterte Optionen;Opzioni avanzate;Opções avançadas
+Language;Langue;Language;Idioma;Sprache;Lingua;Idioma
+Name;Nom;Name;Nombre;Name;Nome;Nome
+Description;Description;Description;Descripción;Beschreibung;Descrizione;Descrição
+Xplorer;Explorateur;Xplorer;Explorador;Explorer;Esploratore;Explorador
+Item;Objet;Item;Objeto;Betreff;Oggetto;Objeto
+TypeName;Merci de taper un nom;Please type a name;Por favor, escriba un nombre;Bitte geben Sie einen Namen ein;Per favore, scrivi un nome;Por favor, digite um nome
+FormatErrorMessage;Erreur de format - merci de vérifier votre saisie;Format error - please double-check what you typed;Error de formato - por favor, compruebe lo que ha escrito;Fehler im Format - bitte überprüfen Sie Ihre Eingabe.;Errore di formato - per favore controlla il tuo input;Erro de formatação - favor verificar os dados de entrada
+ImportErrorMessage;Problème lors de l'importation du fichier - merci de vérifier le format;Problem importing file - please check format;Problema al importar el archivo - por favor, compruebe el formato;Problem beim Importieren der Datei - bitte überprüfen Sie das Format.;Problema nell'importare il file - controlla il formato;Erro na importação do arquivo - favor verificar o formato
+Run;Exécuter;Run;Ejecutar;Ausführen;Esegui;Executar
+FileNotFound;Fichier non trouvé;File not found;Archivo no encontrado;Datei wurde nicht gefunden;File non trovato;Arquivo não encontrado
+ConfigWriteProblem;Problème d'écriture d'un fichier de configuration;Problem writing a configuration file;Problema al escribir un archivo de configuración;Problem beim Schreiben einer Konfigurationsdatei;Problema di scrittura di un file di configurazione;Erro ao escrever um arquivo de configuração
+RunProblem;Problème d'exécution;Problem running the executable;Problema de ejecución;Problem beim Ausführen;Problema di esecuzione;Erro com a execução
+UnidentifiedProblem;Problème non identifié;Unidentified problem;Problema no identificado;Problem nicht gefunden;Problema non identificato;Erro não identificado
+OpenProblem;Problème lors de l'ouverture du fichier;Problem opening the file;Problema al abrir el archivo;Problem beim Öffnen der Datei;Problema di apertura del file;Erro ao abrir o arquivo
+SaveProblem;Problème lors de la sauvergarde;Saving problem;Problema al guardar;Problem beim Speichern;Problema durante il salvataggio;Erro ao salvar
+ExeAborted;L'exécutable a planté;Executable aborted;Ejecución abortada;Die ausführbare Datei ist abgestürzt;L'eseguibile si è bloccato;Execução abortada
+Graph;Graphique;Graph;Gráfico;Grafik;Grafico;Gráfico
+Active;Actif;Active;Activo;Aktiv;Attivo;Ativo
+AllDone;Calcul terminé !;All Done!;¡Cálculo completado!;Die Berechnung ist abgeschlossen!;Calcolo completato!;Cálculo concluído!
+CheckPar;Pensez à vérifier la cohérence des paramètres estimés en utilisant le bouton [Autres graphiques];Please monitor estimated parameters using [More plots] button;Por favor, controle los parámetros estimados con el botón [Más gráficos].;Denken Sie daran, die Konsistenz der geschätzten Parameter zu überprüfen, indem Sie die Schaltfläche [Andere Grafiken] verwenden.;Ricordati di controllare la consistenza dei parametri stimati usando il pulsante [Altri grafici].;Por favor, verifique os parâmetros estimados usando o botão [Mais gráficos] 
+Legend;Légende;Legend;Leyenda;Legende;Leggenda;Legenda
+ShowLegend;Afficher la légende;Show legend;Mostrar leyenda;Legende anzeigen;Mostra la leggenda;Mostrar legenda
+Date;Date;Date;Fecha;Datum;Data;Data
+SelectItem;Sélectionner;Select item;Seleccionar;Wählen Sie;Seleziona;Selecionar item
+SelectItemToDelete;Sélectionner l'objet à effacer;Select item to delete;Seleccionar el objeto a eliminar;Wählen Sie das zu löschende Objekt aus;Selezionare l'oggetto da cancellare;Selecionar item para excluir
+SelectPlot;Sélectionner le graphique;Select plot;Seleccionar el gráfico;Grafik auswählen;Seleziona il grafico;Selecionar gráfico
+Yes;Oui;Yes;Sí;Ja;Sì;Sim
+No;Non;No;No;Nein;No;Não
+Prior;A priori;Prior;A priori;A priori;A priori;A priori
+Posterior;A posteriori;Posterior;A posteriori;A posteriori;A posteriori;A posteriori
+Iteration;Itération;Iteration;Iteración;Iteration;Iterazione;Iteração
+Compute;Calculer;Compute;Calcular;Berechnen;Calcola;Calcular
+Preferences;Préférences;Preferences;Preferencias;Voreinstellungen;Preferenze;Preferências
+DefaultDirectory;Répertoire par défaut;Default directory;Directorio por defecto;Standardverzeichnis;Directory predefinita;Diretório padrão
+SaveOptions;Options de sauvegarde;Save options;Opciones de guardado;Optionen für das Speichern;Opzioni di backup;Opções de backup
+ChangeSaved;Changement enregistré;Change saved;Cambio guardado;Gespeicherte Änderung;Cambiamento salvato;Alteração salva
+Duplicate;Dupliquer;Duplicate;Duplicar;Duplizieren;Duplicato;Duplicar
+YYYY;AAAA;YYYY;AAAA;JJJJ;AAAA;AAAA
+MM;MM;MM;MM;MM;MM;MM
+DD;JJ;DD;DD;TT;GG;DD
+hh;hh;hh;hh;hh;hh;hh
+mm;mm;mm;mm;mm;mm;mm
+ss;ss;ss;ss;ss;ss;ss
+HydrauConf;Configuration hydraulique;Hydraulic Configuration;Configuración hidráulica;Hydraulische Konfiguration;Configurazione idraulica;Configuração hidráulica
+Gaugings;Jaugeages;Gaugings;Aforos;Messungen;Indicatori;Vazão
+RemnantError;Erreur restante;Remnant Error;Error remanente;Verbleibender Fehler;Errore rimanente;Erro remanescente
+RatingCurve;Courbe de tarage;Rating Curve;Curva de gasto;Tarierungskurve;Curva di tara;Curva Chave
+RC;CT;RC;CG;CT;CT;CC
+Limnigraph;Limnigramme;Stage series;Limnigrama;Limnigramm;Limnigram;Série de cotas
+Hydrograph;Hydrogramme;Flow series;Hidrograma;Hydrogramm;Idrografo;Hidrograma
+Catalogues;Catalogues;Catalogues;Catálogos;Kataloge;Cataloghi;Catálogos
+Segment;Segment;Segment;Segmento;Segment;Segmento;Segmento
+Control;Contrôle;Control;Control;Kontrolle;Controllo;Controle
+Ncontrol;Nombre de contrôles;Number of controls;Número de controles;Anzahl der Kontrollen;Numero di controlli;Número de controles
+Type;Type;Type;Tipo;Typ;Tipo;Tipo
+apar;a (coefficient);a (coefficient);a (coeficiente);a (Koeffizient);a (coefficiente);a (coeficiente)
+cpar;c (exposant);c (exponent);c (exponente);c (Exponent);c (esponente);c (expoente)
+kpar;k (hauteur d'activation);k (activation stage);k (altura de activación);k (Aktivierungshöhe);k (altezza di attivazione);k (nível de ativação)
++/-;+/- (incertitude élargie);+/- (uncertainty);+/- (incertidumbre ampliada);+/- (erweiterte Unsicherheit);+/- (incertezza estesa);+/- (incerteza expandida)
++/-_long;Incertitude élargie : demi-longueur d'un intervalle à 95% = 1.96*écart-type pour une distribution gaussienne;Uncertainty expressed as the half-width of a 95% interval = 1.96*standard deviation for a gaussian distribution;Incertidumbre ampliada: la mitad de un intervalo del 95% = 1,96*desviación estándar para una distribución gaussiana;Erweiterte Unsicherheit: Halbe Länge eines 95%-Intervalls = 1.96*Standardabweichung für eine Gaußsche Verteilung.;Incertezza ampliata: metà lunghezza di un intervallo del 95% = 1,96*deviazione standard per una distribuzione gaussiana;Incerteza expressa como a meia largura em um intervalo de 95% = 1,96* desvio padrão para uma distribuição gaussiana
+AddConfig;Ajouter une configuration hydraulique;Add hydraulic configuration;Añadir una configuración hidráulica;Fügen Sie eine hydraulische Konfiguration hinzu.;Aggiungere una configurazione idraulica;Adicionar configuração hidráulica
+AddGauging;Ajouter un jeu de jaugeages;Add gauging dataset;Añadir un conjunto de aforos;Ein Set von Messungen hinzufügen;Aggiungere un set di indicatori;Adicionar conjunto de medições
+AddRemnant;Ajouter un modèle d'erreur;Add error model;Añadir un modelo de error;Fehlermodell hinzufügen;Aggiungere un modello di errore;Adicionar modelo de erro
+AddLimni;Ajouter un limnigramme;Add stage series;Añadir un limnigrama;Limnigramm hinzufügen;Aggiungere un diagramma di flusso;Adicionar série de cotas
+AddRC;Ajouter une courbe de tarage;Add rating curve;Añadir una curva de gasto;Tarierungskurve hinzufügen;Aggiungere una curva di valutazione;Adicionar curva chave
+AddHydro;Ajouter un hydrogramme;Add flow series;Añadir un hidrograma;Eine Ganglinie hinzufügen;Aggiungere un idrografo;Adicionar hidrograma
+NameIsAlreadyUsed;Le nom est déjà utilisé;Name is already being used;El nombre ya se utiliza;Der Name wird bereits verwendet.;Il nome è già usato;Nome já existe
+Channel;Chenal;Channel;Canal;Fahrrinne;Canale;Canal
+RectangularChannel;Chenal rectangulaire;Rectangular channel;Canal rectangular;Rechteckiges Gerinne;Canale rettangolare;Canal retangular
+TriangularChannel;Chenal triangulaire;Triangular channel;Canal triangular;Dreieckiger Kanal;Canale triangolare;Canal triangular
+ParabolicChannel;Chenal parabolique;Parabolic channel;Canal parabólico;Parabolischer Kanal;Canale parabolico;Canal parabólico
+RectangularSill;Déversoir rectangulaire;Rectangular weir;Vertedero rectangular;Rechteckiges Überlaufwehr;Stramazzo rettangolare;Vertedouro retangular
+TriangularSill;Déversoir triangulaire;Triangular weir;Vertedero triangular;Dreieckiger Überlauf;Stramazzo triangolare;Vertedouro triangular
+ParabolicSill;Déversoir parabolique;Parabolic weir;Vertedero parabólico;Parabolisches Wehr;Stramazzo parabolico;Vertedouro parabólico
+Orifice;Orifice;Orifice;Orificio;Öffnung;Orifizio;Orifício
+PriorAssistant;Assistant a priori;Prior assistant;Asistente a priori;A-priori-Wizard;Assistente a priori;Assistente a priori
+OpenPriorAssistant;Ouvrir l'assistant a priori;Open prior assistant;Abrir el asistente a priori;Öffnen Sie den A-priori-Wizard.;Aprire la procedura guidata a priori;Abrir assistente a priori
+PropagateUncertainty;Calcul des paramètres et propagation de l'incertitude;Compute parameters and propagate uncertainty;Cálculo de parámetros y propagación de la incertidumbre;Berechnung der Parameter und Fortpflanzung der Unsicherheit;Calcolo dei parametri e propagazione dell'incertezza;Calcular parâmetros e propagar incertezas
+Explanation_frectangle;Coefficient d'ouvrage ~ 0.4;Coefficient ~ 0.4;Coeficiente de estructura ~ 0,4;Bauwerkskoeffizient ~ 0.4;Coefficiente di struttura ~ 0,4;Coeficiente de trabalho ~ 0,4
+Explanation_ftriangle;Coefficient d'ouvrage ~ 0.31;Coefficient ~ 0.31;Coeficiente de estructura ~ 0,31;Bauwerkskoeffizient ~ 0.31;Coefficiente di lavoro ~ 0,31;Coeficiente de trabalho ~ 0,31
+Explanation_forifice;Coefficient d'ouvrage ~ 0.6;Coefficient ~ 0.6;Coeficiente de estructura ~ 0,6;Bauwerkskoeffizient ~ 0.6;Coefficiente di lavoro ~ 0,6;Coeficiente de trabalho ~ 0,6
+Explanation_fparabola;Coefficient d'ouvrage ~ 0.22;Coefficient ~ 0.22;Coeficiente de estructura ~ 0,22;Koeffizient des Bauwerks ~ 0.22;Coefficiente di struttura ~ 0,22;Coeficiente de trabalho ~ 0,22
+Explanation_Lrectangle;Largeur du déversoir;Weir width;Ancho del vertedero;Breite des Überlaufs;Larghezza dello stramazzo;Largura do vertedor
+Explanation_Bparabola;Largeur de la parabole au plein bord;Parabola width at bankful stage;Ancho de la parábola llena de agua;Breite der Schüssel bis zur vollen Kante;Larghezza della parabola a bordo intero;Largura da parábola com margens afogadas
+Explanation_Hparabola;Hauteur de la parabole au plein bord;Parabola height at bankful stage;Altura de la parábola llena de agua;Höhe der Schüssel bis zur vollen Kante.;Altezza della parabola in piena riva;Altura da parábola com margens afogadas
+Explanation_Lchannel;Largeur du chenal;Channel width;Ancho del canal;Breite der Fahrrinne;Larghezza del canale;Largura do canal
+Explanation_Vchannel;Angle d'ouverture du triangle (en degrés);Angle (in degrees);Ángulo de apertura del triángulo (en grados);Öffnungswinkel des Dreiecks (in Grad);Angolo di apertura del triangolo (in gradi);Ângulo de abertura do triângulo (em graus)
+Explanation_Bpchannel;Largeur de la parabole au plein bord;Parabola width at bankful stage;Ancho de la parábola llena de agua;Breite der Schüssel am vollen Rand;Larghezza del piatto al bordo completo;Largura da parábola com margens afogadas
+Explanation_Hpchannel;Hauteur de la parabole au plein bord;Parabola height at bankful stage;Altura de la parábola llena de agua;Höhe der Schüssel am vollen Rand;Altezza della parabola a tutto tondo;Altura da parábola com margens afogadas
+Explanation_J;Pente du chenal;Channel slope;Pendiente del canal;Neigung der Fahrrinne;Pendenza del canale;Declividade do canal
+butt_J_text;<html>|z<sub>X</sub>-z<sub>Y</sub>|/d(X:Y)</html>;<html>|z<sub>X</sub>-z<sub>Y</sub>|/d(X:Y)</html>;<html>|z<sub>X</sub>-z<sub>Y</sub>|/d(X:Y)</html>;<html>|z<sub>X</sub>-z<sub>Y</sub>|/d(X:Y)</html>;<html>|z<sub>X</sub>-z<sub>Y</sub>|/d(X:Y)</html>;<html>|z<sub>X</sub>-z<sub>Y</sub>|/d(X:Y)</html>
+butt_J_info;Spécifier la pente à partir de deux points X et Y;Specify slope using two points X and Y;Especificación de la pendiente a partir de dos puntos X e Y;Die Steigung von zwei Punkten X und Y aus angeben.;Specificare la pendenza da due punti X e Y;Especificar declividade a partir de dois pontos X e Y
+Manning;Manning;Manning;Manning;Manning;Manning;Manning
+Strickler;Strickler;Strickler;Strickler;Strickler;Strickler;Strickler
+butt_M_info_n;Utiliser le coefficient de Manning;Use Manning coefficient;Utilizar el coeficiente de Manning;Den Manning-Koeffizienten verwenden;Utilizzando il coefficiente Manning;Usar coeficiente de Manning
+butt_M_info_K;Utiliser le coefficient de Strickler;Use Strickler coefficient;Utilizar el coeficiente de Strickler;Den Strickler-Koeffizienten verwenden;Utilizzare il coefficiente di Strickler;Usar coeficiente de Strickler
+Explanation_u;Angle d'ouverture du triangle (en degrés);Angle (in degrees);Ángulo de apertura del triángulo (en grados);Öffnungswinkel des Dreiecks (in Grad);Angolo di apertura del triangolo (in gradi);Ângulo de abertura do triângulo (em graus)
+Explanation_S;Surface de l'orifice;Orifice area;Área del orificio;Fläche der Öffnung;Area dell'orifizio;Área do orifício
+Explanation_g;Accélération de gravité ~ 9.81;Gravity acceleration ~ 9.81;Aceleración de la gravedad ~ 9,81;Schwerkraftbeschleunigung ~ 9.81;Accelerazione di gravità ~ 9,81;Aceleração gravitacional ~ 9,81
+Explanation_K;Coefficient de Strickler (1/Manning);Strickler coefficient (1/Manning);Coeficiente de Strickler (1/Manning);Strickler-Koeffizient (1/Manning);Coefficiente di Strickler (1/Manning);Coeficiente Strickler (1/Manning)
+Explanation_Manning;Coefficient de Manning (1/Strickler);Manning coefficient (1/Strickler);Coeficiente de Manning (1/Strickler);Manning-Koeffizient (1/Strickler);Coefficiente di Manning (1/Strickler);Coeficiente de Manning (1/Strickler)
+Explanation_crectangle;Exposant ~ 1.5;Exponent ~ 1.5;Exponente ~ 1,5;Exponent ~ 1.5;Esponente ~ 1,5;Exponente ~ 1,5
+Explanation_ctriangle;Exposant ~ 2.5;Exponent ~ 2.5;Exponente ~ 2,5;Exponent ~ 2.5;Esponente ~ 2,5;Exponente ~ 2,5
+Explanation_corifice;Exposant ~ 0.5;Exponent ~ 0.5;Exponente ~ 0.5;Exponent ~ 0.5;Esponente ~ 0,5;Exponente ~ 0,5
+Explanation_cparabola;Exposant ~ 2.0;Exponent ~ 2.0;Exponente ~ 2.0;Exponent ~ 2.0;Esponente ~ 2.0;Exponente ~ 2,0
+Explanation_cchannel_rectangle;Exposant ~ 5/3;Exponent ~ 5/3;Exponente ~ 5/3;Exponent ~ 5/3;Esponente ~ 5/3;Exponente ~ 5/3
+Explanation_cchannel_triangle;Exposant ~ 8/3;Exponent ~ 8/3;Exponente ~ 8/3;Exponent ~ 8/3;Espositore ~ 8/3;Exponente ~ 8/3
+Explanation_cchannel_parabola;Exposant ~ 13/6;Exponent ~ 13/6;Exponente ~ 13/6;Exponent ~ 13/6;Esponente ~ 13/6;Exponente ~ 13/6
+Explanation_k;Hauteur d'activation du contrôle;Control activation stage;Altura de activación del control;Höhe der Aktivierung der Kontrolle;Altezza di attivazione del controllo;Altura de ativação do controle
+Explanation_b;offset [déduit par continuité - rien à spécifier];offset [deduced by continuity - no specification required];offset [deducido por la continuidad - no requiere especificar];offset [abgeleitet durch Kontinuität - nichts anzugeben];offset [dedotto dalla continuità - niente da specificare];offset [deduzido por continuidade - nenhuma especificação necessária] 
+Explanation_altA;Altitude du point X;Elevation of X;Elevación del punto X;Höhe des X-Punkts;Altitudine del punto X;Altitude do ponto X
+Explanation_altB;Altitude du point Y;Elevation of Y;Elevación del punto Y;Höhe des Punktes Y;Altitudine del punto Y;Altitude do ponto Y
+Explanation_distAB;Distance entre X et Y;Distance between X and Y;Distancia entre X e Y;Abstand zwischen X und Y;Distanza tra X e Y;Distância entre X e Y
+PriorRC;Courbe de tarage a priori;Prior rating curve;Curva de gasto a priori;Tarierungskurve a priori;Curva di tara a priori;Curva chave a priori
+PriorRC_env;CT a priori - enveloppe;Prior RC - envelop;CG a priori - envolvente;CT a priori - Hüllkurve;TC a priori - busta;CC a priori - envelope
+PriorRC_spag;CT a priori - spaghetti;Prior RC - spaghetti;CG a priori - espaguetis;CT a priori - Spaghetti.;TC a priori - spaghetti;CC a priori  - spaghetti
+PostRC;Courbe de tarage a posteriori;Posterior rating curve;Curva de gasto a posteriori;Tarierungskurve a posteriori;Curva di tara a posteriori;Curva chave a posteriori
+PostRC_env;CT a posteriori - enveloppe;Posterior RC - envelop;CG a posteriori - envolvente;CT a posteriori - Hülle;CT a posteriori - busta;CC a posteriori - envelope
+PostRC_spag;CT a posteriori - spaghetti;Posterior RC - spaghetti;CG a posteriori - espaguetis;CT a posteriori - Spaghetti;CT a posteriori - spaghetti;CC a posteriori  - spaghetti
+KickPlot;Figure extérieure;Plot outside;Gráfico externo;Äußere Figur;Figura esterna;Gráfico de saída
+PlotInExternalWindow;Tracer la figure dans une fenêtre externe;Plot in external window;Gráfico en ventana externa;Zeichnen Sie die Abbildung in einem externen Fenster.;Disegnare la figura in una finestra esterna;Gráfico em janela externa
+NMCsim_long;Nombre de simulations Monte Carlo;Number of Monte Carlo simulations;Número de simulaciones de Monte Carlo;Anzahl der Monte-Carlo-Simulationen;Numero di simulazioni Monte Carlo;Número de simulações de Monte Carlo
+Hmin_long;Grille de hauteurs sur laquelle la CT est évaluée : hauteur minimale;Stage grid on which the RC is evaluated: minimum stage;Cuadrícula de alturas en la que se evalúa la CG: altura mínima;Höhenraster, auf dem die TK ausgewertet wird: minimale Höhe;Griglia di altezze su cui viene valutato il TC: altezza minima;Grade de alturas sobre a qual a CC é avaliada: altura mínima
+Hmax_long;Grille de hauteurs sur laquelle la CT est évaluée : hauteur maximale;Stage grid on which the RC is evaluated: maximum stage;Cuadrícula de alturas en la que se evalúa la CG: altura máxima;Höhenraster, auf dem die TK ausgewertet wird: maximale Höhe;Griglia di altezze su cui viene valutato il TC: altezza massima;Grade de alturas sobre a qual a CC é avaliada: altura máxima
+Hstep_long;Grille de hauteurs sur laquelle la CT est évaluée : pas de la grille;Stage grid on which the RC is evaluated: grid step;Cuadrícula de alturas en la que se evalúa la CG: paso de la cuadrícula;Höhenraster, auf dem die TK ausgewertet wird: Schrittweite des Rasters;Griglia di altezze su cui viene valutato il TC: passo di griglia;Grade de alturas sobre a qual a CC é avaliada: intervalo da grade
+Nstep_long;Grille de hauteurs sur laquelle la CT est évaluée : taille de la grille;Stage grid on which the RC is evaluated: grid size;Cuadrícula de alturas en la que se evalúa la CG: tamaño de la cuadrícula ;Raster von Höhen, auf denen die TK bewertet wird: Rastergröße.;Griglia di altezze su cui viene valutato il TK: dimensione della griglia;Grade de alturas sobre a qual a CC é avaliada: tamanho da grade
+h2n;Calculer la taille de la grille à partir de son pas;Compute grid size from grid step;Calcular el tamaño de la cuadrícula a partir de su paso;Berechnen Sie die Größe des Rasters anhand seiner Teilung.;Calcolare la dimensione della griglia dal suo passo;Calcular o tamanho da grade a partir do intervalo
+n2h;Calculer le pas de la grille à partir de sa taille;Compute grid step from grid size;Calcular el paso de la cuadrícula a partir de su tamaño;Berechnen Sie die Schrittweite des Rasters anhand seiner Größe.;Calcolare il passo della griglia dalla dimensione della griglia;Calcular o intervalo da grade a partir do tamanho da grade
+Ylog_on;Ylog:on;Ylog:on;Ylog:on;Ylog:ein;Ylog:on;Ylog:on
+Ylog_off;Ylog:off;Ylog:off;Ylog:off;Ylog:aus;Ylog:off;Ylog:off
+ApplyYlog;Appliquer une échelle logarithmique sur l'axe des ordonnées;Apply logarithmic scale on y-axis;Aplicar una escala logarítmica al eje Y;Wenden Sie eine logarithmische Skala auf die Y-Achse an.;Applicare una scala logaritmica all'asse y;Aplicar uma escala logarítmica ao eixo y
+H;H [m];H [m];H [m];H [m];H [m];H [m]
+uH;uH [m];uH [m];uH [m];uH [m];uH [m];uH [m]
+bH;bH [m];bH [m];bH [m];bH [m];bH [m];bH [m]
+bHindx;bHindx [-];bHindx [-];bHindx [-];bHindx [-];bHindx [-];bHindx [-]
+uH;uH [m];uH [m];uH [m];uH [m];uH [m];uH [m]
+Q;Q [m3/s];Q [m3/s];Q [m3/s];Q [m3/s];Q [m3/s];P [m3/s]
+uQ;uQ [%];uQ [%];uQ [%];uQ [%];uQ [%];uQ [%]
+Remnant_Linear;Linéaire : sigma=g1+g2*Q;Linear: sigma=g1+g2*Q;Lineal: sigma=g1+g2*Q;Linear: sigma=g1+g2*Q;Lineare: sigma=g1+g2*Q;Linear: sigma=g1+g2*Q
+Remnant_Constant;Constante : sigma=g1;Constant: sigma=g1;Constante: sigma=g1;Konstant: sigma=g1;Costante: sigma=g1;Constante: sigma=g1
+MorePlot;Autres graphiques;More plots;Otros gráficos;Weitere Grafiken;Altri grafici;Outros gráficos
+MorePlotTip;Ouvre une nouvelle fenêtre pour des graphiques avancés;Open a new window for more advanced plots;Abre una nueva ventana para gráficos avanzados;Öffnet ein neues Fenster für erweiterte Grafiken.;Apre una nuova finestra per i grafici avanzati;Abre uma nova janela para gráficos avançados
+TimeInYears;Temps [années];Time [years];Tiempo [años];Zeit [Jahre];Tempo [anni];Tempo [anos]
+Qunit;Q [m3/s];Q [m3/s];Q [m3/s];Q [m3/s];Q [m3/s];P [m3/s]
+Hunit;H [m];H [m];H [m];H [m];H [m];H [m]
+MCMCoptions;Options MCMC;MCMC options;Opciones MCMC;MCMC-Optionen;Opzioni MCMC;Opções MCMC
+RoughnessCoefficient;Coefficient de frottement;Roughness coefficient;Coeficiente de fricción;Reibungskoeffizient;Coefficiente di attrito;Coeficiente de fricção
+SaveHydroSpag;Sauvegarder les spaghetti d'hydrogrammes ?;Save hydrograph spaghetti?;¿Guardar los espaguetis de los hidrogramas?;Spaghetti-Hydrogrammen speichern?;Salvare gli idrografi a spaghetti?;Economizando hidrográficos de spaghetti?
+CloseWarning;Etes-vous sûr de vouloir quitter BaRatinAGE ?;Are you sure you want to close BaRatinAGE?;¿Está seguro de que desea cerrar BaRatinAGE?;Sind Sie sicher, dass Sie BaRatinAGE verlassen wollen?;Sei sicuro di voler lasciare BaRatinAGE?;Tem certeza que quer deixar a BaRatinAGE?
+ConfirmContinue;Voulez-vous continuer ?;Do you wish to continue?;¿Desea continuar?;Möchten Sie fortfahren?;Vuoi continuare?;Deseja continuar?
+OpenWarning;Attention : cette opération écrasera tous les objets existant dans BaRatinAGE;Warning: this operation will overwrite all current objects in BaRatinAGE.;Advertencia: esta operación sobrescribirá todos los objetos existentes en BaRatinAGE;Achtung: Dieser Vorgang überschreibt alle in BaRatinAGE vorhandenen Objekte.;Attenzione: questa operazione sovrascriverà tutti gli oggetti esistenti in BaRatinAGE;Aviso: esta operação irá sobrescrever todos os objetos existentes na BaRatinAGE
+NewWarning;Attention : si vous n'avez pas sauvegardé l'étude en cours cette opération entrainera une perte de données;Warning: if you didn't save the current study this operation will result in a loss of data;Advertencia: si no guardó el estudio actual esta operación resultará en una pérdida de datos;Achtung: Wenn Sie die aktuelle Studie nicht gespeichert haben, führt dieser Vorgang zu einem Datenverlust.;Attenzione: se non avete salvato lo studio attuale, questa operazione comporterà una perdita di dati;Cuidado: se não salvou o estudo atual a operação resultará em perda de dados
+DeleteHydrauWarning;L'effacement de cette configuration hydraulique entraînera l'effacement des courbes de tarage et des hydrogrammes qui l'utilisent : confirmez-vous l'effacement ?;Deleting this hydraulic configuration will also remove all rating curves and flow series using it: do you wish to proceed?;Al borrar esta configuración hidráulica se eliminarán las curvas de gasto y los hidrogramas asociados: ¿desea continuar?;Das Löschen dieser hydraulischen Konfiguration führt zum Löschen der Tarierungskurven und der Ganglinien, die sie verwenden: Bestätigen Sie das Löschen?;La cancellazione di questa configurazione idraulica cancellerà le curve di rating e gli idrografi che la utilizzano: potete confermare la cancellazione?;A exclusão desta configuração hidráulica eliminará as curvas chaves e os hidrogramas que a utilizam: Confirmar exclusão?
+DeleteGaugingsWarning;L'effacement de ce jeu de jaugeages entraînera l'effacement des courbes de tarage et des hydrogrammes qui l'utilisent : confirmez-vous l'effacement ?;Deleting this gauging set will also remove all rating curves and flow series using it: do you wish to proceed?;Al borrar este conjunto de aforos se eliminarán las curvas de gasto y los hidrogramas asociados: ¿desea continuar?;Die Löschung dieses Messwertsatzes wird zur Löschung der Tarierungskurven und der Ganglinien führen, die ihn verwenden: Bestätigen Sie die Löschung?;La cancellazione di questo set di misuratori cancellerà le curve di rating e gli idrografi che lo utilizzano: confermate la cancellazione?;A exclusão deste conjunto de medições eliminará as curvas chaves e os hidrogramas que os utilizam: Confirmar exclusão?
+DeleteLimniWarning;L'effacement de ce limnigramme entraînera l'effacement des hydrogrammes qui l'utilisent : confirmez-vous l'effacement ?;Deleting this stage series will also remove all flow series using it: do you wish to proceed?;Al borrar este limnigrama se eliminarán los hidrogramas asociados: ¿desea continuar?;Die Löschung dieses Limnigramms wird zur Löschung der Hydrogramme führen, die es verwenden: Bestätigen Sie die Löschung?;La cancellazione di questo set di misuratori cancellerà gli idrografi che lo utilizzano: puoi confermare la cancellazione?;A exclusão desta série de cotas eliminará os hidrogramas que a utiliza: Confirmar exclusão?
+DeleteRCWarning;L'effacement de cette courbe de tarage entraînera l'effacement des hydrogrammes qui l'utilisent : confirmez-vous l'effacement ?;Deleting this rating curve will also remove all flow series using it: do you wish to proceed?;Al borrar esta curva de gasto se eliminarán los hidrogramas asociados: ¿desea continuar?;Die Löschung dieser Tarierungskurve wird zur Löschung der Hydrogramme führen, die sie verwenden: Bestätigen Sie die Löschung?;La cancellazione di questa curva di valutazione cancellerà gli idrografi che la utilizzano: confermate la cancellazione?;A exclusão desta curva chave eliminará os hidrogramas que a utiliza: Confirmar exclusão?
+DeleteHydroWarning;Confirmez-vous l'effacement de cet hydrogramme ?;Are you sure you want to delete this flow series?;¿Confirma la eliminación de este hidrograma?;Bestätigen Sie die Löschung dieser Ganglinie?;Confermate la cancellazione di questo idrografo?;Confirma a exclusão deste hidrograma?
+BaRatinAGEFiles;Fichiers BaRatinAGE;BaRatinAGE files;Archivos BaRatinAGE;BaRatinAGE-Dateien;File BaRatinAGE;Arquivos BaRatinAGE
+Density;Densité;Density;Densidad;Dichte;Densità;Densidade
+PriorVsPost_Par;Comparer les paramètres a priori et a posteriori;Compare prior and posterior parameters;Comparar los parámetros a priori y a posteriori;Vergleichen Sie die Parameter a priori und a posteriori.;Confrontare i parametri a priori e a posteriori;Comparar parâmetros anterior e posterior
+PriorVsPost_ParTable;Comparer les paramètres a priori et a posteriori (tableau);Compare prior and posterior parameters (table);Comparar los parámetros a priori y a posteriori (tabla);Vergleichen Sie die A-priori- und A-posteriori-Parameter (Tabelle).;Confrontare i parametri a priori e a posteriori (tabella);Comparar parâmetros anterior e posterior (tabela)
+PriorVsPost_RC;Comparer les courbes de tarage a priori et a posteriori;Compare prior and posterior rating curves;Comparar las curvas de gasto a priori y a posteriori;Vergleichen Sie die a priori und a posteriori Tarierungskurven.;Confrontare le curve di valutazione a priori e a posteriori;Comparar curvas chaves anterior e posterior
+MCMCtrace;Traces des simulations MCMC;MCMC simulation traces;Trazos de simulación MCMC;Spuren der MCMC-Simulationen;Tracce di simulazioni MCMC;Traços de simulações MCMC
+Spaghetti;Spaghetti;Spaghetti;Espaguetis;Spaghetti;Spaghetti;Espaguete
+PhysicalParameters;<html>Paramètres physiques <hr> </html>;<html>Physical parameters <hr> </html>;<html>Parámetros físicos <hr> </html>;<html>Physikalische Parameter <hr> </html>.;<html>Parametri fisici <hr> </html>;<html>Parâmetros físicos <hr> </html>
+RatingCurveParameters;<html>Paramètres du contrôle <hr> </html>;<html>Control parameters <hr> </html>;<html>Parámetros del control <hr> </html>;<html>Steuerungsparameter <hr> </html>.;<html>Parametri di controllo <hr> </html>;<html>Parâmetros de controle <hr> </html>
+SetLanguageInfo;Le changement sera effectif au prochain démarrage de BaRatinAGE;Change will apply next time you start BaRatinAGE;El cambio se aplicará la próxima vez que inicie BaRatinAGE;Die Änderung wird beim nächsten Start von BaRatinAGE wirksam.;La modifica sarà effettiva al prossimo avvio di BaRatinAGE;A mudança será efetivada na próxima vez que a BaRatinAGE for iniciada
+nAdapt;nAdapt;nAdapt;nAdapt;nAdapt;nAdapt;nAdapt
+Explanation_nAdapt;Nombre d'itérations entre deux adaptations;Number of iterations between two adaptions;Número de iteraciones entre dos adaptaciones;Anzahl der Iterationen zwischen zwei Anpassungen.;Numero di iterazioni tra due adattamenti;Número de iterações entre duas adaptações
+nCycles;nCycles;nCycles;nCycles;nCycles;nCycles;nCycles
+Explanation_nCycles;Nombre de cycles d'adaptation;Number of adaption cycles;Número de ciclos de adaptación;Anzahl der Anpassungszyklen;Numero di cicli di adattamento;Número de ciclos de adaptação
+minMR;minTA;minMR;minTA;minTA;minTA;minTA
+Explanation_minMR;Taux d'acceptation minimal;Minimum move rate;Tasa de aceptación mínima;Minimale Akzeptanzrate;Tasso minimo di accettazione;Taxa mínima de aceitação
+maxMR;maxTA;maxMR;maxTA;maxTA;maxTA;maxTA
+Explanation_maxMR;Taux d'acceptation maximal;Maximum move rate;Tasa de aceptación máxima;Maximale Akzeptanzrate;Tasso massimo di accettazione;Taxa máxima de aceitação
+downMult;Facteur-;downMult;Factor-;Faktor-;Fattore-;Fator-
+Explanation_downMult;Facteur pour diminuer la variance de saut;Multiplier to decrease jump variance;Factor de disminución de la varianza de los saltos;Faktor zur Verringerung der Sprungvarianz;Fattore per diminuire la varianza del salto;Fator para diminuir a variação do salto
+upMult;Facteur+;upMult;Factor+;Faktor+;Fattore-+;Fator-+
+Explanation_upMult;Facteur pour augmenter la variance de saut;Multiplier to increase jump variance;Factor de aumento de la varianza de los saltos;Faktor, um die Sprungvarianz zu erhöhen.;Fattore per aumentare la varianza del salto;Fator para aumentar a variação do salto
+nSlim;nAffinage;nSlim;nRefinamiento;nAffinierung;nRefinement;nRefinement
+Explanation_nSlim;Affinage des simulations MCMC (une valeur toutes les nAffinage);Slim MCMC simulations (one value every nSlim);Refinamiento de las simulaciones MCMC (un valor cada nRefinamiento);Verfeinerung der MCMC-Simulationen (ein Wert alle nVerfeinerung).;Raffinazione delle simulazioni MCMC (un valore ogni nRefinement);Refinamento das simulações MCMC (um valor a cada nRefinement)
+burn;burn;burn;burn;burn;burn;burn
+Explanation_burn;Brûlage des simulations MCMC (effacement des premières [burn*nSim] itérations);Burn MCMC simulations (delete the initial [burn*nSim] iterations);Eliminación de simulaciones de MCMC (borrando las [burn*nSim] primeras iteraciones);Abbrennen von MCMC-Simulationen (Löschen der ersten [burn*nSim] Iterationen).;Bruciatura delle simulazioni MCMC (cancellazione delle prime [burn*nSim] iterazioni);Queima de simulações MCMC (apagando as primeiras [burn*nSim] iterações )
+BaremeInfo;Informations Barême;Barême information;Información por Barême;Informationen Barême;Informazioni sul bar;Informações sobre a barra
+BaremeNmaxInfo;Attention : le format Barême limite les courbes de tarage à 100 points. Seules les 100 premières valeurs seront exportées.;Warning: the Barême format restricts rating curves to 100 points. Only the 100 first values will be exported.;Atención: el formato Barême limita las curvas de gasto a 100 puntos. Sólo se exportarán los 100 primeros valores.;Achtung: Das Format Barême beschränkt die Tarierkurven auf 100 Punkte. Es werden nur die ersten 100 Werte exportiert.;Attenzione: il formato Barême limita le curve di tara a 100 punti. Solo i primi 100 valori saranno esportati.;Cuidado: o formato Barême limita as curvas da tara a 100 pontos. Somente os primeiros 100 valores serão exportados.
+Validity_start;Début de la période de validité;Start of validity period;Inicio del período de validez;Beginn des Gültigkeitszeitraums;Inizio del periodo di validità;Início do período de validade
+Validity_end;Fin de la période de validité;End of validity period;Fin del período de validez;Ende des Gültigkeitszeitraums;Fine del periodo di validità;Fim do período de validade
+Explanation_Name;Nom (6 charactères max !);Name (maximum 6 characters!);Nombre (¡máximo 6 caracteres!);Name (max. 6 Zeichen!);Nome (6 caratteri al massimo!);Nome (6 caracteres no máximo!)
+HydroCode;Code HYDRO;HYDRO code;Código HYDRO;HYDRO-Code;Codice HYDRO;Código HYDRO
+Explanation_HydroCode;Code HYDRO (8 charactères);HYDRO code (8 characters);Código HYDRO (8 caracteres);HYDRO-Code (8 Zeichen);Codice HYDRO (8 caratteri);Código HYDRO (8 caracteres)
+RemnantErrorText;Pour plus d'information sur les modèles d'erreur restante merci de consulter l'aide;For more information on remnant error models please open help;Para más información sobre los modelos de error remanente, consulte la ayuda;Für weitere Informationen zu den verbleibenden Fehlermustern konsultieren Sie bitte die Hilfe.;Per maggiori informazioni sui restanti modelli di errore, consultate l'aiuto;Para mais informações sobre os modelos de erro restantes, favor consultar a ajuda
+AboutText_1;BaRatinAGE 2.2 - une interface Java pour l'estimation des courbes de tarage;BaRatinAGE 2.2 - a Java interface for rating curve estimation;BaRatinAGE 2.2 - una interfaz Java para la estimación de las curvas de gasto;BaRatinAGE 2.2 - eine Java-Schnittstelle für die Schätzung von Tarierungskurven.;BaRatinAGE 2.2 - un'interfaccia Java per la stima delle curve di rating;BaRatinAGE 2.2 - uma interface Java para a estimativa das curvas de classificação
+AboutText_2;--------------------------------------------------------------------------------------;--------------------------------------------------------------------------------------;--------------------------------------------------------------------------------------;--------------------------------------------------------------------------------------;--------------------------------------------------------------------------------------;--------------------------------------------------------------------------------------
+AboutText_3;Programmeurs : Sylvain Vigneau - Kevin Mokili - Benjamin Renard - INRAE Lyon-Villeurbanne;Programmers: Sylvain Vigneau - Kevin Mokili - Benjamin Renard - INRAE Lyon-Villeurbanne;Programadores: Sylvain Vigneau - Kevin Mokili - Benjamin Renard - INRAE Lyon-Villeurbanne;Programmierer: Sylvain Vigneau - Kevin Mokili - Benjamin Renard - INRAE Lyon-Villeurbanne.;Programmatori: Sylvain Vigneau - Kevin Mokili - Benjamin Renard - INRAE Lyon-Villeurbanne;Programadores: Sylvain Vigneau - Kevin Mokili - Benjamin Renard - INRAE Lyon-Villeurbanne
+AboutText_4;avec l'aide de DMSL - librairie Fortran développée par Dmitri Kavetski - University of Adelaide - Australie;with the assistance of DMSL - a Fortran numerical library developped by Dmitri Kavetski - University of Adelaide - Australia;con la ayuda de DMSL - biblioteca Fortran desarrollada por Dmitri Kavetski - Universidad de Adelaida - Australia;mit Hilfe von DMSL - Fortran-Bibliothek, entwickelt von Dmitri Kavetski - University of Adelaide - Australien;con l'aiuto di DMSL - libreria Fortran sviluppata da Dmitri Kavetski - Università di Adelaide - Australia;com a ajuda da DMSL - Biblioteca Fortran desenvolvida por Dmitri Kavetski - Universidade de Adelaide - Austrália
