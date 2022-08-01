@@ -84,6 +84,7 @@ public class Defaults {
 	// -------------------
 	// FILES & DIRECTORIES
 	// -------------------
+	public static final String os = System.getProperty("os.name").toLowerCase();  
 	public static final String home = System.getProperty("user.dir");
 	public static final String txtSep=" ";
 	public static final String resultSep=" ";
@@ -91,7 +92,8 @@ public class Defaults {
 	public static final String menuSep="   ";
 	// Directories for executable
 	public static final String exeDir=new File(home,"exe").getAbsolutePath();
-	public static final String exeFile=new File(exeDir,"BaRatin.exe").getAbsolutePath();
+	private static String exeName=os.startsWith("windows") ? "BaRatin.exe" : "BaRatin";
+	public static final String exeFile=new File(exeDir,exeName).getAbsolutePath();
 	public static final String exeConfigFile=new File(exeDir,"Config_BaRatin.txt").getAbsolutePath();
 	public static final  String tempWorkspace=new File(exeDir,"workspace").getAbsolutePath();
 	public static final  String recycleDir=new File(home,"recycle").getAbsolutePath();

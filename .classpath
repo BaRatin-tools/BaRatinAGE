@@ -9,5 +9,6 @@
 	<classpathentry kind="lib" path="externalLib/opencsv-3.1.jar"/>
 	<classpathentry kind="lib" path="externalLib/jfreechart-1.0.19/lib/jfreechart-1.0.19.jar"/>
 	<classpathentry kind="lib" path="externalLib/jfreechart-1.0.19/lib/jcommon-1.0.23.jar"/>
+	<classpathentry kind="lib" path="externalLib/jfreechart-1.0.19/lib/orsonpdf-1.6-eval.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
