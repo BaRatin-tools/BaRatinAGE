@@ -29,6 +29,7 @@ import commons.GridBag_Layout;
 import commons.GridBag_SplitPanel;
 import commons.ReadWrite;
 import controleur.Control;
+import controleur.ExeControl;
 import Utils.Config;
 import Utils.Defaults;
 import Utils.Dico;
@@ -557,7 +558,11 @@ public class MainFrame extends JFrame implements ActionListener{
 				dico.entry("Warning"),
 				Defaults.iconWarning,dico.entry("Yes"),dico.entry("No"));
 		if(ok==JOptionPane.YES_OPTION){
-			//this.dispose();
+			// Kill executable if needed
+			ExeControl exeController = ExeControl.getInstance();
+			Process p = exeController.getExeProc();
+			if(p!=null) {p.destroy();}
+			// Kill Java VM
 			System.exit(0);
 			}
 	}

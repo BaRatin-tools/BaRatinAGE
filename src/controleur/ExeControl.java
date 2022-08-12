@@ -50,7 +50,7 @@ public class ExeControl {
 	private ConfigControl configController = new ConfigControl();
 	private ResultControl resultController = new ResultControl();
 	private Station station=Station.getInstance();
-
+	private Process exeProc=null;
 	private ExeControl(){}
 
 	private void engine(boolean[] options,GaugingSet gaugings,ConfigHydrau hydrau,
@@ -61,17 +61,17 @@ public class ExeControl {
 		DirectoryUtils.deleteDirContent(new File(Defaults.recycleDir));
 		DirectoryUtils.copyFilesInDir(new File(Defaults.tempWorkspace), new File(Defaults.recycleDir));
 		// Pilot executable
-		Process p = Runtime.getRuntime().exec(Defaults.exeFile.trim(), null, new File(Defaults.exeDir.trim()));
-		InputStream exeOut = p.getInputStream();
+		exeProc = Runtime.getRuntime().exec(Defaults.exeFile.trim(), null, new File(Defaults.exeDir.trim()));
+		InputStream exeOut = exeProc.getInputStream();
 		BufferedReader is = new BufferedReader(new InputStreamReader(exeOut));
 		String line = "";String foo=null;
 		while((foo=is.readLine())!=null) {System.out.println(foo);line=foo;}
 		System.out.flush();
-		int exitcode=p.waitFor();
+		int exitcode=exeProc.waitFor();
 		if(exitcode!=0){
 			throw new InterruptedException(dico.entry("ExeAborted")+
 					System.lineSeparator()+
-					dico.entry("Error")+":"+p.exitValue()+
+					dico.entry("Error")+":"+exeProc.exitValue()+
 					System.lineSeparator()+
 					dico.entry("Message")+":"+line);
 		}
@@ -228,6 +228,14 @@ public class ExeControl {
 			x[i]=z.getObservations().get(i).getObsDate().toYear();
 		}
 		return(x);
+	}
+
+	public Process getExeProc() {
+		return exeProc;
+	}
+
+	public void setExeProc(Process exeProc) {
+		this.exeProc = exeProc;
 	}
 
 }
