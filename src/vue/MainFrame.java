@@ -30,6 +30,7 @@ import commons.GridBag_SplitPanel;
 import commons.ReadWrite;
 import controleur.Control;
 import controleur.ExeControl;
+import moteur.Station;
 import Utils.Config;
 import Utils.Defaults;
 import Utils.Dico;
@@ -568,10 +569,15 @@ public class MainFrame extends JFrame implements ActionListener{
 	}
 	
 	private void newStation(){
-		int ok=new Frame_YesNoQuestion().ask(this,
-				dico.entry("NewWarning")+System.getProperty("line.separator")+dico.entry("ConfirmContinue"),
-				dico.entry("Warning"),
-				Defaults.iconWarning,dico.entry("Yes"),dico.entry("No"));
+		int ok;
+		if(!Station.getInstance().isEmpty()) {
+			ok=new Frame_YesNoQuestion().ask(this,
+					dico.entry("NewWarning")+System.getProperty("line.separator")+dico.entry("ConfirmContinue"),
+					dico.entry("Warning"),
+					Defaults.iconWarning,dico.entry("Yes"),dico.entry("No"));
+		} else {
+			ok=JOptionPane.YES_OPTION;
+		}
 		if(ok==JOptionPane.YES_OPTION){controller.newStation();}
 		this.barFile=null;
 	}
