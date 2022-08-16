@@ -217,12 +217,13 @@ public class Control {
 		fc.setFileFilter(new BarZip_FileFilter());
 		fc.setDialogTitle(dico.entry("Save"));
 		fc.setAcceptAllFileFilterUsed(false);
-		fc.setCurrentDirectory(new File(config.getDefaultDir()));
+		fc.setCurrentDirectory(new File(MainFrame.getInstance().getLastBarDir()));
 		String barFile;
 		if(askFile){
 			int returnVal = fc.showOpenDialog(null);
 			if(returnVal!=JFileChooser.APPROVE_OPTION){return;}
 			barFile=fc.getSelectedFile().getAbsolutePath();
+			MainFrame.getInstance().setLastBarDir(fc.getSelectedFile().getAbsoluteFile().getParent());
 		}
 		else {
 			barFile=MainFrame.getInstance().getBarFile();
@@ -272,12 +273,13 @@ public class Control {
 		fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
 		fc.setFileFilter(new BarZip_FileFilter());
 		fc.setDialogTitle(dico.entry("Open"));
-		fc.setCurrentDirectory(new File(config.getDefaultDir()));
+		fc.setCurrentDirectory(new File(MainFrame.getInstance().getLastBarDir()));
 		String barFile;
 		int returnVal = fc.showOpenDialog(null);
 		if(returnVal!=JFileChooser.APPROVE_OPTION){return;}
 		barFile=fc.getSelectedFile().getAbsolutePath();
 		MainFrame.getInstance().setBarFile(barFile);
+		MainFrame.getInstance().setLastBarDir(fc.getSelectedFile().getAbsoluteFile().getParent());
 		MainFrame.getInstance().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 		try{
 			// Unzip it
@@ -1402,13 +1404,14 @@ public class Control {
 		final JFileChooser fc = new JFileChooser();
 		fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
 		fc.setDialogTitle(dico.entry("Save"));
-		fc.setCurrentDirectory(new File(config.getDefaultDir()));
+		fc.setCurrentDirectory(new File(MainFrame.getInstance().getLastDataDir()));
 		fc.setAcceptAllFileFilterUsed(false);
 		for(int i=0;i<filter_exportRC.length;i++){fc.addChoosableFileFilter(filter_exportRC[i]);}
 		String file,file2;
 		int returnVal = fc.showOpenDialog(null);
 		if(returnVal!=JFileChooser.APPROVE_OPTION){return;}
 		file=fc.getSelectedFile().getAbsolutePath();
+		MainFrame.getInstance().setLastDataDir(fc.getSelectedFile().getAbsoluteFile().getParent());
 		// Retrieve RC and save it
 		RatingCurve rc=station.getRatingCurve(name);
 		FileFilter foo = fc.getFileFilter();
@@ -1561,11 +1564,12 @@ public class Control {
 		final JFileChooser fc = new JFileChooser();
 		fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
 		fc.setDialogTitle(dico.entry("Save"));
-		fc.setCurrentDirectory(new File(config.getDefaultDir()));
+		fc.setCurrentDirectory(new File(MainFrame.getInstance().getLastDataDir()));
 		String file;
 		int returnVal = fc.showOpenDialog(null);
 		if(returnVal!=JFileChooser.APPROVE_OPTION){return;}
 		file=fc.getSelectedFile().getAbsolutePath();
+		MainFrame.getInstance().setLastDataDir(fc.getSelectedFile().getAbsoluteFile().getParent());
 		// Retrieve RC and save it
 		Hydrograph h=station.getHydrograph(name);
 		Envelop env=h.getEnv_h();

@@ -106,12 +106,13 @@ public class LimniPanel extends ItemPanel implements ActionListener{
 
 	private void importLimni(){
 		// browse and fill textfield
-		Custom_FileChooser chooser = new Custom_FileChooser(config.getDefaultDir());
+		Custom_FileChooser chooser = new Custom_FileChooser(MainFrame.getInstance().getLastDataDir());
 		if(chooser.getFilepath()!=Constants.S_EMPTY){
 			file.setText(chooser.getFilepath());
 			updateLimni();
 			// import limni
 			controller.importLimnigraph(this);
+			MainFrame.getInstance().setLastDataDir(chooser.getSelectedFile().getAbsoluteFile().getParent());
 		}
 	}
 

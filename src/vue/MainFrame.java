@@ -51,6 +51,8 @@ public class MainFrame extends JFrame implements ActionListener{
 	private HydrographPanel hydrograph=new HydrographPanel("",false);
 	private GridBag_SplitPanel split;
 	private String barFile;
+	private String lastBarDir;
+	private String lastDataDir;
 
 	// locals
 	private Config config=Config.getInstance();
@@ -145,6 +147,11 @@ public class MainFrame extends JFrame implements ActionListener{
 		tabs.addTab(dico.entry("Limnigraph"),iconLimni, limni,dico.entry("Limnigraph"));
 		tabs.addTab(dico.entry("RatingCurve"),iconRC, rc,dico.entry("RatingCurve"));
 		tabs.addTab(dico.entry("Hydrograph"),iconHydro, hydrograph,dico.entry("Hydrograph"));
+		//-------------------------------------------------------------
+		// Initialize last opened directories
+		//-------------------------------------------------------------
+		this.setLastBarDir(config.getDefaultDir());
+		this.setLastDataDir(config.getDefaultDir());
 		//-------------------------------------------------------------
 		// Finito!
 		//-------------------------------------------------------------
@@ -683,5 +690,20 @@ public class MainFrame extends JFrame implements ActionListener{
 		this.barFile = barFile;
 	}
 
+	public String getLastBarDir() {
+		return lastBarDir;
+	}
+
+	public void setLastBarDir(String lastBarDir) {
+		this.lastBarDir = lastBarDir;
+	}
+
+	public String getLastDataDir() {
+		return lastDataDir;
+	}
+
+	public void setLastDataDir(String lastDataDir) {
+		this.lastDataDir = lastDataDir;
+	}
 
 }

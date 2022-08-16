@@ -119,7 +119,7 @@ public class GaugingPanel extends ItemPanel implements ActionListener {
 
 	private void importGauging(){
 		// browse and fill textfield
-		Custom_FileChooser chooser = new Custom_FileChooser(config.getDefaultDir(),filter_importGaugings);
+		Custom_FileChooser chooser = new Custom_FileChooser(MainFrame.getInstance().getLastDataDir(),filter_importGaugings);
 		String f=chooser.getFilepath();
 		if(!f.equals(Constants.S_EMPTY)){
 			file.setText(f);
@@ -128,6 +128,7 @@ public class GaugingPanel extends ItemPanel implements ActionListener {
 			FileFilter foo = chooser.getFileFilter();
 			String ext = ((FileNameExtensionFilter) foo).getExtensions()[0]; //f.substring(f.lastIndexOf(".")+1);
 			controller.importGaugingSet(this,ext);
+			MainFrame.getInstance().setLastDataDir(chooser.getSelectedFile().getAbsoluteFile().getParent());
 		}
 	}
 
