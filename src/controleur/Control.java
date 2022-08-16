@@ -260,11 +260,13 @@ public class Control {
 
 	public void open() {
 		File f=null;
-		// Ask confirmation
-		int ok=new Frame_YesNoQuestion().ask(null,
-				dico.entry("OpenWarning")+System.getProperty("line.separator")+dico.entry("ConfirmContinue"),
-				dico.entry("Open"),Defaults.iconWarning,dico.entry("Yes"),dico.entry("No"));
-		if(ok==JOptionPane.NO_OPTION) {return;}
+		// Ask confirmation if current workspace is not empty
+		if (!Station.getInstance().isEmpty()) {
+			int ok=new Frame_YesNoQuestion().ask(null,
+					dico.entry("OpenWarning")+System.getProperty("line.separator")+dico.entry("ConfirmContinue"),
+					dico.entry("Open"),Defaults.iconWarning,dico.entry("Yes"),dico.entry("No"));
+			if(ok==JOptionPane.NO_OPTION) {return;}
+		}
 		// Select bar file
 		final JFileChooser fc = new JFileChooser();
 		fc.setFileSelectionMode(JFileChooser.FILES_ONLY);

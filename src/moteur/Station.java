@@ -83,6 +83,13 @@ public class Station {
 		this.setRc(new Dataset<RatingCurve>());
 		this.setHydrograph(new Dataset<Hydrograph>());		
 	}
+	
+	public boolean isEmpty(){
+		boolean out = this.getConfig().getSize()==0 & this.getGauging().getSize()==0 & this.getLimni().getSize()==0 
+				      & this.getRc().getSize()==0 & this.getHydrograph().getSize()==0;
+		return out;
+		
+	}
 
 	/////////////////////////////////////////////////////////
 	// ADD STUFF
