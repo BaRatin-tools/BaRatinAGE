@@ -42,6 +42,7 @@ public class Frame_GetName extends JDialog implements ActionListener{
 	 * @param xPos x positioning of the dialog
 	 * @param yPos y positioning of the dialog
 	 * @param tip tips
+	 * @param init initial text
 	 */
 	public Frame_GetName(Frame parent,
 			String title, //the frame's title
@@ -52,7 +53,7 @@ public class Frame_GetName extends JDialog implements ActionListener{
 			Color bkgColor,Color textColor,Color labelColor,
 			Dimension dim,
 			Integer xPos, Integer yPos,
-			String tip){
+			String tip, String init){
 		super(parent,true);
 		this.setTitle(title);
 		this.setMinimumSize(dim);
@@ -70,7 +71,7 @@ public class Frame_GetName extends JDialog implements ActionListener{
 		JPanel pan =new JPanel();
 		pan.setBackground(bkgColor);
 		GridBag_Layout.SetGrid(pan, new int[] {0,0}, new int[] {0,0}, new double[] {1.,1.}, new double[] {1.,1.});
-		txt_name=new GridBag_TextField_Titled(pan,Constants.S_EMPTY,labelName,textFont,labelFont,
+		txt_name=new GridBag_TextField_Titled(pan,init,labelName,textFont,labelFont,
 				textColor,labelColor,0,0,2,1,tip);
 		butt_apply=new GridBag_Button(pan,this,"foo",apply,applyIcon,0,1,1,1,false,false,"");
 		butt_cancel=new GridBag_Button(pan,this,"foo",cancel,cancelIcon,1,1,1,1,false,false,"");

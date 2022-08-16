@@ -494,7 +494,7 @@ public class Control {
 	public void renameHydrauConfig(String name){
 		MainFrame main=MainFrame.getInstance();
 		// Ask new name
-		Frame_GetName f=main.Popup_GetName(true,null,null);
+		Frame_GetName f=main.Popup_GetName(true,null,null,name+"_");
 		String newname=f.getName();
 		if(newname.equals(Constants.S_EMPTY)){return;}		
 		// check that newname isn't used
@@ -781,7 +781,7 @@ public class Control {
 		ConfigHydrau old = station.getHydrauConfig(original);
 		ConfigHydrau nu = new ConfigHydrau(old);
 		MainFrame main = MainFrame.getInstance();
-		Frame_GetName f=main.Popup_GetName(true,null,null);
+		Frame_GetName f=main.Popup_GetName(true,null,null,original+"_");
 		String copy=f.getName();
 		if(copy.equals(Constants.S_EMPTY)){return;}		
 		// check that newname isn't used
@@ -902,7 +902,7 @@ public class Control {
 	public void renameGaugingSet(String name){
 		MainFrame main=MainFrame.getInstance();
 		// Ask new name
-		Frame_GetName f=main.Popup_GetName(true,null,null);
+		Frame_GetName f=main.Popup_GetName(true,null,null,name+"_");
 		String newname=f.getName();
 		if(newname.equals(Constants.S_EMPTY)){return;}		
 		// check that newname isn't used
@@ -1028,7 +1028,7 @@ public class Control {
 		GaugingSet old = station.getGauging(original);
 		GaugingSet nu = new GaugingSet(old);
 		MainFrame main = MainFrame.getInstance();
-		Frame_GetName f=main.Popup_GetName(true,null,null);
+		Frame_GetName f=main.Popup_GetName(true,null,null,original+"_");
 		String copy=f.getName();
 		if(copy.equals(Constants.S_EMPTY)){return;}		
 		// check that newname isn't used
@@ -1102,7 +1102,7 @@ public class Control {
 	public void renameLimni(String name){
 		MainFrame main=MainFrame.getInstance();
 		// Ask new name
-		Frame_GetName f=main.Popup_GetName(true,null,null);
+		Frame_GetName f=main.Popup_GetName(true,null,null,name+"_");
 		String newname=f.getName();
 		if(newname.equals(Constants.S_EMPTY)){return;}		
 		// check that newname isn't used
@@ -1226,7 +1226,7 @@ public class Control {
 		Limnigraph old = station.getLimnigraph(original);
 		Limnigraph nu = new Limnigraph(old);
 		MainFrame main = MainFrame.getInstance();
-		Frame_GetName f=main.Popup_GetName(true,null,null);
+		Frame_GetName f=main.Popup_GetName(true,null,null,original+"_");
 		String copy=f.getName();
 		if(copy.equals(Constants.S_EMPTY)){return;}		
 		// check that newname isn't used
@@ -1288,7 +1288,7 @@ public class Control {
 	public void renameRatingCurve(String name){
 		MainFrame main=MainFrame.getInstance();
 		// Ask new name
-		Frame_GetName f=main.Popup_GetName(true,null,null);
+		Frame_GetName f=main.Popup_GetName(true,null,null,name+"_");
 		String newname=f.getName();
 		if(newname.equals(Constants.S_EMPTY)){return;}		
 		// check that newname isn't used
@@ -1437,7 +1437,7 @@ public class Control {
 		RatingCurve old = station.getRatingCurve(original);
 		RatingCurve nu = new RatingCurve(old);
 		MainFrame main = MainFrame.getInstance();
-		Frame_GetName f=main.Popup_GetName(true,null,null);
+		Frame_GetName f=main.Popup_GetName(true,null,null,original+"_");
 		String copy=f.getName();
 		if(copy.equals(Constants.S_EMPTY)){return;}		
 		// check that newname isn't used
@@ -1481,7 +1481,7 @@ public class Control {
 	public void renameHydrograph(String name){
 		MainFrame main=MainFrame.getInstance();
 		// Ask new name
-		Frame_GetName f=main.Popup_GetName(true,null,null);
+		Frame_GetName f=main.Popup_GetName(true,null,null,name+"_");
 		String newname=f.getName();
 		if(newname.equals(Constants.S_EMPTY)){return;}		
 		// check that newname isn't used
@@ -1607,7 +1607,7 @@ public class Control {
 		Hydrograph old = station.getHydrograph(original);
 		Hydrograph nu = new Hydrograph(old);
 		MainFrame main = MainFrame.getInstance();
-		Frame_GetName f=main.Popup_GetName(true,null,null);
+		Frame_GetName f=main.Popup_GetName(true,null,null,original+"_");
 		String copy=f.getName();
 		if(copy.equals(Constants.S_EMPTY)){return;}		
 		// check that newname isn't used

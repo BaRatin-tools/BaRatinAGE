@@ -237,7 +237,7 @@ public class MainFrame extends JFrame implements ActionListener{
 	}
 
 	public void addConfig(boolean decorated,Integer x,Integer y){
-		Frame_GetName f=Popup_GetName(decorated,x,y);
+		Frame_GetName f=Popup_GetName(decorated,x,y,Constants.S_EMPTY);
 		String nam=f.getName();
 		if(!nam.equals(Constants.S_EMPTY)){
 			// Add to station (through controller)
@@ -276,7 +276,7 @@ public class MainFrame extends JFrame implements ActionListener{
 	}
 
 	public void addGaugingSet(boolean decorated,Integer x,Integer y){
-		Frame_GetName f=Popup_GetName(decorated,x,y);
+		Frame_GetName f=Popup_GetName(decorated,x,y,Constants.S_EMPTY);
 		String nam=f.getName();
 		if(!nam.equals(Constants.S_EMPTY)){
 			// Add to station (through controller)
@@ -315,7 +315,7 @@ public class MainFrame extends JFrame implements ActionListener{
 	}
 
 	public void addRatingCurve(boolean decorated,Integer x,Integer y){
-		Frame_GetName f=Popup_GetName(decorated,x,y);
+		Frame_GetName f=Popup_GetName(decorated,x,y,Constants.S_EMPTY);
 		String nam=f.getName();
 		if(!nam.equals(Constants.S_EMPTY)){
 			// Add to station (through controller)
@@ -363,7 +363,7 @@ public class MainFrame extends JFrame implements ActionListener{
 	}
 
 	public void addLimni(boolean decorated,Integer x,Integer y){
-		Frame_GetName f=Popup_GetName(decorated,x,y);
+		Frame_GetName f=Popup_GetName(decorated,x,y,Constants.S_EMPTY);
 		String nam=f.getName();
 		if(!nam.equals(Constants.S_EMPTY)){
 			// Add to station (through controller)
@@ -402,7 +402,7 @@ public class MainFrame extends JFrame implements ActionListener{
 	}
 
 	public void addHydrograph(boolean decorated,Integer x,Integer y){
-		Frame_GetName f=Popup_GetName(decorated,x,y);
+		Frame_GetName f=Popup_GetName(decorated,x,y,Constants.S_EMPTY);
 		String nam=f.getName();
 		if(!nam.equals(Constants.S_EMPTY)){
 			// Add to station (through controller)
@@ -519,7 +519,7 @@ public class MainFrame extends JFrame implements ActionListener{
 		}
 	}
 
-	public Frame_GetName Popup_GetName(boolean decorated,Integer x,Integer y){
+	public Frame_GetName Popup_GetName(boolean decorated,Integer x,Integer y, String init){
 		Frame_GetName f = new Frame_GetName(this,
 				dico.entry("TypeName"),decorated,dico.entry("Name"),
 				dico.entry("Apply"),dico.entry("Cancel"),
@@ -527,7 +527,7 @@ public class MainFrame extends JFrame implements ActionListener{
 				config.getFontTxt(),config.getFontLbl(),
 				Defaults.bkgColor,Defaults.txtColor,Defaults.lblColor,
 				Defaults.popupSize,
-				x,y,dico.entry("TypeName"));
+				x,y,dico.entry("TypeName"),init);
 		return(f);
 	}
 
