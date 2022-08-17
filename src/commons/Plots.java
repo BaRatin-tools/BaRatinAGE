@@ -195,4 +195,57 @@ public class Plots{
 		plot.setDomainGridlinePaint(Defaults.plot_gridColor);
 		return chart;
 	}
+	
+	/**
+	 * histogram of MCMC simulations
+	 * @param sim
+	 * @param title
+	 * @param xlab
+	 * @param ylab
+	 * @param histColor
+	 * @param bkgColor
+	 * @param gridColor
+	 * @return
+	 */
+	public static JFreeChart histPlot(Double[] sim,String title, String xlab, String ylab,
+			Color histColor, Color bkgColor, Color gridColor){
+		// create Histogram chart
+		int nbins=50;
+		HistogramDataset histo = new HistogramDataset();
+		histo.setType(HistogramType.SCALE_AREA_TO_1);
+		double[] foo=new double[sim.length];
+		for(int i=0;i<sim.length;i++){foo[i]=sim[i];}
+        histo.addSeries("histogram",foo,nbins);
+        JFreeChart chart_histo = ChartFactory.createHistogram(title, xlab,ylab,histo, PlotOrientation.VERTICAL, true, true, false);
+        XYBarRenderer rend = (XYBarRenderer)chart_histo.getXYPlot().getRenderer();
+        rend.setDrawBarOutline(false);
+        chart_histo.getXYPlot().getRenderer().setSeriesPaint(0, histColor);
+		// create plotting domain
+		ValueAxis domain = new NumberAxis("Domain");
+		ValueAxis range = new NumberAxis("Range");
+		((NumberAxis) domain).setAutoRangeIncludesZero(false);
+		// Extract dataset and renderer
+		XYDataset d0 = chart_histo.getXYPlot().getDataset(0);
+		XYItemRenderer r0 = chart_histo.getXYPlot().getRenderer(0);
+		// Make a new plot and assign datasets		
+		XYPlot plot = new XYPlot();
+		plot.setDataset(0, d0);
+		plot.setRenderer(0, r0);
+		// assign domain/range
+		plot.setDomainAxis(0, domain);
+		plot.setRangeAxis(0, range);
+		plot.getDomainAxis().setLabel(xlab);
+		plot.getRangeAxis().setLabel(ylab);
+		plot.mapDatasetToDomainAxis(0,0);
+		plot.mapDatasetToRangeAxis(0,0);
+		// Create the chart with all plots 
+		JFreeChart chart = new JFreeChart(title, JFreeChart.DEFAULT_TITLE_FONT, plot, true);
+		chart.removeLegend();
+		chart.setTitle(title);
+		chart.setBackgroundPaint(bkgColor);
+		chart.getPlot().setBackgroundPaint(Defaults.bkgColor);
+		plot.setRangeGridlinePaint(Defaults.plot_gridColor);
+		plot.setDomainGridlinePaint(Defaults.plot_gridColor);
+		return chart;
+	}
 }

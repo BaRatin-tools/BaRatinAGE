@@ -1,6 +1,7 @@
 package controleur;
 
 import java.awt.Color;
+import java.text.DecimalFormat;
 import java.util.Arrays;
 
 import javax.swing.JPanel;
@@ -61,89 +62,112 @@ public class PlotControl {
 		if(rc.getMcmc()==null){return(null);}
 		int ncontrol=h.getControls().size();
 		int[] sizeRow=new int[ncontrol];Arrays.fill(sizeRow, 0);
-		int[] sizeCol=new int[3];Arrays.fill(sizeCol, 0);
+		int[] sizeCol=new int[4];Arrays.fill(sizeCol, 0);
 		double[] weightRow=new double[ncontrol];Arrays.fill(weightRow, 1.0);
-		double[] weightCol=new double[3];Arrays.fill(weightCol, 1.0);
+		double[] weightCol=new double[4];Arrays.fill(weightCol, 1.0);
 		GridBag_Layout.SetGrid(panout, sizeRow, sizeCol, weightRow, weightCol);
 		// loop on all controls
-		int ai,ci,ki;
+		int ai,ci,ki,bi;
 		Distribution gauss;
 		JFreeChart chart;
 		ChartPanel CP;
+		Double[][] mcmc= rc.getMcmc_cooked();
+		// b0 is the last column before derived b's
+		int b0 = mcmc.length-ncontrol;
 		for(int i=0;i<ncontrol;i++){
-			if(i==0){ai=0;ki=1;ci=2;} else {ki=3*i;ai=3*i+1;ci=3*i+2;}
+			if(i==0){ai=0;ki=1;ci=2;bi=1;} else {ki=3*i;ai=3*i+1;ci=3*i+2;bi=b0+i;}
 			// K
 			gauss = h.getControls().get(i).getK().getPrior();
-			chart=Plots.gaussHistPlot(gauss.getParval()[0],gauss.getParval()[1],rc.getMcmc_cooked()[ki],
+			chart=Plots.gaussHistPlot(gauss.getParval()[0],gauss.getParval()[1],mcmc[ki],
 					"k - "+dico.entry("Control")+" "+(i+1), "k", dico.entry("Density"),
 					Defaults.plot_priorColor,Defaults.plot_postColor, Defaults.plot_bkgColor, Defaults.plot_gridColor);
 			CP = new ChartPanel(chart);
 			GridBag_Layout.putIntoGrid(CP, panout,0,i,1,1,true,true);
 			// A
 			gauss = h.getControls().get(i).getA().getPrior();
-			chart=Plots.gaussHistPlot(gauss.getParval()[0],gauss.getParval()[1],rc.getMcmc_cooked()[ai],
+			chart=Plots.gaussHistPlot(gauss.getParval()[0],gauss.getParval()[1],mcmc[ai],
 					"a - "+dico.entry("Control")+" "+(i+1), "a", dico.entry("Density"),
 					Defaults.plot_priorColor,Defaults.plot_postColor, Defaults.plot_bkgColor, Defaults.plot_gridColor);
 			CP = new ChartPanel(chart);
 			GridBag_Layout.putIntoGrid(CP, panout,1,i,1,1,true,true);
 			// C
 			gauss = h.getControls().get(i).getC().getPrior();
-			chart=Plots.gaussHistPlot(gauss.getParval()[0],gauss.getParval()[1],rc.getMcmc_cooked()[ci],
+			chart=Plots.gaussHistPlot(gauss.getParval()[0],gauss.getParval()[1],mcmc[ci],
 					"c - "+dico.entry("Control")+" "+(i+1), "c", dico.entry("Density"),
 					Defaults.plot_priorColor,Defaults.plot_postColor, Defaults.plot_bkgColor, Defaults.plot_gridColor);
 			CP = new ChartPanel(chart);
 			GridBag_Layout.putIntoGrid(CP, panout,2,i,1,1,true,true);
+			// B
+			chart=Plots.histPlot(mcmc[bi],"b - "+dico.entry("Control")+" "+(i+1), "b", dico.entry("Density"),
+					Defaults.plot_postColor, Defaults.plot_bkgColor, Defaults.plot_gridColor);
+			CP = new ChartPanel(chart);
+			GridBag_Layout.putIntoGrid(CP, panout,3,i,1,1,true,true);
 		}
 		return(panout);
 	} 
 
 	public JPanel priorVsPost_parTable(RatingCurvePanel panel){
+		// Format of numbers in tabkle
+		DecimalFormat fmt = new DecimalFormat("### ### ###.###");	
+		// returning panel
 		JPanel panout = new JPanel();
 		panout.setBackground(Defaults.bkgColor);
+		// get objects
 		RatingCurve rc=station.getRatingCurve(panel.getId().getText());
 		ConfigHydrau h=station.getHydrauConfig(rc.getHydrau_id());
 		if(rc.getMcmc()==null){return(null);}
 		int ncontrol=h.getControls().size();
 		int[] sizeRow=new int[ncontrol+1];Arrays.fill(sizeRow, 0);
-		int[] sizeCol=new int[7];Arrays.fill(sizeCol, 0);
+		int[] sizeCol=new int[9];Arrays.fill(sizeCol, 0);
 		double[] weightRow=new double[ncontrol+1];Arrays.fill(weightRow, 0.0);
-		double[] weightCol=new double[7];Arrays.fill(weightCol, 1.0);
+		double[] weightCol=new double[9];Arrays.fill(weightCol, 1.0);
 		GridBag_Layout.SetGrid(panout, sizeRow, sizeCol, weightRow, weightCol);
 		// headers
 		new GridBag_Label(panout,dico.entry("kpar"),config.getFontBigLbl(),Defaults.txtColor,SwingConstants.CENTER,1,0,2,1,true,true);
 		new GridBag_Label(panout,dico.entry("apar"),config.getFontBigLbl(),Defaults.txtColor,SwingConstants.CENTER,3,0,2,1,true,true);
 		new GridBag_Label(panout,dico.entry("cpar"),config.getFontBigLbl(),Defaults.txtColor,SwingConstants.CENTER,5,0,2,1,true,true);
+		new GridBag_Label(panout,dico.entry("bpar"),config.getFontBigLbl(),Defaults.txtColor,SwingConstants.CENTER,7,0,2,1,true,true);
 		// loop on all controls
-		int ai,ci,ki;
+		int ai,ci,ki,bi;
 		Distribution gauss;
 		String priortxt,posttxt;
+		Double[][] mcmc= rc.getMcmc_summary();
+		// b0 is the last column before derived b's
+		int b0 = mcmc.length-ncontrol;
 		int x;
 		for(int i=0;i<ncontrol;i++){
-			if(i==0){ai=0;ki=1;ci=2;} else {ki=3*i;ai=3*i+1;ci=3*i+2;}
+			if(i==0){ai=0;ki=1;ci=2;bi=1;} else {ki=3*i;ai=3*i+1;ci=3*i+2;bi=b0+i;}
 			x=0;
 			// rower
 			new GridBag_Label(panout,dico.entry("Control")+" "+(i+1),config.getFontBigLbl(),Defaults.txtColor,SwingConstants.CENTER,x,i+1,1,1,true,true);
 			// K
 			gauss = h.getControls().get(i).getK().getPrior();
 			//TODO: replace +/- 2*sdev by a proper 95% interval - need to modify BaRatin for that
-			priortxt=Double.toString(gauss.getParval()[0])+" +/- "+Double.toString(2*gauss.getParval()[1]);
-			posttxt=Double.toString(rc.getMcmc_summary()[ki][15])+" +/- "+Double.toString(2*rc.getMcmc_summary()[ki][10]);
+			priortxt=fmt.format(gauss.getParval()[0]) + " +/- " + fmt.format(2*gauss.getParval()[1]);
+			posttxt=fmt.format(mcmc[ki][15])+" +/- "+ fmt.format(2*mcmc[ki][10]);
 			x=x+1;
 			new GridBag_Text_Titled(panout,priortxt,dico.entry("Prior"),config.getFontTxt(),config.getFontLbl(),Color.BLUE,Color.BLUE,x,i+1,1,1);
 			x=x+1;
 			new GridBag_Text_Titled(panout,posttxt,dico.entry("Posterior"),config.getFontTxt(),config.getFontLbl(),Color.RED,Color.RED,x,i+1,1,1);
 			// A
 			gauss = h.getControls().get(i).getA().getPrior();
-			priortxt=Double.toString(gauss.getParval()[0])+" +/- "+Double.toString(2*gauss.getParval()[1]);
-			posttxt=Double.toString(rc.getMcmc_summary()[ai][15])+" +/- "+Double.toString(2*rc.getMcmc_summary()[ai][10]);
+			priortxt=fmt.format(gauss.getParval()[0]) + " +/- " + fmt.format(2*gauss.getParval()[1]);
+			posttxt=fmt.format(mcmc[ai][15]) + " +/- " + fmt.format(2*mcmc[ai][10]);
 			x=x+1;
 			new GridBag_Text_Titled(panout,priortxt,dico.entry("Prior"),config.getFontTxt(),config.getFontLbl(),Color.BLUE,Color.BLUE,x,i+1,1,1);
 			x=x+1;
 			new GridBag_Text_Titled(panout,posttxt,dico.entry("Posterior"),config.getFontTxt(),config.getFontLbl(),Color.RED,Color.RED,x,i+1,1,1);
 			// C
 			gauss = h.getControls().get(i).getC().getPrior();
-			priortxt=Double.toString(gauss.getParval()[0])+" +/- "+Double.toString(2*gauss.getParval()[1]);
-			posttxt=Double.toString(rc.getMcmc_summary()[ci][15])+" +/- "+Double.toString(2*rc.getMcmc_summary()[ci][10]);
+			priortxt=fmt.format(gauss.getParval()[0]) + " +/- " + fmt.format(2*gauss.getParval()[1]);
+			posttxt=fmt.format(mcmc[ci][15]) + " +/- " + fmt.format(2*mcmc[ci][10]);
+			x=x+1;
+			new GridBag_Text_Titled(panout,priortxt,dico.entry("Prior"),config.getFontTxt(),config.getFontLbl(),Color.BLUE,Color.BLUE,x,i+1,1,1);
+			x=x+1;
+			new GridBag_Text_Titled(panout,posttxt,dico.entry("Posterior"),config.getFontTxt(),config.getFontLbl(),Color.RED,Color.RED,x,i+1,1,1);
+			// B
+			priortxt="    ------    ";
+			posttxt=fmt.format(mcmc[bi][15]) + " +/- " + fmt.format(2*mcmc[bi][10]);
 			x=x+1;
 			new GridBag_Text_Titled(panout,priortxt,dico.entry("Prior"),config.getFontTxt(),config.getFontLbl(),Color.BLUE,Color.BLUE,x,i+1,1,1);
 			x=x+1;
@@ -213,37 +237,46 @@ public class PlotControl {
 		if(rc.getMcmc()==null){return(null);}
 		int ncontrol=h.getControls().size();
 		int[] sizeRow=new int[ncontrol];Arrays.fill(sizeRow, 0);
-		int[] sizeCol=new int[3];Arrays.fill(sizeCol, 0);
+		int[] sizeCol=new int[4];Arrays.fill(sizeCol, 0);
 		double[] weightRow=new double[ncontrol];Arrays.fill(weightRow, 1.0);
-		double[] weightCol=new double[3];Arrays.fill(weightCol, 1.0);
+		double[] weightCol=new double[4];Arrays.fill(weightCol, 1.0);
 		GridBag_Layout.SetGrid(panout, sizeRow, sizeCol, weightRow, weightCol);
 		// loop on all controls
-		int ai,ci,ki;
+		int ai,ci,ki,bi;
 		JFreeChart chart;
 		ChartPanel CP;
 		Double[] x,y;
-		x=new Double[rc.getMcmc_cooked()[0].length];
+		Double[][] mcmc= rc.getMcmc_cooked();
+		// b0 is the last column before derived b's
+		int b0 = mcmc.length-ncontrol;
+		x=new Double[mcmc[0].length];
 		for(int i=0;i<x.length;i++){x[i]=1.0*i;}
 		for(int i=0;i<ncontrol;i++){
-			if(i==0){ai=0;ki=1;ci=2;} else {ki=3*i;ai=3*i+1;ci=3*i+2;}
+			if(i==0){ai=0;ki=1;ci=2;bi=1;} else {ki=3*i;ai=3*i+1;ci=3*i+2;bi=b0+i;}
 			// K
-			y = rc.getMcmc_cooked()[ki];
+			y = mcmc[ki];
 			chart=Plots.LinePlot(x,y,"k - "+dico.entry("Control")+" "+(i+1), dico.entry("Iteration"),"k",
 					Defaults.plot_lineColor, Defaults.plot_bkgColor, Defaults.plot_gridColor,false);
 			CP = new ChartPanel(chart);
 			GridBag_Layout.putIntoGrid(CP, panout,0,i,1,1,true,true);
 			// A
-			y = rc.getMcmc_cooked()[ai];
+			y = mcmc[ai];
 			chart=Plots.LinePlot(x,y,"a - "+dico.entry("Control")+" "+(i+1), dico.entry("Iteration"),"a",
 					Defaults.plot_lineColor, Defaults.plot_bkgColor, Defaults.plot_gridColor,false);
 			CP = new ChartPanel(chart);
 			GridBag_Layout.putIntoGrid(CP, panout,1,i,1,1,true,true);
 			// C
-			y = rc.getMcmc_cooked()[ci];
+			y = mcmc[ci];
 			chart=Plots.LinePlot(x,y,"c - "+dico.entry("Control")+" "+(i+1), dico.entry("Iteration"),"c",
 					Defaults.plot_lineColor, Defaults.plot_bkgColor, Defaults.plot_gridColor,false);
 			CP = new ChartPanel(chart);
 			GridBag_Layout.putIntoGrid(CP, panout,2,i,1,1,true,true);
+			// B
+			y = mcmc[bi];
+			chart=Plots.LinePlot(x,y,"b - "+dico.entry("Control")+" "+(i+1), dico.entry("Iteration"),"b",
+					Defaults.plot_lineColor, Defaults.plot_bkgColor, Defaults.plot_gridColor,false);
+			CP = new ChartPanel(chart);
+			GridBag_Layout.putIntoGrid(CP, panout,3,i,1,1,true,true);
 		}
 		return(panout);
 	} 

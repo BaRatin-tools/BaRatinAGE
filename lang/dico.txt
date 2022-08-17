@@ -83,6 +83,7 @@ Type;Type;Type;Tipo;Typ;Tipo;Tipo
 apar;a (coefficient);a (coefficient);a (coeficiente);a (Koeffizient);a (coefficiente);a (coeficiente)
 cpar;c (exposant);c (exponent);c (exponente);c (Exponent);c (esponente);c (expoente)
 kpar;k (hauteur d'activation);k (activation stage);k (altura de activación);k (Aktivierungshöhe);k (altezza di attivazione);k (nível de ativação)
+bpar;b (offset);b (offset);b (offset);b (offset);b (offset);b (offset)
 +/-;+/- (incertitude élargie);+/- (uncertainty);+/- (incertidumbre ampliada);+/- (erweiterte Unsicherheit);+/- (incertezza estesa);+/- (incerteza expandida)
 +/-_long;Incertitude élargie : demi-longueur d'un intervalle à 95% = 1.96*écart-type pour une distribution gaussienne;Uncertainty expressed as the half-width of a 95% interval = 1.96*standard deviation for a gaussian distribution;Incertidumbre ampliada: la mitad de un intervalo del 95% = 1,96*desviación estándar para una distribución gaussiana;Erweiterte Unsicherheit: Halbe Länge eines 95%-Intervalls = 1.96*Standardabweichung für eine Gaußsche Verteilung.;Incertezza ampliata: metà lunghezza di un intervallo del 95% = 1,96*deviazione standard per una distribuzione gaussiana;Incerteza expressa como a meia largura em um intervalo de 95% = 1,96* desvio padrão para uma distribuição gaussiana
 AddConfig;Ajouter une configuration hydraulique;Add hydraulic configuration;Añadir una configuración hidráulica;Fügen Sie eine hydraulische Konfiguration hinzu.;Aggiungere una configurazione idraulica;Adicionar configuração hidráulica
