@@ -127,7 +127,7 @@ public class PlotControl {
 			gauss = h.getControls().get(i).getK().getPrior();
 			//TODO: replace +/- 2*sdev by a proper 95% interval - need to modify BaRatin for that
 			priortxt=Double.toString(gauss.getParval()[0])+" +/- "+Double.toString(2*gauss.getParval()[1]);
-			posttxt=Double.toString(rc.getMcmc_summary()[ki][15])+" +/- "+Double.toString(rc.getMcmc_summary()[ki][10]);
+			posttxt=Double.toString(rc.getMcmc_summary()[ki][15])+" +/- "+Double.toString(2*rc.getMcmc_summary()[ki][10]);
 			x=x+1;
 			new GridBag_Text_Titled(panout,priortxt,dico.entry("Prior"),config.getFontTxt(),config.getFontLbl(),Color.BLUE,Color.BLUE,x,i+1,1,1);
 			x=x+1;
@@ -135,7 +135,7 @@ public class PlotControl {
 			// A
 			gauss = h.getControls().get(i).getA().getPrior();
 			priortxt=Double.toString(gauss.getParval()[0])+" +/- "+Double.toString(2*gauss.getParval()[1]);
-			posttxt=Double.toString(rc.getMcmc_summary()[ai][15])+" +/- "+Double.toString(rc.getMcmc_summary()[ai][10]);
+			posttxt=Double.toString(rc.getMcmc_summary()[ai][15])+" +/- "+Double.toString(2*rc.getMcmc_summary()[ai][10]);
 			x=x+1;
 			new GridBag_Text_Titled(panout,priortxt,dico.entry("Prior"),config.getFontTxt(),config.getFontLbl(),Color.BLUE,Color.BLUE,x,i+1,1,1);
 			x=x+1;
@@ -143,7 +143,7 @@ public class PlotControl {
 			// C
 			gauss = h.getControls().get(i).getC().getPrior();
 			priortxt=Double.toString(gauss.getParval()[0])+" +/- "+Double.toString(2*gauss.getParval()[1]);
-			posttxt=Double.toString(rc.getMcmc_summary()[ci][15])+" +/- "+Double.toString(rc.getMcmc_summary()[ci][10]);
+			posttxt=Double.toString(rc.getMcmc_summary()[ci][15])+" +/- "+Double.toString(2*rc.getMcmc_summary()[ci][10]);
 			x=x+1;
 			new GridBag_Text_Titled(panout,priortxt,dico.entry("Prior"),config.getFontTxt(),config.getFontLbl(),Color.BLUE,Color.BLUE,x,i+1,1,1);
 			x=x+1;
