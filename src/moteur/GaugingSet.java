@@ -144,14 +144,21 @@ public class GaugingSet extends Item {
  		XYIntervalSeriesCollection dataset = new XYIntervalSeriesCollection();
         XYIntervalSeries intervals = new XYIntervalSeries("uncertainty");
 		int n=this.getGaugings().size();
+		double q,qlow,qhigh;
 		for (int i=0;i<n;i++){
 			if(this.getGaugings().get(i).getActive()){
+				q=this.getGaugings().get(i).getQ();
+				qlow=this.getGaugings().get(i).getQ()-this.getGaugings().get(i).getQ()*this.getGaugings().get(i).getuQ()*0.01;
+				qhigh=this.getGaugings().get(i).getQ()+this.getGaugings().get(i).getQ()*this.getGaugings().get(i).getuQ()*0.01;
+				if(ylog) { // Avoid Q<=0
+					if(qlow<=0) {qlow=Constants.D_TINY;}
+					if(qhigh<=0) {qhigh=Constants.D_TINY;}
+					if(q<=0) {q=Constants.D_TINY;}
+				}
 				intervals.add(this.getGaugings().get(i).getH(),
 						this.getGaugings().get(i).getH()-this.getGaugings().get(i).getuH(),
 						this.getGaugings().get(i).getH()+this.getGaugings().get(i).getuH(),
-						this.getGaugings().get(i).getQ(),
-						this.getGaugings().get(i).getQ()-this.getGaugings().get(i).getQ()*this.getGaugings().get(i).getuQ()*0.01,
-						this.getGaugings().get(i).getQ()+this.getGaugings().get(i).getQ()*this.getGaugings().get(i).getuQ()*0.01);
+						q,qlow,qhigh);
 			}
 		}
 		dataset.addSeries(intervals);
