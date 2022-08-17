@@ -89,6 +89,8 @@ public class Defaults {
 	public static final String txtSep=" ";
 	public static final String resultSep=" ";
 	public static final String barSep=";";
+	public static final String csvSep=";";
+	public static final String csvSep2=",";
 	public static final String menuSep="   ";
 	// Directories for executable
 	public static final String exeDir=new File(home,"exe").getAbsolutePath();

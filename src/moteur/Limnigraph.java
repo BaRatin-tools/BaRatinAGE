@@ -96,7 +96,12 @@ public class Limnigraph extends TimeSerie {
 
 	public void read() throws Exception,FileNotFoundException{
 		// read data file
-		Double[][] y=ReadWrite.read(this.getFilePath(), Defaults.barSep, 1);
+		Double[][] y;
+		try{y=ReadWrite.read(this.getFilePath(), Defaults.csvSep, 1);}
+		catch(Exception e) {
+			// try with alternative csv separator
+			y=ReadWrite.read(this.getFilePath(), Defaults.csvSep2, 1);
+		}
 		int n=y[0].length;
 		// put content in object
 		Double[] uH= new Double[n];

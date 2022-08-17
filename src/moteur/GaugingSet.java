@@ -115,10 +115,15 @@ public class GaugingSet extends Item {
 	public void read(String fmt) throws Exception,FileNotFoundException{
 		boolean active=true;
 		String sep="";
-		if(fmt.equalsIgnoreCase("csv")){sep=Defaults.barSep;}
+		if(fmt.equalsIgnoreCase("csv")){sep=Defaults.csvSep;}
 		else if(fmt.equalsIgnoreCase("bad")){sep=" ";}
 		else {throw new Exception("UnknownFormat");}
-		Double[][] y=ReadWrite.read(this.getFilePath(),sep,1);
+		Double[][] y;
+		try{y=ReadWrite.read(this.getFilePath(),sep,1);}
+		catch(Exception e){
+			// try with alternative csv separator
+			y=ReadWrite.read(this.getFilePath(),Defaults.csvSep2,1);
+		}
 		this.gaugings=new ArrayList<Gauging>();
 		for (int i=0;i<y[0].length;i++){
 			if(fmt.equalsIgnoreCase("bad")){

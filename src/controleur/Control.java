@@ -1594,7 +1594,7 @@ public class Control {
 			ReadWrite.write(w,
 					new String[] {"Year","Month","Day","Hour","Min","Sec","Qmaxpost[m3/s]","Qlow_stage[m3/s]","Qhigh_stage[m3/s]",
 					"Qlow_stage+param[m3/s]","Qhigh_stage+param[m3/s]","Qlow_total[m3/s]","Qhigh_total[m3/s]"},
-					file,Defaults.barSep);
+					file,Defaults.csvSep);
 		}
 		/*
 		catch (FileNotFoundException e) {}

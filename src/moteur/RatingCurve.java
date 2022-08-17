@@ -243,7 +243,7 @@ public class RatingCurve extends Item {
 		w[5]=env.getQhigh();
 		ReadWrite.write(w,
 				new String[] {"H[m]","Qmaxpost[m3/s]","Qlow_param[m3/s]","Qhigh_param[m3/s]","Qlow_total[m3/s]","Qhigh_total[m3/s]"},
-				file,Defaults.barSep);
+				file,Defaults.csvSep);
 	}
 
 	public void export_bareme(String file,String code,String name,Time start,Time end) throws FileNotFoundException, IOException, Exception{
