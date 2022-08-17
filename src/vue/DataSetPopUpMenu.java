@@ -21,6 +21,7 @@ public class DataSetPopUpMenu extends JPopupMenu implements ActionListener{
 	private JMenuItem rename = new JMenuItem();
 	private JMenuItem update = new JMenuItem();
 	private JMenuItem export = new JMenuItem();
+	private JMenuItem exportEq = new JMenuItem();
 	private JMenuItem duplicate = new JMenuItem();
 	/*
 	private String file;
@@ -66,12 +67,17 @@ public class DataSetPopUpMenu extends JPopupMenu implements ActionListener{
 		obj = node;
 	}
 
-	public DataSetPopUpMenu(DefaultMutableTreeNode node, boolean Xtend) throws HeadlessException {
+	public DataSetPopUpMenu(DefaultMutableTreeNode node, int Xtend) throws HeadlessException {
 		this(node);
-		if(Xtend){
+		if(Xtend>0){ // Export values for RC and Q(t)
 			export.setText(dico.entry("ExportValues"));
 			this.add(export);
 			export.addActionListener(this);
+		}
+		if(Xtend>1){ // Export RC equation
+			exportEq.setText(dico.entry("ExportEquation"));
+			this.add(exportEq);
+			exportEq.addActionListener(this);
 		}
 		obj = node;
 	}
@@ -177,7 +183,13 @@ public class DataSetPopUpMenu extends JPopupMenu implements ActionListener{
 				if (node.getParent().equals(HYDroot)){controller.exportHydrograph(node.toString());}
 			}
 		}
-
+		else if (ae.getSource().equals(exportEq)){
+			DefaultMutableTreeNode node = (DefaultMutableTreeNode)obj;
+			Object RCroot = MainFrame.getInstance().getTrees().getTree_RC().getModel().getRoot();
+			if(RCroot!=null){
+				if (node.getParent().equals(RCroot)){controller.exportRatingCurveEquation(node.toString());}
+			}
+		}
 	}
 
 	/////////////////////////////////////////////////////////

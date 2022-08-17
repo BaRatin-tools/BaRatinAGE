@@ -17,6 +17,7 @@ DeleteAll;Tout effacer;Delete all;Borrar todo;Alle löschen;Cancellare tutto;Exc
 Rename;Renommer;Rename;Renombrar;Umbenennen;Rinominare;Renomear
 Export;Exporter;Export;Exportar;Exportieren;Esportazione;Exportar
 ExportValues;Exporter les valeurs;Export values;Exportar valores;Werte exportieren;Valori di esportazione;Exportar valores
+ExportEquation;Exporter l'équation;Export equation;Exportar ecuación;Gleichung exportieren;Equazione di esportazione;Exportar equação
 Error;Erreur;Error;Error;Fehler;Errore;Erro
 Message;Message;Message;Mensaje;Nachricht;Messaggio;Mensagem
 Unknown;Inconnu;Unknown;Desconocido;Unbekannt;Sconosciuto;Desconhecido

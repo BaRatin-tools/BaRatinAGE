@@ -150,6 +150,24 @@ public class HydrauControl {
 		return out;
 	}
 
+	public String toEquation(){
+		String out="";
+		if(b!=null & a!=null & c!=null) {
+			out=a.getValue().toString()+"*(h";
+			Double bval=b.getValue();
+			if(bval<0) {
+				bval=-1*bval;
+				out=out+"+"+bval.toString();
+			} 
+			else {
+				out=out+"-"+bval.toString();
+			}
+			out=out+")^"+c.getValue().toString();
+		}
+		return out;
+	}
+
+	
 	public Parameter getA() {
 		return a;
 	}

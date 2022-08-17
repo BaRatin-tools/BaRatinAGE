@@ -73,7 +73,7 @@ public class HydroTree extends JTree implements MouseListener {
 			else if(node.isLeaf()){   //click on a leaf
 				new HydrographPanel(node.toString(),true);
 				if(SwingUtilities.isRightMouseButton(me)){
-					DataSetPopUpMenu popup =new DataSetPopUpMenu(node,true);
+					DataSetPopUpMenu popup =new DataSetPopUpMenu(node,1);
 					popup.show(this,me.getX(), me.getY());
 				}
 			}

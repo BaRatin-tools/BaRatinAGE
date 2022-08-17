@@ -73,7 +73,7 @@ public class RatingCurveTree extends JTree implements MouseListener{
 			else if(node.isLeaf()){   //click on a leaf
 				new RatingCurvePanel(node.toString(),true);
 				if(SwingUtilities.isRightMouseButton(me)){
-					DataSetPopUpMenu popup =new DataSetPopUpMenu(node,true);
+					DataSetPopUpMenu popup =new DataSetPopUpMenu(node,2);
 					popup.show(this,me.getX(), me.getY());
 				}
 			}

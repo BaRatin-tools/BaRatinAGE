@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Calendar;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -15,6 +16,7 @@ import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYItemRenderer;
 import org.jfree.data.xy.XYDataset;
 
+import commons.Parameter;
 import commons.Plots;
 import commons.ReadWrite;
 import commons.Time;
@@ -332,6 +334,55 @@ public class RatingCurve extends Item {
 		bw.close();
 	}
 
+	public void export_equation(String file) throws FileNotFoundException, IOException, Exception {
+		// Maxpost parameters
+		Double[][] pars = this.getMcmc_summary();
+		int imaxpost = 15;
+		// Hydrau-config and constituting controls
+		ConfigHydrau h=Station.getInstance().getHydrauConfig(this.getHydrau_id());
+		ArrayList<HydrauControl> controls = h.getControls();
+		int ncontrol=controls.size();
+		ArrayList<ArrayList<Boolean>> M = h.getMatrix().getMatrix();
+		// b0 is the last column before derived b's
+		int b0 = pars.length-ncontrol;
+		// Columns defining k-a-c-b RC parameters
+		int ai,ci,ki,bi;
+		// Equations
+		String[] eqs = new String[ncontrol]; // individual equation for each control
+		// First pass to get equation of each control
+		for(int i=0;i<ncontrol;i++){
+			if(i==0){ai=0;ki=1;ci=2;bi=1;} else {ki=3*i;ai=3*i+1;ci=3*i+2;bi=b0+i;}
+			HydrauControl dummy = new HydrauControl(new Parameter(pars[ai][imaxpost]),
+													new Parameter(pars[bi][imaxpost]),
+													new Parameter(pars[ci][imaxpost]),
+													new Parameter(pars[ki][imaxpost]));
+			eqs[i] = dummy.toEquation();
+		}
+		
+		// Second pass to work out succession or addition of controls
+		String[] fullEq = new String[ncontrol+1]; 
+		fullEq[0]="h ≤ "+pars[1][imaxpost]+" : Q = 0";
+		for(int i=0;i<ncontrol;i++){			
+			if(i==0){ki=1;} else {ki=3*i;}
+			if(i==ncontrol-1) {
+				fullEq[i+1]="h > "+pars[ki][imaxpost];
+			} 
+			else {
+				fullEq[i+1]=pars[ki][imaxpost] + " < h ≤ "+pars[3*(i+1)][imaxpost];
+			}
+			fullEq[i+1]=fullEq[i+1] + " : Q = ";
+			for(int j=0;j<=i;j++) {
+				if(M.get(j).get(i)) {
+					// Determine if a '+' is required
+					String foo = fullEq[i+1].replaceAll("\\s+",""); // remove all spaces
+					String lastChar = String.valueOf(foo.charAt(foo.length()-1)); // last character of eq.
+					if(!lastChar.equals("=")) {fullEq[i+1]=fullEq[i+1] + " + ";} // if it's not '=', we're adding up
+					fullEq[i+1]=fullEq[i+1] + eqs[j];
+				}
+			}
+		}
+		ReadWrite.write(fullEq, file);
+	}
 	/////////////////////////////////////////////////////////
 	// GETTERS & SETTERS
 	/////////////////////////////////////////////////////////
