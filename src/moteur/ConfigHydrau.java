@@ -16,7 +16,7 @@ import commons.Plots;
 import Utils.Defaults;
 
 public class ConfigHydrau extends Item {
-	//classe regroupant une BonnifaitMatrix et les HydrauControl associés
+	//classe regroupant une BonnifaitMatrix et les HydrauControl associï¿½s
 
 	private BonnifaitMatrix matrix;
 	private ArrayList<HydrauControl> controls;
@@ -102,6 +102,8 @@ public class ConfigHydrau extends Item {
 		// create common plotting domain
 		ValueAxis domain = new NumberAxis("Domain");
 		ValueAxis range = new NumberAxis("Range");
+		((NumberAxis)domain).setAutoRangeIncludesZero(false);
+
 		// Extract datasets
 		XYDataset d0 = chart.getChart().getXYPlot().getDataset(0);
 		XYDataset[] d=new XYDataset[ncontrol];

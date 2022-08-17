@@ -164,6 +164,8 @@ public class RatingCurve extends Item {
 		// create common plotting domain
 		ValueAxis domain = new NumberAxis("Domain");
 		ValueAxis range = new NumberAxis("Range");
+		((NumberAxis)domain).setAutoRangeIncludesZero(false);
+
 		// Extract datasets
 		XYDataset d2 = chart_total.getChart().getXYPlot().getDataset(0);
 		XYDataset d1 = chart_param.getChart().getXYPlot().getDataset(0);
@@ -226,6 +228,7 @@ public class RatingCurve extends Item {
 		chart.getPlot().setBackgroundPaint(Defaults.bkgColor);
 		plot.setRangeGridlinePaint(Defaults.plot_gridColor);
 		plot.setDomainGridlinePaint(Defaults.plot_gridColor);
+
 
 		final NumberAxis logaxis = new LogarithmicAxis(ylab);
 		if(ylog){chart.getXYPlot().setRangeAxis(logaxis);}		

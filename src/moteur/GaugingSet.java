@@ -157,6 +157,7 @@ public class GaugingSet extends Item {
 		dataset.addSeries(intervals);
         NumberAxis x = new NumberAxis(xlab);
         NumberAxis y = new NumberAxis(ylab);
+
 		// Points
         XYErrorRenderer xyerrorrenderer = new XYErrorRenderer();
 		xyerrorrenderer.setSeriesPaint(0,pointColor);
@@ -173,7 +174,10 @@ public class GaugingSet extends Item {
 		chart.getPlot().setBackgroundPaint(bkgColor);
 		xyplot.setRangeGridlinePaint(gridColor);
 		xyplot.setDomainGridlinePaint(gridColor);
-	
+		xyplot.setDomainAxis(x);
+		xyplot.setRangeAxis(y);
+		x.setAutoRangeIncludesZero(false);
+		
 		final NumberAxis logaxis = new LogarithmicAxis(ylab);
 		if(ylog){chart.getXYPlot().setRangeAxis(logaxis);}		
 		ChartPanel CP = new ChartPanel(chart);
