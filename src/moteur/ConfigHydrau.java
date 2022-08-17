@@ -95,9 +95,9 @@ public class ConfigHydrau extends Item {
 			double maxi = chart.getChart().getXYPlot().getRangeAxis().getUpperBound();
 			Envelop env = new Envelop(new Double[] {low,high},new Double[] {0.0,0.0},new Double[] {0.0,0.0},new Double[] {0.0,0.0},new Double[] {maxi,maxi});
 			chart_k[i] = env.plot(title,xlab,ylab,
-					Defaults.plot_kColor_light,Defaults.plot_kColor,0.5f,Defaults.plot_bkgColor,Defaults.plot_gridColor,ylog);
+					Defaults.plot_kPriorColor_light,Defaults.plot_kPriorColor_light,0.5f,Defaults.plot_bkgColor,Defaults.plot_gridColor,ylog);
 			line_k[i]=Plots.LinePlot(new Double[] {k[0],k[0]},new Double[] {0.0,maxi},title,xlab,ylab,
-					Defaults.plot_kColor,Defaults.plot_bkgColor,Defaults.plot_gridColor,ylog);
+					Defaults.plot_kPriorColor,Defaults.plot_bkgColor,Defaults.plot_gridColor,ylog);
 		}
 		// create common plotting domain
 		ValueAxis domain = new NumberAxis("Domain");

@@ -76,6 +76,8 @@ public class Defaults {
 	public static final Color plot_totalColor=new Color(0.5f,0.5f,1.0f);
 	public static final Color plot_kColor_light=Color.GREEN;
 	public static final Color plot_kColor=new Color(0.0f,0.8f,0.0f);
+	public static final Color plot_kPriorColor_light=new Color(0.8f,0.0f,0.8f);
+	public static final Color plot_kPriorColor=new Color(0.5f,0.0f,0.5f);
 	public static final Color plot_priorColor=new Color(0.0f,0.0f,0.9f);
 	public static final Color plot_priorColor_light=new Color(0.5f,0.5f,1.0f);
 	public static final Color plot_postColor=new Color(0.9f,0.0f,0.0f);
