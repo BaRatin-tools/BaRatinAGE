@@ -190,9 +190,9 @@ public class PlotControl {
 		Envelop post = rc.getEnv_param();
 		Envelop prior = h.getPriorEnv();
 		ChartPanel chart_post = post.plot("","","]",
-				Defaults.plot_postColor,Defaults.plot_postColor_light,1.0f,Defaults.plot_bkgColor,Defaults.plot_gridColor,false);
+				Defaults.plot_postColor,Defaults.plot_postColor_light,0.6f,Defaults.plot_bkgColor,Defaults.plot_gridColor,false);
 		ChartPanel chart_prior = prior.plot("","","",
-				Defaults.plot_priorColor,Defaults.plot_priorColor_light,1.0f,Defaults.plot_bkgColor,Defaults.plot_gridColor,false);
+				Defaults.plot_priorColor,Defaults.plot_priorColor_light,0.6f,Defaults.plot_bkgColor,Defaults.plot_gridColor,false);
 		// create common plotting domain
 		ValueAxis domain = new NumberAxis("Domain");
 		ValueAxis range = new NumberAxis("Range");
