@@ -518,8 +518,15 @@ public class MainFrame extends JFrame implements ActionListener{
 			try {
 				String foo;
 				if(save.equals(dico.entry("Yes"))) {foo="true";} else {foo="false";}
+				if(foo.equalsIgnoreCase("true")) {
+					int ok=new Frame_YesNoQuestion().ask(this,
+							dico.entry("saveSpagWarning")+System.getProperty("line.separator")+dico.entry("ConfirmContinue"),
+							dico.entry("Warning"),
+							Defaults.iconWarning,dico.entry("Yes"),dico.entry("No"));
+					if(ok==JOptionPane.NO_OPTION) {foo="false";}
+				}				
 				ReadWrite.write(new String[]{foo}, Defaults.options_save);
-				config.setSaveHydroSpag(save.equals(dico.entry("yes")));
+				config.setSaveHydroSpag(foo.equalsIgnoreCase("true"));				
 				new InformationPanel(this,dico.entry("ChangeSaved"));
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
