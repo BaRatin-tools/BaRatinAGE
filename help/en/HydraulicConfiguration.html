@@ -1,0 +1,209 @@
+﻿<!DOCTYPE html>
+<html lang="fr">
+	<head>
+		<meta charset="utf-8" />
+		<!--[if lt IE 9]>
+			<script src="http://github.com/aFarkas/html5shiv/blob/master/dist/html5shiv.js"></script>
+		<![endif]-->
+		<title>BaRatinAGE</title>
+		<link rel="stylesheet" type="text/css" href="css/styles.css"/>
+		<link rel="icon" type="image/png" href="img/BaRatinAGE_icon.png" />
+	</head>
+
+	<body>
+		<header>
+			<div>
+				<img src="img/Hydraulic_icon.png",alt="logo",id="logo">
+				<h1>BaRatinAGE</h1> 
+				<h2>Hydraulic configuration</h2> 
+			</div>
+			<div>
+				<iframe src="Contents.html" width=100% height=100 marginheight="0" frameborder="0"></iframe>
+			</div>
+		</header>
+	
+		<section>
+		
+			<h1>Overview</h1>
+			<p>The hydraulic configuration is the definition of all the controls that govern the physical stage-discharge 
+			relationship, and their succession/combination when the water level rises. 
+			It plays a crucial role in an analysis with BaRatinAGE because
+			it induces the equation of the rating curve.</p>
+			<p>Specifying a hydraulic configuration must result from a hydraulic analysis of how 
+			the hydrometric station works. For a natural river, the following situation is quite frequent: 
+			at low flows, the stage-discharge relationship is controlled by the geometry of a critical section at one 
+			or more weirs/sills (natural or artificial). When the stage 
+			increases, the weir gets drowned and the stage-discharge relationship is then controlled by the average geometry 
+			and roughness of the low-flow channel. 
+			For an even larger stage, part of the stream may flow in a floodway 
+			or over the bars of the main channel:
+			the stage-discharge relationship is then controlled by two channels: the low-flow channel and the floodway.</p>
+			<p>BaRatinAGE formalises this hydraulic analysis for a wide variety of situations, which covers
+			the vast majority of practical cases encountered in natural rivers (while making some 
+			acceptable approximations). The recommended practice in BaRatinAGE is to break down the real critical sections 
+			into a combination of idealised weirs or orifices, and the real controlling channels in a combination of wide, rectangular channels. 
+			Each introduced control must correspond to physical elements that can be clearly identified in the field.
+			For details on the hydraulic analysis of a hydrometric station, you may refer to 
+			<a href="img/HydraulicAnalysis.pdf">this document</a>.</p>
+			
+			<h1>Creating a hydraulic configuration</h1>
+			<p>You can create a new hydraulic configuration in several ways:
+				<ul>
+					<li>via the Hydraulic configuration...Add menu;</li> 
+					<li>via the Ctrl+C shortcut;</li> 
+					<li>by making a right click on the node "Hydraulic configuration" in the xplorer tree;</li> 
+					<li>by clicking the button  
+					<img src="img/Hydraulic_icon.png",alt="Hydraulic_icon",id="Hydraulic_icon", align="middle"> 
+					in the tool bar.</li> 
+				</ul>
+			</p>
+			<p>You will be asked to name this new hydraulic configuration, and you can enter a description.
+			In the "Hydraulic configuration" tab,
+			you need to specify the properties of this configuration. If you wish, you can enter a
+			free text in the "Description" field. You must also specify the number of controls that make up this
+			configuration. As an illustration, we will work with the common example mentioned above, 
+			and thus select 3 controls (weir, low-flow channel, floodway).</p> 
+			<p>The panels of the "Hydraulic configuration" tab then update. In particular,
+			the following matrix, called "matrix of controls" or "Bonnifait matrix" (in honor of his
+			venerable inventor) appears:</p>
+			<p align="center"><img src="img/Matrix_diag.png",alt="ControlMatrix",id="ControlMatrix"></p>
+			<p>This matrix determines how controls succeed or add to each other. 
+			Each row of the matrix corresponds to a stage segment, and each column to a control.
+			The above matrix is therefore interpreted as follows:
+				<ul>
+					<li>In segment 1 (the lowest stages, i.e. low flows), only control 1 (the weir) is activated;</li> 
+					<li>In segment 2 (intermediate stages), only control 2 (the low-flow channel) is activated;</li>
+					<li>In segment 3 (the highest stages, i.e. high flows), only control 3 (the floodway) is activated.</li> 
+				</ul>
+			</p>
+			<p>This matrix is not adequate for the example here. Indeed, for the third segment, the flow is both 
+			in the low-flow channel and in the floodway. The control by the floodway should therefore be added to the control by 
+			the low-flow channel (instead of replacing it). We can specify this combination of controls by selecting, for the 
+			third segment, both control 2 ("low-flow channel") and control 3 ("floodway") as shown below:</p>	
+			<p align="center"><img src="img/Matrix_ok.png",alt="ControlMatrix",id="ControlMatrix"></p>
+			<p>Note 1: Remember to click the "Apply" button to save the edits that you have made.</p>
+			<p>Note 2: There are some restrictions on how to fill the matrix of controls (e.g., a control 
+			that has been disabled cannot be re-enabled in a higher segment, etc.), which is why all 
+			the matrix cells are not clickable.</p>
+			<p>Note 3: The information contained in the matrix of controls is sufficient to write the equation of the rating curve. 
+			For more details on this equation, you can refer to <a href="img/RCequation.pdf">this document</a>.
+			</p>
+
+			<h1>Defining the hydraulic controls</h1>
+			<p>The hydraulic analysis not only identifies the different types of controls that govern the 
+			stage-discharge relationship, and their succession/combination: it also allows a first quantitative 
+			(though potentially very uncertain) estimation of the rating curve.</p>
+			<p>In BaRatinAGE, each control is associated with a stage (H) - discharge (Q) relationship 
+			in the form of the basic equation:</p>
+			<p>Q = a(H-b)<sup>c</sup> for H > k (and Q = 0 if H &#8804 b)
+				<ul>			
+					<li>k is the activation stage; when the stage falls below the k value, the control becomes inactive;</li>
+					<li>a is the coefficient, which depends on the physical properties of the control;</li>
+					<li>c is the exponent, which depends only on the type of control;</li>
+					<li>b is the offset; when the stage falls below the value b, the flow is zero. Note that this parameter 
+				is generally different from the activation stage k. For example, for a channel control that takes over 
+				a weir control, the parameter b represents the average elevation of the channel bottom, but the control only 
+				activates when the weir is drowned, at a stage which is different from b.</li>
+				</ul>
+			Each of these parameters can be related to the physical characteristics of the control as explained 
+			 in detail in <a href="img/HydraulicControls.zip">this document</a>. It is therefore possible to define approximate 
+			 values for each parameter, and most importantly their (potentially large) uncertainty. 
+			 We say we thus define <em>prior parameters</em>, the term <em>prior</em> being used here to 
+			 mean that this first rough estimation can and <strong>must</strong> be done without using any gauging.
+			 Finally, note that in practice the definition of priors is done only for the parameters 
+			 k, a and c. Indeed, the continuity of the rating curve is a constraint which implies that the parameter b
+			 is automatically deduced from the other three parameters.</p>
+			
+			<p>Defining prior parameters is done in the lower part of the descriptive panel, 
+			where each control is associated with a tab. Getting back to the example used so far, we can
+			define the characteristics of the first control by entering a description of the control and 
+			by selecting its type in the pulldown menu (here "rectangular weir"). This selection 
+			provides access to the <em>prior assistant</em> that will help you relate the physical properties of
+			the control and the uncertain values of the parameters k, a and c. By clicking the button, the assistant 
+			opens in a new window like the one shown below. In the upper part of the window, 
+			the relationship between the physical properties of the control and the parameters k, a and c are recalled
+			(obviously these relationships depend on the previously selected control type). You can 
+			enter the physical properties in the fields located in the left side of the window 
+			(some fields are prefilled because they only depend on the type of control, but you can always
+			edit them if you wish). Note that everywhere throughout BaRatinAGE, uncertainties are expressed 
+			as 95% expanded uncertainties, i.e. as the half-width of a 95% confidence interval. 
+			For a Gaussian distribution, this corresponds to 1.96 times the standard deviation.
+			Once all fields are defined, a click on the "Compute" button 
+			will translate the physical properties of the control in terms of parameters k, a and c, and propagate 
+			the uncertainties. Finally, clicking the "apply" button will close the assistant and complete 
+			the definition of prior parameters for the first control. You can continue with the second 
+			control in a similar manner until all controls are completed.</p>
+			<p align="center"><img src="img/PriorAssistant.png",alt="PriorAssistant",id="PriorAssistant"></p>
+			
+			<h1>The prior rating curve</h1>
+			<p> Once the priors are defined for all the controls, it is possible to plot 
+			a first rating curve (with uncertainties), called the <em>prior rating curve</em> 
+			because it is achieved without using any gauging. The prior rating curve is computed 
+			using a Monte Carlo approach: parameters k, a and c of all the controls are sampled randomly 
+			using the uncertainties defined in the previous step. By sampling a large number of parameters, 
+			we obtain a large number of possible curves which are used to calculate an uncertainty interval 
+			at a given confidence level (95% in BaRatinAGE).</p>
+			<p>In practice, you must specify the following information at the top of the graphic panel:
+				<ul>
+					<li>The number of Monte Carlo simulations Nsim. We recommend keeping the default value, 
+					i.e. 1000, which is sufficient in practice and requires only limited computation time;</li>
+					<li>A grid of stages on which the rating curve is calculated. Defining 
+					this grid requires the following information:</li>
+						<ul>
+							<li>The minimum stage of the grid, Hmin;</li>
+							<li>The maximum stage of the grid, Hmax;</li>
+							<li>The step of the grid, Hstep. We recommend you automatically calculate this step 
+							using the size of the default grid (grid of 101 values). Of course you can 
+							select the desired number of steps Nstep, or directly set the space step Hstep if you wish,
+							but be careful, the computing time is proportional to the size of the grid.</li>
+						</ul>		
+				</ul>
+			Once all the information is entered, you can start the computation by clicking on the "Run" button, and 
+			a few seconds later, the prior rating curve should appear in the graphic panel, as shown below. 
+			Of course, this prior curve will be generally very uncertain, but we will use the gaugings in the next step 
+			to reduce this uncertainty. The graph also shows the activation stages of the 
+			various controls as green vertical lines (with uncertainty). 
+			This visualisation of the prior curve allows you to check the relevance and consistency 
+			of your prior assumptions on the controls.</p>
+			<p align="center"><img src="img/PriorRC.png",alt="PriorRatingCurve",id="PriorRatingCurve"></p>
+			<p>Here are some important recommendations for defining priors:
+				<ul>
+					<li>First golden rule: <strong>do not use the gaugings</strong>. These will indeed 
+					be used in the next step, and using them also for "tuning" the prior curve 
+					would be using the same information twice: this is a guarantee to underestimate uncertainties! 
+					Also note that it is not possible to display gaugings in the prior 
+					rating curve graph (and it's done on purpose!)</li>
+					<li>Second golden rule: <strong>be honest</strong>! You should not hesitate setting 
+					a large uncertainty when you do not know much about a parameter. Of course this will result 
+					in a very uncertain prior rating curve, but that curve is not the final curve since 
+					the information provided by the gaugings will be used in the next step to decrease 
+					the uncertainty. Here are some typical examples:
+						<ul>
+							<li>parameters that are often poorly known a priori: the activation stage of a control when it 
+							corresponds to the drowning of a weir; the geometric properties of a natural channel that is 
+							not very uniform along the controlling reach; the roughness of a natural channel 
+							(Strickler or Manning coefficient), etc.;</li>
+							<li>parameters that are often quite well known a priori: the geometric properties of an artificial structure or 
+							channel; the exponent c, which depends only on the type of control; discharge coefficients 
+							of artificial controlling sections (rectangle, triangle, orifice, etc.), etc .;</li>
+						</ul>
+					</li>
+					<li>Remember to click the "Apply" button before executing the computation of the prior rating curve 
+					to be sure you have saved your latest changes to the hydraulic configuration.</li>
+				</ul>
+			</p>
+			<p>Finally, note that by clicking on the "More plots" button, it is possible to plot the 
+			rating curve "spaghettis": in this chart, each curve corresponds to a random sampling 
+			of parameters k, a and c of each control, as explained above. Displaying all the Nsim 
+			random samples provides a different representation of the uncertainty than the standard 
+			interval (Note. only 100 spaghettis are actually plotted for readability and efficiency reasons).</p>
+
+		</section>
+
+		<footer>
+			<div>
+				<iframe src="Contents.html" width=100% height=100 marginheight="0" frameborder="0"></iframe>
+			</div>
+		</footer>
+    </body>
+</html>

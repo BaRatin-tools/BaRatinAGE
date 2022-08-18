@@ -1,6 +1,9 @@
 package Utils;
 
 import java.awt.Font;
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 import moteur.MCMCoptions;
 import commons.Constants;
@@ -31,8 +34,17 @@ public class Config {
 	private Font fontBigLbl=new Font("Tahoma",Font.BOLD,18);
 	private Font fontTabs=new Font("Tahoma",Font.PLAIN,14);
 	private Font fontTree=new Font("Tahoma",Font.PLAIN,16);
-
 	
+	// Help directories and files
+	private String helpDir;
+	private String helpFile;
+	private String helpImageDir;
+	private String legend_HydrauConfig;
+	private String legend_Gauging;
+	private String legend_RC;
+	private String legend_Limni;
+	private String legend_Hydro;
+
 	public static synchronized Config getInstance(){
 	    if (instance == null){
             instance = new Config();
@@ -41,14 +53,27 @@ public class Config {
     }
 
 	private Config() {
-		// read language
+		// read language and assign help directories accordingly
 		try {
 			String[] foo=ReadWrite.read(Defaults.options_lang);
 			this.language=foo[0];
 		} catch (Exception e) {
 			// use defaults
-			this.language="en";
+			this.language=Defaults.lang_def;
 		}
+		this.helpDir=new File(Defaults.helpDir,this.language).getAbsolutePath();
+		// Check helpDir exists - otherwise fallback on default
+		if(!Files.exists(Paths.get(this.helpDir))) {
+			this.helpDir=new File(Defaults.helpDir,Defaults.lang_def).getAbsolutePath();
+		}
+		this.setHelpFile(new File(this.helpDir,Defaults.helpFile).getAbsolutePath());
+		this.helpImageDir=new File(this.helpDir,Defaults.helpImageDir).getAbsolutePath();
+		this.setLegend_HydrauConfig(new File(this.helpImageDir,Defaults.legend_HydrauConfig).getAbsolutePath());
+		this.setLegend_Gauging(new File(this.helpImageDir,Defaults.legend_Gauging).getAbsolutePath());
+		this.setLegend_RC(new File(this.helpImageDir,Defaults.legend_RC).getAbsolutePath());
+		this.setLegend_Limni(new File(this.helpImageDir,Defaults.legend_Limni).getAbsolutePath());
+		this.setLegend_Hydro(new File(this.helpImageDir,Defaults.legend_Hydro).getAbsolutePath());
+
 		// read mcmc options
 		try {
 			Double[][] foo=ReadWrite.read(Defaults.options_mcmc, Defaults.barSep,0);
@@ -228,6 +253,70 @@ public class Config {
 
 	public void setDefaultDir(String defaultDir) {
 		this.defaultDir = defaultDir;
+	}
+
+	public String getHelpDir() {
+		return helpDir;
+	}
+
+	public void setHelpDir(String helpDir) {
+		this.helpDir = helpDir;
+	}
+
+	public String getHelpFile() {
+		return helpFile;
+	}
+
+	public void setHelpFile(String helpFile) {
+		this.helpFile = helpFile;
+	}
+
+	public String getHelpImageDir() {
+		return helpImageDir;
+	}
+
+	public void setHelpImageDir(String helpImageDir) {
+		this.helpImageDir = helpImageDir;
+	}
+
+	public String getLegend_HydrauConfig() {
+		return legend_HydrauConfig;
+	}
+
+	public void setLegend_HydrauConfig(String legend_HydrauConfig) {
+		this.legend_HydrauConfig = legend_HydrauConfig;
+	}
+
+	public String getLegend_Gauging() {
+		return legend_Gauging;
+	}
+
+	public void setLegend_Gauging(String legend_Gauging) {
+		this.legend_Gauging = legend_Gauging;
+	}
+
+	public String getLegend_RC() {
+		return legend_RC;
+	}
+
+	public void setLegend_RC(String legend_RC) {
+		this.legend_RC = legend_RC;
+	}
+
+	public String getLegend_Limni() {
+		return legend_Limni;
+	}
+
+	public void setLegend_Limni(String legend_Limni) {
+		this.legend_Limni = legend_Limni;
+	}
+
+	public String getLegend_Hydro() {
+		return legend_Hydro;
+	}
+
+	public void setLegend_Hydro(String legend_Hydro) {
+		this.legend_Hydro = legend_Hydro;
 	}
 
 }

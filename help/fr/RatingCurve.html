@@ -1,0 +1,126 @@
+﻿<!DOCTYPE html>
+<html lang="fr">
+	<head>
+		<meta charset="utf-8" />
+		<!--[if lt IE 9]>
+			<script src="http://github.com/aFarkas/html5shiv/blob/master/dist/html5shiv.js"></script>
+		<![endif]-->
+		<title>BaRatinAGE</title>
+		<link rel="stylesheet" type="text/css" href="css/styles.css"/>
+		<link rel="icon" type="image/png" href="img/BaRatinAGE_icon.png" />
+	</head>
+
+	<body>
+		<header>
+			<div>
+				<img src="img/RC_icon.png",alt="logo",id="logo">
+				<h1>BaRatinAGE</h1> 
+				<h2>Courbe de tarage</h2> 
+			</div>
+			<div>
+				<iframe src="Contents.html" width=100% height=100 marginheight="0" frameborder="0"></iframe>
+			</div>
+		</header>
+	
+		<section>
+		
+			<h1>Création d'une courbe de tarage</h1>
+			<p>Vous pouvez créer une nouvelle courbe de tarage de plusieurs façons :
+				<ul>
+					<li>via le menu Courbe de tarage...Ajouter;</li> 
+					<li>via le raccourci Ctrl+R;</li> 
+					<li>en effectuant un clic droit sur le noeud "Courbe de tarage" dans l'arborescence de l'explorateur;</li> 
+					<li>en cliquant sur le bouton 
+					<img src="img/RC_icon.png",alt="RC_icon",id="RC_icon", align="middle"> 
+					dans la barre d'outils.</li> 
+				</ul>
+			</p>
+			<p>Il vous sera demandé de nommer cette nouvelle courbe de tarage, et vous pouvez en saisir une description.
+			La spécification des propriétés de la courbe se fait alors en sélectionnant :
+				<ul>
+					<li>Une configuration hydraulique (qui détermine l'équation de la courbe et les a priori);</li> 
+					<li>Un jeu de jaugeages (utilisés pour estimer la courbe);</li> 
+					<li>Un modèle d'erreur restante (nous conseillons de conserver l'option sélectionnée par défaut).</li> 
+				</ul>
+			</p>
+			<p>Vous êtes à présent prêts à lancer le calcul de la courbe de tarage 
+			(tous les détails sur les modèles statistiques sous-jacents sont dans 
+			<a href="img/BaRatinStatisticalModel.pdf">ce document</a>). Dans le panneau graphique, définissez 
+			une grille de hauteurs comme vous l'aviez fait pour la courbe a priori, puis cliquer sur le bouton 
+			Exécuter. Après un calcul qui ne devrait pas excéder quelques dizaines de secondes, le panneau se met 
+			à jour comme ceci :</p>
+			<p align="center"><img src="img/PosteriorRC.png",alt="PosteriorRC",id="PosteriorRC"></p>
+			
+			<h1>Graphiques</h1>
+			
+			<h2>Courbe de tarage a posteriori</h2>
+			<p>Le graphique ci-dessus montre la <em>courbe de tarage a posteriori</em>. Le terme "a posteriori"
+			indique que cette courbe a été estimée en utilisant les jaugeages ("après les avoir observés"), par opposition
+			à la courbe a priori qui n'utilisait aucun jaugeage.
+			Sur ce graphique, les lignes verticales représentent les hauteurs d'activation de chaque contrôle (avec incertitudes).
+			La courbe représentée en noir est la courbe la plus probable a posteriori, nommée pour simplifier <em>courbe maxpost</em>.
+			Autour de la courbe maxpost, l'intervalle en rouge clair représente l'<em>incertitude paramétrique</em>, c'est-à-dire 
+			l'incertitude liée uniquement à l'estimation des paramètres de la courbe. L'intervalle en rouge foncé
+			représente l'<em>incertitude totale</em>, c'est-à-dire la combinaison de l'incertitude paramétrique et de
+			l'incertitude induite par l'erreur restante. 
+			Il est recommandé de visualiser le graphique aussi en prenant une échelle logarithmique pour les débits,
+			ce qui permet souvent de mieux voir l’articulation des contrôles sur toute la gamme de hauteur d’eau, 
+			les écarts relatifs de débit (en %) apparaissant alors avec la même taille quel que soit le débit.</p> 
+			<p>Il est possible d'exporter la courbe de tarage a posteriori en effectuant un clic droit sur la courbe
+			souhaitée dans l'arborescence de l'explorateur, ou via le menu Courbe de tarage...Exporter. Deux formats 
+			d'export sont proposés :
+				<ul>
+					<li>Le format .csv (séparateur: point-virgule). Les colonnes représentent les hauteurs, la courbe maxpost, 
+					les limites de l'intervalle d'incertitude paramétrique à 95% et les limites de 
+					l'intervalle d'incertitude totale à 95%;</li> 
+					<li>Le format Barème. Trois courbes sont exportées: la courbe maxpost, et les courbes correspondant
+					aux limites inférieures et supérieures de l'intervalle d'incertitude totale à 95%. Le fichier exporté peut
+					être ré-importé et donc manipulé sous Barème.</li> 
+				</ul>
+			En plus de la courbe de tarage a posteriori qui est affichée par défaut, il est possible d'accéder
+			à plusieurs autres graphiques en cliquant sur le bouton éponyme. Ces graphiques sont décrits ci-dessous.
+			</p>
+			
+			<h2>Comparaison des paramètres a priori et a posteriori</h2>
+			<p>Il est particulièrement important de vérifier que les paramètres estimés a posteriori sont cohérents avec 
+			les hypothèses a priori faites sur les contrôles hydrauliques. 
+			Un conflit entre les paramètres a priori et a posteriori doit être interprété comme une 
+			alarme sur la validité de la courbe de tarage, c'est à dire de la configuration hydraulique spécifiée.
+			Typiquement, un contrôle important a peut-être été oublié, ce qui force les paramètres à se contortionner
+			au-delà de ce qui est physiquement raisonnable pour coller aux jaugeages.</p>
+			<p>Le graphique ci-dessous permet d'évaluer comment la connaissance a priori des paramètres (en bleu) a été transformée
+			en connaissance a posteriori (en rouge) par l'information apportée par les jaugeages.</p>
+			<p align="center"><img src="img/PriorVsPost_Parameters.png",alt="PriorVsPost_Parameters",id="PriorVsPost_Parameters"></p>
+			<p>La même information est également disponible sous forme de tableau, avec pour chaque paramètre 
+			une comparaison entre les estimations a priori et a posteriori, sous la forme valeur +/- incertitude étendue à 95%.</p>
+
+			<h2>Comparaison des courbes de tarage a priori et a posteriori</h2>
+			<p>Le graphique permet de comparer les courbes de tarage a priori (en bleu) et a posteriori (en rouge)
+			dans un même graphique. En règle générale, on s'attend à ce que la courbe a posteriori soit 
+			beaucoup moins incertaine que la courbe a priori, car elle bénéficie de l'information apportée par les jaugeages.</p>
+			<p align="center"><img src="img/PriorVsPost_RC.png",alt="PriorVsPost_RC",id="PriorVsPost_RC"></p>
+			
+			<h2>Simulations MCMC</h2>
+			<p>Le graphique représente les paramètres simulés depuis la distribution a posteriori grâce au 
+			simulateur MCMC (tous les détails techniques sont <a href="img/MCMC.zip">ici</a>). Notez que le graphique
+			ne montre que 500 valeurs simulées, mais en fait 10 000 valeurs ont été initialement générées. Ces 10 000
+			valeurs initiales ont simplement été post-traitées et réduites à 500 valeurs pour éviter de conserver 
+			un nombre de simulations trop important. L'utilisateur peut modifier les options de ce post-traitement
+			via le menu Options...Options MCMC.</p>
+			<p align="center"><img src="img/MCMCtraces.png",alt="MCMCtraces",id="MCMCtraces"></p>
+		
+			<h2>Spaghettis</h2>
+			<p>Comme pour la courbe a priori, le graphique représente les "spaghettis" de la courbe de tarage
+			a posteriori : chaque courbe correspond à un tirage MCMC des paramètres k, a, et c de chaque contrôle.</p>
+			<p align="center"><img src="img/Spaghetti_post.png",alt="Spaghetti_post",id="Spaghetti_post"></p>
+
+				
+		</section>
+
+		<footer>
+			<div>
+				<iframe src="Contents.html" width=100% height=100 marginheight="0" frameborder="0"></iframe>
+			</div>
+		</footer>
+    </body>
+</html>

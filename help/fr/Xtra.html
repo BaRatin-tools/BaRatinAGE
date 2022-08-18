@@ -1,0 +1,93 @@
+﻿<!DOCTYPE html>
+<html lang="fr">
+	<head>
+		<meta charset="utf-8" />
+		<!--[if lt IE 9]>
+			<script src="http://github.com/aFarkas/html5shiv/blob/master/dist/html5shiv.js"></script>
+		<![endif]-->
+		<title>BaRatinAGE</title>
+		<link rel="stylesheet" type="text/css" href="css/styles.css"/>
+		<link rel="icon" type="image/png" href="img/BaRatinAGE_icon.png" />
+	</head>
+
+	<body>
+		<header>
+			<div>
+				<img src="img/BaRatinAGE_icon.png",alt="logo",id="logo">
+				<h1>BaRatinAGE</h1> 
+				<h2>Pour aller plus loin...</h2> 
+			</div>
+			<div >
+				<iframe src="Contents.html" width=100% height=100 marginheight="0" frameborder="0"></iframe>
+			</div>
+		</header>
+	
+		<section>
+		
+			<h1>Utilisation du contenu du fichier .bar.zip</h1>
+			<p>Vous souhaitez peut-être réutiliser les résultats de BaRatinAGE avec vos propres outils : par exemple, 
+			récupérer les paramètres simulés par MCMC sous votre tableur favori pour pouvoir les comparer
+			avec vos propres calculs, ou bien pour réaliser votre propre représentation graphique, etc.
+			Pour cela, vous pouvez utiliser le fichier de sauvegarde au format .bar.zip. En effet, ce fichier 
+			n'est en fait rien d'autre qu'un fichier zip qui contient l'intégralité des informations générées par BaRatinAGE,
+			sous la forme de simples fichiers textes.
+			<p>Par exemple, utilisez votre application ZIP favorite pour dézipper le fichier nommé Sauze.bar.zip
+			dans le répertoire exemple. Vous obtenez alors une arborescence de dossiers qui suit exactement
+			l'organisation des objets dans BaRatinAGE. En parcourant ces dossiers, vous pouvez alors récupérer les fichers
+			textes bruts qui vous intéressent, et les traiter comme bon vous semble.</p>
+			<p>Malheureusement, la documentation de ces fichiers bruts est pour le moment rudimentaire. 
+			Nous améliorerons cette documentation dans les futures versions de BaratinAGE (via des en-têtes plus
+			explicites dans les fichiers, et la rédaction d'une aide spécifique). En attendant, vous 
+			pouvez toujours envoyer un courriel à l'équipe de développement de BaRatinAGE si vous souhaitez en savoir plus
+			sur ces fichiers.</p>
+
+			
+			<h1>Pilotage de l'exécutable BaRatin.exe</h1>
+			<p>L'environnement de travail BaRatinAGE travaille en pilotant le fichier exécutable BaRatin.exe,
+			qui effectue tous les calculs, et qui se trouve dans le répertoire "exe" du dossier 
+			d'installation de BaRatinAGE. Le pilotage de cet exécutable s'effectue 
+			intégralement en manipulant quelques fichiers de configuration qui sont en pratique de 
+			simples fichiers textes. Ceci implique que vous pouvez si vous le souhaitez piloter 
+			directement l'exécutable BaRatin.exe, sans passer par l'interface BaRatinAGE. Ceci
+			peut être utile par exemple si vous utilisez un langage de programmation et souhaitez
+			effectuer des calculs BaRatin directement dans un de vos programmes.</p>
+			<p>Une copie des fichiers de configuration créés lors du dernier calcul effectué par BaRatinAGE
+			peut être récupérée dans le répertoire "recycle" du dossier d'installation de BaRatinAGE. 
+			Malheureusement, comme pour le fichier .bar.zip, la documentation de ces fichiers de configuration est
+			pour le moment inexistante. Nous rédigerons une aide spécifique dans les futures versions de BaRatinAGE,
+			mais en attendant, vous pouvez toujours envoyer un mail à l'équipe de développement de BaRatinAGE 
+			si vous souhaitez en savoir plus.</p>
+			
+									
+			<h1>Références bibliographiques sur BaRatin</h1>
+			<p>Horner I., Renard B., Le Coz J., Branger F., McMillan H.K., Pierrefeu G. Impact of stage measurement errors on streamflow uncertainty, Water Resources Research, 54, 1952-1976, 2018.</p>
+			<p>Le Coz, J., Renard, B., Bonnifait, L., Branger, F., Le Boursicaud, R. Combining hydraulic knowledge and uncertain gaugings in the estimation of hydrometric rating curves: a Bayesian approach, Journal of Hydrology, 509, 573-587, 2014.</p>
+			<p>Le Coz, J., Renard, B., Bonnifait, L., Branger, F., Le Boursicaud, R. Uncertainty Analysis of Stage-Discharge Relations using the BaRatin Bayesian Framework. 35th IAHR World Congress 08/09/2013-13/09/2013, Chengdu, China, 9 p, 2013.</p>
+			<p>Mansanarez, V. Non unique stage-discharge relations: Bayesian analysis of complex rating curves and their uncertainties, PhD thesis, 2016.</p>
+			<p>Mansanarez, V., Le Coz, J., Renard, B., Vauchel, P., Pierrefeu, G., Lang, M. Bayesian analysis of stage-fall-discharge rating curves and their uncertainties, Water Resources Research, 52, 7424-7443, 2016.</p>
+			<p>Mansanarez, V., Renard, B., Le Coz, J. Lang, M., Darienzo, M., Shift happens! Adjusting stage-discharge rating curves to riverbed morphological changes at known times, Water Resources Research, submitted.</p>
+
+			
+			<h1>Références bibliographiques utilisant BaRatin</h1>
+			<p>Francke, T., Foerster, S., Brosinsky, A., Sommerer, E., Lopez-Tarazon, J.A., Güntner, A., Batalla, R.J., Bronstert, A. Water and sediment fluxes in Mediterranean mountainous regions: Comprehensive dataset for hydro-sedimentological analyses and modelling in a mesoscale catchment (River Isábena, NE Spain), Earth System Science Data, 10(2), 1063-1075, 2018.</p>
+			<p>Henn, B., Painter, T.H., Bormann, K.J., McGurk, B., Flint, A.L., Flint, L.E., White, V., Lundquist, J.D., High-Elevation Evapotranspiration Estimates During Drought: Using Streamflow and NASA Airborne Snow Observatory SWE Observations to Close the Upper Tuolumne River Basin Water Balance, Water Resources Research, 54(2), 746-766, 2018.</p>
+			<p>Kiang, J.E., Gazoorian, C., McMillan, H., Coxon, G., Le Coz, J., Westerberg, I., Belleville, A., Sevrez, D., Sikorska, A.E., Petersen-Øverleir, A., Reitan, T., Freer, J., Renard, B., Mansanarez, V., Mason, R. A comparison of methods for streamflow uncertainty estimation, Water Resources Research, submitted.</p>
+			<p>Lundquist, J.D., Roche, J.W., Forrester, H., Moore, C., Keenan, E., Perry, G., Cristea, N., Henn, B., Lapo, K., McGurk, B., Cayan, D.R., Dettinger, M.D. Yosemite Hydroclimate Network: Distributed Stream and Atmospheric Data for the Tuolumne River Watershed and Surroundings, Water Resources Research, 52, 7478-7489, 2016.</p>
+			<p>Mason, R.R. Jr., Kiang, J.E., Cohn, T.A. Rating curve uncertainty: An illustration of two estimation methods, IAHR River Flow conference, St. Louis, Missouri, USA, 12-15 July, 729-734, 2016.</p>
+			<p>Ocio, D., Le Vine, N., Westerberg, I., Pappenberger, F., Buytaert, W. The role of rating curve uncertainty in real-time flood forecasting, Water Resources Research, 53, 4197-4213, 2017.</p>
+			<p>Osorio, A.L.N.A., Reis, D.S. A Bayesian Approach for the Evaluation of Rating Curve Uncertainties in Flood Frequency Analyses, World Environmental and Water Resources Congress, West Palm Beach, Florida, USA, May 22-26, 482-491, 2016.</p>
+			<p>Osorio, A.L.N.A. Modelo bayesiano completo para análise de frequência de cheias com incorporação do conhecimento hidráulico na modelagem das incertezas na curva-chave [Full Bayesian model for flood frequency analysis with incorporation of hydraulic knowledge in the modeling of uncertainties in the rating curve], Master thesis, Universidade de Brasília, Brazil, 161 p, 2017.</p>
+			<p>Sikorska, A.E., Renard, R. Calibrating a hydrological model in stage space to account for rating curve uncertainties: general framework and key challenges, Advances in Water Resources, 105, 51-66, 2017.</p>
+			<p>Storz, S.M. Stage-discharge relationships for two nested research catchments of the high-mountain observatory in the Simen Mountains National Park in Ethiopia, Master thesis, Bern University, Switzerland, 87 p, 2016.</p>
+			<p>Zeroual, A., Meddi, M., Assani, A.A. Artificial Neural Network Rainfall-Discharge Model Assessment Under Rating Curve Uncertainty and Monthly Discharge Volume Predictions, Water Resources Management, 30, 3191-3205, 2016.</p>
+
+					
+		</section>
+
+		<footer>
+			<div>
+				<iframe src="Contents.html" width=100% height=100 marginheight="0" frameborder="0"></iframe>
+			</div>
+		</footer>
+    </body>
+</html>

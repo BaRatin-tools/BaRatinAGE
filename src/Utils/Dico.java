@@ -16,25 +16,22 @@ public class Dico extends HashMap<String,String> {
 		return instance;
 	}
 	private static final String unknown="Unknown dictionary entry";
-	private static final int indx_fr=0;
-	private static final int indx_en=1;
-	private static final int indx_es=2;
-	private static final int indx_de=3;
-	private static final int indx_it=4;
-	private static final int indx_br=5;
-	private static final int indx_def=indx_en;
+	private String lang="en";
+	private String[] available=null;
 
 	public Dico(String lang){
-		int indx=indx_def;
 		HashMap<String,String[]> ML=GetMLdico();
 		Iterator<String> key = ML.keySet().iterator();		
-		if(lang.equals("fr")){indx=indx_fr;}
-		else if(lang.equals("en")){indx=indx_en;}
-		else if(lang.equals("es")){indx=indx_es;}
-		else if(lang.equals("de")){indx=indx_de;}
-		else if(lang.equals("it")){indx=indx_it;}
-		else if(lang.equals("br")){indx=indx_br;}
+		// get available languages
+		String[] head = ML.get("﻿key DO NOT MODIFY");
+		// get index of available language corresponding to the requested one
+		int indx = -1;
+		for(int i=0;i<head.length;i++){
+			if(head[i].equalsIgnoreCase(lang)) {indx=i;}
+		}
 		this.clear();
+		this.setLang(lang);
+		this.setAvailable(head);
 		while(key.hasNext()){
 			String k = key.next();
 			this.put(k, ML.get(k)[indx]);
@@ -67,5 +64,21 @@ public class Dico extends HashMap<String,String> {
 		}		
 		return dico;
 		}
+
+	public String getLang() {
+		return lang;
+	}
+
+	public void setLang(String lang) {
+		this.lang = lang;
+	}
+
+	public String[] getAvailable() {
+		return available;
+	}
+
+	public void setAvailable(String[] available) {
+		this.available = available;
+	}
 
 }

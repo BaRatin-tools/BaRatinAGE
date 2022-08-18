@@ -1,0 +1,96 @@
+﻿<!DOCTYPE html>
+<html lang="fr">
+	<head>
+		<meta charset="utf-8" />
+		<!--[if lt IE 9]>
+			<script src="http://github.com/aFarkas/html5shiv/blob/master/dist/html5shiv.js"></script>
+		<![endif]-->
+		<title>BaRatinAGE</title>
+		<link rel="stylesheet" type="text/css" href="css/styles.css"/>
+		<link rel="icon" type="image/png" href="img/BaRatinAGE_icon.png" />
+	</head>
+
+	<body>
+		<header>
+			<div>
+				<img src="img/Limni_icon.png",alt="logo",id="logo">
+				<h1>BaRatinAGE</h1> 
+				<h2>Stage series</h2> 
+			</div>
+			<div>
+				<iframe src="Contents.html" width=100% height=100 marginheight="0" frameborder="0"></iframe>
+			</div>
+		</header>
+	
+		<section>
+		
+			<h1>Creating a stage series</h1>
+			<p>You can create a new stage series in several ways:
+				<ul>
+					<li>via the Stage series...Add menu;</li> 
+					<li>via the Ctrl+L shortcut;</li> 
+					<li>by making a right click on the node "Stage series" in the xplorer tree;</li> 
+					<li>by clicking the button  
+					<img src="img/Limni_icon.png",alt="Limni_icon",id="Limni_icon", align="middle"> 
+					in the tool bar.</li> 
+				</ul>
+			</p>
+			<p>You will be asked to name this new stage series, and you can enter a description.
+			You will then have to import the source file by clicking the "Browse" button and
+			selecting the file. For example, you can select the file
+			"Sauze_limni_short.csv" in the "exemple" directory, which contains a stage series of 
+			the Ardèche river at Sauze station for year 1980. The panel then updates as follows:</p>
+			<p align="center"><img src="img/Limni.png",alt="Limni",id="Limni"></p>
+			<p>The table contains the following columns:
+				<ul>
+					<li>Date, in format YYYY/MM/DD hh:mm:ss;</li> 
+					<li>Recorded stage, in metres;</li> 
+					<li>Expanded uncertainty related to non-systematic errors;</li> 
+					<li>Systematic errors: error index (period of time);</li> 
+					<li>Systematic errors: expanded uncertainty related to the unknown bias.</li> 
+				</ul>
+			</p>
+
+			<p>The processing of the stage series uncertainties intends to discriminate two types of errors:
+			non-systematic errors (which vary at each time step) and systematic errors (which
+			remain identical for a set of time steps). Typically, non-systematic errors are
+			associated with the sensor noise and wavelets; systematic errors are associated with the
+			periodic calibration of the sensor relative to the staff gauge (for a more detailed explanation, see
+			<a href="img/StageSeriesUncertainties.pdf">this document</a>). 
+			This type of error is in fact an unknown bias, which is assumed to be constant between two calibrations
+			of the sensor. We must therefore specify two pieces of information:
+				<ul>
+					<li>The periods over which the error remains constant (bHindx column).
+						The value 0 means that the error is ignored. The value 1 is entered in all
+						the rows corresponding to the first period, and the value 2 for the second period, etc.; </li>
+					<li>The expanded uncertainty due to the unknown bias (bH column). </li>
+				</ul>
+			</p>
+			
+			<h1>File formats</h1>
+			<p>For the stage series, a unique file format is supported for now: the .csv format.
+			As for the gaugings, it uses a semicolon separator (you can open
+			the "Sauze_limni_short.csv" file in your text editor to observe the format).
+			The file content is exactly what you see in the BaRatinAGE table shown above
+			(except that the date is ventilated on 6 columns: year, month, day, hour, minute, second).
+			The simplicity of this format enables you to easily create/manipulate stage series files
+			with your favorite spreadsheet.</p>
+
+			<h1>Notes on the management of stage series in BaRatinAGE</h1>
+			<p>At present, the stage series cannot be modified directly in BaRatinAGE:
+			you must create and modify yourself the source file in .csv format. Future versions of BaRatinAGE
+			will offer more tools for the management of stage series and their uncertainties.</p>
+			<p>In addition, note that the stage series files can become large when the 
+			sampling step is short and/or the duration is long. This can create a slight slowdown for
+			the drawing the graph. This will also be improved in future versions of BaRatinAGE which will propose
+			subsampling tools.</p>
+					
+		</section>
+
+		<footer>
+			<div>
+				<iframe src="Contents.html" width=100% height=100 marginheight="0" frameborder="0"></iframe>
+			</div>
+		</footer>
+    </body>
+</html>

@@ -102,23 +102,6 @@ public class Defaults {
 	public static final String exeConfigFile=new File(exeDir,"Config_BaRatin.txt").getAbsolutePath();
 	public static final  String tempWorkspace=new File(exeDir,"workspace").getAbsolutePath();
 	public static final  String recycleDir=new File(home,"recycle").getAbsolutePath();
-	// Directories for help
-	public static final String helpDir_fr= new File(home,"aide").getAbsolutePath();
-	public static final String helpDir_en= new File(home,"help").getAbsolutePath();
-	public static final String helpFile_fr=new File(helpDir_fr,"index.html").getAbsolutePath();
-	public static final String helpFile_en=new File(helpDir_en,"index.html").getAbsolutePath();
-	public static final String helpImageDir_fr= new File(helpDir_fr,"img").getAbsolutePath();
-	public static final String helpImageDir_en= new File(helpDir_en,"img").getAbsolutePath();
-	public static final String legend_HydrauConfig_fr= new File(helpImageDir_fr,"Legend_HydrauConfig.png").getAbsolutePath();
-	public static final String legend_HydrauConfig_en= new File(helpImageDir_en,"Legend_HydrauConfig.png").getAbsolutePath();
-	public static final String legend_Gauging_fr= new File(helpImageDir_fr,"Legend_Gaugings.png").getAbsolutePath();
-	public static final String legend_Gauging_en= new File(helpImageDir_en,"Legend_Gaugings.png").getAbsolutePath();
-	public static final String legend_RC_fr= new File(helpImageDir_fr,"Legend_RC.png").getAbsolutePath();
-	public static final String legend_RC_en= new File(helpImageDir_en,"Legend_RC.png").getAbsolutePath();
-	public static final String legend_Limni_fr= new File(helpImageDir_fr,"Legend_Limni.png").getAbsolutePath();
-	public static final String legend_Limni_en= new File(helpImageDir_en,"Legend_Limni.png").getAbsolutePath();
-	public static final String legend_Hydro_fr= new File(helpImageDir_fr,"Legend_Hydro.png").getAbsolutePath();
-	public static final String legend_Hydro_en= new File(helpImageDir_en,"Legend_Hydro.png").getAbsolutePath();
 	// Directories for options
 	public static final String optionsDir= new File(home,"options").getAbsolutePath();
 	public static final String options_lang= new File(optionsDir,"lang.txt").getAbsolutePath();
@@ -153,7 +136,33 @@ public class Defaults {
 	// Dictionary
 	public static final String dicoDir = new File(home,"lang").getAbsolutePath();
 	public static final String dicoFile=new File(dicoDir,"dico.txt").getAbsolutePath();
-
+	public static final String lang_def = "en";
+	// Directories for help
+	public static final String helpDir= new File(home,"help").getAbsolutePath();
+	public static final String helpFile="index.html";
+	public static final String helpImageDir= "img";
+	public static final String legend_HydrauConfig= "Legend_HydrauConfig.png";
+	public static final String legend_Gauging= "Legend_Gaugings.png";
+	public static final String legend_RC= "Legend_RC.png";
+	public static final String legend_Limni= "Legend_Limni.png";
+	public static final String legend_Hydro= "Legend_Hydro.png";
+//	public static final String helpDir_fr= new File(home,"aide").getAbsolutePath();
+//	public static final String helpDir_en= new File(home,"help").getAbsolutePath();
+//	public static final String helpFile_fr=new File(helpDir_fr,"index.html").getAbsolutePath();
+//	public static final String helpFile_en=new File(helpDir_en,"index.html").getAbsolutePath();
+//	public static final String helpImageDir_fr= new File(helpDir_fr,"img").getAbsolutePath();
+//	public static final String helpImageDir_en= new File(helpDir_en,"img").getAbsolutePath();
+//	public static final String legend_HydrauConfig_fr= new File(helpImageDir_fr,"Legend_HydrauConfig.png").getAbsolutePath();
+//	public static final String legend_HydrauConfig_en= new File(helpImageDir_en,"Legend_HydrauConfig.png").getAbsolutePath();
+//	public static final String legend_Gauging_fr= new File(helpImageDir_fr,"Legend_Gaugings.png").getAbsolutePath();
+//	public static final String legend_Gauging_en= new File(helpImageDir_en,"Legend_Gaugings.png").getAbsolutePath();
+//	public static final String legend_RC_fr= new File(helpImageDir_fr,"Legend_RC.png").getAbsolutePath();
+//	public static final String legend_RC_en= new File(helpImageDir_en,"Legend_RC.png").getAbsolutePath();
+//	public static final String legend_Limni_fr= new File(helpImageDir_fr,"Legend_Limni.png").getAbsolutePath();
+//	public static final String legend_Limni_en= new File(helpImageDir_en,"Legend_Limni.png").getAbsolutePath();
+//	public static final String legend_Hydro_fr= new File(helpImageDir_fr,"Legend_Hydro.png").getAbsolutePath();
+//	public static final String legend_Hydro_en= new File(helpImageDir_en,"Legend_Hydro.png").getAbsolutePath();
+	
 	public Defaults() {
 	}
 

@@ -1,0 +1,91 @@
+﻿<!DOCTYPE html>
+<html lang="fr">
+	<head>
+		<meta charset="utf-8" />
+		<!--[if lt IE 9]>
+			<script src="http://github.com/aFarkas/html5shiv/blob/master/dist/html5shiv.js"></script>
+		<![endif]-->
+		<title>BaRatinAGE</title>
+		<link rel="stylesheet" type="text/css" href="css/styles.css"/>
+		<link rel="icon" type="image/png" href="img/BaRatinAGE_icon.png" />
+	</head>
+
+	<body>
+		<header>
+			<div>
+				<img src="img/Gauging_icon.png",alt="logo",id="logo">
+				<h1>BaRatinAGE</h1> 
+				<h2>Gaugings</h2> 
+			</div>
+			<div>
+				<iframe src="Contents.html" width=100% height=100 marginheight="0" frameborder="0"></iframe>
+			</div>
+		</header>
+	
+		<section>
+		
+			<h1>Creating a set of gaugings</h1>
+			<p>You can create a set of gaugings in several ways:
+				<ul>
+					<li>via the Gaugings...Add menu;</li> 
+					<li>via the Ctrl+J shortcut;</li> 
+					<li>by making a right click on the node "Gaugings" in the xplorer tree;</li> 
+					<li>by clicking the button 
+					<img src="img/Gauging_icon.png",alt="Gauging_icon",id="Gauging_icon", align="middle"> 
+					in the tool bar.</li> 
+				</ul>
+			</p> 
+			<p>You will be asked to name this new set of gaugings, and you can enter a description.
+			You will then have to import the gaugings file by clicking the "Browse" button and
+			selecting the file. For example, you can select the file
+			"Sauze_gaugings.csv" in the "exemple" directory, which contains 38 gaugings for the Ardèche river at Sauze station.
+			The panel then updates as follows:</p>
+			<p align="center"><img src="img/Gaugings.png",alt="Gaugings",id="Gaugings"></p>
+			<p>The gaugings table contains the following columns:
+				<ul>
+					<li>Stage in metres;</li> 
+					<li>Expanded stage uncertainty, in meters. In most cases we suggest to set it to zero (see <a href="img/GaugingUncertainties.pdf">this document</a> 
+					for further discussion);</li> 
+					<li>Discharge in cubic meters per second;</li> 
+					<li>Expanded discharge uncertainty, <strong>in percentage of the discharge</strong>;</li> 
+					<li>Status of the gauging: if the box is unchecked, the gauging will not be used for
+					estimation of the rating curve.</li> 
+				</ul>
+			</p>
+			
+			<h1>File formats</h1>
+			<p>When importing a gauging file, you can choose between two file formats:
+			.csv and .BAD formats.
+				<ul>
+					<li>.csv format: it uses a semicolon separator (you can open
+					the "Sauze_gaugings.csv" file in your text editor to observe the format).
+					The file content is exactly what you see in the BaRatinAGE table shown above 
+					(In the last column, the check boxes are replaced by 0/1). The simplicity of
+					this format allows you to easily create/manipulate gauging files with your favorite spreadsheet.</li> 
+					<li>.BAD format: This format is retained for reasons of compatibility with the software Barème
+					and with older versions of BaRatinAGE. Indeed you can export from Barème a set of
+					gaugings at the .BAD format. However, we advise not to directly manipulate this type of
+					file with your spreadsheet, because the content of the file is not the same as what you
+					see in the BaRatinAGE table. To be more specific: the uncertainties are there all expressed
+					as standard-deviations (not as expanded uncertainty) and in absolute values (not in percentage of discharge).</li> 
+				</ul>
+			</p>
+
+			<h1>Notes on the management of gaugings in BaRatinAGE</h1>
+			<p>At present, the management of gaugings in BaRatinAGE is rudimentary:
+				the only possible edition is the activation/deactivation of a gauging. If you want to change
+				a value or add a gauging, you must modify the source file. The reason is that there are already
+				specialised software for managing gaugings (e.g. Barème in France), and we prefer ensuring
+				the compatibility with such software, rather than re-inventing the wheel. However,
+				we will implement some simple tools in future versions of BaRatinAGE
+				(input and edition of gaugings, inclusion of dates and measurement methods, elementary filters).</p>
+								
+		</section>
+
+		<footer>
+			<div>
+				<iframe src="Contents.html" width=100% height=100 marginheight="0" frameborder="0"></iframe>
+			</div>
+		</footer>
+    </body>
+</html>

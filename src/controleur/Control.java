@@ -325,33 +325,23 @@ public class Control {
 		String file=null;
 		// Hydraulic configuration
 		if(panel.getClass().getName().equals("vue.ConfigHydrauPanel")){
-			file=Defaults.legend_HydrauConfig_fr;
-			if(config.getLanguage().equals("fr")){file=Defaults.legend_HydrauConfig_fr;}
-			if(config.getLanguage().equals("en")){file=Defaults.legend_HydrauConfig_en;}
+			file=config.getLegend_HydrauConfig();
 		}
 		// Gaugings
 		if(panel.getClass().getName().equals("vue.GaugingPanel")){
-			file=Defaults.legend_Gauging_fr;
-			if(config.getLanguage().equals("fr")){file=Defaults.legend_Gauging_fr;}
-			if(config.getLanguage().equals("en")){file=Defaults.legend_Gauging_en;}
+			file=config.getLegend_Gauging();
 		}
 		// RC
 		if(panel.getClass().getName().equals("vue.RatingCurvePanel")){
-			file=Defaults.legend_RC_fr;
-			if(config.getLanguage().equals("fr")){file=Defaults.legend_RC_fr;}
-			if(config.getLanguage().equals("en")){file=Defaults.legend_RC_en;}
+			file=config.getLegend_RC();
 		}
 		// Limni
 		if(panel.getClass().getName().equals("vue.LimniPanel")){
-			file=Defaults.legend_Limni_fr;
-			if(config.getLanguage().equals("fr")){file=Defaults.legend_Limni_fr;}
-			if(config.getLanguage().equals("en")){file=Defaults.legend_Limni_en;}
+			file=config.getLegend_Limni();
 		}
 		// Hydro
 		if(panel.getClass().getName().equals("vue.HydrographPanel")){
-			file=Defaults.legend_Hydro_fr;
-			if(config.getLanguage().equals("fr")){file=Defaults.legend_Hydro_fr;}
-			if(config.getLanguage().equals("en")){file=Defaults.legend_Hydro_en;}
+			file=config.getLegend_Hydro();
 		}		
 		File htmlFile = new File(file);
 		try {

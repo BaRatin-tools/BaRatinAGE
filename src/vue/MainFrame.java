@@ -463,7 +463,7 @@ public class MainFrame extends JFrame implements ActionListener{
 
 	public void setLanguage(){
 		// select language
-		Frame_SelectItem select=Popup_SelectItem(new String[] {"fr","en","es","de","it","br"},dico.entry("Language"),true,null,null);
+		Frame_SelectItem select=Popup_SelectItem(dico.getAvailable(),dico.entry("Language"),true,null,null);
 		String lang=select.getName();
 		if(!lang.equals(Constants.S_EMPTY)){
 			try {
@@ -570,9 +570,7 @@ public class MainFrame extends JFrame implements ActionListener{
 	}
 
 	private void openHelp(){
-		String help=Defaults.helpFile_en;
-		if(config.getLanguage().equals("fr")){help=Defaults.helpFile_fr;}
-		else if(config.getLanguage().equals("en")){help=Defaults.helpFile_en;}
+		String help=config.getHelpFile();
 		File htmlFile = new File(help);
 		try {
 			Desktop.getDesktop().browse(htmlFile.toURI());

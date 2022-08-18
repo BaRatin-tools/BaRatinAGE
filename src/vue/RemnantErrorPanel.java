@@ -44,14 +44,7 @@ public class RemnantErrorPanel extends ItemPanel implements ActionListener  {
 	@Override
 	public void actionPerformed(ActionEvent ae) {
 		if(ae.getSource()==butt){
-			String help=null;
-			if(config.getLanguage().equals("fr")){
-				help=new File(Defaults.helpDir_fr,"RemnantError.html").getAbsolutePath();
-				}
-			else if(config.getLanguage().equals("en")){
-				help=new File(Defaults.helpDir_en,"RemnantError.html").getAbsolutePath();
-				}
-			else{help=new File(Defaults.helpDir_en,"RemnantError.html").getAbsolutePath();}
+			String help=new File(config.getHelpDir(),"RemnantError.html").getAbsolutePath();
 			File htmlFile = new File(help);
 			try {
 				Desktop.getDesktop().browse(htmlFile.toURI());

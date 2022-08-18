@@ -1,0 +1,101 @@
+﻿<!DOCTYPE html>
+<html lang="fr">
+	<head>
+		<meta charset="utf-8" />
+		<!--[if lt IE 9]>
+			<script src="http://github.com/aFarkas/html5shiv/blob/master/dist/html5shiv.js"></script>
+		<![endif]-->
+		<title>BaRatinAGE</title>
+		<link rel="stylesheet" type="text/css" href="css/styles.css"/>
+		<link rel="icon" type="image/png" href="img/BaRatinAGE_icon.png" />
+	</head>
+
+	<body>
+		<header>
+			<div>
+				<img src="img/Hydro_icon.png",alt="logo",id="logo">
+				<h1>BaRatinAGE</h1> 
+				<h2>Hydrogramme</h2> 
+			</div>
+			<div>
+				<iframe src="Contents.html" width=100% height=100 marginheight="0" frameborder="0"></iframe>
+			</div>
+		</header>
+	
+		<section>
+
+			<h1>Création d'un hydrogramme</h1>
+			<p>Vous pouvez créer un nouvel hydrogramme de plusieurs façons :
+				<ul>
+					<li>via le menu Hydrogramme...Ajouter;</li> 
+					<li>via le raccourci Ctrl+Y;</li> 
+					<li>en effectuant un clic droit sur le noeud "Hydrogramme" dans l'arborescence de l'explorateur;</li> 
+					<li>en cliquant sur le bouton 
+					<img src="img/Hydro_icon.png",alt="Hydro_icon",id="Hydro_icon", align="middle"> 
+					dans la barre d'outils.</li> 
+				</ul>
+			</p>
+			<p>Il vous sera demandé de nommer ce nouvel hydrogramme, et vous pouvez en saisir une description.
+			La spécification des propriétés de l'hydrogramme se fait alors en sélectionnant :
+				<ul>
+					<li>Un limnigramme;</li> 
+					<li>Une courbe de tarage.</li> 
+				</ul>
+			</p>
+			<p>Vous êtes à présent prêts à lancer le calcul de l'hydrogramme, en cliquant sur le bouton 
+			Exécuter. A l'issue du calcul, le panneau se met à jour comme ceci :</p>
+			<p align="center"><img src="img/FlowSeries.png",alt="FlowSeries",id="FlowSeries"></p>
+			<p>Note 1 : Le temps de calcul à cette étape peut être important, et il est principalement gouverné par
+			le nombre de pas de temps que contient le limnigramme. En guise d'ordre de grandeur, il faut s'attendre 
+			à un temps de calcul de l'ordre de la minute pour un limnigramme contenant 10 000 pas de temps. Ceci est dû
+			au mode de calcul utilisé par BaRatinAGE pour l'estimation des incertitudes. En effet, pour calculer
+			les intervalles d'incertitudes autour de l'hydrogramme, ce sont plusieurs centaines d'hydrogrammes
+			qui sont en fait calculés, en propageant à la fois les incertitudes du limnigramme et 
+			celles liées à l'estimation de la courbe de tarage (approche spaghetti). Pour plus de détails sur ce calcul, 
+			vous pouvez consulter <a href="img/FlowSeriesComputation.pdf">ce document</a>).</p>
+			<p>Note 2 : Pour économiser de l'espace mémoire et du temps de calcul, par défaut les spaghetti d'hydrogrammes calculés
+			 ne sont pas sauvegardés. Si vous souhaitez les enregistrer, allez dans Options...Options de sauvegarde, 
+			 sélectionnez "oui", "Appliquer" et redémarrez BaRatinAGE. A partir de maintenant, les spaghetti d'hydrogrammes 
+			 seront sauvegardés dans le fichier bar.zip chaque fois que vous calculez un hydrogamme dans BaRatinAGE.
+			Vous les trouverez dans le sous-dossier "Hydrograph", sous les noms de spagH.txt (incertitude due aux seules erreurs 
+			du limnigramme), spagHParam.txt (erreurs du limnigramme + incertitude paramétrique de la courbe de tarage),
+			spagTotal.txt (erreurs du limnigramme + incertitude paramétrique de la courbe de tarage + erreurs restantes).
+			Attention cependant: les fichiers créés peuvent être très volumineux, ce qui peut ralentir l'ouverture et
+			 la sauvegarde du fichier bar.zip.</p>
+
+			<h1>Représentations graphiques</h1>
+			<p>En zoomant dans le panneau graphique, on voit apparaître plusieurs intervalles d'incertitude autour de 
+			l'hydrogramme calculé, comme représenté ci-dessous :</p>
+			<p align="center"><img src="img/FlowSeries_zoom.png",alt="FlowSeries_zoom",id="FlowSeries_zoom"></p>
+			<p>Les éléments de ce graphique doivent être interprétés comme ceci :
+				<ul>
+					<li>La courbe noire représente l'hydrogramme calculé en propageant le limnigramme
+					(sans incertitudes) dans la courbe de tarage maxpost (donc sans incertitudes);</li> 
+					<li>L'intervalle jaune représente l'incertitude induite uniquement par le limnigramme: 
+					l'incertitude du limnigramme est propagée dans la courbe de tarage maxpost (donc sans incertitudes);</li> 
+					<li>L'intervalle rouge clair représente l'incertitude induite à la fois par le limnigramme et par 
+					les paramètres de la courbe de tarage: 
+					l'incertitude du limnigramme est propagée dans un grand nombre de courbes de tarage, 
+					dont les paramètres varient suivant les simulations MCMC effectuées lors de l'estimation de la 
+					courbe de tarage;</li> 
+					<li>L'intervalle rouge foncé représente l'incertitude totale : en plus des deux sources 
+					d'incertitude décrites ci-dessus, on ajoute l'incertitude induite par l'erreur restante.</li> 
+				</ul>
+			La décomposition des incertitudes présentée dans ce graphique est riche d'information: on voit par exemple 
+			que pour l'extrait représenté ci-dessus, l'incertitude liée au limnigramme (jaune) est faible. On observe aussi 
+			que l'incertitude paramétrique (rouge clair) est dominante au-dessus de 100 m<sup>3</sup>/s, 
+			mais qu'elle devient négligeable pour les débits plus faibles. Ceci suggère une opportunité pour diminuer
+			l'incertitude de l'hydrogramme en allant jauger prioritairement des débits au dessus de 
+			100 m<sup>3</sup>/s (et effectivement, en retournant voir la courbe de tarage, on observe qu'il n'y a 
+			aucun jaugeage entre 100 m<sup>3</sup>/s et 250 m<sup>3</sup>/s, 
+			et que l'incertitude paramétrique est particulièrement forte dans cette gamme).</p>	
+					
+		</section>
+
+		<footer>
+			<div>
+				<iframe src="Contents.html" width=100% height=100 marginheight="0" frameborder="0"></iframe>
+			</div>
+		</footer>
+    </body>
+</html>

@@ -1,0 +1,67 @@
+﻿<!DOCTYPE html>
+<html lang="fr">
+	<head>
+		<meta charset="utf-8" />
+		<!--[if lt IE 9]>
+			<script src="http://github.com/aFarkas/html5shiv/blob/master/dist/html5shiv.js"></script>
+		<![endif]-->
+		<title>BaRatinAGE</title>
+		<link rel="stylesheet" type="text/css" href="css/styles.css"/>
+		<link rel="icon" type="image/png" href="img/BaRatinAGE_icon.png" />
+	</head>
+
+	<body>
+		<header>
+			<div>
+				<img src="img/BaRatinAGE_icon.png",alt="logo",id="logo">
+				<h1>BaRatinAGE</h1> 
+				<h2>Tour d'horizon</h2> 
+			</div>
+			<div>
+				<iframe src="Contents.html" width=100% height=100 marginheight="0" frameborder="0"></iframe>
+			</div>
+		</header>
+	
+		<section>
+		
+			<h1>Généralités</h1>
+			<p>BaRatinAGE est un logiciel permettant d'estimer des courbes de tarage ainsi que leurs incertitudes, et de
+			propager ces incertitudes aux hydrogrammes. La méthode est basée sur une 
+			<a href="img/HydraulicAnalysis.pdf">analyse hydraulique</a> de la station hydrométrique et sur 
+			l'<a href="img/BayesianBasics.zip">estimation bayésienne</a> de la courbe de tarage. 
+			BaRatinAGE est l'acronyme de BAyesian RATINg curve Advanced Graphical Environment.</p>
+			<p>Pour installer BaRatinAGE, il vous suffit d'extraire le fichier zip que vous avez dû télécharger <a href="https://forge.irstea.fr/projects/baratinage_v2/files"> ici </a>
+			dans le dossier de votre choix, <strong>pourvu que vous ayez les droits d'écriture dans ce dossier</strong>. Double-cliquez sur le fichier <strong>BaRatinAGE.jar</strong>, 
+			et (si tout va bien...) c'est parti!</p>
+			<p>Note 1: pour l'instant, BaRatinAGE ne fonctionne que sous Windows. Une version Linux devrait être disponible sous peu.</p>
+			<p>Note 2: BaRatinAGE étant une application Java, elle réclame qu'une machine virtuelle Java soit installée sur votre ordinateur. Sur l'immense majorité des ordinateurs,
+				cela devrait déjà être le cas. Dans le cas contraire, vous pouvez télécharger ou mettre à jour Java <a href="https://www.java.com/fr/download/"> ici</a>.</p>
+			<p>Note 3: la langue par défaut au premier lancement de BaRatinAGE est le français. Vous pouvez changer la langue via le menu Options...Langue</p>
+				
+			<h1>Principaux objets dans BaRatinAGE</h1>
+			<p>BaRatinAGE manipule les objets suivants, dont le fonctionnement sera détaillé dans les pages qui suivent:
+				<ul>
+					<li>La <em>configuration hydraulique</em> est la définition de l'ensemble des contrôles qui gouvernent la relation physique hauteur-débit, et de leur 
+						succession/combinaison lorsque la hauteur d'eau augmente. La configuration hydraulique induit l'équation qui sera utilisée pour la courbe de tarage.</li> 
+					<li>Le <em>jeu de jaugeages</em> est l'ensemble des mesures ponctuelles de hauteur et de débit qui seront utilisées pour estimer les paramètres de la 
+						courbe de tarage.</li> 
+					<li>Le modèle d'<em>erreur restante</em> définit les propriétés de l'erreur structurelle de la courbe de tarage.</li> 
+					<li>Le <em>limnigramme</em> est la série temporelle de hauteur mesurée en continu au droit de la station hydrométrique.</li> 
+					<li>La <em>courbe de tarage</em> est la relation hauteur-débit estimée à partir d'une configuration hydraulique, d'un jeu de jaugeages et d'un modèle
+						d'erreur restante.</li> 
+					<li>L'<em>hydrogramme</em> est la série temporelle de débit calculée à partir d'un limnigramme et d'une courbe de tarage.</li> 
+				</ul>
+			</p>
+			Les quatre premiers objets dans la liste ci-dessus sont des données d'entrée pour les calculs effectués par BaRatinAGE, et doivent donc être spécifiés par 
+			l'utilisateur. A l'opposé, les objets <em>courbe de tarage</em> et <em>hydrogramme</em> représentent les résultats des calculs effectués par BaRatinAGE.
+			Ils pourront être exportés sous différents formats.
+			
+		</section>
+
+		<footer>
+			<div>
+				<iframe src="Contents.html" width=100% height=100 marginheight="0" frameborder="0"></iframe>
+			</div>
+		</footer>
+    </body>
+</html>
