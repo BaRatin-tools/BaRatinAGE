@@ -11,6 +11,7 @@ import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYItemRenderer;
 import org.jfree.data.xy.XYDataset;
 
+import commons.Parameter;
 import commons.Plots;
 
 import Utils.Defaults;
@@ -198,6 +199,21 @@ public class ConfigHydrau extends Item {
 				+ ((controls == null) ? 0 : controls.hashCode());
 		result = prime * result + ((matrix == null) ? 0 : matrix.hashCode());
 		return result;
+	}
+	
+	public boolean checkActivationStages() {
+		boolean ok = true;
+		ArrayList<HydrauControl> hc = this.getControls();
+		int ncontrol = hc.size();
+		Double[] k=new Double[ncontrol];
+		k[0] = hc.get(0).getK().getValue();
+		if(ncontrol>1) {
+			for(int i=1;i<ncontrol;i++){
+				k[i] = hc.get(i).getK().getValue();
+				if(k[i]<=k[i-1]) {return false;}
+			}
+		}
+		return ok;		
 	}
 
 	/////////////////////////////////////////////////////////

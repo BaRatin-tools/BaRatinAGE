@@ -255,6 +255,8 @@ public class ConfigHydrauPanel extends ItemPanel implements ActionListener {
 			boolean ok = controller.setPriorRatingCurveOptions(this);
 			if(!ok){controller.popupFormatError();return;}
 			controller.updateHydrauConfig(this);
+			ok = controller.checkActivationStages(this);
+			if(!ok){controller.popupKError();return;}
 			exeController.run(new boolean[] {true,false,false,false}, // RunOptions
 					null, // gaugings
 					this.id.getText().trim(), // hydrau-config

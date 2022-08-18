@@ -107,6 +107,10 @@ public class Control {
 	public void popupImportError(){
 		new ExceptionPanel(MainFrame.getInstance(),dico.entry("ImportErrorMessage"));
 	}
+	
+	public void popupKError(){
+		new ExceptionPanel(MainFrame.getInstance(),dico.entry("KErrorMessage"));
+	}
 
 	public double safeParse_d(String s){
 		double d;
@@ -799,7 +803,14 @@ public class Control {
 		station.setConfigAt(indx, nu);
 		refresh(MainFrame.HYDRAULIC_INDX,copy);
 	}	
-
+	
+	public boolean checkActivationStages(ConfigHydrauPanel panel){
+		// get current hydrau config
+		int indx=station.getHydrauConfigIndex(panel.getId().getText());
+		ConfigHydrau hydrau = station.getConfigAt(indx);		
+		return hydrau.checkActivationStages();
+	}
+	
 	//-----------------------------------
 	// RC options
 
