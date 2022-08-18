@@ -477,8 +477,11 @@ public class MainFrame extends JFrame implements ActionListener{
 	}
 
 	public void setPreferences(){
+		// NOTE BR, 18/08/2022: Manning option has been deactivated since it wasn't handled properly, 
+		//                      and handling it properly would require major changes.
 		// select coefficient
-		Frame_SelectItem select=Popup_SelectItem(new String[] {"Strickler","Manning"},dico.entry("RoughnessCoefficient"),true,null,null);
+		Frame_SelectItem select=Popup_SelectItem(new String[] {"Strickler"},dico.entry("RoughnessCoefficient"),true,null,null);
+		//Frame_SelectItem select=Popup_SelectItem(new String[] {"Strickler","Manning"},dico.entry("RoughnessCoefficient"),true,null,null);
 		String coeff=select.getName();
 		if(!coeff.equals(Constants.S_EMPTY)){
 			try {
