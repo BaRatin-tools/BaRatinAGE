@@ -26,8 +26,8 @@ public class MenuBar extends Custom_MenuBar{
 	private static final String[] Gaugings_names={"Add","Delete","Rename","Duplicate"};
 	private static final String[] Limnigraph_IDs={"AddLimni","DeleteLimni","RenameLimni","DuplicateLimni"};
 	private static final String[] Limnigraph_names={"Add","Delete","Rename","Duplicate"};
-	private static final String[] RatingCurve_IDs={"AddRC","DeleteRC","RenameRC","DuplicateRC","ExportRC","ExportRCeq"};
-	private static final String[] RatingCurve_names={"Add","Delete","Rename","Duplicate","ExportValues","ExportEquation"};
+	private static final String[] RatingCurve_IDs={"AddRC","DeleteRC","RenameRC","DuplicateRC","ExportRC","ExportRCeq","ExportMCMC"};
+	private static final String[] RatingCurve_names={"Add","Delete","Rename","Duplicate","ExportValues","ExportEquation","ExportMCMC"};
 	private static final String[] Hydrograph_IDs={"AddHydro","DeleteHydro","RenameHydro","DuplicateHydro","ExportHydro"};
 	private static final String[] Hydrograph_names={"Add","Delete","Rename","Duplicate","ExportValues"};
 	private static final String[] Options_IDs={"Language","Preferences","DefaultDirectory","MCMCoptions","SaveOptions"};

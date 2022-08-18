@@ -1453,6 +1453,26 @@ public class Control {
 		catch (Exception e) {new ExceptionPanel(null,dico.entry("SaveProblem"));}
 	};
 	
+	public void exportMCMC(String name){
+		// ask file
+		final JFileChooser fc = new JFileChooser();
+		fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
+		fc.setDialogTitle(dico.entry("Save"));
+		fc.setCurrentDirectory(new File(MainFrame.getInstance().getLastDataDir()));
+		fc.setAcceptAllFileFilterUsed(false);
+		fc.addChoosableFileFilter(new FileNameExtensionFilter("csv",new String[] {"csv", "CSV"}));
+		int returnVal = fc.showOpenDialog(null);
+		if(returnVal!=JFileChooser.APPROVE_OPTION){return;}
+		String file = fc.getSelectedFile().getAbsolutePath();
+		MainFrame.getInstance().setLastDataDir(fc.getSelectedFile().getAbsoluteFile().getParent());
+		String fext=file.substring(file.length()-3, file.length());
+		if(!fext.equalsIgnoreCase("csv")){file=file+".csv";}
+		// Retrieve RC and export its equation
+		RatingCurve rc=station.getRatingCurve(name);
+		try{rc.export_mcmc(file);}
+		catch (Exception e) {new ExceptionPanel(null,dico.entry("SaveProblem"));}
+	};
+	
 	public void duplicateRatingCurve(String original){
 		RatingCurve old = station.getRatingCurve(original);
 		RatingCurve nu = new RatingCurve(old);

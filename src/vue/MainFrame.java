@@ -216,6 +216,7 @@ public class MainFrame extends JFrame implements ActionListener{
 		else if(id.equals("SaveAs")){controller.save(true);}
 		else if(id.equals("ExportRC")){exportRatingCurve(controller.getRCList(),true,null,null);}
 		else if(id.equals("ExportRCeq")){exportRatingCurveEquation(controller.getRCList(),true,null,null);}
+		else if(id.equals("ExportMCMC")){exportMCMC(controller.getRCList(),true,null,null);}
 		else if(id.equals("ExportHydro")){exportHydrograph(controller.getHydrographList(),true,null,null);}
 		else if(id.equals("About")){new Frame_About();}
 		else if(id.equals("Language")){setLanguage();}
@@ -348,6 +349,15 @@ public class MainFrame extends JFrame implements ActionListener{
 		String nam=f.getName();
 		if(!nam.equals(Constants.S_EMPTY)){
 			controller.exportRatingCurveEquation(nam);
+		}
+	}
+
+	public void exportMCMC(String[] itemList,boolean decorated,Integer x,Integer y){
+		// select item
+		Frame_SelectItem f=Popup_SelectItem(itemList,dico.entry("RatingCurve"),decorated,x,y);
+		String nam=f.getName();
+		if(!nam.equals(Constants.S_EMPTY)){
+			controller.exportMCMC(nam);
 		}
 	}
 	

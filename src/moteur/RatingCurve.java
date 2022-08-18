@@ -386,6 +386,60 @@ public class RatingCurve extends Item {
 		}
 		ReadWrite.write(fullEq, file);
 	}
+	
+	public String[] buildMCMCheaders() {
+		Double[][] mcmc = this.getMcmc_cooked();
+		int ncol = mcmc.length;
+		String[] head = new String[ncol];
+		ConfigHydrau h=Station.getInstance().getHydrauConfig(this.getHydrau_id());
+		ArrayList<HydrauControl> controls = h.getControls();
+		int ncontrol=controls.size();
+		ArrayList<Gauging> g = Station.getInstance().getGauging(this.getGauging_id()).getGaugings();
+		RemnantError r = Station.getInstance().getRemnant(this.getError_id());
+		int m = 0;
+		// b/k-a-c parameters
+		for(int i=0;i<ncontrol;i++){
+			if(i==0) {
+				head[m]="a"+1;m=m+1;
+				head[m]="b"+1;m=m+1;
+				head[m]="c"+1;m=m+1;
+			} 
+			else {
+				head[m]="k"+(i+1);m=m+1;
+				head[m]="a"+(i+1);m=m+1;
+				head[m]="c"+(i+1);m=m+1;
+			}
+		}
+		// remnant errors parameters
+		for(int i=0;i<r.getNpar();i++){
+			head[m]="gamma"+(i+1);m=m+1;
+		}
+		// true stages		
+		for(int i=0;i<g.size();i++){
+			if(g.get(i).getuH()>0 & g.get(i).getActive()) { // uncertainty in gauged h, Htrue is estimated
+				head[m]="Htrue"+(i+1);m=m+1;
+			}
+		}
+		// log-post		
+		head[m]="LogPost";m=m+1;
+		// derived b's 	
+		if(ncontrol>1) {
+			for(int i=1;i<ncontrol;i++){
+				head[m]="b"+(i+1);m=m+1;
+			}
+		}
+		
+		return head;		
+	}
+	
+	public void export_mcmc(String file) throws FileNotFoundException, IOException, Exception {
+		// MCMC simulations
+		Double[][] mcmc = this.getMcmc_cooked();
+		// headers
+		String[] head = buildMCMCheaders();
+		ReadWrite.write(mcmc, head, file, Defaults.csvSep);
+	}
+	
 	/////////////////////////////////////////////////////////
 	// GETTERS & SETTERS
 	/////////////////////////////////////////////////////////

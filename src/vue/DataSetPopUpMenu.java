@@ -22,6 +22,7 @@ public class DataSetPopUpMenu extends JPopupMenu implements ActionListener{
 	private JMenuItem update = new JMenuItem();
 	private JMenuItem export = new JMenuItem();
 	private JMenuItem exportEq = new JMenuItem();
+	private JMenuItem exportMCMC = new JMenuItem();
 	private JMenuItem duplicate = new JMenuItem();
 	/*
 	private String file;
@@ -74,10 +75,13 @@ public class DataSetPopUpMenu extends JPopupMenu implements ActionListener{
 			this.add(export);
 			export.addActionListener(this);
 		}
-		if(Xtend>1){ // Export RC equation
+		if(Xtend>1){ // Export RC equation and MCMC simulations
 			exportEq.setText(dico.entry("ExportEquation"));
 			this.add(exportEq);
 			exportEq.addActionListener(this);
+			exportMCMC.setText(dico.entry("ExportMCMC"));
+			this.add(exportMCMC);
+			exportMCMC.addActionListener(this);
 		}
 		obj = node;
 	}
@@ -188,6 +192,13 @@ public class DataSetPopUpMenu extends JPopupMenu implements ActionListener{
 			Object RCroot = MainFrame.getInstance().getTrees().getTree_RC().getModel().getRoot();
 			if(RCroot!=null){
 				if (node.getParent().equals(RCroot)){controller.exportRatingCurveEquation(node.toString());}
+			}
+		}
+		else if (ae.getSource().equals(exportMCMC)){
+			DefaultMutableTreeNode node = (DefaultMutableTreeNode)obj;
+			Object RCroot = MainFrame.getInstance().getTrees().getTree_RC().getModel().getRoot();
+			if(RCroot!=null){
+				if (node.getParent().equals(RCroot)){controller.exportMCMC(node.toString());}
 			}
 		}
 	}

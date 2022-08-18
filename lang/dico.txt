@@ -18,6 +18,7 @@ Rename;Renommer;Rename;Renombrar;Umbenennen;Rinominare;Renomear
 Export;Exporter;Export;Exportar;Exportieren;Esportazione;Exportar
 ExportValues;Exporter les valeurs;Export values;Exportar valores;Werte exportieren;Valori di esportazione;Exportar valores
 ExportEquation;Exporter l'équation;Export equation;Exportar ecuación;Gleichung exportieren;Equazione di esportazione;Exportar equação
+ExportMCMC;Exporter les simulations MCMC;Export MCMC simulations;Exportar MCMC simulaciones;Gleichung MCMC-Simulationen;Simulazioni MCMC di esportazione;Exportar MCMC simulações
 Error;Erreur;Error;Error;Fehler;Errore;Erro
 Message;Message;Message;Mensaje;Nachricht;Messaggio;Mensagem
 Unknown;Inconnu;Unknown;Desconocido;Unbekannt;Sconosciuto;Desconhecido
