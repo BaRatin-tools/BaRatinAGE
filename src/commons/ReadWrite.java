@@ -179,7 +179,7 @@ public class ReadWrite {
 			// next line is to avoid pb due to leading separators (space typically)
 			if(foo0[0].equals("")){foo=Arrays.copyOfRange(foo0, 1,foo0.length);} else {foo=foo0;}
 			// get values
-			dico.put(foo[0],Arrays.copyOfRange(foo,1,foo.length));
+			if(foo.length>0) {dico.put(foo[0],Arrays.copyOfRange(foo,1,foo.length));}
 		}
 		sc.close();
 		return dico;

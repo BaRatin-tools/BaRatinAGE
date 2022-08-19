@@ -9,7 +9,10 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 
+import javax.swing.JOptionPane;
+
 import commons.DirectoryUtils;
+import commons.Frame_YesNoQuestion;
 import commons.Observation;
 import commons.ReadWrite;
 import commons.TimeSerie;
@@ -205,6 +208,27 @@ public class ExeControl {
 			GaugingSet gaugings=station.getGauging(rc.getGauging_id());
 			RemnantError remnant=station.getRemnant(rc.getError_id());
 			MainFrame.getInstance().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+			// Ask confirmation to user
+			int nt = limni.getObservations().size();
+			int nspag = (int) (mcmc.getnAdapt()*mcmc.getnCycles()*mcmc.getBurn()/mcmc.getnSlim());
+			double roughSize=nt*nspag*16*3/1000000; // 16-char representation times 3 propagation experiments
+			if(roughSize>10) {
+				String sizeTxt;
+				if(roughSize>=1000) { // express in GB
+					sizeTxt = ((int) roughSize/1000) + "GB";
+				}
+				else { // express in MB
+					sizeTxt = (int) roughSize + "MB";
+				}
+				String mess = dico.entry("propagationWarning")+System.getProperty("line.separator")+
+						      dico.entry("estimatedFileSize")+" : "+ sizeTxt +System.getProperty("line.separator")+
+						      dico.entry("ConfirmContinue");
+				int ok=new Frame_YesNoQuestion().ask(MainFrame.getInstance(),
+						mess,
+						dico.entry("Warning"),
+						Defaults.iconWarning,dico.entry("Yes"),dico.entry("No"));
+				if(ok==JOptionPane.NO_OPTION) {return;}
+			}
 			// Rewrite MCMC file
 			int ncol=rc.getMcmc().length;
 			String[] head=new String[ncol];
