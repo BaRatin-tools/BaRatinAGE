@@ -6,6 +6,7 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.Arrays;
 
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
@@ -16,6 +17,7 @@ import org.jfree.chart.ChartPanel;
 
 import commons.Constants;
 import commons.Frame_SelectItem;
+import commons.Frame_YesNoQuestion;
 import commons.GridBag_Button;
 import commons.GridBag_CheckBox;
 import commons.GridBag_ComboBox_Titled;
@@ -68,6 +70,7 @@ public class ConfigHydrauPanel extends ItemPanel implements ActionListener {
 	private Control controller=Control.getInstance();
 	private ExeControl exeController=ExeControl.getInstance();
 	private PlotControl plotController=PlotControl.getInstance();
+	private int currentNC=0;
 	
 	// constants
 	public static final String[] nControlCombo=new String[] {"0","1","2","3","4","5","6","7","8","9","10"};
@@ -85,6 +88,7 @@ public class ConfigHydrauPanel extends ItemPanel implements ActionListener {
 			// fill in content with ConfigHydrau object, through controller
 			controller.fillHydrauConfigPanel(hID,this);
 		}
+		ncontrol.addActionListener(listener_ncontrol);
 	}
 
 	private void drawInfoPanel(String hID,boolean enabled){
@@ -94,7 +98,6 @@ public class ConfigHydrauPanel extends ItemPanel implements ActionListener {
 		ncontrol=new GridBag_ComboBox_Titled(this.getInfoPanel(),nControlCombo,dico.entry("Ncontrol"),
 				config.getFontTxt(),config.getFontLbl(),Defaults.txtColor,Defaults.lblColor,
 				1,0,1,1,true,false,dico.entry("Ncontrol"));
-		ncontrol.addItemListener(listener_ncontrol);
 		description=new GridBag_TextField_Titled(this.getInfoPanel(),Constants.S_EMPTY,dico.entry("Description"),config.getFontTxt(),config.getFontLbl(),
 				Defaults.txtColor,Defaults.lblColor,0,1,3,1,dico.entry("Description"));
 		ncontrol.setEnabled(enabled);description.setEnabled(enabled);
@@ -121,6 +124,7 @@ public class ConfigHydrauPanel extends ItemPanel implements ActionListener {
 		// Extra actions only if hydrocontrol already exists
 		if(!hID.equals("")){
 			int nc=controller.getHydrauConfigNcontrol(hID);
+			currentNC=nc;
 			// Bonnifait Matrix
 			matrix = drawMatrixPanel(nc);
 			// Controls
@@ -299,14 +303,27 @@ public class ConfigHydrauPanel extends ItemPanel implements ActionListener {
 		controller.setCheckboxEnabled(matrix);matrixPanel.revalidate();this.revalidate();
 	}
 
-	ItemListener listener_ncontrol = new ItemListener() {
-		public void itemStateChanged(ItemEvent itemEvent) {
+	ActionListener listener_ncontrol = new ActionListener() {
+		@Override
+		public void actionPerformed(ActionEvent e) {
 			int k=Integer.parseInt((String) ncontrol.getSelectedItem());
+			if(currentNC>0) {
+				String mess = dico.entry("nControlWarning")+System.getProperty("line.separator")+
+						dico.entry("ConfirmContinue");
+				int ok=new Frame_YesNoQuestion().ask(MainFrame.getInstance(),mess,
+							dico.entry("Warning"),
+							Defaults.iconWarning,dico.entry("Yes"),dico.entry("No"));
+				if(ok==JOptionPane.NO_OPTION) {
+					ncontrol.setSelectedIndex(currentNC);
+					return;
+				}
+			}
 			matrix=drawMatrixPanel(k);
 			controls=drawControlPanel(k);
-		}
+			currentNC=k;
+		};
 	};
-
+	
 	ItemListener listener_graph = new ItemListener() {
 		public void itemStateChanged(ItemEvent itemEvent) {
 			updateHydrau();
@@ -459,14 +476,6 @@ public class ConfigHydrauPanel extends ItemPanel implements ActionListener {
 
 	public void setExeController(ExeControl exeController) {
 		this.exeController = exeController;
-	}
-
-	public ItemListener getListener_ncontrol() {
-		return listener_ncontrol;
-	}
-
-	public void setListener_ncontrol(ItemListener listener_ncontrol) {
-		this.listener_ncontrol = listener_ncontrol;
 	}
 
 	public static String[] getNcontrolcombo() {
