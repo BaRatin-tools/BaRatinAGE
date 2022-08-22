@@ -589,9 +589,9 @@ public class MainFrame extends JFrame implements ActionListener{
 	}
 
 	private void close(){
-		int ok=new Frame_YesNoQuestion().ask(this,
-				dico.entry("CloseWarning"),
-				dico.entry("Warning"),
+		String mess = dico.entry("CloseWarning")+System.getProperty("line.separator")+
+				dico.entry("mayBeLostWarning");
+		int ok=new Frame_YesNoQuestion().ask(this,mess,dico.entry("Warning"),
 				Defaults.iconWarning,dico.entry("Yes"),dico.entry("No"));
 		if(ok==JOptionPane.YES_OPTION){
 			// Kill executable if needed
