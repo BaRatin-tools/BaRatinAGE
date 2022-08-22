@@ -227,7 +227,10 @@ public class ConfigHydrauPanel extends ItemPanel implements ActionListener {
 		}
 		// draw row headers
 		for(int i=0;i<ncontrol;i++){
-			new GridBag_Label(matrixPanel,dico.entry("Segment")+" "+(i+1)+" ",config.getFontTxt(),Defaults.txtColor,SwingConstants.CENTER,0,i+1,1,1,true,true);
+			String txt=dico.entry("Segment")+" "+(i+1)+" ";
+			if(ncontrol>1 & i==0) {txt=txt+"("+dico.entry("lowest")+")";}
+			if(ncontrol>1 & i==ncontrol-1) {txt=txt+"("+dico.entry("highest")+")";}
+			new GridBag_Label(matrixPanel,txt,config.getFontTxt(),Defaults.txtColor,SwingConstants.CENTER,0,i+1,1,1,true,true);
 		}
 		GridBag_CheckBox[][] matrix = new GridBag_CheckBox[ncontrol][ncontrol];
 		// draw buttons
