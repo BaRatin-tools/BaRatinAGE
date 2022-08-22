@@ -92,6 +92,8 @@ public class DirectoryUtils {
 		while (enu.hasMoreElements()) {
 			ZipEntry zipEntry = (ZipEntry) enu.nextElement();
 			String name = zipEntry.getName();
+			// replace backslash by slash to accomodate windows-created zip in linux
+			name=name.replace("\\","/");
 
 			folder.mkdirs();
 			File file = new File(folder,name);
