@@ -55,6 +55,7 @@ public class Station {
 		this.setID(ID);
 		this.getRemnant().add(RemnantError.Remnant_Linear);
 		this.getRemnant().add(RemnantError.Remnant_Constant);
+		this.getRemnant().add(RemnantError.Remnant_Proportional);
 	}
 
 	/**

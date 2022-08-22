@@ -166,6 +166,7 @@ uH;uH [m];uH [m];uH [m];uH [m];uH [m];uH [m]
 Q;Q [m3/s];Q [m3/s];Q [m3/s];Q [m3/s];Q [m3/s];P [m3/s]
 uQ;uQ [%];uQ [%];uQ [%];uQ [%];uQ [%];uQ [%]
 Remnant_Linear;Linéaire : sigma=g1+g2*Q;Linear: sigma=g1+g2*Q;Lineal: sigma=g1+g2*Q;Linear: sigma=g1+g2*Q;Lineare: sigma=g1+g2*Q;Linear: sigma=g1+g2*Q
+Remnant_Proportional;Proportionnelle : sigma=g1*Q;Proportional: sigma=g1*Q;Proporcional: sigma=g1*Q;Proportional: sigma=g1*Q;Proporzionale: sigma=g1*Q;Proporcional: sigma=g1*Q
 Remnant_Constant;Constante : sigma=g1;Constant: sigma=g1;Constante: sigma=g1;Konstant: sigma=g1;Costante: sigma=g1;Constante: sigma=g1
 MorePlot;Autres graphiques;More plots;Otros gráficos;Weitere Grafiken;Altri grafici;Outros gráficos
 MorePlotTip;Ouvre une nouvelle fenêtre pour des graphiques avancés;Open a new window for more advanced plots;Abre una nueva ventana para gráficos avanzados;Öffnet ein neues Fenster für erweiterte Grafiken.;Apre una nuova finestra per i grafici avanzati;Abre uma nova janela para gráficos avançados

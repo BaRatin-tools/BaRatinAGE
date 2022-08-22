@@ -30,6 +30,7 @@ public class DataSetTree extends JTree implements MouseListener {
 		this.addMouseListener(this);
 		this.getDstModel().addErrorNode(dico.entry("Remnant_Linear"));
 		this.getDstModel().addErrorNode(dico.entry("Remnant_Constant"));
+		this.getDstModel().addErrorNode(dico.entry("Remnant_Proportional"));
 	}
 
 	public DataSetTree(Object[] arg0) {
@@ -126,7 +127,7 @@ public class DataSetTree extends JTree implements MouseListener {
 			MainFrame.getInstance().getTabs().setSelectedIndex(node.getParent().getIndex(node));
 		}
 		 */
-		// TODO à compléter
+		// TODO ï¿½ complï¿½ter
 	}
 
 	public DataSetTreeModel getDstModel() {

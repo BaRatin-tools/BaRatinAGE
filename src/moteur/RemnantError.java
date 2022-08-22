@@ -14,7 +14,7 @@ public class RemnantError extends Item {
 	private Parameter[] par;
 
 
-	//TODO: faire les hashcode et equals quand classe plus avancée
+	//TODO: faire les hashcode et equals quand classe plus avancï¿½e
 
 	/**
 	 * Full Constructor
@@ -81,6 +81,7 @@ public class RemnantError extends Item {
 	final private static Parameter gamma2=new Parameter("slope",0.1,gamma2_prior);
 	final private static Parameter gamma=new Parameter("constant",1.0,gamma_prior);
 	final public static RemnantError Remnant_Linear=new RemnantError("Remnant_Linear","Default model: sdev=g1+g2*predicted","Linear",2,new Parameter[]{gamma1,gamma2});
+	final public static RemnantError Remnant_Proportional=new RemnantError("Remnant_Proportional","Purely proportional model: sdev=g1*predicted","Proportional",1,new Parameter[]{gamma2});
 	final public static RemnantError Remnant_Constant=new RemnantError("Remnant_Constant","simple model: sdev=g1","Constant",1,new Parameter[]{gamma});
 
 	@Override
