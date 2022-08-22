@@ -136,7 +136,7 @@ public class HydrauConfig_DAO extends ConfigHydrau implements DAO {
 		int ncontrol=DAOtools.safeRead_i(sc.nextLine());
 		sc.close();
 		if(ncontrol>0) {
-			///////////////////////////////////////////////////////////////////////
+			///////////////////////////////////////////////	////////////////////////
 			// Bonnifait Matrix
 			f=new File(this.folder.trim(),FILE_MATRIX);
 			Double[][] md=ReadWrite.read(f.getAbsolutePath(),Defaults.barSep,0);
@@ -192,15 +192,17 @@ public class HydrauConfig_DAO extends ConfigHydrau implements DAO {
 		///////////////////////////////////////////////////////////////////////
 		// Prior RC option
 		f=new File(this.folder.trim(),FILE_PRIOR);
-		sc = new Scanner(f);
-		PriorRatingCurveOptions prior = new PriorRatingCurveOptions();
-		prior.setnSim(DAOtools.safeRead_i(sc.nextLine()));
-		prior.sethMin(DAOtools.safeRead_d(sc.nextLine()));
-		prior.sethMax(DAOtools.safeRead_d(sc.nextLine()));
-		prior.sethStep(DAOtools.safeRead_d(sc.nextLine()));
-		prior.setnStep(DAOtools.safeRead_i(sc.nextLine()));
-		sc.close();
-		this.setPriorRCoptions(prior);
+		if(ncontrol>0) {
+			sc = new Scanner(f);
+			PriorRatingCurveOptions prior = new PriorRatingCurveOptions();
+			prior.setnSim(DAOtools.safeRead_i(sc.nextLine()));
+			prior.sethMin(DAOtools.safeRead_d(sc.nextLine()));
+			prior.sethMax(DAOtools.safeRead_d(sc.nextLine()));
+			prior.sethStep(DAOtools.safeRead_d(sc.nextLine()));
+			prior.setnStep(DAOtools.safeRead_i(sc.nextLine()));
+			sc.close();
+			this.setPriorRCoptions(prior);
+		}
 	}
 
 	@Override
