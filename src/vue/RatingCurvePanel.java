@@ -54,12 +54,13 @@ public class RatingCurvePanel extends ItemPanel implements ActionListener {
 	private GridBag_Button butt_n2h;
 
 	// constants
-	private static final String[] morePlotsList=new String[] {"PriorVsPost_Par","PriorVsPost_ParTable","PriorVsPost_RC","MCMCtrace","Spaghetti"};
+	private static final String[] morePlotsList=new String[] {"PriorVsPost_Par","PriorVsPost_ParTable","PriorVsPost_RC","MCMCtrace","Spaghetti","Remarks"};
 	private static final int PVP_Par_indx=0;
 	private static final int PVP_ParTable_indx=1;
 	private static final int PVP_RC_indx=2;
 	private static final int MCMC_indx=3;
 	private static final int Spag_indx=4;
+	private static final int Remarks_indx=5;
 	public static final int nstep_def=101;
 
 	// locals
@@ -223,8 +224,9 @@ public class RatingCurvePanel extends ItemPanel implements ActionListener {
 				else if(indx==PVP_RC_indx){chart = plotController.priorVsPost_RC(this);}
 				else if(indx==MCMC_indx){chart = plotController.MCMCtraces(this);}
 				else if(indx==Spag_indx){chart = plotController.postSpag(this);}
+				else if(indx==Remarks_indx){chart = plotController.remarks(this);}
 				if(chart!=null){controller.kickPlot(chart);} 
-			}
+			} 
 		}
 		else if(e.getSource().equals(butt_legend)){controller.showLegend(this);}
 		else if(e.getSource().equals(butt_h2n)){controller.fillNHstep(hmin,hmax,hstep,nstep,"n");}

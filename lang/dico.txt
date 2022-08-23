@@ -231,3 +231,7 @@ nControlWarning;Cette action reinitialisera tous les côntroles ci-dessous.;This
 mayBeLostWarning;S'il existe des modifications non enregistrées, elles seront perdues.;If there are unsaved changes, they will be lost.;Si hay cambios no guardados, se perderán.;Wenn es nicht gespeicherte Änderungen gibt, gehen diese verloren.;Se ci sono modifiche non salvate, andranno perse.;Se houver mudanças não salvas, elas serão perdidas.
 lowest;bas;lowest;más bajo;niedrigste;più basso;mais baixo
 highest;haut;highest;más alto;höchste;più alto;mais alto
+Remarks;Remarques;Remarks;Observaciones;Bemerkungen;Osservazioni;Observações
+PriorVsPost_check;Cohérence des paramètres a priori et a posteriori;Consistency of prior and posterior parameters;Consistencia de los parámetros a priori y a posteriori;Konsistenz von Parameter a priori und a posteriori;Coerenza de i parametri a priori e a posteriori;Consistência dos parâmetros anterior e posterior
+hydraulicAssumptions;Adéquation des hypothèses hydrauliques;adequacy of hydraulic assumptions;adecuación de los supuestos hidráulicos;Angemessenheit der hydraulischen Annahmen;adeguatezza delle ipotesi idrauliche;adequação de suposições hidráulicas
+
