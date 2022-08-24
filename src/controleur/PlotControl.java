@@ -5,6 +5,7 @@ import java.text.DecimalFormat;
 import java.util.Arrays;
 
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.SwingConstants;
 
 import org.jfree.chart.ChartPanel;
@@ -19,11 +20,8 @@ import commons.Distribution;
 import commons.GridBag_Label;
 import commons.GridBag_Layout;
 import commons.GridBag_TextArea_Titled;
-import commons.GridBag_TextField_Titled;
 import commons.GridBag_Text_Titled;
-import commons.Parameter;
 import commons.Plots;
-import vue.Combo_ControlType;
 import vue.ConfigHydrauPanel;
 import vue.HydrographPanel;
 import vue.RatingCurvePanel;
@@ -287,22 +285,26 @@ public class PlotControl {
 	} 
 
 	public JPanel remarks(RatingCurvePanel panel){
+		
+		// UI components
 		JPanel panout = new JPanel();
 		panout.setBackground(Defaults.bkgColor);
-		RatingCurve rc=station.getRatingCurve(panel.getId().getText());
-		ConfigHydrau h=station.getHydrauConfig(rc.getHydrau_id());
-		int ncontrol=h.getControls().size();
-		Double[][] mcmc= rc.getMcmc_cooked();
-		Double[][] summary= rc.getMcmc_summary();
-		int ai,ci,ki,bi;
-		int b0 = mcmc.length-ncontrol;
-		new Combo_ControlType();
-		String[] ctypes = Combo_ControlType.getStringList();
-		
 		GridBag_Layout.SetGrid(panout, new int[]{0},new int[]{0},new double[]{1.0},new double[]{1.0});
 		GridBag_TextArea_Titled txtArea = new GridBag_TextArea_Titled(panout,"",dico.entry("Remarks"),
 				config.getFontTxt(),config.getFontLbl(),
 				Defaults.txtColor,Defaults.lblColor,0,0,1,1);
+		
+		// objects
+		RatingCurve rc=station.getRatingCurve(panel.getId().getText());
+		ConfigHydrau h=station.getHydrauConfig(rc.getHydrau_id());
+		int ncontrol=h.getControls().size();
+		Double[][] summary= rc.getMcmc_summary();
+		int ai,ci,ki;
+		Double maxpost;
+		Distribution prior;
+		double u;
+		
+		// 1. Prior-Post consistency check
 		String txt;
 		String sep="----------------------------------------------------------------------";
 		txt= sep + System.lineSeparator();
@@ -311,9 +313,47 @@ public class PlotControl {
 		txtArea.append(txt);
 		txt= sep + System.lineSeparator();
 		txtArea.append(txt);
+		txt="";
+		for(int i=0;i<ncontrol;i++){
+			if(i==0){ai=0;ki=1;ci=2;} else {ki=3*i;ai=3*i+1;ci=3*i+2;}
+			HydrauControl con = h.getControls().get(i);
+			// K
+			txt= dico.entry("Control")+ " " + (i+1) + ", " + dico.entry("parameter")+ " " + dico.entry("kpar");
+			maxpost = summary[ki][15];
+			prior = con.getK().getPrior();
+			u = (maxpost-prior.getParval()[0])/prior.getParval()[1]; // center-scale
+			if(Math.abs(u)>2.33d) { // 2.33 corresponds to a 1% probability for a N(0,1)
+				txt= txt+ ": " + dico.entry("possibleInconsistency");
+			} else {txt= txt+": OK";}
+			txtArea.append(txt+ System.lineSeparator());
+			// A
+			txt= dico.entry("Control")+ " " + (i+1) + ", " + dico.entry("parameter")+ " " + dico.entry("apar");
+			maxpost = summary[ai][15];
+			prior = con.getA().getPrior();
+			u = (maxpost-prior.getParval()[0])/prior.getParval()[1]; // center-scale
+			if(Math.abs(u)>2.33d) { // 2.33 corresponds to a 1% probability for a N(0,1)
+				txt= txt+": " + dico.entry("possibleInconsistency");
+			} else {txt= txt+": OK";}
+			txtArea.append(txt+ System.lineSeparator());
+			// C
+			txt= dico.entry("Control")+ " " + (i+1) + ", " + dico.entry("parameter")+ " " + dico.entry("cpar");
+			maxpost = summary[ci][15];
+			prior = con.getC().getPrior();
+			u = (maxpost-prior.getParval()[0])/prior.getParval()[1]; // center-scale
+			if(Math.abs(u)>2.33d) { // 2.33 corresponds to a 1% probability for a N(0,1)
+				txt= txt+ ": " + dico.entry("possibleInconsistency");
+			} else {txt= txt+": OK";}
+			txtArea.append(txt+ System.lineSeparator());
+		}
+		
+		
 		txt= System.lineSeparator();
 		txtArea.append(txt);
 		txtArea.append(txt);
+		
+		// 2. Hydraulic assumptions - commented out for the moment
+		/*
+		String[] ctypes = Combo_ControlType.getStringList();
 		txt= sep + System.lineSeparator();
 		txtArea.append(txt);
 		txt= dico.entry("hydraulicAssumptions")+ System.lineSeparator();
@@ -322,17 +362,16 @@ public class PlotControl {
 		txtArea.append(txt);
 		for(int i=0;i<ncontrol;i++){
 			if(i==0){ai=0;ki=1;ci=2;bi=1;} else {ki=3*i;ai=3*i+1;ci=3*i+2;bi=b0+i;}
-			HydrauControl con = h.getControls().get(i); String ctype =
+			HydrauControl con = h.getControls().get(i);
 			ctypes[con.getType()]; txt="C"+(i+1)+": "+dico.entry(ctype)+": ";
-			/* if(ctype.equalsIgnoreCase("RectangularChannel")) { Double b =
-			 * summary[bi][15]; Parameter[] width = con.getSpecifix(); } else
-			 * if(ctype.equalsIgnoreCase("ParabolicChannel")) {} else {
-			 * txt=txt+"OK"+System.lineSeparator(); }
-			 */
+			if(ctype.equalsIgnoreCase("RectangularChannel")) { Double b =
+			summary[bi][15]; Parameter[] width = con.getSpecifix(); } else
+			if(ctype.equalsIgnoreCase("ParabolicChannel")) {} else {
+			txt=txt+"OK"+System.lineSeparator(); }
 			txt=txt+"OK"+System.lineSeparator();
 			txtArea.append(txt);
 		}
-
+	    */
 		return(panout);
 	} 
 

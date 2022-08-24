@@ -208,6 +208,8 @@ public class RatingCurvePanel extends ItemPanel implements ActionListener {
 			}
 		}
 		else if(e.getSource().equals(butt_moreplots)){
+			// JPanel chart = plotController.remarks(this);
+			// controller.kickPlot(chart);
 			Frame_SelectItem f = new Frame_SelectItem(null,
 					dico.entry("SelectItem"),dico.entry(morePlotsList),true,dico.entry("SelectPlot"),
 					dico.entry("Apply"),dico.entry("Cancel"),
@@ -226,7 +228,7 @@ public class RatingCurvePanel extends ItemPanel implements ActionListener {
 				else if(indx==Spag_indx){chart = plotController.postSpag(this);}
 				else if(indx==Remarks_indx){chart = plotController.remarks(this);}
 				if(chart!=null){controller.kickPlot(chart);} 
-			} 
+			}
 		}
 		else if(e.getSource().equals(butt_legend)){controller.showLegend(this);}
 		else if(e.getSource().equals(butt_h2n)){controller.fillNHstep(hmin,hmax,hstep,nstep,"n");}

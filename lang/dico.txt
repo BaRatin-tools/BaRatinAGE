@@ -234,4 +234,6 @@ highest;haut;highest;más alto;höchste;più alto;mais alto
 Remarks;Remarques;Remarks;Observaciones;Bemerkungen;Osservazioni;Observações
 PriorVsPost_check;Cohérence des paramètres a priori et a posteriori;Consistency of prior and posterior parameters;Consistencia de los parámetros a priori y a posteriori;Konsistenz von Parameter a priori und a posteriori;Coerenza de i parametri a priori e a posteriori;Consistência dos parâmetros anterior e posterior
 hydraulicAssumptions;Adéquation des hypothèses hydrauliques;adequacy of hydraulic assumptions;adecuación de los supuestos hidráulicos;Angemessenheit der hydraulischen Annahmen;adeguatezza delle ipotesi idrauliche;adequação de suposições hidráulicas
+parameter;paramètre;parameter;parámetro;parameter;parametro;parâmetro
+possibleInconsistency;Possible incohérence;Possible inconsistency;Posible inconsistencia;Mögliche Inkonsistenz;Possibile incoerenza;Possível inconsistência
 
