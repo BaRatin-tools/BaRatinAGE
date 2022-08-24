@@ -48,15 +48,15 @@ public class RatingCurveOptions {
 	public RatingCurveOptions(RatingCurveOptions x) {
 		if(x==null){return;}
 		if(x.gethMin()!=null){
-			this.hMin=new Double(x.gethMin());
+			this.hMin= Double.valueOf(x.gethMin());
 		}
 		if(x.gethMax()!=null){
-			this.hMax=new Double(x.gethMax());
+			this.hMax= Double.valueOf(x.gethMax());
 		}
 		if(x.gethStep()!=null){
-			this.hStep=new Double(x.gethStep());
+			this.hStep= Double.valueOf(x.gethStep());
 		}
-		this.nStep=new Integer(x.getnStep());
+		this.nStep= Integer.valueOf(x.getnStep());
 	}
 
 	@Override

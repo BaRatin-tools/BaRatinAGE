@@ -66,11 +66,11 @@ public class Gauging {
 	public Gauging(Gauging x){
 		if(x==null){return;}
 		if(x.getT()!=null) this.t=new Time(x.getT());
-		if(x.getActive()!=null) this.active = new Boolean(x.getActive());		
-		if(x.getH()!=null) this.H = new Double(x.getH());
-		if(x.getuH()!=null) this.uH = new Double(x.getuH());
-		if(x.getQ()!=null) this.Q = new Double(x.getQ());
-		if(x.getuQ()!=null) this.uQ = new Double(x.getuQ());
+		if(x.getActive()!=null) this.active = Boolean.valueOf(x.getActive());		
+		if(x.getH()!=null) this.H = Double.valueOf(x.getH());
+		if(x.getuH()!=null) this.uH = Double.valueOf(x.getuH());
+		if(x.getQ()!=null) this.Q = Double.valueOf(x.getQ());
+		if(x.getuQ()!=null) this.uQ = Double.valueOf(x.getuQ());
 	}
 
 	//update of the fields of the gauging, principally used by the controller

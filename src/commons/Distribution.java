@@ -45,7 +45,7 @@ public class Distribution {
 		if(x.getName()!=null){
 			this.name=new String(x.getName());
 		}
-		this.npar=new Integer(x.getNpar());
+		this.npar=Integer.valueOf(x.getNpar());
 		this.parname=new String[this.npar];
 		this.parval=new Double[this.npar];
 		if(x.getParname()!=null){
@@ -55,7 +55,7 @@ public class Distribution {
 		}
 		if(x.getParval()!=null){		
 			for(int i=0;i<this.npar;i++){
-				if(x.getParval()[i]!=null) this.parval[i]=new Double(x.getParval()[i]);
+				if(x.getParval()[i]!=null) this.parval[i]=Double.valueOf(x.getParval()[i]);
 			}
 		}
 	}

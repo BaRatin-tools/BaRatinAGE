@@ -11,7 +11,6 @@ import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYItemRenderer;
 import org.jfree.data.xy.XYDataset;
 
-import commons.Parameter;
 import commons.Plots;
 
 import Utils.Defaults;

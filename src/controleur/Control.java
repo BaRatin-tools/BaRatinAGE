@@ -588,7 +588,7 @@ public class Control {
 		for(int i=0;i<nc;i++){
 			for(int j=i;j<nc;j++){
 				// reverse current cell
-				b=new Boolean(lolo.getMatrix().get(i).get(j));
+				b=Boolean.valueOf(lolo.getMatrix().get(i).get(j));
 				lolo.getMatrix().get(i).set(j,!b);
 				// check whether it's feasible and enable cell accordingly
 				matrix[i][j].setEnabled(lolo.isValid());

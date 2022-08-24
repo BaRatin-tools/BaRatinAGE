@@ -36,7 +36,7 @@ public class Envelop {
 	 */
 	public Envelop(Envelop x){
 		if(x==null) {return;}
-		this.nx=new Integer(x.getNx());
+		this.nx=Integer.valueOf(x.getNx());
 		this.x=new Double[this.nx];
 		this.maxpost=new Double[this.nx];
 		this.median=new Double[this.nx];
@@ -44,19 +44,19 @@ public class Envelop {
 		this.qhigh=new Double[this.nx];
 		for(int i=0;i<this.nx;i++){
 			if(x.getX()!=null) {
-				if(x.getX()[i]!=null) this.x[i]=new Double(x.getX()[i]);
+				if(x.getX()[i]!=null) this.x[i]=Double.valueOf(x.getX()[i]);
 			}
 			if(x.getMaxpost()!=null) {
-				if(x.getMaxpost()[i]!=null) this.maxpost[i]=new Double(x.getMaxpost()[i]);
+				if(x.getMaxpost()[i]!=null) this.maxpost[i]=Double.valueOf(x.getMaxpost()[i]);
 			}
 			if(x.getMedian()!=null) {
-				if(x.getMedian()[i]!=null) this.median[i]=new Double(x.getMedian()[i]);
+				if(x.getMedian()[i]!=null) this.median[i]=Double.valueOf(x.getMedian()[i]);
 			}
 			if(x.getQlow()!=null) {
-				if(x.getQlow()[i]!=null) this.qlow[i]=new Double(x.getQlow()[i]);
+				if(x.getQlow()[i]!=null) this.qlow[i]=Double.valueOf(x.getQlow()[i]);
 			}
 			if(x.getQhigh()!=null) {
-				if(x.getQhigh()[i]!=null) this.qhigh[i]=new Double(x.getQhigh()[i]);		
+				if(x.getQhigh()[i]!=null) this.qhigh[i]=Double.valueOf(x.getQhigh()[i]);		
 			}
 		}
 	}

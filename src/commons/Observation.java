@@ -35,13 +35,13 @@ public class Observation {
 	public Observation(Observation x){
 		if(x==null){return;}
 		if(x.getValue()!=null){
-			this.value=new Double(x.getValue());
+			this.value=Double.valueOf(x.getValue());
 		}
 		if(x.getObsDate()!=null){		
 			this.obsDate=new Time(x.getObsDate());
 		}
 		if(x.getQualityCode()!=null){		
-			this.qualityCode=new Integer(x.getQualityCode());
+			this.qualityCode=Integer.valueOf(x.getQualityCode());
 		}
 	}
 

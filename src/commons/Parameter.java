@@ -59,7 +59,7 @@ public class Parameter {
 			this.name=new String(x.getName());
 		}
 		if(x.getValue()!=null){
-			this.value=new Double(x.getValue());
+			this.value=Double.valueOf(x.getValue());
 		}
 		if(x.getPrior()!=null){
 			this.prior=new Distribution(x.getPrior());	

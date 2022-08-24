@@ -87,9 +87,9 @@ public class Limnigraph extends TimeSerie {
 			this.bHindx=new int[n];
 			this.bH=new Double[n];
 			for(int i=0;i<n;i++){
-				if(x.getuH()[i]!=null) this.uH[i]=new Double(x.getuH()[i]);
-				if(x.getbH()[i]!=null) this.bH[i]=new Double(x.getbH()[i]);
-				this.bHindx[i]=new Integer(x.getbHindx()[i]);		
+				if(x.getuH()[i]!=null) this.uH[i]= Double.valueOf(x.getuH()[i]);
+				if(x.getbH()[i]!=null) this.bH[i]= Double.valueOf(x.getbH()[i]);
+				this.bHindx[i]= Integer.valueOf(x.getbHindx()[i]);		
 			}
 		}
 	}

@@ -40,7 +40,7 @@ public class PriorRatingCurveOptions extends RatingCurveOptions{
 	public PriorRatingCurveOptions(PriorRatingCurveOptions x) {
 		super(x);
 		if(x==null){return;}
-		this.nSim=new Integer(x.getnSim());
+		this.nSim= Integer.valueOf(x.getnSim());
 	}
 
 	@Override

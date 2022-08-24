@@ -36,7 +36,7 @@ public class BonnifaitMatrix {
 			for(int i=0;i<x.getMatrix().size();i++){
 				ArrayList<Boolean> foo=new ArrayList<Boolean>();
 				for(int j=0;j<x.getMatrix().get(i).size();j++){
-					if(x.getMatrix().get(i).get(j)!=null) foo.add(new Boolean(x.getMatrix().get(i).get(j)));
+					if(x.getMatrix().get(i).get(j)!=null) foo.add(Boolean.valueOf(x.getMatrix().get(i).get(j)));
 				}
 				this.matrix.add(foo);
 			}
@@ -51,7 +51,7 @@ public class BonnifaitMatrix {
 		return new Dimension(matrix.size(), matrix.get(1).size());
 	}
 
-	public ArrayList<Boolean> getLine(Integer index){   //génère une liste de booléen qui est la ligne de numéro index, compté en partant de 0
+	public ArrayList<Boolean> getLine(Integer index){   //gï¿½nï¿½re une liste de boolï¿½en qui est la ligne de numï¿½ro index, comptï¿½ en partant de 0
 		if (this.matrix == null || index >= this.matrix.size())
 			return null;
 		else {

@@ -100,7 +100,7 @@ public class RatingCurve extends Item {
 			this.mcmc=new Double[col][row];
 			for(int i=0;i<row;i++){
 				for(int j=0;j<col;j++){
-					if(x.getMcmc()[j][i]!=null) this.mcmc[j][i]=new Double(x.getMcmc()[j][i]);
+					if(x.getMcmc()[j][i]!=null) this.mcmc[j][i]= Double.valueOf(x.getMcmc()[j][i]);
 				}
 			}
 		}
@@ -109,7 +109,7 @@ public class RatingCurve extends Item {
 			this.mcmc_cooked=new Double[col][row];
 			for(int i=0;i<row;i++){
 				for(int j=0;j<col;j++){
-					if(x.getMcmc_cooked()[j][i]!=null) this.mcmc_cooked[j][i]=new Double(x.getMcmc_cooked()[j][i]);
+					if(x.getMcmc_cooked()[j][i]!=null) this.mcmc_cooked[j][i]= Double.valueOf(x.getMcmc_cooked()[j][i]);
 				}
 			}
 		}
@@ -118,7 +118,7 @@ public class RatingCurve extends Item {
 			this.mcmc_summary=new Double[col][row];
 			for(int i=0;i<row;i++){
 				for(int j=0;j<col;j++){
-					if(x.getMcmc_summary()[j][i]!=null) this.mcmc_summary[j][i]=new Double(x.getMcmc_summary()[j][i]);
+					if(x.getMcmc_summary()[j][i]!=null) this.mcmc_summary[j][i]= Double.valueOf(x.getMcmc_summary()[j][i]);
 				}
 			}
 		}
@@ -127,7 +127,7 @@ public class RatingCurve extends Item {
 			this.HQ=new Double[col][row];
 			for(int i=0;i<row;i++){
 				for(int j=0;j<col;j++){
-					if(x.getHQ()[j][i]!=null) this.HQ[j][i]=new Double(x.getHQ()[j][i]);
+					if(x.getHQ()[j][i]!=null) this.HQ[j][i]= Double.valueOf(x.getHQ()[j][i]);
 				}
 			}
 		}

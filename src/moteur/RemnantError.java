@@ -39,7 +39,7 @@ public class RemnantError extends Item {
 		super(x);
 		if(x==null){return;}
 		if(x.getFunction()!=null) this.function=new String(x.getFunction());
-		this.npar=new Integer(x.getNpar());
+		this.npar= Integer.valueOf(x.getNpar());
 		this.par=new Parameter[this.npar];
 		if(x.getPar()!=null) {
 			for(int i=0;i<this.npar;i++){

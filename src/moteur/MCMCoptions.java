@@ -73,14 +73,14 @@ public class MCMCoptions {
 	 */
 	public MCMCoptions(MCMCoptions x){
 		if(x==null){return;}
-		this.nAdapt=new Integer(x.getnAdapt());
-		this.nCycles=new Integer(x.getnCycles());
-		this.burn=new Double(x.getBurn());
-		this.nSlim=new Integer(x.getnSlim());
-		this.minMR=new Double(x.getMinMR());
-		this.maxMR=new Double(x.getMaxMR());
-		this.downMult=new Double(x.getDownMult());
-		this.upMult=new Double(x.getUpMult());
+		this.nAdapt= Integer.valueOf(x.getnAdapt());
+		this.nCycles= Integer.valueOf(x.getnCycles());
+		this.burn= Double.valueOf(x.getBurn());
+		this.nSlim= Integer.valueOf(x.getnSlim());
+		this.minMR= Double.valueOf(x.getMinMR());
+		this.maxMR= Double.valueOf(x.getMaxMR());
+		this.downMult= Double.valueOf(x.getDownMult());
+		this.upMult= Double.valueOf(x.getUpMult());
 		if(x.getFilename()!=null) this.filename=new String(x.getFilename());
 	}
 	

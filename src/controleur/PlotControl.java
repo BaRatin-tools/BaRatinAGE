@@ -5,7 +5,6 @@ import java.text.DecimalFormat;
 import java.util.Arrays;
 
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 import javax.swing.SwingConstants;
 
 import org.jfree.chart.ChartPanel;

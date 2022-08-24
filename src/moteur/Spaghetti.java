@@ -55,19 +55,19 @@ public class Spaghetti {
 	 */
 	public Spaghetti(Spaghetti x) {
 		if(x==null){return;}
-		this.nx=new Integer(x.getNx());
-		this.nspag=new Integer(x.getNspag());
+		this.nx= Integer.valueOf(x.getNx());
+		this.nspag= Integer.valueOf(x.getNspag());
 		this.x=new Double[nx];
 		this.y=new Double[nspag][nx];
 		if(x.getX()!=null){
 			for(int i=0;i<this.nx;i++){
-				if(x.getX()[i]!=null) this.x[i]=new Double(x.getX()[i]);
+				if(x.getX()[i]!=null) this.x[i]= Double.valueOf(x.getX()[i]);
 			}
 		}
 		if(x.getY()!=null){
 			for(int i=0;i<this.nx;i++){
 				for(int j=0;j<this.nspag;j++){
-					if(x.getY()[j][i]!=null) this.y[j][i]=new Double(x.getY()[j][i]);
+					if(x.getY()[j][i]!=null) this.y[j][i]= Double.valueOf(x.getY()[j][i]);
 				}
 			}
 		}

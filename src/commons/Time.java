@@ -84,12 +84,12 @@ public class Time {
 	 */
 	public Time(Time x) {
 		if(x==null){return;}
-		this.year = new Integer(x.getYear());
-		this.month = new Integer(x.getMonth());
-		this.day = new Integer(x.getDay());
-		this.hour = new Integer(x.getHour());
-		this.minute = new Integer(x.getMinute());
-		this.second = new Integer(x.getSecond());
+		this.year = Integer.valueOf(x.getYear());
+		this.month = Integer.valueOf(x.getMonth());
+		this.day = Integer.valueOf(x.getDay());
+		this.hour = Integer.valueOf(x.getHour());
+		this.minute = Integer.valueOf(x.getMinute());
+		this.second = Integer.valueOf(x.getSecond());
 	}
 
 	/**
@@ -232,7 +232,7 @@ public class Time {
 	//------------------------------------------------------------------------------------------------------------------------//
 
 	/**
-	 * Convertit en jours décimaux
+	 * Convertit en jours dï¿½cimaux
 	 */
 	public double convertToDays() {
 		//TODO: fix for leap years
