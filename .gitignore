@@ -28,4 +28,6 @@ externalLib
 recycle/*
 debug*.bar.zip
 *.bar.zip
+bar.zip
 TEMP_*
+
