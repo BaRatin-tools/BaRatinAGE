@@ -60,6 +60,7 @@ public class ExeControl {
 			RemnantError remnant,MCMCoptions mcmc,RatingCurve rc,Limnigraph limni,Hydrograph hydro)
 					throws IOException, Exception,InterruptedException,FileNotFoundException {
 		// Write config files and make a copy in recycle folder
+		new File(Defaults.tempWorkspace).mkdir();
 		configController.write_engine(options,gaugings,hydrau,remnant,mcmc,rc,limni,hydro);
 		DirectoryUtils.deleteDirContent(new File(Defaults.recycleDir));
 		DirectoryUtils.copyFilesInDir(new File(Defaults.tempWorkspace), new File(Defaults.recycleDir));
