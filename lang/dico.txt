@@ -1,4 +1,4 @@
-﻿key DO NOT MODIFY;fr;en;es;de;it;br
+﻿key_DO_NOT_MODIFY;fr;en;es;de;it;br
 Open;Ouvrir;Open;Abrir;Öffnen;Aprire;Abrir
 Save;Enregistrer;Save;Guardar;Speichern;Salva;Salvar
 SaveAs;Enregistrer sous;Save as;Guardar como;Speichern unter;Salva con nome;Salvar como
