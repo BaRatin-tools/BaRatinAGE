@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -165,7 +166,7 @@ public class ReadWrite {
 		HashMap<String,String[]> dico=new HashMap<String,String[]>();
 		String line;String[] foo0;String[] foo;
 		File f=new File(file);
-		Scanner sc = new Scanner(f);
+		Scanner sc = new Scanner(f, StandardCharsets.UTF_8);
 		// read headers
 		line=sc.nextLine();
 		foo0=line.split(sep+"+");
