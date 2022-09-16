@@ -23,7 +23,7 @@ public class Dico extends HashMap<String,String> {
 		HashMap<String,String[]> ML=GetMLdico();
 		Iterator<String> key = ML.keySet().iterator();		
 		// get available languages
-		String[] head = ML.get("﻿key_DO_NOT_MODIFY");
+		String[] head = ML.get("key_DO_NOT_MODIFY");
 		// get index of available language corresponding to the requested one
 		int indx = -1;
 		for(int i=0;i<head.length;i++){
