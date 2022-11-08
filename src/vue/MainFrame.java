@@ -520,7 +520,8 @@ public class MainFrame extends JFrame implements ActionListener{
 				if(save.equals(dico.entry("Yes"))) {foo="true";} else {foo="false";}
 				if(foo.equalsIgnoreCase("true")) {
 					int ok=new Frame_YesNoQuestion().ask(this,
-							dico.entry("saveSpagWarning")+System.getProperty("line.separator")+dico.entry("ConfirmContinue"),
+							String.format("<html>%s<br>%s</html>", dico.entry("saveSpagWarning"), dico.entry("ConfirmContinue")),
+//							dico.entry("saveSpagWarning")+System.getProperty("line.separator")+dico.entry("ConfirmContinue"),
 							dico.entry("Warning"),
 							Defaults.iconWarning,dico.entry("Yes"),dico.entry("No"));
 					if(ok==JOptionPane.NO_OPTION) {foo="false";}
@@ -589,8 +590,8 @@ public class MainFrame extends JFrame implements ActionListener{
 	}
 
 	private void close(){
-		String mess = dico.entry("CloseWarning")+System.getProperty("line.separator")+
-				dico.entry("mayBeLostWarning");
+		String mess = String.format("<html>%s<br><span color=\"red\">%s</span></html>",
+				dico.entry("CloseWarning"), dico.entry("mayBeLostWarning"));
 		int ok=new Frame_YesNoQuestion().ask(this,mess,dico.entry("Warning"),
 				Defaults.iconWarning,dico.entry("Yes"),dico.entry("No"));
 		if(ok==JOptionPane.YES_OPTION){
@@ -606,8 +607,11 @@ public class MainFrame extends JFrame implements ActionListener{
 	private void newStation(){
 		int ok;
 		if(!Station.getInstance().isEmpty()) {
+			String mess = String.format("<html>%s<br>%s</html>",
+					dico.entry("NewWarning"), dico.entry("ConfirmContinue"));
+//			dico.entry("NewWarning")+System.getProperty("line.separator")+dico.entry("ConfirmContinue")
 			ok=new Frame_YesNoQuestion().ask(this,
-					dico.entry("NewWarning")+System.getProperty("line.separator")+dico.entry("ConfirmContinue"),
+					mess,
 					dico.entry("Warning"),
 					Defaults.iconWarning,dico.entry("Yes"),dico.entry("No"));
 		} else {
