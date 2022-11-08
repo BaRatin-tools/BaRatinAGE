@@ -10,6 +10,8 @@ import javax.swing.ImageIcon;
 import javax.swing.JToggleButton;
 import javax.swing.SwingConstants;
 
+import Utils.Config;
+
 /**
  * A derived toggle button type.
  * <p> Assumes that the component lies in a container (typically a Jpanel) whose layout is set to GridBagLayout.
@@ -21,6 +23,7 @@ public class GridBag_ToggleButton extends JToggleButton implements ItemListener{
 	private String ID;
 	private String txt_on;
 	private String txt_off;
+	private Config config=Config.getInstance();
 
 	/**
 	 * Full constructor
@@ -69,6 +72,7 @@ public class GridBag_ToggleButton extends JToggleButton implements ItemListener{
 		else if(xExpand){gbc.fill = GridBagConstraints.HORIZONTAL;}
 		else if(yExpand){gbc.fill = GridBagConstraints.VERTICAL;}
 		container.add(this, gbc);
+		this.setFont(config.getFontTxt());
 	}
 
 	@Override

@@ -8,6 +8,8 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.SwingConstants;
 
+import Utils.Config;
+
 /**
  * GridBag_Button, a derived JButton type.
  * <p> Assumes that the component lies in a container (typically a Jpanel) whose layout is set to GridBagLayout.
@@ -17,6 +19,7 @@ import javax.swing.SwingConstants;
 public class GridBag_Button extends JButton{
 	
 	private String ID;
+	private Config config=Config.getInstance();
 	
 	/**
 	 * Full constructor
@@ -54,6 +57,7 @@ public class GridBag_Button extends JButton{
 		else if(yExpand){gbc.fill = GridBagConstraints.VERTICAL;}
 		else{gbc.fill = GridBagConstraints.NONE;}
 		container.add(this, gbc);
+		this.setFont(config.getFontTxt());
 	}
 	
 	/**
