@@ -1,7 +1,10 @@
 package Utils;
 
 import java.awt.Font;
+import java.awt.FontFormatException;
+import java.awt.GraphicsEnvironment;
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
@@ -61,6 +64,43 @@ public class Config {
 			// use defaults
 			this.language=Defaults.lang_def;
 		}
+		
+		// set font
+		// import custom font
+		try {
+			Font[] fonts = {
+					Font.createFont(Font.TRUETYPE_FONT,
+							new File(Defaults.fontDir, "OpenSans/OpenSans-VariableFont_wdth,wght.ttf")),
+					 Font.createFont(Font.TRUETYPE_FONT,
+							 new File(Defaults.fontDir, "Hahmlet/Hahmlet-VariableFont_wght.ttf")),
+			};			
+			for (Font f: fonts) {
+				System.out.println("");
+		
+					GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+					ge.registerFont(f);
+	
+			}
+		} catch (FontFormatException | IOException e1) {
+			e1.printStackTrace();
+		}
+
+		String fontName = "OpenSans";
+		// handle special case for korean (not in OpenSans font)
+		if ("ko".equals(this.getLanguage())) {
+			fontName = "Hahmlet";
+		} 
+		this.setFontXplorerLbl(new Font(fontName,Font.BOLD,24));
+		this.setFontMenu(new Font(fontName,Font.BOLD,16));
+		this.setFontMenuItem(new Font(fontName,Font.PLAIN,16));
+		this.setFontTxt(new Font(fontName,Font.PLAIN,14));
+		this.setFontBigTxt(new Font(fontName,Font.PLAIN,16));
+		this.setFontLbl(new Font(fontName,Font.BOLD,14));
+		this.setFontBigLbl(new Font(fontName,Font.BOLD,18));
+		this.setFontTabs(new Font(fontName,Font.PLAIN,14));
+		this.setFontTree(new Font(fontName,Font.PLAIN,16));
+
+		// setup help
 		this.helpDir=new File(Defaults.helpDir,this.language).getAbsolutePath();
 		// Check helpDir exists - otherwise fallback on default
 		if(!Files.exists(Paths.get(this.helpDir))) {

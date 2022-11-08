@@ -134,6 +134,7 @@ public class Defaults {
 	// Import/Export
 	public static final  String tempExport=new File(home,"temp").getAbsolutePath();
 	// Dictionary
+	public static final String fontDir = new File(home,"lang/fonts").getAbsolutePath();
 	public static final String dicoDir = new File(home,"lang").getAbsolutePath();
 	public static final String dicoFile=new File(dicoDir,"dico.txt").getAbsolutePath();
 	public static final String lang_def = "en";
