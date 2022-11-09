@@ -268,7 +268,7 @@ public class Control {
 		// Ask confirmation if current workspace is not empty
 		if (!Station.getInstance().isEmpty()) {
 			int ok=new Frame_YesNoQuestion().ask(null,
-					dico.entry("OpenWarning")+System.getProperty("line.separator")+dico.entry("ConfirmContinue"),
+					String.format("<html>%s<br>%s</html>", dico.entry("OpenWarning"), dico.entry("ConfirmContinue")),
 					dico.entry("Open"),Defaults.iconWarning,dico.entry("Yes"),dico.entry("No"));
 			if(ok==JOptionPane.NO_OPTION) {return;}
 		}

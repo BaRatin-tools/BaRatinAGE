@@ -15,7 +15,6 @@ public class Frame_YesNoQuestion extends JOptionPane {
 	
 	public Frame_YesNoQuestion(){
 		super();
-//		this.setFont(config.getFontTxt());
 	}
 	
 	public int ask(Component parent, String question, String title,String icon,String yesTxt, String noTxt){

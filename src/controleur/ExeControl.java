@@ -221,9 +221,11 @@ public class ExeControl {
 				else { // express in MB
 					sizeTxt = (int) roughSize + "MB";
 				}
-				String mess = dico.entry("propagationWarning")+System.getProperty("line.separator")+
-						      dico.entry("estimatedFileSize")+" : "+ sizeTxt +System.getProperty("line.separator")+
-						      dico.entry("ConfirmContinue");
+				String mess = String.format("<html>%s<br>%s:<span style=\"font-weight: bold\">%s</span><br>%s</html>",
+					dico.entry("propagationWarning"),
+					dico.entry("estimatedFileSize"),
+					sizeTxt,
+					dico.entry("ConfirmContinue"));
 				int ok=new Frame_YesNoQuestion().ask(MainFrame.getInstance(),
 						mess,
 						dico.entry("Warning"),

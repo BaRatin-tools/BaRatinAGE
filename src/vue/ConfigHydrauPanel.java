@@ -311,8 +311,7 @@ public class ConfigHydrauPanel extends ItemPanel implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
 			int k=Integer.parseInt((String) ncontrol.getSelectedItem());
 			if(currentNC>0) {
-				String mess = dico.entry("nControlWarning")+System.getProperty("line.separator")+
-						dico.entry("ConfirmContinue");
+				String mess = String.format("<html>%s<br>%s</html>", dico.entry("nControlWarning"), dico.entry("ConfirmContinue"));
 				int ok=new Frame_YesNoQuestion().ask(MainFrame.getInstance(),mess,
 							dico.entry("Warning"),
 							Defaults.iconWarning,dico.entry("Yes"),dico.entry("No"));

@@ -521,7 +521,6 @@ public class MainFrame extends JFrame implements ActionListener{
 				if(foo.equalsIgnoreCase("true")) {
 					int ok=new Frame_YesNoQuestion().ask(this,
 							String.format("<html>%s<br>%s</html>", dico.entry("saveSpagWarning"), dico.entry("ConfirmContinue")),
-//							dico.entry("saveSpagWarning")+System.getProperty("line.separator")+dico.entry("ConfirmContinue"),
 							dico.entry("Warning"),
 							Defaults.iconWarning,dico.entry("Yes"),dico.entry("No"));
 					if(ok==JOptionPane.NO_OPTION) {foo="false";}
@@ -609,7 +608,6 @@ public class MainFrame extends JFrame implements ActionListener{
 		if(!Station.getInstance().isEmpty()) {
 			String mess = String.format("<html>%s<br>%s</html>",
 					dico.entry("NewWarning"), dico.entry("ConfirmContinue"));
-//			dico.entry("NewWarning")+System.getProperty("line.separator")+dico.entry("ConfirmContinue")
 			ok=new Frame_YesNoQuestion().ask(this,
 					mess,
 					dico.entry("Warning"),
