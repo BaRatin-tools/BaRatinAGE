@@ -12,6 +12,7 @@ import Utils.Config;
 import Utils.Defaults;
 import commons.Observation;
 import commons.ReadWrite;
+import commons.textFileReader;
 import moteur.Envelop;
 import moteur.Hydrograph;
 import moteur.Spaghetti;
@@ -96,7 +97,9 @@ public class Hydrograph_DAO extends Hydrograph implements DAO{
 		///////////////////////////////////////////////////////////////////////
 		//properties
 		f=new File(this.folder.trim(),FILE_PROPERTIES);
-		sc = new Scanner(f);
+//		textFileReader.getFileInfo(f);
+//		sc = new Scanner(f);
+		sc = textFileReader.createScanner(f);
 		this.setName(sc.nextLine());
 		this.setDescription(sc.nextLine());
 		this.setDescription(sc.nextLine());

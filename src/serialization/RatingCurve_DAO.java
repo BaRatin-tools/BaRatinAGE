@@ -9,6 +9,7 @@ import java.util.Scanner;
 
 import Utils.Defaults;
 import commons.ReadWrite;
+import commons.textFileReader;
 import moteur.Envelop;
 import moteur.PostRatingCurveOptions;
 import moteur.RatingCurve;
@@ -112,7 +113,9 @@ public class RatingCurve_DAO extends RatingCurve implements DAO {
 		///////////////////////////////////////////////////////////////////////
 		//properties
 		f=new File(this.folder.trim(),FILE_PROPERTIES);
-		sc = new Scanner(f);
+//		textFileReader.getFileInfo(f);
+//		sc = new Scanner(f);
+		sc = textFileReader.createScanner(f);
 		this.setName(sc.nextLine());
 		this.setDescription(sc.nextLine());
 		this.setHydrau_id(sc.nextLine());
@@ -122,7 +125,9 @@ public class RatingCurve_DAO extends RatingCurve implements DAO {
 		///////////////////////////////////////////////////////////////////////
 		// Posterior Options
 		f=new File(this.folder.trim(),FILE_POSTERIOR);
-		sc = new Scanner(f);
+//		textFileReader.getFileInfo(f);
+//		sc = new Scanner(f);
+		sc = textFileReader.createScanner(f);
 		PostRatingCurveOptions post = new PostRatingCurveOptions();
 		post.sethMin(DAOtools.safeRead_d(sc.nextLine()));
 		post.sethMax(DAOtools.safeRead_d(sc.nextLine()));

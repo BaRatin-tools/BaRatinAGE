@@ -10,6 +10,7 @@ import java.util.Scanner;
 
 import Utils.Defaults;
 import commons.ReadWrite;
+import commons.textFileReader;
 import moteur.Gauging;
 import moteur.GaugingSet;
 
@@ -56,7 +57,9 @@ public class GaugingSet_DAO extends GaugingSet implements DAO{
 		///////////////////////////////////////////////////////////////////////
 		//properties
 		f=new File(this.folder.trim(),FILE_PROPERTIES);
-		sc = new Scanner(f);
+//		textFileReader.getFileInfo(f);
+		sc = textFileReader.createScanner(f);
+//		sc = new Scanner(f);
 		this.setName(sc.nextLine());
 		this.setDescription(sc.nextLine());
 		this.setFilePath(sc.nextLine());

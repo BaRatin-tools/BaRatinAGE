@@ -11,6 +11,7 @@ import java.util.Scanner;
 import Utils.Defaults;
 import commons.Observation;
 import commons.ReadWrite;
+import commons.textFileReader;
 import moteur.Limnigraph;
 
 public class Limnigraph_DAO extends Limnigraph implements DAO {
@@ -56,7 +57,9 @@ public class Limnigraph_DAO extends Limnigraph implements DAO {
 		///////////////////////////////////////////////////////////////////////
 		//properties
 		f=new File(this.folder.trim(),FILE_PROPERTIES);
-		sc = new Scanner(f);
+		textFileReader.getFileInfo(f);
+//		sc = new Scanner(f);
+		sc = textFileReader.createScanner(f);
 		this.setName(sc.nextLine());
 		this.setDescription(sc.nextLine());
 		this.setFilePath(sc.nextLine());
