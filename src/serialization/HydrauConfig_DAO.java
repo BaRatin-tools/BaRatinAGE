@@ -5,9 +5,11 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+import commons.textFileReader; 
 import commons.Distribution;
 import commons.Parameter;
 import commons.ReadWrite;
@@ -18,6 +20,7 @@ import moteur.Envelop;
 import moteur.HydrauControl;
 import moteur.PriorRatingCurveOptions;
 import moteur.Spaghetti;
+import org.mozilla.universalchardet.UniversalDetector;
 
 public class HydrauConfig_DAO extends ConfigHydrau implements DAO {
 
@@ -130,7 +133,8 @@ public class HydrauConfig_DAO extends ConfigHydrau implements DAO {
 		///////////////////////////////////////////////////////////////////////
 		//properties
 		f=new File(this.folder.trim(),FILE_PROPERTIES);
-		sc = new Scanner(f);
+		sc = textFileReader.createScanner(f);
+//		sc = new Scanner(f, StandardCharsets.UTF_8);
 		this.setName(sc.nextLine());
 		this.setDescription(sc.nextLine());
 		int ncontrol=DAOtools.safeRead_i(sc.nextLine());
@@ -155,7 +159,9 @@ public class HydrauConfig_DAO extends ConfigHydrau implements DAO {
 			for(int i=0;i<ncontrol;i++){
 				control=new HydrauControl();
 				f=new File(this.folder.trim(),Integer.toString(i)+"_"+FILE_CONTROL);
-				sc = new Scanner(f);
+//				textFileReader.getFileInfo(f);
+				sc = textFileReader.createScanner(f);
+//				sc = new Scanner(f);
 				control.setDescription(sc.nextLine());
 				String type=sc.nextLine(); if(!type.equals("")){control.setType(Integer.valueOf(type));}
 				// par K, A, C
@@ -192,8 +198,10 @@ public class HydrauConfig_DAO extends ConfigHydrau implements DAO {
 		///////////////////////////////////////////////////////////////////////
 		// Prior RC option
 		f=new File(this.folder.trim(),FILE_PRIOR);
+//		textFileReader.getFileInfo(f);
 		if(ncontrol>0) {
-			sc = new Scanner(f);
+//			sc = new Scanner(f);
+			sc = textFileReader.createScanner(f);
 			PriorRatingCurveOptions prior = new PriorRatingCurveOptions();
 			prior.setnSim(DAOtools.safeRead_i(sc.nextLine()));
 			prior.sethMin(DAOtools.safeRead_d(sc.nextLine()));

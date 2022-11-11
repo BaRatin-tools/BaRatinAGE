@@ -20,6 +20,7 @@ import Utils.Defaults;
 import Utils.Dictionnary;
 
 import com.opencsv.CSVReader;
+import com.opencsv.exceptions.CsvValidationException;
 
 import commons.Constants;
 import commons.ReadWrite;
@@ -65,8 +66,9 @@ public class GaugingSet extends Item {
 	 * full constructor, reads gaugings from file 
 	 * @param file
 	 * @param name
+	 * @throws CsvValidationException 
 	 */
-	public GaugingSet(String file, String name) {
+	public GaugingSet(String file, String name) throws CsvValidationException {
 		super(name);
 		this.filePath = file ;
 

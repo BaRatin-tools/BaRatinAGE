@@ -8,7 +8,7 @@ import java.io.IOException;
 import java.util.Scanner;
 
 import commons.DirectoryUtils;
-
+import commons.textFileReader;
 import moteur.ConfigHydrau;
 import moteur.Dataset;
 import moteur.GaugingSet;
@@ -116,7 +116,9 @@ public class Station_DAO implements DAO {
 		Scanner sc;
 		//properties
 		f=new File(this.folder.trim(),FILE_PROPERTIES);
-		sc = new Scanner(f);
+//		textFileReader.getFileInfo(f);
+		sc = textFileReader.createScanner(f);
+//		sc = new Scanner(f);
 		int nHydrau=Integer.valueOf(sc.nextLine());
 		int nGauging=Integer.valueOf(sc.nextLine());
 		int nLimni=Integer.valueOf(sc.nextLine());
