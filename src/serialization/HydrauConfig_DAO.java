@@ -5,7 +5,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -20,7 +19,6 @@ import moteur.Envelop;
 import moteur.HydrauControl;
 import moteur.PriorRatingCurveOptions;
 import moteur.Spaghetti;
-import org.mozilla.universalchardet.UniversalDetector;
 
 public class HydrauConfig_DAO extends ConfigHydrau implements DAO {
 
