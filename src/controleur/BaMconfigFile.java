@@ -34,7 +34,7 @@ public class BaMconfigFile {
     }
 
     public void addItem(String value, String comment, Boolean quoted) {
-        String v = String.format("'%s'", value);
+        String v = String.format("\"%s\"", value);
         addItem(v, comment);
     }
 
