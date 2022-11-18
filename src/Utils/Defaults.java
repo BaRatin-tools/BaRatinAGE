@@ -97,10 +97,11 @@ public class Defaults {
 	public static final String menuSep = "   ";
 	// Directories for executable
 	public static final String exeDir = new File(home, "exe").getAbsolutePath();
-	public static final String exeName = "BaRatin";
-	private static String exeFullName = os.startsWith("windows") ? exeName + ".exe" : exeName;
-	public static final String exeFile = new File(exeDir, exeFullName).getAbsolutePath();
-	public static final String exeConfigFile = new File(exeDir, "Config_BaRatin.txt").getAbsolutePath();
+	private static final String exeName = "BaM";
+	public static final String exeCommand = os.startsWith("windows") ? exeName + ".exe" : exeName;
+	// private static final String exeFilePath = new File(exeDir,
+	// exeFullName).getAbsolutePath();
+	public static final String exeConfigFile = new File(exeDir, "Config_BaM.txt").getAbsolutePath();
 	public static final String tempWorkspace = new File(exeDir, "workspace").getAbsolutePath();
 	public static final String recycleDir = new File(home, "recycle").getAbsolutePath();
 	// Directories for options
