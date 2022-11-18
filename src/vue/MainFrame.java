@@ -510,7 +510,7 @@ public class MainFrame extends JFrame implements ActionListener {
 		String lang = select.getName();
 		if (!lang.equals(Constants.S_EMPTY)) {
 			try {
-				ReadWrite.write(new String[] { lang }, Defaults.options_lang);
+				ReadWrite.write(new String[] { lang }, Defaults.optionsLang);
 				new InformationPanel(this, dico.entry("SetLanguageInfo"));
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
@@ -531,7 +531,7 @@ public class MainFrame extends JFrame implements ActionListener {
 		String coeff = select.getName();
 		if (!coeff.equals(Constants.S_EMPTY)) {
 			try {
-				ReadWrite.write(new String[] { coeff }, Defaults.options_preferences);
+				ReadWrite.write(new String[] { coeff }, Defaults.optionsPreferences);
 				config.setUseManning(coeff.equals("Manning"));
 				new InformationPanel(this, dico.entry("ChangeSaved"));
 			} catch (Exception e) {
@@ -546,7 +546,7 @@ public class MainFrame extends JFrame implements ActionListener {
 		Custom_FileChooser chooser = new Custom_FileChooser(config.getDefaultDir(), "d");
 		if (chooser.getFilepath() != Constants.S_EMPTY) {
 			try {
-				ReadWrite.write(new String[] { chooser.getFilepath() }, Defaults.options_directory);
+				ReadWrite.write(new String[] { chooser.getFilepath() }, Defaults.optionsDirectory);
 				config.setDefaultDir(chooser.getFilepath());
 				new InformationPanel(this, dico.entry("ChangeSaved"));
 			} catch (Exception e) {
@@ -579,7 +579,7 @@ public class MainFrame extends JFrame implements ActionListener {
 						foo = "false";
 					}
 				}
-				ReadWrite.write(new String[] { foo }, Defaults.options_save);
+				ReadWrite.write(new String[] { foo }, Defaults.optionsSave);
 				config.setSaveHydroSpag(foo.equalsIgnoreCase("true"));
 				new InformationPanel(this, dico.entry("ChangeSaved"));
 			} catch (Exception e) {
@@ -593,7 +593,7 @@ public class MainFrame extends JFrame implements ActionListener {
 		Frame_MCMCoptions f = new Frame_MCMCoptions(this, config.getMcmc());
 		if (f.getMcmc() != null) {
 			try {
-				ReadWrite.write(new String[] { f.getMcmc().toString_mini() }, Defaults.options_mcmc);
+				ReadWrite.write(new String[] { f.getMcmc().toString_mini() }, Defaults.optionsMcmc);
 				config.setMcmc(f.getMcmc());
 				new InformationPanel(this, dico.entry("ChangeSaved"));
 			} catch (Exception e) {
