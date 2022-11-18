@@ -25,6 +25,7 @@ hs_err_pid*
 # others
 externalLib
 .settings
+.vscode
 recycle/*
 debug*.bar.zip
 *.bar.zip
