@@ -101,31 +101,42 @@ public class Defaults {
 	public static final String exeCommand = os.startsWith("windows") ? exeName + ".exe" : exeName;
 	// private static final String exeFilePath = new File(exeDir,
 	// exeFullName).getAbsolutePath();
-	public static final String exeConfigFile = new File(exeDir, "Config_BaM.txt").getAbsolutePath();
-	public static final String tempWorkspace = new File(exeDir, "workspace").getAbsolutePath();
+	public static final String exeConfigFileName = "Config_BaM.txt";
+	public static final String workspacePath = new File(exeDir, "workspace").getAbsolutePath();
 	public static final String recycleDir = new File(home, "recycle").getAbsolutePath();
 	// Directories for options
 	public static final String optionsDir = new File(home, "options").getAbsolutePath();
-	public static final String options_lang = new File(optionsDir, "lang.txt").getAbsolutePath();
-	public static final String options_mcmc = new File(optionsDir, "mcmc.txt").getAbsolutePath();
-	public static final String options_preferences = new File(optionsDir, "preferences.txt").getAbsolutePath();
-	public static final String options_save = new File(optionsDir, "save.txt").getAbsolutePath();
-	public static final String options_directory = new File(optionsDir, "directory.txt").getAbsolutePath();
+	public static final String optionsLang = new File(optionsDir, "lang.txt").getAbsolutePath();
+	public static final String optionsMcmc = new File(optionsDir, "mcmc.txt").getAbsolutePath();
+	public static final String optionsPreferences = new File(optionsDir, "preferences.txt").getAbsolutePath();
+	public static final String optionsSave = new File(optionsDir, "save.txt").getAbsolutePath();
+	public static final String optionsDirectory = new File(optionsDir, "directory.txt").getAbsolutePath();
 	// Configuration files
-	public static final String config_RunOptions = new File(tempWorkspace, "Config_RunOptions.txt").getAbsolutePath();
-	public static final String config_Data = new File(tempWorkspace, "Config_Data.txt").getAbsolutePath();
-	public static final String config_XYBAD = new File(tempWorkspace, "XY.BAD").getAbsolutePath();
-	public static final String config_HHBAD = new File(tempWorkspace, "HH.BAD").getAbsolutePath();
-	public static final String config_RatingCurve = new File(tempWorkspace, "Config_RatingCurve.txt").getAbsolutePath();
-	public static final String config_ControlMatrix = new File(tempWorkspace, "Config_ControlMatrix.txt")
-			.getAbsolutePath();
-	public static final String config_RemnantSigma = new File(tempWorkspace, "Config_RemnantSigma.txt")
-			.getAbsolutePath();
-	public static final String config_MCMC = new File(tempWorkspace, "Config_MCMC.txt").getAbsolutePath();
-	public static final String config_PriorRC = new File(tempWorkspace, "Config_PriorRC.txt").getAbsolutePath();
-	public static final String config_PostProcessing = new File(tempWorkspace, "Config_PostProcessing.txt")
-			.getAbsolutePath();
-	public static final String config_H2Q = new File(tempWorkspace, "Config_H2QPropagation.txt").getAbsolutePath();
+	public static final String configRunOptions = "Config_RunOptions.txt";
+	public static final String configModel = "Config_Model.txt";
+	public static final String configSetup = "Config_Control_Matrix.txt";
+	public static final String configData = "Config_Data.txt";
+	public static final String configRemnantSigma = "Config_Remnant_Sigma.txt";
+	public static final String configMcmc = "Config_MCMC.txt";
+	public static final String configCooking = "Config_Cooking.txt";
+	public static final String configSummary = "Config_Summary.txt";
+	public static final String configResiduals = "Config_Residuals.txt";
+	public static final String configPredMaster = "Config_Pred_Master.txt";
+	public static final String configPredSuffix = "Config_Pred_";
+	// Input data files
+	public static final String dataGaugings = "Data_Gaugings.txt";
+	public static final String dataLimnigraph = "Data_Limnigraph.txt";
+
+	// public static final String config_XYBAD = "XY.BAD";
+	// public static final String config_HHBAD = "HH.BAD";
+	// public static final String config_RatingCurve = "Config_RatingCurve.txt";
+	// public static final String config_ControlMatrix = "Config_ControlMatrix.txt";
+
+	// public static final String config_PriorRC = "Config_PriorRC.txt";
+	// public static final String config_PostProcessing =
+	// "Config_PostProcessing.txt";
+	// public static final String config_H2Q = "Config_H2QPropagation.txt";
+
 	// Result files
 	public static final String results_PriorRC_env = "Results_RC_Prior_Envelop";
 	public static final String results_PriorRC_spag = "Results_RC_Prior_Spaghetti";
