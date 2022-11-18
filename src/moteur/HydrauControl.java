@@ -7,24 +7,26 @@ import commons.Parameter;
 
 /**
  * Class representing hydraulic controls: Q=a(h-b)^c
+ * 
  * @author Sylvain Vigneau - Benjamin Renard, Irstea Lyon *
  */
 public class HydrauControl {
-	private Parameter a=new Parameter();
-	private Parameter b=new Parameter();
-	private Parameter c=new Parameter();
-	private Parameter k=new Parameter(); // Stage at which the control gets activated
+	private Parameter a = new Parameter();
+	private Parameter b = new Parameter();
+	private Parameter c = new Parameter();
+	private Parameter k = new Parameter(); // Stage at which the control gets activated
 	private int type; // section or channel? - see class Combo_ControlType
-	private String description="";
+	private String description = "";
 	// type-specific parameters
 	private Parameter[] specifix;
 
 	// default values
-	private static final int type_def=-1;
-	private static final String description_def=Constants.S_EMPTY;
+	private static final int type_def = -1;
+	private static final String description_def = Constants.S_EMPTY;
 
 	/**
 	 * full constructor
+	 * 
 	 * @param a
 	 * @param b
 	 * @param c
@@ -33,20 +35,21 @@ public class HydrauControl {
 	 * @param type
 	 * @param description
 	 */
-	public HydrauControl(Parameter a,Parameter b,Parameter c,Parameter k,
+	public HydrauControl(Parameter a, Parameter b, Parameter c, Parameter k,
 			Parameter[] specifix,
-			int type,String description) {
+			int type, String description) {
 		this.a = a;
 		this.b = b;
 		this.c = c;
 		this.k = k;
-		this.type=type;
-		this.description=description;
-		this.specifix=specifix;
+		this.type = type;
+		this.description = description;
+		this.specifix = specifix;
 	}
 
 	/**
 	 * partial constructor
+	 * 
 	 * @param a
 	 * @param b
 	 * @param c
@@ -54,120 +57,155 @@ public class HydrauControl {
 	 * @param type
 	 * @param description
 	 */
-	public HydrauControl(Parameter a,Parameter b,Parameter c,Parameter k,int type,String description) {
-		this(a,b,c,k,null,type,description);
+	public HydrauControl(Parameter a, Parameter b, Parameter c, Parameter k, int type, String description) {
+		this(a, b, c, k, null, type, description);
 	}
 
 	/**
 	 * partial constructor
+	 * 
 	 * @param a
 	 * @param b
 	 * @param c
 	 * @param k
 	 * @param type
 	 */
-	public HydrauControl(Parameter a,Parameter b,Parameter c,Parameter k,int type) {
-		this(a,b,c,k,null,type,description_def);
+	public HydrauControl(Parameter a, Parameter b, Parameter c, Parameter k, int type) {
+		this(a, b, c, k, null, type, description_def);
 	}
 
 	/**
 	 * partial constructor
+	 * 
 	 * @param a
 	 * @param b
 	 * @param c
 	 * @param k
 	 */
-	public HydrauControl(Parameter a,Parameter b,Parameter c,Parameter k) {
-		this(a,b,c,k,null,type_def,description_def);
+	public HydrauControl(Parameter a, Parameter b, Parameter c, Parameter k) {
+		this(a, b, c, k, null, type_def, description_def);
 	}
 
 	/**
 	 * Copy constructor
+	 * 
 	 * @param x copied object
 	 */
 	public HydrauControl(HydrauControl x) {
-		if(x==null){return;}
-		this.type=x.getType();
-		if(x.getA()!=null) this.a = new Parameter(x.getA());
-		if(x.getB()!=null) this.b = new Parameter(x.getB());
-		if(x.getC()!=null) this.c = new Parameter(x.getC());
-		if(x.getK()!=null) this.k = new Parameter(x.getK());
-		if(x.getDescription()!=null) this.description=new String(x.getDescription());
-		if(x.getSpecifix()!=null) {
-			this.specifix=new Parameter[x.getSpecifix().length];
-			for(int i=0;i<x.getSpecifix().length;i++){
-				if(x.getSpecifix()[i]!=null) this.specifix[i]=new Parameter(x.getSpecifix()[i]);
+		if (x == null) {
+			return;
+		}
+		this.type = x.getType();
+		if (x.getA() != null)
+			this.a = new Parameter(x.getA());
+		if (x.getB() != null)
+			this.b = new Parameter(x.getB());
+		if (x.getC() != null)
+			this.c = new Parameter(x.getC());
+		if (x.getK() != null)
+			this.k = new Parameter(x.getK());
+		if (x.getDescription() != null)
+			this.description = new String(x.getDescription());
+		if (x.getSpecifix() != null) {
+			this.specifix = new Parameter[x.getSpecifix().length];
+			for (int i = 0; i < x.getSpecifix().length; i++) {
+				if (x.getSpecifix()[i] != null)
+					this.specifix[i] = new Parameter(x.getSpecifix()[i]);
 			}
 		}
 	}
 
 	public HydrauControl() {
-		this(new Parameter(),new Parameter(),new Parameter(),new Parameter(),null,type_def,description_def);
+		this(new Parameter(), new Parameter(), new Parameter(), new Parameter(), null, type_def, description_def);
 	}
 
 	@Override
-	public String toString(){
-		String out="";
-		out=out+type+System.getProperty("line.separator");
-		out=out+description+System.getProperty("line.separator");
-		if(a!=null){out=out+a.toString();}
-		out=out+System.getProperty("line.separator");
-		if(b!=null){out=out+b.toString();}
-		out=out+System.getProperty("line.separator");
-		if(c!=null){out=out+c.toString();}
-		out=out+System.getProperty("line.separator");
-		if(k!=null){out=out+k.toString();}
-		return out;
-	}
-
-	public String toString_abc(){
-		String out="";
-		if(a!=null){out=out+a.toString();}
-		out=out+System.getProperty("line.separator");
-		if(b!=null){out=out+b.toString();}
-		out=out+System.getProperty("line.separator");
-		if(c!=null){out=out+c.toString();}
-		return out;
-	}
-
-	public String toString_akc(){
-		String out="";
-		if(a!=null){out=out+a.toString();}
-		out=out+System.getProperty("line.separator");
-		if(k!=null){out=out+k.toString();}
-		out=out+System.getProperty("line.separator");
-		if(c!=null){out=out+c.toString();}
-		return out;
-	}
-
-	public String toString_kac(){
-		String out="";
-		if(k!=null){out=out+k.toString();}
-		out=out+System.getProperty("line.separator");
-		if(a!=null){out=out+a.toString();}
-		out=out+System.getProperty("line.separator");
-		if(c!=null){out=out+c.toString();}
-		return out;
-	}
-
-	public String toEquation(){
-		String out="";
-		if(b!=null & a!=null & c!=null) {
-			out=a.getValue().toString()+"*(h";
-			Double bval=b.getValue();
-			if(bval<0) {
-				bval=-1*bval;
-				out=out+"+"+bval.toString();
-			} 
-			else {
-				out=out+"-"+bval.toString();
-			}
-			out=out+")^"+c.getValue().toString();
+	public String toString() {
+		String out = "";
+		out = out + type + System.getProperty("line.separator");
+		out = out + description + System.getProperty("line.separator");
+		if (a != null) {
+			out = out + a.toString();
+		}
+		out = out + System.getProperty("line.separator");
+		if (b != null) {
+			out = out + b.toString();
+		}
+		out = out + System.getProperty("line.separator");
+		if (c != null) {
+			out = out + c.toString();
+		}
+		out = out + System.getProperty("line.separator");
+		if (k != null) {
+			out = out + k.toString();
 		}
 		return out;
 	}
 
-	
+	public String toString_abc() {
+		String out = "";
+		if (a != null) {
+			out = out + a.toString();
+		}
+		out = out + System.getProperty("line.separator");
+		if (b != null) {
+			out = out + b.toString();
+		}
+		out = out + System.getProperty("line.separator");
+		if (c != null) {
+			out = out + c.toString();
+		}
+		return out;
+	}
+
+	public String toString_akc() {
+		String out = "";
+		if (a != null) {
+			out = out + a.toString();
+		}
+		out = out + System.getProperty("line.separator");
+		if (k != null) {
+			out = out + k.toString();
+		}
+		out = out + System.getProperty("line.separator");
+		if (c != null) {
+			out = out + c.toString();
+		}
+		return out;
+	}
+
+	public String toString_kac() {
+		String out = "";
+		if (k != null) {
+			out = out + k.toString();
+		}
+		out = out + System.getProperty("line.separator");
+		if (a != null) {
+			out = out + a.toString();
+		}
+		out = out + System.getProperty("line.separator");
+		if (c != null) {
+			out = out + c.toString();
+		}
+		return out;
+	}
+
+	public String toEquation() {
+		String out = "";
+		if (b != null & a != null & c != null) {
+			out = a.getValue().toString() + "*(h";
+			Double bval = b.getValue();
+			if (bval < 0) {
+				bval = -1 * bval;
+				out = out + "+" + bval.toString();
+			} else {
+				out = out + "-" + bval.toString();
+			}
+			out = out + ")^" + c.getValue().toString();
+		}
+		return out;
+	}
+
 	public Parameter getA() {
 		return a;
 	}
