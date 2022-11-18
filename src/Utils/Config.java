@@ -14,30 +14,32 @@ import commons.ReadWrite;
 
 /**
  * Configuration of the application (can be modified by the user)
+ * 
  * @author Sylvain Vigneau - Benjamin Renard, Irstea Lyon *
  */
 public class Config {
-	
+
 	private static Config instance;
 	private String language;
 	private MCMCoptions mcmc;
 	private String defaultDir;
-	private boolean useManning=false;
-	private boolean saveHydroSpag=false;
-	
+	private boolean useManning = false;
+	private boolean saveHydroSpag = false;
+
 	// Appearance - not yet interfaced
 	private Boolean expertMode = true;
-	private String lookAndFeel="OS"; // Available: "OS" (OS-specific) "Metal" "Nimbus" "CDE/Motif" "Windows" "Windows Classic"
-	private Font fontXplorerLbl=new Font("Tahoma",Font.BOLD,24);
-	private Font fontMenu=new Font("Tahoma",Font.BOLD,16);
-	private Font fontMenuItem=new Font("Tahoma",Font.PLAIN,16);
-	private Font fontTxt=new Font("Tahoma",Font.PLAIN,14);
-	private Font fontBigTxt=new Font("Tahoma",Font.PLAIN,16);
-	private Font fontLbl=new Font("Tahoma",Font.BOLD,14);
-	private Font fontBigLbl=new Font("Tahoma",Font.BOLD,18);
-	private Font fontTabs=new Font("Tahoma",Font.PLAIN,14);
-	private Font fontTree=new Font("Tahoma",Font.PLAIN,16);
-	
+	private String lookAndFeel = "OS"; // Available: "OS" (OS-specific) "Metal" "Nimbus" "CDE/Motif" "Windows" "Windows
+										// Classic"
+	private Font fontXplorerLbl = new Font("Tahoma", Font.BOLD, 24);
+	private Font fontMenu = new Font("Tahoma", Font.BOLD, 16);
+	private Font fontMenuItem = new Font("Tahoma", Font.PLAIN, 16);
+	private Font fontTxt = new Font("Tahoma", Font.PLAIN, 14);
+	private Font fontBigTxt = new Font("Tahoma", Font.PLAIN, 16);
+	private Font fontLbl = new Font("Tahoma", Font.BOLD, 14);
+	private Font fontBigLbl = new Font("Tahoma", Font.BOLD, 18);
+	private Font fontTabs = new Font("Tahoma", Font.PLAIN, 14);
+	private Font fontTree = new Font("Tahoma", Font.PLAIN, 16);
+
 	// Help directories and files
 	private String helpDir;
 	private String helpFile;
@@ -48,38 +50,38 @@ public class Config {
 	private String legend_Limni;
 	private String legend_Hydro;
 
-	public static synchronized Config getInstance(){
-	    if (instance == null){
-            instance = new Config();
-        }
-        return instance;
-    }
+	public static synchronized Config getInstance() {
+		if (instance == null) {
+			instance = new Config();
+		}
+		return instance;
+	}
 
 	private Config() {
 		// read language and assign help directories accordingly
 		try {
-			String[] foo=ReadWrite.read(Defaults.options_lang);
-			this.language=foo[0];
+			String[] foo = ReadWrite.read(Defaults.optionsLang);
+			this.language = foo[0];
 		} catch (Exception e) {
 			// use defaults
-			this.language=Defaults.lang_def;
+			this.language = Defaults.lang_def;
 		}
-		
+
 		// set font
 		// import custom font
 		try {
 			Font[] fonts = {
 					Font.createFont(Font.TRUETYPE_FONT,
 							new File(Defaults.fontDir, "OpenSans/OpenSans-VariableFont_wdth,wght.ttf")),
-					 Font.createFont(Font.TRUETYPE_FONT,
-							 new File(Defaults.fontDir, "Hahmlet/Hahmlet-VariableFont_wght.ttf")),
-			};			
-			for (Font f: fonts) {
+					Font.createFont(Font.TRUETYPE_FONT,
+							new File(Defaults.fontDir, "Hahmlet/Hahmlet-VariableFont_wght.ttf")),
+			};
+			for (Font f : fonts) {
 				System.out.println("");
-		
-					GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
-					ge.registerFont(f);
-	
+
+				GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+				ge.registerFont(f);
+
 			}
 		} catch (FontFormatException | IOException e1) {
 			e1.printStackTrace();
@@ -89,42 +91,43 @@ public class Config {
 		// handle special case for korean (not in OpenSans font)
 		if ("ko".equals(this.getLanguage())) {
 			fontName = "Hahmlet";
-		} 
-		this.setFontXplorerLbl(new Font(fontName,Font.BOLD,24));
-		this.setFontMenu(new Font(fontName,Font.BOLD,16));
-		this.setFontMenuItem(new Font(fontName,Font.PLAIN,16));
-		this.setFontTxt(new Font(fontName,Font.PLAIN,14));
-		this.setFontBigTxt(new Font(fontName,Font.PLAIN,16));
-		this.setFontLbl(new Font(fontName,Font.BOLD,14));
-		this.setFontBigLbl(new Font(fontName,Font.BOLD,18));
-		this.setFontTabs(new Font(fontName,Font.PLAIN,14));
-		this.setFontTree(new Font(fontName,Font.PLAIN,16));
+		}
+		this.setFontXplorerLbl(new Font(fontName, Font.BOLD, 24));
+		this.setFontMenu(new Font(fontName, Font.BOLD, 16));
+		this.setFontMenuItem(new Font(fontName, Font.PLAIN, 16));
+		this.setFontTxt(new Font(fontName, Font.PLAIN, 14));
+		this.setFontBigTxt(new Font(fontName, Font.PLAIN, 16));
+		this.setFontLbl(new Font(fontName, Font.BOLD, 14));
+		this.setFontBigLbl(new Font(fontName, Font.BOLD, 18));
+		this.setFontTabs(new Font(fontName, Font.PLAIN, 14));
+		this.setFontTree(new Font(fontName, Font.PLAIN, 16));
 
 		// setup help
-		this.helpDir=new File(Defaults.helpDir,this.language).getAbsolutePath();
+		this.helpDir = new File(Defaults.helpDir, this.language).getAbsolutePath();
 		// Check helpDir exists - otherwise fallback on default
-		if(!Files.exists(Paths.get(this.helpDir))) {
-			this.helpDir=new File(Defaults.helpDir,Defaults.lang_def).getAbsolutePath();
+		if (!Files.exists(Paths.get(this.helpDir))) {
+			this.helpDir = new File(Defaults.helpDir, Defaults.lang_def).getAbsolutePath();
 		}
-		this.setHelpFile(new File(this.helpDir,Defaults.helpFile).getAbsolutePath());
-		this.helpImageDir=new File(this.helpDir,Defaults.helpImageDir).getAbsolutePath();
-		this.setLegend_HydrauConfig(new File(this.helpImageDir,Defaults.legend_HydrauConfig).getAbsolutePath());
-		this.setLegend_Gauging(new File(this.helpImageDir,Defaults.legend_Gauging).getAbsolutePath());
-		this.setLegend_RC(new File(this.helpImageDir,Defaults.legend_RC).getAbsolutePath());
-		this.setLegend_Limni(new File(this.helpImageDir,Defaults.legend_Limni).getAbsolutePath());
-		this.setLegend_Hydro(new File(this.helpImageDir,Defaults.legend_Hydro).getAbsolutePath());
+		this.setHelpFile(new File(this.helpDir, Defaults.helpFile).getAbsolutePath());
+		this.helpImageDir = new File(this.helpDir, Defaults.helpImageDir).getAbsolutePath();
+		this.setLegend_HydrauConfig(new File(this.helpImageDir, Defaults.legend_HydrauConfig).getAbsolutePath());
+		this.setLegend_Gauging(new File(this.helpImageDir, Defaults.legend_Gauging).getAbsolutePath());
+		this.setLegend_RC(new File(this.helpImageDir, Defaults.legend_RC).getAbsolutePath());
+		this.setLegend_Limni(new File(this.helpImageDir, Defaults.legend_Limni).getAbsolutePath());
+		this.setLegend_Hydro(new File(this.helpImageDir, Defaults.legend_Hydro).getAbsolutePath());
 
 		// read mcmc options
 		try {
-			Double[][] foo=ReadWrite.read(Defaults.options_mcmc, Defaults.barSep,0);
-			this.setMcmc(new MCMCoptions(foo[0][0].intValue(),foo[0][1].intValue(),foo[0][2],foo[0][3].intValue(),foo[0][4],foo[0][5],foo[0][6],foo[0][7]));
+			Double[][] foo = ReadWrite.read(Defaults.optionsMcmc, Defaults.barSep, 0);
+			this.setMcmc(new MCMCoptions(foo[0][0].intValue(), foo[0][1].intValue(), foo[0][2], foo[0][3].intValue(),
+					foo[0][4], foo[0][5], foo[0][6], foo[0][7]));
 		} catch (Exception e) {
 			// use defaults
 			this.setMcmc(new MCMCoptions());
 		}
 		// read preferences
 		try {
-			String[] foo=ReadWrite.read(Defaults.options_preferences);
+			String[] foo = ReadWrite.read(Defaults.optionsPreferences);
 			this.setUseManning(foo[0].equals("true"));
 		} catch (Exception e) {
 			// use defaults
@@ -132,16 +135,19 @@ public class Config {
 		}
 		// read directories
 		try {
-			String[] foo=ReadWrite.read(Defaults.options_directory);
-			if(foo[0].trim().equals(Constants.S_EMPTY)) {this.setDefaultDir(Defaults.home);}
-			else{this.setDefaultDir(foo[0]);}
+			String[] foo = ReadWrite.read(Defaults.optionsDirectory);
+			if (foo[0].trim().equals(Constants.S_EMPTY)) {
+				this.setDefaultDir(Defaults.home);
+			} else {
+				this.setDefaultDir(foo[0]);
+			}
 		} catch (Exception e) {
 			// use defaults
 			this.setDefaultDir(Defaults.home);
 		}
 		// read preferences
 		try {
-			String[] foo=ReadWrite.read(Defaults.options_save);
+			String[] foo = ReadWrite.read(Defaults.optionsSave);
 			this.setSaveHydroSpag(foo[0].equals("true"));
 		} catch (Exception e) {
 			// use defaults
@@ -162,7 +168,7 @@ public class Config {
 	public void setExpertMode(Boolean expertMode) {
 		this.expertMode = expertMode;
 	}
-	
+
 	public String getLookAndFeel() {
 		return lookAndFeel;
 	}
