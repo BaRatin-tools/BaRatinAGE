@@ -125,7 +125,7 @@ public class Defaults {
 	public static final String configPredSuffix = "Config_Pred_";
 	// Input data files
 	public static final String dataGaugings = "Data_Gaugings.txt";
-	public static final String dataLimnigraph = "Data_Limnigraph.txt";
+	public static final String dataLimnigraphPrefix = "Data_Limnigraph_";
 
 	// public static final String config_XYBAD = "XY.BAD";
 	// public static final String config_HHBAD = "HH.BAD";
@@ -142,8 +142,8 @@ public class Defaults {
 	public static final String results_PriorRC_spag = "Results_RC_Prior_Spaghetti";
 	public static final String results_PostRC_env = "Results_RC_Post_Envelop";
 	public static final String results_PostRC_spag = "Results_RC_Post_Spaghetti";
-	public static final String results_Qt_env = "Results_Qt_Envelop";
-	public static final String results_Qt_spag = "Results_Qt_Spaghetti";
+	public static final String resultsEnvPrefix = "Results_Qt_Envelop_";
+	public static final String resultsSpagPrefix = "Results_Qt_Spaghetti_";
 	public static final String results_CookedMCMC = "Results_MCMCcooked.txt";
 	public static final String results_SummaryMCMC = "Results_MCMCsummary.txt";
 	public static final String results_SummaryGaugings = "Results_HQ.txt";
