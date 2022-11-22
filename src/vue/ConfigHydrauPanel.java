@@ -37,6 +37,7 @@ import Utils.Dico;
 
 /**
  * Panel for handling Hydraulic configurations
+ * 
  * @author Ben Renard, Irstea Lyon
  */
 @SuppressWarnings("serial")
@@ -52,7 +53,7 @@ public class ConfigHydrauPanel extends ItemPanel implements ActionListener {
 	private ControlPanel[] controls;
 	private GridBag_Button butt_run;
 	private GridBag_Button butt_kickout;
-	private GridBag_ToggleButton butt_ylog; 
+	private GridBag_ToggleButton butt_ylog;
 	private GridBag_Button butt_legend;
 	private GridBag_Button butt_moreplots;
 	private GridBag_Panel pan_graph;
@@ -65,52 +66,59 @@ public class ConfigHydrauPanel extends ItemPanel implements ActionListener {
 	private GridBag_Button butt_n2h;
 
 	// locals
-	private Config config=Config.getInstance();
-	private Dico dico=Dico.getInstance(config.getLanguage());
-	private Control controller=Control.getInstance();
-	private ExeControl exeController=ExeControl.getInstance();
-	private PlotControl plotController=PlotControl.getInstance();
-	private int currentNC=0;
-	
+	private Config config = Config.getInstance();
+	private Dico dico = Dico.getInstance(config.getLanguage());
+	private Control controller = Control.getInstance();
+	private ExeControl exeController = ExeControl.getInstance();
+	private PlotControl plotController = PlotControl.getInstance();
+	private int currentNC = 0;
+
 	// constants
-	public static final String[] nControlCombo=new String[] {"0","1","2","3","4","5","6","7","8","9","10"};
-	public static final int nsim_def=1000;
-	public static final int nstep_def=101;
-	private static final String[] morePlotsList=new String[] {"Spaghetti"};
-	private static final int Spag_indx=0;
-	
-	public ConfigHydrauPanel(String hID,boolean enabled) {
-		super(new int[] {0,0,0,0}, new int[] {0,0}, new double[] {0.0,0.0,1.0,0.0},new double[] {1.0,1.0},
-				new int[] {0}, new int[] {0}, new double[] {1.0},new double[] {1.0});
-		drawInfoPanel(hID,enabled);
-		drawGraphPanel(hID,enabled);
-		if(!hID.equals("")){
+	public static final String[] nControlCombo = new String[] { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9",
+			"10" };
+	public static final int nsim_def = 1000;
+	public static final int nstep_def = 101;
+	private static final String[] morePlotsList = new String[] { "Spaghetti" };
+	private static final int Spag_indx = 0;
+
+	public ConfigHydrauPanel(String hID, boolean enabled) {
+		super(new int[] { 0, 0, 0, 0 }, new int[] { 0, 0 }, new double[] { 0.0, 0.0, 1.0, 0.0 },
+				new double[] { 1.0, 1.0 },
+				new int[] { 0 }, new int[] { 0 }, new double[] { 1.0 }, new double[] { 1.0 });
+		drawInfoPanel(hID, enabled);
+		drawGraphPanel(hID, enabled);
+		if (!hID.equals("")) {
 			// fill in content with ConfigHydrau object, through controller
-			controller.fillHydrauConfigPanel(hID,this);
+			controller.fillHydrauConfigPanel(hID, this);
 		}
 		ncontrol.addActionListener(listener_ncontrol);
 	}
 
-	private void drawInfoPanel(String hID,boolean enabled){
+	private void drawInfoPanel(String hID, boolean enabled) {
 		// basic description
-		id=new GridBag_Text_Titled(this.getInfoPanel(),Constants.S_EMPTY,dico.entry("Name"),config.getFontTxt(),config.getFontLbl(),
-				Defaults.txtColor,Defaults.lblColor,0,0,1,1);
-		ncontrol=new GridBag_ComboBox_Titled(this.getInfoPanel(),nControlCombo,dico.entry("Ncontrol"),
-				config.getFontTxt(),config.getFontLbl(),Defaults.txtColor,Defaults.lblColor,
-				1,0,1,1,true,false,dico.entry("Ncontrol"));
-		description=new GridBag_TextField_Titled(this.getInfoPanel(),Constants.S_EMPTY,dico.entry("Description"),config.getFontTxt(),config.getFontLbl(),
-				Defaults.txtColor,Defaults.lblColor,0,1,3,1,dico.entry("Description"));
-		ncontrol.setEnabled(enabled);description.setEnabled(enabled);
+		id = new GridBag_Text_Titled(this.getInfoPanel(), Constants.S_EMPTY, dico.entry("Name"), config.getFontTxt(),
+				config.getFontLbl(),
+				Defaults.txtColor, Defaults.lblColor, 0, 0, 1, 1);
+		ncontrol = new GridBag_ComboBox_Titled(this.getInfoPanel(), nControlCombo, dico.entry("Ncontrol"),
+				config.getFontTxt(), config.getFontLbl(), Defaults.txtColor, Defaults.lblColor,
+				1, 0, 1, 1, true, false, dico.entry("Ncontrol"));
+		description = new GridBag_TextField_Titled(this.getInfoPanel(), Constants.S_EMPTY, dico.entry("Description"),
+				config.getFontTxt(), config.getFontLbl(),
+				Defaults.txtColor, Defaults.lblColor, 0, 1, 3, 1, dico.entry("Description"));
+		ncontrol.setEnabled(enabled);
+		description.setEnabled(enabled);
 
 		// split pannel
-		GridBag_SplitPanel split=new GridBag_SplitPanel(this.getInfoPanel(),JSplitPane.VERTICAL_SPLIT,0.5,0,2,2,1);
-		JScrollPane scroll1=new JScrollPane();
+		GridBag_SplitPanel split = new GridBag_SplitPanel(this.getInfoPanel(), JSplitPane.VERTICAL_SPLIT, 0.5, 0, 2, 2,
+				1);
+		JScrollPane scroll1 = new JScrollPane();
 		scroll1.setVerticalScrollBarPolicy(Defaults.scrollV);
 		scroll1.setHorizontalScrollBarPolicy(Defaults.scrollH);
-		matrixPanel=new JPanel();matrixPanel.setBackground(Defaults.bkgColor);
+		matrixPanel = new JPanel();
+		matrixPanel.setBackground(Defaults.bkgColor);
 		scroll1.setViewportView(matrixPanel);
 		split.setLeftComponent(scroll1);
-		JScrollPane scroll2=new JScrollPane();
+		JScrollPane scroll2 = new JScrollPane();
 		scroll2.setVerticalScrollBarPolicy(Defaults.scrollV);
 		scroll2.setHorizontalScrollBarPolicy(Defaults.scrollH);
 		controlPanel = new JTabbedPane();
@@ -118,127 +126,142 @@ public class ConfigHydrauPanel extends ItemPanel implements ActionListener {
 		scroll2.setViewportView(controlPanel);
 		split.setRightComponent(scroll2);
 		// buttons
-		butt_apply=new GridBag_Button(this.getInfoPanel(),this,"butt_apply",dico.entry("Apply"),
-				Defaults.iconApply,0,3,2,1,false,true,"");
+		butt_apply = new GridBag_Button(this.getInfoPanel(), this, "butt_apply", dico.entry("Apply"),
+				Defaults.iconApply, 0, 3, 2, 1, false, true, "");
 		butt_apply.setEnabled(enabled);
 		// Extra actions only if hydrocontrol already exists
-		if(!hID.equals("")){
-			int nc=controller.getHydrauConfigNcontrol(hID);
-			currentNC=nc;
+		if (!hID.equals("")) {
+			int nc = controller.getHydrauConfigNcontrol(hID);
+			currentNC = nc;
 			// Bonnifait Matrix
 			matrix = drawMatrixPanel(nc);
 			// Controls
-			controls = drawControlPanel(nc);		
+			controls = drawControlPanel(nc);
 		}
 		this.revalidate();
 	}
 
-	private void drawGraphPanel(String hID,boolean enabled){
+	private void drawGraphPanel(String hID, boolean enabled) {
 		// Split Panel
-		GridBag_SplitPanel split= new GridBag_SplitPanel(this.getGraphPanel(),JSplitPane.VERTICAL_SPLIT,0.D,0,0,1,1);
+		GridBag_SplitPanel split = new GridBag_SplitPanel(this.getGraphPanel(), JSplitPane.VERTICAL_SPLIT, 0.D, 0, 0, 1,
+				1);
 		// top panel
-		JPanel topPanel=new JPanel();
-		GridBag_Layout.SetGrid(topPanel,new int[] {0,0,0},new int[] {0,0,0,0,0,0,0},new double[] {0.0,0.0,0.0},new double[] {1.0,1.0,1.0,1.0,1.0,1.0,1.0});
+		JPanel topPanel = new JPanel();
+		GridBag_Layout.SetGrid(topPanel, new int[] { 0, 0, 0 }, new int[] { 0, 0, 0, 0, 0, 0, 0 },
+				new double[] { 0.0, 0.0, 0.0 }, new double[] { 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0 });
 		topPanel.setBackground(Defaults.bkgColor);
 		split.setLeftComponent(topPanel);
 		// bottom graph panel
-		JPanel bottomPanel=new JPanel();
-		GridBag_Layout.SetGrid(bottomPanel,new int[] {0,0},new int[] {0,0,0,0},new double[] {0.0,1.0},new double[] {1.0,1.0,1.0,1.0});
+		JPanel bottomPanel = new JPanel();
+		GridBag_Layout.SetGrid(bottomPanel, new int[] { 0, 0 }, new int[] { 0, 0, 0, 0 }, new double[] { 0.0, 1.0 },
+				new double[] { 1.0, 1.0, 1.0, 1.0 });
 		bottomPanel.setBackground(Defaults.bkgColor);
 		split.setRightComponent(bottomPanel);
-		//------------------
+		// ------------------
 		// top panel: compute prior RC
-		new GridBag_Label(topPanel,dico.entry("PriorRC"),config.getFontBigLbl(),Defaults.txtColor,SwingConstants.CENTER,0,0,7,1,true,false);
-		nsim=new GridBag_TextField_Titled(topPanel,Integer.toString(nsim_def),"Nsim",
-				config.getFontTxt(),config.getFontLbl(),Defaults.txtColor,Defaults.lblColor,
-				0,1,1,2,dico.entry("NMCsim_long"));
+		new GridBag_Label(topPanel, dico.entry("PriorRC"), config.getFontBigLbl(), Defaults.txtColor,
+				SwingConstants.CENTER, 0, 0, 7, 1, true, false);
+		nsim = new GridBag_TextField_Titled(topPanel, Integer.toString(nsim_def), "Nsim",
+				config.getFontTxt(), config.getFontLbl(), Defaults.txtColor, Defaults.lblColor,
+				0, 1, 1, 2, dico.entry("NMCsim_long"));
 		nsim.setEnabled(enabled);
-		hmin=new GridBag_TextField_Titled(topPanel,"","Hmin",
-				config.getFontTxt(),config.getFontLbl(),Defaults.txtColor,Defaults.lblColor,
-				1,1,1,2,dico.entry("Hmin_long"));
+		hmin = new GridBag_TextField_Titled(topPanel, "", "Hmin",
+				config.getFontTxt(), config.getFontLbl(), Defaults.txtColor, Defaults.lblColor,
+				1, 1, 1, 2, dico.entry("Hmin_long"));
 		hmin.setEnabled(enabled);
-		hmax=new GridBag_TextField_Titled(topPanel,"","Hmax",
-				config.getFontTxt(),config.getFontLbl(),Defaults.txtColor,Defaults.lblColor,
-				2,1,1,2,dico.entry("Hmax_long"));
+		hmax = new GridBag_TextField_Titled(topPanel, "", "Hmax",
+				config.getFontTxt(), config.getFontLbl(), Defaults.txtColor, Defaults.lblColor,
+				2, 1, 1, 2, dico.entry("Hmax_long"));
 		hmax.setEnabled(enabled);
-		hstep=new GridBag_TextField_Titled(topPanel,"","Hstep",
-				config.getFontTxt(),config.getFontLbl(),Defaults.txtColor,Defaults.lblColor,
-				5,1,1,2,dico.entry("Hstep_long"));
+		hstep = new GridBag_TextField_Titled(topPanel, "", "Hstep",
+				config.getFontTxt(), config.getFontLbl(), Defaults.txtColor, Defaults.lblColor,
+				5, 1, 1, 2, dico.entry("Hstep_long"));
 		hstep.setEnabled(enabled);
-		butt_h2n=new GridBag_Button(topPanel,this,"butt_h2n","<-",
-				null,4,2,1,1,true,false,dico.entry("h2n"));
+		butt_h2n = new GridBag_Button(topPanel, this, "butt_h2n", "<-",
+				null, 4, 2, 1, 1, true, false, dico.entry("h2n"));
 		butt_h2n.setEnabled(enabled);
-		butt_n2h=new GridBag_Button(topPanel,this,"butt_h2n","->",
-				null,4,1,1,1,true,false,dico.entry("n2h"));
+		butt_n2h = new GridBag_Button(topPanel, this, "butt_h2n", "->",
+				null, 4, 1, 1, 1, true, false, dico.entry("n2h"));
 		butt_n2h.setEnabled(enabled);
-		nstep=new GridBag_TextField_Titled(topPanel,Integer.toString(nstep_def),"Nstep",
-				config.getFontTxt(),config.getFontLbl(),Defaults.txtColor,Defaults.lblColor,
-				3,1,1,2,dico.entry("Nstep_long"));
+		nstep = new GridBag_TextField_Titled(topPanel, Integer.toString(nstep_def), "Nstep",
+				config.getFontTxt(), config.getFontLbl(), Defaults.txtColor, Defaults.lblColor,
+				3, 1, 1, 2, dico.entry("Nstep_long"));
 		nstep.setEnabled(enabled);
-		butt_run=new GridBag_Button(topPanel,this,"butt_run",dico.entry("Run"),
-				Defaults.iconRun,6,1,1,2,true,true,dico.entry("Run"));
+		butt_run = new GridBag_Button(topPanel, this, "butt_run", dico.entry("Run"),
+				Defaults.iconRun, 6, 1, 1, 2, true, true, dico.entry("Run"));
 		butt_run.setEnabled(enabled);
-		
-		//------------------		
-		// bottom panel: graph			
-		butt_ylog=new GridBag_ToggleButton(bottomPanel,this,"ylog",dico.entry("Ylog_on"),dico.entry("Ylog_off"),false,
-				Defaults.iconYlog,0,0,1,1,true,true,dico.entry("ApplyYlog"));
+
+		// ------------------
+		// bottom panel: graph
+		butt_ylog = new GridBag_ToggleButton(bottomPanel, this, "ylog", dico.entry("Ylog_on"), dico.entry("Ylog_off"),
+				false,
+				Defaults.iconYlog, 0, 0, 1, 1, true, true, dico.entry("ApplyYlog"));
 		butt_ylog.setEnabled(enabled);
-		butt_kickout=new GridBag_Button(bottomPanel,this,"butt_kickout",dico.entry("KickPlot"),
-				Defaults.iconKickPlot,1,0,1,1,true,true,dico.entry("PlotInExternalWindow"));
+		butt_kickout = new GridBag_Button(bottomPanel, this, "butt_kickout", dico.entry("KickPlot"),
+				Defaults.iconKickPlot, 1, 0, 1, 1, true, true, dico.entry("PlotInExternalWindow"));
 		butt_kickout.setEnabled(enabled);
-		butt_legend=new GridBag_Button(bottomPanel,this,"butt_legend",dico.entry("Legend"),
-				Defaults.iconLegend,2,0,1,1,true,true,dico.entry("ShowLegend"));
+		butt_legend = new GridBag_Button(bottomPanel, this, "butt_legend", dico.entry("Legend"),
+				Defaults.iconLegend, 2, 0, 1, 1, true, true, dico.entry("ShowLegend"));
 		butt_legend.setEnabled(enabled);
-		butt_moreplots=new GridBag_Button(bottomPanel,this,"butt_moreplots",dico.entry("MorePlot"),
-				Defaults.iconMorePlots,3,0,1,1,true,true,dico.entry("MorePlotTip"));
+		butt_moreplots = new GridBag_Button(bottomPanel, this, "butt_moreplots", dico.entry("MorePlot"),
+				Defaults.iconMorePlots, 3, 0, 1, 1, true, true, dico.entry("MorePlotTip"));
 		butt_moreplots.setEnabled(enabled);
-		pan_graph=new GridBag_Panel(bottomPanel,0,1,4,1);
+		pan_graph = new GridBag_Panel(bottomPanel, 0, 1, 4, 1);
 		pan_graph.setBackground(Defaults.bkgColor);
-		GridBag_Layout.SetGrid(pan_graph,new int[] {0},new int[] {0},new double[] {1.0},new double[] {1.0});
+		GridBag_Layout.SetGrid(pan_graph, new int[] { 0 }, new int[] { 0 }, new double[] { 1.0 }, new double[] { 1.0 });
 	}
 
-	public ControlPanel[] drawControlPanel(int ncontrol){
+	public ControlPanel[] drawControlPanel(int ncontrol) {
 		controlPanel.removeAll();
-		ControlPanel[] controls= new ControlPanel[ncontrol];
-		for(int i=0;i<ncontrol;i++){
-			controls[i]=new ControlPanel(this);
-			controlPanel.addTab(dico.entry("Control")+" "+(i+1),controls[i]);
+		ControlPanel[] controls = new ControlPanel[ncontrol];
+		for (int i = 0; i < ncontrol; i++) {
+			controls[i] = new ControlPanel(this);
+			controlPanel.addTab(dico.entry("Control") + " " + (i + 1), controls[i]);
 		}
 		controlPanel.revalidate();
 		return controls;
 	}
 
-	public GridBag_CheckBox[][] drawMatrixPanel(int ncontrol){
+	public GridBag_CheckBox[][] drawMatrixPanel(int ncontrol) {
 		matrixPanel.removeAll();
-		int nrow=ncontrol+2;int ncol=ncontrol+2;
-		int[] xx=new int[ncol];
-		int[] yy=new int[nrow];
-		Arrays.fill(xx,0);
-		Arrays.fill(yy,0);
-		double[] wx=new double[ncol];
-		double[] wy=new double[nrow];
-		Arrays.fill(wx,1.0);
-		Arrays.fill(wy,1.0);
-		GridBag_Layout.SetGrid(matrixPanel,yy,xx,wy,wx);
+		int nrow = ncontrol + 2;
+		int ncol = ncontrol + 2;
+		int[] xx = new int[ncol];
+		int[] yy = new int[nrow];
+		Arrays.fill(xx, 0);
+		Arrays.fill(yy, 0);
+		double[] wx = new double[ncol];
+		double[] wy = new double[nrow];
+		Arrays.fill(wx, 1.0);
+		Arrays.fill(wy, 1.0);
+		GridBag_Layout.SetGrid(matrixPanel, yy, xx, wy, wx);
 		// draw column headers
-		for(int i=0;i<ncontrol;i++){
-			new GridBag_Label(matrixPanel,dico.entry("Control")+" "+(i+1)+" ",config.getFontTxt(),Defaults.txtColor,SwingConstants.CENTER,i+1,0,1,1,true,true);
+		for (int i = 0; i < ncontrol; i++) {
+			new GridBag_Label(matrixPanel, dico.entry("Control") + " " + (i + 1) + " ", config.getFontTxt(),
+					Defaults.txtColor, SwingConstants.CENTER, i + 1, 0, 1, 1, true, true);
 		}
 		// draw row headers
-		for(int i=0;i<ncontrol;i++){
-			String txt=dico.entry("Segment")+" "+(i+1)+" ";
-			if(ncontrol>1 & i==0) {txt=txt+"("+dico.entry("lowest")+")";}
-			if(ncontrol>1 & i==ncontrol-1) {txt=txt+"("+dico.entry("highest")+")";}
-			new GridBag_Label(matrixPanel,txt,config.getFontTxt(),Defaults.txtColor,SwingConstants.CENTER,0,i+1,1,1,true,true);
+		for (int i = 0; i < ncontrol; i++) {
+			String txt = dico.entry("Segment") + " " + (i + 1) + " ";
+			if (ncontrol > 1 & i == 0) {
+				txt = txt + "(" + dico.entry("lowest") + ")";
+			}
+			if (ncontrol > 1 & i == ncontrol - 1) {
+				txt = txt + "(" + dico.entry("highest") + ")";
+			}
+			new GridBag_Label(matrixPanel, txt, config.getFontTxt(), Defaults.txtColor, SwingConstants.CENTER, 0, i + 1,
+					1, 1, true, true);
 		}
 		GridBag_CheckBox[][] matrix = new GridBag_CheckBox[ncontrol][ncontrol];
 		// draw buttons
-		for(int i=0;i<ncontrol;i++){//column
-			for(int j=i;j<ncontrol;j++){//row
-				matrix[i][j]=new GridBag_CheckBox(matrixPanel,this,(i+","+j),i+1,j+1,1,1,true,true,"");
+		for (int i = 0; i < ncontrol; i++) {// column
+			for (int j = i; j < ncontrol; j++) {// row
+				matrix[i][j] = new GridBag_CheckBox(matrixPanel, this, (i + "," + j), i + 1, j + 1, 1, 1, true, true,
+						"");
 				matrix[i][j].setBackground(Defaults.bkgColor);
-				if(i==j){matrix[i][j].setSelected(true);}
+				if (i == j) {
+					matrix[i][j].setSelected(true);
+				}
 			}
 		}
 		// check feasability
@@ -248,84 +271,96 @@ public class ConfigHydrauPanel extends ItemPanel implements ActionListener {
 		return matrix;
 	}
 
-	public void updateHydrau(){
+	public void updateHydrau() {
 		controller.updateHydrauConfig(this);
 		controller.setPriorRatingCurveOptions(this);
 	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		if(e.getSource().equals(butt_apply)){
+		if (e.getSource().equals(butt_apply)) {
 			updateHydrau();
-		}
-		else if(e.getSource().equals(butt_run)){
+		} else if (e.getSource().equals(butt_run)) {
 			boolean ok = controller.setPriorRatingCurveOptions(this);
-			if(!ok){controller.popupFormatError();return;}
+			if (!ok) {
+				controller.popupFormatError();
+				return;
+			}
 			controller.updateHydrauConfig(this);
 			ok = controller.checkActivationStages(this);
-			if(!ok){controller.popupKError();return;}
-			exeController.run(new boolean[] {true,false,false,false}, // RunOptions
-					null, // gaugings
-					this.id.getText().trim(), // hydrau-config
-					null, // remnant error model
-					null, // MCMC
-					null // Rating Curve
-					);
-		}
-		else if(e.getSource().equals(butt_kickout)){
+			if (!ok) {
+				controller.popupKError();
+				return;
+			}
+			// exeController.run(new boolean[] {true,false,false,false}, // RunOptions
+			// null, // gaugings
+			// this.id.getText().trim(), // hydrau-config
+			// null, // remnant error model
+			// null, // MCMC
+			// null // Rating Curve
+			// );
+		} else if (e.getSource().equals(butt_kickout)) {
 			controller.kickPlot_hydrau(this);
-		}
-		else if(e.getSource().equals(butt_ylog)){
+		} else if (e.getSource().equals(butt_ylog)) {
 			this.getPan_graph().removeAll();
 			ChartPanel chart = controller.plotHydrau(this);
-			if(chart!=null){
-				GridBag_Layout.putIntoGrid(chart,this.getPan_graph(),0,0,1,1,true,true);
+			if (chart != null) {
+				GridBag_Layout.putIntoGrid(chart, this.getPan_graph(), 0, 0, 1, 1, true, true);
 				this.getPan_graph().revalidate();
 			}
-		}
-		else if(e.getSource().equals(butt_moreplots)){
+		} else if (e.getSource().equals(butt_moreplots)) {
 			Frame_SelectItem f = new Frame_SelectItem(null,
-					dico.entry("SelectItem"),dico.entry(morePlotsList),true,dico.entry("SelectPlot"),
-					dico.entry("Apply"),dico.entry("Cancel"),
-					Defaults.iconApply,Defaults.iconCancel,
-					config.getFontTxt(),config.getFontLbl(),
-					Defaults.bkgColor,Defaults.txtColor,Defaults.lblColor,
+					dico.entry("SelectItem"), dico.entry(morePlotsList), true, dico.entry("SelectPlot"),
+					dico.entry("Apply"), dico.entry("Cancel"),
+					Defaults.iconApply, Defaults.iconCancel,
+					config.getFontTxt(), config.getFontLbl(),
+					Defaults.bkgColor, Defaults.txtColor, Defaults.lblColor,
 					Defaults.popupSize_Wide,
-					null,null,dico.entry("SelectItem"));
-			int indx=f.getIndx();
-			if(indx>=0){
+					null, null, dico.entry("SelectItem"));
+			int indx = f.getIndx();
+			if (indx >= 0) {
 				JPanel chart = null;
-				if(indx==Spag_indx){chart = plotController.priorSpag(this);}
-				if(chart!=null){controller.kickPlot(chart);} 
+				if (indx == Spag_indx) {
+					chart = plotController.priorSpag(this);
+				}
+				if (chart != null) {
+					controller.kickPlot(chart);
+				}
 			}
+		} else if (e.getSource().equals(butt_legend)) {
+			controller.showLegend(this);
+		} else if (e.getSource().equals(butt_h2n)) {
+			controller.fillNHstep(hmin, hmax, hstep, nstep, "n");
+		} else if (e.getSource().equals(butt_n2h)) {
+			controller.fillNHstep(hmin, hmax, hstep, nstep, "h");
 		}
-		else if(e.getSource().equals(butt_legend)){controller.showLegend(this);}
-		else if(e.getSource().equals(butt_h2n)){controller.fillNHstep(hmin,hmax,hstep,nstep,"n");}
-		else if(e.getSource().equals(butt_n2h)){controller.fillNHstep(hmin,hmax,hstep,nstep,"h");}
 		// if source is none of the above, it's the matrix, so update feasability
-		controller.setCheckboxEnabled(matrix);matrixPanel.revalidate();this.revalidate();
+		controller.setCheckboxEnabled(matrix);
+		matrixPanel.revalidate();
+		this.revalidate();
 	}
 
 	ActionListener listener_ncontrol = new ActionListener() {
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			int k=Integer.parseInt((String) ncontrol.getSelectedItem());
-			if(currentNC>0) {
-				String mess = String.format("<html>%s<br>%s</html>", dico.entry("nControlWarning"), dico.entry("ConfirmContinue"));
-				int ok=new Frame_YesNoQuestion().ask(MainFrame.getInstance(),mess,
-							dico.entry("Warning"),
-							Defaults.iconWarning,dico.entry("Yes"),dico.entry("No"));
-				if(ok==JOptionPane.NO_OPTION) {
+			int k = Integer.parseInt((String) ncontrol.getSelectedItem());
+			if (currentNC > 0) {
+				String mess = String.format("<html>%s<br>%s</html>", dico.entry("nControlWarning"),
+						dico.entry("ConfirmContinue"));
+				int ok = new Frame_YesNoQuestion().ask(MainFrame.getInstance(), mess,
+						dico.entry("Warning"),
+						Defaults.iconWarning, dico.entry("Yes"), dico.entry("No"));
+				if (ok == JOptionPane.NO_OPTION) {
 					ncontrol.setSelectedIndex(currentNC);
 					return;
 				}
 			}
-			matrix=drawMatrixPanel(k);
-			controls=drawControlPanel(k);
-			currentNC=k;
+			matrix = drawMatrixPanel(k);
+			controls = drawControlPanel(k);
+			currentNC = k;
 		};
 	};
-	
+
 	ItemListener listener_graph = new ItemListener() {
 		public void itemStateChanged(ItemEvent itemEvent) {
 			updateHydrau();
@@ -520,24 +555,20 @@ public class ConfigHydrauPanel extends ItemPanel implements ActionListener {
 		this.nstep = nstep;
 	}
 
-	
 	public GridBag_Button getButt_h2n() {
 		return butt_h2n;
 	}
-	
 
 	public void setButt_h2n(GridBag_Button butt_h2n) {
 		this.butt_h2n = butt_h2n;
 	}
-	
 
 	public GridBag_Button getButt_n2h() {
 		return butt_n2h;
 	}
-	
 
 	public void setButt_n2h(GridBag_Button butt_n2h) {
 		this.butt_n2h = butt_n2h;
 	}
-	
+
 }
