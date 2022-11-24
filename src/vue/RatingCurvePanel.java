@@ -205,7 +205,7 @@ public class RatingCurvePanel extends ItemPanel implements ActionListener {
 			}
 			updateRC();
 			// exeController.run(new boolean[] {false,true,true,false}, // RunOptions
-			exeController.run(new RunOptions(true, true, true, false), // RunOptions
+			exeController.run(new RunOptions(true, true, true, true), // RunOptions
 					this.combo_gauging.getSelectedItem().toString(), // gaugings
 					this.combo_hydrau.getSelectedItem().toString(), // hydrau-config
 					this.combo_error.getSelectedIndex(), // remnant error model
