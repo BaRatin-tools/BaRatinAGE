@@ -2,20 +2,23 @@ package controleur;
 
 import java.awt.Cursor;
 import java.io.BufferedReader;
+// import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+// import java.io.OutputStream;
+// import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 
 import javax.swing.JOptionPane;
 
 import commons.DirectoryUtils;
 import commons.Frame_YesNoQuestion;
-import commons.Observation;
+// import commons.Observation;
 import commons.ReadWrite;
-import commons.TimeSerie;
+// import commons.TimeSerie;
 import moteur.ConfigHydrau;
 import moteur.Envelop;
 import moteur.GaugingSet;
@@ -24,9 +27,10 @@ import moteur.Limnigraph;
 import moteur.MCMCoptions;
 import moteur.RatingCurve;
 import moteur.RemnantError;
+import moteur.RunOptions;
 import moteur.Spaghetti;
 import moteur.Station;
-import vue.AllDonePanel;
+// import vue.AllDonePanel;
 import vue.ConfigHydrauPanel;
 import vue.ExceptionPanel;
 import vue.HydrographPanel;
@@ -35,6 +39,7 @@ import vue.RatingCurvePanel;
 import Utils.Config;
 import Utils.Defaults;
 import Utils.Dico;
+// import Utils.FileReadWrite;
 
 public class ExeControl {
 
@@ -50,133 +55,180 @@ public class ExeControl {
 	// locals
 	private Config config = Config.getInstance();
 	private Dico dico = Dico.getInstance(config.getLanguage());
-	private ConfigControl configController = new ConfigControl();
-	private ResultControl resultController = new ResultControl();
+	// private ConfigControl configController = new ConfigControl();
+	// private ResultControl resultController = new ResultControl();
 	private Station station = Station.getInstance();
 	private Process exeProc = null;
 
 	private ExeControl() {
 	}
 
-	private void engine(boolean[] options, GaugingSet gaugings, ConfigHydrau hydrau,
+	private void engine(RunOptions runOptions, GaugingSet gaugings, ConfigHydrau hydrau,
 			RemnantError remnant, MCMCoptions mcmc, RatingCurve rc, Limnigraph limni, Hydrograph hydro)
 			throws IOException, Exception, InterruptedException, FileNotFoundException {
-		// Write config files and make a copy in recycle folder
-		new File(Defaults.tempWorkspace).mkdir();
-		configController.write_engine(options, gaugings, hydrau, remnant, mcmc, rc, limni, hydro);
+
+		// Write config files and
+		new File(Defaults.workspacePath).mkdir();
+		PredictionMaster predictionMaster = ConfigControl.write_engine(runOptions, gaugings, hydrau, remnant, mcmc,
+				rc, limni, hydro);
+
+		// make a copy in recycle folder
 		DirectoryUtils.deleteDirContent(new File(Defaults.recycleDir));
-		DirectoryUtils.copyFilesInDir(new File(Defaults.tempWorkspace), new File(Defaults.recycleDir));
-		// Pilot executable
-		String[] exeCommand = { Defaults.exeCommand }; // Needs to be an array since Java SE 18
-		exeProc = Runtime.getRuntime().exec(exeCommand, null, new File(Defaults.exeDir));
-		InputStream exeOut = exeProc.getInputStream();
-		BufferedReader is = new BufferedReader(new InputStreamReader(exeOut));
-		String line = "";
-		String foo = null;
-		while ((foo = is.readLine()) != null) {
-			System.out.println(foo);
-			line = foo;
+		DirectoryUtils.copyFilesInDir(new File(Defaults.workspacePath), new File(Defaults.recycleDir));
+
+		// // Pilot executable
+		String[] exeCommand = { Defaults.exeCommand };
+		File exeDirectory = new File(Defaults.home, "exe");
+		try {
+			exeProc = Runtime.getRuntime().exec(exeCommand, null, exeDirectory);
+		} catch (IOException e) {
+			System.err.println(e);
+			throw new IOException(e);
+		}
+
+		InputStream inputStream = exeProc.getInputStream();
+		InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
+		BufferedReader bufferReader = new BufferedReader(inputStreamReader);
+		ArrayList<String> consoleLines = new ArrayList<String>();
+		String currentLine = null;
+		while ((currentLine = bufferReader.readLine()) != null) {
+			System.out.println(String.format("\"%s\"", currentLine));
+			consoleLines.add(currentLine);
 		}
 		System.out.flush();
 		int exitcode = exeProc.waitFor();
 		if (exitcode != 0) {
-			throw new InterruptedException(dico.entry("ExeAborted") +
-					System.lineSeparator() +
-					dico.entry("Error") + ":" + exeProc.exitValue() +
-					System.lineSeparator() +
-					dico.entry("Message") + ":" + line);
-		}
-		// read result files and update panels
-		// prior RC
-		if (options[0] == true) {
-			Envelop env = resultController.readEnvelop(
-					new File(Defaults.tempWorkspace, Defaults.results_PriorRC_env + "_010.txt").getAbsolutePath());
-			hydrau.setPriorEnv(env);
-			Spaghetti spag = resultController.readSpaghetti(
-					new File(Defaults.tempWorkspace, Defaults.results_PriorRC_spag + "_010.txt").getAbsolutePath());
-			hydrau.setPriorSpag(spag);
-		}
-		// raw MCMC
-		if (options[1] == true) {
-			Double[][] y = ReadWrite.read(new File(Defaults.tempWorkspace, mcmc.getFilename()).getAbsolutePath(),
-					Defaults.resultSep, 1);
-			rc.setMcmc(y);
-		}
-		// Post-processing and posterior RC
-		if (options[2] == true) {
-			// Cooked & summary MCMC
-			Double[][] y = ReadWrite.read(
-					new File(Defaults.tempWorkspace, Defaults.results_CookedMCMC).getAbsolutePath(), Defaults.resultSep,
-					1);
-			rc.setMcmc_cooked(y);
-			y = ReadWrite.read(new File(Defaults.tempWorkspace, Defaults.results_SummaryMCMC).getAbsolutePath(),
-					Defaults.resultSep, 1, 1);
-			rc.setMcmc_summary(y);
-			// summary HQ
-			y = ReadWrite.read(new File(Defaults.tempWorkspace, Defaults.results_SummaryGaugings).getAbsolutePath(),
-					Defaults.resultSep, 1);
-			rc.setHQ(y);
-			// Envelops and Spaghettis
-			Envelop env = resultController.readEnvelop(
-					new File(Defaults.tempWorkspace, Defaults.results_PostRC_env + "_011.txt").getAbsolutePath());
-			rc.setEnv_total(env);
-			env = resultController.readEnvelop(
-					new File(Defaults.tempWorkspace, Defaults.results_PostRC_env + "_010.txt").getAbsolutePath());
-			rc.setEnv_param(env);
-			Spaghetti spag = resultController.readSpaghetti(
-					new File(Defaults.tempWorkspace, Defaults.results_PostRC_spag + "_011.txt").getAbsolutePath());
-			rc.setSpag_total(spag);
-			spag = resultController.readSpaghetti(
-					new File(Defaults.tempWorkspace, Defaults.results_PostRC_spag + "_010.txt").getAbsolutePath());
-			rc.setSpag_param(spag);
-		}
-		// h2Q propagation
-		if (options[3] == true) {
-			Envelop env = resultController.readEnvelop(
-					new File(Defaults.tempWorkspace, Defaults.results_Qt_env + "_111.txt").getAbsolutePath());
-			env.setX(toYear(limni));
-			hydro.setEnv_total(env);
-			env = resultController.readEnvelop(
-					new File(Defaults.tempWorkspace, Defaults.results_Qt_env + "_100.txt").getAbsolutePath());
-			env.setX(toYear(limni));
-			hydro.setEnv_h(env);
-			env = resultController.readEnvelop(
-					new File(Defaults.tempWorkspace, Defaults.results_Qt_env + "_110.txt").getAbsolutePath());
-			env.setX(toYear(limni));
-			hydro.setEnv_hparam(env);
-			hydro.setObservations(new ArrayList<Observation>());
-			for (int i = 0; i < limni.getObservations().size(); i++) {
-				hydro.addObservation(
-						new Observation(env.getMaxpost()[i], limni.getObservations().get(i).getObsDate(), null));
+			String errorMessage = "Unknown Error Message";
+			for (int k = 0; k < consoleLines.size(); k++) {
+				if (consoleLines.get(k).contains("FATAL ERROR has occured")) {
+					if (k < consoleLines.size() - 2) {
+						errorMessage = consoleLines.get(k + 1);
+						break;
+					}
+				}
 			}
-			// TODO: read spag, but this could take several gigas in memory, need to think
-			// about it
-			if (config.isSaveHydroSpag()) {
-				Spaghetti spag = resultController.readSpaghetti(
-						new File(Defaults.tempWorkspace, Defaults.results_Qt_spag + "_111.txt").getAbsolutePath());
-				spag.setX(toYear(limni));
-				hydro.setSpag_total(spag);
-				spag = resultController.readSpaghetti(
-						new File(Defaults.tempWorkspace, Defaults.results_Qt_spag + "_110.txt").getAbsolutePath());
-				spag.setX(toYear(limni));
-				hydro.setSpag_hparam(spag);
-				spag = resultController.readSpaghetti(
-						new File(Defaults.tempWorkspace, Defaults.results_Qt_spag + "_100.txt").getAbsolutePath());
-				spag.setX(toYear(limni));
-				hydro.setSpag_h(spag);
-			}
+			// ConsoleLines.forEach(null);q
+			throw new InterruptedException(errorMessage);
 		}
-		// Clean up
-		DirectoryUtils.deleteDirContent(new File(Defaults.tempWorkspace));
-		if (options[1]) {
-			new AllDonePanel(null,
-					dico.entry("AllDone") + System.getProperty("line.separator") + dico.entry("CheckPar"));
-		} else {
-			new AllDonePanel(null, dico.entry("AllDone"));
-		}
+
+		// // ##################################
+
+		BaMresult bamResult = new BaMresult(Defaults.workspacePath,
+				predictionMaster);
+
+		// Read MCMC
+		Double[][] mcmcSamples = bamResult.getMcmc();
+		mcmcSamples = BaMresult.transposeMatrix(mcmcSamples);
+		mcmcSamples = BaMresult.swapColumns(mcmcSamples, 0, 1);
+		Double[] columnK1 = mcmcSamples[0];
+		mcmcSamples[0] = mcmcSamples[1];
+		mcmcSamples[1] = columnK1;
+		rc.setMcmc(mcmcSamples);
+		rc.setMcmc_cooked(mcmcSamples);
+		Double[][] mcmcSummary = bamResult.readMcmcSummary();
+		mcmcSummary = BaMresult.transposeMatrix(mcmcSummary);
+		mcmcSummary = BaMresult.swapColumns(mcmcSummary, 0, 1);
+		rc.setMcmc_summary(mcmcSummary);
+
+		// Read envelops
+		// FIXME: needs refactoring/encapsulations
+
+		// predictionMaster
+		// predictionName
+		// predictionName
+
+		Double[] stageVector = bamResult.getBaRatinRatingCurveInput("C10");
+
+		Spaghetti spaghettiParam = bamResult.getBaRatinRatingCurveSpaghetti("C10", stageVector);
+		Envelop envelopParam = bamResult.getBaRatinRatingCurveEnvelop("C10", stageVector,
+				spaghettiParam.getY()[bamResult.getMaxpostIndex()]);
+
+		rc.setEnv_param(envelopParam);
+		rc.setSpag_param(spaghettiParam);
+
+		Spaghetti spaghettiTotal = bamResult.getBaRatinRatingCurveSpaghetti("C11", stageVector);
+		Envelop envelopTotal = bamResult.getBaRatinRatingCurveEnvelop("C11", stageVector,
+				spaghettiTotal.getY()[bamResult.getMaxpostIndex()]);
+
+		rc.setEnv_total(envelopTotal);
+		rc.setSpag_total(spaghettiTotal);
+
+		// // read result files and update panels
+		// // prior RC
+		// // if (options[0] == true) {
+		// // Envelop env = resultController.readEnvelop(
+		// // new File(Defaults.workspacePath, Defaults.results_PriorRC_env +
+		// // "_010.txt").getAbsolutePath());
+		// // hydrau.setPriorEnv(env);
+		// // Spaghetti spag = resultController.readSpaghetti(
+		// // new File(Defaults.workspacePath, Defaults.results_PriorRC_spag +
+		// // "_010.txt").getAbsolutePath());
+		// // hydrau.setPriorSpag(spag);
+		// // }
+		// // raw MCMC
+		// // if (options[1] == true) {
+
+		// // String rcEnvFilePath = new File(Defaults.workspacePath,
+		// // Defaults.results_Qt_env +"_111.txt")
+
+		// // h2Q propagation
+		// if (options[3] == true) {
+		// Envelop env = resultController.readEnvelop(
+		// new File(Defaults.workspacePath, Defaults.results_Qt_env +
+		// "_111.txt").getAbsolutePath());
+		// env.setX(toYear(limni));
+		// hydro.setEnv_total(env);
+		// env = resultController.readEnvelop(
+		// new File(Defaults.workspacePath, Defaults.results_Qt_env +
+		// "_100.txt").getAbsolutePath());
+		// env.setX(toYear(limni));
+		// hydro.setEnv_h(env);
+		// env = resultController.readEnvelop(
+		// new File(Defaults.workspacePath, Defaults.results_Qt_env +
+		// "_110.txt").getAbsolutePath());
+		// env.setX(toYear(limni));
+		// hydro.setEnv_hparam(env);
+		// hydro.setObservations(new ArrayList<Observation>());
+		// for (int i = 0; i < limni.getObservations().size(); i++) {
+		// hydro.addObservation(
+		// new Observation(env.getMaxpost()[i],
+		// limni.getObservations().get(i).getObsDate(), null));
+		// }
+		// // TODO: read spag, but this could take several gigas in memory, need to
+		// // think
+		// // about it
+		// if (config.isSaveHydroSpag()) {
+		// Spaghetti spag = resultController.readSpaghetti(
+		// new File(Defaults.workspacePath, Defaults.results_Qt_spag +
+		// "_111.txt").getAbsolutePath());
+		// spag.setX(toYear(limni));
+		// hydro.setSpag_total(spag);
+		// spag = resultController.readSpaghetti(
+		// new File(Defaults.workspacePath, Defaults.results_Qt_spag +
+		// "_110.txt").getAbsolutePath());
+		// spag.setX(toYear(limni));
+		// hydro.setSpag_hparam(spag);
+		// spag = resultController.readSpaghetti(
+		// new File(Defaults.workspacePath, Defaults.results_Qt_spag +
+		// "_100.txt").getAbsolutePath());
+		// spag.setX(toYear(limni));
+		// hydro.setSpag_h(spag);
+		// }
+		// }
+		// // Clean up
+		DirectoryUtils.deleteDirContent(new File(Defaults.workspacePath));
+		// if (options[1]) {
+		// new AllDonePanel(null,
+		// dico.entry("AllDone") + System.getProperty("line.separator") +
+		// dico.entry("CheckPar"));
+		// } else {
+		// new AllDonePanel(null, dico.entry("AllDone"));
+		// }
+
+		// ##################################
 	}
 
-	public void run(boolean[] options, String id_gaugings, String id_hydrau, Integer indx_remnant, String id_mcmc,
+	public void run(RunOptions runOptions, String id_gaugings, String id_hydrau, Integer indx_remnant, String id_mcmc,
 			String id_rc) {
 		GaugingSet gaugings = null;
 		ConfigHydrau hydrau = null;
@@ -213,7 +265,7 @@ public class ExeControl {
 		}
 		try {
 			MainFrame.getInstance().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-			engine(options, gaugings, hydrau, remnant, mcmc, rc, null, null);
+			engine(runOptions, gaugings, hydrau, remnant, mcmc, rc, null, null);
 			// update panels
 			if (id_hydrau != null) {
 				new ConfigHydrauPanel(id_hydrau, true);
@@ -222,12 +274,18 @@ public class ExeControl {
 				new RatingCurvePanel(id_rc, true);
 			}
 		} catch (FileNotFoundException e3) {
+			System.err.println(e3);
 			new ExceptionPanel(MainFrame.getInstance(), dico.entry("FileNotFound"));
 		} catch (IOException e3) {
+			System.err.println(e3);
 			new ExceptionPanel(MainFrame.getInstance(), dico.entry("ConfigWriteProblem"));
 		} catch (InterruptedException e3) {
-			new ExceptionPanel(MainFrame.getInstance(), dico.entry("RunProblem"));
+			System.err.println(e3);
+			String message = String.format("%s!\n%s: %s", dico.entry("RunProblem"), dico.entry("ExeAborted"),
+					e3.getMessage());
+			new ExceptionPanel(MainFrame.getInstance(), message);
 		} catch (Exception e3) {
+			System.err.println(e3);
 			new ExceptionPanel(MainFrame.getInstance(), dico.entry("UnidentifiedProblem"));
 		} finally {
 			MainFrame.getInstance().setCursor(Cursor.getDefaultCursor());
@@ -275,34 +333,38 @@ public class ExeControl {
 			for (int i = 0; i < ncol; i++) {
 				head[i] = "dummy";
 			}
-			ReadWrite.write(rc.getMcmc(), head, new File(Defaults.tempWorkspace, mcmc.getFilename()).getAbsolutePath(),
+			ReadWrite.write(rc.getMcmc(), head, new File(Defaults.workspacePath, mcmc.getFilename()).getAbsolutePath(),
 					Defaults.resultSep);
-			engine(new boolean[] { false, false, false, true }, gaugings, hydrau, remnant, mcmc, rc, limni, hydro);
+			engine(new RunOptions(false, false, false, true), gaugings, hydrau, remnant, mcmc, rc, limni, hydro);
 			// update panels
 			if (id_hydro != null) {
 				new HydrographPanel(id_hydro, true);
 			}
 		} catch (FileNotFoundException e3) {
+			System.err.println(e3);
 			new ExceptionPanel(MainFrame.getInstance(), dico.entry("FileNotFound"));
 		} catch (IOException e3) {
+			System.err.println(e3);
 			new ExceptionPanel(MainFrame.getInstance(), dico.entry("ConfigWriteProblem"));
 		} catch (InterruptedException e3) {
+			System.err.println(e3);
 			new ExceptionPanel(MainFrame.getInstance(), dico.entry("RunProblem"));
 		} catch (Exception e3) {
+			System.err.println(e3);
 			new ExceptionPanel(MainFrame.getInstance(), dico.entry("UnidentifiedProblem"));
 		} finally {
 			MainFrame.getInstance().setCursor(Cursor.getDefaultCursor());
 		}
 	}
 
-	private Double[] toYear(TimeSerie z) {
-		int n = z.length();
-		Double[] x = new Double[n];
-		for (int i = 0; i < n; i++) {
-			x[i] = z.getObservations().get(i).getObsDate().toYear();
-		}
-		return (x);
-	}
+	// private Double[] toYear(TimeSerie z) {
+	// int n = z.length();
+	// Double[] x = new Double[n];
+	// for (int i = 0; i < n; i++) {
+	// x[i] = z.getObservations().get(i).getObsDate().toYear();
+	// }
+	// return (x);
+	// }
 
 	public Process getExeProc() {
 		return exeProc;
