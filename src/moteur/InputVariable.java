@@ -1,44 +1,54 @@
 package moteur;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Random;
 
+import Utils.FileReadWrite;
 import commons.Observation;
+import controleur.InputVarConfig;
 
 public class InputVariable {
     private String name;
     private Double[] values;
+
+    private boolean hasUncertainty = false;
     private Double[] nonSystematicStd;
     private Double[] systematicStd;
     private int[] systematicIndices;
+    private int nReplication;
     private Double[][] nonSystematicErrors;
     private Double[][] systematicErrors;
     private boolean nonSystematicErrorsGenerated;
     private boolean systematicErrorsGenerated;
-    // Could be Observation[] instead... Unclear whether nonSyst, syst error
-    // approach is generic enough to be applicable to other models
-    // Observation should be refactored to be more generic anyway (e.g. use a
-    // metadata class instead of a time class)
-    // or I could make a constructor from a Timeseries object? Limnigraph object?
-    // ... where I would actually compute the matrices from the uncertainties?
 
-    private void set(String name, Double[] values, Double[] nonSystematicStd, Double[] systematicStd,
-            int[] systematicIndices) {
+    private void set(String name, Double[] values) {
         this.nonSystematicErrorsGenerated = false;
         this.systematicErrorsGenerated = false;
         this.name = name;
         this.values = values;
+    }
+
+    private void setInputUncertainty(Double[] nonSystematicStd, Double[] systematicStd,
+            int[] systematicIndices, int nReplication) {
+        this.hasUncertainty = true;
         this.nonSystematicStd = nonSystematicStd;
         this.systematicStd = systematicStd;
         this.systematicIndices = systematicIndices;
+        this.nReplication = nReplication;
     }
 
     public InputVariable(String name, Double[] values, Double[] nonSystematicStd, Double[] systematicStd,
-            int[] systematicIndices) {
-        set(name, values, nonSystematicStd, systematicStd, systematicIndices);
+            int[] systematicIndices, int nReplication) {
+        set(name, values);
+        setInputUncertainty(nonSystematicStd, systematicStd, systematicIndices, nReplication);
     }
 
-    public InputVariable(Limnigraph limnigraph) {
+    public InputVariable(String name, Double[] values) {
+        set(name, values);
+    }
+
+    public InputVariable(Limnigraph limnigraph, int nReplication) {
         // Convert the list of observation into a regular array of observation
         List<Observation> listOfObservations = limnigraph.getObservations();
         int nObs = listOfObservations.size();
@@ -56,7 +66,8 @@ public class InputVariable {
         systematicStd = limnigraph.getbH();
         systematicIndices = limnigraph.getbHindx();
         // use default constructor
-        set(limnigraph.getName(), values, nonSystematicStd, systematicStd, systematicIndices);
+        set(limnigraph.getName(), values);
+        setInputUncertainty(values, values, systematicIndices, nReplication);
     }
 
     private static Double[][] computeNonSystematicErrorsMatrix(int nReplication, Double[] nonSystematicStd) {
@@ -65,8 +76,6 @@ public class InputVariable {
         Double[][] matrix = new Double[nObs][nReplication];
         for (int k = 0; k < nObs; k++) {
             for (int i = 0; i < nReplication; i++) {
-                // matrix[k][i] = pseudoRandomNumberGenerator.nextGaussian(0.0, (double)
-                // nonSystematicStd[k]);
                 matrix[k][i] = pseudoRandomNumberGenerator.nextGaussian() * nonSystematicStd[k];
             }
         }
@@ -77,7 +86,6 @@ public class InputVariable {
             int nReplication) {
         Double[] randomErrorArray = new Double[nReplication];
         for (int k = 0; k < nReplication; k++) {
-            // randomErrorArray[k] = pseudoRandomNumberGenerator.nextGaussian(mean, std);
             randomErrorArray[k] = pseudoRandomNumberGenerator.nextGaussian() * std + mean;
         }
         return randomErrorArray;
@@ -100,44 +108,16 @@ public class InputVariable {
         return matrix;
     }
 
-    // public static Double[][][] computeUncertaintyMatrices(Double[] values, int
-    // nReplication, Double[] nonSystematicStd,
-    // Double[] systematicStd, int[] systematicIndices) {
-
-    // Double[][] nonSystematicErrors =
-    // computeNonSystematicErrorsMatrix(nReplication, nonSystematicStd);
-    // Double[][] systematicErrors = computeSystematicErrorsMatrix(nReplication,
-    // systematicStd, systematicIndices);
-
-    // int nObs = values.length;
-    // Double[][][] allMatrics = new Double[3][nObs][nReplication];
-    // for (int k = 0; k < nObs; k++) {
-    // for (int i = 0; i < nReplication; i++) {
-    // allMatrics[0][k][i] = values[k] + nonSystematicErrors[k][i];
-    // allMatrics[1][k][i] = values[k] + systematicErrors[k][i];
-    // allMatrics[2][k][i] = values[k] + nonSystematicErrors[k][i] +
-    // systematicErrors[k][i];
-    // }
-    // }
-    // return allMatrics;
-    // }
-
-    public Double[][] getNonSytematicErrors(int nReplication) {
-        if (!nonSystematicErrorsGenerated) {
-            nonSystematicErrors = computeNonSystematicErrorsMatrix(nReplication,
-                    nonSystematicStd);
-            nonSystematicErrorsGenerated = true;
-        }
-        return nonSystematicErrors;
+    private void generateNonSytematicErrors() {
+        nonSystematicErrors = computeNonSystematicErrorsMatrix(nReplication,
+                nonSystematicStd);
+        nonSystematicErrorsGenerated = true;
     }
 
-    public Double[][] getSytematicErrors(int nReplication) {
-        if (!systematicErrorsGenerated) {
-            systematicErrors = computeSystematicErrorsMatrix(nReplication, systematicStd,
-                    systematicIndices);
-            systematicErrorsGenerated = true;
-        }
-        return systematicErrors;
+    private void generateSytematicErrors() {
+        systematicErrors = computeSystematicErrorsMatrix(nReplication, systematicStd,
+                systematicIndices);
+        systematicErrorsGenerated = true;
     }
 
     public String getName() {
@@ -148,4 +128,58 @@ public class InputVariable {
         return values;
     }
 
+    public int getNobs() {
+        return values.length;
+    }
+
+    public InputVarConfig writeToFile(String filePath, boolean withNonSystematicError, boolean withSystematicErrors)
+            throws IOException {
+        if (!hasUncertainty && (withNonSystematicError | withSystematicErrors)) {
+            System.err.println(
+                    "Error: cannot write uncertainty matrices if uncertainties were not set when creating the InputVarialbe");
+            withNonSystematicError = false;
+            withSystematicErrors = false;
+        }
+        int nRow = values.length;
+        int nCol = 1;
+        if (withNonSystematicError && !nonSystematicErrorsGenerated) {
+            nCol = nReplication;
+            generateNonSytematicErrors();
+        }
+        if (withSystematicErrors && !systematicErrorsGenerated) {
+            nCol = nReplication;
+            generateSytematicErrors();
+        }
+
+        Double[][] data = new Double[nRow][nCol];
+        if (withNonSystematicError && withSystematicErrors) {
+            for (int k = 0; k < nRow; k++) {
+                for (int i = 0; i < nCol; i++) {
+                    data[k][i] = values[k] + nonSystematicErrors[k][i] + systematicErrors[k][i];
+                }
+            }
+        } else if (withNonSystematicError && !withSystematicErrors) {
+            for (int k = 0; k < nRow; k++) {
+                for (int i = 0; i < nCol; i++) {
+                    data[k][i] = values[k] + nonSystematicErrors[k][i];
+                }
+            }
+        } else if (!withNonSystematicError && withSystematicErrors) {
+            for (int k = 0; k < nRow; k++) {
+                for (int i = 0; i < nCol; i++) {
+                    data[k][i] = values[k] + systematicErrors[k][i];
+                }
+            }
+        } else if (!withNonSystematicError && !withSystematicErrors) {
+            for (int k = 0; k < nRow; k++) {
+                for (int i = 0; i < nCol; i++) {
+                    data[k][i] = values[k];
+                }
+            }
+        }
+
+        FileReadWrite.writeMatrix(filePath, data);
+
+        return new InputVarConfig(filePath, nRow, nCol);
+    }
 }
