@@ -3,6 +3,7 @@ package Utils;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.io.File;
+import java.nio.file.Path;
 
 import javax.swing.ScrollPaneConstants;
 
@@ -98,7 +99,9 @@ public class Defaults {
 	// Directories for executable
 	public static final String exeDir = new File(home, "exe").getAbsolutePath();
 	private static final String exeName = "BaM";
-	public static final String exeCommand = os.startsWith("windows") ? exeName + ".exe" : exeName;
+	public static final String exeCommand = os.startsWith("windows")
+			? Path.of(exeDir, String.format("%s.exe", exeName)).toString()
+			: exeName;
 	// private static final String exeFilePath = new File(exeDir,
 	// exeFullName).getAbsolutePath();
 	public static final String exeConfigFileName = "Config_BaM.txt";
@@ -125,6 +128,7 @@ public class Defaults {
 	public static final String configPredSuffix = "Config_Pred_";
 	// Input data files
 	public static final String dataGaugings = "Data_Gaugings.txt";
+	public static final String dataRatingCurveStageGrid = "Data_RatingCurveStageGrid.txt";
 	public static final String dataLimnigraphPrefix = "Data_Limnigraph_";
 
 	// public static final String config_XYBAD = "XY.BAD";
@@ -142,8 +146,8 @@ public class Defaults {
 	public static final String results_PriorRC_spag = "Results_RC_Prior_Spaghetti";
 	public static final String results_PostRC_env = "Results_RC_Post_Envelop";
 	public static final String results_PostRC_spag = "Results_RC_Post_Spaghetti";
-	public static final String resultsEnvPrefix = "Results_Qt_Envelop_";
-	public static final String resultsSpagPrefix = "Results_Qt_Spaghetti_";
+	public static final String resultsEnvPrefix = "Results_Env_";
+	public static final String resultsSpagPrefix = "Results_Spag_";
 	public static final String results_CookedMCMC = "Results_MCMCcooked.txt";
 	public static final String results_SummaryMCMC = "Results_MCMCsummary.txt";
 	public static final String results_SummaryGaugings = "Results_HQ.txt";
