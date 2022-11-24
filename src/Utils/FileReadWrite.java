@@ -55,14 +55,28 @@ public class FileReadWrite {
     /**
      * Create a string array containing the lines of a text file
      * 
-     * @param textFilePath full file path
+     * @param textFilePath  full file path
+     * @param detectCharset whether it should auto-detect the file encoding
      * @return an array of string corresponding to the lines of a text file
      */
     static public String[] readLines(String textFilePath, boolean detectCharset) {
+        return readLines(textFilePath, Integer.MAX_VALUE, detectCharset);
+    }
+
+    /**
+     * 
+     * @param textFilePath  full file path to read
+     * @param nMax          the maximum number of line to read
+     * @param detectCharset whether it should auto-detect the file encoding
+     * @return an array of string corresponding to the lines of a text file
+     */
+    static public String[] readLines(String textFilePath, int nMax, boolean detectCharset) {
         Scanner scanner = FileReadWrite.createScanner(textFilePath, detectCharset);
         ArrayList<String> lines = new ArrayList<String>();
-        while (scanner.hasNextLine()) {
+        int n = 0;
+        while (scanner.hasNextLine() && n < nMax) {
             lines.add(scanner.nextLine());
+            n++;
         }
         scanner.close();
         String[] stringLines = lines.toArray(new String[0]);
@@ -109,30 +123,44 @@ public class FileReadWrite {
         String[] rows = FileReadWrite.readLines(textFilePath, detectCharset);
         int nRow = rows.length;
         if (nRow <= nHeah) {
-            return new Double[0][0];
+            String errMsg = "Cannot read matrix: the files contains no (or not enough) rows.";
+            System.err.println(errMsg);
+            throw new Exception(errMsg);
         }
-        int nCol = FileReadWrite.parseString(rows[0], sep, trim).length;
-        Double[][] itemsPerRow = new Double[nRow - nHeah][nCol];
-        for (int rowIndex = nHeah; rowIndex < nRow; rowIndex++) {
-            String[] currentRow = FileReadWrite.parseString(rows[rowIndex], sep, trim);
-            if (currentRow.length != nCol) {
-                throw new Exception(String.format(
-                        "Error while parsing file %s.\n"
-                                + "The number of column in line %o doesn't match "
-                                + "the expect number of column:\n"
-                                + "%o columns were expected, %o columns were found",
-                        textFilePath, rowIndex, nCol, currentRow.length));
+        int nCol = 0;
+        try {
+            nCol = FileReadWrite.parseString(rows[nHeah], sep, trim).length;
+            if (nCol <= skipCol) {
+                String errMsg = "Cannot read matrix: the files contains no (or not enough) columns.";
+                System.err.println(errMsg);
+                throw new Exception(errMsg);
             }
-            try {
-                for (int colIndex = 0; colIndex < nCol; colIndex++) {
-                    itemsPerRow[rowIndex - nHeah][colIndex] = Double.parseDouble(currentRow[colIndex]);
+        } catch (Exception e) {
+            String errorMessage = String.format("Cannot parse first line:\nLine: %s\nSep: %s\nError: %s",
+                    rows[0], sep, e.toString());
+            System.err.println(errorMessage);
+            throw new Exception(e);
+        }
+        Double[][] itemsPerRow = new Double[nRow - nHeah][nCol - skipCol];
+        int currentRowIndex = 0;
+        try {
+
+            for (int rowIndex = nHeah; rowIndex < nRow; rowIndex++) {
+                currentRowIndex = rowIndex;
+                String[] currentRow = FileReadWrite.parseString(rows[rowIndex], sep, trim);
+                for (int colIndex = skipCol; colIndex < nCol; colIndex++) {
+                    itemsPerRow[rowIndex - nHeah][colIndex - skipCol] = Double.parseDouble(currentRow[colIndex]);
                 }
-            } catch (Exception e) {
-                throw new Exception(String.format(
-                        "Error while parsing file %s.\n"
-                                + "Cannot convert to Double type on line %o.",
-                        textFilePath, rowIndex));
             }
+        } catch (Exception e) {
+            String errorMessage = String.format(
+                    "Error while parsing file %s.\n Error occured on line %d containing \"%s\"\nError: %s",
+                    textFilePath,
+                    currentRowIndex,
+                    rows[currentRowIndex],
+                    e.toString());
+            System.err.println(errorMessage);
+            throw new Exception(e);
         }
         return itemsPerRow;
     }
@@ -149,7 +177,13 @@ public class FileReadWrite {
      *                   (e.g. if the number of columns found is not consistent)
      */
     static public Double[][] readMatrix(String textFilePath, String sep, int nHeah) throws Exception {
-        return FileReadWrite.readMatrix(textFilePath, sep, nHeah, nHeah, true, false);
+        return FileReadWrite.readMatrix(textFilePath, sep, nHeah, 0, true, false);
+    }
+
+    static public String[] readHeaders(String textFilePath, String sep, int nRowSkip) {
+        String[] headingLines = readLines(textFilePath, nRowSkip + 1, false);
+        String[] headers = parseString(headingLines[headingLines.length - 1], sep, true);
+        return headers;
     }
 
     /**
@@ -275,8 +309,9 @@ public class FileReadWrite {
         for (int k = 0; k < arr.length; k++) {
             System.out.print(String.format("%s%s", arr[k], sep));
         }
-    } // for debugging purposes
+    }
 
+    // for debugging purposes
     static public void printStringArray(String[] arr) {
         printStringArray(arr, ", ");
     }
