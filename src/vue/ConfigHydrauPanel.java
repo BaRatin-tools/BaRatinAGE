@@ -31,6 +31,7 @@ import commons.GridBag_ToggleButton;
 import controleur.Control;
 import controleur.ExeControl;
 import controleur.PlotControl;
+import moteur.RunOptions;
 import Utils.Config;
 import Utils.Defaults;
 import Utils.Dico;
@@ -292,13 +293,14 @@ public class ConfigHydrauPanel extends ItemPanel implements ActionListener {
 				controller.popupKError();
 				return;
 			}
-			// exeController.run(new boolean[] {true,false,false,false}, // RunOptions
-			// null, // gaugings
-			// this.id.getText().trim(), // hydrau-config
-			// null, // remnant error model
-			// null, // MCMC
-			// null // Rating Curve
-			// );
+			exeController.run(new RunOptions(false, false, false, true), // RunOptions
+					null, // gaugings
+					this.id.getText().trim(), // hydrau-config
+					null, // remnant error model
+					null, // MCMC
+					null // Rating Curve
+			);
+
 		} else if (e.getSource().equals(butt_kickout)) {
 			controller.kickPlot_hydrau(this);
 		} else if (e.getSource().equals(butt_ylog)) {
