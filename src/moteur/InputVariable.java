@@ -16,6 +16,7 @@ public class InputVariable {
     private Double[] nonSystematicStd;
     private Double[] systematicStd;
     private int[] systematicIndices;
+
     private int nReplication;
     private Double[][] nonSystematicErrors;
     private Double[][] systematicErrors;
