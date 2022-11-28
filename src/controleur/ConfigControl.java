@@ -17,6 +17,7 @@ import moteur.InputVariable;
 import moteur.Limnigraph;
 import moteur.MCMCoptions;
 import moteur.PostRatingCurveOptions;
+import moteur.PriorRatingCurveOptions;
 import moteur.RatingCurve;
 import moteur.RemnantError;
 import moteur.RunOptions;
@@ -35,10 +36,35 @@ public class ConfigControl {
 			RemnantError remnant, MCMCoptions mcmc, RatingCurve rc,
 			Limnigraph limni, Hydrograph hydro) throws IOException {
 
+		/**
+		 * Note: here everything can be null exept:
+		 * - runOptions
+		 * - hydrau
+		 * - remnant (has a default one built in any case)
+		 * - mcmc (provided by the BaRatinAGE config object, created from a text file)
+		 */
+		if (runOptions == null) {
+			System.err.println("Error: RunOptions is null! Aborting.");
+			return null;
+		}
+		if (hydrau == null) {
+			System.err.println("Error: ConfigHydrau is null! Aborting.");
+			return null;
+		}
+		if (remnant == null) {
+			System.err.println("Error: RemnantError is null! Aborting.");
+			return null;
+		}
+		if (mcmc == null) {
+			System.err.println("Error: MCMCoptions is null! Aborting.");
+			return null;
+		}
+
 		// master Config_BaRatin ------------------------------------
 		writeConfigBaRatin();
 
 		// RunOptions -----------------------------------------------
+		// FIXME: have it receive a runOption object as argument?
 		writeConfigRunOptions(
 				runOptions.doMCMC(),
 				runOptions.doMcmcSummary(),
@@ -59,7 +85,11 @@ public class ConfigControl {
 		writeConfigControlMatrix(hydrau.getMatrix());
 
 		// Calibration data -----------------------------------------
-		writeConfigGaugingsData(gaugings);
+		if (gaugings != null) {
+			writeConfigGaugingsData(gaugings);
+		} else {
+			System.out.println("No gaugings specified...");
+		}
 
 		// Remnant sigma --------------------------------------------
 		writeConfigRemnantSigma(remnant);
@@ -69,22 +99,30 @@ public class ConfigControl {
 
 		// Cooking, summary and residuals ---------------------------
 		// FIXME: naming conventions!
-		writeConfigCooking(Defaults.results_CookedMCMC, 0.5, 100);
+		writeConfigCooking(Defaults.results_CookedMCMC, 0.5, 10);
 		writeConfigSummary(Defaults.results_SummaryMCMC);
 		writeConfigResiduals(Defaults.results_SummaryGaugings);
 
 		// Predictions ----------------------------------------------
 		if (runOptions.doPrediction()) {
 			PredictionMaster predictionMaster = new PredictionMaster();
+			if (rc == null && limni == null && hydro == null) {
+				System.out.println("Probably a prior experiment...");
+				if (!runOptions.doMCMC() && !runOptions.doMcmcSummary() && !runOptions.doResidualDiag()
+						&& runOptions.doPrediction()) {
+					System.out.println("Certainly a prior experiment...");
+					predictionMaster = writeCongigPriorRC(hydrau, predictionMaster);
+				}
+			}
 			if (rc != null) {
 				predictionMaster = writeConfigRC(rc, predictionMaster);
 			} else {
-				System.err.println("No RC prediction");
+				System.err.println("No RC prediction...");
 			}
 			if (limni != null && hydro != null) {
 				predictionMaster = writeConfigH2Qproppagation(limni, hydro, predictionMaster);
 			} else {
-				System.err.println("No H2Q prediction");
+				System.err.println("No H2Q prediction...");
 			}
 
 			predictionMaster.writeConfigFile(Defaults.workspacePath);
@@ -271,6 +309,46 @@ public class ConfigControl {
 		configFile.writeToFile();
 	}
 
+	static private InputVariable createStageGridInputVariable(Double from, Double to, Double step) {
+		int nStep = (int) ((to - from) / step);
+		Double[] stageValues = new Double[nStep];
+		for (int k = 0; k < nStep; k++) {
+			stageValues[k] = from + step * k;
+		}
+		return new InputVariable("RatingCurveStageGrid", stageValues);
+	}
+
+	static private InputVariable createStageGridInputVariable(Double from, Double to, int nStep) {
+		Double step = (to - from) / (double) nStep;
+		return createStageGridInputVariable(from, to, step);
+	}
+
+	static private PredictionMaster writeCongigPriorRC(ConfigHydrau hydraulicConfig, PredictionMaster predictionMaster)
+			throws IOException {
+
+		PriorRatingCurveOptions priorRatingCurveOptions = hydraulicConfig.getPriorRCoptions();
+
+		int nStep = priorRatingCurveOptions.getnStep();
+		Double hMin = priorRatingCurveOptions.gethMin();
+		Double hMax = priorRatingCurveOptions.gethMax();
+
+		InputVariable hGridInputVariable = createStageGridInputVariable(hMin, hMax, nStep);
+
+		String hGridFilePath = Path.of(Defaults.workspacePath, Defaults.dataRatingCurveStageGrid).toString();
+		InputVarConfig hGridInVarConf = hGridInputVariable.writeToFile(hGridFilePath, false, false);
+
+		OutputVarConfig QoutputWithoutRemnantErr = new OutputVarConfig("Q_noRemnErr",
+				true, true, false);
+
+		Prediction C10 = new Prediction("C10", new InputVarConfig[] { hGridInVarConf },
+				new OutputVarConfig[] { QoutputWithoutRemnantErr }, true);
+
+		predictionMaster.addPrediction(C10);
+
+		return predictionMaster;
+
+	}
+
 	static private PredictionMaster writeConfigRC(RatingCurve ratingCurve, PredictionMaster predictionMaster)
 			throws IOException {
 		PostRatingCurveOptions ratingCurveOptions = ratingCurve.getPostRCoptions();
@@ -283,14 +361,9 @@ public class ConfigControl {
 			System.err.println("Error: rating curve grid should be specified");
 			return null;
 		}
-		// hStep = (hMax - hMin) / (double)nStep;
 
-		Double[] hGrid = new Double[nStep];
-		for (int k = 0; k < nStep; k++) {
-			hGrid[k] = hMin + hStep * k;
-		}
+		InputVariable hGridInputVariable = createStageGridInputVariable(hMin, hMax, nStep);
 
-		InputVariable hGridInputVariable = new InputVariable("RC", hGrid);
 		String hGridFilePath = Path.of(Defaults.workspacePath, Defaults.dataRatingCurveStageGrid).toString();
 		InputVarConfig hGridInVarConf = hGridInputVariable.writeToFile(hGridFilePath, false, false);
 
