@@ -99,12 +99,17 @@ public class ExeControl {
 		int exitcode = exeProc.waitFor();
 		if (exitcode != 0) {
 			String errorMessage = "Unknown Error Message";
+			boolean hasMessage = false;
 			for (int k = 0; k < consoleLines.size(); k++) {
-				if (consoleLines.get(k).contains("FATAL ERROR has occured")) {
-					if (k < consoleLines.size() - 2) {
-						errorMessage = consoleLines.get(k + 1);
-						break;
-					}
+				currentLine = consoleLines.get(k);
+				if (currentLine.contains("FATAL ERROR has occured")) {
+					errorMessage = "";
+					hasMessage = true;
+				} else if (currentLine.contains("Execution will stop")) {
+					break;
+				}
+				if (hasMessage) {
+					errorMessage = String.format("%s\n%s", errorMessage, currentLine);
 				}
 			}
 			// ConsoleLines.forEach(null);q
@@ -148,7 +153,7 @@ public class ExeControl {
 
 		Spaghetti spaghettiTotal = bamResult.getBaRatinRatingCurveSpaghetti("C11", stageVector);
 		Envelop envelopTotal = bamResult.getBaRatinRatingCurveEnvelop("C11", stageVector,
-				spaghettiTotal.getY()[bamResult.getMaxpostIndex()]);
+				spaghettiParam.getY()[bamResult.getMaxpostIndex()]);
 
 		rc.setEnv_total(envelopTotal);
 		rc.setSpag_total(spaghettiTotal);
