@@ -1,42 +1,40 @@
 package Utils;
 
-
 public class Dictionnary {
 
 	private static Dictionnary instance;
 
-	private String fileNotFound = "Le fichier n'a pas été trouvé";
+	private String fileNotFound = "Le fichier n'a pas Ã©tÃ© trouvÃ©";
 
 	private String iOException = "Une erreur est survenue dans la gestion du fichier";
 
-	private String numFormatException = "Donnée erronéee dans le fichier";
-	
-	private String errorOccurred = "Une erreur est survenue";
-	
-	private String dataSet = "Catalogues";
-	
-	private String gauging = "Jeux de jaugeages";
-	
-	private String configHydrau = "Configurations hydrauliques";
-	
-	private String limni = "Limnigrammes";
-	
-	private String errorData = "Erreurs";
-	
-	private String importationFrameTitle = "Importation de données";
-	
-	private String nameLabel = "Nom";
-	
-	private String fileLabel = "Fichier";
-	
-	private String validate = "Valider";
-	
-	private String browse = "Parcourir";
-	
-	private String cancel = "Annuler";
-	
-	private String describeGauginFile = "Fichiers de jaugeages";
+	private String numFormatException = "DonnÃ©e erronÃ©ee dans le fichier";
 
+	private String errorOccurred = "Une erreur est survenue";
+
+	private String dataSet = "Catalogues";
+
+	private String gauging = "Jeux de jaugeages";
+
+	private String configHydrau = "Configurations hydrauliques";
+
+	private String limni = "Limnigrammes";
+
+	private String errorData = "Erreurs";
+
+	private String importationFrameTitle = "Importation de donnÃ©es";
+
+	private String nameLabel = "Nom";
+
+	private String fileLabel = "Fichier";
+
+	private String validate = "Valider";
+
+	private String browse = "Parcourir";
+
+	private String cancel = "Annuler";
+
+	private String describeGauginFile = "Fichiers de jaugeages";
 
 	public String getDataSet() {
 		return dataSet;
@@ -62,9 +60,9 @@ public class Dictionnary {
 		this.configHydrau = configHydrau;
 	}
 
-	public static synchronized Dictionnary getInstance(){
+	public static synchronized Dictionnary getInstance() {
 
-		if (instance == null){
+		if (instance == null) {
 			instance = new Dictionnary();
 		}
 		return instance;
@@ -74,9 +72,9 @@ public class Dictionnary {
 		this.load(Config.getInstance().getLanguage());
 
 	}
-	
-	private void load(String language){
-		
+
+	private void load(String language) {
+
 	}
 
 	/**
@@ -239,6 +237,5 @@ public class Dictionnary {
 	public void setDescribeGauginFile(String describeGauginFile) {
 		this.describeGauginFile = describeGauginFile;
 	}
-	
 
 }
