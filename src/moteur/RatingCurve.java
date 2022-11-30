@@ -1,5 +1,7 @@
 package moteur;
 
+import java.awt.BasicStroke;
+import java.awt.Color;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -189,10 +191,11 @@ public class RatingCurve extends Item {
 			Envelop env = new Envelop(new Double[] { low, high }, new Double[] { 0.0, 0.0 }, new Double[] { 0.0, 0.0 },
 					new Double[] { 0.0, 0.0 }, new Double[] { maxi, maxi });
 			chart_k[i] = env.plot(title, xlab, ylab,
-					Defaults.plot_kColor, Defaults.plot_kColor, 0.5f, Defaults.plot_bkgColor, Defaults.plot_gridColor,
+					Defaults.plot_kColor, Defaults.plot_kColor_light, 0.5f, Defaults.plot_bkgColor,
+					Defaults.plot_gridColor,
 					ylog);
 			line_k[i] = Plots.LinePlot(new Double[] { maxpost, maxpost }, new Double[] { 0.0, maxi }, title, xlab, ylab,
-					Defaults.plot_kColor, Defaults.plot_bkgColor, Defaults.plot_gridColor, ylog);
+					Color.BLACK, Color.BLACK, Defaults.plot_gridColor, ylog);
 		}
 		// create common plotting domain
 		ValueAxis domain = new NumberAxis("Domain");
@@ -232,8 +235,12 @@ public class RatingCurve extends Item {
 		plot.setRenderer(1, r1);
 		plot.setRenderer(2, r2);
 		for (int i = 0; i < ncontrol; i++) {
+			// quick fix to remove ugmy irrelevant horizontal lines at the bottom
+			// of vertical transition stage line/range
+			r[i].setSeriesStroke(0, new BasicStroke(0.0f));
 			plot.setRenderer(3 + 2 * i, r[i]);
-			plot.setRenderer(3 + 2 * i + 1, r[i]);
+			// plot.setRenderer(3 + 2 * i + 1, r[i]);
+			plot.setRenderer(3 + 2 * i + 1, rline[i]);
 		}
 		// assign domain/range
 		plot.setDomainAxis(0, domain);
