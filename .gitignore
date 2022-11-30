@@ -32,6 +32,7 @@ bar.zip
 TEMP_*
 archives/
 .vscode
+.project
 dist/
 build/
 exe/
