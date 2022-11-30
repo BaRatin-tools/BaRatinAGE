@@ -5,11 +5,10 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-import commons.textFileReader; 
+import commons.textFileReader;
 import commons.Distribution;
 import commons.Parameter;
 import commons.ReadWrite;
@@ -20,109 +19,130 @@ import moteur.Envelop;
 import moteur.HydrauControl;
 import moteur.PriorRatingCurveOptions;
 import moteur.Spaghetti;
-import org.mozilla.universalchardet.UniversalDetector;
 
 public class HydrauConfig_DAO extends ConfigHydrau implements DAO {
 
 	private String folder;
 	// Constants
-	private static final String FILE_PROPERTIES="Properties.txt";
-	private static final String FILE_MATRIX="BonnifaitMatrix.txt";
-	private static final String FILE_CONTROL="Control.txt";
-	private static final String FILE_PRIOR="PriorOptions.txt";
-	private static final String FILE_PRIOR_ENV="PriorEnvelop.txt";
-	private static final String FILE_PRIOR_SPAG="PriorSpaghetti.txt";
+	private static final String FILE_PROPERTIES = "Properties.txt";
+	private static final String FILE_MATRIX = "BonnifaitMatrix.txt";
+	private static final String FILE_CONTROL = "Control.txt";
+	private static final String FILE_PRIOR = "PriorOptions.txt";
+	private static final String FILE_PRIOR_ENV = "PriorEnvelop.txt";
+	private static final String FILE_PRIOR_SPAG = "PriorSpaghetti.txt";
 
-	public HydrauConfig_DAO(ConfigHydrau h,String folder){
+	public HydrauConfig_DAO(ConfigHydrau h, String folder) {
 		super(h);
-		this.folder=folder;
+		this.folder = folder;
 	}
 
 	@Override
-	public void create() throws FileNotFoundException,IOException,Exception {
+	public void create() throws FileNotFoundException, IOException, Exception {
 		File f;
 		FileWriter fw;
 		BufferedWriter bw;
 		///////////////////////////////////////////////////////////////////////
 		// properties
-		f=new File(this.folder.trim(),FILE_PROPERTIES);
-		if (!f.exists()) {f.createNewFile();}
+		f = new File(this.folder.trim(), FILE_PROPERTIES);
+		if (!f.exists()) {
+			f.createNewFile();
+		}
 		fw = new FileWriter(f.getAbsoluteFile());
 		bw = new BufferedWriter(fw);
-		DAOtools.safeWrite(bw,this.getName());
-		DAOtools.safeWrite(bw,this.getDescription());
-		if(this.getControls()==null){DAOtools.safeWrite(bw,0);} else {DAOtools.safeWrite(bw,this.getControls().size());}		
+		DAOtools.safeWrite(bw, this.getName());
+		DAOtools.safeWrite(bw, this.getDescription());
+		if (this.getControls() == null) {
+			DAOtools.safeWrite(bw, 0);
+		} else {
+			DAOtools.safeWrite(bw, this.getControls().size());
+		}
 		bw.close();
 		///////////////////////////////////////////////////////////////////////
 		// Bonnifait Matrix
 		BonnifaitMatrix bonnifait = this.getMatrix();
-		if(bonnifait!=null){
+		if (bonnifait != null) {
 			ArrayList<ArrayList<Boolean>> m = this.getMatrix().getMatrix();
 			// transform m into double matrix
-			Double[][] md=new Double[m.size()][m.size()];			
-			if(m!=null){
-				for(int i=0;i<m.size();i++){
-					for(int j=0;j<=i;j++){
-						if(m.get(j).get(i)) {md[i][j]=0.0;md[j][i]=1.0;}
-						else{md[j][i]=0.0;md[i][j]=0.0;}
-					}				
+			Double[][] md = new Double[m.size()][m.size()];
+			if (m != null) {
+				for (int i = 0; i < m.size(); i++) {
+					for (int j = 0; j <= i; j++) {
+						if (m.get(j).get(i)) {
+							md[i][j] = 0.0;
+							md[j][i] = 1.0;
+						} else {
+							md[j][i] = 0.0;
+							md[i][j] = 0.0;
+						}
+					}
 				}
 			}
-			ReadWrite.write(md,null,new File(this.folder.trim(),FILE_MATRIX).getAbsolutePath(),Defaults.barSep);
+			ReadWrite.write(md, null, new File(this.folder.trim(), FILE_MATRIX).getAbsolutePath(), Defaults.barSep);
 		}
 		///////////////////////////////////////////////////////////////////////
 		// Controls
 		ArrayList<HydrauControl> control = this.getControls();
-		if(control!=null){
-			for(int i=0;i<control.size();i++){
-				f=new File(this.folder.trim(),Integer.toString(i)+"_"+FILE_CONTROL);
-				if (!f.exists()) {f.createNewFile();}
+		if (control != null) {
+			for (int i = 0; i < control.size(); i++) {
+				f = new File(this.folder.trim(), Integer.toString(i) + "_" + FILE_CONTROL);
+				if (!f.exists()) {
+					f.createNewFile();
+				}
 				fw = new FileWriter(f.getAbsoluteFile());
 				bw = new BufferedWriter(fw);
-				DAOtools.safeWrite(bw,control.get(i).getDescription());	
-				DAOtools.safeWrite(bw,control.get(i).getType());	
-				bw.write(control.get(i).toString_kac());bw.newLine();
+				DAOtools.safeWrite(bw, control.get(i).getDescription());
+				DAOtools.safeWrite(bw, control.get(i).getType());
+				bw.write(control.get(i).toString_kac());
+				bw.newLine();
 				Parameter[] specifix = control.get(i).getSpecifix();
-				if(specifix!=null){
-					bw.write(Integer.toString(specifix.length));bw.newLine();
-					for(int j=0;j<specifix.length;j++){
-						bw.write(specifix[j].toString());bw.newLine();
+				if (specifix != null) {
+					bw.write(Integer.toString(specifix.length));
+					bw.newLine();
+					for (int j = 0; j < specifix.length; j++) {
+						bw.write(specifix[j].toString());
+						bw.newLine();
 					}
-				}
-				else{
-					bw.write("0");bw.newLine();
+				} else {
+					bw.write("0");
+					bw.newLine();
 				}
 				bw.close();
 			}
 		}
 		///////////////////////////////////////////////////////////////////////
 		// Prior RC option
-		f=new File(this.folder.trim(),FILE_PRIOR);
-		if (!f.exists()) {f.createNewFile();}
+		f = new File(this.folder.trim(), FILE_PRIOR);
+		if (!f.exists()) {
+			f.createNewFile();
+		}
 		fw = new FileWriter(f.getAbsoluteFile());
 		bw = new BufferedWriter(fw);
-		if(this.getPriorRCoptions()==null){
-			bw.newLine();bw.newLine();bw.newLine();bw.newLine();
-		}
-		else {
-			DAOtools.safeWrite(bw,this.getPriorRCoptions().getnSim());
-			DAOtools.safeWrite(bw,this.getPriorRCoptions().gethMin());
-			DAOtools.safeWrite(bw,this.getPriorRCoptions().gethMax());
-			DAOtools.safeWrite(bw,this.getPriorRCoptions().gethStep());
-			DAOtools.safeWrite(bw,this.getPriorRCoptions().getnStep());
+		if (this.getPriorRCoptions() == null) {
+			bw.newLine();
+			bw.newLine();
+			bw.newLine();
+			bw.newLine();
+		} else {
+			DAOtools.safeWrite(bw, this.getPriorRCoptions().getnSim());
+			DAOtools.safeWrite(bw, this.getPriorRCoptions().gethMin());
+			DAOtools.safeWrite(bw, this.getPriorRCoptions().gethMax());
+			DAOtools.safeWrite(bw, this.getPriorRCoptions().gethStep());
+			DAOtools.safeWrite(bw, this.getPriorRCoptions().getnStep());
 		}
 		bw.close();
 		///////////////////////////////////////////////////////////////////////
 		// Prior Envelop
 		Envelop env = this.getPriorEnv();
-		if(env!=null){
-			ReadWrite.write(env.toMatrix(),null,new File(this.folder.trim(),FILE_PRIOR_ENV).getAbsolutePath(),Defaults.barSep);
+		if (env != null) {
+			ReadWrite.write(env.toMatrix(), null, new File(this.folder.trim(), FILE_PRIOR_ENV).getAbsolutePath(),
+					Defaults.barSep);
 		}
 		///////////////////////////////////////////////////////////////////////
 		// Prior spag
 		Spaghetti spag = this.getPriorSpag();
-		if(spag!=null){
-			ReadWrite.write(spag.toMatrix(),null,new File(this.folder.trim(),FILE_PRIOR_SPAG).getAbsolutePath(),Defaults.barSep);
+		if (spag != null) {
+			ReadWrite.write(spag.toMatrix(), null, new File(this.folder.trim(), FILE_PRIOR_SPAG).getAbsolutePath(),
+					Defaults.barSep);
 		}
 	}
 
@@ -131,24 +151,26 @@ public class HydrauConfig_DAO extends ConfigHydrau implements DAO {
 		File f;
 		Scanner sc;
 		///////////////////////////////////////////////////////////////////////
-		//properties
-		f=new File(this.folder.trim(),FILE_PROPERTIES);
+		// properties
+		f = new File(this.folder.trim(), FILE_PROPERTIES);
 		sc = textFileReader.createScanner(f);
-//		sc = new Scanner(f, StandardCharsets.UTF_8);
+		// sc = new Scanner(f, StandardCharsets.UTF_8);
 		this.setName(sc.nextLine());
 		this.setDescription(sc.nextLine());
-		int ncontrol=DAOtools.safeRead_i(sc.nextLine());
+		int ncontrol = DAOtools.safeRead_i(sc.nextLine());
 		sc.close();
-		if(ncontrol>0) {
-			///////////////////////////////////////////////	////////////////////////
+		if (ncontrol > 0) {
+			/////////////////////////////////////////////// ////////////////////////
 			// Bonnifait Matrix
-			f=new File(this.folder.trim(),FILE_MATRIX);
-			Double[][] md=ReadWrite.read(f.getAbsolutePath(),Defaults.barSep,0);
+			f = new File(this.folder.trim(), FILE_MATRIX);
+			Double[][] md = ReadWrite.read(f.getAbsolutePath(), Defaults.barSep, 0);
 			ArrayList<ArrayList<Boolean>> mat = new ArrayList<ArrayList<Boolean>>();
 			ArrayList<Boolean> foo;
-			for(int j=0;j<ncontrol;j++){
-				foo=new ArrayList<Boolean>();
-				for(int i=0;i<ncontrol;i++){foo.add(md[j][i]==1.0);}
+			for (int j = 0; j < ncontrol; j++) {
+				foo = new ArrayList<Boolean>();
+				for (int i = 0; i < ncontrol; i++) {
+					foo.add(md[j][i] == 1.0);
+				}
 				mat.add(foo);
 			}
 			this.setMatrix(new BonnifaitMatrix(mat));
@@ -156,23 +178,26 @@ public class HydrauConfig_DAO extends ConfigHydrau implements DAO {
 			// Controls
 			ArrayList<HydrauControl> controlList = new ArrayList<HydrauControl>();
 			HydrauControl control;
-			for(int i=0;i<ncontrol;i++){
-				control=new HydrauControl();
-				f=new File(this.folder.trim(),Integer.toString(i)+"_"+FILE_CONTROL);
-//				textFileReader.getFileInfo(f);
+			for (int i = 0; i < ncontrol; i++) {
+				control = new HydrauControl();
+				f = new File(this.folder.trim(), Integer.toString(i) + "_" + FILE_CONTROL);
+				// textFileReader.getFileInfo(f);
 				sc = textFileReader.createScanner(f);
-//				sc = new Scanner(f);
+				// sc = new Scanner(f);
 				control.setDescription(sc.nextLine());
-				String type=sc.nextLine(); if(!type.equals("")){control.setType(Integer.valueOf(type));}
+				String type = sc.nextLine();
+				if (!type.equals("")) {
+					control.setType(Integer.valueOf(type));
+				}
 				// par K, A, C
-				control.setK(readParBlock(sc,"K"));
-				control.setA(readParBlock(sc,"A"));
-				control.setC(readParBlock(sc,"C"));
-				int nspec=Integer.valueOf(sc.nextLine());
-				if(nspec>0){
-					Parameter [] specifix=new Parameter[nspec];
-					for(int j=0;j<nspec;j++){
-						specifix[j]=readParBlock(sc,Integer.toString(j));
+				control.setK(readParBlock(sc, "K"));
+				control.setA(readParBlock(sc, "A"));
+				control.setC(readParBlock(sc, "C"));
+				int nspec = Integer.valueOf(sc.nextLine());
+				if (nspec > 0) {
+					Parameter[] specifix = new Parameter[nspec];
+					for (int j = 0; j < nspec; j++) {
+						specifix[j] = readParBlock(sc, Integer.toString(j));
 					}
 					control.setSpecifix(specifix);
 				}
@@ -182,25 +207,25 @@ public class HydrauConfig_DAO extends ConfigHydrau implements DAO {
 			this.setControls(controlList);
 			///////////////////////////////////////////////////////////////////////
 			// Prior Envelop
-			f=new File(this.folder.trim(),FILE_PRIOR_ENV);
-			if(f.exists()){
-				Double[][] w=ReadWrite.read(f.getAbsolutePath(), Defaults.barSep, 0);
+			f = new File(this.folder.trim(), FILE_PRIOR_ENV);
+			if (f.exists()) {
+				Double[][] w = ReadWrite.read(f.getAbsolutePath(), Defaults.barSep, 0);
 				this.setPriorEnv(new Envelop(w));
 			}
 			///////////////////////////////////////////////////////////////////////
 			// Prior Spag
-			f=new File(this.folder.trim(),FILE_PRIOR_SPAG);
-			if(f.exists()){
-				Double[][] w=ReadWrite.read(f.getAbsolutePath(), Defaults.barSep, 0);
+			f = new File(this.folder.trim(), FILE_PRIOR_SPAG);
+			if (f.exists()) {
+				Double[][] w = ReadWrite.read(f.getAbsolutePath(), Defaults.barSep, 0);
 				this.setPriorSpag(new Spaghetti(w));
-			}			
+			}
 		}
 		///////////////////////////////////////////////////////////////////////
 		// Prior RC option
-		f=new File(this.folder.trim(),FILE_PRIOR);
-//		textFileReader.getFileInfo(f);
-		if(ncontrol>0) {
-//			sc = new Scanner(f);
+		f = new File(this.folder.trim(), FILE_PRIOR);
+		// textFileReader.getFileInfo(f);
+		if (ncontrol > 0) {
+			// sc = new Scanner(f);
 			sc = textFileReader.createScanner(f);
 			PriorRatingCurveOptions prior = new PriorRatingCurveOptions();
 			prior.setnSim(DAOtools.safeRead_i(sc.nextLine()));
@@ -225,24 +250,27 @@ public class HydrauConfig_DAO extends ConfigHydrau implements DAO {
 
 	}
 
-	private Parameter readParBlock(Scanner sc,String name){
-		Parameter par=new Parameter();
+	private Parameter readParBlock(Scanner sc, String name) {
+		Parameter par = new Parameter();
 		sc.nextLine(); // name
 		sc.nextLine(); // initval
-		String dist=sc.nextLine();//dist
-		String parline=sc.nextLine();//par
-		String [] foo=parline.split(",+");
+		String dist = sc.nextLine();// dist
+		String parline = sc.nextLine();// par
+		String[] foo = parline.split(",+", -1);
 		par.setName(name);
 		par.setPrior(null);
-		if(!dist.equals("Gaussian")){return(par);}
-		if(foo.length!=2){return(par);}
-		if(foo[0].equals("")){return(par);}
-		if(foo[1].equals("")){return(par);}
-		Double mean=Double.parseDouble(foo[0]);
-		Double sd=Double.parseDouble(foo[1]);		
-		par.setPrior(new Distribution("Gaussian",2,new String[] {"mean","standard_deviation"},new Double[]{mean,sd}));
+		if (!dist.equals("Gaussian")) {
+			return (par);
+		}
+		if (foo.length != 2) {
+			return (par);
+		}
+		Double mean = foo[0].equals("") ? null : Double.parseDouble(foo[0]);
+		Double sd = foo[1].equals("") ? null : Double.parseDouble(foo[1]);
+		par.setPrior(new Distribution("Gaussian", 2, new String[] { "mean", "standard_deviation" },
+				new Double[] { mean, sd }));
 		par.setValue(mean);
-		return(par);
+		return (par);
 	}
 
 	/////////////////////////////////////////////////////////
