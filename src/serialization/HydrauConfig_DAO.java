@@ -256,7 +256,7 @@ public class HydrauConfig_DAO extends ConfigHydrau implements DAO {
 		sc.nextLine(); // initval
 		String dist = sc.nextLine();// dist
 		String parline = sc.nextLine();// par
-		String[] foo = parline.split(",+");
+		String[] foo = parline.split(",+", -1);
 		par.setName(name);
 		par.setPrior(null);
 		if (!dist.equals("Gaussian")) {
@@ -265,14 +265,8 @@ public class HydrauConfig_DAO extends ConfigHydrau implements DAO {
 		if (foo.length != 2) {
 			return (par);
 		}
-		if (foo[0].equals("")) {
-			return (par);
-		}
-		if (foo[1].equals("")) {
-			return (par);
-		}
-		Double mean = Double.parseDouble(foo[0]);
-		Double sd = Double.parseDouble(foo[1]);
+		Double mean = foo[0].equals("") ? null : Double.parseDouble(foo[0]);
+		Double sd = foo[1].equals("") ? null : Double.parseDouble(foo[1]);
 		par.setPrior(new Distribution("Gaussian", 2, new String[] { "mean", "standard_deviation" },
 				new Double[] { mean, sd }));
 		par.setValue(mean);
