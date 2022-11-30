@@ -5,24 +5,22 @@ import java.util.List;
 
 import commons.Period;
 
-
 public class RatingCurvePoints {
-	
+
 	private int code;
 	private String label;
 	private int curveType;
-	private IntervalRatingPoints itv;  //gamme de validité de la courbe
+	private IntervalRatingPoints itv; // gamme de validitÃ© de la courbe
 	private String codeStationHydro;
-	
+
 	private List<RatingPoints> points = new ArrayList<RatingPoints>();
-	
+
 	private Period periodeUtilCourbe;
-	
-	public RatingCurvePoints(final int code, final String label, 
-			final int courbeType, final IntervalRatingPoints itv, 
+
+	public RatingCurvePoints(final int code, final String label,
+			final int courbeType, final IntervalRatingPoints itv,
 			final String codeStatHydro, final Period periodeUtilCourbe,
-			final List<RatingPoints> ltp) 
-	{
+			final List<RatingPoints> ltp) {
 		this.setCode(code);
 		this.setLabel(label);
 		this.setCurveType(courbeType);
@@ -134,7 +132,9 @@ public class RatingCurvePoints {
 		this.points = lesPoints;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see java.lang.Object#hashCode()
 	 */
 	@Override
@@ -150,12 +150,15 @@ public class RatingCurvePoints {
 		result = prime * result + ((label == null) ? 0 : label.hashCode());
 		result = prime
 				* result
-				+ ((periodeUtilCourbe == null) ? 0 : periodeUtilCourbe
-						.hashCode());
+				+ ((periodeUtilCourbe == null) ? 0
+						: periodeUtilCourbe
+								.hashCode());
 		return result;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
 	@Override
@@ -193,7 +196,5 @@ public class RatingCurvePoints {
 			return false;
 		return true;
 	}
-	
-	
-	
+
 }
