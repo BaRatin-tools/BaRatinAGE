@@ -33,3 +33,5 @@ bar.zip
 TEMP_*
 archives/
 dist/
+build/
+exe/
