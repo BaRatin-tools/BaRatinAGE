@@ -21,8 +21,7 @@
     <property name="extlib.opencsv" value="${root}/externalLib/opencsv-5.7.0.jar" />
     <property name="extlib.juniversalchardet" value="${root}/externalLib/juniversalchardet-2.4.0.jar" />
 
-    <target name="clean-all" depends="clean, all" />
-    <target name="all" depends="init, build, jar, package" />
+    <target name="all" depends="clean, init, build, jar, package" />
 
     <target name="init">
         <echo> 
