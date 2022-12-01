@@ -4,18 +4,23 @@
     <property name="name" value="BaRatinAGE" />
     <property name="version" value="2.2" />
 
+    <property name="root" value="." />
+
+    <!-- no extension: BaRatin or BaM ______________________________ -->
+    <property name="bamexe" value="BaRatin" />
+
+    <!-- no extension: must be ico for windows and png for unix ____ -->
+    <property name="iconfile" value="${root}/BaRatinage" />
+
     <property name="nameversion" value="${name}_${version}" />
     <property name="jarfile" value="${nameversion}.jar" />
-
-    <property name="root" value="." />
 
     <property name="src" value="${root}/src" />
     <property name="build" value="${root}/build" />
     <property name="dist" value="${root}/dist" />
     <property name="final" value="${dist}/${nameversion}" />
 
-    <property name="iconfile" value="${root}/BaRatinage.ico" />
-
+    <!-- dependencies: external libraries to add to the build ______ -->
     <property name="extlib.jfreechart" value="${root}/externalLib/jfreechart-1.5.3/target/jfreechart-1.5.3.jar" />
     <property name="extlib.orsonpdf" value="${root}/externalLib/orsonpdf-1.9.1/target/orsonpdf-1.9.1.jar" />
     <property name="extlib.opencsv" value="${root}/externalLib/opencsv-5.7.0.jar" />
@@ -70,7 +75,7 @@ Create build directory containing all the java files to compile
         </jar>
     </target>
 
-    <target name="package">
+    <target name="package" depends="set-os-dep-properties">
         <fail message="The target folder ${final} already exist!">
             <condition>
                 <available file="${final}" />
@@ -94,7 +99,7 @@ Creating temporary directories...
         <echo> 
 Running jpackage...
         </echo>
-        <exec executable="jpackage">
+        <exec executable="jpackage" >
             <arg value="--type" />
             <arg value="app-image" />
             <arg value="--app-version" />
@@ -110,7 +115,7 @@ Running jpackage...
             <arg value="--main-jar" />
             <arg value="${jarfile}" />
             <arg value="--icon" />
-            <arg value="${iconfile}" />
+            <arg value="${icon.fullpath}" />
         </exec>
 
         <echo> 
@@ -119,23 +124,23 @@ Moving packaging result into target directory...
         <move file="${tmpdir.target}/${name}" tofile="${final}" />
 
         <echo> 
-Copying required ressources into target directory...
+Copying required ressources into final exe directory...
         </echo>
-        <copy todir="${final}/exe">
-            <!-- <fileset file="${root}/exe/BaM.exe" /> -->
-            <fileset file="${root}/exe/BaRatin.exe" />
+
+        <copy todir="${finalexe.targetdir}/exe">
+            <fileset file="${root}/exe/${bamexe.fullname}" />
         </copy>
-        <copy todir="${final}/lang">
+        <copy todir="${finalexe.targetdir}/lang">
             <fileset dir="${root}/lang" />
         </copy>
-        <copy todir="${final}/help">
+        <copy todir="${finalexe.targetdir}/help">
             <fileset dir="${root}/help" />
         </copy>
-        <copy todir="${final}/options">
+        <copy todir="${finalexe.targetdir}/options">
             <fileset dir="${root}/options" />
         </copy>
-        <mkdir dir="${final}/recycle" />
-        <mkdir dir="${final}/exe/workspace" />
+        <mkdir dir="${finalexe.targetdir}/recycle" />
+        <mkdir dir="${finalexe.targetdir}/exe/workspace" />
 
         <echo> 
 Creating zip file
@@ -147,7 +152,26 @@ Cleaning up...
         </echo>
         <delete dir="${tmpdir.source}" />
         <delete dir="${tmpdir.target}" />
+    </target>
+
+    <target name="set-os-dep-properties">
+
+         <!-- on unix, the final exe is located in the bin folder, on windows, its the root folder -->
+         <condition property="finalexe.targetdir" value="${final}"><os family="windows" /></condition>
+         <condition property="finalexe.targetdir" value="${final}/bin"><os family="unix" /></condition>
+         <property name="exe.targetdir" value="${final}"/>
+   
+         <condition property="bamexe.fullname" value="${exe}.exe"><os family="windows" /></condition>
+         <condition property="bamexe.fullname" value="${exe}"><os family="unix" /></condition>
+         <property name="bamexe.fullname" value="${exe}.exe"/>
+
+         <condition property="icon.fullpath" value="${iconfile}.ico"><os family="windows" /></condition>
+         <condition property="icon.fullpath" value="${iconfile}.png"><os family="unix" /></condition>
+         <property name="icon.fullpath" value="${iconfile}.ico"/>
+
+
 
     </target>
+
 
 </project>
