@@ -10,7 +10,7 @@
     <property name="bamexe" value="BaRatin" />
 
     <!-- no extension: must be ico for windows and png for unix ____ -->
-    <property name="iconfile" value="${root}/BaRatinage" />
+    <property name="iconfile" value="${root}/icon/icon" />
 
     <property name="nameversion" value="${name}_${version}" />
     <property name="jarfile" value="${nameversion}.jar" />
@@ -99,7 +99,7 @@ Creating temporary directories...
         <echo> 
 Running jpackage...
         </echo>
-        <exec executable="jpackage" >
+        <exec executable="jpackage">
             <arg value="--type" />
             <arg value="app-image" />
             <arg value="--app-version" />
@@ -156,19 +156,30 @@ Cleaning up...
 
     <target name="set-os-dep-properties">
 
-         <!-- on unix, the final exe is located in the bin folder, on windows, its the root folder -->
-         <condition property="finalexe.targetdir" value="${final}"><os family="windows" /></condition>
-         <condition property="finalexe.targetdir" value="${final}/bin"><os family="unix" /></condition>
-         <property name="exe.targetdir" value="${final}"/>
-   
-         <condition property="bamexe.fullname" value="${exe}.exe"><os family="windows" /></condition>
-         <condition property="bamexe.fullname" value="${exe}"><os family="unix" /></condition>
-         <property name="bamexe.fullname" value="${exe}.exe"/>
+        <!-- on unix, the final exe is located in the bin folder, on windows, its the root folder -->
+        <condition property="finalexe.targetdir" value="${final}">
+            <os family="windows" />
+        </condition>
+        <condition property="finalexe.targetdir" value="${final}/bin">
+            <os family="unix" />
+        </condition>
+        <property name="exe.targetdir" value="${final}" />
 
-         <condition property="icon.fullpath" value="${iconfile}.ico"><os family="windows" /></condition>
-         <condition property="icon.fullpath" value="${iconfile}.png"><os family="unix" /></condition>
-         <property name="icon.fullpath" value="${iconfile}.ico"/>
+        <condition property="bamexe.fullname" value="${exe}.exe">
+            <os family="windows" />
+        </condition>
+        <condition property="bamexe.fullname" value="${exe}">
+            <os family="unix" />
+        </condition>
+        <property name="bamexe.fullname" value="${exe}.exe" />
 
+        <condition property="icon.fullpath" value="${iconfile}.ico">
+            <os family="windows" />
+        </condition>
+        <condition property="icon.fullpath" value="${iconfile}.png">
+            <os family="unix" />
+        </condition>
+        <property name="icon.fullpath" value="${iconfile}.ico" />
 
 
     </target>
