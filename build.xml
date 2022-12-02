@@ -27,6 +27,7 @@
     <property name="extlib.juniversalchardet" value="${root}/externalLib/juniversalchardet-2.4.0.jar" />
 
     <target name="all" depends="clean, init, build, jar, package" />
+    <target name="no-package" depends="clean, init, build, jar" />
 
     <target name="init">
         <echo> 
