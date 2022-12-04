@@ -2,7 +2,7 @@
 <project default="all">
 
     <property name="name" value="BaRatinAGE" />
-    <property name="version" value="2.2" />
+    <property name="version" value="2.2.3" />
 
     <property name="root" value="." />
 
@@ -166,13 +166,13 @@ Cleaning up...
         </condition>
         <property name="exe.targetdir" value="${final}" />
 
-        <condition property="bamexe.fullname" value="${exe}.exe">
+        <condition property="bamexe.fullname" value="${bamexe}.exe">
             <os family="windows" />
         </condition>
-        <condition property="bamexe.fullname" value="${exe}">
+        <condition property="bamexe.fullname" value="${bamexe}">
             <os family="unix" />
         </condition>
-        <property name="bamexe.fullname" value="${exe}.exe" />
+        <property name="bamexe.fullname" value="${bamexe}.exe" />
 
         <condition property="icon.fullpath" value="${iconfile}.ico">
             <os family="windows" />
