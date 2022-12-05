@@ -238,6 +238,8 @@ public class RatingCurve extends Item {
 			// quick fix to remove ugmy irrelevant horizontal lines at the bottom
 			// of vertical transition stage line/range
 			r[i].setSeriesStroke(0, new BasicStroke(0.0f));
+			rline[i].setSeriesStroke(0, new BasicStroke(1.5f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 1.0f,
+					new float[] { 5.0f, 4.0f }, 0.0f));
 			plot.setRenderer(3 + 2 * i, r[i]);
 			// plot.setRenderer(3 + 2 * i + 1, r[i]);
 			plot.setRenderer(3 + 2 * i + 1, rline[i]);

@@ -62,14 +62,18 @@ public class ExeControl {
 			RemnantError remnant, MCMCoptions mcmc, RatingCurve rc, Limnigraph limni, Hydrograph hydro)
 			throws IOException, Exception, InterruptedException, FileNotFoundException {
 		// Write config files and make a copy in recycle folder
+		System.out.println("Writing configuration files...");
 		new File(Defaults.tempWorkspace).mkdir();
 		configController.write_engine(options, gaugings, hydrau, remnant, mcmc, rc, limni, hydro);
+		System.out.println("Creating a backup copy of the configuration files...");
 		DirectoryUtils.deleteDirContent(new File(Defaults.recycleDir));
 		DirectoryUtils.copyFilesInDir(new File(Defaults.tempWorkspace), new File(Defaults.recycleDir));
 		// Pilot executable
+		System.out.println("Launching BaRatin/BaM executable...");
 		exeProc = Runtime.getRuntime().exec(new String[] { Defaults.exeFile.trim() }, null,
 				new File(Defaults.exeDir.trim()));
 		InputStream exeOut = exeProc.getInputStream();
+		System.out.println("Initializing child process monitoring...");
 		BufferedReader is = new BufferedReader(new InputStreamReader(exeOut));
 		String line = "";
 		String foo = null;
@@ -86,6 +90,7 @@ public class ExeControl {
 					System.lineSeparator() +
 					dico.entry("Message") + ":" + line);
 		}
+		System.out.println("Reading result files...");
 		// read result files and update panels
 		// prior RC
 		if (options[0] == true) {
@@ -222,12 +227,16 @@ public class ExeControl {
 				new RatingCurvePanel(id_rc, true);
 			}
 		} catch (FileNotFoundException e3) {
+			System.err.println(e3);
 			new ExceptionPanel(MainFrame.getInstance(), dico.entry("FileNotFound"));
 		} catch (IOException e3) {
+			System.err.println(e3);
 			new ExceptionPanel(MainFrame.getInstance(), dico.entry("ConfigWriteProblem"));
 		} catch (InterruptedException e3) {
+			System.err.println(e3);
 			new ExceptionPanel(MainFrame.getInstance(), dico.entry("RunProblem"));
 		} catch (Exception e3) {
+			System.err.println(e3);
 			new ExceptionPanel(MainFrame.getInstance(), dico.entry("UnidentifiedProblem"));
 		} finally {
 			MainFrame.getInstance().setCursor(Cursor.getDefaultCursor());
@@ -283,12 +292,16 @@ public class ExeControl {
 				new HydrographPanel(id_hydro, true);
 			}
 		} catch (FileNotFoundException e3) {
+			System.err.println(e3);
 			new ExceptionPanel(MainFrame.getInstance(), dico.entry("FileNotFound"));
 		} catch (IOException e3) {
+			System.err.println(e3);
 			new ExceptionPanel(MainFrame.getInstance(), dico.entry("ConfigWriteProblem"));
 		} catch (InterruptedException e3) {
+			System.err.println(e3);
 			new ExceptionPanel(MainFrame.getInstance(), dico.entry("RunProblem"));
 		} catch (Exception e3) {
+			System.err.println(e3);
 			new ExceptionPanel(MainFrame.getInstance(), dico.entry("UnidentifiedProblem"));
 		} finally {
 			MainFrame.getInstance().setCursor(Cursor.getDefaultCursor());

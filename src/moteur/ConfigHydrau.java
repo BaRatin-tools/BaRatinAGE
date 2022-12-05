@@ -2,6 +2,7 @@ package moteur;
 
 import java.util.ArrayList;
 
+import java.awt.BasicStroke;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.LogarithmicAxis;
@@ -147,6 +148,11 @@ public class ConfigHydrau extends Item {
 		}
 		plot.setRenderer(0, r0);
 		for (int i = 0; i < ncontrol; i++) {
+			// quick fix to remove ugmy irrelevant horizontal lines at the bottom
+			// of vertical transition stage line/range
+			r[i].setSeriesStroke(0, new BasicStroke(0.0f));
+			rline[i].setSeriesStroke(0, new BasicStroke(1.5f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 1.0f,
+					new float[] { 5.0f, 4.0f }, 0.0f));
 			plot.setRenderer(1 + 2 * i, r[i]);
 			plot.setRenderer(1 + 2 * i + 1, rline[i]);
 		}
