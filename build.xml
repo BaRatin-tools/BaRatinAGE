@@ -131,11 +131,15 @@ Copying required ressources into final exe directory...
         <copy todir="${finalexe.targetdir}/exe">
             <fileset file="${root}/exe/${bamexe.fullname}" />
         </copy>
+        <chmod file="${finalexe.targetdir}/exe/${bamexe.fullname}" perm="a+rx"/>
         <copy todir="${finalexe.targetdir}/lang">
             <fileset dir="${root}/lang" />
         </copy>
         <copy todir="${finalexe.targetdir}/help">
             <fileset dir="${root}/help" />
+        </copy>
+        <copy todir="${finalexe.targetdir}/exemple">
+            <fileset dir="${root}/exemple" />
         </copy>
         <copy todir="${finalexe.targetdir}/options">
             <fileset dir="${root}/options" />
