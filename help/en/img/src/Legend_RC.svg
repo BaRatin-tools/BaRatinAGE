@@ -1,0 +1,303 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="784.46741"
+   height="525.69672"
+   viewBox="0 0 784.4674 525.6967"
+   version="1.1"
+   id="svg8"
+   inkscape:version="1.0.2-2 (e86c870879, 2021-01-15)"
+   sodipodi:docname="Legend_RC.svg"
+   inkscape:export-filename="C:\Users\ihach\Documents\Programming\Java\BaRatinAGE\help\en\img\Legend_RC.png"
+   inkscape:export-xdpi="116"
+   inkscape:export-ydpi="116">
+  <defs
+     id="defs2">
+    <rect
+       x="278.57144"
+       y="95.714287"
+       width="527.14288"
+       height="85.714287"
+       id="rect1314" />
+    <marker
+       style="overflow:visible"
+       id="StopM"
+       refX="0"
+       refY="0"
+       orient="auto"
+       inkscape:stockid="StopM"
+       inkscape:isstock="true">
+      <path
+         transform="scale(0.4)"
+         style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#000000;stroke-width:1pt;stroke-opacity:1"
+         d="M 0,5.65 V -5.65"
+         id="path1020" />
+    </marker>
+    <marker
+       style="overflow:visible"
+       id="StopL"
+       refX="0"
+       refY="0"
+       orient="auto"
+       inkscape:stockid="StopL"
+       inkscape:isstock="true">
+      <path
+         transform="scale(0.8)"
+         style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#000000;stroke-width:1pt;stroke-opacity:1"
+         d="M 0,5.65 V -5.65"
+         id="path1017" />
+    </marker>
+    <rect
+       x="278.57144"
+       y="95.714287"
+       width="417.14288"
+       height="78.571426"
+       id="rect1314-1" />
+    <rect
+       x="278.57144"
+       y="95.714287"
+       width="527.14288"
+       height="85.714287"
+       id="rect1327" />
+    <rect
+       x="278.57144"
+       y="95.714287"
+       width="527.14288"
+       height="85.714287"
+       id="rect1314-0" />
+    <rect
+       x="278.57144"
+       y="95.714287"
+       width="527.14288"
+       height="85.714287"
+       id="rect1492" />
+    <rect
+       x="278.57144"
+       y="95.714287"
+       width="395.82306"
+       height="84.704132"
+       id="rect1314-0-8" />
+    <rect
+       x="278.57144"
+       y="95.714287"
+       width="527.14288"
+       height="85.714287"
+       id="rect1527" />
+    <rect
+       x="278.57144"
+       y="95.714287"
+       width="585.55328"
+       height="88.2248"
+       id="rect1314-0-8-8" />
+    <rect
+       x="278.57144"
+       y="95.714287"
+       width="327.13269"
+       height="78.643219"
+       id="rect1564" />
+    <rect
+       x="278.57144"
+       y="95.714287"
+       width="527.14288"
+       height="85.714287"
+       id="rect1314-7" />
+    <rect
+       x="278.57144"
+       y="95.714287"
+       width="527.14288"
+       height="85.714287"
+       id="rect886" />
+    <marker
+       style="overflow:visible"
+       id="StopM-5"
+       refX="0"
+       refY="0"
+       orient="auto"
+       inkscape:stockid="StopM"
+       inkscape:isstock="true">
+      <path
+         transform="scale(0.4)"
+         style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#000000;stroke-width:1pt;stroke-opacity:1"
+         d="M 0,5.65 V -5.65"
+         id="path1020-8" />
+    </marker>
+    <marker
+       style="overflow:visible"
+       id="marker892"
+       refX="0"
+       refY="0"
+       orient="auto"
+       inkscape:stockid="StopM"
+       inkscape:isstock="true">
+      <path
+         transform="scale(0.4)"
+         style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#000000;stroke-width:1pt;stroke-opacity:1"
+         d="M 0,5.65 V -5.65"
+         id="path890" />
+    </marker>
+    <rect
+       x="278.57144"
+       y="95.714287"
+       width="417.14288"
+       height="78.571426"
+       id="rect1314-1-8" />
+    <rect
+       x="278.57144"
+       y="95.714287"
+       width="417.14288"
+       height="78.571426"
+       id="rect895" />
+    <rect
+       x="278.57144"
+       y="95.714287"
+       width="327.13269"
+       height="78.643219"
+       id="rect1314-0-8-3" />
+    <rect
+       x="278.57144"
+       y="95.714287"
+       width="327.13269"
+       height="78.643219"
+       id="rect1816" />
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="1"
+     inkscape:pageshadow="2"
+     inkscape:zoom="0.7"
+     inkscape:cx="-557.94411"
+     inkscape:cy="285.02674"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     inkscape:document-rotation="0"
+     showgrid="false"
+     units="px"
+     showborder="true"
+     inkscape:pagecheckerboard="false"
+     inkscape:showpageshadow="false"
+     borderlayer="false"
+     inkscape:window-width="2858"
+     inkscape:window-height="1368"
+     inkscape:window-x="573"
+     inkscape:window-y="0"
+     inkscape:window-maximized="0"
+     fit-margin-top="32"
+     fit-margin-left="32"
+     fit-margin-bottom="32"
+     fit-margin-right="32" />
+  <metadata
+     id="metadata5">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(10.645636,-215.90657)">
+    <path
+       style="fill:none;stroke:#000000;stroke-width:8;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="M 21.354364,262.85714 H 121.35436"
+       id="path1439" />
+    <rect
+       style="fill:#ff9999;fill-opacity:1;stroke:none;stroke-width:8;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;paint-order:markers fill stroke;stop-color:#000000"
+       id="rect1441"
+       width="100"
+       height="60"
+       x="21.354364"
+       y="315.26324" />
+    <g
+       id="g1601"
+       transform="translate(5.6400753,2)">
+      <rect
+         style="fill:#9bffa9;fill-opacity:1;stroke:none;stroke-width:8;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;paint-order:markers fill stroke;stop-color:#000000"
+         id="rect1441-2"
+         width="100"
+         height="60"
+         x="15.714289"
+         y="535.83472" />
+      <path
+         style="fill:none;stroke:#389c46;stroke-width:4;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:8, 8;stroke-dashoffset:0;stroke-opacity:1"
+         d="m 65.000003,593.8704 v -60"
+         id="path1439-8" />
+    </g>
+    <text
+       xml:space="preserve"
+       id="text1312-1"
+       style="font-style:normal;font-weight:normal;font-size:32px;line-height:1.25;font-family:sans-serif;white-space:pre;shape-inside:url(#rect1314-0);fill:#000000;fill-opacity:1;stroke:none;"
+       transform="translate(-111.48486,148.19173)"><tspan
+         x="278.57227"
+         y="124.02734"><tspan>Posterior rating curve</tspan></tspan></text>
+    <text
+       xml:space="preserve"
+       id="text1312-1-9"
+       style="font-style:normal;font-weight:normal;font-size:32px;line-height:1.25;font-family:sans-serif;white-space:pre;shape-inside:url(#rect1314-0-8);fill:#000000;fill-opacity:1;stroke:none;"
+       transform="translate(-111.09423,212.21098)"><tspan
+         x="278.57227"
+         y="124.02734"><tspan>Parametric uncertainty </tspan></tspan><tspan
+         x="278.57227"
+         y="164.02734"><tspan>(95% interval)</tspan></tspan></text>
+    <text
+       xml:space="preserve"
+       id="text1312-1-9-7"
+       style="font-style:normal;font-weight:normal;font-size:32px;line-height:1.25;font-family:sans-serif;white-space:pre;shape-inside:url(#rect1314-0-8-8);fill:#000000;fill-opacity:1;stroke:none;"
+       transform="translate(-108.59423,431.81199)"><tspan
+         x="278.57227"
+         y="124.02734"><tspan
+           style="shape-inside:url(#rect1314-0-8-8)">Activation stage and its uncertainty </tspan></tspan><tspan
+         x="278.57227"
+         y="164.02734"><tspan
+           style="shape-inside:url(#rect1314-0-8-8)">(95% interval)</tspan></tspan></text>
+    <rect
+       style="fill:#e60000;fill-opacity:1;stroke:none;stroke-width:8;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;paint-order:markers fill stroke;stop-color:#000000"
+       id="rect1441-9"
+       width="100"
+       height="60"
+       x="21.354364"
+       y="426.06683" />
+    <text
+       xml:space="preserve"
+       id="text1312"
+       style="font-style:normal;font-weight:normal;font-size:32px;line-height:1.25;font-family:sans-serif;white-space:pre;shape-inside:url(#rect1314-7);fill:#000000;fill-opacity:1;stroke:none;"
+       transform="translate(-110.14111,533.39374)"><tspan
+         x="278.57227"
+         y="124.02734"><tspan>Gauging and its discharge </tspan></tspan><tspan
+         x="278.57227"
+         y="164.02734"><tspan>uncertainty (95% interval)</tspan></tspan></text>
+    <circle
+       style="fill:#000000;fill-opacity:1;stroke:none;stroke-width:24;stroke-linecap:round;stroke-linejoin:round;paint-order:markers fill stroke;stop-color:#000000"
+       id="path844"
+       cx="71.354362"
+       cy="666.53668"
+       r="20" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;marker-start:url(#StopM-5);marker-end:url(#StopM-5)"
+       d="m 71.354364,627.30602 v 81.2306"
+       id="path846" />
+    <text
+       xml:space="preserve"
+       id="text1312-1-9-70"
+       style="font-style:normal;font-weight:normal;font-size:32px;line-height:1.25;font-family:sans-serif;white-space:pre;shape-inside:url(#rect1314-0-8-3);fill:#000000;fill-opacity:1;stroke:none;"
+       transform="translate(-108.25048,327.01149)"><tspan
+         x="278.57227"
+         y="124.02734"><tspan>Total uncertainty </tspan></tspan><tspan
+         x="278.57227"
+         y="164.02734"><tspan>(95% interval)</tspan></tspan></text>
+  </g>
+</svg>
