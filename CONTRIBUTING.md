@@ -3,7 +3,7 @@
 To have a fully working environment for developping and modifying BaRatinAGE you'll need:
 - an IDE that you've set up correctly for Java
 - a recent enough version of Java JDK
-- BaRatin executable (can be found in [released versions](https://github.com/BaRatin-tools/BaRatinAGE/releases) or recompiled from [sources](https://github.com/BaRatin-tools/BaRatin)
+- BaRatin executable (can be found in [released versions](https://github.com/BaRatin-tools/BaRatinAGE/releases) or recompiled from [sources](https://github.com/BaRatin-tools/BaRatin))
 - Download and compile external dependencies
 
 Here we detail some of these aspects.
