@@ -3,20 +3,20 @@ _BaRatin Advanced Graphical Environment_
 
 [English version follows > ](#Overview)
 
-## Présentation général
+## Présentation générale
 
 BaRatin (BAyesian RATINg curve) est une méthode d'estimation des courbes de tarage et des incertitudes associées à l'aide d'un formalisme bayésien. Ce dépôt contient l'interface graphique de BaRatin, nommée BaRatinAGE.
 
 ## Téléchargement et installation
 
 Pour télécharger la dernière version de **BaRatinAGE**, rendez vous sur la page [https://github.com/BaRatin-tools/BaRatinAGE/releases](https://github.com/BaRatin-tools/BaRatinAGE/releases).
-Choisissez l'archive .zip version adaptée à votre système d'exploitation (Windows ou Linux). 
+Choisissez l'archive .zip adaptée à votre système d'exploitation (Windows ou Linux). 
 Par exemple, pour Windows, et pour la version 2.2, allez dans la section **BaRatinAGE 2.2** cliquez sur **BaRatinAGE_v2.2_windows.zip** pour télécharger l'archive.
 
 **BaRatinAGE** ne nécéssite aucune installation.
-Il vous suffit de dézipper / décompresser l'archive .zip dans le répertoir de votre choix. 
+Il vous suffit de dézipper / décompresser l'archive .zip dans le répertoire de votre choix. 
 
-_Note: contairement aux anciennes version de BaRatinAGE, les nouvelles versions ne nécessitent plus l'installation de Java._
+_Note: contairement aux anciennes versions de BaRatinAGE, les nouvelles versions ne nécessitent plus l'installation de Java._
 
 ## Première utilisation
 
@@ -25,7 +25,7 @@ Pour lancer **BaRatinAGE**:
 - sur linux:
     - dans le sous dossier `bin\`  du dossier contenant BaRatinAGE que vous venez de décompresser,il vous suffit de cliquer sur l'executable nommé **BaRatinAGE** qui s'y trouve.
     - il est fréquent de devoir changer les droits d'execution de l'executable. En ligne de commande: `sudo chmod a=rx BaRatinAGE`.
-    - la même manipulation est parfois nécessaire avec l'executable de **BaRatin** qui se trouve dans le répertoir `bin\exe\`
+    - la même manipulation est parfois nécessaire avec l'executable de **BaRatin** qui se trouve dans le répertoire `bin\exe\`
 
 ## Aide
 
@@ -38,10 +38,10 @@ Vous pouvez également poser vos questions en envoyant un mail à **baratin.dev 
 
 ### Bugs
 
-Si vous rencontrez des problèmes ou bugs lors de l'utilisation de **BaRatinAGE** n'hesitez pas nous en faire part.
-La meilleurs solution est d'avoir  un compte Guthub et de créer une nouvelle _issue_  en cliquant sur `New Issue` sur la page [https://github.com/BaRatin-tools/BaRatinAGE/issues](https://github.com/BaRatin-tools/BaRatinAGE/issues).
+Si vous rencontrez des problèmes ou bugs lors de l'utilisation de **BaRatinAGE** n'hesitez pas à nous en faire part.
+La meilleur solution est d'avoir un compte Guthub et de créer une nouvelle _issue_  en cliquant sur `New Issue` sur la page [https://github.com/BaRatin-tools/BaRatinAGE/issues](https://github.com/BaRatin-tools/BaRatinAGE/issues).
 Alternativement, vous pouvez nous envoyer un mail à l'adresse **baratin.dev [at] lists.irstea.fr**.
-Dans tous les cas soyez le plus exhaustif possible dans la description du problème.
+Dans tous les cas, soyez le plus exhaustif possible dans la description du problème.
 
 ### Multilinguisme
 
@@ -51,7 +51,7 @@ Les fichiers à traduire sont les suivants:
 2. Tous les fichiers `.html` dans le dossier `help`. Aucune connaissance du langage HTML n'est nécessaire. Ouvrez simplement le fichier avec un éditeur de texte (par exemple Notepad++) et traduisez le texte entre les balises HTML
    (<balise> texte à traduire </balise>). Ne modifiez pas les balises elles-mêmes!
 
-Vous pouvez envoyer vos contributions en ouvrant un nouvelle _issue_ sur Github (`New Issue` sur la page [https://github.com/BaRatin-tools/BaRatinAGE/issues](https://github.com/BaRatin-tools/BaRatinAGE/issues), nécéssite un compte Github) ou par email à l'adresse **baratin.dev [at] lists.irstea.fr**.
+Vous pouvez envoyer vos contributions en ouvrant une nouvelle _issue_ sur Github (`New Issue` sur la page [https://github.com/BaRatin-tools/BaRatinAGE/issues](https://github.com/BaRatin-tools/BaRatinAGE/issues), nécéssite un compte Github) ou par email à l'adresse **baratin.dev [at] lists.irstea.fr**.
 
 ### Developpement
 
