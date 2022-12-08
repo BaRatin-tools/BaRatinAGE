@@ -1,7 +1,7 @@
 # BaRatinAGE
 _BaRatin Advanced Graphical Environment_
 
-[English version follows > ](#Overviews)
+[English version follows > ](#Overview)
 
 ## Présentation général
 
