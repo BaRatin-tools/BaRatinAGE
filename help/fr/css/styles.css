@@ -1,3 +1,7 @@
+img {
+  max-width: 80%;
+}
+
 header, footer {
     background-color:#eeeeee;
     color:black;
