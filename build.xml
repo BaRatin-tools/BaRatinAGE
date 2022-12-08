@@ -131,7 +131,7 @@ Copying required ressources into final exe directory...
         <copy todir="${finalexe.targetdir}/exe">
             <fileset file="${root}/exe/${bamexe.fullname}" />
         </copy>
-        <chmod file="${finalexe.targetdir}/exe/${bamexe.fullname}" perm="a+rx"/>
+        <chmod file="${finalexe.targetdir}/exe/${bamexe.fullname}" perm="a+rx" />
         <copy todir="${finalexe.targetdir}/lang">
             <fileset dir="${root}/lang" />
         </copy>
@@ -144,6 +144,7 @@ Copying required ressources into final exe directory...
         <copy todir="${finalexe.targetdir}/options">
             <fileset dir="${root}/options" />
         </copy>
+        <copy file="${root}/README.md" todir="${finalexe.targetdir}" />
         <mkdir dir="${finalexe.targetdir}/recycle" />
         <mkdir dir="${finalexe.targetdir}/exe/workspace" />
 
