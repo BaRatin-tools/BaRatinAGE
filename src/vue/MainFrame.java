@@ -36,77 +36,81 @@ import Utils.Defaults;
 import Utils.Dico;
 
 @SuppressWarnings("serial")
-public class MainFrame extends JFrame implements ActionListener{
+public class MainFrame extends JFrame implements ActionListener {
 
 	private static MainFrame instance;
 	private MenuBar menubar;
 	private ToolBar toolbar;
 	private TreesPanel trees = new TreesPanel();
 	private JTabbedPane tabs = new JTabbedPane();
-	private ConfigHydrauPanel hydraulic=new ConfigHydrauPanel("",false);
-	private GaugingPanel gauging=new GaugingPanel("",false);
-	private RemnantErrorPanel remnant=new RemnantErrorPanel();
-	private RatingCurvePanel rc=new RatingCurvePanel("",false);
-	private LimniPanel limni=new LimniPanel("",false);
-	private HydrographPanel hydrograph=new HydrographPanel("",false);
+	private ConfigHydrauPanel hydraulic = new ConfigHydrauPanel("", false);
+	private GaugingPanel gauging = new GaugingPanel("", false);
+	private RemnantErrorPanel remnant = new RemnantErrorPanel();
+	private RatingCurvePanel rc = new RatingCurvePanel("", false);
+	private LimniPanel limni = new LimniPanel("", false);
+	private HydrographPanel hydrograph = new HydrographPanel("", false);
 	private GridBag_SplitPanel split;
 	private String barFile;
 	private String lastBarDir;
 	private String lastDataDir;
 
 	// locals
-	private Config config=Config.getInstance();
-	private Dico dico=Dico.getInstance(config.getLanguage());
-	private Control controller=Control.getInstance();
+	private Config config = Config.getInstance();
+	private Dico dico = Dico.getInstance(config.getLanguage());
+	private Control controller = Control.getInstance();
 	// constants
-	public static final int HYDRAULIC_INDX=0;
-	public static final int GAUGING_INDX=1;
-	public static final int REMNANT_INDX=2;
-	public static final int LIMNI_INDX=3;
-	public static final int RC_INDX=4;
-	public static final int HYDROGRAPH_INDX=5;
+	public static final int HYDRAULIC_INDX = 0;
+	public static final int GAUGING_INDX = 1;
+	public static final int REMNANT_INDX = 2;
+	public static final int LIMNI_INDX = 3;
+	public static final int RC_INDX = 4;
+	public static final int HYDROGRAPH_INDX = 5;
 
-	public static synchronized MainFrame getInstance(){
-		if (instance==null) 
-		{instance = new MainFrame();}
+	public static synchronized MainFrame getInstance() {
+		if (instance == null) {
+			instance = new MainFrame();
+		}
 		return instance;
 	}
 
-	private MainFrame(String name,Dimension size) throws HeadlessException {
-		//-------------------------------------------------------------
+	private MainFrame(String name, Dimension size) throws HeadlessException {
+		// -------------------------------------------------------------
 		// Main frame
-		//-------------------------------------------------------------
+		// -------------------------------------------------------------
 		super(name);
 		this.setSize(size);
 		this.setLocationRelativeTo(null);
-		GridBag_Layout.SetGrid(this.getContentPane(),new int[] {0, 0}, new int[] {0}, new double[] {0.0, 1.0},new double[] {1.0});
-		this.setDefaultCloseOperation( JFrame.DO_NOTHING_ON_CLOSE );
-		//this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+		GridBag_Layout.SetGrid(this.getContentPane(), new int[] { 0, 0 }, new int[] { 0 }, new double[] { 0.0, 1.0 },
+				new double[] { 1.0 });
+		this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+		// this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 		this.addWindowListener(new WindowAdapter() {
 			@Override
-			public void windowClosing(WindowEvent e) {close();}
+			public void windowClosing(WindowEvent e) {
+				close();
+			}
 		});
 
-		//-------------------------------------------------------------
+		// -------------------------------------------------------------
 		// icons
-		//-------------------------------------------------------------
-		ImageIcon iconGUI=new ImageIcon(getClass().getClassLoader().getResource(Defaults.iconGUI));
-		ImageIcon iconHydraulic=new ImageIcon(getClass().getClassLoader().getResource(Defaults.iconHydraulic));
-		ImageIcon iconGauging=new ImageIcon(getClass().getClassLoader().getResource(Defaults.iconGauging));
-		ImageIcon iconError=new ImageIcon(getClass().getClassLoader().getResource(Defaults.iconError));
-		ImageIcon iconRC=new ImageIcon(getClass().getClassLoader().getResource(Defaults.iconRC));
-		ImageIcon iconLimni=new ImageIcon(getClass().getClassLoader().getResource(Defaults.iconLimni));
-		ImageIcon iconHydro=new ImageIcon(getClass().getClassLoader().getResource(Defaults.iconHydro));
+		// -------------------------------------------------------------
+		ImageIcon iconGUI = new ImageIcon(getClass().getClassLoader().getResource(Defaults.iconGUI));
+		ImageIcon iconHydraulic = new ImageIcon(getClass().getClassLoader().getResource(Defaults.iconHydraulic));
+		ImageIcon iconGauging = new ImageIcon(getClass().getClassLoader().getResource(Defaults.iconGauging));
+		ImageIcon iconError = new ImageIcon(getClass().getClassLoader().getResource(Defaults.iconError));
+		ImageIcon iconRC = new ImageIcon(getClass().getClassLoader().getResource(Defaults.iconRC));
+		ImageIcon iconLimni = new ImageIcon(getClass().getClassLoader().getResource(Defaults.iconLimni));
+		ImageIcon iconHydro = new ImageIcon(getClass().getClassLoader().getResource(Defaults.iconHydro));
 		this.setIconImage(iconGUI.getImage());
 
-		//-------------------------------------------------------------
+		// -------------------------------------------------------------
 		// Menus
-		//-------------------------------------------------------------
-		menubar = new MenuBar(this,this,dico);
-		
-		//-------------------------------------------------------------
-		//KeyAccelerator
-		//-------------------------------------------------------------
+		// -------------------------------------------------------------
+		menubar = new MenuBar(this, this, dico);
+
+		// -------------------------------------------------------------
+		// KeyAccelerator
+		// -------------------------------------------------------------
 		// file
 		menubar.getMenu(0).getItem(0).setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, KeyEvent.CTRL_DOWN_MASK));
 		menubar.getMenu(0).getItem(1).setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_DOWN_MASK));
@@ -121,40 +125,40 @@ public class MainFrame extends JFrame implements ActionListener{
 		// help
 		menubar.getMenu(7).getItem(0).setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_H, KeyEvent.CTRL_DOWN_MASK));
 
-		//-------------------------------------------------------------
+		// -------------------------------------------------------------
 		// Tool bar
-		//-------------------------------------------------------------
-		toolbar = new ToolBar(this.getContentPane(),this,dico);
+		// -------------------------------------------------------------
+		toolbar = new ToolBar(this.getContentPane(), this, dico);
 
-		//-------------------------------------------------------------
+		// -------------------------------------------------------------
 		// Double panel
-		//-------------------------------------------------------------
-		split=new GridBag_SplitPanel(this.getContentPane(),JSplitPane.HORIZONTAL_SPLIT,0.2,0,1,1,1);
+		// -------------------------------------------------------------
+		split = new GridBag_SplitPanel(this.getContentPane(), JSplitPane.HORIZONTAL_SPLIT, 0.2, 0, 1, 1, 1);
 
-		//-------------------------------------------------------------
+		// -------------------------------------------------------------
 		// Left component: trees panel
-		//-------------------------------------------------------------
+		// -------------------------------------------------------------
 		split.setLeftComponent(trees);
 
-		//-------------------------------------------------------------
+		// -------------------------------------------------------------
 		// Right component: thematic tabs
-		//-------------------------------------------------------------
+		// -------------------------------------------------------------
 		tabs.setFont(config.getFontTabs());
 		split.setRightComponent(tabs);
-		tabs.addTab(dico.entry("HydrauConf"),iconHydraulic, hydraulic,dico.entry("HydrauConf"));
-		tabs.addTab(dico.entry("Gaugings"),iconGauging, gauging,dico.entry("Gaugings"));
-		tabs.addTab(dico.entry("RemnantError"),iconError, remnant,dico.entry("RemnantError"));
-		tabs.addTab(dico.entry("Limnigraph"),iconLimni, limni,dico.entry("Limnigraph"));
-		tabs.addTab(dico.entry("RatingCurve"),iconRC, rc,dico.entry("RatingCurve"));
-		tabs.addTab(dico.entry("Hydrograph"),iconHydro, hydrograph,dico.entry("Hydrograph"));
-		//-------------------------------------------------------------
+		tabs.addTab(dico.entry("HydrauConf"), iconHydraulic, hydraulic, dico.entry("HydrauConf"));
+		tabs.addTab(dico.entry("Gaugings"), iconGauging, gauging, dico.entry("Gaugings"));
+		tabs.addTab(dico.entry("RemnantError"), iconError, remnant, dico.entry("RemnantError"));
+		tabs.addTab(dico.entry("Limnigraph"), iconLimni, limni, dico.entry("Limnigraph"));
+		tabs.addTab(dico.entry("RatingCurve"), iconRC, rc, dico.entry("RatingCurve"));
+		tabs.addTab(dico.entry("Hydrograph"), iconHydro, hydrograph, dico.entry("Hydrograph"));
+		// -------------------------------------------------------------
 		// Initialize last opened directories
-		//-------------------------------------------------------------
+		// -------------------------------------------------------------
 		this.setLastBarDir(config.getDefaultDir());
 		this.setLastDataDir(config.getDefaultDir());
-		//-------------------------------------------------------------
+		// -------------------------------------------------------------
 		// Finito!
-		//-------------------------------------------------------------
+		// -------------------------------------------------------------
 		this.setVisible(true);
 	}
 
@@ -176,91 +180,130 @@ public class MainFrame extends JFrame implements ActionListener{
 		String id = null;
 		String eclass = event.getSource().getClass().getName();
 		// Event from a menu
-		if(eclass.equals(menubar.getMenu(0).getItem(0).getClass().getName())){
+		if (eclass.equals(menubar.getMenu(0).getItem(0).getClass().getName())) {
 			Custom_MenuItem obj = (Custom_MenuItem) event.getSource();
-			id=obj.getID();
+			id = obj.getID();
 		}
 		// Event from a button
-		if(eclass.equals(toolbar.getButton(0).getClass().getName())){
+		if (eclass.equals(toolbar.getButton(0).getClass().getName())) {
 			GridBag_Button obj = (GridBag_Button) event.getSource();
-			id=obj.getID();
+			id = obj.getID();
 		}
 		// Take action!
-		if(id.equals("Quit")){close();}
-		else if(id.equals("AddConfig")){addConfig(true,null,null);}
-		else if(id.equals("DeleteConfig")){deleteConfig(controller.getHydrauList(),true,null,null);}
-		else if(id.equals("RenameConfig")){renameConfig(controller.getHydrauList(),true,null,null);}
-		else if(id.equals("DuplicateConfig")){duplicateConfig(controller.getHydrauList(),true,null,null);}
-		else if(id.equals("AddGauging")){addGaugingSet(true,null,null);}
-		else if(id.equals("DeleteGauging")){deleteGaugingSet(controller.getGaugingList(),true,null,null);}
-		else if(id.equals("RenameGauging")){renameGaugingSet(controller.getGaugingList(),true,null,null);}
-		else if(id.equals("DuplicateGauging")){duplicateGaugingSet(controller.getGaugingList(),true,null,null);}
-		else if(id.equals("AddLimni")){addLimni(true,null,null);}
-		else if(id.equals("DeleteLimni")){deleteLimni(controller.getLimniList(),true,null,null);}
-		else if(id.equals("RenameLimni")){renameLimni(controller.getLimniList(),true,null,null);}
-		else if(id.equals("DuplicateLimni")){duplicateLimni(controller.getLimniList(),true,null,null);}
-		else if(id.equals("AddRC")){addRatingCurve(true,null,null);}
-		else if(id.equals("DeleteRC")){deleteRatingCurve(controller.getRCList(),true,null,null);}
-		else if(id.equals("RenameRC")){renameRatingCurve(controller.getRCList(),true,null,null);}
-		else if(id.equals("DuplicateRC")){duplicateRatingCurve(controller.getRCList(),true,null,null);}
-		else if(id.equals("AddHydro")){addHydrograph(true,null,null);}
-		else if(id.equals("DeleteHydro")){deleteHydrograph(controller.getHydrographList(),true,null,null);}
-		else if(id.equals("RenameHydro")){renameHydrograph(controller.getHydrographList(),true,null,null);}
-		else if(id.equals("DuplicateHydro")){duplicateHydrograph(controller.getHydrographList(),true,null,null);}
-		else if(id.equals("Help")){openHelp();}
-		else if(id.equals("Open")){controller.open();}
-		else if(id.equals("New")){newStation();}
-		else if(id.equals("Save")){
-			if(this.barFile!=null){controller.save(false);} else {controller.save(true);}
+		if (id.equals("Quit")) {
+			close();
+		} else if (id.equals("AddConfig")) {
+			addConfig(true, null, null);
+		} else if (id.equals("DeleteConfig")) {
+			deleteConfig(controller.getHydrauList(), true, null, null);
+		} else if (id.equals("RenameConfig")) {
+			renameConfig(controller.getHydrauList(), true, null, null);
+		} else if (id.equals("DuplicateConfig")) {
+			duplicateConfig(controller.getHydrauList(), true, null, null);
+		} else if (id.equals("AddGauging")) {
+			addGaugingSet(true, null, null);
+		} else if (id.equals("DeleteGauging")) {
+			deleteGaugingSet(controller.getGaugingList(), true, null, null);
+		} else if (id.equals("RenameGauging")) {
+			renameGaugingSet(controller.getGaugingList(), true, null, null);
+		} else if (id.equals("DuplicateGauging")) {
+			duplicateGaugingSet(controller.getGaugingList(), true, null, null);
+		} else if (id.equals("AddLimni")) {
+			addLimni(true, null, null);
+		} else if (id.equals("DeleteLimni")) {
+			deleteLimni(controller.getLimniList(), true, null, null);
+		} else if (id.equals("RenameLimni")) {
+			renameLimni(controller.getLimniList(), true, null, null);
+		} else if (id.equals("DuplicateLimni")) {
+			duplicateLimni(controller.getLimniList(), true, null, null);
+		} else if (id.equals("AddRC")) {
+			addRatingCurve(true, null, null);
+		} else if (id.equals("DeleteRC")) {
+			deleteRatingCurve(controller.getRCList(), true, null, null);
+		} else if (id.equals("RenameRC")) {
+			renameRatingCurve(controller.getRCList(), true, null, null);
+		} else if (id.equals("DuplicateRC")) {
+			duplicateRatingCurve(controller.getRCList(), true, null, null);
+		} else if (id.equals("AddHydro")) {
+			addHydrograph(true, null, null);
+		} else if (id.equals("DeleteHydro")) {
+			deleteHydrograph(controller.getHydrographList(), true, null, null);
+		} else if (id.equals("RenameHydro")) {
+			renameHydrograph(controller.getHydrographList(), true, null, null);
+		} else if (id.equals("DuplicateHydro")) {
+			duplicateHydrograph(controller.getHydrographList(), true, null, null);
+		} else if (id.equals("Help")) {
+			openHelp();
+		} else if (id.equals("Open")) {
+			controller.open();
+		} else if (id.equals("New")) {
+			newStation();
+		} else if (id.equals("Save")) {
+			if (this.barFile != null) {
+				controller.save(false);
+			} else {
+				controller.save(true);
+			}
+		} else if (id.equals("SaveAs")) {
+			controller.save(true);
+		} else if (id.equals("ExportRC")) {
+			exportRatingCurve(controller.getRCList(), true, null, null);
+		} else if (id.equals("ExportRCeq")) {
+			exportRatingCurveEquation(controller.getRCList(), true, null, null);
+		} else if (id.equals("ExportMCMC")) {
+			exportMCMC(controller.getRCList(), true, null, null);
+		} else if (id.equals("ExportHydro")) {
+			exportHydrograph(controller.getHydrographList(), true, null, null);
+		} else if (id.equals("About")) {
+			new Frame_About();
+		} else if (id.equals("Language")) {
+			setLanguage();
+		} else if (id.equals("Preferences")) {
+			setPreferences();
+		} else if (id.equals("DefaultDirectory")) {
+			setDefaultDirectory();
+		} else if (id.equals("SaveOptions")) {
+			setSaveOptions();
+		} else if (id.equals("MCMCoptions")) {
+			setMCMCOptions();
 		}
-		else if(id.equals("SaveAs")){controller.save(true);}
-		else if(id.equals("ExportRC")){exportRatingCurve(controller.getRCList(),true,null,null);}
-		else if(id.equals("ExportRCeq")){exportRatingCurveEquation(controller.getRCList(),true,null,null);}
-		else if(id.equals("ExportMCMC")){exportMCMC(controller.getRCList(),true,null,null);}
-		else if(id.equals("ExportHydro")){exportHydrograph(controller.getHydrographList(),true,null,null);}
-		else if(id.equals("About")){new Frame_About();}
-		else if(id.equals("Language")){setLanguage();}
-		else if(id.equals("Preferences")){setPreferences();}
-		else if(id.equals("DefaultDirectory")){setDefaultDirectory();}
-		else if(id.equals("SaveOptions")){setSaveOptions();}
-		else if(id.equals("MCMCoptions")){setMCMCOptions();}
 	}
 
 	/////////////////
 	// HYDRAU CONFIG
 	/////////////////
-	public void deleteConfig(String[] itemList,boolean decorated,Integer x,Integer y){
-		Frame_SelectItem f=Popup_SelectItem(itemList,dico.entry("HydrauConf"),decorated,x,y);
-		String nam=f.getName();
-		if(!nam.equals(Constants.S_EMPTY)){
+	public void deleteConfig(String[] itemList, boolean decorated, Integer x, Integer y) {
+		Frame_SelectItem f = Popup_SelectItem(itemList, dico.entry("HydrauConf"), decorated, x, y);
+		String nam = f.getName();
+		if (!nam.equals(Constants.S_EMPTY)) {
 			// remove from station (through controller)
 			controller.deleteHydrauConfig(nam);
 		}
 	}
 
-	public void addConfig(boolean decorated,Integer x,Integer y){
-		Frame_GetName f=Popup_GetName(decorated,x,y,Constants.S_EMPTY);
-		String nam=f.getName();
-		if(!nam.equals(Constants.S_EMPTY)){
+	public void addConfig(boolean decorated, Integer x, Integer y) {
+		Frame_GetName f = Popup_GetName(decorated, x, y, Constants.S_EMPTY);
+		String nam = f.getName();
+		if (!nam.equals(Constants.S_EMPTY)) {
 			// Add to station (through controller)
 			controller.addHydrauConfig(nam);
 		}
 	}
 
-	public void renameConfig(String[] itemList,boolean decorated,Integer x,Integer y){
+	public void renameConfig(String[] itemList, boolean decorated, Integer x, Integer y) {
 		// select item
-		Frame_SelectItem f=Popup_SelectItem(itemList,dico.entry("HydrauConf"),decorated,x,y);
-		String nam=f.getName();
-		if(!nam.equals(Constants.S_EMPTY)){
+		Frame_SelectItem f = Popup_SelectItem(itemList, dico.entry("HydrauConf"), decorated, x, y);
+		String nam = f.getName();
+		if (!nam.equals(Constants.S_EMPTY)) {
 			controller.renameHydrauConfig(nam);
 		}
 	}
 
-	public void duplicateConfig(String[] itemList,boolean decorated,Integer x,Integer y){
+	public void duplicateConfig(String[] itemList, boolean decorated, Integer x, Integer y) {
 		// select item
-		Frame_SelectItem f1=Popup_SelectItem(itemList,dico.entry("HydrauConf"),decorated,x,y);
-		String original=f1.getName();
-		if(!original.equals(Constants.S_EMPTY)){
+		Frame_SelectItem f1 = Popup_SelectItem(itemList, dico.entry("HydrauConf"), decorated, x, y);
+		String original = f1.getName();
+		if (!original.equals(Constants.S_EMPTY)) {
 			controller.duplicateHydrauConfig(original);
 		}
 	}
@@ -268,38 +311,38 @@ public class MainFrame extends JFrame implements ActionListener{
 	/////////////////
 	// GAUGINGS
 	/////////////////
-	public void deleteGaugingSet(String[] itemList,boolean decorated,Integer x,Integer y){
-		Frame_SelectItem f=Popup_SelectItem(itemList,dico.entry("Gaugings"),decorated,x,y);
-		String nam=f.getName();
-		if(!nam.equals(Constants.S_EMPTY)){
+	public void deleteGaugingSet(String[] itemList, boolean decorated, Integer x, Integer y) {
+		Frame_SelectItem f = Popup_SelectItem(itemList, dico.entry("Gaugings"), decorated, x, y);
+		String nam = f.getName();
+		if (!nam.equals(Constants.S_EMPTY)) {
 			// remove from station (through controller)
 			controller.deleteGaugingSet(nam);
 		}
 	}
 
-	public void addGaugingSet(boolean decorated,Integer x,Integer y){
-		Frame_GetName f=Popup_GetName(decorated,x,y,Constants.S_EMPTY);
-		String nam=f.getName();
-		if(!nam.equals(Constants.S_EMPTY)){
+	public void addGaugingSet(boolean decorated, Integer x, Integer y) {
+		Frame_GetName f = Popup_GetName(decorated, x, y, Constants.S_EMPTY);
+		String nam = f.getName();
+		if (!nam.equals(Constants.S_EMPTY)) {
 			// Add to station (through controller)
 			controller.addGaugingSet(nam);
 		}
 	}
 
-	public void renameGaugingSet(String[] itemList,boolean decorated,Integer x,Integer y){
+	public void renameGaugingSet(String[] itemList, boolean decorated, Integer x, Integer y) {
 		// select item
-		Frame_SelectItem f=Popup_SelectItem(itemList,dico.entry("Gaugings"),decorated,x,y);
-		String nam=f.getName();
-		if(!nam.equals(Constants.S_EMPTY)){
+		Frame_SelectItem f = Popup_SelectItem(itemList, dico.entry("Gaugings"), decorated, x, y);
+		String nam = f.getName();
+		if (!nam.equals(Constants.S_EMPTY)) {
 			controller.renameGaugingSet(nam);
 		}
 	}
 
-	public void duplicateGaugingSet(String[] itemList,boolean decorated,Integer x,Integer y){
+	public void duplicateGaugingSet(String[] itemList, boolean decorated, Integer x, Integer y) {
 		// select item
-		Frame_SelectItem f1=Popup_SelectItem(itemList,dico.entry("Gaugings"),decorated,x,y);
-		String original=f1.getName();
-		if(!original.equals(Constants.S_EMPTY)){
+		Frame_SelectItem f1 = Popup_SelectItem(itemList, dico.entry("Gaugings"), decorated, x, y);
+		String original = f1.getName();
+		if (!original.equals(Constants.S_EMPTY)) {
 			controller.duplicateGauging(original);
 		}
 	}
@@ -307,65 +350,65 @@ public class MainFrame extends JFrame implements ActionListener{
 	/////////////////
 	// RATING CURVE
 	/////////////////
-	public void deleteRatingCurve(String[] itemList,boolean decorated,Integer x,Integer y){
-		Frame_SelectItem f=Popup_SelectItem(itemList,dico.entry("RatingCurve"),decorated,x,y);
-		String nam=f.getName();
-		if(!nam.equals(Constants.S_EMPTY)){
+	public void deleteRatingCurve(String[] itemList, boolean decorated, Integer x, Integer y) {
+		Frame_SelectItem f = Popup_SelectItem(itemList, dico.entry("RatingCurve"), decorated, x, y);
+		String nam = f.getName();
+		if (!nam.equals(Constants.S_EMPTY)) {
 			// remove from station (through controller)
 			controller.deleteRatingCurve(nam);
 		}
 	}
 
-	public void addRatingCurve(boolean decorated,Integer x,Integer y){
-		Frame_GetName f=Popup_GetName(decorated,x,y,Constants.S_EMPTY);
-		String nam=f.getName();
-		if(!nam.equals(Constants.S_EMPTY)){
+	public void addRatingCurve(boolean decorated, Integer x, Integer y) {
+		Frame_GetName f = Popup_GetName(decorated, x, y, Constants.S_EMPTY);
+		String nam = f.getName();
+		if (!nam.equals(Constants.S_EMPTY)) {
 			// Add to station (through controller)
 			controller.addRatingCurve(nam);
 		}
 	}
 
-	public void renameRatingCurve(String[] itemList,boolean decorated,Integer x,Integer y){
+	public void renameRatingCurve(String[] itemList, boolean decorated, Integer x, Integer y) {
 		// select item
-		Frame_SelectItem f=Popup_SelectItem(itemList,dico.entry("RatingCurve"),decorated,x,y);
-		String nam=f.getName();
-		if(!nam.equals(Constants.S_EMPTY)){
+		Frame_SelectItem f = Popup_SelectItem(itemList, dico.entry("RatingCurve"), decorated, x, y);
+		String nam = f.getName();
+		if (!nam.equals(Constants.S_EMPTY)) {
 			controller.renameRatingCurve(nam);
 		}
 	}
 
-	public void exportRatingCurve(String[] itemList,boolean decorated,Integer x,Integer y){
+	public void exportRatingCurve(String[] itemList, boolean decorated, Integer x, Integer y) {
 		// select item
-		Frame_SelectItem f=Popup_SelectItem(itemList,dico.entry("RatingCurve"),decorated,x,y);
-		String nam=f.getName();
-		if(!nam.equals(Constants.S_EMPTY)){
+		Frame_SelectItem f = Popup_SelectItem(itemList, dico.entry("RatingCurve"), decorated, x, y);
+		String nam = f.getName();
+		if (!nam.equals(Constants.S_EMPTY)) {
 			controller.exportRatingCurve(nam);
 		}
 	}
 
-	public void exportRatingCurveEquation(String[] itemList,boolean decorated,Integer x,Integer y){
+	public void exportRatingCurveEquation(String[] itemList, boolean decorated, Integer x, Integer y) {
 		// select item
-		Frame_SelectItem f=Popup_SelectItem(itemList,dico.entry("RatingCurve"),decorated,x,y);
-		String nam=f.getName();
-		if(!nam.equals(Constants.S_EMPTY)){
+		Frame_SelectItem f = Popup_SelectItem(itemList, dico.entry("RatingCurve"), decorated, x, y);
+		String nam = f.getName();
+		if (!nam.equals(Constants.S_EMPTY)) {
 			controller.exportRatingCurveEquation(nam);
 		}
 	}
 
-	public void exportMCMC(String[] itemList,boolean decorated,Integer x,Integer y){
+	public void exportMCMC(String[] itemList, boolean decorated, Integer x, Integer y) {
 		// select item
-		Frame_SelectItem f=Popup_SelectItem(itemList,dico.entry("RatingCurve"),decorated,x,y);
-		String nam=f.getName();
-		if(!nam.equals(Constants.S_EMPTY)){
+		Frame_SelectItem f = Popup_SelectItem(itemList, dico.entry("RatingCurve"), decorated, x, y);
+		String nam = f.getName();
+		if (!nam.equals(Constants.S_EMPTY)) {
 			controller.exportMCMC(nam);
 		}
 	}
-	
-	public void duplicateRatingCurve(String[] itemList,boolean decorated,Integer x,Integer y){
+
+	public void duplicateRatingCurve(String[] itemList, boolean decorated, Integer x, Integer y) {
 		// select item
-		Frame_SelectItem f1=Popup_SelectItem(itemList,dico.entry("RatingCurve"),decorated,x,y);
-		String original=f1.getName();
-		if(!original.equals(Constants.S_EMPTY)){
+		Frame_SelectItem f1 = Popup_SelectItem(itemList, dico.entry("RatingCurve"), decorated, x, y);
+		String original = f1.getName();
+		if (!original.equals(Constants.S_EMPTY)) {
 			controller.duplicateRatingCurve(original);
 		}
 	}
@@ -373,38 +416,38 @@ public class MainFrame extends JFrame implements ActionListener{
 	/////////////////
 	// LIMNI
 	/////////////////
-	public void deleteLimni(String[] itemList,boolean decorated,Integer x,Integer y){
-		Frame_SelectItem f=Popup_SelectItem(itemList,dico.entry("Limnigraph"),decorated,x,y);
-		String nam=f.getName();
-		if(!nam.equals(Constants.S_EMPTY)){
+	public void deleteLimni(String[] itemList, boolean decorated, Integer x, Integer y) {
+		Frame_SelectItem f = Popup_SelectItem(itemList, dico.entry("Limnigraph"), decorated, x, y);
+		String nam = f.getName();
+		if (!nam.equals(Constants.S_EMPTY)) {
 			// remove from station (through controller)
 			controller.deleteLimni(nam);
 		}
 	}
 
-	public void addLimni(boolean decorated,Integer x,Integer y){
-		Frame_GetName f=Popup_GetName(decorated,x,y,Constants.S_EMPTY);
-		String nam=f.getName();
-		if(!nam.equals(Constants.S_EMPTY)){
+	public void addLimni(boolean decorated, Integer x, Integer y) {
+		Frame_GetName f = Popup_GetName(decorated, x, y, Constants.S_EMPTY);
+		String nam = f.getName();
+		if (!nam.equals(Constants.S_EMPTY)) {
 			// Add to station (through controller)
 			controller.addLimni(nam);
 		}
 	}
 
-	public void renameLimni(String[] itemList,boolean decorated,Integer x,Integer y){
+	public void renameLimni(String[] itemList, boolean decorated, Integer x, Integer y) {
 		// select item
-		Frame_SelectItem f=Popup_SelectItem(itemList,dico.entry("Limnigraph"),decorated,x,y);
-		String nam=f.getName();
-		if(!nam.equals(Constants.S_EMPTY)){
+		Frame_SelectItem f = Popup_SelectItem(itemList, dico.entry("Limnigraph"), decorated, x, y);
+		String nam = f.getName();
+		if (!nam.equals(Constants.S_EMPTY)) {
 			controller.renameLimni(nam);
 		}
 	}
 
-	public void duplicateLimni(String[] itemList,boolean decorated,Integer x,Integer y){
+	public void duplicateLimni(String[] itemList, boolean decorated, Integer x, Integer y) {
 		// select item
-		Frame_SelectItem f1=Popup_SelectItem(itemList,dico.entry("Limnigraph"),decorated,x,y);
-		String original=f1.getName();
-		if(!original.equals(Constants.S_EMPTY)){
+		Frame_SelectItem f1 = Popup_SelectItem(itemList, dico.entry("Limnigraph"), decorated, x, y);
+		String original = f1.getName();
+		if (!original.equals(Constants.S_EMPTY)) {
 			controller.duplicateLimni(original);
 		}
 	}
@@ -412,47 +455,47 @@ public class MainFrame extends JFrame implements ActionListener{
 	/////////////////
 	// HYDROGRAPH
 	/////////////////
-	public void deleteHydrograph(String[] itemList,boolean decorated,Integer x,Integer y){
-		Frame_SelectItem f=Popup_SelectItem(itemList,dico.entry("Hydrograph"),decorated,x,y);
-		String nam=f.getName();
-		if(!nam.equals(Constants.S_EMPTY)){
+	public void deleteHydrograph(String[] itemList, boolean decorated, Integer x, Integer y) {
+		Frame_SelectItem f = Popup_SelectItem(itemList, dico.entry("Hydrograph"), decorated, x, y);
+		String nam = f.getName();
+		if (!nam.equals(Constants.S_EMPTY)) {
 			// remove from station (through controller)
 			controller.deleteHydrograph(nam);
 		}
 	}
 
-	public void addHydrograph(boolean decorated,Integer x,Integer y){
-		Frame_GetName f=Popup_GetName(decorated,x,y,Constants.S_EMPTY);
-		String nam=f.getName();
-		if(!nam.equals(Constants.S_EMPTY)){
+	public void addHydrograph(boolean decorated, Integer x, Integer y) {
+		Frame_GetName f = Popup_GetName(decorated, x, y, Constants.S_EMPTY);
+		String nam = f.getName();
+		if (!nam.equals(Constants.S_EMPTY)) {
 			// Add to station (through controller)
 			controller.addHydrograph(nam);
 		}
 	}
 
-	public void renameHydrograph(String[] itemList,boolean decorated,Integer x,Integer y){
+	public void renameHydrograph(String[] itemList, boolean decorated, Integer x, Integer y) {
 		// select item
-		Frame_SelectItem f=Popup_SelectItem(itemList,dico.entry("Hydrograph"),decorated,x,y);
-		String nam=f.getName();
-		if(!nam.equals(Constants.S_EMPTY)){
+		Frame_SelectItem f = Popup_SelectItem(itemList, dico.entry("Hydrograph"), decorated, x, y);
+		String nam = f.getName();
+		if (!nam.equals(Constants.S_EMPTY)) {
 			controller.renameHydrograph(nam);
 		}
 	}
 
-	public void exportHydrograph(String[] itemList,boolean decorated,Integer x,Integer y){
+	public void exportHydrograph(String[] itemList, boolean decorated, Integer x, Integer y) {
 		// select item
-		Frame_SelectItem f=Popup_SelectItem(itemList,dico.entry("Hydrograph"),decorated,x,y);
-		String nam=f.getName();
-		if(!nam.equals(Constants.S_EMPTY)){
+		Frame_SelectItem f = Popup_SelectItem(itemList, dico.entry("Hydrograph"), decorated, x, y);
+		String nam = f.getName();
+		if (!nam.equals(Constants.S_EMPTY)) {
 			controller.exportHydrograph(nam);
 		}
 	}
 
-	public void duplicateHydrograph(String[] itemList,boolean decorated,Integer x,Integer y){
+	public void duplicateHydrograph(String[] itemList, boolean decorated, Integer x, Integer y) {
 		// select item
-		Frame_SelectItem f1=Popup_SelectItem(itemList,dico.entry("Hydrograph"),decorated,x,y);
-		String original=f1.getName();
-		if(!original.equals(Constants.S_EMPTY)){
+		Frame_SelectItem f1 = Popup_SelectItem(itemList, dico.entry("Hydrograph"), decorated, x, y);
+		String original = f1.getName();
+		if (!original.equals(Constants.S_EMPTY)) {
 			controller.duplicateHydrograph(original);
 		}
 	}
@@ -461,14 +504,14 @@ public class MainFrame extends JFrame implements ActionListener{
 	// MISC.
 	/////////////////
 
-	public void setLanguage(){
+	public void setLanguage() {
 		// select language
-		Frame_SelectItem select=Popup_SelectItem(dico.getAvailable(),dico.entry("Language"),true,null,null);
-		String lang=select.getName();
-		if(!lang.equals(Constants.S_EMPTY)){
+		Frame_SelectItem select = Popup_SelectItem(dico.getAvailable(), dico.entry("Language"), true, null, null);
+		String lang = select.getName();
+		if (!lang.equals(Constants.S_EMPTY)) {
 			try {
-				ReadWrite.write(new String[]{lang}, Defaults.options_lang);
-				new InformationPanel(this,dico.entry("SetLanguageInfo"));
+				ReadWrite.write(new String[] { lang }, Defaults.options_lang);
+				new InformationPanel(this, dico.entry("SetLanguageInfo"));
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -476,18 +519,21 @@ public class MainFrame extends JFrame implements ActionListener{
 		}
 	}
 
-	public void setPreferences(){
-		// NOTE BR, 18/08/2022: Manning option has been deactivated since it wasn't handled properly, 
-		//                      and handling it properly would require major changes.
+	public void setPreferences() {
+		// NOTE BR, 18/08/2022: Manning option has been deactivated since it wasn't
+		// handled properly,
+		// and handling it properly would require major changes.
 		// select coefficient
-		Frame_SelectItem select=Popup_SelectItem(new String[] {"Strickler"},dico.entry("RoughnessCoefficient"),true,null,null);
-		//Frame_SelectItem select=Popup_SelectItem(new String[] {"Strickler","Manning"},dico.entry("RoughnessCoefficient"),true,null,null);
-		String coeff=select.getName();
-		if(!coeff.equals(Constants.S_EMPTY)){
+		Frame_SelectItem select = Popup_SelectItem(new String[] { "Strickler" }, dico.entry("RoughnessCoefficient"),
+				true, null, null);
+		// Frame_SelectItem select=Popup_SelectItem(new String[]
+		// {"Strickler","Manning"},dico.entry("RoughnessCoefficient"),true,null,null);
+		String coeff = select.getName();
+		if (!coeff.equals(Constants.S_EMPTY)) {
 			try {
-				ReadWrite.write(new String[]{coeff}, Defaults.options_preferences);
+				ReadWrite.write(new String[] { coeff }, Defaults.options_preferences);
 				config.setUseManning(coeff.equals("Manning"));
-				new InformationPanel(this,dico.entry("ChangeSaved"));
+				new InformationPanel(this, dico.entry("ChangeSaved"));
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -495,14 +541,14 @@ public class MainFrame extends JFrame implements ActionListener{
 		}
 	}
 
-	public void setDefaultDirectory(){
+	public void setDefaultDirectory() {
 		// select directory
-		Custom_FileChooser chooser = new Custom_FileChooser(config.getDefaultDir(),"d");
-		if(chooser.getFilepath()!=Constants.S_EMPTY){
+		Custom_FileChooser chooser = new Custom_FileChooser(config.getDefaultDir(), "d");
+		if (chooser.getFilepath() != Constants.S_EMPTY) {
 			try {
-				ReadWrite.write(new String[]{chooser.getFilepath()}, Defaults.options_directory);
+				ReadWrite.write(new String[] { chooser.getFilepath() }, Defaults.options_directory);
 				config.setDefaultDir(chooser.getFilepath());
-				new InformationPanel(this,dico.entry("ChangeSaved"));
+				new InformationPanel(this, dico.entry("ChangeSaved"));
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -510,24 +556,32 @@ public class MainFrame extends JFrame implements ActionListener{
 		}
 	}
 
-	public void setSaveOptions(){
+	public void setSaveOptions() {
 		// save spags?
-		Frame_SelectItem select=Popup_SelectItem(new String[] {dico.entry("No"),dico.entry("Yes")},dico.entry("SaveHydroSpag"),true,null,null);
-		String save=select.getName();
-		if(!save.equals(Constants.S_EMPTY)){
+		Frame_SelectItem select = Popup_SelectItem(new String[] { dico.entry("No"), dico.entry("Yes") },
+				dico.entry("SaveHydroSpag"), true, null, null);
+		String save = select.getName();
+		if (!save.equals(Constants.S_EMPTY)) {
 			try {
 				String foo;
-				if(save.equals(dico.entry("Yes"))) {foo="true";} else {foo="false";}
-				if(foo.equalsIgnoreCase("true")) {
-					int ok=new Frame_YesNoQuestion().ask(this,
-							String.format("<html>%s<br>%s</html>", dico.entry("saveSpagWarning"), dico.entry("ConfirmContinue")),
+				if (save.equals(dico.entry("Yes"))) {
+					foo = "true";
+				} else {
+					foo = "false";
+				}
+				if (foo.equalsIgnoreCase("true")) {
+					int ok = new Frame_YesNoQuestion().ask(this,
+							String.format("<html>%s<br>%s</html>", dico.entry("saveSpagWarning"),
+									dico.entry("ConfirmContinue")),
 							dico.entry("Warning"),
-							Defaults.iconWarning,dico.entry("Yes"),dico.entry("No"));
-					if(ok==JOptionPane.NO_OPTION) {foo="false";}
-				}				
-				ReadWrite.write(new String[]{foo}, Defaults.options_save);
-				config.setSaveHydroSpag(foo.equalsIgnoreCase("true"));				
-				new InformationPanel(this,dico.entry("ChangeSaved"));
+							Defaults.iconWarning, dico.entry("Yes"), dico.entry("No"));
+					if (ok == JOptionPane.NO_OPTION) {
+						foo = "false";
+					}
+				}
+				ReadWrite.write(new String[] { foo }, Defaults.options_save);
+				config.setSaveHydroSpag(foo.equalsIgnoreCase("true"));
+				new InformationPanel(this, dico.entry("ChangeSaved"));
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -535,13 +589,13 @@ public class MainFrame extends JFrame implements ActionListener{
 		}
 	}
 
-	public void setMCMCOptions(){
+	public void setMCMCOptions() {
 		Frame_MCMCoptions f = new Frame_MCMCoptions(this, config.getMcmc());
-		if(f.getMcmc()!=null){
+		if (f.getMcmc() != null) {
 			try {
-				ReadWrite.write(new String[]{f.getMcmc().toString_mini()}, Defaults.options_mcmc);
+				ReadWrite.write(new String[] { f.getMcmc().toString_mini() }, Defaults.options_mcmc);
 				config.setMcmc(f.getMcmc());
-				new InformationPanel(this,dico.entry("ChangeSaved"));
+				new InformationPanel(this, dico.entry("ChangeSaved"));
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -549,76 +603,80 @@ public class MainFrame extends JFrame implements ActionListener{
 		}
 	}
 
-	public Frame_GetName Popup_GetName(boolean decorated,Integer x,Integer y, String init){
+	public Frame_GetName Popup_GetName(boolean decorated, Integer x, Integer y, String init) {
 		Frame_GetName f = new Frame_GetName(this,
-				dico.entry("TypeName"),decorated,dico.entry("Name"),
-				dico.entry("Apply"),dico.entry("Cancel"),
-				Defaults.iconApply,Defaults.iconCancel,
-				config.getFontTxt(),config.getFontLbl(),
-				Defaults.bkgColor,Defaults.txtColor,Defaults.lblColor,
+				dico.entry("TypeName"), decorated, dico.entry("Name"),
+				dico.entry("Apply"), dico.entry("Cancel"),
+				Defaults.iconApply, Defaults.iconCancel,
+				config.getFontTxt(), config.getFontLbl(),
+				Defaults.bkgColor, Defaults.txtColor, Defaults.lblColor,
 				Defaults.popupSize,
-				x,y,dico.entry("TypeName"),init);
-		return(f);
+				x, y, dico.entry("TypeName"), init);
+		return (f);
 	}
 
-	private Frame_SelectItem Popup_SelectItem(String[] itemList,String label,boolean decorated,Integer x,Integer y){
+	private Frame_SelectItem Popup_SelectItem(String[] itemList, String label, boolean decorated, Integer x,
+			Integer y) {
 		Frame_SelectItem f = new Frame_SelectItem(this,
 				dico.entry("SelectItem"),
 				itemList,
 				decorated,
 				label,
-				dico.entry("Apply"),dico.entry("Cancel"),
-				Defaults.iconApply,Defaults.iconCancel,
-				config.getFontTxt(),config.getFontLbl(),
-				Defaults.bkgColor,Defaults.txtColor,Defaults.lblColor,
+				dico.entry("Apply"), dico.entry("Cancel"),
+				Defaults.iconApply, Defaults.iconCancel,
+				config.getFontTxt(), config.getFontLbl(),
+				Defaults.bkgColor, Defaults.txtColor, Defaults.lblColor,
 				Defaults.popupSize,
-				x,y,dico.entry("SelectItem"));
-		return(f);
+				x, y, dico.entry("SelectItem"));
+		return (f);
 	}
 
-	private void openHelp(){
-		String help=config.getHelpFile();
+	private void openHelp() {
+		String help = config.getHelpFile();
 		File htmlFile = new File(help);
 		try {
 			Desktop.getDesktop().browse(htmlFile.toURI());
 		} catch (IOException ex) {
-			//TODO
+			// TODO
 			ex.printStackTrace();
 		}
 
 	}
 
-	private void close(){
+	private void close() {
 		String mess = String.format("<html>%s<br><span color=\"red\">%s</span></html>",
 				dico.entry("CloseWarning"), dico.entry("mayBeLostWarning"));
-		int ok=new Frame_YesNoQuestion().ask(this,mess,dico.entry("Warning"),
-				Defaults.iconWarning,dico.entry("Yes"),dico.entry("No"));
-		if(ok==JOptionPane.YES_OPTION){
+		int ok = new Frame_YesNoQuestion().ask(this, mess, dico.entry("Warning"),
+				Defaults.iconWarning, dico.entry("Yes"), dico.entry("No"));
+		if (ok == JOptionPane.YES_OPTION) {
 			// Kill executable if needed
 			ExeControl exeController = ExeControl.getInstance();
 			Process p = exeController.getExeProc();
-			if(p!=null) {p.destroy();}
+			if (p != null) {
+				p.destroy();
+			}
 			// Kill Java VM
 			System.exit(0);
-			}
-	}
-	
-	private void newStation(){
-		int ok;
-		if(!Station.getInstance().isEmpty()) {
-			String mess = String.format("<html>%s<br>%s</html>",
-					dico.entry("NewWarning"), dico.entry("ConfirmContinue"));
-			ok=new Frame_YesNoQuestion().ask(this,
-					mess,
-					dico.entry("Warning"),
-					Defaults.iconWarning,dico.entry("Yes"),dico.entry("No"));
-		} else {
-			ok=JOptionPane.YES_OPTION;
 		}
-		if(ok==JOptionPane.YES_OPTION){controller.newStation();}
-		this.barFile=null;
 	}
 
+	private void newStation() {
+		int ok;
+		if (!Station.getInstance().isEmpty()) {
+			String mess = String.format("<html>%s<br>%s</html>",
+					dico.entry("NewWarning"), dico.entry("ConfirmContinue"));
+			ok = new Frame_YesNoQuestion().ask(this,
+					mess,
+					dico.entry("Warning"),
+					Defaults.iconWarning, dico.entry("Yes"), dico.entry("No"));
+		} else {
+			ok = JOptionPane.YES_OPTION;
+		}
+		if (ok == JOptionPane.YES_OPTION) {
+			controller.newStation();
+		}
+		this.barFile = null;
+	}
 
 	/////////////////////////////////////////////////////////
 	// GETTERS & SETTERS
