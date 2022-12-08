@@ -95,8 +95,8 @@ You can also reach out and ask your questions by sending an email to **baratin.d
 ### Bugs
 
 If you enconter bugs or any problems when using **BaRatinAGE**, please let us know.
-The best way to do so is to have a Guithub accompt and open a new _issue_ by clicking `New Issue` on the page la page [https://github.com/BaRatin-tools/BaRatinAGE/issues](https://github.com/BaRatin-tools/BaRatinAGE/issues).
-Alternatively, you can send an emeil to  **baratin.dev [at] lists.irstea.fr**.
+The best way to do so is to have a Guthub account and open a new _issue_ by clicking `New Issue` on the page la page [https://github.com/BaRatin-tools/BaRatinAGE/issues](https://github.com/BaRatin-tools/BaRatinAGE/issues).
+Alternatively, you can send an email to  **baratin.dev [at] lists.irstea.fr**.
 Please, be as exhaustive as possible when describing the issue.
 
 ### Multi-language support
@@ -111,4 +111,4 @@ Please send your contributions by opening a new _issue_ on Github (`New Issue` o
 
 ### Developpement
 
-For more information on BaRatinAGE delelopment, please see the file `CONTRIBUTING.md` on the github page [https://github.com/BaRatin-tools/BaRatinAGE/](https://github.com/BaRatin-tools/BaRatinAGE/).
+For more information on BaRatinAGE development, please see the file `CONTRIBUTING.md` on the github page [https://github.com/BaRatin-tools/BaRatinAGE/](https://github.com/BaRatin-tools/BaRatinAGE/).
