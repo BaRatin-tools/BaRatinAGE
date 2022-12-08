@@ -88,7 +88,7 @@ To execute **BaRatinAGE**:
 
 To access the help of **BaRatinAGE** open the file `help\fr\index.html` (or `bin\help\fr\index.html` on Linux).
 
-You also can reach out and ask you questions by sending an email to **baratin.dev [at] lists.irstea.fr**.
+You can also reach out and ask your questions by sending an email to **baratin.dev [at] lists.irstea.fr**.
 
 ## Contributions
 
