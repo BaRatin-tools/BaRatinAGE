@@ -12,8 +12,14 @@ Here we detail some of these aspects.
 
 For your development environment, you'll need a recent enough [version of Java Standard Edition](https://en.wikipedia.org/wiki/Java_version_history).
 It is recommended to have the most recent Long Term Support (LTS) release.
-At the time of writing (15/11/2022), you need at least the Java SE 10. 
+At the time of writing (15/11/2022), you need at least the Java SE 10 but we recommand you use at least Java 17.
 
+Also note that you need the JDK (the JRE isn't enough) since some of the necessary tools only come with the JDK.
+For example, on linux, if you're using OpenJDK, make sure you install the jdk by running this command (adapt to the desired version):
+```sh
+apt install openjdk-17-jdk 
+```
+... and not `apt install openjdk-17-jre`
 
 ## External libraries
 
@@ -33,13 +39,13 @@ jfreechart and orsonpdf required compiling following the method described below
 
 - prerequesite: have maven installed and its bin path added to PATH. For example (on windows):
    - downloaded the zip file from https://maven.apache.org/index.html
-   - unzip it in `C:\Program Files\Java` folder (administrator privilege requrired) 
-   - update the env variable by adding the path `C:\Program Files\Java\apache-maven-3.8.6\bin`
-   - restart the console. The command `mvn -version` should return the version of Maven you're working with.
+   - unzip it in `C:\Program Files\Java` folder (administrator privilege requrired). _Note: any folder would do! I give an example using the Java folder because this makes the most sense to me but feel free to use any directory you like._
+   - update the `PATH` environment variable by adding the path to the maven bin folder; for example: `C:\Program Files\Java\apache-maven-3.8.6\bin`. _Note: see this [www.howtogeek.com article](https://www.howtogeek.com/787217/how-to-edit-environment-variables-on-windows-10-or-11/) to learn to modify an environment variable on windows_
+   - restart the terminal/console. The command `mvn -version` should return the version of Maven you're working with.
 - download latest source file from github
-- unzip in externalLib folder
-- install by running the command `mvn clean verify` or `mvn clean install` (see the github `README.md` file for the recommanded way to build the lib)
-- the jar file resulting from the build will typically be found in the target folder
+- unzip in `externalLib` folder
+- install by running the command `mvn clean verify` or `mvn clean install` (see the github `README.md` file of each library for the recommanded way to build it)
+- the jar file resulting from the build will typically be found in the `target` folder
  
  
 ### Eclipse IDE: updating the build path
