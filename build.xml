@@ -2,7 +2,7 @@
 <project default="all">
 
     <property name="name" value="BaRatinAGE" />
-    <property name="version" value="2.2.3" />
+    <property name="version" value="2.2.1" />
 
     <property name="root" value="." />
 
