@@ -1,6 +1,8 @@
 # BaRatinAGE
 _BaRatin Advanced Graphical Environment_
 
+[![DOI](https://zenodo.org/badge/520005014.svg)](https://zenodo.org/badge/latestdoi/520005014)
+
 [English version follows > ](#Overview)
 
 ## Présentation générale
@@ -48,7 +50,7 @@ Les contributions pour traduire BaRatinAGE vers d'autres langues sont bienvenues
 Les fichiers à traduire sont les suivants:
 1. Le fichier `lang/dico.txt`. Ajoutez simplement une colonne contenant la traduction de tous les termes dans la nouvelle langue. N'utilisez ni virgules ni points-virgules dans les traductions, car ces caractères sont utilisés comme séparateurs.
 2. Tous les fichiers `.html` dans le dossier `help`. Aucune connaissance du langage HTML n'est nécessaire. Ouvrez simplement le fichier avec un éditeur de texte (par exemple Notepad++) et traduisez le texte entre les balises HTML
-   (<balise> texte à traduire </balise>). Ne modifiez pas les balises elles-mêmes!
+   (`<balise> texte à traduire </balise>`). Ne modifiez pas les balises elles-mêmes!
 
 Vous pouvez envoyer vos contributions en ouvrant une nouvelle _issue_ sur Github (`New Issue` sur la page [https://github.com/BaRatin-tools/BaRatinAGE/issues](https://github.com/BaRatin-tools/BaRatinAGE/issues), nécéssite un compte Github) ou par courriel à l'adresse **baratin.dev [at] inrae.fr**.
 
@@ -103,7 +105,7 @@ Contributions to translate BaRatinAGE are welcome! In particular for the help fi
 The files needing translation are the following:
 1. File `lang/dico.txt`. Just add a column including the translation of all terms in the new language.
    Please do not use commas or semicolons in your translation, since these characters are used as separators.
-2. All `.html ` files in the `help` folder. No knowledge of the HTML language is required: simply open the file with a text editor (e.g. Notepad++) and translate all text located within HTML tags(<tag> text needing translation </tag>). Please do not modify the tags themselves!
+2. All `.html ` files in the `help` folder. No knowledge of the HTML language is required: simply open the file with a text editor (e.g. Notepad++) and translate all text located within HTML tags(`<tag> text needing translation </tag>`). Please do not modify the tags themselves!
 
 Please send your contributions by opening a new _issue_ on Github (`New Issue` on the page [https://github.com/BaRatin-tools/BaRatinAGE/issues](https://github.com/BaRatin-tools/BaRatinAGE/issues) or by sending an email to **baratin.dev [at] inrae.fr**.
 
