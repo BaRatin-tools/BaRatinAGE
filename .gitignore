@@ -1,5 +1,5 @@
-test
-exe
-lib
-bin
-.vscode
+/test
+/exe
+/lib
+/bin
+/.vscode
