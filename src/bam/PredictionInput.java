@@ -2,26 +2,31 @@ package bam;
 
 import java.io.IOException;
 import java.nio.file.Path;
-// import java.util.UUID;
+import java.util.List;
 
-import bam.exe.ConfigFile;
-import utils.FileReadWrite;
+import bam.utils.ConfigFile;
+import bam.utils.Write;
 
 public class PredictionInput {
-    // private String id;
     private String name;
-    private double[][] data;
+    private List<double[]> dataColumns;
     private int nObs;
     private int nSpag;
 
-    public PredictionInput(String name, double[][] data) {
-        // FIXME: should check input data here!
-        this.nSpag = data.length;
-        this.nObs = data[0].length;
-        // this.id = UUID.randomUUID().toString(); // should change any time the data
-        // changes
+    public PredictionInput(String name, List<double[]> dataColumns) {
+        this.nSpag = dataColumns.size();
+        if (this.nSpag == 0) {
+            throw new IllegalArgumentException("dataColumns must have at least one element!");
+        }
+        int n = dataColumns.get(0).length;
+        for (double[] col : dataColumns) {
+            if (col.length != n) {
+                throw new IllegalArgumentException("All arrays of dataColumns must have the same length!");
+            }
+        }
+        this.nObs = n;
         this.name = name;
-        this.data = data;
+        this.dataColumns = dataColumns;
     }
 
     public String getDataFileName() {
@@ -37,25 +42,19 @@ public class PredictionInput {
         return this.nSpag;
     }
 
-    public void writeDataFile(String workspace) {
+    public void toDataFile(String workspace) {
         String fileName = this.getDataFileName();
         try {
-            FileReadWrite.writeMatrix(
-                    Path.of(workspace, fileName).toString(), this.data, " ", "-9999", null);
+            Write.writeMatrix(
+                    Path.of(workspace, fileName).toString(), this.dataColumns, " ", "-9999", null);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    public void log() {
-        int nRow = data.length;
-        int nCol = 0;
-        if (nRow > 0) {
-            nCol = data[0].length;
-        }
-        System.out.println(
-                String.format(
-                        "Prediction input '%s' contains a %dx%d dataset ",
-                        this.name, nRow, nCol));
+    public String toString() {
+        return String.format(
+                "Prediction input '%s' contains  %d observations and %d replications ",
+                this.name, this.nObs, this.nSpag);
     }
 }

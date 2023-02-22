@@ -1,6 +1,6 @@
 package bam;
 
-import bam.exe.ConfigFile;
+import bam.utils.ConfigFile;
 
 public class McmcConfig {
     private String outputFileName;
@@ -29,7 +29,11 @@ public class McmcConfig {
         // this.remnMultFactor = new double[]{0.1, 0.1};
     }
 
-    public void writeConfig(String workspace) {
+    public int numberOfMcmcSamples() {
+        return this.nAdapt * this.nCycle;
+    }
+
+    public void toFiles(String workspace) {
         ConfigFile configFile = new ConfigFile();
         configFile.addItem(this.outputFileName, "File name", true);
         configFile.addItem(this.nAdapt, "NAdapt");
@@ -46,15 +50,15 @@ public class McmcConfig {
         configFile.writeToFile(workspace, ConfigFile.CONFIG_MCMC);
     }
 
-    public void log() {
-        System.out.print("Config - McmcConfig: ");
-        System.out.print(String.format("%s; ", this.outputFileName));
-        System.out.print(String.format("%d; ", this.nAdapt));
-        System.out.print(String.format("%d; ", this.nCycle));
-        System.out.print(String.format("%f; ", this.minMoveRate));
-        System.out.print(String.format("%f; ", this.maxMoveRate));
-        System.out.print(String.format("%f; ", this.downMult));
-        System.out.print(String.format("%f; ", this.upMult));
-        System.out.print(".\n");
+    public String toString() {
+        String str = "Config - McmcConfig: ";
+        str += String.format("%s; ", this.outputFileName);
+        str += String.format("%d; ", this.nAdapt);
+        str += String.format("%d; ", this.nCycle);
+        str += String.format("%f; ", this.minMoveRate);
+        str += String.format("%f; ", this.maxMoveRate);
+        str += String.format("%f; ", this.downMult);
+        str += String.format("%f.\n", this.upMult);
+        return str;
     }
 }

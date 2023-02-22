@@ -33,14 +33,13 @@ public class PredictionOutput {
         return this.createEnvelop;
     }
 
-    public void log() {
-        System.out.println(
-                String.format(
-                        "Prediction output '%s' (%b, %b, %b).",
-                        this.name,
-                        this.structuralError,
-                        this.transpose,
-                        this.createEnvelop));
+    public String toString() {
+        return String.format(
+                "Prediction output '%s' (%b, %b, %b).",
+                this.name,
+                this.structuralError,
+                this.transpose,
+                this.createEnvelop);
     }
 
 }

@@ -1,7 +1,5 @@
 package bam;
 
-// import bam.exe.ConfigFile;
-
 public class ModelOutput {
     private String name;
     private StructuralErrorModel structuralErrorModel;
@@ -15,13 +13,14 @@ public class ModelOutput {
         return this.structuralErrorModel.getConfigFileName();
     }
 
-    public void writeConfig(String workspace) {
-        this.structuralErrorModel.writeConfig(workspace);
+    public void toFiles(String workspace) {
+        this.structuralErrorModel.toFiles(workspace);
     }
 
-    public void log() {
-        System.out.println(
-                String.format("Model output %s associated with the following structural error model.", this.name));
-        this.structuralErrorModel.log();
+    public String toString() {
+
+        String str = String.format("Model output %s associated with the following structural error model.", this.name);
+        str = str + "\n" + this.structuralErrorModel.toString();
+        return str;
     }
 }

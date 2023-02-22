@@ -34,28 +34,49 @@ public class CalibrationConfig {
         return structErrConfNames;
     }
 
-    public void writeConfig(String workspace) {
-        this.mcmcConfig.writeConfig(workspace);
-        this.mcmcCookingConfig.writeConfig(workspace);
-        this.mcmcSummaryConfig.writeConfig(workspace);
-        this.model.writeConfig(workspace);
-        for (ModelOutput mo : this.modelOutputs) {
-            mo.writeConfig(workspace);
-        }
-        this.calibrationData.writeConfig(workspace);
-        this.calDataResidualConfig.writeConfig(workspace);
+    public McmcConfig getMcmcConfig() {
+        return this.mcmcConfig;
     }
 
-    public void log() {
-        System.out.println("Calibration config: ");
-        this.model.log();
+    public McmcCookingConfig getMcmcCookingConfig() {
+        return this.mcmcCookingConfig;
+    }
+
+    public void toFiles(String workspace) {
+
+        // MCMC configuration files
+        this.mcmcConfig.toFiles(workspace);
+        this.mcmcCookingConfig.toFiles(workspace);
+        this.mcmcSummaryConfig.toFiles(workspace);
+
+        // Model configuration files
+        this.model.toFiles(workspace);
         for (ModelOutput mo : this.modelOutputs) {
-            mo.log();
+            mo.toFiles(workspace);
         }
-        this.calibrationData.log();
-        this.mcmcConfig.log();
-        this.mcmcCookingConfig.log();
-        this.mcmcSummaryConfig.log();
-        this.calDataResidualConfig.log();
+
+        // Calibration data/configuration files
+        this.calibrationData.toDataFile(workspace);
+        this.calibrationData.toConfigFile(workspace);
+        this.calDataResidualConfig.toFiles(workspace);
+
+    }
+
+    public String toString() {
+        // System.out.println("Calibration config: ");
+        // List<String> str = new ArrayList<>();
+        String str = "";
+        // str += "*** Calibration configuration\n";
+        str += "\n" + this.model.toString() + "\n\n";
+        for (ModelOutput mo : this.modelOutputs) {
+            str += mo.toString();
+        }
+
+        str += "\n" + this.calibrationData.toString() + "\n\n";
+        str += this.mcmcConfig.toString();
+        str += this.mcmcCookingConfig.toString();
+        str += this.mcmcSummaryConfig.toString();
+        str += this.calDataResidualConfig.toString();
+        return str;
     }
 }

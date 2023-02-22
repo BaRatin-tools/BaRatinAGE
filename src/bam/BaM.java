@@ -1,44 +1,71 @@
 package bam;
 
-// import java.nio.file.FileSystem;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 
-import bam.exe.ConfigFile;
-import bam.exe.Run;
+import bam.utils.ConfigFile;
 
 public class BaM {
+
+    private static final String OS = System.getProperty("os.name").toLowerCase();
+    private static final String EXE_DIR = "./exe/";
+    private static final String EXE_NAME = "BaM";
+    private static final String EXE_COMMAND = OS.startsWith("windows")
+            ? Path.of(EXE_DIR, String.format("%s.exe", EXE_NAME)).toString()
+            : EXE_NAME;
+
     private CalibrationConfig calibrationConfig;
     private PredictionConfig[] predictionConfigs;
     private RunOptions runOptions;
-    private ConfigFile mainBaMconfig;
-    // private CalibrationResult calibrationResult;
-    // private PredictionResult[] predictionResult;
+    private Process bamExecutionProcess;
 
     public BaM(CalibrationConfig calibrationConfig, PredictionConfig[] predictionConfigs, RunOptions runOptions) {
         this.calibrationConfig = calibrationConfig;
-        this.predictionConfigs = predictionConfigs;
+        this.predictionConfigs = predictionConfigs; // FIXME: should check that there's no conflicting names in the
+                                                    // variables!
         this.runOptions = runOptions;
-        this.mainBaMconfig = null;
     }
 
-    public void writeConfigFiles(String workspace) {
-        this.calibrationConfig.writeConfig(workspace);
+    public PredictionConfig[] getPredictionsConfigs() {
+        return this.predictionConfigs;
+    }
+
+    public CalibrationConfig getCalibrationConfig() {
+        return this.calibrationConfig;
+    }
+
+    public void toFiles(String workspace, String exeDir) {
+
+        // Calibration configuraiton files
+        this.calibrationConfig.toFiles(workspace);
+
+        // Prediction configuraiton files
         if (this.predictionConfigs.length > 0) { // FIXME: check if it is necessary
             ConfigFile predMasterConfig = new ConfigFile();
             predMasterConfig.addItem(this.predictionConfigs.length, "Number of prediction experiments");
             for (PredictionConfig p : this.predictionConfigs) {
-                String configFileName = String.format(ConfigFile.CONFIG_PREDICTION, p.getName());
-                predMasterConfig.addItem(configFileName,
+
+                predMasterConfig.addItem(p.getConfigFileName(),
                         "Config file for experiments - an many lines as the number above", true);
-                p.writeConfig(workspace, configFileName);
+                p.toFiles(workspace);
             }
             predMasterConfig.writeToFile(workspace, ConfigFile.CONFIG_PREDICTION_MASTER);
         }
-        this.runOptions.writeConfig(workspace);
+
+        // Run options configuraiton file
+        this.runOptions.toFiles(workspace);
+
+        // Main BaM configuration file
         String[] structErrConfNames = this.calibrationConfig.getStructErrConfNames();
         String absoluteWorkspace = Path.of(workspace).toAbsolutePath().toString();
         absoluteWorkspace = String.format("%s/", absoluteWorkspace);
-        mainBaMconfig = new ConfigFile();
+        ConfigFile mainBaMconfig = new ConfigFile();
         mainBaMconfig.addItem(absoluteWorkspace, "workspace", true);
         mainBaMconfig.addItem(ConfigFile.CONFIG_RUN_OPTIONS, "Config file: run options", true);
         mainBaMconfig.addItem(ConfigFile.CONFIG_MODEL, "Config file: model", true);
@@ -52,30 +79,137 @@ public class BaM {
         mainBaMconfig.addItem(ConfigFile.CONFIG_MCMC_SUMMARY, "Config file: summary of MCMC samples", true);
         mainBaMconfig.addItem(ConfigFile.CONFIG_RESIDUALS, "Config file: residual diagnostics", true);
         mainBaMconfig.addItem(ConfigFile.CONFIG_PREDICTION_MASTER, " Config file: prediction experiments", true);
+        mainBaMconfig.writeToFile(exeDir, ConfigFile.CONFIG_BAM);
     }
 
-    public void run() {
-        if (mainBaMconfig == null) {
-            System.err.println("Cannot run BaM.exe if writeConfigFiles hasn't been called before!");
-            return;
+    public RunOptions getRunOptions() {
+        return this.runOptions;
+    }
+
+    public Process getBaMexecutionProcess() {
+        return this.bamExecutionProcess;
+    }
+
+    @FunctionalInterface
+    public interface ConsoleOutputFollower {
+        public void onConsoleLog(String logMessage);
+    }
+
+    public void run(String workspace, ConsoleOutputFollower consoleOutputFollower) throws IOException {
+
+        // FIXME: this is temporary
+        File dir = new File(workspace);
+
+        File[] files = dir.listFiles();
+        if (files != null) {
+            for (File f : files) {
+                if (f.isDirectory()) {
+                    // deleteDirContent(f); // I disabled recursion...
+                } else {
+                    f.delete();
+                }
+            }
         }
-        Run.run(mainBaMconfig);
+
+        this.toFiles(workspace, EXE_DIR);
+
+        String[] cmd = { EXE_COMMAND };
+        File exeDirectory = new File(EXE_DIR);
+        bamExecutionProcess = Runtime.getRuntime().exec(cmd, null, exeDirectory);
+        InputStream inputStream = bamExecutionProcess.getInputStream();
+        InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
+        BufferedReader bufferReader = new BufferedReader(inputStreamReader);
+        List<String> consoleLines = new ArrayList<String>();
+        String currentLine = null;
+
+        try {
+            while ((currentLine = bufferReader.readLine()) != null) {
+                // System.out.printf(".");
+                consoleLines.add(currentLine);
+                consoleOutputFollower.onConsoleLog(currentLine);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        int exitcode = -1;
+        try {
+            exitcode = bamExecutionProcess.waitFor();
+        } catch (InterruptedException e) {
+            System.err.println("BAM RUN INTERRUPTED!");
+        }
+
+        if (exitcode != 0) {
+            switch (exitcode) {
+                case -1:
+                    System.err.println("A FATAL ERROR has occured");
+                    break;
+                case -2:
+                    System.err.println("A FATAL ERROR has occured while opening the following file.");
+                    break;
+                case -3:
+                    System.err.println("A FATAL ERROR has occured while reading a config file.");
+                    break;
+                case -4:
+                    System.err.println("A FATAL ERROR has occured while generating the prior model.");
+                    break;
+                case -5:
+                    System.err.println("A FATAL ERROR has occured while fitting the model..");
+                    break;
+                case -6:
+                    System.err.println("A FATAL ERROR has occured while post-processing MCMC samples.");
+                    break;
+                case -7:
+                    System.err.println("A FATAL ERROR has occured while propagating uncertainty.");
+                    break;
+                case -8:
+                    System.err.println("A FATAL ERROR has occured while writting to a file.");
+                    break;
+                default:
+                    System.err.println("An unknown FATAL ERROR has occured.");
+                    break;
+            }
+        }
+        bamExecutionProcess = null;
     }
 
-    public void log() {
+    public String toString() {
 
-        System.out.println("*******************************************");
-        System.out.println("**** BaM **********************************");
-        System.out.println("*******************************************");
-        this.calibrationConfig.log();
-        System.out.println("*******************************************");
+        List<String> str = new ArrayList<>();
+
+        str.add("*".repeat(70));
+        str.add("*".repeat(3) + "  BaM  " + " ".repeat(55) + "*".repeat(5));
+        str.add("*".repeat(70));
+
+        // str.add(this.calibrationConfig.toString());
+
+        String[] calStrings = this.calibrationConfig.toString().split("\n");
+        for (String s : calStrings)
+            str.add("***  " + s);
+
+        str.add("***  ");
+        str.add("*".repeat(70));
+        str.add("***  ");
         for (PredictionConfig p : this.predictionConfigs) {
-            p.log();
+
+            String[] predStrings = p.toString().split("\n");
+            for (String s : predStrings)
+                str.add("***  " + s);
+            str.add("***  ");
         }
-        System.out.println("*******************************************");
-        this.runOptions.log();
-        System.out.println("*******************************************");
-        System.out.println("*******************************************");
+
+        str.add("*".repeat(70));
+
+        str.add("***  ");
+        String[] runStrings = runOptions.toString().split("\n");
+        for (String s : runStrings)
+            str.add("***  " + s);
+
+        str.add("***  ");
+        str.add("*".repeat(70));
+        str.add("*".repeat(70) + "\n");
+
+        return String.join("\n", str);
     }
 
 }

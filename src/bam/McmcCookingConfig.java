@@ -1,6 +1,6 @@
 package bam;
 
-import bam.exe.ConfigFile;
+import bam.utils.ConfigFile;
 
 public class McmcCookingConfig {
     private String outputFileName;
@@ -13,7 +13,11 @@ public class McmcCookingConfig {
         this.nSlim = 10;
     }
 
-    public void writeConfig(String workspace) {
+    public int numberOfCookedMcmcSamples(int numberOfMcmcSamples) {
+        return (int) (numberOfMcmcSamples * this.burnFactor / this.nSlim);
+    }
+
+    public void toFiles(String workspace) {
         ConfigFile configFile = new ConfigFile();
         configFile.addItem(this.outputFileName, "Result file");
         configFile.addItem(this.burnFactor, "BurnFactor");
@@ -21,11 +25,11 @@ public class McmcCookingConfig {
         configFile.writeToFile(workspace, ConfigFile.CONFIG_MCMC_COOKING);
     }
 
-    public void log() {
-        System.out.print("Config - McmcCookingConfig: ");
-        System.out.print(String.format("%s; ", this.outputFileName));
-        System.out.print(String.format("%f; ", this.burnFactor));
-        System.out.print(String.format("%d; ", this.nSlim));
-        System.out.print(".\n");
+    public String toString() {
+        String str = "Config - McmcCookingConfig: ";
+        str += String.format("%s; ", this.outputFileName);
+        str += String.format("%f; ", this.burnFactor);
+        str += String.format("%d.\n", this.nSlim);
+        return str;
     }
 }

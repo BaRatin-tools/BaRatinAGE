@@ -1,6 +1,8 @@
 package bam;
 
-import bam.exe.ConfigFile;
+import java.nio.file.Path;
+
+import bam.utils.ConfigFile;
 
 public class PredictionConfig {
     private String name;
@@ -32,13 +34,17 @@ public class PredictionConfig {
         return this.name;
     }
 
-    public void writeConfig(String workspace, String configFileName) {
+    public String getConfigFileName() {
+        return String.format(ConfigFile.CONFIG_PREDICTION, this.name);
+    }
+
+    public void toFiles(String workspace) {
         int n = this.inputs.length;
-        String[] inputFileNames = new String[n];
+        String[] inputFilePaths = new String[n];
         int nObs = 0; // FIXME: is zero data allowed?
         int[] nSpag = new int[n];
         for (int k = 0; k < n; k++) {
-            inputFileNames[k] = this.inputs[k].getDataFileName();
+            inputFilePaths[k] = Path.of(workspace, this.inputs[k].getDataFileName()).toAbsolutePath().toString();
             int tmpNobs = this.inputs[k].getNobs();
             if (nObs == 0) {
                 nObs = tmpNobs;
@@ -52,9 +58,10 @@ public class PredictionConfig {
                 }
             }
             nSpag[k] = this.inputs[k].getNspag();
-            this.inputs[k].writeDataFile(workspace);
+            this.inputs[k].toDataFile(workspace);
         }
 
+        // FIXME: should refactor code?
         n = this.outputs.length;
         String[] spagOutputFileName = new String[n];
         String[] envOutputFileName = new String[n];
@@ -86,7 +93,7 @@ public class PredictionConfig {
         }
 
         ConfigFile configFile = new ConfigFile();
-        configFile.addItem(inputFileNames, "Files containing spaghettis for each input variable (size nX)", true);
+        configFile.addItem(inputFilePaths, "Files containing spaghettis for each input variable (size nX)", true);
         configFile.addItem(nObs, "Nobs, number of observations per spaghetti (common to all files!)");
         configFile.addItem(nSpag, "Nspag, number of spaghettis for each input variable (size nX)");
         configFile.addItem(this.propageParametricUncertainty, "Propagate parametric uncertainty?");
@@ -110,22 +117,23 @@ public class PredictionConfig {
             configFile.addItem(createStateEnvelop, "Post-processing: create envelops? (size nState)");
             configFile.addItem(envStateFileName, "Post-processing: name of envelop files (size nState)");
         }
-        configFile.writeToFile(workspace, configFileName);
+        configFile.writeToFile(workspace, this.getConfigFileName());
     }
 
-    public void log() {
-        System.out.printf("PredictionConfig '%s' (%b, %b, %d): \n",
+    public String toString() {
+        String str = String.format("PredictionConfig '%s' (%b, %b, %d):\n",
                 this.name,
                 this.propageParametricUncertainty,
                 this.printProgress,
                 this.nPriorReplicates);
-        System.out.println("- Inputs: ");
+        str += " Inputs: \n";
         for (PredictionInput i : this.inputs) {
-            i.log();
+            str += i.toString() + "\n";
         }
-        System.out.println("- Outputs: ");
-        for (PredictionOutput i : this.outputs) {
-            i.log();
+        str += " Outputs: \n";
+        for (PredictionOutput o : this.outputs) {
+            str += o.toString();
         }
+        return str;
     }
 }

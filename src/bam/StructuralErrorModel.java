@@ -2,7 +2,7 @@ package bam;
 
 import java.nio.file.Path;
 
-import bam.exe.ConfigFile;
+import bam.utils.ConfigFile;
 
 public class StructuralErrorModel {
     private String name;
@@ -20,7 +20,7 @@ public class StructuralErrorModel {
         return configFileName;
     }
 
-    public void writeConfig(String workspace) {
+    public void toFiles(String workspace) {
         ConfigFile configFile = new ConfigFile();
         configFile.addItem(this.modelId, "Function f used in sdev=f(Qrc) ", true);
         configFile.addItem(this.parameters.length, "Number of parameters gamma for f");
@@ -37,10 +37,12 @@ public class StructuralErrorModel {
         configFile.writeToFile(Path.of(workspace, configFileName).toString());
     }
 
-    public void log() {
-        System.out.println(String.format("Structural Error Model %s of type '%s':", this.name, this.modelId));
+    public String toString() {
+        System.out.println();
+        String str = String.format("Structural Error Model %s of type '%s':\n", this.name, this.modelId);
         for (Parameter p : this.parameters) {
-            p.log();
+            str += p.toString() + "\n";
         }
+        return str;
     }
 }

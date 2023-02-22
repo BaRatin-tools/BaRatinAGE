@@ -23,8 +23,8 @@ public class Parameter {
         return this.distribution;
     }
 
-    public void log() {
-        System.out.print(String.format(" > Parameter '%s': %f - ", this.name, this.initalGuess));
-        this.distribution.log();
+    public String toString() {
+        return String.format(" > Parameter '%s': %f - %s",
+                this.name, this.initalGuess, this.distribution.toString());
     }
 }

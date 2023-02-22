@@ -1,6 +1,6 @@
 package bam;
 
-import bam.exe.ConfigFile;
+import bam.utils.ConfigFile;
 
 public class CalDataResidualConfig {
     private String outputFileName;
@@ -13,15 +13,15 @@ public class CalDataResidualConfig {
         this(ConfigFile.RESULTS_RESIDUALS);
     }
 
-    public void writeConfig(String workspace) {
+    public void toFiles(String workspace) {
         ConfigFile configFile = new ConfigFile();
         configFile.addItem(this.outputFileName, "Result file");
         configFile.writeToFile(workspace, ConfigFile.CONFIG_RESIDUALS);
     }
 
-    public void log() {
-        System.out.print("Config - CalDataResidualConfig: ");
-        System.out.print(String.format("%s", this.outputFileName));
-        System.out.print(".\n");
+    public String toString() {
+        String str = "Config - CalDataResidualConfig: ";
+        str += String.format("%s.\n", this.outputFileName);
+        return str;
     }
 }

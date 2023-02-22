@@ -1,12 +1,12 @@
 package bam;
 
-import bam.exe.ConfigFile;
+import bam.utils.ConfigFile;
 
 public class RunOptions {
-    private boolean doMcmc;
-    private boolean doSummary;
-    private boolean doResidual;
-    private boolean doPrediction;
+    public final boolean doMcmc;
+    public final boolean doSummary;
+    public final boolean doResidual;
+    public final boolean doPrediction;
 
     public RunOptions(
             boolean doMcmc,
@@ -19,7 +19,7 @@ public class RunOptions {
         this.doPrediction = doPrediction;
     }
 
-    public void writeConfig(String workspace) {
+    public void toFiles(String workspace) {
         ConfigFile configFile = new ConfigFile();
         configFile.addItem(this.doMcmc, "Do MCMC?");
         configFile.addItem(this.doSummary, "Do MCMC summary?");
@@ -28,11 +28,11 @@ public class RunOptions {
         configFile.writeToFile(workspace, ConfigFile.CONFIG_RUN_OPTIONS);
     }
 
-    public void log() {
-        System.out.println(String.format("RunOptions: %b, %b, %b, %b",
+    public String toString() {
+        return String.format("RunOptions: %b, %b, %b, %b",
                 this.doMcmc,
                 this.doSummary,
                 this.doResidual,
-                this.doPrediction));
+                this.doPrediction);
     }
 }

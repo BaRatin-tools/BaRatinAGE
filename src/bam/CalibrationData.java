@@ -2,11 +2,11 @@ package bam;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 
-import bam.exe.ConfigFile;
-import utils.FileReadWrite;
-import utils.Matrix;
-import utils.Vector;
+import bam.utils.ConfigFile;
+import bam.utils.Write;
 
 public class CalibrationData {
     private String name;
@@ -19,135 +19,150 @@ public class CalibrationData {
         // elements/rows
         this.inputs = inputs;
         this.outputs = outputs;
+
     }
 
-    public void writeConfig(String workspace) {
+    private class UncertainDataConfig {
+        public int nCol;
+        public int nRow;
+        public int[] X;
+        public int[] Xu;
+        public int[] Xb;
+        public int[] Xbi;
+    }
 
-        double[][] data = new double[0][0];
-        String[] header = new String[0];
-        int colIndex = 1;
-
-        int[] X = new int[this.inputs.length];
-        int[] Xu = new int[this.inputs.length];
-        int[] Xb = new int[this.inputs.length];
-        int[] Xbi = new int[this.inputs.length];
-
-        for (int k = 0; k < this.inputs.length; k++) {
-            data = Matrix.concat(data, this.inputs[k].getValues());
-            header = Vector.push(header, this.inputs[k].getName());
-            X[k] = colIndex;
-            colIndex++;
-            if (this.inputs[k].hasNonSysError()) {
-                data = Matrix.concat(data, this.inputs[k].getNonSysStd());
-                header = Vector.push(header, String.format("%s_u", this.inputs[k].getName()));
-                Xu[k] = colIndex;
-
+    // FIXME: better implementation? it feels like this should be a static method...
+    // However it cannot be because of the UncertainDataConfig class
+    private UncertainDataConfig getUncertainDataConfig(UncertainData[] data) {
+        UncertainDataConfig uDataConfig = new UncertainDataConfig();
+        uDataConfig.nCol = 0;
+        uDataConfig.nRow = data[0].getNumberOfValues(); // FIXME should check data consistency
+        uDataConfig.X = new int[data.length];
+        uDataConfig.Xu = new int[data.length];
+        uDataConfig.Xb = new int[data.length];
+        uDataConfig.Xbi = new int[data.length];
+        for (int k = 0; k < data.length; k++) {
+            uDataConfig.X[k] = uDataConfig.nCol + 1;
+            uDataConfig.nCol++;
+            if (data[k].hasNonSysError()) {
+                uDataConfig.Xu[k] = uDataConfig.nCol + 1;
+                uDataConfig.nCol++;
             } else {
-                Xu[k] = 0;
+                uDataConfig.Xu[k] = 0;
             }
-            if (this.inputs[k].hasSysError()) {
-                data = Matrix.concat(data, this.inputs[k].getNonSysStd());
-                header = Vector.push(header, String.format("%s_b", this.inputs[k].getName()));
-                Xb[k] = colIndex;
-                colIndex++;
-                data = Matrix.concat(data, this.inputs[k].getSysIndicesAsDouble());
-                header = Vector.push(header, String.format("%s_bi", this.inputs[k].getName()));
-                Xbi[k] = colIndex;
-                colIndex++;
+            if (data[k].hasSysError()) {
+                uDataConfig.Xb[k] = uDataConfig.nCol + 1;
+                uDataConfig.nCol++;
+                uDataConfig.Xbi[k] = uDataConfig.nCol + 1;
+                uDataConfig.nCol++;
             } else {
-                Xb[k] = 0;
-                Xbi[k] = 0;
-            }
-
-        }
-
-        int[] Y = new int[this.outputs.length];
-        int[] Yu = new int[this.outputs.length];
-        int[] Yb = new int[this.outputs.length];
-        int[] Ybi = new int[this.outputs.length];
-
-        for (int k = 0; k < this.outputs.length; k++) {
-            data = Matrix.concat(data, this.outputs[k].getValues());
-            header = Vector.push(header, this.outputs[k].getName());
-            Y[k] = colIndex;
-            colIndex++;
-            if (this.outputs[k].hasNonSysError()) {
-                data = Matrix.concat(data, this.outputs[k].getNonSysStd());
-                header = Vector.push(header, String.format("%s_u", this.outputs[k].getName()));
-                Yu[k] = colIndex;
-                colIndex++;
-
-            } else {
-                Yu[k] = 0;
-            }
-            if (this.outputs[k].hasSysError()) {
-                data = Matrix.concat(data, this.outputs[k].getNonSysStd());
-                header = Vector.push(header, String.format("%s_b", this.outputs[k].getName()));
-                Yb[k] = colIndex;
-                colIndex++;
-                data = Matrix.concat(data, this.outputs[k].getSysIndicesAsDouble());
-                header = Vector.push(header, String.format("%s_bi", this.outputs[k].getName()));
-                Ybi[k] = colIndex;
-                colIndex++;
-            } else {
-                Yb[k] = 0;
-                Ybi[k] = 0;
+                uDataConfig.Xb[k] = 0;
+                uDataConfig.Xbi[k] = 0;
             }
 
         }
+        return uDataConfig;
+    }
 
-        Matrix.prettyPrint(data);
-
+    public String getDataFilePath(String workspace) {
         String dataFileName = String.format(ConfigFile.DATA_CALIBRATION, this.name);
         String dataFilePath = Path.of(workspace, dataFileName).toAbsolutePath().toString();
-        // double[][] data
-        int nCol = data.length;
-        data = Matrix.transpose(data);
-        int nRow = data.length;
+        return dataFilePath;
+    }
+
+    public void toDataFile(String workspace) {
+
+        List<double[]> dataColumns = new ArrayList<>();
+        List<String> headers = new ArrayList<>();
+
+        for (UncertainData i : this.inputs) {
+            dataColumns.add(i.getValues());
+            headers.add("X_" + i.getName());
+            if (i.hasNonSysError()) {
+                dataColumns.add(i.getNonSysStd());
+                headers.add("Xu_" + i.getName());
+            }
+            if (i.hasSysError()) {
+                dataColumns.add(i.getSysStd());
+                headers.add("Xb_" + i.getName());
+                dataColumns.add(i.getSysIndicesAsDouble());
+                headers.add("Xbi_" + i.getName());
+            }
+        }
+
+        for (UncertainData o : this.outputs) {
+            dataColumns.add(o.getValues());
+            headers.add("X_" + o.getName());
+            if (o.hasNonSysError()) {
+                dataColumns.add(o.getNonSysStd());
+                headers.add("Xu_" + o.getName());
+            }
+            if (o.hasSysError()) {
+                dataColumns.add(o.getSysStd());
+                headers.add("Xb_" + o.getName());
+                dataColumns.add(o.getSysIndicesAsDouble());
+                headers.add("Xbi_" + o.getName());
+            }
+        }
+
+        String dataFilePath = this.getDataFilePath(workspace);
         try {
-            FileReadWrite.writeMatrix(
+            Write.writeMatrix(
                     dataFilePath,
-                    data,
+                    dataColumns,
                     " ",
                     "-9999",
-                    header);
+                    headers.toArray(new String[0]));
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public void toConfigFile(String workspace) {
+
+        UncertainDataConfig inputsDataConfig = this.getUncertainDataConfig(this.inputs);
+        UncertainDataConfig outputsDataConfig = this.getUncertainDataConfig(this.outputs);
 
         ConfigFile configFile = new ConfigFile();
-        configFile.addItem(dataFilePath, "Absolute path to data file", true);
+        configFile.addItem(this.getDataFilePath(workspace), "Absolute path to data file", true);
         configFile.addItem(1, "number of header lines");
-        configFile.addItem(nRow, "Nobs, number of rows in data file (excluding header lines)");
-        configFile.addItem(nCol, "number of columns in the data file");
-        configFile.addItem(X, "columns for X (observed inputs) in data file - comma-separated if several");
-        configFile.addItem(Xu,
+        configFile.addItem(inputsDataConfig.nRow, "Nobs, number of rows in data file (excluding header lines)");
+        configFile.addItem(inputsDataConfig.nCol + outputsDataConfig.nCol, "number of columns in the data file");
+        configFile.addItem(inputsDataConfig.X,
+                "columns for X (observed inputs) in data file - comma-separated if several");
+        configFile.addItem(inputsDataConfig.Xu,
                 "columns for Xu (random uncertainty in X, EXPRESSED AS A STANDARD DEVIATION - use 0 for a no-error assumption)");
-        configFile.addItem(Xb,
+        configFile.addItem(inputsDataConfig.Xb,
                 "columns for Xb (systematic uncertainty in X, EXPRESSED AS A STANDARD DEVIATION - use 0 for a no-error assumption)");
-        configFile.addItem(Xbi,
+        configFile.addItem(inputsDataConfig.Xbi,
                 "columns for Xb_indx (index of systematic errors in X - use 0 for a no-error assumption)");
-        configFile.addItem(Y, "columns for Y (observed outputs) in data file - comma-separated if several");
-        configFile.addItem(Yu,
+        configFile.addItem(outputsDataConfig.X,
+                "columns for Y (observed outputs) in data file - comma-separated if several");
+        configFile.addItem(outputsDataConfig.Xu,
                 "columns for Yu (uncertainty in Y, EXPRESSED AS A STANDARD DEVIATION - use 0 for a no-error assumption)");
-        configFile.addItem(Yb,
+        configFile.addItem(outputsDataConfig.Xb,
                 "columns for Yb (systematic uncertainty in Y, EXPRESSED AS A STANDARD DEVIATION - use 0 for a no-error assumption)");
-        configFile.addItem(Ybi,
+        configFile.addItem(outputsDataConfig.Xbi,
                 "columns for Yb_indx (index of systematic errors in Y - use 0 for a no-error assumption)");
 
         String configFileName = ConfigFile.CONFIG_CALIBRATION;
         configFile.writeToFile(workspace, configFileName);
     }
 
-    public void log() {
-        System.out.println(String.format("CalibrationData '%s' with:", this.name));
-        System.out.println(" - Inputs: ");
+    public String toString() {
+
+        List<String> str = new ArrayList<>();
+
+        str.add(String.format("CalibrationData '%s' with:", this.name));
+        str.add(" Inputs: ");
         for (UncertainData input : inputs) {
-            input.log();
+            str.add(input.toString());
         }
-        System.out.println(" - Outputs: ");
+        str.add(" Outputs: ");
         for (UncertainData output : outputs) {
-            output.log();
+            str.add(output.toString());
         }
+
+        return String.join("\n", str);
     }
 }

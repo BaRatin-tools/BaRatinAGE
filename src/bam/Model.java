@@ -2,9 +2,11 @@ package bam;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 
-import bam.exe.ConfigFile;
-import utils.FileReadWrite;
+import bam.utils.ConfigFile;
+import bam.utils.Write;
 
 public class Model {
     private String modelId;
@@ -21,7 +23,7 @@ public class Model {
         this.xTra = xTra;
     }
 
-    public void writeConfig(String workspace) {
+    public void toFiles(String workspace) {
         ConfigFile configFile = new ConfigFile();
         configFile.addItem(this.modelId, "Model ID", true);
         configFile.addItem(this.nInput, "nX: number of input variables");
@@ -39,23 +41,27 @@ public class Model {
         configFile.writeToFile(workspace, ConfigFile.CONFIG_MODEL);
 
         try {
-            FileReadWrite.writeLines(Path.of(workspace, ConfigFile.CONFIG_XTRA),
+            Write.writeLines(Path.of(workspace, ConfigFile.CONFIG_XTRA),
                     new String[] { this.xTra });
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    public void log() {
-        System.out.println(
-                String.format("Model '%s' with %d inputs and %d outputs and the following parameters:", this.modelId,
-                        this.nInput, this.nOutput));
-        for (Parameter p : this.parameters) {
-            p.log();
-        }
-        System.out.println("--- xTra content start ---");
-        System.out.println(this.xTra);
-        System.out.println("--- xTra content end ---");
+    public String toString() {
 
+        List<String> str = new ArrayList<>();
+
+        str.add(String.format("Model '%s' with %d inputs and %d outputs and the following parameters:",
+                this.modelId, this.nInput, this.nOutput));
+        for (Parameter p : this.parameters) {
+            str.add(p.toString());
+        }
+        str.add("\nxTra content associated with the model is:");
+        str.add("--- xTra content start ---");
+        str.add(this.xTra);
+        str.add("--- xTra content end ---");
+
+        return String.join("\n", str);
     }
 }

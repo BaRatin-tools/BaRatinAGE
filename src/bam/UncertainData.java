@@ -1,7 +1,5 @@
 package bam;
 
-// import utils.Matrix;
-
 public class UncertainData {
     private String name;
     private double[] values;
@@ -21,6 +19,7 @@ public class UncertainData {
             sysStd = new double[] {};
             sysIndices = new int[] {};
         }
+        // FIXME should check data consistency
 
         this.name = name;
         this.values = values;
@@ -39,6 +38,10 @@ public class UncertainData {
 
     public String getName() {
         return this.name;
+    }
+
+    public int getNumberOfValues() {
+        return this.values.length;
     }
 
     public double[] getValues() {
@@ -66,28 +69,6 @@ public class UncertainData {
         return sysIndices;
     }
 
-    // public double[][] getMatrix() {
-    // if (this.hasSysError()) {
-    // double[] sysIndicesAsDouble = new double[this.length()];
-    // for (int k = 0; k < this.length(); k++) {
-    // sysIndicesAsDouble[k] = (double) this.sysIndices[k];
-    // }
-    // if (this.hasNonSysError()) {
-    // return Matrix.concat(this.values, this.nonSysStd, this.sysStd,
-    // sysIndicesAsDouble);
-    // } else {
-    // return Matrix.concat(this.values, this.sysStd, sysIndicesAsDouble);
-    // }
-    // } else {
-    // if (this.hasNonSysError()) {
-    // return Matrix.concat(this.values, this.nonSysStd);
-    // } else {
-    // return Matrix.concat(this.values);
-    // }
-    // }
-    // // return new double[0][0];
-    // }
-
     public boolean hasNonSysError() {
         return this.nonSysStd.length > 0;
     }
@@ -100,20 +81,21 @@ public class UncertainData {
         return this.values.length;
     }
 
-    public void log() {
+    public String toString() {
         boolean hasSysError = this.sysStd.length > 0;
         boolean hasNonSysError = this.nonSysStd.length > 0 && this.sysIndices.length > 0;
         int n = this.values.length;
-        System.out.print(String.format("Data '%s' contains %d elements with ", this.name, n));
+        String str = String.format("Data '%s' contains %d elements with ", this.name, n);
         if (hasNonSysError) {
-            System.out.print("non-systematic errors and ");
+            str += "non-systematic errors and ";
         } else {
-            System.out.print("NO non-systematic errors and ");
+            str += "NO non-systematic errors and ";
         }
         if (hasSysError) {
-            System.out.print("systematic errors.\n");
+            str += "systematic errors.\n";
         } else {
-            System.out.print("NO systematic errors.\n");
+            str += "NO systematic errors.";
         }
+        return str;
     }
 }

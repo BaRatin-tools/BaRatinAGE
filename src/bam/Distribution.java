@@ -43,23 +43,17 @@ public class Distribution {
         return this.parameterValues;
     }
 
-    // public String[] getParameterNames() {
-    // return this.parameterNames;
-    // }
-
-    // public int getNumberOfParameters() {
-    // return this.parameterNames.length;
-    // }
-
-    public void log() {
-        System.out.print(String.format("'%s' (", this.name));
+    public String toString() {
+        String str = String.format("'%s' (", this.name);
         int n = this.parameterNames.length;
         for (int k = 0; k < n; k++) {
-            System.out.print(String.format("%s: %f", this.parameterNames[k], this.parameterValues[k]));
+            str = str + String.format("%s: %f",
+                    this.parameterNames[k], this.parameterValues[k]);
             if (k != n - 1) {
-                System.out.print(", ");
+                str = str + ", ";
             }
         }
-        System.out.print(")\n");
+        str = str + ")";
+        return str;
     }
 }

@@ -1,18 +1,16 @@
-package bam.exe;
+package bam.utils;
 
 import java.io.IOException;
-// import java.nio.file.Path;
-// import java.nio.file.Path;
 import java.nio.file.Path;
-
-import utils.FileReadWrite;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ConfigFile {
 
     public static final String DATA_CALIBRATION = "Data_%s.txt";
     public static final String DATA_PREDICTION = "Data_%s.txt";
 
-    // public static final String CONFIG_CALIBRATION = "Config_Data_%s.txt";
+    public static final String CONFIG_BAM = "Config_BaM.txt";
     public static final String CONFIG_CALIBRATION = "Config_Data.txt";
     public static final String CONFIG_RESIDUALS = "Config_Residuals.txt";
     public static final String CONFIG_MCMC = "Config_MCMC.txt";
@@ -30,28 +28,28 @@ public class ConfigFile {
     public static final String RESULTS_MCMC_COOKING = "Results_MCMC_Cooked.txt";
     public static final String RESULTS_MCMC_SUMMARY = "Results_Summary.txt";
     public static final String RESULTS_OUTPUT_SPAG = "output_%s_%s.spag";
-    public static final String RESULTS_OUTPUT_ENV = "output_%s_%s.ENV";
+    public static final String RESULTS_OUTPUT_ENV = "output_%s_%s.env";
     public static final String RESULTS_STATE_SPAG = "state_%s_%s.spag";
-    public static final String RESULTS_STATE_ENV = "state_%s_%s.ENV";
+    public static final String RESULTS_STATE_ENV = "state_%s_%s.env";
 
-    private static final String commentSeparator = "  ! "; // FIXME: to be defined in Default class
+    private static final String COMMENT_SEPARATOR = "  ! "; // FIXME: to be defined in Default class
 
-    private String[] values;
-    private String[] comments;
+    private List<String> values;
+    private List<String> comments;
 
     public ConfigFile() {
-        values = new String[0];
-        comments = new String[0];
+        values = new ArrayList<>();
+        comments = new ArrayList<>();
     }
 
     private String[] createFileLines() {
         final int maxSpaces = 50;
         final int minSpaces = 0;
         int maxValueLength = minSpaces;
-        int nItems = values.length;
+        int nItems = values.size();
         for (int k = 0; k < nItems; k++) {
-            if (values[k].length() > maxValueLength - minSpaces) {
-                maxValueLength = values[k].length() + minSpaces;
+            if (values.get(k).length() > maxValueLength - minSpaces) {
+                maxValueLength = values.get(k).length() + minSpaces;
                 if (maxValueLength >= maxSpaces) {
                     maxValueLength = maxSpaces;
                     break;
@@ -60,55 +58,34 @@ public class ConfigFile {
         }
         String[] lines = new String[nItems];
         for (int k = 0; k < nItems; k++) {
-            if (comments[k] != "") {
-                int nSpaces = maxValueLength - values[k].length();
+            if (comments.get(k) != "") {
+                int nSpaces = maxValueLength - values.get(k).length();
                 nSpaces = nSpaces <= minSpaces ? minSpaces : nSpaces;
-                lines[k] = String.format("%s%s%s%s", values[k], " ".repeat(nSpaces), commentSeparator, comments[k]);
+                lines[k] = String.format("%s%s%s%s", values.get(k), " ".repeat(nSpaces), COMMENT_SEPARATOR,
+                        comments.get(k));
             } else {
-                lines[k] = values[k];
+                lines[k] = values.get(k);
             }
         }
         return lines;
     }
 
     public void writeToFile(String filePathFirst, String... filePathMore) {
-        String[] lines = createFileLines();
-        Path filePath = Path.of(filePathFirst, filePathMore);
-        try {
-            FileReadWrite.writeLines(filePath, lines);
-        } catch (IOException e) {
-            System.err.println(String.format("Failed to write configuration \n '%s'...", filePath.toString()));
-            e.printStackTrace();
-        }
+        this.writeToFile(Path.of(filePathFirst, filePathMore));
     }
 
     public void writeToFile(String filePath) {
-        String[] lines = createFileLines();
-        try {
-            FileReadWrite.writeLines(filePath, lines);
-        } catch (IOException e) {
-            System.err.println(String.format("Failed to write configuration \n '%s'...", filePath));
-            e.printStackTrace();
-        }
+        this.writeToFile(Path.of(filePath));
     }
 
     public void writeToFile(Path filePath) {
-        String[] lines = createFileLines();
+        String[] lines = this.createFileLines();
         try {
-            FileReadWrite.writeLines(filePath, lines);
+            Write.writeLines(filePath, lines);
         } catch (IOException e) {
             System.err.println(String.format("Failed to write configuration \n '%s'...", filePath.toString()));
             e.printStackTrace();
         }
-    }
-
-    static private String[] addItemToArray(String[] arr, String item) {
-        String[] newArr = new String[arr.length + 1];
-        for (int k = 0; k < arr.length; k++) {
-            newArr[k] = arr[k];
-        }
-        newArr[arr.length] = item;
-        return newArr;
     }
 
     static private String mergeStrings(String[] arr, boolean quoted) {
@@ -134,10 +111,11 @@ public class ConfigFile {
 
     // --------------------------------------------------------------
     // String
+    // --------------------------------------------------------------
 
     public void addItem(String value, String comment) {
-        values = addItemToArray(values, value);
-        comments = addItemToArray(comments, comment);
+        values.add(value);
+        comments.add(comment);
     }
 
     public void addItem(String value, String comment, Boolean quoted) {
@@ -164,6 +142,7 @@ public class ConfigFile {
 
     // --------------------------------------------------------------
     // Boolean
+    // --------------------------------------------------------------
 
     public void addItem(boolean value, String comment) {
         String v = value ? ".true." : ".false.";
@@ -188,6 +167,7 @@ public class ConfigFile {
 
     // --------------------------------------------------------------
     // int
+    // --------------------------------------------------------------
 
     public void addItem(int value, String comment) {
         String v = Integer.toString(value);
@@ -211,7 +191,8 @@ public class ConfigFile {
     }
 
     // --------------------------------------------------------------
-    // Double
+    // double
+    // --------------------------------------------------------------
 
     public void addItem(double value, String comment) {
         String v = Double.toString(value);
