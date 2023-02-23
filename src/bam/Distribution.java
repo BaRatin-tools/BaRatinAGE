@@ -43,6 +43,7 @@ public class Distribution {
         return this.parameterValues;
     }
 
+    @Override
     public String toString() {
         String str = String.format("'%s' (", this.name);
         int n = this.parameterNames.length;

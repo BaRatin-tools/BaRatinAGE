@@ -23,6 +23,10 @@ public class Model {
         this.xTra = xTra;
     }
 
+    public Parameter[] getParameters() {
+        return this.parameters;
+    }
+
     public void toFiles(String workspace) {
         ConfigFile configFile = new ConfigFile();
         configFile.addItem(this.modelId, "Model ID", true);
@@ -48,6 +52,7 @@ public class Model {
         }
     }
 
+    @Override
     public String toString() {
 
         List<String> str = new ArrayList<>();

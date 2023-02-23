@@ -17,8 +17,8 @@ public class McmcConfig {
 
     public McmcConfig() {
         this.outputFileName = ConfigFile.RESULTS_MCMC;
-        this.nAdapt = 100;
-        this.nCycle = 100;
+        this.nAdapt = 20;
+        this.nCycle = 20;
         this.minMoveRate = 0.1;
         this.maxMoveRate = 0.5;
         this.downMult = 0.9;
@@ -50,6 +50,7 @@ public class McmcConfig {
         configFile.writeToFile(workspace, ConfigFile.CONFIG_MCMC);
     }
 
+    @Override
     public String toString() {
         String str = "Config - McmcConfig: ";
         str += String.format("%s; ", this.outputFileName);

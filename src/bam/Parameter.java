@@ -23,6 +23,7 @@ public class Parameter {
         return this.distribution;
     }
 
+    @Override
     public String toString() {
         return String.format(" > Parameter '%s': %f - %s",
                 this.name, this.initalGuess, this.distribution.toString());

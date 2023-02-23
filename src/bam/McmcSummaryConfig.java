@@ -15,6 +15,7 @@ public class McmcSummaryConfig {
         configFile.writeToFile(workspace, ConfigFile.CONFIG_MCMC_SUMMARY);
     }
 
+    @Override
     public String toString() {
         String str = "Config - McmcSummaryConfig: ";
         str += String.format("%s.\n", this.outputFileName);

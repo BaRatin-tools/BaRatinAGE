@@ -120,6 +120,7 @@ public class PredictionConfig {
         configFile.writeToFile(workspace, this.getConfigFileName());
     }
 
+    @Override
     public String toString() {
         String str = String.format("PredictionConfig '%s' (%b, %b, %d):\n",
                 this.name,

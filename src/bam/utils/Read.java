@@ -7,7 +7,9 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map.Entry;
 
 import org.mozilla.universalchardet.ReaderFactory;
 
@@ -71,6 +73,23 @@ public class Read {
 
     static public List<double[]> readMatrix(
             String textFilePath,
+            int nRowSkip) throws IOException {
+        int nRowMax = Integer.MAX_VALUE;
+        int nColMax = Integer.MAX_VALUE;
+        return readMatrix(
+                textFilePath,
+                "\\s+",
+                nRowSkip,
+                nRowMax,
+                0,
+                nColMax,
+                "-9999",
+                false,
+                true);
+    }
+
+    static public List<double[]> readMatrix(
+            String textFilePath,
             String sep,
             int nRowSkip,
             int nColSkip,
@@ -103,8 +122,15 @@ public class Read {
 
         int nLines = getLinesCount(textFilePath, detectCharset);
         int nRow = Math.min(nLines - nRowSkip, nRowMax);
-        int nCol = getColumnCount(textFilePath, detectCharset, sep, trim, nRowSkip);
+        int nCol = getColumnCount(textFilePath, detectCharset, sep, trim, nRowSkip) - nColSkip;
         nCol = Math.min(nColMax, nCol);
+
+        // System.out.println("*".repeat(70));
+        // System.out.println("nColMax : " + nColMax);
+        // System.out.println("nCol : " + nCol);
+        // System.out.println("nColSkip : " + nColSkip);
+        // System.out.println("getColumnCount : " + getColumnCount(textFilePath,
+        // detectCharset, sep, trim, nRowSkip));
 
         List<double[]> colMatrix = new ArrayList<>();
         for (int i = 0; i < nCol; i++) {
@@ -121,10 +147,19 @@ public class Read {
             if (i > nRow)
                 break;
             if (k >= nRowSkip) {
-                double[] row = parseStringArray(parseString(line, sep, trim), missingValueString);
+                double[] row = parseStringArray(parseString(line, sep, trim), missingValueString, nColSkip);
+
+                // System.out.print("\n > " + row.length + ", " + nColSkip +
+                // "------------->\n");
+
+                // for (int j = 0; j < row.length; j++) {
+                // System.out.println(row[j]);
+                // }
+
                 for (int j = 0; j < nCol; j++) {
-                    // matrix[i][j] = row[j + nColSkip];
-                    colMatrix.get(j)[i] = row[j + nColSkip];
+                    // System.out.print(j + nColSkip + ", ");
+                    colMatrix.get(j)[i] = row[j];
+
                 }
                 i++;
             }
@@ -133,6 +168,39 @@ public class Read {
         }
 
         return colMatrix;
+    }
+
+    static public String[] readHeaders(String textFilePath) throws IOException {
+        return readHeaders(textFilePath, "\\s+", 0, false, true);
+    }
+
+    static public String[] readHeaders(String textFilePath,
+            String sep,
+            int headerRowIndex) throws IOException {
+        return readHeaders(textFilePath, sep, headerRowIndex, false, true);
+    }
+
+    static public String[] readHeaders(String textFilePath,
+            String sep,
+            int headerRowIndex,
+            boolean detectCharset,
+            boolean trim) throws IOException {
+
+        BufferedReader reader = createBufferedReader(textFilePath, detectCharset);
+        int n = 0;
+        String[] headers = new String[0];
+        String line = reader.readLine();
+        while (line != null) {
+            if (n == headerRowIndex) {
+                headers = parseString(line, sep, trim);
+                break;
+            }
+            line = reader.readLine();
+            n++;
+        }
+        reader.close();
+
+        return headers;
     }
 
     /**
@@ -153,13 +221,18 @@ public class Read {
         }
     }
 
-    static private double[] parseStringArray(String[] str, String missingValueString) {
-        double[] result = new double[str.length];
-        for (int k = 0; k < str.length; k++) {
+    static private double[] parseStringArray(String[] str, String missingValueString, int nColSkip) {
+        double[] result = new double[str.length - nColSkip];
+        for (int k = nColSkip; k < str.length; k++) {
             if (str[k].equals(missingValueString)) {
-                result[k] = Double.NaN;
+                result[k - nColSkip] = Double.NaN;
             } else {
-                result[k] = Double.parseDouble(str[k]);
+                // try {
+                result[k - nColSkip] = Double.parseDouble(str[k]);
+                // } catch (NumberFormatException e) {
+                // System.err.println(e);
+                // result[k] = Double.NaN;
+                // }
             }
         }
         return result;
@@ -233,5 +306,147 @@ public class Read {
         }
         System.out.print("\n");
     }
+
+    // public static void prettyPrintMatrix(LinkedHashMap<String, double[]> matrix,
+    // int maxRows, int maxCols) {
+
+    // double[][] matrixValues = matrix.values().toArray(new double[0][0]);
+    // String[] matrixHeaders = matrix.keySet().toArray(new String[0]);
+
+    // // Getting matrix dimensions
+    // int nCol = matrixValues.length;
+    // if (nCol == 0) {
+    // System.out.println("\nmatrix | 0 x 0 | empty matrix\n");
+    // return;
+    // }
+    // int[] nRows = new int[nCol];
+    // int nRow = matrixValues[0].length;
+    // int nRowMax = nRow;
+    // for (int k = 0; k < nCol; k++) {
+    // if (nRow != matrixValues[k].length) {
+    // nRow = -1;
+    // if (matrixValues[k].length > nRowMax) {
+    // nRowMax = matrixValues[k].length;
+    // }
+    // }
+    // nRows[k] = matrixValues[k].length;
+    // }
+
+    // // Printing matrix dimensions
+    // System.out.print("\nmatrix | (row x column) ");
+    // if (nRow == -1) {
+    // System.out.print("[");
+    // for (int i : nRows) {
+    // System.out.printf("%d, ", i);
+
+    // }
+    // System.out.print("]");
+    // } else {
+    // System.out.printf("%d", nRow);
+    // }
+    // System.out.printf(" x %d\n\n", nCol);
+
+    // // Printing column headers
+    // for (int j = 0; j < nCol; j++) {
+    // System.out.printf("%12s", matrixHeaders[j]);
+    // if (j >= maxCols) {
+    // System.out.print(" ...");
+    // break;
+    // }
+    // }
+    // System.out.print("\n");
+
+    // // Printing content, row wise
+    // for (int j = 0; j < nRowMax; j++) {
+    // for (int i = 0; i < nCol; i++) {
+    // if (matrixValues[i].length > j) {
+    // System.out.printf("%12.4f", matrixValues[i][j]);
+    // } else {
+    // System.out.printf("%12s", " - "); // row not long enough
+    // }
+    // if (i >= maxCols) {
+    // System.out.print(" ..."); // meaning there's more column
+    // break;
+    // }
+    // }
+
+    // System.out.print("\n");
+    // if (j >= maxRows) {
+    // System.out.printf("%12s\n", "..."); // meaning there's more row
+    // break;
+    // }
+    // }
+    // System.out.print("\n");
+    // }
+
+    // public static void prettyPrintMatrix(ArrayList<Entry<String, double[]>>
+    // matrix, int maxRows, int maxCols) {
+
+    // // Getting matrix dimensions
+    // int nCol = matrix.size();
+    // if (nCol == 0) {
+    // System.out.println("\nmatrix | 0 x 0 | empty matrix\n");
+    // return;
+    // }
+    // int[] nRows = new int[nCol];
+    // int nRow = matrix.get(0).getValue().length;
+    // int nRowMax = nRow;
+    // for (int k = 0; k < nCol; k++) {
+    // int n = matrix.get(0).getValue().length;
+    // if (nRow != n) {
+    // nRow = -1;
+    // if (n > nRowMax) {
+    // nRowMax = n;
+    // }
+    // }
+    // nRows[k] = n;
+    // }
+
+    // // Printing matrix dimensions
+    // System.out.print("\nmatrix | (row x column) ");
+    // if (nRow == -1) {
+    // System.out.print("[");
+    // for (int i : nRows) {
+    // System.out.printf("%d, ", i);
+
+    // }
+    // System.out.print("]");
+    // } else {
+    // System.out.printf("%d", nRow);
+    // }
+    // System.out.printf(" x %d\n\n", nCol);
+
+    // // Printing column headers
+    // for (int j = 0; j < nCol; j++) {
+    // System.out.printf("%12s", matrix.get(j).getKey());
+    // if (j >= maxCols) {
+    // System.out.print(" ...");
+    // break;
+    // }
+    // }
+    // System.out.print("\n");
+
+    // // Printing content, row wise
+    // for (int j = 0; j < nRowMax; j++) {
+    // for (int i = 0; i < nCol; i++) {
+    // if (matrix.get(i).getValue().length > j) {
+    // System.out.printf("%12.4f", matrix.get(i).getValue()[j]);
+    // } else {
+    // System.out.printf("%12s", " - "); // row not long enough
+    // }
+    // if (i >= maxCols) {
+    // System.out.print(" ..."); // meaning there's more column
+    // break;
+    // }
+    // }
+
+    // System.out.print("\n");
+    // if (j >= maxRows) {
+    // System.out.printf("%12s\n", "..."); // meaning there's more row
+    // break;
+    // }
+    // }
+    // System.out.print("\n");
+    // }
 
 }

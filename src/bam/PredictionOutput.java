@@ -33,6 +33,7 @@ public class PredictionOutput {
         return this.createEnvelop;
     }
 
+    @Override
     public String toString() {
         return String.format(
                 "Prediction output '%s' (%b, %b, %b).",

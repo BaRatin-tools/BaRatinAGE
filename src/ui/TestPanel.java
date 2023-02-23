@@ -108,6 +108,10 @@ public class TestPanel extends JPanel {
                             } else {
                                 System.out.println("BaM running is done!");
                                 progressBar.update("done", 1, 1, 0, 0);
+
+                                if (bam.getRunOptions().doMcmc) {
+                                    bam.readResults(workspace);
+                                }
                             }
 
                             launchBamButton.setEnabled(true);

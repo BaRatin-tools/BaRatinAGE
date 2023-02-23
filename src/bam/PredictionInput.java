@@ -52,6 +52,7 @@ public class PredictionInput {
         }
     }
 
+    @Override
     public String toString() {
         return String.format(
                 "Prediction input '%s' contains  %d observations and %d replications ",

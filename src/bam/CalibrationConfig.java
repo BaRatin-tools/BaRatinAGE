@@ -34,6 +34,14 @@ public class CalibrationConfig {
         return structErrConfNames;
     }
 
+    public Model getModel() {
+        return this.model;
+    }
+
+    public CalibrationData getCalibrationData() {
+        return this.calibrationData;
+    }
+
     public McmcConfig getMcmcConfig() {
         return this.mcmcConfig;
     }
@@ -62,6 +70,7 @@ public class CalibrationConfig {
 
     }
 
+    @Override
     public String toString() {
         // System.out.println("Calibration config: ");
         // List<String> str = new ArrayList<>();

@@ -19,6 +19,7 @@ public class CalDataResidualConfig {
         configFile.writeToFile(workspace, ConfigFile.CONFIG_RESIDUALS);
     }
 
+    @Override
     public String toString() {
         String str = "Config - CalDataResidualConfig: ";
         str += String.format("%s.\n", this.outputFileName);

@@ -37,6 +37,7 @@ public class StructuralErrorModel {
         configFile.writeToFile(Path.of(workspace, configFileName).toString());
     }
 
+    @Override
     public String toString() {
         System.out.println();
         String str = String.format("Structural Error Model %s of type '%s':\n", this.name, this.modelId);

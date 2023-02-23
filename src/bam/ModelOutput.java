@@ -17,6 +17,7 @@ public class ModelOutput {
         this.structuralErrorModel.toFiles(workspace);
     }
 
+    @Override
     public String toString() {
 
         String str = String.format("Model output %s associated with the following structural error model.", this.name);

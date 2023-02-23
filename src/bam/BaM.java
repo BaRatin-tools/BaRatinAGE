@@ -23,13 +23,22 @@ public class BaM {
     private CalibrationConfig calibrationConfig;
     private PredictionConfig[] predictionConfigs;
     private RunOptions runOptions;
+    private CalibrationResult calibrationResult;
+    // private PredictionResult[] predictionResults
+
     private Process bamExecutionProcess;
 
-    public BaM(CalibrationConfig calibrationConfig, PredictionConfig[] predictionConfigs, RunOptions runOptions) {
+    public BaM(
+            CalibrationConfig calibrationConfig,
+            PredictionConfig[] predictionConfigs,
+            RunOptions runOptions,
+            CalibrationResult calibrationResult,
+            Void v) {
         this.calibrationConfig = calibrationConfig;
         this.predictionConfigs = predictionConfigs; // FIXME: should check that there's no conflicting names in the
                                                     // variables!
         this.runOptions = runOptions;
+        this.calibrationResult = calibrationResult;
     }
 
     public PredictionConfig[] getPredictionsConfigs() {
@@ -40,7 +49,16 @@ public class BaM {
         return this.calibrationConfig;
     }
 
+    public void readResults(String workspace) {
+        this.calibrationResult = new CalibrationResult(workspace, calibrationConfig);
+
+        System.out.println(this.calibrationResult);
+    }
+
     public void toFiles(String workspace, String exeDir) {
+
+        // FIXME: should write to files only the necessary files (e.g. no need for huge
+        // prediction input files if doPrediction is false)
 
         // Calibration configuraiton files
         this.calibrationConfig.toFiles(workspace);
@@ -173,6 +191,7 @@ public class BaM {
         bamExecutionProcess = null;
     }
 
+    @Override
     public String toString() {
 
         List<String> str = new ArrayList<>();

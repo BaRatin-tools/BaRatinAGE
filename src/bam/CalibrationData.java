@@ -22,6 +22,14 @@ public class CalibrationData {
 
     }
 
+    public UncertainData[] getInputs() {
+        return this.inputs;
+    }
+
+    public UncertainData[] getOutputs() {
+        return this.outputs;
+    }
+
     private class UncertainDataConfig {
         public int nCol;
         public int nRow;
@@ -149,6 +157,7 @@ public class CalibrationData {
         configFile.writeToFile(workspace, configFileName);
     }
 
+    @Override
     public String toString() {
 
         List<String> str = new ArrayList<>();

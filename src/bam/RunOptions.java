@@ -28,6 +28,7 @@ public class RunOptions {
         configFile.writeToFile(workspace, ConfigFile.CONFIG_RUN_OPTIONS);
     }
 
+    @Override
     public String toString() {
         return String.format("RunOptions: %b, %b, %b, %b",
                 this.doMcmc,

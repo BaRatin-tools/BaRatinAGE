@@ -193,15 +193,15 @@ public class Project {
 
                 System.out.println("Creating final BaM configuration...");
                 RunOptions runOptions = new RunOptions(
-                                !true,
-                                false,
-                                false,
+                                true,
+                                true,
+                                true,
                                 !true);
 
                 boolean useRepeatedDataInCalibration = false;
                 BaM bam;
                 if (!useRepeatedDataInCalibration) {
-                        bam = new BaM(calibrationConfig, predConfigs, runOptions);
+                        bam = new BaM(calibrationConfig, predConfigs, runOptions, null, null);
                 } else {
                         // Calibration using repeated data instead of regular data for longer MCMC
                         // sampling
@@ -222,7 +222,7 @@ public class Project {
                                         mcmcCookingConfig,
                                         mcmcSummaryConfig,
                                         calDataResidualConfig);
-                        bam = new BaM(calibrationConfigBig, predConfigs, runOptions);
+                        bam = new BaM(calibrationConfigBig, predConfigs, runOptions, null, null);
                 }
                 System.out.println(bam);
                 return bam;

@@ -25,6 +25,7 @@ public class McmcCookingConfig {
         configFile.writeToFile(workspace, ConfigFile.CONFIG_MCMC_COOKING);
     }
 
+    @Override
     public String toString() {
         String str = "Config - McmcCookingConfig: ";
         str += String.format("%s; ", this.outputFileName);
