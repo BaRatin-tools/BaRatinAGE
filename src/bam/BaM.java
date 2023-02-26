@@ -49,6 +49,10 @@ public class BaM {
         return this.calibrationConfig;
     }
 
+    public CalibrationResult getCalibrationResults() {
+        return this.calibrationResult;
+    }
+
     public void readResults(String workspace) {
         this.calibrationResult = new CalibrationResult(workspace, calibrationConfig);
 

@@ -16,6 +16,14 @@ public class EstimatedParameter {
         this.summary = summary;
     }
 
+    public String getName() {
+        return this.name;
+    }
+
+    public double[] getMcmc() {
+        return this.mcmc;
+    }
+
     @Override
     public String toString() {
         String str = String.format("Parameter results '%s' with %d samples",

@@ -17,8 +17,10 @@ public class McmcConfig {
 
     public McmcConfig() {
         this.outputFileName = ConfigFile.RESULTS_MCMC;
-        this.nAdapt = 20;
-        this.nCycle = 20;
+        this.nAdapt = 10;
+        this.nCycle = 10;
+        // this.nAdapt = 100;
+        // this.nCycle = 100;
         this.minMoveRate = 0.1;
         this.maxMoveRate = 0.5;
         this.downMult = 0.9;

@@ -1,69 +1,46 @@
 package ui;
 
 import java.awt.Dimension;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
-
 import javax.swing.AbstractButton;
 import javax.swing.JButton;
-import javax.swing.JPanel;
+import javax.swing.JTabbedPane;
 import javax.swing.SwingWorker;
 
 import bam.BaM;
+import bam.CalibrationResult;
 import bam.utils.Monitoring;
 import project.Project;
+import ui.container.FlexPanel;
 
 import java.awt.event.ActionListener;
 import java.util.List;
 import java.awt.event.ActionEvent;
 
-public class TestPanel extends JPanel {
+public class TestPanel extends FlexPanel {
 
     private ProgressBar progressBar;
     private Logger logger;
+    private ResultPanel resultsPanel;
+    private JTabbedPane tabs;
 
     private SwingWorker<Void, String> runningWorker;
     private SwingWorker<Void, Void> monitoringWorker;
     protected AbstractButton cancelBamButton;
 
     public TestPanel() {
+        super(FlexPanel.AXIS.COL, 5);
+        // this.setLayout(new GridBagLayout());
 
-        this.setLayout(new GridBagLayout());
-
-        JPanel actionButtons = new JPanel();
-        actionButtons.setLayout(new GridBagLayout());
-        this.add(actionButtons,
-                new GridBagConstraints(
-                        0,
-                        0,
-                        1,
-                        1,
-                        1.0,
-                        1.0,
-                        GridBagConstraints.NORTH,
-                        GridBagConstraints.BOTH,
-                        new Insets(0, 0, 0, 0),
-                        0,
-                        0));
+        FlexPanel actionButtons = new FlexPanel(FlexPanel.AXIS.ROW);
+        int actionHeight = 50;
+        actionButtons.setMinimumSize(new Dimension(100, actionHeight));
+        actionButtons.setMaximumSize(new Dimension(Integer.MAX_VALUE, actionHeight));
+        actionButtons.setPreferredSize(new Dimension(100, actionHeight));
+        this.appendChild(actionButtons);
 
         JButton launchBamButton = new JButton();
         launchBamButton.setText("Launch BaM");
-        launchBamButton.setPreferredSize(new Dimension(500, 50));
-
-        actionButtons.add(launchBamButton,
-                new GridBagConstraints(
-                        0,
-                        0,
-                        1,
-                        1,
-                        1.0,
-                        1.0,
-                        GridBagConstraints.NORTH,
-                        GridBagConstraints.BOTH,
-                        new Insets(2, 2, 2, 2),
-                        0,
-                        0));
+        actionButtons.appendChild(launchBamButton, 1.0);
 
         launchBamButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -111,6 +88,9 @@ public class TestPanel extends JPanel {
 
                                 if (bam.getRunOptions().doMcmc) {
                                     bam.readResults(workspace);
+                                    CalibrationResult res = bam.getCalibrationResults();
+                                    resultsPanel.setMcmcResults(res.getEsimatedParameters());
+                                    tabs.setSelectedIndex(1);
                                 }
                             }
 
@@ -161,21 +141,7 @@ public class TestPanel extends JPanel {
         cancelBamButton = new JButton();
         cancelBamButton.setText("Cancel");
         cancelBamButton.setEnabled(false);
-        cancelBamButton.setPreferredSize(new Dimension(100, 50));
-
-        actionButtons.add(cancelBamButton,
-                new GridBagConstraints(
-                        1,
-                        0,
-                        1,
-                        1,
-                        0.0,
-                        1.0,
-                        GridBagConstraints.NORTH,
-                        GridBagConstraints.BOTH,
-                        new Insets(2, 2, 2, 2),
-                        0,
-                        0));
+        actionButtons.appendChild(cancelBamButton);
 
         cancelBamButton.addActionListener(new ActionListener() {
 
@@ -189,42 +155,18 @@ public class TestPanel extends JPanel {
         });
 
         this.progressBar = new ProgressBar();
-
-        this.add(progressBar,
-
-                new GridBagConstraints(
-                        0,
-                        1,
-                        1,
-                        1,
-                        1.0,
-                        1.0,
-                        GridBagConstraints.NORTH,
-                        GridBagConstraints.BOTH,
-                        new Insets(2, 2, 2, 2),
-                        0,
-                        0)
-
-        );
+        this.appendChild(this.progressBar);
 
         logger = new Logger();
 
-        this.add(logger,
+        resultsPanel = new ResultPanel();
 
-                new GridBagConstraints(
-                        0,
-                        2,
-                        1,
-                        1,
-                        1.0,
-                        1000,
-                        GridBagConstraints.NORTH,
-                        GridBagConstraints.BOTH,
-                        new Insets(2, 2, 2, 2),
-                        0,
-                        0)
+        tabs = new JTabbedPane();
+        this.appendChild(tabs, 1.0);
 
-        );
+        tabs.add("BaM Log", logger);
+        tabs.add("BaM results", resultsPanel);
 
+        // tabs.setSelectedIndex(1);
     }
 }

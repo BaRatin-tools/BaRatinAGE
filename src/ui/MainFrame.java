@@ -2,8 +2,10 @@ package ui;
 
 import javax.swing.JFrame;
 
-import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.Point;
 
 import java.awt.event.ActionListener;
@@ -21,12 +23,20 @@ public class MainFrame extends JFrame implements ActionListener {
 
         this.setSize(new Dimension(773, 1118));
         this.setLocation(new Point(1986, 0));
-        //
-        this.setBackground(Color.RED);
+
+        // this.setSize(new Dimension(966, 1398));
+        // this.setLocation(new Point(2482, 0));
 
         TestPanel testPanel = new TestPanel();
 
-        this.add(testPanel);
+        this.setLayout(new GridBagLayout());
+        this.add(testPanel, new GridBagConstraints(
+                0, 0,
+                1, 1,
+                1, 1,
+                GridBagConstraints.CENTER, GridBagConstraints.BOTH,
+                new Insets(5, 5, 5, 5),
+                0, 0));
 
         this.addComponentListener(new ComponentAdapter() {
             public void componentResized(ComponentEvent e) {

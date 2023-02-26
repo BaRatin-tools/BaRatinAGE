@@ -1,13 +1,14 @@
 
 import java.awt.EventQueue;
 import javax.swing.UIManager;
-
 import ui.MainFrame;
-// import bam.utils.Performance;
+// import utils.Performance;
 
 public class Main {
 
         public static void main(String[] args) throws Exception {
+
+                // System.setProperty("sun.java2d.uiScale", "1");
 
                 /*
                  * *************************************************************
@@ -28,6 +29,7 @@ public class Main {
                  */
 
                 try {
+                        // UIManager.setLookAndFeel(new NimbusLookAndFeel());
                         UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
                 } catch (Exception e) {
                         e.printStackTrace();

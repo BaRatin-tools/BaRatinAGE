@@ -1,4 +1,4 @@
-package bam.utils;
+package utils;
 
 public class Performance {
 

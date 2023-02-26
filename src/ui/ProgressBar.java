@@ -9,9 +9,10 @@ public class ProgressBar extends JProgressBar {
     public ProgressBar() {
         this.setStringPainted(true);
         this.setString("");
-        Dimension dim = this.getPreferredSize();
-        dim.height = 16;
-        this.setPreferredSize(dim);
+        int height = 25;
+        this.setPreferredSize(new Dimension(0, height));
+        this.setMinimumSize(new Dimension(0, height));
+        this.setMaximumSize(new Dimension(Integer.MAX_VALUE, height));
     }
 
     public void update(String id, int progress, int total, int step, int totalStep) {

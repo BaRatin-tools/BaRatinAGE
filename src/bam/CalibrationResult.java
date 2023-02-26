@@ -80,6 +80,10 @@ public class CalibrationResult {
 
     }
 
+    public HashMap<String, EstimatedParameter> getEsimatedParameters() {
+        return this.estimatedParameter;
+    }
+
     @Override
     public String toString() {
         String str = "Calibration results: \n";
