@@ -27,6 +27,8 @@ public class TestPanel extends FlexPanel {
     private SwingWorker<Void, Void> monitoringWorker;
     protected AbstractButton cancelBamButton;
 
+    protected AbstractButton btn;
+
     public TestPanel() {
         super(FlexPanel.AXIS.COL, 5);
         // this.setLayout(new GridBagLayout());
@@ -38,8 +40,41 @@ public class TestPanel extends FlexPanel {
         actionButtons.setPreferredSize(new Dimension(100, actionHeight));
         this.appendChild(actionButtons);
 
+        JButton lgPicker = new JButton();
+        lgPicker.setText("Test changement de langue");
+        actionButtons.appendChild(lgPicker);
+
+        lgPicker.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                String key = Lg.getLanguageKey();
+                System.out.println(key);
+                if (!key.equals("en")) {
+                    Lg.setLanguage("en");
+                } else {
+                    Lg.setLanguage("fr");
+                }
+
+            }
+
+        });
+
+        // JButton btnRemover = new JButton();
+        // btnRemover.setText("Remove");
+        // actionButtons.appendChild(btnRemover);
+        // btnRemover.addActionListener(new ActionListener() {
+        // public void actionPerformed(ActionEvent e) {
+        // actionButtons.remove(btn);
+        // TestPanel.this.updateUI();
+        // // TestPanel.this.repaint();
+        // }
+        // });
+        // btn = new JButton();
+        // Lg.setText(btn, "will_be_removed");
+        // actionButtons.appendChild(btn);
+
         JButton launchBamButton = new JButton();
-        launchBamButton.setText("Launch BaM");
+        // launchBamButton.setText(Lg.getText("launch_bam"));
+        Lg.setText(launchBamButton, "launch_bam");
         actionButtons.appendChild(launchBamButton, 1.0);
 
         launchBamButton.addActionListener(new ActionListener() {
@@ -139,7 +174,8 @@ public class TestPanel extends FlexPanel {
         });
 
         cancelBamButton = new JButton();
-        cancelBamButton.setText("Cancel");
+        // cancelBamButton.setText(Lg.getText("cancel"));
+        Lg.setText(cancelBamButton, "cancel");
         cancelBamButton.setEnabled(false);
         actionButtons.appendChild(cancelBamButton);
 
@@ -164,8 +200,11 @@ public class TestPanel extends FlexPanel {
         tabs = new JTabbedPane();
         this.appendChild(tabs, 1.0);
 
-        tabs.add("BaM Log", logger);
-        tabs.add("BaM results", resultsPanel);
+        tabs.add(Lg.getText("bam_log"), logger);
+        tabs.add("dgfsdflsdkfmklm", resultsPanel);
+
+        Lg.setText(tabs, "bam_log", 0);
+        Lg.setText(tabs, "bam_mcmc_res", 1);
 
         // tabs.setSelectedIndex(1);
     }
