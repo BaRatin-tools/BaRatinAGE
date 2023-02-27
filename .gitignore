@@ -4,3 +4,12 @@
 /bin
 /.vscode
 /archive
+/dist
+
+*jar
+*.bar.zip
+
+# V2 related folder to ignore
+/externalLib
+/recycle
+/.settings
