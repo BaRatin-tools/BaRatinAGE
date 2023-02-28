@@ -114,6 +114,10 @@ public class TestPanel extends FlexPanel {
 
                         @Override
                         protected void done() {
+
+                            launchBamButton.setEnabled(true);
+                            cancelBamButton.setEnabled(false);
+
                             if (this.isCancelled()) {
                                 System.out.println("BaM running was canceled!");
                                 progressBar.update("canceled", 0, 0, 0, 0);
@@ -129,8 +133,6 @@ public class TestPanel extends FlexPanel {
                                 }
                             }
 
-                            launchBamButton.setEnabled(true);
-                            cancelBamButton.setEnabled(false);
                         }
 
                     };
