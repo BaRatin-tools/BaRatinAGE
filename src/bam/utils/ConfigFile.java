@@ -12,10 +12,10 @@ public class ConfigFile {
 
     public static final String CONFIG_BAM = "Config_BaM.txt";
     public static final String CONFIG_CALIBRATION = "Config_Data.txt";
-    public static final String CONFIG_RESIDUALS = "Config_Residuals.txt";
+    public static final String CONFIG_RESIDUALS = "Config_Data_Residuals.txt";
     public static final String CONFIG_MCMC = "Config_MCMC.txt";
     public static final String CONFIG_MCMC_COOKING = "Config_MCMC_Cooking.txt";
-    public static final String CONFIG_MCMC_SUMMARY = "Results_Summary.txt";
+    public static final String CONFIG_MCMC_SUMMARY = "Config_MCMC_Summary.txt";
     public static final String CONFIG_MODEL = "Config_Model.txt";
     public static final String CONFIG_XTRA = "Config_xTra.txt";
     public static final String CONFIG_RUN_OPTIONS = "Config_RunOptions.txt";

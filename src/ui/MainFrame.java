@@ -21,8 +21,9 @@ public class MainFrame extends JFrame implements ActionListener {
 
     public MainFrame() {
 
-        this.setSize(new Dimension(773, 1118));
-        this.setLocation(new Point(1986, 0));
+        this.setSize(new Dimension(800, 650));
+        // this.setSize(new Dimension(773, 1118));
+        // this.setLocation(new Point(1986, 0));
 
         // this.setSize(new Dimension(966, 1398));
         // this.setLocation(new Point(2482, 0));

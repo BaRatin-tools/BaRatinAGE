@@ -196,7 +196,7 @@ public class Project {
                                 true,
                                 true,
                                 true,
-                                !true);
+                                true);
 
                 boolean useRepeatedDataInCalibration = false;
                 BaM bam;

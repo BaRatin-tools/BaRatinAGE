@@ -146,7 +146,7 @@ public class BaM {
 
         try {
             while ((currentLine = bufferReader.readLine()) != null) {
-                // System.out.printf(".");
+                System.out.printf("LINE=%s\n", currentLine);
                 consoleLines.add(currentLine);
                 consoleOutputFollower.onConsoleLog(currentLine);
             }
@@ -188,7 +188,7 @@ public class BaM {
                     System.err.println("A FATAL ERROR has occured while writting to a file.");
                     break;
                 default:
-                    System.err.println("An unknown FATAL ERROR has occured.");
+                    System.err.printf("An unknown FATAL ERROR has occured. Exit Code=%d\n", exitcode);
                     break;
             }
         }

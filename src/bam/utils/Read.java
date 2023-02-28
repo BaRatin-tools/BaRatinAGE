@@ -9,6 +9,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
+// FIXME: the bam librairy should not take care of this; it should be a matter for the ui where the user can import random files
 import org.mozilla.universalchardet.ReaderFactory;
 
 public class Read {
