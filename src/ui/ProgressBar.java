@@ -4,6 +4,8 @@ import java.awt.Dimension;
 
 import javax.swing.JProgressBar;
 
+import ui.lg.Lg;
+
 public class ProgressBar extends JProgressBar {
 
     public ProgressBar() {
@@ -20,26 +22,23 @@ public class ProgressBar extends JProgressBar {
         this.setMaximum(total);
         this.setValue(progress);
 
+        double percent = total > 0 ? (double) progress / (double) total * 100 : 0;
+        String stepTxt = Lg.format(Lg.getText("ui", "step_n_out_of_m"), step, totalStep);
         String s = "";
         if (id.equals("MCMC")) {
-            s = "MCMC simulations running ...";
+            String mainTxt = Lg.getText("ui", "mcmc_running");
+            s = String.format("%s - %.0f %% - %s", stepTxt, percent, mainTxt);
         } else if (id.startsWith("Prediction")) {
-            s = "Propagation experiment running ...";
+            String mainTxt = Lg.getText("ui", "pred_running");
+            s = String.format("%s - %.0f %% - %s", stepTxt, percent, mainTxt);
         } else if (id.equals("starting")) {
-            this.setString("Writing configuration and data files ...");
-            this.repaint();
-            return;
+            s = Lg.getText("ui", "conf_writing");
         } else if (id.equals("canceled")) {
-            this.setString("Canceled!");
-            this.repaint();
-            return;
+            s = Lg.getText("ui", "canceled");
         } else {
-            this.setString("Done!");
-            this.repaint();
-            return;
+            s = Lg.getText("ui", "done");
         }
-        double percent = (double) progress / (double) total * 100;
-        this.setString(String.format("Step %d/%d: %s (%.0f %%)", step, totalStep, s, percent));
+        this.setString(s);
         this.repaint();
 
     }

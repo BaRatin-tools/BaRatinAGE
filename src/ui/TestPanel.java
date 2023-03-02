@@ -11,8 +11,11 @@ import bam.CalibrationResult;
 import bam.utils.Monitoring;
 import project.Project;
 import ui.container.FlexPanel;
+import ui.lg.Lg;
+import ui.lg.LgElement;
 
 import java.awt.event.ActionListener;
+import java.text.MessageFormat;
 import java.util.List;
 import java.awt.event.ActionEvent;
 
@@ -29,9 +32,10 @@ public class TestPanel extends FlexPanel {
 
     protected AbstractButton btn;
 
+    private int lgChangedNtimes;
+
     public TestPanel() {
         super(FlexPanel.AXIS.COL, 5);
-        // this.setLayout(new GridBagLayout());
 
         FlexPanel actionButtons = new FlexPanel(FlexPanel.AXIS.ROW);
         int actionHeight = 50;
@@ -41,40 +45,49 @@ public class TestPanel extends FlexPanel {
         this.appendChild(actionButtons);
 
         JButton lgPicker = new JButton();
-        lgPicker.setText("Test changement de langue");
+
+        lgChangedNtimes = 0;
+
+        Lg.register(new LgElement<JButton>(lgPicker) {
+            @Override
+            public void setTranslatedText() {
+                String mainText = Lg.getText("ui", "change_language");
+
+                String secondaryText = "";
+                if (lgChangedNtimes == 0) {
+                    secondaryText = Lg.getText("ui", "no_change_done");
+                } else if (lgChangedNtimes == 1) {
+                    secondaryText = Lg.getText("ui", "one_change_done");
+                } else {
+                    secondaryText = Lg.format(Lg.getText("ui", "n_changes_done"), lgChangedNtimes);
+                }
+                System.out.println(secondaryText);
+
+                String template = "<html><div>%s</div><div style='color: gray; font-size: smaller; width: 200'>%s</div></html>";
+                component.setText(String.format(template, mainText, secondaryText));
+            }
+        });
+
         actionButtons.appendChild(lgPicker);
 
         lgPicker.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                String key = Lg.getLanguageKey();
+                lgChangedNtimes++; // for demonstration purposes only
+                String key = Lg.getLocaleKey();
                 System.out.println(key);
                 if (!key.equals("en")) {
-                    Lg.setLanguage("en");
+                    Lg.setLocale("en");
                 } else {
-                    Lg.setLanguage("fr");
+                    Lg.setLocale("fr");
                 }
 
             }
 
         });
 
-        // JButton btnRemover = new JButton();
-        // btnRemover.setText("Remove");
-        // actionButtons.appendChild(btnRemover);
-        // btnRemover.addActionListener(new ActionListener() {
-        // public void actionPerformed(ActionEvent e) {
-        // actionButtons.remove(btn);
-        // TestPanel.this.updateUI();
-        // // TestPanel.this.repaint();
-        // }
-        // });
-        // btn = new JButton();
-        // Lg.setText(btn, "will_be_removed");
-        // actionButtons.appendChild(btn);
-
         JButton launchBamButton = new JButton();
-        // launchBamButton.setText(Lg.getText("launch_bam"));
-        Lg.setText(launchBamButton, "launch_bam");
+        Lg.registerButton(launchBamButton, "ui", "launch_bam");
+
         actionButtons.appendChild(launchBamButton, 1.0);
 
         launchBamButton.addActionListener(new ActionListener() {
@@ -176,8 +189,7 @@ public class TestPanel extends FlexPanel {
         });
 
         cancelBamButton = new JButton();
-        // cancelBamButton.setText(Lg.getText("cancel"));
-        Lg.setText(cancelBamButton, "cancel");
+        Lg.registerButton(cancelBamButton, "ui", "cancel");
         cancelBamButton.setEnabled(false);
         actionButtons.appendChild(cancelBamButton);
 
@@ -202,12 +214,15 @@ public class TestPanel extends FlexPanel {
         tabs = new JTabbedPane();
         this.appendChild(tabs, 1.0);
 
-        tabs.add(Lg.getText("bam_log"), logger);
-        tabs.add("dgfsdflsdkfmklm", resultsPanel);
+        tabs.add("logger", logger);
+        tabs.add("resultsPanel", resultsPanel);
 
-        Lg.setText(tabs, "bam_log", 0);
-        Lg.setText(tabs, "bam_mcmc_res", 1);
-
-        // tabs.setSelectedIndex(1);
+        Lg.register(new LgElement<JTabbedPane>(tabs) {
+            @Override
+            public void setTranslatedText() {
+                component.setTitleAt(0, Lg.getText("ui", "bam_log"));
+                component.setTitleAt(1, Lg.getText("ui", "bam_mcmc_res"));
+            }
+        });
     }
 }
