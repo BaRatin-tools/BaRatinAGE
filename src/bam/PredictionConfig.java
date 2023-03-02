@@ -38,6 +38,10 @@ public class PredictionConfig {
         return String.format(ConfigFile.CONFIG_PREDICTION, this.name);
     }
 
+    public PredictionOutput[] getPredictionOutputs() {
+        return this.outputs;
+    }
+
     public void toFiles(String workspace) {
         int n = this.inputs.length;
         String[] inputFilePaths = new String[n];

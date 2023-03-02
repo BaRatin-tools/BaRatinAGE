@@ -137,12 +137,13 @@ public class TestPanel extends FlexPanel {
                                 System.out.println("BaM running is done!");
                                 progressBar.update("done", 1, 1, 0, 0);
 
-                                if (bam.getRunOptions().doMcmc) {
-                                    bam.readResults(workspace);
-                                    CalibrationResult res = bam.getCalibrationResults();
+                                bam.readResults(workspace);
+                                CalibrationResult res = bam.getCalibrationResults();
+                                if (res != null) {
                                     resultsPanel.setMcmcResults(res.getEsimatedParameters());
                                     tabs.setSelectedIndex(1);
                                 }
+
                             }
 
                         }

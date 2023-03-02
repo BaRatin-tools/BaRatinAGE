@@ -24,7 +24,7 @@ public class BaM {
     private PredictionConfig[] predictionConfigs;
     private RunOptions runOptions;
     private CalibrationResult calibrationResult;
-    // private PredictionResult[] predictionResults
+    private PredictionResult[] predictionResults;
 
     private Process bamExecutionProcess;
 
@@ -33,12 +33,13 @@ public class BaM {
             PredictionConfig[] predictionConfigs,
             RunOptions runOptions,
             CalibrationResult calibrationResult,
-            Void v) {
+            PredictionResult[] predictionResults) {
         this.calibrationConfig = calibrationConfig;
         this.predictionConfigs = predictionConfigs; // FIXME: should check that there's no conflicting names in the
                                                     // variables!
         this.runOptions = runOptions;
         this.calibrationResult = calibrationResult;
+        this.predictionResults = predictionResults;
     }
 
     public PredictionConfig[] getPredictionsConfigs() {
@@ -54,9 +55,21 @@ public class BaM {
     }
 
     public void readResults(String workspace) {
-        this.calibrationResult = new CalibrationResult(workspace, calibrationConfig);
+        if (this.runOptions.doMcmc) {
+            this.calibrationResult = new CalibrationResult(workspace, calibrationConfig);
 
-        System.out.println(this.calibrationResult);
+            System.out.println(this.calibrationResult);
+        }
+        if (this.runOptions.doPrediction) {
+            int n = this.predictionConfigs.length;
+            this.predictionResults = new PredictionResult[n];
+            for (int k = 0; k < n; k++) {
+                this.predictionResults[k] = new PredictionResult(workspace, this.predictionConfigs[k]);
+                System.out.println(this.predictionResults[k]);
+            }
+
+        }
+
     }
 
     public void toFiles(String workspace, String exeDir) {
