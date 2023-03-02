@@ -15,7 +15,6 @@ import ui.lg.Lg;
 import ui.lg.LgElement;
 
 import java.awt.event.ActionListener;
-import java.text.MessageFormat;
 import java.util.List;
 import java.awt.event.ActionEvent;
 

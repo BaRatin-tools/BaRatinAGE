@@ -1,7 +1,5 @@
 package ui.lg;
 
-import java.awt.Component;
-
 public abstract class LgElement<T> {
     public T component;
 
