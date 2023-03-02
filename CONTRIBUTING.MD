@@ -44,6 +44,14 @@ code .
 
 Once VS Code is running, if you open any of the Java source file (.java file in the src folder), you'll see the Java extension starting running.
 
+A small tweak that will make you life easier when developping is to turn on autocomplete for the `awt` package.
+Follow the appraoch suggested [here](https://stackoverflow.com/a/72851417):
+
+- Open command pallete: `Ctrl + Shift + P`
+- Select `Java: Help center`
+- Go to `Students` tab
+- Click on `Enable AWT Development`
+
 Probably that you'll get some errors since there are some external libraries you need to install.
 
 ### Installing the external dependencies
