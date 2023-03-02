@@ -226,12 +226,14 @@ public class Read {
             if (str[k].equals(missingValueString)) {
                 result[k - nColSkip] = Double.NaN;
             } else {
-                // try {
-                result[k - nColSkip] = Double.parseDouble(str[k]);
-                // } catch (NumberFormatException e) {
-                // System.err.println(e);
-                // result[k] = Double.NaN;
-                // }
+                try {
+                    result[k - nColSkip] = Double.parseDouble(str[k]);
+                } catch (NumberFormatException e) {
+                    // NOTE: this try/catch is necessary because BaM sometimes gives
+                    // very low/high values that can't be parsed (e.g. -0.179769+309)
+                    System.err.println(e);
+                    result[k - nColSkip] = Double.NaN;
+                }
             }
         }
         return result;
