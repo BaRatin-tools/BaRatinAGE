@@ -99,7 +99,7 @@ public class Monitoring {
                         ms.currenStep = currentStep;
                         ms.totalSteps = this.monitoringSteps.size();
                         monitoringFollower.onUpdate(ms);
-                        if (ms.progress == ms.total) {
+                        if (ms.progress >= ms.total) {
                             k = N_MAX;
                         }
                     } catch (IOException e) {
