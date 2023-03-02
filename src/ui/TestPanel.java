@@ -60,7 +60,6 @@ public class TestPanel extends FlexPanel {
                 } else {
                     secondaryText = Lg.format(Lg.getText("ui", "n_changes_done"), lgChangedNtimes);
                 }
-                System.out.println(secondaryText);
 
                 String template = "<html><div>%s</div><div style='color: gray; font-size: smaller; width: 200'>%s</div></html>";
                 component.setText(String.format(template, mainText, secondaryText));
@@ -73,7 +72,6 @@ public class TestPanel extends FlexPanel {
             public void actionPerformed(ActionEvent e) {
                 lgChangedNtimes++; // for demonstration purposes only
                 String key = Lg.getLocaleKey();
-                System.out.println(key);
                 if (!key.equals("en")) {
                     Lg.setLocale("en");
                 } else {
