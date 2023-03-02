@@ -11,6 +11,7 @@ import java.util.ResourceBundle;
 import java.util.UUID;
 
 import javax.swing.AbstractButton;
+import javax.swing.JLabel;
 
 import java.util.PropertyResourceBundle;
 
@@ -19,18 +20,6 @@ public class Lg {
     static private final String I18N_RESSOURCE_DIR = "ressources/i18n";
     static private final String DEFAULT_RESSOURCE_KEY = "en";
     static private final String[] RESSOURCE_IDS = new String[] { "ui" };
-
-    // public abstract class LgSetTranslatedText {
-    // public Component component;
-
-    // public LgSetTranslatedText(Component component) {
-    // this.component = component;
-    // }
-
-    // public void setTranslatedText() {
-
-    // }
-    // }
 
     static private Lg instance;
 
@@ -45,7 +34,6 @@ public class Lg {
         Lg instance = getInstance();
         instance.setLocaleFromKey(languageKey);
         for (String k : instance.elements.keySet()) {
-            // instance.elements.get(k);
             updateText(k);
         }
     }
@@ -88,6 +76,16 @@ public class Lg {
 
     public static String registerButton(AbstractButton button, String ressourceKey, String textKey) {
         return register(new LgElement<AbstractButton>(button) {
+            @Override
+            public void setTranslatedText() {
+                String text = Lg.getText(ressourceKey, textKey);
+                component.setText(text);
+            }
+        });
+    }
+
+    public static String registerLabel(JLabel label, String ressourceKey, String textKey) {
+        return register(new LgElement<JLabel>(label) {
             @Override
             public void setTranslatedText() {
                 String text = Lg.getText(ressourceKey, textKey);
