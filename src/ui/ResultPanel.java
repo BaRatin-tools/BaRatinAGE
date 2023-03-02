@@ -31,7 +31,7 @@ public class ResultPanel extends FlexPanel {
 
         }
 
-        public void setMcmcResults(HashMap<String, EstimatedParameter> estimatedParameters) {
-                mcmcResPanel.setMcmcResults(estimatedParameters);
+        public void setMcmcResults(HashMap<String, EstimatedParameter> estimatedParameters, int maxpostIndex) {
+                mcmcResPanel.setMcmcResults(estimatedParameters, maxpostIndex);
         }
 }

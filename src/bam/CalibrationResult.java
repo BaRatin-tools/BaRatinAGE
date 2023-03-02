@@ -12,6 +12,7 @@ public class CalibrationResult {
 
     private HashMap<String, EstimatedParameter> estimatedParameter;
     private CalibrationDataResiduals calibrationDataResiduals;
+    private int maxPostIndex;
 
     public CalibrationResult(String workspace, CalibrationConfig calibrationConfig) {
 
@@ -21,19 +22,8 @@ public class CalibrationResult {
         List<double[]> listCookedMcmcResults = null;
         List<double[]> listSummaryMcmcResults = null;
         String[] headers = new String[0];
-        String[] headers2 = new String[0];
         try {
             headers = Read.readHeaders(cookedMcmcFilePath.toString());
-            headers2 = Read.readHeaders(summaryMcmcFilePath.toString());
-
-            System.out.println("---");
-            for (String s : headers)
-                System.out.println(s);
-            System.out.println("---");
-            for (String s : headers2)
-                System.out.println(s);
-            System.out.println("---");
-
             listCookedMcmcResults = Read.readMatrix(cookedMcmcFilePath.toString(), 1);
             listSummaryMcmcResults = Read.readMatrix(summaryMcmcFilePath.toString(), "\\s+", 1, 1);
             Read.prettyPrintMatrix(listSummaryMcmcResults);
@@ -48,13 +38,23 @@ public class CalibrationResult {
                 System.err.println("Inconsistent sizes!");
             }
 
+            // FIXME: Not ideal... here we assume LogPost values are always the last column
+            // in the MCMC cooked file.
             for (int k = 0; k < headers.length; k++) {
                 this.estimatedParameter.put(headers[k], new EstimatedParameter(
                         headers[k],
                         listCookedMcmcResults.get(k),
                         k < listSummaryMcmcResults.size() ? listSummaryMcmcResults.get(k) : null));
-                // Here we assume LogPost values are always the last column in the MCMC cooked
-                // file.
+
+            }
+            double[] logPost = listCookedMcmcResults.get(headers.length - 1);
+            double maxLogPost = Double.NEGATIVE_INFINITY;
+            maxPostIndex = -1;
+            for (int k = 0; k < logPost.length; k++) {
+                if (logPost[k] > maxLogPost) {
+                    maxLogPost = logPost[k];
+                    maxPostIndex = k;
+                }
             }
 
         }
@@ -82,6 +82,10 @@ public class CalibrationResult {
 
     public HashMap<String, EstimatedParameter> getEsimatedParameters() {
         return this.estimatedParameter;
+    }
+
+    public int getMaxPostIndex() {
+        return this.maxPostIndex;
     }
 
     @Override

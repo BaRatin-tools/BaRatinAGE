@@ -20,7 +20,7 @@ public class McmcResultsPanel extends JPanel {
         this.setLayout(new GridBagLayout());
     }
 
-    public void setMcmcResults(HashMap<String, EstimatedParameter> estimatedParameters) {
+    public void setMcmcResults(HashMap<String, EstimatedParameter> estimatedParameters, int maxpostIndex) {
 
         int n = -1;
         for (EstimatedParameter p : estimatedParameters.values()) {
@@ -45,7 +45,7 @@ public class McmcResultsPanel extends JPanel {
             Plot plot = new Plot("index", p.getName(), false);
             plot.addLine(new Line("", x, mcmc, Color.BLACK, 1));
 
-            double xMean = Calc.mean(x);
+            double xMean = maxpostIndex;
             // double yMean = Calc.mean(mcmc);
             double[] yRange = Calc.range(mcmc);
 

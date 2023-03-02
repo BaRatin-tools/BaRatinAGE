@@ -140,7 +140,7 @@ public class TestPanel extends FlexPanel {
                                 bam.readResults(workspace);
                                 CalibrationResult res = bam.getCalibrationResults();
                                 if (res != null) {
-                                    resultsPanel.setMcmcResults(res.getEsimatedParameters());
+                                    resultsPanel.setMcmcResults(res.getEsimatedParameters(), res.getMaxPostIndex());
                                     tabs.setSelectedIndex(1);
                                 }
 
