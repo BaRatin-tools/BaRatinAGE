@@ -46,6 +46,10 @@ public class BaM {
         return this.predictionConfigs;
     }
 
+    public PredictionResult[] getPredictionsResults() {
+        return this.predictionResults;
+    }
+
     public CalibrationConfig getCalibrationConfig() {
         return this.calibrationConfig;
     }

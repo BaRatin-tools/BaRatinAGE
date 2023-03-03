@@ -29,9 +29,17 @@ public class PredictionInput {
         this.dataColumns = dataColumns;
     }
 
+    public List<double[]> getDataColumns() {
+        return this.dataColumns;
+    }
+
     public String getDataFileName() {
         String fileName = String.format(ConfigFile.DATA_PREDICTION, this.name);
         return fileName;
+    }
+
+    public String getName() {
+        return this.name;
     }
 
     public int getNobs() {

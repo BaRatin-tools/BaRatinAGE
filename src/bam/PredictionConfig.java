@@ -42,6 +42,10 @@ public class PredictionConfig {
         return this.outputs;
     }
 
+    public PredictionInput[] getPredictionInputs() {
+        return this.inputs;
+    }
+
     public void toFiles(String workspace) {
         int n = this.inputs.length;
         String[] inputFilePaths = new String[n];
