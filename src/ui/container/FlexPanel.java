@@ -1,6 +1,5 @@
 package ui.container;
 
-// import java.awt.Color;
 import java.awt.Component;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -19,6 +18,16 @@ public class FlexPanel extends JPanel {
                 private final int value;
 
                 private ALIGN(int value) {
+                        this.value = value;
+                }
+        }
+
+        public enum AXIS {
+                COL(0), ROW(1);
+
+                private final int value;
+
+                private AXIS(int value) {
                         this.value = value;
                 }
         }
@@ -102,27 +111,37 @@ public class FlexPanel extends JPanel {
                         }
         };
 
-        public enum AXIS {
-                COL(true), ROW(false);
+        private AXIS axis;
+        private int gap;
 
-                private final boolean value;
+        // private boolean debug = false;
+        // public void setDebug(boolean debug) {
+        // this.debug = debug;
+        // if (debug) {
+        // this.setBackground(new Color(
+        // (int) (Math.random() * 255),
+        // (int) (Math.random() * 255),
+        // (int) (Math.random() * 255), 150));
+        // }
+        // }
 
-                private AXIS(boolean value) {
-                        this.value = value;
+        public FlexPanel(AXIS axis, ALIGN align, int gap) {
+                this.axis = axis;
+                this.gap = gap;
+                this.setLayout(new GridBagLayout());
+
+                if (align == ALIGN.START) {
+                        addEndExtensor();
+                } else if (align == ALIGN.END) {
+                        addStartExtensor();
                 }
         }
 
-        private final boolean stackInColumn;
-        private int gap;
-
         public FlexPanel(AXIS axis, int gap) {
-                this.stackInColumn = axis.value;
+                this.axis = axis;
                 this.gap = gap;
                 this.setLayout(new GridBagLayout());
-                // this.setBackground(new Color(
-                // (int) (Math.random() * 255),
-                // (int) (Math.random() * 255),
-                // (int) (Math.random() * 255), 150));
+
         }
 
         public FlexPanel(AXIS axis) {
@@ -172,7 +191,7 @@ public class FlexPanel extends JPanel {
                         int top, int right, int bottom, int left) {
                 GridBagConstraints gbc = new GridBagConstraints();
                 int index = this.getComponentCount();
-                if (stackInColumn) {
+                if (this.axis.value == 0) {
 
                         gbc.gridx = 0;
                         gbc.gridy = index;
@@ -195,24 +214,62 @@ public class FlexPanel extends JPanel {
 
                 gbc.insets = new Insets(top, left, bottom, right);
 
-                int[] anchor_fill = LOOK_UP_TABLE[stackInColumn ? 0 : 1][ALIGN.EXPAND.value][crossAxisAlign.value];
+                // if (this.debug) {
+                // System.out.println("--------------------------");
+                // System.out.println("main-axis=" + this.axis.value);
+                // System.out.println("main-align=" + this.align.value);
+                // System.out.println("cross-align=" + crossAxisAlign.value);
+                // }
 
+                int[] anchor_fill = LOOK_UP_TABLE[this.axis.value][ALIGN.EXPAND.value][crossAxisAlign.value];
                 gbc.anchor = anchor_fill[0];
                 gbc.fill = anchor_fill[1];
 
                 super.add(component, gbc);
         }
 
+        private void addEndExtensor() {
+                super.add(new JPanel(),
+                                new GridBagConstraints(
+                                                this.axis.value == 0 ? 0 : 10000,
+                                                this.axis.value == 0 ? 10000 : 0,
+                                                1,
+                                                1,
+                                                1,
+                                                1,
+                                                C,
+                                                B,
+                                                new Insets(0, 0, 0, 0),
+                                                0,
+                                                0));
+        }
+
+        private void addStartExtensor() {
+                super.add(new JPanel(),
+                                new GridBagConstraints(
+                                                0,
+                                                0,
+                                                1,
+                                                1,
+                                                1,
+                                                1,
+                                                C,
+                                                B,
+                                                new Insets(0, 0, 0, 0),
+                                                0,
+                                                0));
+        }
+
         @Override
         public Component add(Component component) {
-                System.err.println("Please use addChild method instead!");
+                System.err.println("Please use appendChild method instead!");
                 this.appendChild(component);
                 return component;
         }
 
         @Override
         public void add(Component component, Object constraints) {
-                System.err.println("Please use addChild method instead!");
+                System.err.println("Please use appendChild method instead!");
                 this.appendChild(component);
         }
 }
