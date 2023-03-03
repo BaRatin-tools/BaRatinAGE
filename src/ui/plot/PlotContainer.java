@@ -42,6 +42,9 @@ public class PlotContainer extends FlexPanel {
         this.chartPanel.setMinimumDrawWidth(100);
         this.chartPanel.setMinimumDrawHeight(100);
 
+        this.chartPanel.setMaximumDrawWidth(10000);
+        this.chartPanel.setMaximumDrawHeight(10000);
+
         FlexPanel actionPanel = new FlexPanel(FlexPanel.AXIS.ROW);
 
         this.appendChild(actionPanel, 0, FlexPanel.ALIGN.END,
