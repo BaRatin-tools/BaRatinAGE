@@ -40,14 +40,16 @@ public class PredictionResultsPanel extends FlexPanel {
     FlexPanel plotPanel;
 
     public PredictionResultsPanel() {
-        super(FlexPanel.AXIS.ROW, 5);
-
+        super(FlexPanel.AXIS.ROW);
+        this.setGap(5);
+        this.setPadding(5);
         predictions = new DefaultListModel<>();
         inputs = new DefaultListModel<>();
         outputs = new DefaultListModel<>();
 
         FlexPanel dataSelectorPanel = new FlexPanel(
-                FlexPanel.AXIS.COL, FlexPanel.ALIGN.START, 5);
+                FlexPanel.AXIS.COL, FlexPanel.ALIGN.START);
+        dataSelectorPanel.setGap(5);
 
         this.appendChild(dataSelectorPanel);
 
@@ -139,7 +141,6 @@ public class PredictionResultsPanel extends FlexPanel {
 
         plotPanel = new FlexPanel();
         this.appendChild(plotPanel, 1);
-        plotPanel.setBackground(Color.RED);
 
     }
 

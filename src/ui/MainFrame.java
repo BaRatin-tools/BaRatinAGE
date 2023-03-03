@@ -3,9 +3,6 @@ package ui;
 import javax.swing.JFrame;
 
 import java.awt.Dimension;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
 import java.awt.Point;
 
 import java.awt.event.ActionListener;
@@ -30,14 +27,7 @@ public class MainFrame extends JFrame implements ActionListener {
 
         TestPanel testPanel = new TestPanel();
 
-        this.setLayout(new GridBagLayout());
-        this.add(testPanel, new GridBagConstraints(
-                0, 0,
-                1, 1,
-                1, 1,
-                GridBagConstraints.CENTER, GridBagConstraints.BOTH,
-                new Insets(5, 5, 5, 5),
-                0, 0));
+        this.add(testPanel);
 
         this.addComponentListener(new ComponentAdapter() {
             public void componentResized(ComponentEvent e) {

@@ -35,7 +35,9 @@ public class TestPanel extends FlexPanel {
     private int lgChangedNtimes;
 
     public TestPanel() {
-        super(FlexPanel.AXIS.COL, 5);
+        super(FlexPanel.AXIS.COL);
+        this.setGap(5);
+        this.setPadding(5);
 
         FlexPanel actionButtons = new FlexPanel(FlexPanel.AXIS.ROW);
         int actionHeight = 50;
