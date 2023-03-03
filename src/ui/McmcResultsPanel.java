@@ -8,9 +8,10 @@ import java.util.HashMap;
 
 import javax.swing.JPanel;
 
+import bam.CalibrationResult;
 import bam.EstimatedParameter;
 import ui.plot.PlotContainer;
-import ui.plot.Line;
+import ui.plot.PlotLine;
 import ui.plot.Plot;
 import utils.Calc;
 
@@ -20,7 +21,9 @@ public class McmcResultsPanel extends JPanel {
         this.setLayout(new GridBagLayout());
     }
 
-    public void setMcmcResults(HashMap<String, EstimatedParameter> estimatedParameters, int maxpostIndex) {
+    public void setMcmcResults(CalibrationResult calibrationResult) {
+        HashMap<String, EstimatedParameter> estimatedParameters = calibrationResult.getEsimatedParameters();
+        int maxpostIndex = calibrationResult.getMaxPostIndex();
 
         int n = -1;
         for (EstimatedParameter p : estimatedParameters.values()) {
@@ -43,13 +46,13 @@ public class McmcResultsPanel extends JPanel {
             double[] mcmc = p.getMcmc();
 
             Plot plot = new Plot("index", p.getName(), false);
-            plot.addLine(new Line("", x, mcmc, Color.BLACK, 1));
+            plot.addLine(new PlotLine("", x, mcmc, Color.BLACK, 1));
 
             double xMean = maxpostIndex;
             // double yMean = Calc.mean(mcmc);
             double[] yRange = Calc.range(mcmc);
 
-            plot.addLine(new Line("",
+            plot.addLine(new PlotLine("",
                     new double[] { xMean, xMean }, yRange, Color.RED, 2));
 
             PlotContainer plotContainer = new PlotContainer(plot.getChart());

@@ -8,6 +8,7 @@ import javax.swing.SwingWorker;
 
 import bam.BaM;
 import bam.CalibrationResult;
+import bam.PredictionResult;
 import bam.utils.Monitoring;
 import project.Project;
 import ui.container.FlexPanel;
@@ -136,11 +137,14 @@ public class TestPanel extends FlexPanel {
                                 progressBar.update("done", 1, 1, 0, 0);
 
                                 bam.readResults(workspace);
-                                CalibrationResult res = bam.getCalibrationResults();
-                                if (res != null) {
-                                    resultsPanel.setMcmcResults(res.getEsimatedParameters(), res.getMaxPostIndex());
-                                    tabs.setSelectedIndex(1);
-                                }
+                                CalibrationResult calRes = bam.getCalibrationResults();
+                                PredictionResult[] predRes = bam.getPredictionsResults();
+                                // if (res != null) {
+                                // resultsPanel.setMcmcResults(res.getEsimatedParameters(),
+                                // res.getMaxPostIndex());
+                                resultsPanel.setResults(calRes, predRes);
+                                tabs.setSelectedIndex(1);
+                                // }
 
                             }
 
@@ -222,5 +226,7 @@ public class TestPanel extends FlexPanel {
                 component.setTitleAt(1, Lg.getText("ui", "bam_mcmc_res"));
             }
         });
+
+        tabs.setSelectedIndex(1);
     }
 }
