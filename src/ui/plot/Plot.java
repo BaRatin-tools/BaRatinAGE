@@ -21,12 +21,15 @@ public class Plot {
     NumberAxis axisX;
     NumberAxis axisY;
 
-    private ArrayList<Line> lines;
+    private ArrayList<PlotLine> lines;
+    private ArrayList<PlotItem> items;
 
     public Plot(String xAxisLabel, String yAxisLabel, boolean includeLegend) {
         lines = new ArrayList<>();
+        items = new ArrayList<>();
 
         axisX = new NumberAxis(xAxisLabel);
+        axisX.setAutoRangeIncludesZero(false);
         axisY = new NumberAxis(yAxisLabel);
         axisY.setAutoRangeIncludesZero(false);
 
@@ -64,9 +67,15 @@ public class Plot {
         return this.chart;
     }
 
-    public void addLine(Line line) {
+    public void addLine(PlotLine line) {
         plot.setDataset(lines.size(), line.getDataset());
         plot.setRenderer(lines.size(), line.getRenderer());
         lines.add(line);
+    }
+
+    public void addXYItem(PlotItem item) {
+        plot.setDataset(items.size(), item.getDataset());
+        plot.setRenderer(items.size(), item.getRenderer());
+        items.add(item);
     }
 }
