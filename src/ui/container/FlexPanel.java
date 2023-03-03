@@ -4,6 +4,8 @@ import java.awt.Component;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.JPanel;
 
@@ -111,8 +113,20 @@ public class FlexPanel extends JPanel {
                         }
         };
 
+        private record Item(
+                        Component component,
+                        GridBagConstraints constraints,
+                        double mainAxisWeight,
+                        ALIGN crossAxisAlign,
+                        Insets insets) {
+        };
+
+        private GridBagLayout layout;
+        // private ALIGN align;
         private AXIS axis;
         private int gap;
+        private Insets padding;
+        private List<Item> items;
 
         // private boolean debug = false;
         // public void setDebug(boolean debug) {
@@ -125,11 +139,14 @@ public class FlexPanel extends JPanel {
         // }
         // }
 
-        public FlexPanel(AXIS axis, ALIGN align, int gap) {
+        public FlexPanel(AXIS axis, ALIGN align) {
+                this.layout = new GridBagLayout();
+                this.items = new ArrayList<>();
+                this.setLayout(this.layout);
+                this.gap = 0;
+                this.padding = new Insets(0, 0, 0, 0);
                 this.axis = axis;
-                this.gap = gap;
-                this.setLayout(new GridBagLayout());
-
+                // this.align = align;
                 if (align == ALIGN.START) {
                         addEndExtensor();
                 } else if (align == ALIGN.END) {
@@ -137,23 +154,32 @@ public class FlexPanel extends JPanel {
                 }
         }
 
-        public FlexPanel(AXIS axis, int gap) {
-                this.axis = axis;
-                this.gap = gap;
-                this.setLayout(new GridBagLayout());
-
-        }
-
         public FlexPanel(AXIS axis) {
-                this(axis, 0);
+                this(axis, ALIGN.EXPAND);
         }
 
-        public FlexPanel(int gap) {
-                this(AXIS.ROW, gap);
+        public FlexPanel(ALIGN align) {
+                this(AXIS.COL, align);
         }
 
         public FlexPanel() {
-                this(AXIS.ROW, 0);
+                this(AXIS.COL, ALIGN.EXPAND);
+        }
+
+        public void setGap(int gap) {
+                this.gap = gap;
+        }
+
+        public void setPadding(int top, int right, int bottom, int left) {
+                this.padding = new Insets(top, left, bottom, right);
+        }
+
+        public void setPadding(int vPadding, int hPadding) {
+                this.padding = new Insets(vPadding, hPadding, vPadding, hPadding);
+        }
+
+        public void setPadding(int padding) {
+                this.padding = new Insets(padding, padding, padding, padding);
         }
 
         public void appendChild(Component component) {
@@ -190,7 +216,8 @@ public class FlexPanel extends JPanel {
         public void appendChild(Component component, double mainAxisWeight, ALIGN crossAxisAlign,
                         int top, int right, int bottom, int left) {
                 GridBagConstraints gbc = new GridBagConstraints();
-                int index = this.getComponentCount();
+                // int index = this.getComponentCount();
+                int index = this.items.size() + 1; // always an offset of one in case there's an extensor
                 if (this.axis.value == 0) {
 
                         gbc.gridx = 0;
@@ -198,21 +225,76 @@ public class FlexPanel extends JPanel {
                         gbc.weightx = 1;
                         gbc.weighty = mainAxisWeight;
 
-                        if (index != 0) {
-                                top = top + this.gap;
-                        }
+                        // if (index != 0) {
+                        // top = top + this.gap;
+                        // }
                 } else {
                         gbc.gridx = index;
                         gbc.gridy = 0;
                         gbc.weightx = mainAxisWeight;
                         gbc.weighty = 1;
 
-                        if (index != 0) {
-                                left = left + this.gap;
+                        // if (index != 0) {
+                        // left = left + this.gap;
+                        // }
+                }
+
+                Insets insets = new Insets(
+                                top,
+                                left,
+                                bottom,
+                                right);
+
+                if (this.axis == AXIS.COL) {
+                        left = left + this.padding.left;
+                        right = right + this.padding.right;
+                } else {
+                        top = top + this.padding.top;
+                        bottom = bottom + this.padding.bottom;
+                }
+
+                if (index == 1) { // first element to be appended
+                        if (this.axis == AXIS.COL) {
+                                top = top + this.padding.top;
+                                bottom = bottom + this.padding.bottom;
+                        } else {
+                                left = left + this.padding.left;
+                                right = right + this.padding.right;
+                        }
+
+                        this.layout.setConstraints(component, this.layout.getConstraints(component));
+                } else if (index > 1) { // next elements to be appended
+                        for (int k = 1; k < index; k++) {
+
+                                Item item = this.items.get(k - 1);
+                                GridBagConstraints constraints = item.constraints();
+
+                                if (this.axis == AXIS.COL) {
+                                        constraints.insets.bottom = item.insets().bottom + this.gap;
+                                } else {
+                                        constraints.insets.right = item.insets().right + this.gap;
+                                }
+
+                                this.layout.setConstraints(item.component(), item.constraints());
+                        }
+                        if (this.axis == AXIS.COL) {
+                                bottom = bottom + this.padding.bottom;
+                        } else {
+                                right = right + this.padding.right;
                         }
                 }
 
-                gbc.insets = new Insets(top, left, bottom, right);
+                // gbc.insets = new Insets(
+                // top + this.padding.top,
+                // left + this.padding.left,
+                // bottom + this.padding.bottom,
+                // right + this.padding.right);
+
+                gbc.insets = new Insets(
+                                top,
+                                left,
+                                bottom,
+                                right);
 
                 // if (this.debug) {
                 // System.out.println("--------------------------");
@@ -225,6 +307,7 @@ public class FlexPanel extends JPanel {
                 gbc.anchor = anchor_fill[0];
                 gbc.fill = anchor_fill[1];
 
+                items.add(new Item(component, gbc, mainAxisWeight, crossAxisAlign, insets));
                 super.add(component, gbc);
         }
 
