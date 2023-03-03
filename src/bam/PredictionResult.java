@@ -10,11 +10,11 @@ import bam.utils.Read;
 
 public class PredictionResult {
 
-    private static final String[] ENV_COLUMN_NAMES = new String[] {
+    public static final String[] ENV_COLUMN_NAMES = new String[] {
             "Median", "q2.5", "q97.5", "q16", "q84", "Mean", "Stdev"
     };
 
-    private record PredictionOutputResult(List<double[]> env, List<double[]> spag) {
+    public record PredictionOutputResult(List<double[]> env, List<double[]> spag) {
         @Override
         public String toString() {
             int nEnv = 0;
@@ -28,10 +28,24 @@ public class PredictionResult {
     }
 
     private HashMap<String, PredictionOutputResult> outputResults;
-    private String name;
+    // private String name;
+    private PredictionConfig predictionConfig; // FIXME: should this be here?
+
+    public String getName() {
+        return this.predictionConfig.getName();
+    }
+
+    public PredictionConfig getPredictionConfig() {
+        return this.predictionConfig;
+    }
+
+    public HashMap<String, PredictionOutputResult> getOutputResults() {
+        return this.outputResults;
+    }
 
     public PredictionResult(String workspace, PredictionConfig predictionConfig) {
-        this.name = predictionConfig.getName();
+        this.predictionConfig = predictionConfig;
+        // this.name = predictionConfig.getName();
         this.outputResults = new HashMap<>();
         PredictionOutput[] outputConfigs = predictionConfig.getPredictionOutputs();
         for (PredictionOutput outConfig : outputConfigs) {
@@ -55,7 +69,7 @@ public class PredictionResult {
     @Override
     public String toString() {
         String str = String.format("PredictionResults '%s' :\n",
-                this.name);
+                this.getName());
         str += " Outputs: \n";
         for (String key : this.outputResults.keySet()) {
             str += " > " + key + ":\n";
