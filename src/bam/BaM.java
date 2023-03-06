@@ -20,13 +20,18 @@ public class BaM {
             ? Path.of(EXE_DIR, String.format("%s.exe", EXE_NAME)).toString()
             : EXE_NAME;
 
+    @FunctionalInterface
+    public interface ConsoleOutputFollower {
+        public void onConsoleLog(String logMessage);
+    }
+
+    private Process bamExecutionProcess;
+
     private CalibrationConfig calibrationConfig;
     private PredictionConfig[] predictionConfigs;
     private RunOptions runOptions;
     private CalibrationResult calibrationResult;
     private PredictionResult[] predictionResults;
-
-    private Process bamExecutionProcess;
 
     public BaM(
             CalibrationConfig calibrationConfig,
@@ -42,20 +47,20 @@ public class BaM {
         this.predictionResults = predictionResults;
     }
 
-    public PredictionConfig[] getPredictionsConfigs() {
-        return this.predictionConfigs;
-    }
-
-    public PredictionResult[] getPredictionsResults() {
-        return this.predictionResults;
-    }
-
     public CalibrationConfig getCalibrationConfig() {
         return this.calibrationConfig;
     }
 
     public CalibrationResult getCalibrationResults() {
         return this.calibrationResult;
+    }
+
+    public PredictionConfig[] getPredictionsConfigs() {
+        return this.predictionConfigs;
+    }
+
+    public PredictionResult[] getPredictionsResults() {
+        return this.predictionResults;
     }
 
     public void readResults(String workspace) {
@@ -129,21 +134,16 @@ public class BaM {
         return this.bamExecutionProcess;
     }
 
-    @FunctionalInterface
-    public interface ConsoleOutputFollower {
-        public void onConsoleLog(String logMessage);
-    }
-
     public void run(String workspace, ConsoleOutputFollower consoleOutputFollower) throws IOException {
 
-        // FIXME: this is temporary
+        // Delete work space content
         File dir = new File(workspace);
 
         File[] files = dir.listFiles();
         if (files != null) {
             for (File f : files) {
                 if (f.isDirectory()) {
-                    // deleteDirContent(f); // I disabled recursion...
+                    // no recursion
                 } else {
                     f.delete();
                 }
@@ -163,7 +163,6 @@ public class BaM {
 
         try {
             while ((currentLine = bufferReader.readLine()) != null) {
-                System.out.printf("LINE=%s\n", currentLine);
                 consoleLines.add(currentLine);
                 consoleOutputFollower.onConsoleLog(currentLine);
             }
@@ -220,8 +219,6 @@ public class BaM {
         str.add("*".repeat(70));
         str.add("*".repeat(3) + "  BaM  " + " ".repeat(55) + "*".repeat(5));
         str.add("*".repeat(70));
-
-        // str.add(this.calibrationConfig.toString());
 
         String[] calStrings = this.calibrationConfig.toString().split("\n");
         for (String s : calStrings)

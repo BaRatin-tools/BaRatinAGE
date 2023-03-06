@@ -1,6 +1,5 @@
 package bam;
 
-// FIXME: change name to EstimatedParameter?
 public class EstimatedParameter {
     private String name;
     private double[] mcmc;

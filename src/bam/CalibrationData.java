@@ -16,7 +16,7 @@ public class CalibrationData {
     public CalibrationData(String name, UncertainData[] inputs, UncertainData[] outputs) {
         this.name = name;
         // FIXME: should check that inputs and outputs have the same number of
-        // elements/rows
+        // FIXME: elements/rows
         this.inputs = inputs;
         this.outputs = outputs;
 
