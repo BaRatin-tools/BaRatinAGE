@@ -8,7 +8,7 @@ public class PredictionConfig {
     private String name;
     private PredictionInput[] inputs;
     private PredictionOutput[] outputs;
-    private PredictionOutput[] states;
+    private PredictionOutput[] states; // FIXME: should state have its own class?
     private boolean propageParametricUncertainty;
     private boolean printProgress;
     private int nPriorReplicates;

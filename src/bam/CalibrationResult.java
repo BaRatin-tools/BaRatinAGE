@@ -10,9 +10,14 @@ import bam.utils.Read;
 
 public class CalibrationResult {
 
+    // FIXME: using a HashMap may not be required since the parameters order
+    // FIXME: are set during configuration
+    // FIXME: (+ a list is more consistent with configuration approach)
     private HashMap<String, EstimatedParameter> estimatedParameter;
     private CalibrationDataResiduals calibrationDataResiduals;
     private int maxPostIndex;
+
+    // FIXME: should there be an instance variable for 'calibrationConfig' ?
 
     public CalibrationResult(String workspace, CalibrationConfig calibrationConfig) {
 
@@ -62,11 +67,6 @@ public class CalibrationResult {
         this.calibrationDataResiduals = null;
         Path calDataResidualFilePath = Path.of(workspace, ConfigFile.RESULTS_RESIDUALS);
         try {
-            String[] headers3 = Read.readHeaders(calDataResidualFilePath.toString());
-            System.out.println("---");
-            for (String s : headers3)
-                System.out.println(s);
-            System.out.println("---");
 
             List<double[]> residualMatrix = Read.readMatrix(calDataResidualFilePath.toString(), 1);
 

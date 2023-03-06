@@ -5,6 +5,9 @@ import java.util.List;
 
 public class CalibrationDataResiduals {
 
+    // FIXME: should 'InputDataResiduals' and 'OutputDataResiduals'
+    // FIXME: be records instead of classes
+
     // - Xi (obs, true, )
     public class InputDataResiduals {
         public String name;
@@ -56,6 +59,9 @@ public class CalibrationDataResiduals {
         }
     }
 
+    // FIXME: a list might be more appropriate since the order of
+    // FIXME: the inputs/outputs variables matters and is set during configuration.
+    // FIXME: (+ a list is more consistent with configuration approach)
     private HashMap<String, InputDataResiduals> inputResiduals;
     private HashMap<String, OutputDataResiduals> outputResiduals;
 

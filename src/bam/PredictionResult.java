@@ -14,6 +14,7 @@ public class PredictionResult {
             "Median", "q2.5", "q97.5", "q16", "q84", "Mean", "Stdev"
     };
 
+    // FIXME: should have a 'name' argument as well? So we don't need a hashmap key!
     public record PredictionOutputResult(List<double[]> env, List<double[]> spag) {
         @Override
         public String toString() {
@@ -27,8 +28,10 @@ public class PredictionResult {
         }
     }
 
+    // FIXME: using a HashMap may not be required since the outputs order
+    // FIXME: are set during configuration
+    // FIXME: (+ a list is more consistent with configuration approach)
     private HashMap<String, PredictionOutputResult> outputResults;
-    // private String name;
     private PredictionConfig predictionConfig; // FIXME: should this be here?
 
     public String getName() {
@@ -45,7 +48,6 @@ public class PredictionResult {
 
     public PredictionResult(String workspace, PredictionConfig predictionConfig) {
         this.predictionConfig = predictionConfig;
-        // this.name = predictionConfig.getName();
         this.outputResults = new HashMap<>();
         PredictionOutput[] outputConfigs = predictionConfig.getPredictionOutputs();
         for (PredictionOutput outConfig : outputConfigs) {
