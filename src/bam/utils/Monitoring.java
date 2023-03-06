@@ -12,7 +12,6 @@ import bam.PredictionConfig;
 public class Monitoring {
 
     private final static String MONITOR_FILE_SUFFIX = ".monitor";
-    // private final BaM bam;
 
     public class MonitoringStep {
         public String id;
@@ -22,13 +21,19 @@ public class Monitoring {
         public int currenStep;
         public int totalSteps;
 
-        MonitoringStep(String id, int progress, int total, Path monitorFilePath) {
+        MonitoringStep(
+                String id,
+                Path monitorFilePath,
+                int progress,
+                int total,
+                int currenStep,
+                int totalSteps) {
             this.id = id;
+            this.monitorFilePath = monitorFilePath;
             this.progress = progress;
             this.total = total;
-            this.monitorFilePath = monitorFilePath;
-            this.currenStep = 1;
-            this.totalSteps = 1;
+            this.currenStep = currenStep;
+            this.totalSteps = totalSteps;
         }
     }
 
@@ -50,17 +55,29 @@ public class Monitoring {
         int mcmcSamples = bam.getCalibrationConfig().getMcmcConfig().numberOfMcmcSamples();
         if (bam.getRunOptions().doMcmc) {
             this.monitoringSteps
-                    .add(new MonitoringStep("MCMC", 0, mcmcSamples,
-                            Path.of(workspace, ConfigFile.CONFIG_MCMC + Monitoring.MONITOR_FILE_SUFFIX)));
+                    .add(new MonitoringStep(
+                            "MCMC",
+                            Path.of(workspace,
+                                    ConfigFile.CONFIG_MCMC + Monitoring.MONITOR_FILE_SUFFIX),
+                            0,
+                            mcmcSamples,
+                            0,
+                            0));
         }
 
         if (bam.getRunOptions().doPrediction) {
             int cookedMcmcSamples = bam.getCalibrationConfig().getMcmcCookingConfig()
                     .numberOfCookedMcmcSamples(mcmcSamples);
             for (PredictionConfig predConfig : bam.getPredictionsConfigs()) {
-                this.monitoringSteps.add(new MonitoringStep("Prediction_" + predConfig.getName(), 0, cookedMcmcSamples,
-                        Path.of(workspace, predConfig.getConfigFileName() + Monitoring.MONITOR_FILE_SUFFIX)));
-                ;
+                this.monitoringSteps.add(
+                        new MonitoringStep(
+                                "Prediction_" + predConfig.getName(),
+                                Path.of(workspace, predConfig.getConfigFileName() + Monitoring.MONITOR_FILE_SUFFIX),
+                                0,
+                                cookedMcmcSamples,
+                                0,
+                                0));
+
             }
         }
 
