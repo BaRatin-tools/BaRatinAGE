@@ -7,13 +7,11 @@ import bam.CalibrationResult;
 import bam.PredictionResult;
 import ui.container.FlexPanel;
 import ui.lg.Lg;
-import ui.plot.TestLineChart;
 
 import java.awt.Font;
 
 public class ResultPanel extends FlexPanel {
 
-        TestLineChart lineChartPanel;
         McmcResultsPanel mcmcResPanel;
         PredictionResultsPanel predResPanel;
 
