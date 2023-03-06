@@ -34,22 +34,24 @@ public class ConfigFile {
 
     private static final String COMMENT_SEPARATOR = "  ! "; // FIXME: to be defined in Default class
 
-    private List<String> values;
-    private List<String> comments;
+    private record ValueCommentPair(String value, String comment) {
+    }
+
+    private List<ValueCommentPair> items;
 
     public ConfigFile() {
-        values = new ArrayList<>();
-        comments = new ArrayList<>();
+        items = new ArrayList<>();
     }
 
     private String[] createFileLines() {
         final int maxSpaces = 50;
         final int minSpaces = 0;
         int maxValueLength = minSpaces;
-        int nItems = values.size();
+        int nItems = items.size();
         for (int k = 0; k < nItems; k++) {
-            if (values.get(k).length() > maxValueLength - minSpaces) {
-                maxValueLength = values.get(k).length() + minSpaces;
+            ValueCommentPair item = items.get(k);
+            if (item.value().length() > maxValueLength - minSpaces) {
+                maxValueLength = item.value().length() + minSpaces;
                 if (maxValueLength >= maxSpaces) {
                     maxValueLength = maxSpaces;
                     break;
@@ -58,13 +60,17 @@ public class ConfigFile {
         }
         String[] lines = new String[nItems];
         for (int k = 0; k < nItems; k++) {
-            if (comments.get(k) != "") {
-                int nSpaces = maxValueLength - values.get(k).length();
+            ValueCommentPair item = items.get(k);
+            if (item.comment() != "") {
+                int nSpaces = maxValueLength - item.value().length();
                 nSpaces = nSpaces <= minSpaces ? minSpaces : nSpaces;
-                lines[k] = String.format("%s%s%s%s", values.get(k), " ".repeat(nSpaces), COMMENT_SEPARATOR,
-                        comments.get(k));
+                lines[k] = String.format("%s%s%s%s",
+                        item.value(),
+                        " ".repeat(nSpaces),
+                        COMMENT_SEPARATOR,
+                        item.comment());
             } else {
-                lines[k] = values.get(k);
+                lines[k] = item.value();
             }
         }
         return lines;
@@ -114,8 +120,7 @@ public class ConfigFile {
     // --------------------------------------------------------------
 
     public void addItem(String value, String comment) {
-        values.add(value);
-        comments.add(comment);
+        items.add(new ValueCommentPair(value, comment));
     }
 
     public void addItem(String value, String comment, Boolean quoted) {
