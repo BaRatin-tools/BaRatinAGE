@@ -9,7 +9,7 @@ public class PredictionConfig {
     private PredictionInput[] inputs;
     private PredictionOutput[] outputs;
     private PredictionOutput[] states; // FIXME: should state have its own class?
-    private boolean propageParametricUncertainty;
+    private boolean propagateParametricUncertainty;
     private boolean printProgress;
     private int nPriorReplicates;
 
@@ -18,14 +18,14 @@ public class PredictionConfig {
             PredictionInput[] inputs,
             PredictionOutput[] outputs,
             PredictionOutput[] states,
-            boolean propageParametricUncertainty,
+            boolean propagateParametricUncertainty,
             boolean printProgress,
             int nPriorReplicates) {
         this.name = name;
         this.inputs = inputs;
         this.outputs = outputs;
         this.states = states;
-        this.propageParametricUncertainty = propageParametricUncertainty;
+        this.propagateParametricUncertainty = propagateParametricUncertainty;
         this.printProgress = printProgress;
         this.nPriorReplicates = nPriorReplicates;
     }
@@ -104,7 +104,7 @@ public class PredictionConfig {
         configFile.addItem(inputFilePaths, "Files containing spaghettis for each input variable (size nX)", true);
         configFile.addItem(nObs, "Nobs, number of observations per spaghetti (common to all files!)");
         configFile.addItem(nSpag, "Nspag, number of spaghettis for each input variable (size nX)");
-        configFile.addItem(this.propageParametricUncertainty, "Propagate parametric uncertainty?");
+        configFile.addItem(this.propagateParametricUncertainty, "Propagate parametric uncertainty?");
         configFile.addItem(includeOutputStructuralError,
                 "Propagate remnant uncertainty for each output variable? (size nY)");
         configFile.addItem(this.nPriorReplicates,
@@ -132,7 +132,7 @@ public class PredictionConfig {
     public String toString() {
         String str = String.format("PredictionConfig '%s' (%b, %b, %d):\n",
                 this.name,
-                this.propageParametricUncertainty,
+                this.propagateParametricUncertainty,
                 this.printProgress,
                 this.nPriorReplicates);
         str += " Inputs: \n";
