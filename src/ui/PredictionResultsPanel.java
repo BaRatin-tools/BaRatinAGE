@@ -12,9 +12,9 @@ import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import bam.PredictionInput;
-import bam.PredictionOutput;
-import bam.PredictionResult;
+import jbam.PredictionInput;
+import jbam.PredictionOutput;
+import jbam.PredictionResult;
 import ui.container.FlexPanel;
 import ui.plot.PlotPoints;
 import ui.plot.Plot;

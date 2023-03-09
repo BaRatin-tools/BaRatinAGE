@@ -1,12 +1,12 @@
-package bam;
+package jbam;
 
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.List;
 
-import bam.utils.ConfigFile;
-import bam.utils.Read;
+import jbam.utils.ConfigFile;
+import jbam.utils.Read;
 
 public class CalibrationResult {
 
@@ -35,6 +35,9 @@ public class CalibrationResult {
         } catch (IOException e) {
             System.err.println(e);
         }
+
+        // FIXME: identify all parameters by name!!
+        // everything after log post should
 
         this.estimatedParameter = null; // FIXME: not sure how this case should be handled...
         if (listCookedMcmcResults != null && listSummaryMcmcResults != null) {

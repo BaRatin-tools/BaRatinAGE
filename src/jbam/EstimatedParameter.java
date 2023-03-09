@@ -1,4 +1,4 @@
-package bam;
+package jbam;
 
 public class EstimatedParameter {
     private String name;

@@ -1,4 +1,4 @@
-package bam;
+package jbam;
 
 import java.util.HashMap;
 import java.util.List;

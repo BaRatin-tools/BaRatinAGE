@@ -1,8 +1,8 @@
-package bam;
+package jbam;
 
 import java.nio.file.Path;
 
-import bam.utils.ConfigFile;
+import jbam.utils.ConfigFile;
 
 public class PredictionConfig {
     private String name;

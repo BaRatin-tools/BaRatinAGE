@@ -1,4 +1,4 @@
-package bam.utils;
+package jbam.utils;
 
 import java.io.BufferedWriter;
 import java.io.File;

@@ -3,8 +3,8 @@ package ui;
 import javax.swing.JLabel;
 import javax.swing.JTabbedPane;
 
-import bam.CalibrationResult;
-import bam.PredictionResult;
+import jbam.CalibrationResult;
+import jbam.PredictionResult;
 import ui.container.FlexPanel;
 import ui.lg.Lg;
 

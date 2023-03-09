@@ -1,4 +1,4 @@
-package bam;
+package jbam;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -9,7 +9,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
-import bam.utils.ConfigFile;
+import jbam.utils.ConfigFile;
 
 public class BaM {
 
@@ -83,8 +83,9 @@ public class BaM {
 
     public void toFiles(String workspace, String exeDir) {
 
-        // FIXME: should write to files only the necessary files (e.g. no need for huge
-        // prediction input files if doPrediction is false)
+        // FIXME: should write to files only the necessary files
+        // FIXME: (e.g. no need for huge prediction input files if doPrediction is
+        // false)
 
         // Calibration configuraiton files
         this.calibrationConfig.toFiles(workspace);

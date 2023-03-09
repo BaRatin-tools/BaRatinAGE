@@ -1,6 +1,6 @@
-package bam;
+package jbam;
 
-import bam.utils.ConfigFile;
+import jbam.utils.ConfigFile;
 
 public class RunOptions {
     public final boolean doMcmc;

@@ -1,9 +1,11 @@
-package bam;
+package jbam;
 
-import bam.utils.ConfigFile;
+import jbam.utils.ConfigFile;
 
 public class McmcSummaryConfig {
     private String outputFileName;
+    // FIXME: see
+    // https://github.com/BaM-tools/BaM/commit/1c22189af4cd00d0e8267c2b95e22c38ac56a517
 
     public McmcSummaryConfig() {
         this.outputFileName = ConfigFile.RESULTS_MCMC_SUMMARY;

@@ -1,12 +1,12 @@
-package bam;
+package jbam;
 
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
-import bam.utils.ConfigFile;
-import bam.utils.Write;
+import jbam.utils.ConfigFile;
+import jbam.utils.Write;
 
 public class Model {
     private String modelId;

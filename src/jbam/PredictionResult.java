@@ -1,12 +1,12 @@
-package bam;
+package jbam;
 
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.List;
 
-import bam.utils.ConfigFile;
-import bam.utils.Read;
+import jbam.utils.ConfigFile;
+import jbam.utils.Read;
 
 public class PredictionResult {
 

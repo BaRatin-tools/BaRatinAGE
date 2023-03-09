@@ -6,10 +6,10 @@ import javax.swing.JButton;
 import javax.swing.JTabbedPane;
 import javax.swing.SwingWorker;
 
-import bam.BaM;
-import bam.CalibrationResult;
-import bam.PredictionResult;
-import bam.utils.Monitoring;
+import jbam.BaM;
+import jbam.CalibrationResult;
+import jbam.PredictionResult;
+import jbam.utils.Monitoring;
 import project.Project;
 import ui.container.FlexPanel;
 import ui.lg.Lg;

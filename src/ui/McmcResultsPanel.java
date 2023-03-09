@@ -8,8 +8,8 @@ import java.util.HashMap;
 
 import javax.swing.JPanel;
 
-import bam.CalibrationResult;
-import bam.EstimatedParameter;
+import jbam.CalibrationResult;
+import jbam.EstimatedParameter;
 import ui.plot.PlotContainer;
 import ui.plot.PlotLine;
 import ui.plot.Plot;

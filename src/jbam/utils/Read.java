@@ -1,4 +1,4 @@
-package bam.utils;
+package jbam.utils;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -14,6 +14,8 @@ import java.util.List;
 import org.mozilla.universalchardet.ReaderFactory;
 
 public class Read {
+
+    // FIXME: missing value code should be final constant defined here
 
     static BufferedReader createBufferedReader(String filePath, boolean detectEncoding) throws IOException {
         if (detectEncoding) {
@@ -125,13 +127,6 @@ public class Read {
         int nCol = getColumnCount(textFilePath, detectCharset, sep, trim, nRowSkip) - nColSkip;
         nCol = Math.min(nColMax, nCol);
 
-        // System.out.println("*".repeat(70));
-        // System.out.println("nColMax : " + nColMax);
-        // System.out.println("nCol : " + nCol);
-        // System.out.println("nColSkip : " + nColSkip);
-        // System.out.println("getColumnCount : " + getColumnCount(textFilePath,
-        // detectCharset, sep, trim, nRowSkip));
-
         List<double[]> colMatrix = new ArrayList<>();
         for (int i = 0; i < nCol; i++) {
             double[] column = new double[nRow];
@@ -148,18 +143,8 @@ public class Read {
                 break;
             if (k >= nRowSkip) {
                 double[] row = parseStringArray(parseString(line, sep, trim), missingValueString, nColSkip);
-
-                // System.out.print("\n > " + row.length + ", " + nColSkip +
-                // "------------->\n");
-
-                // for (int j = 0; j < row.length; j++) {
-                // System.out.println(row[j]);
-                // }
-
                 for (int j = 0; j < nCol; j++) {
-                    // System.out.print(j + nColSkip + ", ");
                     colMatrix.get(j)[i] = row[j];
-
                 }
                 i++;
             }

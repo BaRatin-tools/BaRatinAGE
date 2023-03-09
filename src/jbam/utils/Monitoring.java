@@ -1,4 +1,4 @@
-package bam.utils;
+package jbam.utils;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -6,8 +6,8 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
-import bam.BaM;
-import bam.PredictionConfig;
+import jbam.BaM;
+import jbam.PredictionConfig;
 
 public class Monitoring {
 

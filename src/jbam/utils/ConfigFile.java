@@ -1,4 +1,4 @@
-package bam.utils;
+package jbam.utils;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -32,7 +32,7 @@ public class ConfigFile {
     public static final String RESULTS_STATE_SPAG = "state_%s_%s.spag";
     public static final String RESULTS_STATE_ENV = "state_%s_%s.env";
 
-    private static final String COMMENT_SEPARATOR = "  ! "; // FIXME: to be defined in Default class
+    private static final String COMMENT_SEPARATOR = "  ! ";
 
     private record ValueCommentPair(String value, String comment) {
     }
