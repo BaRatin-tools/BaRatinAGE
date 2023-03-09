@@ -1,30 +1,28 @@
 package project;
 
-import bam.BaM;
-import bam.CalDataResidualConfig;
-import bam.CalibrationConfig;
-import bam.CalibrationData;
-import bam.Distribution;
-import bam.McmcConfig;
-import bam.McmcCookingConfig;
-import bam.McmcSummaryConfig;
-import bam.Model;
-import bam.ModelOutput;
-import bam.Parameter;
-import bam.PredictionConfig;
-import bam.PredictionInput;
-import bam.PredictionOutput;
-import bam.RunOptions;
-import bam.StructuralErrorModel;
-import bam.UncertainData;
-import bam.utils.Read;
-
-// import utils.Matrix; // Used here only because this is temporary code!
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import jbam.BaM;
+import jbam.CalDataResidualConfig;
+import jbam.CalibrationConfig;
+import jbam.CalibrationData;
+import jbam.Distribution;
+import jbam.McmcConfig;
+import jbam.McmcCookingConfig;
+import jbam.McmcSummaryConfig;
+import jbam.Model;
+import jbam.ModelOutput;
+import jbam.Parameter;
+import jbam.PredictionConfig;
+import jbam.PredictionInput;
+import jbam.PredictionOutput;
+import jbam.RunOptions;
+import jbam.StructuralErrorModel;
+import jbam.UncertainData;
+import jbam.utils.Read;
 
 public class Project {
         public Project() {
@@ -35,7 +33,7 @@ public class Project {
 
                 // ----------------------------------------------------------
                 // MODEL DEFINITION
-                System.out.println("Creating model defintion...");
+                System.out.println("Creating model definition...");
                 Parameter[] parameters = new Parameter[] {
                                 new Parameter("K1", 10000,
                                                 Distribution.LogNormal(9, 1)),
@@ -47,6 +45,7 @@ public class Project {
                                                 Distribution.LogNormal(9, 1)),
                 };
 
+                // FIXME: have a proper object to store and handle xTra
                 String xTra = "3 \nt, T1,T2 \n4 \nK1,P0,r,K2\n2\nK1/(1+((K1-P0)/P0)*exp(-r*T1*t))\nK2/(1+((K2-P0)/P0)*exp(-r*T2*t))";
 
                 Model model = new Model("TextFile", 3, 2, parameters, xTra);
