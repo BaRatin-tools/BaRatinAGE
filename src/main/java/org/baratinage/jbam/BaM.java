@@ -66,7 +66,9 @@ public class BaM {
     public void readResults(String workspace) {
         if (this.runOptions.doMcmc) {
             this.calibrationResult = new CalibrationResult(workspace, calibrationConfig);
-
+            if (!this.calibrationResult.getIsValid()) {
+                this.calibrationResult = null;
+            }
             System.out.println(this.calibrationResult);
         }
         if (this.runOptions.doPrediction) {
@@ -74,9 +76,12 @@ public class BaM {
             this.predictionResults = new PredictionResult[n];
             for (int k = 0; k < n; k++) {
                 this.predictionResults[k] = new PredictionResult(workspace, this.predictionConfigs[k]);
+                if (!this.predictionResults[k].getIsValid()) {
+                    this.predictionResults = null;
+                    break;
+                }
                 System.out.println(this.predictionResults[k]);
             }
-
         }
 
     }
@@ -114,9 +119,10 @@ public class BaM {
         mainBaMconfig.addItem(absoluteWorkspace, "workspace", true);
         mainBaMconfig.addItem(ConfigFile.CONFIG_RUN_OPTIONS, "Config file: run options", true);
         mainBaMconfig.addItem(ConfigFile.CONFIG_MODEL, "Config file: model", true);
-        mainBaMconfig.addItem(ConfigFile.CONFIG_XTRA, "Config file: xtra model information", true); // NOTE can be empty
-                                                                                                    // string
-        mainBaMconfig.addItem(ConfigFile.CONFIG_CALIBRATION, "Config file: Data", true); // NOTE can be empty string
+        // NOTE can be empty string
+        mainBaMconfig.addItem(ConfigFile.CONFIG_XTRA, "Config file: xtra model information", true);
+        // NOTE can be empty string
+        mainBaMconfig.addItem(ConfigFile.CONFIG_CALIBRATION, "Config file: Data", true);
         mainBaMconfig.addItem(structErrConfNames,
                 "Config file: Remnant sigma (as many files as there are output variables separated by commas)", true);
         mainBaMconfig.addItem(ConfigFile.CONFIG_MCMC, "Config file: MCMC", true);
@@ -135,7 +141,7 @@ public class BaM {
         return this.bamExecutionProcess;
     }
 
-    public void run(String workspace, ConsoleOutputFollower consoleOutputFollower) throws IOException {
+    public String run(String workspace, ConsoleOutputFollower consoleOutputFollower) throws IOException {
 
         // Delete work space content
         File dir = new File(workspace);
@@ -173,12 +179,28 @@ public class BaM {
 
         int exitcode = -1;
         try {
-            exitcode = bamExecutionProcess.waitFor();
+            exitcode = bamExecutionProcess.waitFor() * -1;
         } catch (InterruptedException e) {
             System.err.println("BAM RUN INTERRUPTED!");
         }
 
         if (exitcode != 0) {
+            // FIXME: all cases except default have message that should be captured!
+            System.out.println(consoleLines);
+            // consoleLines.stream().filter(null)((String l) -> l.contains("FATAL ERROR"));
+            List<String> errMsg = new ArrayList<>();
+            boolean inErrMsg = false;
+            for (String l : consoleLines) {
+                if (l.contains("FATAL ERROR")) {
+                    inErrMsg = true;
+                }
+                if (inErrMsg) {
+                    errMsg.add(l);
+                }
+                if (l.contains("Execution will stop")) {
+                    inErrMsg = false;
+                }
+            }
             switch (exitcode) {
                 case -1:
                     System.err.println("A FATAL ERROR has occured");
@@ -208,8 +230,11 @@ public class BaM {
                     System.err.printf("An unknown FATAL ERROR has occured. Exit Code=%d\n", exitcode);
                     break;
             }
+
+            return String.join("\n", errMsg);
         }
         bamExecutionProcess = null;
+        return "";
     }
 
     @Override
