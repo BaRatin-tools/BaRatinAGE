@@ -16,10 +16,12 @@ public class CalibrationResult {
     private HashMap<String, EstimatedParameter> estimatedParameter;
     private CalibrationDataResiduals calibrationDataResiduals;
     private int maxPostIndex;
+    private boolean isValid;
 
     // FIXME: should there be an instance variable for 'calibrationConfig' ?
 
     public CalibrationResult(String workspace, CalibrationConfig calibrationConfig) {
+        this.isValid = false;
 
         Path cookedMcmcFilePath = Path.of(workspace, ConfigFile.RESULTS_MCMC_COOKING);
         Path summaryMcmcFilePath = Path.of(workspace, ConfigFile.RESULTS_MCMC_SUMMARY);
@@ -34,6 +36,7 @@ public class CalibrationResult {
             Read.prettyPrintMatrix(listSummaryMcmcResults);
         } catch (IOException e) {
             System.err.println(e);
+            return;
         }
 
         // FIXME: identify all parameters by name!!
@@ -44,6 +47,7 @@ public class CalibrationResult {
             this.estimatedParameter = new HashMap<>();
             if (listSummaryMcmcResults.size() != listCookedMcmcResults.size() - 1) {
                 System.err.println("Inconsistent sizes!");
+                return;
             }
 
             // FIXME: Not ideal... here we assume LogPost values are always the last column
@@ -79,8 +83,10 @@ public class CalibrationResult {
 
         } catch (IOException e) {
             System.err.println(e);
+            return;
         }
 
+        this.isValid = true;
     }
 
     public HashMap<String, EstimatedParameter> getEsimatedParameters() {
@@ -89,6 +95,10 @@ public class CalibrationResult {
 
     public int getMaxPostIndex() {
         return this.maxPostIndex;
+    }
+
+    public boolean getIsValid() {
+        return isValid;
     }
 
     @Override

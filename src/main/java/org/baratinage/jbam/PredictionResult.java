@@ -33,6 +33,7 @@ public class PredictionResult {
     // FIXME: (+ a list is more consistent with configuration approach)
     private HashMap<String, PredictionOutputResult> outputResults;
     private PredictionConfig predictionConfig; // FIXME: should this be here?
+    private boolean isValid;
 
     public String getName() {
         return this.predictionConfig.getName();
@@ -46,7 +47,12 @@ public class PredictionResult {
         return this.outputResults;
     }
 
+    public boolean getIsValid() {
+        return this.isValid;
+    }
+
     public PredictionResult(String workspace, PredictionConfig predictionConfig) {
+        this.isValid = false;
         this.predictionConfig = predictionConfig;
         this.outputResults = new HashMap<>();
         PredictionOutput[] outputConfigs = predictionConfig.getPredictionOutputs();
@@ -62,10 +68,12 @@ public class PredictionResult {
 
             } catch (IOException e) {
                 System.err.println(e);
+                return;
             }
 
             this.outputResults.put(outputName, new PredictionOutputResult(env, spag));
         }
+        this.isValid = true;
     }
 
     @Override
