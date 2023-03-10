@@ -29,7 +29,7 @@ As stated in the [Installing Apache Maven]() page
 
 > The installation of Apache Maven is a simple process of extracting the archive and adding the `bin` directory with the `mvn` command to the `PATH`.
 
-Below a detailed approach you can follow on windows is suggested but feel free to install Maven anyt way you see fit!
+Below a detailed approach you can follow on windows is suggested but feel free to install Maven any way you see fit!
 
 1. downloaded the zip file from https://maven.apache.org/index.html
 2. unzip it in `C:\Program Files\Java` folder (administrator privilege requrired). _Note: any folder would do! I give an example using the Java folder because this makes the most sense to me but feel free to use any directory you like._
@@ -39,11 +39,12 @@ Below a detailed approach you can follow on windows is suggested but feel free t
 
 ## Getting the BaRatinAGE source code source code
 
-TO get the source code of BaRatinAGE V3 simply clone the [GitHub BaRatinAGE repository](https://github.com/BaRatin-tools/BaRatinAGE) and switch to the **v3** branch.
+To get the source code of BaRatinAGE V3 simply clone the [GitHub BaRatinAGE repository](https://github.com/BaRatin-tools/BaRatinAGE) and switch to the **v3** branch.
 Open a terminal in the directory where BaRatinAGE source code will be downloaded:
 
 ```
 git clone https://github.com/BaRatin-tools/BaRatinAGE.git
+cd BaRatinAGE
 git checkout v3
 ```
 
@@ -53,7 +54,7 @@ Or here is the direct link: [https://github.com/BaRatin-tools/BaRatinAGE/archive
 
 ## Getting BaM executable
 
-To get BaM executable, refere to the instructions in the readme of the [GitHub BaM repository](https://github.com/BaM-tools/BaM).
+To get the BaM executable, refere to the instructions in the readme of the [GitHub BaM repository](https://github.com/BaM-tools/BaM).
 _Note: that you need a version that doesn't wait for a user input to exit at the end of the execution!_
 
 It can be compiled from source (provided you have access to all the dependencies) as described below.
@@ -92,7 +93,7 @@ After getting the BaRatinAGE source code, you need to add a directory named `exe
 ## IDE setup
 
 Use any IDE you like for Java development.
-Here are the steps to have you [Eclipse](https://www.eclipse.org/downloads/) and [Visual Studio Code](https://code.visualstudio.com/) configured.
+Here are the steps for [Eclipse](https://www.eclipse.org/downloads/) and [Visual Studio Code](https://code.visualstudio.com/).
 
 ### Eclipse
 
@@ -105,9 +106,8 @@ Done!
 ### Visual Studio Code (VS Code)
 
 [Visual Studio Code](https://code.visualstudio.com/) needs to be setup correctly for Java.
-To do so, please refere to this [Getting Started](https://code.visualstudio.com/docs/java/java-tutorial).
+To do so, please refere to this [Getting Started with Java in VS Code](https://code.visualstudio.com/docs/java/java-tutorial).
 Basically, you need to install the [Extension Pack for Java](https://marketplace.visualstudio.com/items?itemName=vscjava.vscode-java-pack).
-
 The [Extension Pack for Java](https://marketplace.visualstudio.com/items?itemName=vscjava.vscode-java-pack) can be found by searching the extensions in the extension panel of VS Code.
-If you use [VS Codium](https://vscodium.com/), you may need to download the `vsix` file for the [Extension Pack for Java](https://marketplace.visualstudio.com/items?itemName=vscjava.vscode-java-pack) (on the right panel, click download) and install it manually.
+If you're using [VS Codium](https://vscodium.com/), you may need to download the `vsix` file for the [Extension Pack for Java](https://marketplace.visualstudio.com/items?itemName=vscjava.vscode-java-pack) (on the right panel, click download) and install it manually.
 
