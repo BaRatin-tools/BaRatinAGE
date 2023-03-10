@@ -45,7 +45,7 @@ public class ResultPanel extends FlexPanel {
                 resultsTabs.add("mcmc", mcmcRes);
                 resultsTabs.add("pred", predRes);
 
-                resultsTabs.setSelectedIndex(1);
+                // resultsTabs.setSelectedIndex(1);
         }
 
         public void setResults(CalibrationResult calibrationResult, PredictionResult[] predictionResults) {

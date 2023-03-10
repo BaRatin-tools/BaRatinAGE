@@ -3,6 +3,8 @@ package org.baratinage.ui;
 import java.awt.Dimension;
 import javax.swing.AbstractButton;
 import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JTabbedPane;
 import javax.swing.SwingWorker;
 
@@ -34,8 +36,11 @@ public class TestPanel extends FlexPanel {
 
     private int lgChangedNtimes;
 
+    // private FlexPanel that;
+
     public TestPanel() {
         super(FlexPanel.AXIS.COL);
+        // that = this;
         this.setGap(5);
         this.setPadding(5);
 
@@ -93,9 +98,22 @@ public class TestPanel extends FlexPanel {
                         protected Void doInBackground() throws Exception {
 
                             progressBar.update("starting", 0, 0, 0, 0);
-                            bam.run(workspace, (String logMessage) -> {
+                            String msg = bam.run(workspace, (String logMessage) -> {
                                 publish(logMessage);
                             });
+                            if (msg != "") {
+                                System.err.println(msg);
+                                msg = String.format(
+                                        "<html>"
+                                                + "<div style='font-weight: bold; color: red;'>BaM a rencontré un problème!</div>"
+                                                + "<div style='margin-top: 10;'>Message d'erreur de BaM: </div>"
+                                                + "<div style='color: black; font-family: monospace; background-color: white; padding: 5;'>%s</div>"
+                                                + "</html>",
+                                        msg.replaceAll("\\n", "<br>"));
+
+                                JOptionPane.showMessageDialog(new JFrame(), msg, "BaM",
+                                        JOptionPane.ERROR_MESSAGE);
+                            }
 
                             return null;
                         }
@@ -121,6 +139,8 @@ public class TestPanel extends FlexPanel {
                                 bam.readResults(workspace);
                                 CalibrationResult calRes = bam.getCalibrationResults();
                                 PredictionResult[] predRes = bam.getPredictionsResults();
+                                System.out.println(calRes);
+                                System.out.println(predRes);
                                 resultsPanel.setResults(calRes, predRes);
                                 tabs.setSelectedIndex(1);
 
@@ -225,6 +245,6 @@ public class TestPanel extends FlexPanel {
                 component.setTitleAt(1, Lg.getText("ui", "bam_mcmc_res"));
             }
         });
-        tabs.setSelectedIndex(1);
+        // tabs.setSelectedIndex(1);
     }
 }
