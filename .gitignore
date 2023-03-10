@@ -1,12 +1,19 @@
-/test
+# build, dist and BaM exe folder
+/dist
+/target
 /exe
-/lib
-/bin
+
+# IDE specific stuff
+/.settings
+.classpath
+.project
 /.vscode
+
+# test folder and other stuff to ignore
+/test
 /archive
 /dist
-
-*jar
+*.jar
 *.bar.zip
 
 # V2 related folder to ignore
