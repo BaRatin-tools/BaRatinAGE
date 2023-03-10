@@ -6,7 +6,6 @@ import javax.swing.UIManager;
 
 import java.awt.EventQueue;
 import java.awt.Font;
-import java.awt.Image;
 import java.net.URL;
 import java.util.Set;
 
