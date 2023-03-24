@@ -1,4 +1,4 @@
-package org.baratinage.ui;
+package org.baratinage.ui.test;
 
 import java.awt.Dimension;
 import javax.swing.AbstractButton;
@@ -13,6 +13,8 @@ import org.baratinage.jbam.CalibrationResult;
 import org.baratinage.jbam.PredictionResult;
 import org.baratinage.jbam.utils.Monitoring;
 import org.baratinage.project.Project;
+import org.baratinage.ui.component.Logger;
+import org.baratinage.ui.component.ProgressBar;
 import org.baratinage.ui.container.FlexPanel;
 import org.baratinage.ui.lg.Lg;
 import org.baratinage.ui.lg.LgElement;

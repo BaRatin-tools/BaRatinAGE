@@ -2,6 +2,8 @@ package org.baratinage.ui;
 
 import javax.swing.JFrame;
 
+import org.baratinage.ui.test.TestPanel;
+
 import java.awt.Dimension;
 import java.awt.Point;
 
