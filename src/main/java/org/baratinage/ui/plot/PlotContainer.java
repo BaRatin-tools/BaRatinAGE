@@ -128,8 +128,8 @@ public class PlotContainer extends FlexPanel {
             }
         };
 
-        ImageIcon saveIcon = new NoScalingIcon(this, "./resources/icons/save_32x32.png");
-        ImageIcon copyIcon = new NoScalingIcon(this, "./resources/icons/copy_32x32.png");
+        ImageIcon saveIcon = new NoScalingIcon("./resources/icons/save_32x32.png");
+        ImageIcon copyIcon = new NoScalingIcon("./resources/icons/copy_32x32.png");
 
         JButton btnSaveAsSvg = new JButton();
 
