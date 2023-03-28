@@ -9,21 +9,23 @@ import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 
-import org.baratinage.ui.container.FlexPanel;
+// import org.baratinage.ui.container.FlexPanel;
+import org.baratinage.ui.container.GridPanel;
 
-public class Explorer extends FlexPanel {
+public class Explorer extends GridPanel {
 
     private JTree explorerTree;
     private ExplorerItem rootNode;
     private DefaultTreeModel explorerTreeModel;
 
     public Explorer(String label) {
-        super(FlexPanel.AXIS.COL);
-        this.setGap(5);
-        this.setPadding(5);
+        // super(FlexPanel.AXIS.COL);
+        super();
+        // this.setGap(5);
+        // this.setPadding(5);
 
         JLabel header = new JLabel(label);
-        this.appendChild(header);
+        this.appendChild(header); // TODO: make GridPanel(appendDirection, maxItemInDirection) if 0 ==> infinite
 
         // this.explorerTreeData = new DefaultMutableTreeNode();
 

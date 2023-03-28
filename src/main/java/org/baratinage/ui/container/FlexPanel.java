@@ -10,6 +10,7 @@ import java.util.List;
 
 import javax.swing.JPanel;
 
+@Deprecated
 public class FlexPanel extends JPanel {
 
         public enum ALIGN {
