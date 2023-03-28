@@ -1,5 +1,6 @@
 package org.baratinage.ui.container;
 
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -9,6 +10,7 @@ import java.util.List;
 
 import javax.swing.JPanel;
 
+@Deprecated
 public class FlexPanel extends JPanel {
 
         public enum ALIGN {
@@ -129,15 +131,20 @@ public class FlexPanel extends JPanel {
         private List<Item> items;
 
         // private boolean debug = false;
-        // public void setDebug(boolean debug) {
-        // this.debug = debug;
-        // if (debug) {
-        // this.setBackground(new Color(
-        // (int) (Math.random() * 255),
-        // (int) (Math.random() * 255),
-        // (int) (Math.random() * 255), 150));
-        // }
-        // }
+
+        public void setDebug(boolean debug) {
+                // this.debug = debug;
+                if (debug) {
+                        this.setBackground(new Color(
+                                        (int) (Math.random() * 255),
+                                        (int) (Math.random() * 255),
+                                        (int) (Math.random() * 255), 150));
+
+                } else {
+                        this.setBackground(null);
+                }
+                this.updateUI();
+        }
 
         public FlexPanel(AXIS axis, ALIGN align) {
                 this.layout = new GridBagLayout();
@@ -147,11 +154,8 @@ public class FlexPanel extends JPanel {
                 this.padding = new Insets(0, 0, 0, 0);
                 this.axis = axis;
                 // this.align = align;
-                if (align == ALIGN.START) {
-                        addEndExtensor();
-                } else if (align == ALIGN.END) {
-                        addStartExtensor();
-                }
+                setAlign(align);
+                // setDebug(true);
         }
 
         public FlexPanel(AXIS axis) {
@@ -164,6 +168,15 @@ public class FlexPanel extends JPanel {
 
         public FlexPanel() {
                 this(AXIS.COL, ALIGN.EXPAND);
+        }
+
+        public void setAlign(ALIGN align) {
+                if (align == ALIGN.START) {
+                        addEndExtensor();
+                } else if (align == ALIGN.END) {
+                        addStartExtensor();
+                }
+                this.updateUI();
         }
 
         public void setGap(int gap) {
@@ -211,6 +224,13 @@ public class FlexPanel extends JPanel {
         public void appendChild(Component component, double mainAxisWeight, ALIGN crossAxisAlign) {
                 this.appendChild(component, mainAxisWeight, crossAxisAlign,
                                 0, 0, 0, 0);
+        }
+
+        public void clear() {
+                for (Item item : this.items) {
+                        super.remove(item.component);
+                }
+                this.items.clear();
         }
 
         public void appendChild(Component component, double mainAxisWeight, ALIGN crossAxisAlign,

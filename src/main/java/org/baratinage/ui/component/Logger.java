@@ -1,4 +1,4 @@
-package org.baratinage.ui;
+package org.baratinage.ui.component;
 
 import java.awt.EventQueue;
 import java.awt.Font;
@@ -40,7 +40,7 @@ public class Logger extends JPanel {
         }
     }
 
-    Logger() {
+    public Logger() {
 
         logs = new ArrayList<>();
 

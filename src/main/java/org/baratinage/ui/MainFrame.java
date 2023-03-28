@@ -2,6 +2,9 @@ package org.baratinage.ui;
 
 import javax.swing.JFrame;
 
+import org.baratinage.ui.baratin.BaratinProject;
+// import org.baratinage.ui.test.TestPanel;
+
 import java.awt.Dimension;
 import java.awt.Point;
 
@@ -25,9 +28,11 @@ public class MainFrame extends JFrame implements ActionListener {
         // this.setSize(new Dimension(966, 1398));
         // this.setLocation(new Point(2482, 0));
 
-        TestPanel testPanel = new TestPanel();
+        // TestPanel testPanel = new TestPanel();
+        // this.add(testPanel);
 
-        this.add(testPanel);
+        BaratinProject currentProject = new BaratinProject();
+        this.add(currentProject);
 
         this.addComponentListener(new ComponentAdapter() {
             public void componentResized(ComponentEvent e) {

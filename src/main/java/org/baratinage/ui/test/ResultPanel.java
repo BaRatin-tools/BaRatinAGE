@@ -1,4 +1,4 @@
-package org.baratinage.ui;
+package org.baratinage.ui.test;
 
 import javax.swing.JLabel;
 import javax.swing.JTabbedPane;

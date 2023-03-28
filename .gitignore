@@ -12,6 +12,7 @@
 # test folder and other stuff to ignore
 /test
 /archive
+/.archive
 /dist
 *.jar
 *.bar.zip

@@ -4,7 +4,7 @@ import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
-
+import java.awt.Frame;
 import javax.swing.ImageIcon;
 
 public class NoScalingIcon extends ImageIcon {
@@ -18,8 +18,15 @@ public class NoScalingIcon extends ImageIcon {
      * to have everything zoomed 200%... But at least, it's no longer
      * pixelated...
      */
-    public NoScalingIcon(Component component, String iconFilePath) {
+
+    public NoScalingIcon(String iconFilePath) {
         super(iconFilePath);
+        this.setComponent();
+    }
+
+    private void setComponent() {
+        Frame[] frames = Frame.getFrames();
+        Component component = frames[0].getComponent(0);
         this.component = component;
     }
 
@@ -31,8 +38,9 @@ public class NoScalingIcon extends ImageIcon {
         AffineTransform at = g2d.getTransform();
 
         // Reset scaling to 1.0 by concatenating an inverse scale transfom
-        AffineTransform scaled = AffineTransform.getScaleInstance(1.0 /
-                at.getScaleX(), 1.0 / at.getScaleY());
+        AffineTransform scaled = AffineTransform.getScaleInstance(
+                1.0 / at.getScaleX(),
+                1.0 / at.getScaleY());
 
         at.concatenate(scaled);
         g2d.setTransform(at);
@@ -43,7 +51,11 @@ public class NoScalingIcon extends ImageIcon {
     }
 
     private AffineTransform getAffineTransform() {
-        Graphics2D g2d = (Graphics2D) component.getGraphics().create();
+        Graphics g = component.getGraphics();
+        if (g == null) {
+            return new AffineTransform();
+        }
+        Graphics2D g2d = (Graphics2D) g.create();
         AffineTransform aT = g2d.getTransform();
         g2d.dispose();
         return aT;

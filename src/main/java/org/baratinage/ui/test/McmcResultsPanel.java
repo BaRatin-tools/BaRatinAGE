@@ -1,4 +1,4 @@
-package org.baratinage.ui;
+package org.baratinage.ui.test;
 
 import java.awt.Color;
 import java.awt.GridBagConstraints;
