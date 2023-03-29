@@ -10,15 +10,14 @@ import java.util.List;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
-import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
-import org.baratinage.ui.container.FlexPanel;
 import org.baratinage.ui.container.GridPanel;
+import org.baratinage.ui.container.RowColPanel;
 
-public class ControlMatrix extends FlexPanel {
+public class ControlMatrix extends RowColPanel {
 
     private record ControlCheckBox(int segment, int control, CheckBox checkbox) {
     }
@@ -28,8 +27,7 @@ public class ControlMatrix extends FlexPanel {
     private List<ControlCheckBox> controlCheckboxes;
 
     public ControlMatrix() {
-        // super(FlexPanel.AXIS.ROW,
-        // FlexPanel.ALIGN.START);
+        super(AXIS.ROW);
         nControls = 1;
         controlCheckboxes = new ArrayList<>();
         createMatrixPanel();
@@ -40,16 +38,10 @@ public class ControlMatrix extends FlexPanel {
     private void createMatrixPanel() {
         controlCheckboxes.clear();
         matrixContainer = new GridPanel();
-        // matrixContainer.setDebug(true);
-        matrixContainer.setGap(5, 5);
-        matrixContainer.setPadding(10, 10, 10, 10);
 
-        matrixContainer.insertChild(new Component() {
-        }, 1000, 1000);
-        matrixContainer.setColWeight(1000, 10000);
-        matrixContainer.setRowWeight(1000, 10000);
-
-        // matrixContainer.setColWeight(100, 1);
+        matrixContainer.setGap(5);
+        matrixContainer.setPadding(10);
+        matrixContainer.setAnchor(GridPanel.ANCHOR.NE);
 
         for (int i = 0; i < nControls; i++) {
             JLabel label = new JLabel("Contrôle #" + (i + 1));
@@ -90,19 +82,12 @@ public class ControlMatrix extends FlexPanel {
                 checkBox.addItemListener(e -> {
                     updateEditability();
                 });
-                // matrixContainer.insertChild(checkBox, i + 1, nControls - j);
                 if (i == 1 && j == 2) {
 
-                    matrixContainer.insertChild(checkBox, i + 1, nControls - j,
-                            1, 1,
-                            GridPanel.ANCHOR.C, GridPanel.FILL.BOTH,
-                            0, 0, 0, 0);
+                    matrixContainer.insertChild(checkBox, i + 1, nControls - j);
                 } else {
 
-                    matrixContainer.insertChild(checkBox, i + 1, nControls - j,
-                            1, 1,
-                            GridPanel.ANCHOR.C, GridPanel.FILL.BOTH,
-                            0, 0, 0, 0);
+                    matrixContainer.insertChild(checkBox, i + 1, nControls - j);
                 }
 
             }
@@ -197,18 +182,22 @@ public class ControlMatrix extends FlexPanel {
 
     private class CheckBox extends JCheckBox {
 
+        private int grayRGBvalue = 225;
+        private Color uncheckedColor = new Color(grayRGBvalue, grayRGBvalue, grayRGBvalue);
+        private Color checkedColor = new Color(50, 200, 50);
+
         public CheckBox(String text) {
             super(text);
             this.setOpaque(true);
-            this.setBackground(Color.GRAY);
+            this.setBackground(uncheckedColor);
             this.setPreferredSize(new Dimension(50, 30));
             this.setHorizontalAlignment(CENTER);
             this.addItemListener(e -> {
                 CheckBox ccb = (CheckBox) e.getItem();
                 if (ccb.isSelected()) {
-                    ccb.setBackground(Color.GREEN);
+                    ccb.setBackground(checkedColor);
                 } else {
-                    ccb.setBackground(Color.GRAY);
+                    ccb.setBackground(uncheckedColor);
                 }
             });
         }

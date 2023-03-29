@@ -12,7 +12,7 @@ import org.baratinage.ui.component.Explorer;
 import org.baratinage.ui.component.ExplorerItem;
 // import org.baratinage.ui.component.ImportedData;
 import org.baratinage.ui.component.NoScalingIcon;
-import org.baratinage.ui.container.FlexPanel;
+import org.baratinage.ui.container.RowColPanel;
 
 /**
  *
@@ -33,7 +33,7 @@ import org.baratinage.ui.container.FlexPanel;
  */
 
 // public class ProjectBaratin extends FlexPanel {
-public class BaratinProject extends FlexPanel {
+public class BaratinProject extends RowColPanel {
 
     private record ProjectBamItem(BamItem bamItem, ExplorerItem explorerItem) {
     }
@@ -57,22 +57,22 @@ public class BaratinProject extends FlexPanel {
     static private final String structuralErrIconPath = "./resources/icons/Error_icon.png";
     static private final String ratingCurveIconPath = "./resources/icons/RC_icon.png";
 
-    FlexPanel actionBar;
+    RowColPanel actionBar;
     JSplitPane content;
 
     Explorer explorer;
-    FlexPanel currentPanel;
-    FlexPanel currentPanelHeader;
+    RowColPanel currentPanel;
+    RowColPanel currentPanelHeader;
     JLabel currentPanelHeaderLabel;
-    FlexPanel currentPanelContent;
+    RowColPanel currentPanelContent;
 
     public BaratinProject() {
-        super();
+        super(AXIS.COL);
 
         this.hydraulicConfigs = new ArrayList<>();
 
-        this.actionBar = new FlexPanel(FlexPanel.AXIS.ROW, FlexPanel.ALIGN.START);
-        this.appendChild(this.actionBar);
+        this.actionBar = new RowColPanel(AXIS.ROW, ALIGN.START, ALIGN.STRETCH);
+        this.appendChild(this.actionBar, 0);
         JButton btnNewHydraulicConfig = new JButton();
         btnNewHydraulicConfig.setText("Nouvelle configuration hydraulique");
         btnNewHydraulicConfig.setIcon(new NoScalingIcon("./resources/icons/Hydraulic_icon.png"));
@@ -90,12 +90,12 @@ public class BaratinProject extends FlexPanel {
         this.explorer = new Explorer("Explorateur");
         this.setupExplorer();
 
-        this.currentPanel = new FlexPanel();
+        this.currentPanel = new RowColPanel(AXIS.COL);
         this.currentPanel.setPadding(5);
         this.currentPanel.setGap(5);
-        this.currentPanelHeader = new FlexPanel(FlexPanel.AXIS.ROW);
-        this.currentPanelContent = new FlexPanel();
-        this.currentPanel.appendChild(this.currentPanelHeader);
+        this.currentPanelHeader = new RowColPanel(AXIS.ROW);
+        this.currentPanelContent = new RowColPanel(AXIS.ROW);
+        this.currentPanel.appendChild(this.currentPanelHeader, 0);
         this.currentPanel.appendChild(this.currentPanelContent, 1);
 
         // this.currentPanel.appendChild(new JLabel("current panel"));
@@ -132,13 +132,13 @@ public class BaratinProject extends FlexPanel {
                         deleteHydraulicConfig(projBamItem.bamItem.getUUID());
                     });
                     this.currentPanelHeader.appendChild(this.currentPanelHeaderLabel, 1);
-                    this.currentPanelHeader.appendChild(deleteButton);
+                    this.currentPanelHeader.appendChild(deleteButton, 0);
 
                     this.currentPanelContent.clear();
                     this.currentPanelContent.appendChild(projBamItem.bamItem, 1);
 
                     this.currentPanel.clear();
-                    this.currentPanel.appendChild(this.currentPanelHeader);
+                    this.currentPanel.appendChild(this.currentPanelHeader, 0);
                     this.currentPanel.appendChild(this.currentPanelContent, 1);
 
                 } else {

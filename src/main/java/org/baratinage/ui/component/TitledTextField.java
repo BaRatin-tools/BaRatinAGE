@@ -4,16 +4,14 @@ import java.util.ArrayList;
 import java.util.EventListener;
 import java.util.List;
 
-// import java.awt.Dimension;
-
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
-import org.baratinage.ui.container.FlexPanel;
+import org.baratinage.ui.container.RowColPanel;
 
-public class TitledTextField extends FlexPanel {
+public class TitledTextField extends RowColPanel {
 
     @FunctionalInterface
     public interface TextChangeListener extends EventListener {
@@ -26,7 +24,7 @@ public class TitledTextField extends FlexPanel {
     List<TextChangeListener> textChangeListeners;
 
     public TitledTextField(String title) {
-        super(FlexPanel.AXIS.ROW);
+        super(AXIS.ROW);
 
         this.textChangeListeners = new ArrayList<>();
 

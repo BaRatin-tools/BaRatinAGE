@@ -10,10 +10,11 @@ import java.util.UUID;
 // import java.util.concurrent.Flow.Subscriber;
 // import java.util.concurrent.Flow.Subscription;
 
+// import org.baratinage.ui.container.FlexPanel;
 // import org.baratinage.jbam.BaM;
-import org.baratinage.ui.container.FlexPanel;
+import org.baratinage.ui.container.RowColPanel;
 
-abstract public class BamItem extends FlexPanel {
+abstract public class BamItem extends RowColPanel {
 
     private String uuid;
     // private List<BamItem> parents;
@@ -31,7 +32,8 @@ abstract public class BamItem extends FlexPanel {
     // // private Publisher<BamItem> publisher;
 
     public BamItem(BamItem... parents) {
-        super(FlexPanel.AXIS.COL);
+        // super(AXIS.ROW);
+        super(AXIS.COL);
         this.setGap(5);
         // this.children = new ArrayList<>();
         // this.parents = new ArrayList<>(Arrays.asList(bamItems));

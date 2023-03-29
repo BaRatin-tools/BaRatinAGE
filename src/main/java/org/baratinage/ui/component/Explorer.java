@@ -1,6 +1,7 @@
 package org.baratinage.ui.component;
 
 import java.awt.Component;
+
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 import javax.swing.JTree;
@@ -9,23 +10,23 @@ import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 
-// import org.baratinage.ui.container.FlexPanel;
-import org.baratinage.ui.container.GridPanel;
+import org.baratinage.ui.container.RowColPanel;
 
-public class Explorer extends GridPanel {
+public class Explorer extends RowColPanel {
 
     private JTree explorerTree;
     private ExplorerItem rootNode;
     private DefaultTreeModel explorerTreeModel;
 
     public Explorer(String label) {
-        // super(FlexPanel.AXIS.COL);
-        super();
-        // this.setGap(5);
-        // this.setPadding(5);
+
+        super(AXIS.COL, ALIGN.STRETCH, ALIGN.STRETCH);
+
+        this.setGap(5);
+        this.setPadding(5);
 
         JLabel header = new JLabel(label);
-        this.appendChild(header); // TODO: make GridPanel(appendDirection, maxItemInDirection) if 0 ==> infinite
+        this.appendChild(header, 0);
 
         // this.explorerTreeData = new DefaultMutableTreeNode();
 
@@ -37,7 +38,8 @@ public class Explorer extends GridPanel {
         JScrollPane treeViewScrollableArea = new JScrollPane(explorerTree);
         // treeViewScrollableArea.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 
-        this.appendChild(treeViewScrollableArea, 1);
+        // this.appendChild(treeViewScrollableArea, 1);
+        this.appendChild(treeViewScrollableArea);
 
         this.rootNode = new ExplorerItem("root", "Root", null);
         this.explorerTreeModel = new DefaultTreeModel(rootNode);
@@ -45,7 +47,7 @@ public class Explorer extends GridPanel {
 
         this.explorerTree.setCellRenderer(new CustomRenderer());
         this.explorerTree.setRowHeight(35);
-        // this.explorerTree.setEx
+
     }
 
     public void appendItem(ExplorerItem item) {

@@ -7,7 +7,8 @@ import org.baratinage.ui.bam.BamItem;
 import org.baratinage.ui.bam.IModelDefinition;
 // import org.baratinage.ui.bam.IPriors;
 import org.baratinage.ui.component.TitledTextField;
-import org.baratinage.ui.container.FlexPanel;
+import org.baratinage.ui.container.RowColPanel;
+// import org.baratinage.ui.container.FlexPanel;
 // import org.baratinage.ui.bam.IPredictionData;
 // import org.baratinage.ui.bam.IPredictionExperiment;
 
@@ -36,11 +37,11 @@ class HydraulicConfiguration extends BamItem
         });
         nameField.setText(this.name);
         TitledTextField descField = new TitledTextField("Description");
-        FlexPanel content = new FlexPanel();
-        this.appendChild(nameField);
-        this.appendChild(descField);
-        this.appendChild(content, 1);
-
+        // FlexPanel content = new FlexPanel();
+        RowColPanel content = new RowColPanel(AXIS.COL);
+        this.appendChild(nameField, 0);
+        this.appendChild(descField, 0);
+        this.appendChild(content);
         content.appendChild(new ControlMatrix(), 1);
     }
 
