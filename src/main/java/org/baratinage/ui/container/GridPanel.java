@@ -14,8 +14,10 @@ import javax.swing.JPanel;
 
 public class GridPanel extends JPanel {
 
-    public enum ANCHOR {
+    static public enum ANCHOR {
         C(GridBagConstraints.CENTER),
+        CNS(GridBagConstraints.CENTER),
+        CWE(GridBagConstraints.CENTER),
         N(GridBagConstraints.NORTH),
         E(GridBagConstraints.EAST),
         S(GridBagConstraints.SOUTH),
@@ -30,9 +32,29 @@ public class GridPanel extends JPanel {
         private ANCHOR(int value) {
             this.value = value;
         }
+
+        public ANCHOR opposite() {
+            if (this == N)
+                return S;
+            if (this == E)
+                return W;
+            if (this == W)
+                return E;
+            if (this == S)
+                return N;
+            if (this == NW)
+                return SE;
+            if (this == NE)
+                return SW;
+            if (this == SW)
+                return NE;
+            if (this == SE)
+                return NW;
+            return C;
+        }
     }
 
-    public enum FILL {
+    static public enum FILL {
         NONE(GridBagConstraints.NONE),
         H(GridBagConstraints.HORIZONTAL),
         V(GridBagConstraints.VERTICAL),
@@ -45,25 +67,35 @@ public class GridPanel extends JPanel {
         }
     }
 
-    private record ChildComponent(Component component,
+    protected record ChildComponent(Component component,
             int x, int y,
             int xSpan, int ySpan,
             ANCHOR anchor, FILL fill,
             int topPadding, int rightPadding,
             int bottomPadding, int leftPadding) {
-
+        public ChildComponent flipXY() {
+            return new ChildComponent(
+                    component,
+                    y, x,
+                    xSpan, ySpan,
+                    anchor, fill,
+                    topPadding,
+                    rightPadding,
+                    bottomPadding,
+                    leftPadding);
+        }
     }
 
-    List<ChildComponent> childComponents;
-    Map<Integer, Double> colWeights;
-    Map<Integer, Double> rowWeights;
+    protected List<ChildComponent> childComponents;
+    protected Map<Integer, Double> colWeights;
+    protected Map<Integer, Double> rowWeights;
 
-    Insets padding;
-    int rowGap;
-    int colGap;
+    private Insets padding;
+    private int rowGap;
+    private int colGap;
 
-    int lastColIndex;
-    int lastRowIndex;
+    protected int lastColIndex;
+    protected int lastRowIndex;
 
     public GridPanel() {
         super();
@@ -95,27 +127,88 @@ public class GridPanel extends JPanel {
         updateChildrenLayout();
     }
 
+    public void setPadding(int padding) {
+        setPadding(padding, padding, padding, padding);
+    }
+
     public void setGap(int rowGap, int colGap) {
         this.rowGap = rowGap;
         this.colGap = colGap;
         updateChildrenLayout();
     }
 
+    public void setGap(int gap) {
+        setGap(gap, gap);
+    }
+
     public void setColWeight(int index, double weight) {
+        index += 1; // to accound for extensor
         this.colWeights.put(index, weight);
         updateChildrenLayout();
     }
 
     public void setRowWeight(int index, double weight) {
+        index += 1; // to accound for extensor
         this.rowWeights.put(index, weight);
         updateChildrenLayout();
     }
 
-    public void insertChild(Component component, int x, int y) {
-        this.insertChild(component, x, y, 1, 1,
+    private static final int EXTENSOR_INDEX_MIN = 0;
+    private static final int EXTENSOR_INDEX_MAX = 10000;
+    private static final double EXTENSOR_STRENGTH = 10000;
+    private List<Component> extensors = new ArrayList<>();
+
+    private void addExtensor(ANCHOR anchor) {
+        int x = 0;
+        int y = 0;
+        double xWeight = 0;
+        double yWeight = 0;
+        if (anchor == ANCHOR.N || anchor == ANCHOR.NE || anchor == ANCHOR.NW) {
+            y = EXTENSOR_INDEX_MIN;
+            yWeight = EXTENSOR_STRENGTH;
+        }
+        if (anchor == ANCHOR.S || anchor == ANCHOR.SE || anchor == ANCHOR.SW) {
+            y = EXTENSOR_INDEX_MAX;
+            yWeight = EXTENSOR_STRENGTH;
+        }
+
+        if (anchor == ANCHOR.E || anchor == ANCHOR.SE || anchor == ANCHOR.NE) {
+            x = EXTENSOR_INDEX_MAX;
+            xWeight = EXTENSOR_STRENGTH;
+        }
+        if (anchor == ANCHOR.W || anchor == ANCHOR.SW || anchor == ANCHOR.NW) {
+            x = EXTENSOR_INDEX_MIN;
+            xWeight = EXTENSOR_STRENGTH;
+        }
+
+        Component extensor = new Component() {
+        };
+        extensors.add(extensor);
+        innerInsertChild(extensor, x, y,
+                1, 1,
+                xWeight, yWeight,
                 ANCHOR.C, FILL.BOTH,
-                0, 0,
-                0, 0);
+                0, 0, 0, 0);
+    }
+
+    public void setAnchor(ANCHOR anchor) {
+        for (Component extensor : extensors) {
+            this.remove(extensor);
+        }
+        extensors.clear();
+        if (anchor == ANCHOR.C) {
+            addExtensor(ANCHOR.NE);
+            addExtensor(ANCHOR.SW);
+        } else if (anchor == ANCHOR.CNS) {
+            addExtensor(ANCHOR.N);
+            addExtensor(ANCHOR.S);
+        } else if (anchor == ANCHOR.CWE) {
+            addExtensor(ANCHOR.E);
+            addExtensor(ANCHOR.W);
+        } else {
+            addExtensor(anchor.opposite());
+        }
+
     }
 
     public void insertChild(Component component,
@@ -124,6 +217,9 @@ public class GridPanel extends JPanel {
             ANCHOR anchor, FILL fill,
             int topPadding, int rightPadding,
             int bottomPadding, int leftPadding) {
+
+        x += 1;
+        y += 1;
 
         this.childComponents.add(
                 new ChildComponent(component,
@@ -134,6 +230,39 @@ public class GridPanel extends JPanel {
                         bottomPadding, leftPadding));
 
         updateChildrenLayout();
+    }
+
+    public void insertChild(Component component, int x, int y) {
+        insertChild(component, x, y, 1, 1,
+                ANCHOR.C, FILL.BOTH,
+                0, 0,
+                0, 0);
+    }
+
+    public void insertChild(Component component,
+            int x, int y,
+            int xSpan, int ySpan,
+            ANCHOR anchor, FILL fill) {
+
+        insertChild(component, x, y,
+                xSpan, ySpan,
+                anchor, fill,
+                0, 0, 0, 0);
+
+    }
+
+    public void insertChild(Component component,
+            int x, int y,
+            ANCHOR anchor, FILL fill) {
+
+        insertChild(component, x, y, 1, 1, anchor, fill, 0, 0, 0, 0);
+    }
+
+    public void insertChild(Component component,
+            int x, int y,
+            int xSpan, int ySpan) {
+
+        insertChild(component, x, y, xSpan, ySpan, ANCHOR.C, FILL.BOTH, 0, 0, 0, 0);
     }
 
     private void innerInsertChild(Component component,
@@ -149,8 +278,8 @@ public class GridPanel extends JPanel {
         gbc.gridy = y;
         gbc.gridwidth = xSpan;
         gbc.gridheight = ySpan;
-        gbc.weightx = xWeight; // FIXME: deal with weights
-        gbc.weighty = yWeight; // FIXME: deal with weights
+        gbc.weightx = xWeight;
+        gbc.weighty = yWeight;
         gbc.anchor = anchor.value;
         gbc.fill = fill.value;
 
@@ -161,28 +290,28 @@ public class GridPanel extends JPanel {
 
         this.updateCurrentGridSize();
         // if there's a row before, add gap to top, otherwise, add global padding.top
-        if (y > 0) {
+        if (y > 1) {
             top = top + this.rowGap / 2;
         } else {
             top = top + this.padding.top;
         }
         // if there's a row after, add gap to botom, otherwise, add global
         // padding.bottom
-        if (y < this.lastRowIndex) {
+        if (y < this.lastRowIndex + 1) {
             bottom = bottom + this.rowGap / 2;
         } else {
             bottom = bottom + this.padding.bottom;
         }
         // if there's a column before, add gap to left, otherwise, add global
         // padding.left
-        if (x > 0) {
+        if (x > 1) {
             left = left + this.colGap / 2;
         } else {
             left = left + this.padding.left;
         }
         // if there's a column after, add gap to right, otherwise, add global
         // padding.right
-        if (x < this.lastColIndex) {
+        if (x < this.lastColIndex + 1) {
             right = right + this.colGap / 2;
         } else {
             right = right + this.padding.right;
@@ -193,7 +322,7 @@ public class GridPanel extends JPanel {
         super.add(component, gbc);
     }
 
-    private void updateCurrentGridSize() {
+    protected void updateCurrentGridSize() {
         int lastColIndex = 0;
         int lastRowIndex = 0;
         for (ChildComponent child : this.childComponents) {
@@ -204,11 +333,20 @@ public class GridPanel extends JPanel {
                 lastRowIndex = child.y;
             }
         }
-        this.lastColIndex = lastColIndex;
-        this.lastRowIndex = lastRowIndex;
+        // the minus 1 is to account for the extensors
+        this.lastColIndex = lastColIndex - 1;
+        this.lastRowIndex = lastRowIndex - 1;
     }
 
-    private void updateChildrenLayout() {
+    public void clear() {
+        for (ChildComponent child : this.childComponents) {
+            super.remove(child.component);
+        }
+        this.childComponents.clear();
+        revalidate();
+    }
+
+    protected void updateChildrenLayout() {
         for (ChildComponent child : this.childComponents) {
             super.remove(child.component);
         }
