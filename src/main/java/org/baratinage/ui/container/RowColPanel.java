@@ -24,6 +24,10 @@ public class RowColPanel extends GridPanel {
     protected ALIGN crossAxisAlign;
     protected double defaultMainAxisWeight = 0;
 
+    public RowColPanel() {
+        this(AXIS.ROW, ALIGN.STRETCH, ALIGN.STRETCH);
+    }
+
     public RowColPanel(AXIS mainAxis) {
         this(mainAxis, ALIGN.STRETCH, ALIGN.STRETCH);
     }
@@ -184,7 +188,7 @@ public class RowColPanel extends GridPanel {
 
     @Override
     public void insertChild(Component component, int x, int y) {
-        System.err.println("Only appendChild valid! insertChild is disabled for RowColPanel!");
+        throw new UnsupportedOperationException("Only appendChild valid! insertChild is disabled for RowColPanel!");
     }
 
     @Override
@@ -194,7 +198,7 @@ public class RowColPanel extends GridPanel {
             ANCHOR anchor, FILL fill,
             int topPadding, int rightPadding,
             int bottomPadding, int leftPadding) {
-        System.err.println("Only appendChild valid! insertChild is disabled for RowColPanel!");
+        throw new UnsupportedOperationException("Only appendChild valid! insertChild is disabled for RowColPanel!");
     }
 
     @Override
@@ -202,21 +206,21 @@ public class RowColPanel extends GridPanel {
             int x, int y,
             int xSpan, int ySpan,
             ANCHOR anchor, FILL fill) {
-        System.err.println("Only appendChild valid! insertChild is disabled for RowColPanel!");
+        throw new UnsupportedOperationException("Only appendChild valid! insertChild is disabled for RowColPanel!");
     }
 
     @Override
     public void insertChild(Component component,
             int x, int y,
             ANCHOR anchor, FILL fill) {
-        System.err.println("Only appendChild valid! insertChild is disabled for RowColPanel!");
+        throw new UnsupportedOperationException("Only appendChild valid! insertChild is disabled for RowColPanel!");
     }
 
     @Override
     public void insertChild(Component component,
             int x, int y,
             int xSpan, int ySpan) {
-        System.err.println("Only appendChild valid! insertChild is disabled for RowColPanel!");
+        throw new UnsupportedOperationException("Only appendChild valid! insertChild is disabled for RowColPanel!");
     }
 
 }
