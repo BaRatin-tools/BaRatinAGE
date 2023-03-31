@@ -5,12 +5,15 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Insets;
 import java.util.ArrayList;
+import java.util.EventListener;
 import java.util.List;
 
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
+import javax.swing.JSeparator;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
@@ -27,7 +30,7 @@ public class ControlMatrix extends RowColPanel {
     private List<ControlCheckBox> controlCheckboxes;
 
     public ControlMatrix() {
-        super(AXIS.ROW);
+        super(AXIS.COL);
         nControls = 1;
         controlCheckboxes = new ArrayList<>();
         createMatrixPanel();
@@ -38,10 +41,9 @@ public class ControlMatrix extends RowColPanel {
     private void createMatrixPanel() {
         controlCheckboxes.clear();
         matrixContainer = new GridPanel();
-
         matrixContainer.setGap(5);
         matrixContainer.setPadding(10);
-        matrixContainer.setAnchor(GridPanel.ANCHOR.NE);
+        matrixContainer.setAnchor(GridPanel.ANCHOR.N);
 
         for (int i = 0; i < nControls; i++) {
             JLabel label = new JLabel("Contrôle #" + (i + 1));
@@ -100,34 +102,35 @@ public class ControlMatrix extends RowColPanel {
         matrixContainer.insertChild(addControl, nControls + 1, 0);
 
         JScrollPane scrollPane = new JScrollPane(matrixContainer);
+        scrollPane.setBorder(BorderFactory.createEmptyBorder());
         clear();
-        appendChild(scrollPane, 1);
+        appendChild(new JSeparator(), 0);
+        appendChild(scrollPane);
 
     }
 
     private void deleteLastControl() {
         boolean[][] oldControlMatrix = getControlMatrix();
-        printMatrix(oldControlMatrix);
-
         nControls--;
         createMatrixPanel();
         updateStateFromBooleanMatrix(oldControlMatrix);
         revalidate();
         updateEditability();
+        fireChangeListeners();
     }
 
     private void addNewControl() {
         boolean[][] oldControlMatrix = getControlMatrix();
-        printMatrix(oldControlMatrix);
-
         nControls++;
         createMatrixPanel();
         updateStateFromBooleanMatrix(oldControlMatrix);
         revalidate();
         updateEditability();
+        fireChangeListeners();
     }
 
-    private static void printMatrix(boolean[][] matrix) {
+    // for quick debugging purposes...
+    public static void printMatrix(boolean[][] matrix) {
         for (int i = 0; i < matrix.length; i++) { // this equals to the row in our matrix.
             for (int j = 0; j < matrix[i].length; j++) { // this equals to the column in each row.
                 System.out.print(matrix[i][j] + " ");
@@ -172,7 +175,7 @@ public class ControlMatrix extends RowColPanel {
         }
     }
 
-    private boolean[][] getControlMatrix() {
+    public boolean[][] getControlMatrix() {
         boolean[][] matrix = new boolean[nControls][nControls];
         for (ControlCheckBox ccb : controlCheckboxes) {
             matrix[ccb.segment][ccb.control] = ccb.checkbox.isSelected();
@@ -200,6 +203,27 @@ public class ControlMatrix extends RowColPanel {
                     ccb.setBackground(uncheckedColor);
                 }
             });
+        }
+    }
+
+    @FunctionalInterface
+    public interface ControlMatrixChangeListener extends EventListener {
+        public void hasChanged(boolean[][] controlMatrix);
+    }
+
+    List<ControlMatrixChangeListener> controlMatrixChangeListeners = new ArrayList<>();
+
+    public void addChangeListener(ControlMatrixChangeListener listener) {
+        this.controlMatrixChangeListeners.add(listener);
+    }
+
+    public void removeChangeListener(ControlMatrixChangeListener listener) {
+        this.controlMatrixChangeListeners.remove(listener);
+    }
+
+    public void fireChangeListeners() {
+        for (ControlMatrixChangeListener cl : this.controlMatrixChangeListeners) {
+            cl.hasChanged(getControlMatrix());
         }
     }
 
