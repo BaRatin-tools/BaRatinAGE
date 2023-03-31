@@ -14,11 +14,14 @@ import javax.swing.JSeparator;
 import javax.swing.JSplitPane;
 import javax.swing.ListSelectionModel;
 
+import org.baratinage.jbam.Distribution;
+import org.baratinage.jbam.Parameter;
+import org.baratinage.ui.bam.IPriors;
 import org.baratinage.ui.component.NumberField;
 import org.baratinage.ui.container.GridPanel;
 import org.baratinage.ui.container.RowColPanel;
 
-public class HydraulicControls extends RowColPanel {
+public class HydraulicControls extends RowColPanel implements IPriors {
 
     private record ControlItem(String id, String label, String icon) {
         public String toString() {
@@ -109,12 +112,12 @@ public class HydraulicControls extends RowColPanel {
         public final String id;
 
         private GridPanel parametersPanel;
-        private NumberField activationStage;
-        private NumberField activationStageUncertainty;
-        private NumberField coefficient;
-        private NumberField coefficientUncertainty;
-        private NumberField exponent;
-        private NumberField exponentUncertainty;
+        public NumberField activationStage;
+        public NumberField activationStageUncertainty;
+        public NumberField coefficient;
+        public NumberField coefficientUncertainty;
+        public NumberField exponent;
+        public NumberField exponentUncertainty;
 
         public HydraulicControl(String id, String label) {
             super(AXIS.COL);
@@ -157,6 +160,35 @@ public class HydraulicControls extends RowColPanel {
             this.appendChild(parametersPanel);
 
         }
+
+    }
+
+    @Override
+    public Parameter[] getParameters() {
+        int nControls = controls.size();
+        Parameter[] parameters = new Parameter[nControls * 3];
+        for (int k = 0; k < nControls; k++) {
+            HydraulicControl hc = controls.get(k);
+            Distribution activationStageDistribution = Distribution.Gaussian(
+                    hc.activationStage.getValue(),
+                    hc.activationStageUncertainty.getValue() / 2);
+            parameters[k * 3 + 0] = new Parameter("k_" + k,
+                    hc.activationStage.getValue(),
+                    activationStageDistribution);
+            Distribution coefficientDistribution = Distribution.Gaussian(
+                    hc.coefficient.getValue(),
+                    hc.coefficientUncertainty.getValue() / 2);
+            parameters[k * 3 + 1] = new Parameter("a_" + k,
+                    hc.coefficient.getValue(),
+                    coefficientDistribution);
+            Distribution exponentDistribution = Distribution.Gaussian(
+                    hc.exponent.getValue(),
+                    hc.exponentUncertainty.getValue() / 2);
+            parameters[k * 3 + 2] = new Parameter("c_" + k,
+                    hc.coefficient.getValue(),
+                    exponentDistribution);
+        }
+        return parameters;
     }
 
 }

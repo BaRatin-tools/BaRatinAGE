@@ -4,18 +4,19 @@ import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JSplitPane;
 
+import org.baratinage.jbam.Parameter;
 // import org.baratinage.jbam.Parameter;
 // import org.baratinage.jbam.PredictionConfig;
 // import org.baratinage.jbam.PredictionInput;
 import org.baratinage.ui.bam.BamItem;
 import org.baratinage.ui.bam.IModelDefinition;
+import org.baratinage.ui.bam.IPriors;
 import org.baratinage.ui.component.TextField;
-// import org.baratinage.ui.bam.IPriors;
 import org.baratinage.ui.container.GridPanel;
 import org.baratinage.ui.container.RowColPanel;
 
 class HydraulicConfiguration extends BamItem
-        implements IModelDefinition {
+        implements IModelDefinition, IPriors {
 
     static private final String defaultNameTemplate = "Configuration Hydraulique #%s";
     static private int nInstance = 0;
@@ -93,26 +94,27 @@ class HydraulicConfiguration extends BamItem
 
     @Override
     public String getModelId() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getModelId'");
+        return "BaRatin";
     }
 
     @Override
     public String[] getParameterNames() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getParameterNames'");
+        Parameter[] parameters = getParameters();
+        String[] parameterNames = new String[parameters.length];
+        for (int k = 0; k < parameters.length; k++) {
+            parameterNames[k] = parameters[k].getName();
+        }
+        return parameterNames;
     }
 
     @Override
     public String[] getInputNames() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getInputNames'");
+        return new String[] { "h" };
     }
 
     @Override
     public String[] getOutputNames() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getOutputNames'");
+        return new String[] { "Q" };
     }
 
     @Override
@@ -122,8 +124,15 @@ class HydraulicConfiguration extends BamItem
 
     @Override
     public String getXtra(String workspace) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getXtra'");
+        boolean[][] matrix = this.controlMatrix.getControlMatrix();
+        String xtra = "";
+        for (int i = 0; i < matrix.length; i++) {
+            for (int j = 0; j < matrix[i].length; j++) {
+                xtra += matrix[i][j] ? "1 " : "0 ";
+            }
+            xtra += "\n";
+        }
+        return xtra;
     }
 
     @Override
@@ -142,6 +151,11 @@ class HydraulicConfiguration extends BamItem
     public void fromJsonString(String jsonString) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'fromJsonString'");
+    }
+
+    @Override
+    public Parameter[] getParameters() {
+        return hydraulicControls.getParameters();
     }
 
 }
