@@ -1,16 +1,18 @@
 package org.baratinage.ui.baratin;
 
+import javax.swing.BorderFactory;
+import javax.swing.JLabel;
+import javax.swing.JSplitPane;
+
 // import org.baratinage.jbam.Parameter;
 // import org.baratinage.jbam.PredictionConfig;
 // import org.baratinage.jbam.PredictionInput;
 import org.baratinage.ui.bam.BamItem;
 import org.baratinage.ui.bam.IModelDefinition;
+import org.baratinage.ui.component.TextField;
 // import org.baratinage.ui.bam.IPriors;
-import org.baratinage.ui.component.TitledTextField;
+import org.baratinage.ui.container.GridPanel;
 import org.baratinage.ui.container.RowColPanel;
-// import org.baratinage.ui.container.FlexPanel;
-// import org.baratinage.ui.bam.IPredictionData;
-// import org.baratinage.ui.bam.IPredictionExperiment;
 
 class HydraulicConfiguration extends BamItem
         implements IModelDefinition {
@@ -21,6 +23,10 @@ class HydraulicConfiguration extends BamItem
     private String name;
     private String description;
 
+    private ControlMatrix controlMatrix;
+
+    private HydraulicControls hydraulicControls;
+
     public HydraulicConfiguration() {
         super();
         HydraulicConfiguration.nInstance++;
@@ -30,22 +36,58 @@ class HydraulicConfiguration extends BamItem
         this.description = "";
         System.out.println(description);
 
-        TitledTextField nameField = new TitledTextField("Nom de la configuration hydraulique");
+        GridPanel header = new GridPanel();
+        header.setGap(5);
+        header.setPadding(5);
+        header.setRowWeight(0, 1);
+        header.setColWeight(1, 1);
+
+        JLabel nameFieldLabel = new JLabel("Nom de la configuration hydraulique");
+        TextField nameField = new TextField();
         nameField.addChangeListener(nt -> {
-            this.name = nt;
+            setName(nt);
             hasChanged();
         });
         nameField.setText(this.name);
-        TitledTextField descField = new TitledTextField("Description");
-        // FlexPanel content = new FlexPanel();
-        RowColPanel content = new RowColPanel(AXIS.COL);
-        this.appendChild(nameField, 0);
-        this.appendChild(descField, 0);
-        this.appendChild(content);
-        content.appendChild(new ControlMatrix(), 1);
+        JLabel descFieldLabel = new JLabel("Description");
+        TextField descField = new TextField();
+
+        header.insertChild(nameFieldLabel, 0, 0);
+        header.insertChild(nameField, 1, 0);
+        header.insertChild(descFieldLabel, 0, 1);
+        header.insertChild(descField, 1, 1);
+
+        controlMatrix = new ControlMatrix();
+        controlMatrix.addChangeListener(matrix -> {
+            System.out.println("Control matrix has changed!");
+            updateControls(matrix);
+        });
+        hydraulicControls = new HydraulicControls();
+
+        JSplitPane splitPaneContainer = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
+        splitPaneContainer.setBorder(BorderFactory.createEmptyBorder());
+        splitPaneContainer.setLeftComponent(controlMatrix);
+        splitPaneContainer.setRightComponent(hydraulicControls);
+        splitPaneContainer.setResizeWeight(0.5);
+
+        RowColPanel content = new RowColPanel(RowColPanel.AXIS.COL);
+        content.appendChild(header, 0);
+        content.appendChild(splitPaneContainer, 1);
+        content.setGap(5);
+
+        setContent(content);
+
+        updateControls(controlMatrix.getControlMatrix());
+    }
+
+    private void updateControls(boolean[][] controlMatrix) {
+        ControlMatrix.printMatrix(controlMatrix);
+        hydraulicControls.setNumberOfControls(controlMatrix.length);
+
     }
 
     public void setName(String name) {
+        setTitle(name);
         this.name = name;
     }
 
