@@ -2,6 +2,7 @@ package org.baratinage.ui.component;
 
 import java.awt.Component;
 
+import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 import javax.swing.JTree;
@@ -23,22 +24,19 @@ public class Explorer extends RowColPanel {
         super(AXIS.COL, ALIGN.STRETCH, ALIGN.STRETCH);
 
         this.setGap(5);
-        this.setPadding(5);
 
         JLabel header = new JLabel(label);
         this.appendChild(header, 0);
 
-        // this.explorerTreeData = new DefaultMutableTreeNode();
-
         this.explorerTree = new JTree();
+        this.explorerTree.setBorder(BorderFactory.createEmptyBorder());
 
         this.explorerTree.setRootVisible(false);
         this.explorerTree.setShowsRootHandles(true);
 
         JScrollPane treeViewScrollableArea = new JScrollPane(explorerTree);
-        // treeViewScrollableArea.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        treeViewScrollableArea.setBorder(BorderFactory.createEmptyBorder());
 
-        // this.appendChild(treeViewScrollableArea, 1);
         this.appendChild(treeViewScrollableArea);
 
         this.rootNode = new ExplorerItem("root", "Root", null);
@@ -65,17 +63,7 @@ public class Explorer extends RowColPanel {
             root = item.parentItem;
         }
         this.explorerTreeModel.nodeStructureChanged(root);
-        // expandItem(item);
     }
-
-    // public void updateItem(ExplorerItem item) {
-    // ExplorerItem root = this.rootNode;
-    // if (item.parentItem != null) {
-    // root = item.parentItem;
-    // }
-    // // this.explorerTreeModel.upda
-    // this.explorerTreeModel.nodeStructureChanged(root);
-    // }
 
     // FIXME: given the following methods, I think I sould find a way to make
     // this class herit from JTree!
@@ -101,8 +89,6 @@ public class Explorer extends RowColPanel {
     }
 
     public void removeItem(ExplorerItem item) {
-        // this.explorerTreeModel.insertNodeInto(item, root, root.getChildCount());
-        // this.explorerTreeModel.nodeStructureChanged(root);
         ExplorerItem root = this.rootNode;
         if (item.parentItem != null) {
             root = item.parentItem;
@@ -129,20 +115,6 @@ public class Explorer extends RowColPanel {
 
             setText(item.label);
             setIcon(item.icon);
-
-            // this.setPreferredSize(new Dimension(5000, 40));
-
-            // this.setOpaque(true);
-            // Color rC = this.getBackgroundSelectionColor();
-            // if (selected && hasFocus) {
-            // Color c = new Color(rC.getRed(), rC.getGreen(), rC.getBlue());
-            // this.setBackground(c);
-            // } else if (selected && !hasFocus) {
-            // Color c = new Color(rC.getRed() + 50, rC.getGreen() + 50, 255);
-            // this.setBackground(c);
-            // } else {
-            // this.setOpaque(false);
-            // }
 
             return this;
         }
