@@ -1,5 +1,6 @@
 package org.baratinage.ui.component;
 
+import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.EventListener;
 import java.util.List;
@@ -19,6 +20,13 @@ public class TextField extends JTextField {
 
     public TextField() {
         super();
+
+        System.out.println(this.getPreferredSize());
+
+        Dimension dim = this.getPreferredSize();
+        dim.width = 200;
+        // this.setMinimumSize(minDimension);
+        this.setPreferredSize(dim);
 
         this.textChangeListeners = new ArrayList<>();
 
