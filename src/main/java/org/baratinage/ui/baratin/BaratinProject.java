@@ -3,8 +3,9 @@ package org.baratinage.ui.baratin;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
-import javax.swing.JLabel;
+import javax.swing.JSeparator;
 import javax.swing.JSplitPane;
 
 import org.baratinage.ui.bam.BamItem;
@@ -32,7 +33,6 @@ import org.baratinage.ui.container.RowColPanel;
  * 
  */
 
-// public class ProjectBaratin extends FlexPanel {
 public class BaratinProject extends RowColPanel {
 
     private record ProjectBamItem(BamItem bamItem, ExplorerItem explorerItem) {
@@ -57,14 +57,11 @@ public class BaratinProject extends RowColPanel {
     static private final String structuralErrIconPath = "./resources/icons/Error_icon.png";
     static private final String ratingCurveIconPath = "./resources/icons/RC_icon.png";
 
-    RowColPanel actionBar;
+    private RowColPanel actionBar;
     JSplitPane content;
 
-    Explorer explorer;
-    RowColPanel currentPanel;
-    RowColPanel currentPanelHeader;
-    JLabel currentPanelHeaderLabel;
-    RowColPanel currentPanelContent;
+    private Explorer explorer;
+    private RowColPanel currentPanel;
 
     public BaratinProject() {
         super(AXIS.COL);
@@ -72,6 +69,8 @@ public class BaratinProject extends RowColPanel {
         this.hydraulicConfigs = new ArrayList<>();
 
         this.actionBar = new RowColPanel(AXIS.ROW, ALIGN.START, ALIGN.STRETCH);
+        this.actionBar.setPadding(5);
+        this.actionBar.setGap(5);
         this.appendChild(this.actionBar, 0);
         JButton btnNewHydraulicConfig = new JButton();
         btnNewHydraulicConfig.setText("Nouvelle configuration hydraulique");
@@ -85,61 +84,37 @@ public class BaratinProject extends RowColPanel {
         this.actionBar.appendChild(new JButton("action 2"));
 
         this.content = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
+        this.content.setBorder(BorderFactory.createEmptyBorder());
+        this.appendChild(new JSeparator(), 0);
         this.appendChild(this.content, 1);
 
         this.explorer = new Explorer("Explorateur");
         this.setupExplorer();
 
         this.currentPanel = new RowColPanel(AXIS.COL);
-        this.currentPanel.setPadding(5);
         this.currentPanel.setGap(5);
-        this.currentPanelHeader = new RowColPanel(AXIS.ROW);
-        this.currentPanelContent = new RowColPanel(AXIS.ROW);
-        this.currentPanel.appendChild(this.currentPanelHeader, 0);
-        this.currentPanel.appendChild(this.currentPanelContent, 1);
-
-        // this.currentPanel.appendChild(new JLabel("current panel"));
-        // this.currentPanel.appendChild(new JLabel("with various things in it"));
 
         this.content.setLeftComponent(this.explorer);
         this.content.setRightComponent(this.currentPanel);
         this.content.setResizeWeight(0);
 
-        // this.appendChild(explorer);
-
-        // this.appendChild(new JLabel("main"));
-
-        addHydraulicConfig();
-        // addHydraulicConfig();
+        addHydraulicConfig(); // FIXME: feels like default should be empty to be able to set a default
+                              // elsewhere and import content from a file
 
     }
 
+    // FIXME: this method is typically something that should be set in a parent
+    // class that represents BaM project (as an abstract method...)
     private void setupExplorer() {
 
-        // this.explorer.setMinimumSize(getMinimumSize());
         this.explorer.addTreeSelectionListener(e -> {
             ExplorerItem item = explorer.getLastSelectedPathComponent();
             if (item != null) {
                 System.out.println(item.id);
                 ProjectBamItem projBamItem = findProjectBamItem(item.id);
                 if (projBamItem != null) {
-
-                    this.currentPanelHeader.clear();
-                    this.currentPanelHeaderLabel = new JLabel(projBamItem.bamItem.getName());
-                    JButton deleteButton = new JButton("Delete");
-                    deleteButton.addActionListener(ale -> {
-                        System.out.println("Delete " + projBamItem.bamItem.getName());
-                        deleteHydraulicConfig(projBamItem.bamItem.getUUID());
-                    });
-                    this.currentPanelHeader.appendChild(this.currentPanelHeaderLabel, 1);
-                    this.currentPanelHeader.appendChild(deleteButton, 0);
-
-                    this.currentPanelContent.clear();
-                    this.currentPanelContent.appendChild(projBamItem.bamItem, 1);
-
                     this.currentPanel.clear();
-                    this.currentPanel.appendChild(this.currentPanelHeader, 0);
-                    this.currentPanel.appendChild(this.currentPanelContent, 1);
+                    this.currentPanel.appendChild(projBamItem.bamItem, 1);
 
                 } else {
                     this.currentPanel.clear();
@@ -182,11 +157,12 @@ public class BaratinProject extends RowColPanel {
             if (newName.equals("")) {
                 newName = "<html><div style='color: red; font-style: italic'>Sans nom</div></html>";
             }
-            System.out.println("HAS CHANGE >>> " + newName);
-            currentPanelHeaderLabel.setText(newName);
             pbi.explorerItem.label = newName;
             explorer.updateItemView(pbi.explorerItem);
-            // explorerItem
+        });
+        bamItem.addDeleteAction(e -> {
+            System.out.println("Delete " + bamItem.getName());
+            deleteHydraulicConfig(bamItem.getUUID());
         });
         ExplorerItem explorerItem = new ExplorerItem(
                 bamItem.getUUID(),
