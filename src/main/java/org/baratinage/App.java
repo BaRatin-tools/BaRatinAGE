@@ -19,7 +19,7 @@ public class App {
             System.out.println(sysLookAndFeel);
             UIManager.setLookAndFeel(sysLookAndFeel);
 
-            setDefaultSize(13);
+            setDefaultSize(14);
         } catch (Exception e) {
             e.printStackTrace();
         }
