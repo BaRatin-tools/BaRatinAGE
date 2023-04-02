@@ -58,11 +58,7 @@ public class Explorer extends RowColPanel {
     }
 
     public void updateItemView(ExplorerItem item) {
-        ExplorerItem root = this.rootNode;
-        if (item.parentItem != null) {
-            root = item.parentItem;
-        }
-        this.explorerTreeModel.nodeStructureChanged(root);
+        this.explorerTreeModel.nodeChanged(item);
     }
 
     // FIXME: given the following methods, I think I sould find a way to make
