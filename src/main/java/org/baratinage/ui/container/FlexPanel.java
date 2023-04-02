@@ -304,24 +304,11 @@ public class FlexPanel extends JPanel {
                         }
                 }
 
-                // gbc.insets = new Insets(
-                // top + this.padding.top,
-                // left + this.padding.left,
-                // bottom + this.padding.bottom,
-                // right + this.padding.right);
-
                 gbc.insets = new Insets(
                                 top,
                                 left,
                                 bottom,
                                 right);
-
-                // if (this.debug) {
-                // System.out.println("--------------------------");
-                // System.out.println("main-axis=" + this.axis.value);
-                // System.out.println("main-align=" + this.align.value);
-                // System.out.println("cross-align=" + crossAxisAlign.value);
-                // }
 
                 int[] anchor_fill = LOOK_UP_TABLE[this.axis.value][ALIGN.EXPAND.value][crossAxisAlign.value];
                 gbc.anchor = anchor_fill[0];

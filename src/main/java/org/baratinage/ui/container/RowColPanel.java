@@ -32,6 +32,10 @@ public class RowColPanel extends GridPanel {
         this(mainAxis, ALIGN.STRETCH, ALIGN.STRETCH);
     }
 
+    public RowColPanel(AXIS mainAxis, ALIGN mainAxisAlign) {
+        this(mainAxis, mainAxisAlign, ALIGN.STRETCH);
+    }
+
     public RowColPanel(AXIS mainAxis, ALIGN mainAxisAlign, ALIGN crossAxisAlign) {
         super();
         this.mainAxis = mainAxis;
@@ -132,7 +136,7 @@ public class RowColPanel extends GridPanel {
                 }
             } else if (align == ALIGN.END) {
                 if (this.mainAxisAlign == ALIGN.END) {
-                    System.out.println("HEEEEEERe!");
+                    ;
                     setAnchor(ANCHOR.SE);
                 } else if (this.mainAxisAlign == ALIGN.START) {
                     setAnchor(ANCHOR.SW);

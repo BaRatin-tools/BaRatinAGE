@@ -16,7 +16,7 @@ public class App {
 
         try {
             String sysLookAndFeel = UIManager.getSystemLookAndFeelClassName();
-            System.out.println(sysLookAndFeel);
+            // System.out.println(sysLookAndFeel);
             UIManager.setLookAndFeel(sysLookAndFeel);
 
             setDefaultSize(14);
@@ -51,7 +51,7 @@ public class App {
         Object[] keys = keySet.toArray(new Object[keySet.size()]);
         for (Object key : keys) {
             if (key != null && key.toString().toLowerCase().contains("font")) {
-                System.out.println(key);
+                // System.out.println(key);
                 Font font = UIManager.getDefaults().getFont(key);
                 if (font != null) {
                     font = font.deriveFont((float) size);
