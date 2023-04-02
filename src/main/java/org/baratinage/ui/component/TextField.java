@@ -11,48 +11,47 @@ import javax.swing.event.DocumentListener;
 
 public class TextField extends JTextField {
 
-    @FunctionalInterface
-    public interface TextChangeListener extends EventListener {
-        public void hasChanged(String newText);
-    }
-
-    List<TextChangeListener> textChangeListeners;
-
     public TextField() {
         super();
 
-        System.out.println(this.getPreferredSize());
-
         Dimension dim = this.getPreferredSize();
         dim.width = 200;
-        // this.setMinimumSize(minDimension);
         this.setPreferredSize(dim);
-
-        this.textChangeListeners = new ArrayList<>();
 
         this.getDocument().addDocumentListener(new DocumentListener() {
 
             @Override
             public void insertUpdate(DocumentEvent e) {
-                // System.out.println("INSERT >>> '" + textField.getText() + "'");
                 fireChangeListeners();
-
             }
 
             @Override
             public void removeUpdate(DocumentEvent e) {
-                // System.out.println("REMOVE >>> '" + textField.getText() + "'");
                 fireChangeListeners();
             }
 
             @Override
             public void changedUpdate(DocumentEvent e) {
-                // System.out.println("CHANGE >>> '" + textField.getText() + "'");
                 fireChangeListeners();
             }
 
         });
     }
+
+    private boolean doNotFireChange = false;
+
+    public void setTextWithoutFiringChangeListeners(String text) {
+        doNotFireChange = true;
+        super.setText(text);
+        doNotFireChange = false;
+    }
+
+    @FunctionalInterface
+    public interface TextChangeListener extends EventListener {
+        public void hasChanged(String newText);
+    }
+
+    private final List<TextChangeListener> textChangeListeners = new ArrayList<>();
 
     public void addChangeListener(TextChangeListener listener) {
         this.textChangeListeners.add(listener);
@@ -63,9 +62,35 @@ public class TextField extends JTextField {
     }
 
     public void fireChangeListeners() {
+        if (doNotFireChange)
+            return;
         for (TextChangeListener cl : this.textChangeListeners) {
             cl.hasChanged(getText());
         }
+    }
+
+    @FunctionalInterface
+    public interface TextValidators {
+        public boolean isTextValid(String text);
+    }
+
+    private final List<TextValidators> textValidators = new ArrayList<>();
+
+    public void addTextValidator(TextValidators validator) {
+        this.textValidators.add(validator);
+    }
+
+    public void removeTextValidator(TextValidators validator) {
+        this.textValidators.remove(validator);
+    }
+
+    public boolean isTextValid() {
+        String text = getText();
+        for (TextValidators tv : this.textValidators) {
+            if (!tv.isTextValid(text))
+                return false;
+        }
+        return true;
     }
 
 }
