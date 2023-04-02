@@ -5,6 +5,12 @@ import org.baratinage.ui.bam.IDataset;
 
 public class ImportedData extends BamItem implements IDataset {
 
+    public static final int TYPE = (int) Math.floor(Math.random() * Integer.MAX_VALUE);
+
+    public ImportedData() {
+        super(TYPE);
+    }
+
     @Override
     public String[] getColumnNames() {
         // TODO Auto-generated method stub

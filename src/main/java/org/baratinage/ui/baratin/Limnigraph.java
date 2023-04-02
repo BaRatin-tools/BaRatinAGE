@@ -6,6 +6,12 @@ import org.baratinage.ui.bam.IPredictionData;
 
 public class Limnigraph extends BamItem implements IPredictionData {
 
+    public static final int TYPE = (int) Math.floor(Math.random() * Integer.MAX_VALUE);
+
+    public Limnigraph() {
+        super(TYPE);
+    }
+
     @Override
     public PredictionInput[] getPredictionInputs() {
         // TODO Auto-generated method stub

@@ -6,6 +6,13 @@ import org.baratinage.ui.bam.ICalibrationData;
 
 public class Gaugings extends BamItem implements ICalibrationData {
 
+    public static final int TYPE = (int) Math.floor(Math.random() * Integer.MAX_VALUE);
+
+    public Gaugings() {
+        super(TYPE);
+
+    }
+
     @Override
     public UncertainData[] getInputs() {
         // TODO Auto-generated method stub

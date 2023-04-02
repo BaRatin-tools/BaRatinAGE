@@ -6,6 +6,12 @@ import org.baratinage.ui.bam.IStructuralError;
 
 public class StructuralError extends BamItem implements IStructuralError {
 
+    public static final int TYPE = (int) Math.floor(Math.random() * Integer.MAX_VALUE);
+
+    public StructuralError() {
+        super(TYPE);
+    }
+
     @Override
     public StructuralErrorModel getStructuralErrorModel() {
         // TODO Auto-generated method stub
