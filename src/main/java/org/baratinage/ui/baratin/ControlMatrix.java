@@ -5,7 +5,6 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Insets;
 import java.util.ArrayList;
-import java.util.EventListener;
 import java.util.List;
 
 import javax.swing.BorderFactory;
@@ -13,14 +12,13 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
-import javax.swing.JSeparator;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
+import org.baratinage.ui.container.ChangingRowColPanel;
 import org.baratinage.ui.container.GridPanel;
-import org.baratinage.ui.container.RowColPanel;
 
-public class ControlMatrix extends RowColPanel {
+public class ControlMatrix extends ChangingRowColPanel {
 
     private record ControlCheckBox(int segment, int control, CheckBox checkbox) {
     }
@@ -83,6 +81,7 @@ public class ControlMatrix extends RowColPanel {
 
                 checkBox.addItemListener(e -> {
                     updateEditability();
+                    notifyFollowers();
                 });
                 if (i == 1 && j == 2) {
 
@@ -104,7 +103,6 @@ public class ControlMatrix extends RowColPanel {
         JScrollPane scrollPane = new JScrollPane(matrixContainer);
         scrollPane.setBorder(BorderFactory.createEmptyBorder());
         clear();
-        appendChild(new JSeparator(), 0);
         appendChild(scrollPane);
 
     }
@@ -116,7 +114,7 @@ public class ControlMatrix extends RowColPanel {
         updateStateFromBooleanMatrix(oldControlMatrix);
         revalidate();
         updateEditability();
-        fireChangeListeners();
+        notifyFollowers();
     }
 
     private void addNewControl() {
@@ -126,7 +124,7 @@ public class ControlMatrix extends RowColPanel {
         updateStateFromBooleanMatrix(oldControlMatrix);
         revalidate();
         updateEditability();
-        fireChangeListeners();
+        notifyFollowers();
     }
 
     // for quick debugging purposes...
@@ -159,8 +157,6 @@ public class ControlMatrix extends RowColPanel {
             ccb.checkbox
                     .setEnabled(ccb.control != ccb.segment && (nextLevelCondition || prevLevelCondition));
         }
-        System.out.println(editableSegmentPerControl);
-        getControlMatrix();
     }
 
     private void updateStateFromBooleanMatrix(boolean[][] matrix) {
@@ -203,27 +199,6 @@ public class ControlMatrix extends RowColPanel {
                     ccb.setBackground(uncheckedColor);
                 }
             });
-        }
-    }
-
-    @FunctionalInterface
-    public interface ControlMatrixChangeListener extends EventListener {
-        public void hasChanged(boolean[][] controlMatrix);
-    }
-
-    List<ControlMatrixChangeListener> controlMatrixChangeListeners = new ArrayList<>();
-
-    public void addChangeListener(ControlMatrixChangeListener listener) {
-        this.controlMatrixChangeListeners.add(listener);
-    }
-
-    public void removeChangeListener(ControlMatrixChangeListener listener) {
-        this.controlMatrixChangeListeners.remove(listener);
-    }
-
-    public void fireChangeListeners() {
-        for (ControlMatrixChangeListener cl : this.controlMatrixChangeListeners) {
-            cl.hasChanged(getControlMatrix());
         }
     }
 

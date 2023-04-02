@@ -3,36 +3,34 @@ package org.baratinage.ui.bam;
 import java.awt.Font;
 import java.awt.event.ActionListener;
 import java.awt.Component;
-import java.util.ArrayList;
-import java.util.EventListener;
-import java.util.List;
 import java.util.UUID;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JSeparator;
 
+import org.baratinage.ui.container.ChangingRowColPanel;
 import org.baratinage.ui.container.RowColPanel;
 
-abstract public class BamItem extends RowColPanel {
+abstract public class BamItem extends ChangingRowColPanel {
 
     private String uuid;
-    private BamItem[] parents;
 
-    @FunctionalInterface
-    public interface BamItemChangeListener extends EventListener {
-        public void onChange(BamItem item);
-    }
-
-    private List<BamItemChangeListener> bamItemChangeListeners;
+    protected BamItemList children;
+    protected BamItemList siblings;
+    protected String name;
+    protected String description;
 
     private JLabel titleLabel;
     private JButton deleteButton;
     private RowColPanel headerPanel;
     private RowColPanel contentPanel;
 
-    public BamItem(BamItem... parents) {
+    public final int type;
+
+    public BamItem(int type) {
         super(AXIS.COL);
+        this.type = type;
 
         headerPanel = new RowColPanel(AXIS.ROW);
         headerPanel.setGap(5);
@@ -52,16 +50,13 @@ abstract public class BamItem extends RowColPanel {
         headerPanel.appendChild(deleteButton, 0);
 
         this.uuid = UUID.randomUUID().toString();
-        this.bamItemChangeListeners = new ArrayList<>();
 
-        this.parents = parents;
-        System.out.println(this.parents);
-        for (BamItem parent : parents) {
-            parent.addChangeListener((p) -> {
-                System.out.println("PARENT_HAS_CHANGED >>> " + p);
-            });
-        }
+        this.siblings = new BamItemList();
+        this.children = new BamItemList();
+    }
 
+    public void setSiblings(BamItemList siblings) {
+        this.siblings = siblings;
     }
 
     public void addDeleteAction(ActionListener action) {
@@ -88,31 +83,43 @@ abstract public class BamItem extends RowColPanel {
         return this.uuid;
     }
 
-    // // FIXME: when/how are children removed?
     public void hasChanged() {
-        fireChangeListeners();
-        // for (BamItem child : this.children) {
-        // child.parentHasChanged(this);
-        // }
-    }
-
-    public void addChangeListener(BamItemChangeListener updateListener) {
-        this.bamItemChangeListeners.add(updateListener);
-    }
-
-    public void removeChangeListener(BamItemChangeListener updateListener) {
-        this.bamItemChangeListeners.remove(updateListener);
-    }
-
-    public void fireChangeListeners() {
-        for (BamItemChangeListener listener : this.bamItemChangeListeners) {
-            listener.onChange(this);
+        notifyFollowers();
+        for (BamItem child : this.children) {
+            child.parentHasChanged(this);
         }
     }
 
-    public abstract String getName();
+    public void addChild(BamItem child) {
 
-    @Deprecated
+        children.add(child);
+    }
+
+    public void removeChild(BamItem child) {
+        children.remove(child);
+    }
+
+    public String getName() {
+        return this.name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getDescription() {
+        return this.name;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    @Override
+    public String toString() {
+        return "BamItem | " + this.type + " : " + this.name + " (" + this.uuid + ")";
+    }
+
     public abstract void parentHasChanged(BamItem parent);
 
     public abstract String toJsonString();

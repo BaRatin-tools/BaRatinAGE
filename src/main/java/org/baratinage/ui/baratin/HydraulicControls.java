@@ -18,16 +18,29 @@ import org.baratinage.jbam.Distribution;
 import org.baratinage.jbam.Parameter;
 import org.baratinage.ui.bam.IPriors;
 import org.baratinage.ui.component.NumberField;
+// import org.baratinage.ui.component.ToBeNotified;
+import org.baratinage.ui.container.ChangingRowColPanel;
 import org.baratinage.ui.container.GridPanel;
 import org.baratinage.ui.container.RowColPanel;
 
-public class HydraulicControls extends RowColPanel implements IPriors {
+public class HydraulicControls extends ChangingRowColPanel implements IPriors {
 
     private record ControlItem(String id, String label, String icon) {
         public String toString() {
             return label();
         }
     }
+
+    // private ToBeNotified toBeNotified = new ChangingRowColPanel.ToBeNotified() {
+    // @Override
+    // public void notify(ChangingRowColPanel object) {
+    // notifyFollowers();
+    // }
+    // };
+
+    private ToBeNotified toBeNotified = (ChangingRowColPanel panel) -> {
+        notifyFollowers();
+    };
 
     JList<ControlItem> controlSelector;
     DefaultListModel<ControlItem> controlSelectorModel;
@@ -91,7 +104,7 @@ public class HydraulicControls extends RowColPanel implements IPriors {
         int m = controlSelectorModel.size();
         if (m > n) {
             int d = m - n;
-            System.out.println("Deleting the " + d + " controls no longer needed");
+            System.out.println("Deleting the " + d + " no longer needed controls");
             for (int k = 0; k < d; k++) {
                 controlSelectorModel.remove(m - k - 1);
             }
@@ -101,14 +114,17 @@ public class HydraulicControls extends RowColPanel implements IPriors {
                 ControlItem ctrl = new ControlItem(UUID.randomUUID().toString(),
                         "Contrôle #" + (k + 1), null);
                 controlSelectorModel.addElement(ctrl);
-                controls.add(new HydraulicControl(ctrl.id(), ctrl.label()));
+                HydraulicControl newHydraulicControl = new HydraulicControl(ctrl.id(), ctrl.label());
+                // newHydraulicControl.addChangeListener(() -> fireChangeListeners());
+                newHydraulicControl.addFollower(toBeNotified);
+                controls.add(newHydraulicControl);
             }
         } else {
             System.out.println("Number of controls are already matching!");
         }
     }
 
-    private class HydraulicControl extends RowColPanel {
+    private class HydraulicControl extends ChangingRowColPanel {
         public final String id;
 
         private GridPanel parametersPanel;
@@ -138,21 +154,33 @@ public class HydraulicControls extends RowColPanel implements IPriors {
 
             JLabel activationStageLabel = new JLabel("k - Hauteur d'activation");
             activationStage = new NumberField();
+            // activationStage.addChangeListener(() -> fireChangeListeners());
+            activationStage.addFollower(toBeNotified);
             activationStageUncertainty = new NumberField();
+            // activationStageUncertainty.addChangeListener(() -> fireChangeListeners());
+            activationStageUncertainty.addFollower(toBeNotified);
             parametersPanel.insertChild(activationStageLabel, 0, 1);
             parametersPanel.insertChild(activationStage, 1, 1);
             parametersPanel.insertChild(activationStageUncertainty, 2, 1);
 
             JLabel coefficientLabel = new JLabel("a - Coefficient");
             coefficient = new NumberField();
+            // .addChangeListener(() -> fireChangeListeners());
+            coefficient.addFollower(toBeNotified);
             coefficientUncertainty = new NumberField();
+            // coefficientUncertainty.addChangeListener(() -> fireChangeListeners());
+            coefficientUncertainty.addFollower(toBeNotified);
             parametersPanel.insertChild(coefficientLabel, 0, 2);
             parametersPanel.insertChild(coefficient, 1, 2);
             parametersPanel.insertChild(coefficientUncertainty, 2, 2);
 
             JLabel exponentLabel = new JLabel("c - Exposant");
             exponent = new NumberField();
+            // exponent.addChangeListener(() -> fireChangeListeners());
+            exponent.addFollower(toBeNotified);
             exponentUncertainty = new NumberField();
+            // exponentUncertainty.addChangeListener(() -> fireChangeListeners());
+            exponentUncertainty.addFollower(toBeNotified);
             parametersPanel.insertChild(exponentLabel, 0, 3);
             parametersPanel.insertChild(exponent, 1, 3);
             parametersPanel.insertChild(exponentUncertainty, 2, 3);
