@@ -2,6 +2,8 @@ package org.baratinage.ui.baratin;
 
 import java.awt.Color;
 import java.io.IOException;
+import java.util.List;
+
 import javax.swing.JButton;
 
 import org.baratinage.jbam.BaM;
@@ -36,7 +38,9 @@ import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.ui.plot.Plot;
 import org.baratinage.ui.plot.PlotContainer;
 import org.baratinage.ui.plot.PlotItem;
+import org.baratinage.ui.plot.PlotLine;
 import org.baratinage.ui.plot.PlotPoints;
+import org.baratinage.ui.plot.PlotBand;
 
 public class PriorRatingCurve extends GridPanel implements IPriorPredictionExperiment {
 
@@ -52,15 +56,104 @@ public class PriorRatingCurve extends GridPanel implements IPriorPredictionExper
                 });
                 insertChild(runButton, 0, 0,
                                 ANCHOR.C, FILL.NONE);
-                setRowWeight(0, 1);
+                setRowWeight(1, 1);
                 setColWeight(0, 1);
 
                 setName("prior_rating_curve");
 
                 plotPanel = new RowColPanel(RowColPanel.AXIS.COL);
 
-                insertChild(plotPanel, 0, 0,
+                insertChild(plotPanel, 0, 1,
                                 ANCHOR.C, FILL.BOTH);
+
+                buildFakePlot();
+        }
+
+        private void buildFakePlot() {
+                double[] x = { 0, 1, 2, 3, 4, 5, 6, 10, 15, 20 };
+                double[] y = { 5, 4, 6, 3, 7, 8, 9, 13, 10, 11 };
+                double[] ylow = new double[y.length];
+                double[] yhigh = new double[y.length];
+
+                for (int k = 0; k < y.length; k++) {
+                        ylow[k] = y[k] * 0.7;
+                        yhigh[k] = y[k] * 1.1 + 2;
+                }
+                Plot plot = new Plot("xlabe", "ylab", true);
+
+                plot.addXYItem(new PlotBand(
+                                "test",
+                                x,
+                                y,
+                                ylow, yhigh,
+                                new Color(255, 100, 100, 100),
+                                Color.RED,
+                                5,
+                                PlotBand.SHAPE.CIRCLE,
+                                10
+
+                ));
+
+                // plot.addXYItem(new PlotBand(
+                // "test",
+                // x,
+                // ylow, yhigh,
+                // new Color(255, 0, 100, 100)
+
+                // ));
+
+                PlotContainer plotContainer = new PlotContainer(plot);
+
+                plotPanel.clear();
+                plotPanel.appendChild(plotContainer);
+
+                plot.setAxisLogY(true);
+        }
+
+        // buildPlot(
+        // predConfig.getPredictionInputs()[0],
+        // predConfig.getPredictionOutputs()[0],
+        // predRes[1],
+        // 0);
+
+        private void buildRatingCurvePlot(
+                        PredictionConfig predictionConfig,
+                        PredictionResult parametricUncertainty,
+                        PredictionResult maxpost) {
+
+                double[] stage = predictionConfig.getPredictionInputs()[0].getDataColumns().get(0);
+                String outputName = predictionConfig.getPredictionOutputs()[0].getName();
+                double[] dischargeMaxpost = maxpost.getOutputResults().get(outputName).spag().get(0);
+
+                List<double[]> dischargeParametricEnv = parametricUncertainty.getOutputResults().get(outputName).env();
+
+                double[] dischargeLow = dischargeParametricEnv.get(1);
+                double[] dischargeHigh = dischargeParametricEnv.get(2);
+
+                Plot plot = new Plot("Stage [m]", "Discharge [m3/s]", true);
+
+                PlotItem mp = new PlotLine(
+                                "Prior rating curve",
+                                stage,
+                                dischargeMaxpost,
+                                Color.BLACK,
+                                5);
+
+                PlotItem parEnv = new PlotBand(
+                                "Prior parametric uncertainty",
+                                stage,
+                                dischargeLow,
+                                dischargeHigh,
+                                new Color(200, 200, 255, 100));
+
+                plot.addXYItem(mp);
+                plot.addXYItem(parEnv);
+
+                PlotContainer plotContainer = new PlotContainer(plot);
+
+                plotPanel.clear();
+                plotPanel.appendChild(plotContainer);
+
         }
 
         private void buildPlot(PredictionInput i, PredictionOutput o, PredictionResult r, int maxpostIndex) {
@@ -78,7 +171,7 @@ public class PriorRatingCurve extends GridPanel implements IPriorPredictionExper
                                 PlotItem.SHAPE.CIRCLE,
                                 5));
 
-                PlotContainer plotContainer = new PlotContainer(plot.getChart());
+                PlotContainer plotContainer = new PlotContainer(plot);
 
                 plotPanel.clear();
                 plotPanel.appendChild(plotContainer);
@@ -182,11 +275,13 @@ public class PriorRatingCurve extends GridPanel implements IPriorPredictionExper
                 CalibrationResult calRes = bam.getCalibrationResults();
                 System.out.println(calRes);
 
-                buildPlot(
-                                predConfig.getPredictionInputs()[0],
-                                predConfig.getPredictionOutputs()[0],
-                                predRes[1],
-                                0);
+                // buildPlot(
+                // predConfig.getPredictionInputs()[0],
+                // predConfig.getPredictionOutputs()[0],
+                // predRes[1],
+                // 0);
+
+                buildRatingCurvePlot(predConfig, predRes[0], predRes[1]);
 
         }
 
