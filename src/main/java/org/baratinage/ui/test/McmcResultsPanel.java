@@ -55,7 +55,7 @@ public class McmcResultsPanel extends JPanel {
             plot.addLine(new PlotLine("",
                     new double[] { xMean, xMean }, yRange, Color.RED, 2));
 
-            PlotContainer plotContainer = new PlotContainer(plot.getChart());
+            PlotContainer plotContainer = new PlotContainer(plot);
 
             this.add(plotContainer, new GridBagConstraints(
                     i,

@@ -186,7 +186,7 @@ public class PredictionResultsPanel extends FlexPanel {
                 PlotItem.SHAPE.CIRCLE,
                 5));
 
-        PlotContainer plotContainer = new PlotContainer(plot.getChart());
+        PlotContainer plotContainer = new PlotContainer(plot);
         plotPanel.appendChild(plotContainer, 1);
 
         plotPanel.updateUI();
