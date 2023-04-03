@@ -1,10 +1,16 @@
 package org.baratinage.ui.baratin;
 
+import java.util.ArrayList;
+import java.util.List;
+
 // import java.awt.Color;
 // import javax.swing.plaf.basic.BasicBorders;
 
 import javax.swing.JLabel;
 import javax.swing.SwingUtilities;
+
+import org.baratinage.jbam.PredictionInput;
+import org.baratinage.ui.bam.IPredictionData;
 
 // import javax.swing.SwingUtilities;
 
@@ -16,7 +22,7 @@ import org.baratinage.ui.container.ChangingRowColPanel;
 import org.baratinage.ui.container.GridPanel;
 
 // public class RatingCurveStageGrid extends ChangingRowColPanel implements ToBeNotified {
-public class RatingCurveStageGrid extends ChangingRowColPanel {
+public class RatingCurveStageGrid extends ChangingRowColPanel implements IPredictionData {
 
     private NumberField minStageField;
     private NumberField maxStageField;
@@ -89,6 +95,7 @@ public class RatingCurveStageGrid extends ChangingRowColPanel {
                 if (n > 0) {
                     double step = (max - min) / n;
                     isValueValid = true;
+                    stageGridConfig = new StageGridConfig(min, max, step);
                     SwingUtilities.invokeLater(() -> {
                         valStepField.setValue(step, true);
                         valStepField.updateTextField();
@@ -144,6 +151,19 @@ public class RatingCurveStageGrid extends ChangingRowColPanel {
 
     public boolean isValueValid() {
         return isValueValid;
+    }
+
+    @Override
+    public PredictionInput[] getPredictionInputs() {
+        // System.out.println("*".repeat(70));
+        // System.out.println("PredictionInput");
+        List<double[]> stageGrid = new ArrayList<>();
+        stageGrid.add(getStageGrid());
+        System.out.println(getStageGrid());
+        System.out.println(stageGrid);
+        PredictionInput predInput = new PredictionInput("stage_grid", stageGrid);
+        System.out.println(predInput);
+        return new PredictionInput[] { predInput };
     }
 
 }
