@@ -31,14 +31,17 @@ import org.baratinage.ui.container.RowColPanel;
 
 public class PlotContainer extends RowColPanel {
 
+    Plot plot;
     JFreeChart chart;
     ChartPanel chartPanel;
+    boolean logYaxis;
 
-    public PlotContainer(JFreeChart chart) {
+    public PlotContainer(Plot plot) {
         super(AXIS.COL);
         this.setBackground(Color.WHITE);
 
-        this.chart = chart;
+        this.plot = plot;
+        this.chart = plot.getChart();
         this.chartPanel = new ChartPanel(chart);
         this.chartPanel.setMinimumDrawWidth(100);
         this.chartPanel.setMinimumDrawHeight(100);
@@ -46,11 +49,27 @@ public class PlotContainer extends RowColPanel {
         this.chartPanel.setMaximumDrawWidth(10000);
         this.chartPanel.setMaximumDrawHeight(10000);
 
-        RowColPanel actionPanel = new RowColPanel(AXIS.ROW, ALIGN.END);
+        RowColPanel topPanel = new RowColPanel();
 
-        this.appendChild(actionPanel, 0);
+        this.appendChild(topPanel, 0);
         this.appendChild(chartPanel, 1);
 
+        RowColPanel toolsPanel = new RowColPanel(AXIS.ROW, ALIGN.START);
+        RowColPanel actionPanel = new RowColPanel(AXIS.ROW, ALIGN.END);
+
+        topPanel.appendChild(toolsPanel, 1);
+        topPanel.appendChild(actionPanel, 1);
+
+        logYaxis = false;
+        JButton toggleYaxisLogButton = new JButton(logYaxis ? "Axe Y linéaire" : "Axe Y logarithmique");
+        toolsPanel.appendChild(toggleYaxisLogButton, 0);
+        toggleYaxisLogButton.addActionListener((e) -> {
+            logYaxis = !logYaxis;
+            toggleYaxisLogButton.setText(logYaxis ? "Axe Y linéaire" : "Axe Y logarithmique");
+            plot.setAxisLogY(logYaxis);
+        });
+
+        // FIXME: use lambda instead
         PlotContainer that = this;
         AbstractAction saveAsSvgAction = new AbstractAction("Save As SVG") {
             @Override
