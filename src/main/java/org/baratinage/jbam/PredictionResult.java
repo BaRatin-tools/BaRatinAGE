@@ -64,11 +64,17 @@ public class PredictionResult {
             List<double[]> spag = null;
             try {
                 env = Read.readMatrix(Path.of(workspace, envFileName).toString(), 1);
-                spag = Read.readMatrix(Path.of(workspace, spagFileName).toString(), 0);
 
             } catch (IOException e) {
                 System.err.println(e);
-                return;
+                // return;
+            }
+
+            try {
+                spag = Read.readMatrix(Path.of(workspace, spagFileName).toString(), 0);
+            } catch (IOException e) {
+                System.err.println(e);
+                // return;
             }
 
             this.outputResults.put(outputName, new PredictionOutputResult(env, spag));
