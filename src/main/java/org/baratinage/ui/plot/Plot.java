@@ -7,20 +7,21 @@ import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.DatasetRenderingOrder;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.annotations.XYTitleAnnotation;
+import org.jfree.chart.axis.LogarithmicAxis;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.block.BlockBorder;
 import org.jfree.chart.title.LegendTitle;
 import org.jfree.chart.ui.RectangleAnchor;
 import org.jfree.chart.ui.RectangleEdge;
+import org.jfree.data.Range;
 
 public class Plot {
 
     private XYPlot plot;
     private JFreeChart chart;
 
-    NumberAxis axisX;
-    NumberAxis axisY;
-
+    private NumberAxis axisX;
+    private NumberAxis axisY;
     private ArrayList<PlotLine> lines;
     private ArrayList<PlotItem> items;
 
@@ -31,6 +32,7 @@ public class Plot {
         axisX = new NumberAxis(xAxisLabel);
         axisX.setAutoRangeIncludesZero(false);
         axisY = new NumberAxis(yAxisLabel);
+
         axisY.setAutoRangeIncludesZero(false);
 
         plot = new XYPlot();
@@ -63,10 +65,37 @@ public class Plot {
 
     }
 
+    public void setAxisLogX(boolean log) {
+        if (log) {
+            LogarithmicAxis newAxisX = new LogarithmicAxis(axisX.getLabel());
+            newAxisX.setAutoRangeIncludesZero(false);
+            newAxisX.setAllowNegativesFlag(true);
+            axisX = newAxisX;
+        } else {
+            axisX = new NumberAxis(axisX.getLabel());
+            axisX.setAutoRangeIncludesZero(false);
+        }
+        plot.setDomainAxis(axisX);
+    }
+
+    public void setAxisLogY(boolean log) {
+        if (log) {
+            LogarithmicAxis newAxisY = new LogarithmicAxis(axisY.getLabel());
+            newAxisY.setAutoRangeIncludesZero(false);
+            newAxisY.setAllowNegativesFlag(true);
+            axisY = newAxisY;
+        } else {
+            axisY = new NumberAxis(axisY.getLabel());
+            axisY.setAutoRangeIncludesZero(false);
+        }
+        plot.setRangeAxis(axisY);
+    }
+
     public JFreeChart getChart() {
         return this.chart;
     }
 
+    @Deprecated
     public void addLine(PlotLine line) {
         plot.setDataset(lines.size(), line.getDataset());
         plot.setRenderer(lines.size(), line.getRenderer());
@@ -77,5 +106,23 @@ public class Plot {
         plot.setDataset(items.size(), item.getDataset());
         plot.setRenderer(items.size(), item.getRenderer());
         items.add(item);
+
+        // Range xRange = axisX.getRange();
+        // Range yRange = axisY.getRange();
+
+        // System.out.println(xRange.getLength());
+        // System.out.println(yRange.getLength());
+
+        // xRange = Range.shift(Range.scale(xRange, 2), -xRange.getLength() / 2);
+        // yRange = Range.shift(Range.scale(yRange, 2), -yRange.getLength());
+
+        // System.out.println(axisX.getRange());
+        // System.out.println(axisY.getRange());
+
+        // axisX.setRange(xRange);
+        // axisY.setRange(yRange);
+
+        // System.out.println(axisX.getRange());
+        // System.out.println(axisY.getRange());
     }
 }
