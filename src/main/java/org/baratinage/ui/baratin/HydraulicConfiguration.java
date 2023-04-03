@@ -96,7 +96,9 @@ class HydraulicConfiguration extends BaRatinItem
             for (int j = 0; j < matrix[i].length; j++) {
                 xtra += matrix[i][j] ? "1 " : "0 ";
             }
-            xtra += "\n";
+            if ((i + 1) != matrix.length) {
+                xtra += "\n";
+            }
         }
         return xtra;
     }
