@@ -45,6 +45,7 @@ public class CalibrationData {
         UncertainDataConfig uDataConfig = new UncertainDataConfig();
         uDataConfig.nCol = 0;
         uDataConfig.nRow = data[0].getNumberOfValues(); // FIXME should check data consistency
+        // FIXME: 0 length should be forbidden, makes BaM crash
         uDataConfig.X = new int[data.length];
         uDataConfig.Xu = new int[data.length];
         uDataConfig.Xb = new int[data.length];

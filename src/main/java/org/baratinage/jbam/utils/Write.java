@@ -103,7 +103,16 @@ public class Write {
         }
         int nRow = matrixColumnWise.get(0).length;
         if (nRow <= 0) {
+            // FIXME: this condition could be skiped if BaM allowed input data with 0 rows!
+            // At least for calibration data, Config_Data.txt with nobs = 0 throws an error
+            // FIXME: this error should be handled in CalibrationData class!
             System.err.println("Cannot write an empty matrix.");
+            // String[] emptyMatrix = new String[nCol];
+            // for (int k = 0; k < nCol; k++) {
+            // emptyMatrix[k] = "";
+            // }
+            // writeLines(textFilePath, new String[] { processMatrixRow(emptyMatrix, sep)
+            // });
             return;
         }
         int headerOffset = headers == null ? 0 : 1;
