@@ -26,15 +26,16 @@ import org.jfree.chart.JFreeChart;
 import org.jfree.svg.SVGGraphics2D;
 
 import org.baratinage.ui.component.NoScalingIcon;
-import org.baratinage.ui.container.FlexPanel;
+// import org.baratinage.ui.container.FlexPanel;
+import org.baratinage.ui.container.RowColPanel;
 
-public class PlotContainer extends FlexPanel {
+public class PlotContainer extends RowColPanel {
 
     JFreeChart chart;
     ChartPanel chartPanel;
 
     public PlotContainer(JFreeChart chart) {
-        super(FlexPanel.AXIS.COL);
+        super(AXIS.COL);
         this.setBackground(Color.WHITE);
 
         this.chart = chart;
@@ -45,11 +46,10 @@ public class PlotContainer extends FlexPanel {
         this.chartPanel.setMaximumDrawWidth(10000);
         this.chartPanel.setMaximumDrawHeight(10000);
 
-        FlexPanel actionPanel = new FlexPanel(FlexPanel.AXIS.ROW);
+        RowColPanel actionPanel = new RowColPanel(AXIS.ROW, ALIGN.END);
 
-        this.appendChild(actionPanel, 0, FlexPanel.ALIGN.END,
-                5, 5, 0, 0);
-        this.appendChild(chartPanel, 0.75);
+        this.appendChild(actionPanel, 0);
+        this.appendChild(chartPanel, 1);
 
         PlotContainer that = this;
         AbstractAction saveAsSvgAction = new AbstractAction("Save As SVG") {
