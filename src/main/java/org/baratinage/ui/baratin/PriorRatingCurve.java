@@ -1,18 +1,14 @@
 package org.baratinage.ui.baratin;
 
+import java.awt.Color;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-
 import javax.swing.JButton;
-import javax.swing.JLabel;
 
 import org.baratinage.jbam.BaM;
 import org.baratinage.jbam.CalDataResidualConfig;
 import org.baratinage.jbam.CalibrationConfig;
 import org.baratinage.jbam.CalibrationData;
-import org.baratinage.jbam.Distribution;
+import org.baratinage.jbam.CalibrationResult;
 import org.baratinage.jbam.McmcConfig;
 import org.baratinage.jbam.McmcCookingConfig;
 import org.baratinage.jbam.McmcSummaryConfig;
@@ -22,216 +18,230 @@ import org.baratinage.jbam.Parameter;
 import org.baratinage.jbam.PredictionConfig;
 import org.baratinage.jbam.PredictionInput;
 import org.baratinage.jbam.PredictionOutput;
+import org.baratinage.jbam.PredictionResult;
 import org.baratinage.jbam.RunOptions;
 import org.baratinage.jbam.StructuralErrorModel;
 import org.baratinage.jbam.UncertainData;
-import org.baratinage.jbam.utils.Read;
-import org.baratinage.ui.bam.IPredictionExperiment;
+
+import org.baratinage.ui.bam.DefaultStructuralErrorProvider;
+import org.baratinage.ui.bam.IModelDefinition;
+import org.baratinage.ui.bam.IPredictionData;
+import org.baratinage.ui.bam.IPriorPredictionExperiment;
+import org.baratinage.ui.bam.IPriors;
+import org.baratinage.ui.bam.IStructuralError;
+
+import org.baratinage.ui.container.GridPanel;
 import org.baratinage.ui.container.RowColPanel;
 
-public class PriorRatingCurve extends RowColPanel implements IPredictionExperiment {
+import org.baratinage.ui.plot.Plot;
+import org.baratinage.ui.plot.PlotContainer;
+import org.baratinage.ui.plot.PlotItem;
+import org.baratinage.ui.plot.PlotPoints;
 
-    public PriorRatingCurve() {
-        appendChild(new JLabel("Prior rating curve"));
+public class PriorRatingCurve extends GridPanel implements IPriorPredictionExperiment {
 
-        JButton runButton = new JButton("Compute prior rating curve");
-        runButton.addActionListener((e) -> {
-            System.out.println("Run BaM");
-            runBaM();
-        });
-        appendChild(runButton);
-    }
+        RowColPanel plotPanel;
 
-    private void runBaM() {
+        public PriorRatingCurve() {
+                // appendChild(new JLabel("Prior rating curve"));
 
-        System.out.println("Creating model definition...");
-        Parameter[] parameters = new Parameter[] {
-                new Parameter("K1", 10000,
-                        Distribution.LogNormal(9, 1)),
-                new Parameter("P0", 100,
-                        Distribution.Gaussian(100, 10)),
-                new Parameter("r", 0.001,
-                        Distribution.LogNormal(-7, 1)),
-                new Parameter("K2", 10000,
-                        Distribution.LogNormal(9, 1)),
-        };
-
-        // FIXME: have a proper object to store and handle xTra
-        String xTra = "3 \nt, T1,T2 \n4 \nK1,P0,r,K2\n2\nK1/(1+((K1-P0)/P0)*exp(-r*T1*t))\nK2/(1+((K2-P0)/P0)*exp(-r*T2*t))";
-
-        Model model = new Model("TextFile", 3, 2, parameters, xTra);
-
-        // ----------------------------------------------------------
-        // MODEL OUTPUTS
-        System.out.println("Creating model outputs...");
-        StructuralErrorModel linearErrModel = new StructuralErrorModel("P1andP2",
-                "Linear",
-                new Parameter[] {
-                        new Parameter("gamma1", 1, Distribution.Uniform(0, 1000)),
-                        new Parameter("gamma2", 0.1, Distribution.Uniform(0, 1000)),
+                JButton runButton = new JButton("Compute prior rating curve");
+                runButton.addActionListener((e) -> {
+                        System.out.println("Run BaM");
+                        runBaM();
                 });
-        ModelOutput[] modelOutputs = new ModelOutput[] {
-                new ModelOutput("P1", linearErrModel),
-                new ModelOutput("P2", linearErrModel),
-        };
+                insertChild(runButton, 0, 0,
+                                ANCHOR.C, FILL.NONE);
+                setRowWeight(0, 1);
+                setColWeight(0, 1);
 
-        // ----------------------------------------------------------
-        // TEST DATA
-        System.out.println("Importing test data...");
-        List<double[]> data;
-        try {
-            data = Read.readMatrix("./test/twoPop.txt", ";", 1, 0,
-                    "NA", true);
-        } catch (IOException e) {
-            System.err.println(e);
-            return;
+                setName("prior_rating_curve");
+
+                plotPanel = new RowColPanel(RowColPanel.AXIS.COL);
+
+                insertChild(plotPanel, 0, 0,
+                                ANCHOR.C, FILL.BOTH);
         }
-        Read.prettyPrintMatrix(data);
 
-        System.out.println("Creating fake big test data...");
-        int nRepeat = 10;
-        // Creating a big version
-        List<double[]> repeatedData = data.stream().map((column -> {
-            int n = column.length;
-            double[] repeatedColumn = new double[n * nRepeat];
-            for (int i = 0; i < nRepeat; i++) {
-                for (int j = 0; j < n; j++) {
-                    repeatedColumn[i * n + j] = column[j];
+        private void buildPlot(PredictionInput i, PredictionOutput o, PredictionResult r, int maxpostIndex) {
+
+                double[] x = i.getDataColumns().get(0);
+                double[] y = r.getOutputResults().get(o.getName()).spag().get(maxpostIndex);
+
+                Plot plot = new Plot(i.getName(), o.getName(), true);
+
+                plot.addXYItem(new PlotPoints(
+                                "Maxpost",
+                                x,
+                                y,
+                                Color.GREEN,
+                                PlotItem.SHAPE.CIRCLE,
+                                5));
+
+                PlotContainer plotContainer = new PlotContainer(plot.getChart());
+
+                plotPanel.clear();
+                plotPanel.appendChild(plotContainer);
+
+        }
+
+        private void runBaM() {
+
+                System.out.println("-".repeat(70));
+
+                String workspace = "test/newTestWS";
+
+                String xTra = modelDefinitionProvider.getXtra(workspace);
+
+                Parameter[] parameters = priorsProvider.getParameters();
+
+                String[] inputNames = modelDefinitionProvider.getInputNames();
+                String[] outputNames = modelDefinitionProvider.getOutputNames();
+
+                Model model = new Model(
+                                modelDefinitionProvider.getModelId(),
+                                inputNames.length,
+                                outputNames.length,
+                                parameters,
+                                xTra);
+
+                // we can use only one default error model since prior predictions
+                // often don't propagate structural errors
+                StructuralErrorModel linearErrModel = structuralErrorProvider.getStructuralErrorModel();
+
+                ModelOutput[] modelOutputs = new ModelOutput[outputNames.length];
+                for (int k = 0; k < outputNames.length; k++) {
+                        modelOutputs[k] = new ModelOutput(outputNames[k], linearErrModel);
                 }
-            }
-            return repeatedColumn;
-        })).collect(Collectors.toList());
-        Read.prettyPrintMatrix(repeatedData);
 
-        // ----------------------------------------------------------
-        // CALIBRATION DATA
-        System.out.println("Creating calibration data inputs and outputs ...");
-        UncertainData[] inputs = {
-                new UncertainData("t", data.get(0)),
-                new UncertainData("T1", data.get(1)),
-                new UncertainData("T2", data.get(2))
-        };
-        UncertainData[] outputs = {
-                new UncertainData("P1", data.get(3)),
-                new UncertainData("P2", data.get(4)),
-        };
+                double[] fakeCalibrationData = new double[] { 0 };
+                UncertainData[] inputs = new UncertainData[inputNames.length];
+                for (int k = 0; k < inputNames.length; k++) {
+                        inputs[k] = new UncertainData(inputNames[k], fakeCalibrationData);
+                }
+                UncertainData[] outputs = new UncertainData[inputNames.length];
+                for (int k = 0; k < outputNames.length; k++) {
+                        outputs[k] = new UncertainData(outputNames[k], fakeCalibrationData);
+                }
 
-        CalibrationData calibrationData = new CalibrationData("twoPop",
-                inputs, outputs);
+                CalibrationData calibrationData = new CalibrationData("fakeCalibrationData",
+                                inputs, outputs);
 
-        // ----------------------------------------------------------
-        // ADDITIONAL CONFIGURATION
-        System.out.println("Creating additional configuration objects ...");
-        CalDataResidualConfig calDataResidualConfig = new CalDataResidualConfig();
-        McmcConfig mcmcConfig = new McmcConfig();
-        McmcCookingConfig mcmcCookingConfig = new McmcCookingConfig();
-        McmcSummaryConfig mcmcSummaryConfig = new McmcSummaryConfig();
+                CalDataResidualConfig calDataResidualConfig = new CalDataResidualConfig();
+                McmcConfig mcmcConfig = new McmcConfig();
+                McmcCookingConfig mcmcCookingConfig = new McmcCookingConfig();
+                McmcSummaryConfig mcmcSummaryConfig = new McmcSummaryConfig();
 
-        // ----------------------------------------------------------
-        // CALIBRATION CONFIGURATION
-        System.out.println("Creating model calibration with normal data...");
-        CalibrationConfig calibrationConfig = new CalibrationConfig(
-                model,
-                modelOutputs,
-                calibrationData,
-                mcmcConfig,
-                mcmcCookingConfig,
-                mcmcSummaryConfig,
-                calDataResidualConfig);
+                CalibrationConfig fakeCalibrationConfig = new CalibrationConfig(
+                                model,
+                                modelOutputs,
+                                calibrationData,
+                                mcmcConfig,
+                                mcmcCookingConfig,
+                                mcmcSummaryConfig,
+                                calDataResidualConfig);
 
-        // ----------------------------------------------------------
-        // PREDICTION CONFIGURATION
+                RunOptions runOptions = new RunOptions(
+                                true,
+                                true,
+                                true,
+                                true);
 
-        List<double[]> t = new ArrayList<>();
-        List<double[]> T1 = new ArrayList<>();
-        List<double[]> T2 = new ArrayList<>();
-        int nSpag = 10;
-        for (int k = 0; k < nSpag; k++) {
-            t.add(repeatedData.get(0));
-            T1.add(repeatedData.get(1));
-            T2.add(repeatedData.get(2));
+                PredictionConfig predConfig = getPredictionConfig();
+                PredictionConfig predConfigMaxPost = new PredictionConfig(
+                                predConfig.getName() + "_maxpost",
+                                predConfig.getPredictionInputs(),
+                                predConfig.getPredictionOutputs(),
+                                new PredictionOutput[] {},
+                                false,
+                                true,
+                                500);
+
+                BaM bam = new BaM(
+                                fakeCalibrationConfig,
+                                new PredictionConfig[] { predConfig, predConfigMaxPost },
+                                runOptions,
+                                null,
+                                null);
+
+                System.out.println(bam);
+
+                try {
+                        bam.run(workspace, txt -> {
+                                System.out.println("txt => " + txt);
+                        });
+                } catch (IOException e) {
+                        e.printStackTrace();
+                }
+
+                bam.readResults(workspace);
+
+                PredictionResult[] predRes = bam.getPredictionsResults();
+                System.out.println(predRes);
+
+                CalibrationResult calRes = bam.getCalibrationResults();
+                System.out.println(calRes);
+
+                buildPlot(
+                                predConfig.getPredictionInputs()[0],
+                                predConfig.getPredictionOutputs()[0],
+                                predRes[1],
+                                0);
+
         }
 
-        System.out.println("Creating prediction outputs ...");
-        PredictionOutput[] predOutputs = new PredictionOutput[] {
-                new PredictionOutput(
-                        "P0",
-                        true,
-                        true,
-                        true),
-                new PredictionOutput(
-                        "P1",
-                        true,
-                        true,
-                        true)
-        };
+        private IPredictionData predictionDataProvider;
 
-        System.out.println("Creating prediction configuration ...");
-        PredictionConfig[] predConfigs = new PredictionConfig[] {
-                new PredictionConfig(
-                        "TestWithCalibData",
-                        new PredictionInput[] {
-                                new PredictionInput("t_small", data.subList(0, 1)),
-                                new PredictionInput("T1_small", data.subList(1, 2)),
-                                new PredictionInput("T2_small", data.subList(2, 3)),
-                        },
-                        predOutputs,
-                        new PredictionOutput[] {},
-                        true,
-                        true,
-                        500),
+        @Override
+        public void setPredictionDataProvider(IPredictionData predictionDataProvider) {
+                this.predictionDataProvider = predictionDataProvider;
+        }
 
-        };
+        @Override
+        public PredictionConfig getPredictionConfig() {
+                PredictionInput[] predInputs = predictionDataProvider.getPredictionInputs();
 
-        // ----------------------------------------------------------
-        // BaM
+                String[] outputNames = modelDefinitionProvider.getOutputNames();
+                PredictionOutput[] predOutputs = new PredictionOutput[outputNames.length];
+                for (int k = 0; k < outputNames.length; k++) {
+                        predOutputs[k] = new PredictionOutput(
+                                        outputNames[k],
+                                        false,
+                                        true,
+                                        true);
+                }
 
-        System.out.println("Creating final BaM configuration...");
-        RunOptions runOptions = new RunOptions(
-                true,
-                true,
-                true,
-                true);
+                return new PredictionConfig(
+                                getName(),
+                                predInputs,
+                                predOutputs,
+                                new PredictionOutput[] {},
+                                true,
+                                true,
+                                500);
 
-        // boolean useRepeatedDataInCalibration = false;
-        BaM bam;
-        // if (!useRepeatedDataInCalibration) {
-        bam = new BaM(calibrationConfig, predConfigs, runOptions, null, null);
-        // } else {
-        // Calibration using repeated data instead of regular data for longer MCMC
-        // sampling
-        // CalibrationConfig calibrationConfigBig = new CalibrationConfig(
-        // model,
-        // modelOutputs,
-        // new CalibrationData("twoPop",
-        // new UncertainData[] {
-        // new UncertainData("t", repeatedData.get(0)),
-        // new UncertainData("T1", repeatedData.get(1)),
-        // new UncertainData("T2", repeatedData.get(2))
-        // },
-        // new UncertainData[] {
-        // new UncertainData("P1", repeatedData.get(3)),
-        // new UncertainData("P2", repeatedData.get(4)),
-        // }),
-        // mcmcConfig,
-        // mcmcCookingConfig,
-        // mcmcSummaryConfig,
-        // calDataResidualConfig);
-        // bam = new BaM(calibrationConfigBig, predConfigs, runOptions, null, null);
-        // }
-        System.out.println(bam);
+        }
 
-    }
+        private IPriors priorsProvider;
 
-    @Override
-    public PredictionConfig getPredictionConfig() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getPredictionConfig'");
-    }
+        @Override
+        public void setPriorsProvider(IPriors priorsProvider) {
+                this.priorsProvider = priorsProvider;
+        }
 
-    @Override
-    public void setPredictionData(PredictionInput[] inputs, PredictionOutput[] outputs) {
-        System.out.println(inputs);
-        System.out.println(outputs);
-    }
+        private IStructuralError structuralErrorProvider = new DefaultStructuralErrorProvider(
+                        DefaultStructuralErrorProvider.TYPE.LINEAR);
+
+        @Override
+        public void setStructuralErrorProvider(IStructuralError structuralErrorProvider) {
+                this.structuralErrorProvider = structuralErrorProvider;
+        }
+
+        private IModelDefinition modelDefinitionProvider;
+
+        @Override
+        public void setModelDefintionProvider(IModelDefinition modelDefinitionProvider) {
+                this.modelDefinitionProvider = modelDefinitionProvider;
+        }
+
 }
