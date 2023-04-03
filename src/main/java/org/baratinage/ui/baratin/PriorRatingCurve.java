@@ -39,7 +39,6 @@ import org.baratinage.ui.plot.Plot;
 import org.baratinage.ui.plot.PlotContainer;
 import org.baratinage.ui.plot.PlotItem;
 import org.baratinage.ui.plot.PlotLine;
-import org.baratinage.ui.plot.PlotPoints;
 import org.baratinage.ui.plot.PlotBand;
 
 public class PriorRatingCurve extends GridPanel implements IPriorPredictionExperiment {
@@ -148,28 +147,6 @@ public class PriorRatingCurve extends GridPanel implements IPriorPredictionExper
 
                 plot.addXYItem(mp);
                 plot.addXYItem(parEnv);
-
-                PlotContainer plotContainer = new PlotContainer(plot);
-
-                plotPanel.clear();
-                plotPanel.appendChild(plotContainer);
-
-        }
-
-        private void buildPlot(PredictionInput i, PredictionOutput o, PredictionResult r, int maxpostIndex) {
-
-                double[] x = i.getDataColumns().get(0);
-                double[] y = r.getOutputResults().get(o.getName()).spag().get(maxpostIndex);
-
-                Plot plot = new Plot(i.getName(), o.getName(), true);
-
-                plot.addXYItem(new PlotPoints(
-                                "Maxpost",
-                                x,
-                                y,
-                                Color.GREEN,
-                                PlotItem.SHAPE.CIRCLE,
-                                5));
 
                 PlotContainer plotContainer = new PlotContainer(plot);
 

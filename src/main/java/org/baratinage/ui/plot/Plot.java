@@ -13,7 +13,6 @@ import org.jfree.chart.block.BlockBorder;
 import org.jfree.chart.title.LegendTitle;
 import org.jfree.chart.ui.RectangleAnchor;
 import org.jfree.chart.ui.RectangleEdge;
-import org.jfree.data.Range;
 
 public class Plot {
 
@@ -106,23 +105,5 @@ public class Plot {
         plot.setDataset(items.size(), item.getDataset());
         plot.setRenderer(items.size(), item.getRenderer());
         items.add(item);
-
-        // Range xRange = axisX.getRange();
-        // Range yRange = axisY.getRange();
-
-        // System.out.println(xRange.getLength());
-        // System.out.println(yRange.getLength());
-
-        // xRange = Range.shift(Range.scale(xRange, 2), -xRange.getLength() / 2);
-        // yRange = Range.shift(Range.scale(yRange, 2), -yRange.getLength());
-
-        // System.out.println(axisX.getRange());
-        // System.out.println(axisY.getRange());
-
-        // axisX.setRange(xRange);
-        // axisY.setRange(yRange);
-
-        // System.out.println(axisX.getRange());
-        // System.out.println(axisY.getRange());
     }
 }
