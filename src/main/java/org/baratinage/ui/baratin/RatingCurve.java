@@ -22,7 +22,6 @@ public class RatingCurve extends BaRatinItem implements ICalibratedModel, IMcmc 
 
     BamItemCombobox hydraulicConfigComboBox;
     HydraulicConfiguration hydraulicConfig;
-    // ChangeListener hydraulicConfigChangeListener;
 
     RatingCurveStageGrid ratingCurveGrid;
 
@@ -45,8 +44,6 @@ public class RatingCurve extends BaRatinItem implements ICalibratedModel, IMcmc 
         RowColPanel content = new RowColPanel(RowColPanel.AXIS.COL);
 
         RowColPanel mainConfigPanel = new RowColPanel();
-        // mainConfigPanel.setGap(5);
-        // mainConfigPanel.setPadding(5);
 
         RowColPanel hydraulicConfigPanel = new RowColPanel(AXIS.COL, ALIGN.START);
         hydraulicConfigPanel.setGap(5);
@@ -56,15 +53,10 @@ public class RatingCurve extends BaRatinItem implements ICalibratedModel, IMcmc 
         hydraulicConfigComboBox = new BamItemCombobox();
         hydraulicConfigPanel.appendChild(hydraulicConfigComboBox, 0);
         hydraulicConfigComboBox.addActionListener(e -> {
-            System.out.println("COMBOBOX");
             BamItem selectedHydraulicConf = (BamItem) hydraulicConfigComboBox.getSelectedItem();
-
-            System.out.println(hydraulicConfig);
-            System.out.println(selectedHydraulicConf);
 
             if (hydraulicConfig != null) {
                 if (!hydraulicConfig.equals(selectedHydraulicConf)) {
-                    // System.out.println("DIFFERENT SELECTED ITEM");
                     setHydraulicConfig((HydraulicConfiguration) selectedHydraulicConf);
                 }
             } else {
@@ -78,12 +70,13 @@ public class RatingCurve extends BaRatinItem implements ICalibratedModel, IMcmc 
         mainConfigPanel.appendChild(ratingCurveGrid);
 
         priorRatingCurve = new PriorRatingCurve();
+        priorRatingCurve.setPredictionDataProvider(ratingCurveGrid);
+
         posteriorRatingCurve = new PosteriorRatingCurve();
 
         JTabbedPane ratingCurves = new JTabbedPane();
         ratingCurves.add("<html><i>a priori</i>&nbsp;&nbsp;</html>", priorRatingCurve);
         ratingCurves.add("<html><i>a posteriori</i>&nbsp;&nbsp;</html>", posteriorRatingCurve);
-        // tabs.add("resultsPanel", resultsPanel);
 
         content.appendChild(mainConfigPanel, 0);
         content.appendChild(new JSeparator(), 0);
@@ -95,22 +88,20 @@ public class RatingCurve extends BaRatinItem implements ICalibratedModel, IMcmc 
     private void setHydraulicConfig(HydraulicConfiguration newHydraulicConfig) {
         System.out.println("setHydraulicConfig");
         if (hydraulicConfig != null) {
-            // hydraulicConfig.removeChangeListener(hydraulicConfigChangeListener);
             hydraulicConfig.removeChild(this);
         }
         if (newHydraulicConfig == null) {
             System.out.println("No hydraulic configuration to set");
             hydraulicConfig = null;
+            priorRatingCurve.setModelDefintionProvider(hydraulicConfig);
+            priorRatingCurve.setPriorsProvider(hydraulicConfig);
             return;
         }
         hydraulicConfig = newHydraulicConfig;
+        priorRatingCurve.setModelDefintionProvider(hydraulicConfig);
+        priorRatingCurve.setPriorsProvider(hydraulicConfig);
         hydraulicConfig.addChild(this);
-        // hydraulicConfigChangeListener = hydraulicConfig.addChangeListener(() -> {
-        // hydraulicConfig.addChangeListener(() -> {
-        // System.out.println("#".repeat(70));
-        // System.out.println("Parent hydraulic config has changed");
-        // System.out.println("Parend : " + hydraulicConfig.toString());
-        // });
+
     }
 
     public void updateHydraulicConfigCombobox() {
@@ -138,14 +129,12 @@ public class RatingCurve extends BaRatinItem implements ICalibratedModel, IMcmc 
 
     @Override
     public McmcConfig getMcmcConfig() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getMcmcConfig'");
+        return new McmcConfig();
     }
 
     @Override
     public McmcCookingConfig getMcmcCookingConfig() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getMcmcCookingConfig'");
+        return new McmcCookingConfig();
     }
 
     @Override
