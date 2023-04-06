@@ -144,26 +144,12 @@ public class BaratinProject extends RowColPanel {
 
     }
 
-    // FIXME: should have an category id as input instead of relying on different
-    // list object to store the different types of items...
     private void addItem(BamItem bamItem, ExplorerItem explorerItem) {
 
-        // ProjectBamItem item = new ProjectBamItem(bamItem, explorerItem);
-
         items.add(bamItem);
-        bamItem.setSiblings(items);
+        bamItem.updateSiblings(items);
+        // bamItem.setSiblings(items);
 
-        // bamItem.addChangeListener(() -> {
-        // // BamItem bi = findBamItem(i.getUUID());
-        // // String newName = bi.getName();
-        // String newName = bamItem.getName();
-        // if (newName.equals("")) {
-        // newName = "<html><div style='color: red; font-style: italic'>Sans
-        // nom</div></html>";
-        // }
-        // explorerItem.label = newName;
-        // explorer.updateItemView(explorerItem);
-        // });
         bamItem.addFollower(o -> {
             String newName = bamItem.getName();
             if (newName.equals("")) {
