@@ -44,7 +44,7 @@ public class BaratinProject extends RowColPanel {
     private ExplorerItem structuralError;
     private ExplorerItem ratingCurve;
 
-    static private final String hydroConfigIconPath = "./resources/icons/Hydraulic_icon.png";
+    static private final String hydraulicConfigIconPath = "./resources/icons/Hydraulic_icon.png";
     static private final String gaugingsIconPath = "./resources/icons/Gauging_icon.png";
     static private final String structuralErrIconPath = "./resources/icons/Error_icon.png";
     static private final String ratingCurveIconPath = "./resources/icons/RC_icon.png";
@@ -65,9 +65,8 @@ public class BaratinProject extends RowColPanel {
         this.appendChild(this.actionBar, 0);
         JButton btnNewHydraulicConfig = new JButton();
         btnNewHydraulicConfig.setText("Nouvelle configuration hydraulique");
-        btnNewHydraulicConfig.setIcon(new NoScalingIcon(hydroConfigIconPath));
+        btnNewHydraulicConfig.setIcon(new NoScalingIcon(hydraulicConfigIconPath));
         btnNewHydraulicConfig.addActionListener(e -> {
-            System.out.println("new hydrau config");
             addHydraulicConfig();
         });
         this.actionBar.appendChild(btnNewHydraulicConfig);
@@ -76,7 +75,6 @@ public class BaratinProject extends RowColPanel {
         btnNewRatingCurve.setText("Nouvelle courbe de tarage");
         btnNewRatingCurve.setIcon(new NoScalingIcon(ratingCurveIconPath));
         btnNewRatingCurve.addActionListener(e -> {
-            System.out.println("new rating curve");
             addRatingCurve();
         });
         this.actionBar.appendChild(btnNewRatingCurve);
@@ -123,7 +121,7 @@ public class BaratinProject extends RowColPanel {
         hydraulicConfig = new ExplorerItem(
                 "hc",
                 "Configurations hydrauliques",
-                hydroConfigIconPath);
+                hydraulicConfigIconPath);
         this.explorer.appendItem(hydraulicConfig);
 
         gaugings = new ExplorerItem(
@@ -175,7 +173,6 @@ public class BaratinProject extends RowColPanel {
             explorer.updateItemView(explorerItem);
         });
         bamItem.addDeleteAction(e -> {
-            System.out.println("Delete " + bamItem.getName());
             deleteItem(bamItem, explorerItem);
         });
 
@@ -198,7 +195,7 @@ public class BaratinProject extends RowColPanel {
         ExplorerItem explorerItem = new ExplorerItem(
                 hydroConf.getUUID(),
                 hydroConf.getName(),
-                hydroConfigIconPath,
+                hydraulicConfigIconPath,
                 hydraulicConfig);
         addItem(hydroConf, explorerItem);
 
