@@ -39,7 +39,6 @@ public class StructuralErrorModel {
 
     @Override
     public String toString() {
-        System.out.println();
         String str = String.format("Structural Error Model %s of type '%s':\n", this.name, this.modelId);
         for (Parameter p : this.parameters) {
             str += p.toString() + "\n";

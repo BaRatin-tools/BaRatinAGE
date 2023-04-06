@@ -111,10 +111,7 @@ public class RatingCurveStageGrid extends ChangingRowColPanel implements IPredic
                         int n = (int) Math.floor((max - min) / step);
                         nbrStepField.setValue(n, true);
                         nbrStepField.updateTextField();
-                        // }
-
                         if (max > min && step > 0 && step <= ((max - min) / 1)) {
-                            // System.out.println("min, max and step are consistent!");
                             isValueValid = true;
                             stageGridConfig = new StageGridConfig(min, max, step);
                         }
@@ -123,18 +120,8 @@ public class RatingCurveStageGrid extends ChangingRowColPanel implements IPredic
             }
         }
 
-        // updateApperanceBasedOnValueValidity();
         notifyFollowers();
     };
-
-    // private void updateApperanceBasedOnValueValidity() {
-    // System.out.println("HEY");
-    // Color color = new Color(125, 255, 125, 0);
-    // if (!isValueValid) {
-    // color = new Color(255, 125, 125, 200);
-    // }
-    // setBorder(new BasicBorders.FieldBorder(color, color, color, color));
-    // }
 
     public double[] getStageGrid() {
         if (!isValueValid()) {
@@ -155,14 +142,9 @@ public class RatingCurveStageGrid extends ChangingRowColPanel implements IPredic
 
     @Override
     public PredictionInput[] getPredictionInputs() {
-        // System.out.println("*".repeat(70));
-        // System.out.println("PredictionInput");
         List<double[]> stageGrid = new ArrayList<>();
         stageGrid.add(getStageGrid());
-        System.out.println(getStageGrid());
-        System.out.println(stageGrid);
         PredictionInput predInput = new PredictionInput("stage_grid", stageGrid);
-        System.out.println(predInput);
         return new PredictionInput[] { predInput };
     }
 

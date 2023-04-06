@@ -114,7 +114,6 @@ public class Lg {
     private Locale locale;
 
     private Lg() {
-
         elements = new HashMap<>();
         textFallback = new HashMap<>();
         text = new HashMap<>();
@@ -128,15 +127,12 @@ public class Lg {
         } catch (IOException e) {
             System.err.println(e);
         }
-
         setLocaleFromKey(Locale.getDefault().getLanguage());
     }
 
     private void setLocaleFromKey(String languageKey) {
-
         key = languageKey;
         locale = new Locale(languageKey);
-
         try {
             for (String resourceId : RESSOURCE_IDS) {
                 Path p = Path.of(I18N_RESSOURCE_DIR, resourceId + "_" + key + ".properties");
@@ -150,9 +146,6 @@ public class Lg {
         } catch (IOException e) {
             System.err.println(e);
         }
-
-        System.out.println("There are " + elements.size() + " element(s)...");
-
     }
 
 }

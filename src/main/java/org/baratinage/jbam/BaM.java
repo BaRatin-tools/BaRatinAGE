@@ -69,7 +69,6 @@ public class BaM {
             if (!this.calibrationResult.getIsValid()) {
                 this.calibrationResult = null;
             }
-            System.out.println(this.calibrationResult);
         }
         if (this.runOptions.doPrediction) {
             int n = this.predictionConfigs.length;
@@ -80,7 +79,6 @@ public class BaM {
                     this.predictionResults = null;
                     break;
                 }
-                System.out.println(this.predictionResults[k]);
             }
         }
 
@@ -186,8 +184,6 @@ public class BaM {
 
         if (exitcode != 0) {
             // FIXME: all cases except default have message that should be captured!
-            System.out.println(consoleLines);
-            // consoleLines.stream().filter(null)((String l) -> l.contains("FATAL ERROR"));
             List<String> errMsg = new ArrayList<>();
             boolean inErrMsg = false;
             for (String l : consoleLines) {

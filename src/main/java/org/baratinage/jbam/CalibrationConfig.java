@@ -72,10 +72,7 @@ public class CalibrationConfig {
 
     @Override
     public String toString() {
-        // System.out.println("Calibration config: ");
-        // List<String> str = new ArrayList<>();
         String str = "";
-        // str += "*** Calibration configuration\n";
         str += "\n" + this.model.toString() + "\n\n";
         for (ModelOutput mo : this.modelOutputs) {
             str += mo.toString();

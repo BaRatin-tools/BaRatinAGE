@@ -51,10 +51,7 @@ public class Write {
      *                     write to the files
      */
     static public void writeLines(File file, String[] lines) throws IOException {
-        // System.out.println(String.format("Writing to file \"%s\" ...",
-        // file.toString()));
         if (!file.exists()) {
-            // System.out.println("File does not exist");
             file.createNewFile();
         }
         FileWriter fileWriter = new FileWriter(file);
@@ -70,7 +67,6 @@ public class Write {
         String line = "";
         for (int k = 0; k < row.length; k++) {
             String currentSep = k == 0 ? "" : sep;
-            // line = String.format("%s%s%s", line, currentSep, row[k]);
             line = line + currentSep + row[k];
         }
         return line;
