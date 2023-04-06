@@ -2,6 +2,7 @@ package org.baratinage.ui.bam;
 
 import java.awt.Font;
 import java.awt.event.ActionListener;
+import java.awt.Color;
 import java.awt.Component;
 import java.util.UUID;
 
@@ -10,7 +11,9 @@ import javax.swing.JLabel;
 import javax.swing.JSeparator;
 
 import org.baratinage.ui.container.ChangingRowColPanel;
+import org.baratinage.ui.container.GridPanel;
 import org.baratinage.ui.container.RowColPanel;
+import org.json.JSONObject;
 
 abstract public class BamItem extends ChangingRowColPanel {
 
@@ -23,8 +26,16 @@ abstract public class BamItem extends ChangingRowColPanel {
 
     private JLabel titleLabel;
     private JButton deleteButton;
-    private RowColPanel headerPanel;
+    private GridPanel headerPanel;
     private RowColPanel contentPanel;
+
+    private boolean isFrozen = false;
+    private String jsonFrozenState;
+
+    private RowColPanel backupPanel;
+    private JLabel backupInfoLabel;
+    private JButton useBackupButton;
+    private JButton propagateChangeButton;
 
     public final int type;
 
@@ -32,9 +43,11 @@ abstract public class BamItem extends ChangingRowColPanel {
         super(AXIS.COL);
         this.type = type;
 
-        headerPanel = new RowColPanel(AXIS.ROW);
+        headerPanel = new GridPanel();
         headerPanel.setGap(5);
         headerPanel.setPadding(5);
+        headerPanel.setColWeight(0, 1);
+
         contentPanel = new RowColPanel();
 
         super.appendChild(headerPanel, 0, 0, 0, 0, 0);
@@ -46,8 +59,23 @@ abstract public class BamItem extends ChangingRowColPanel {
         titleLabel.setFont(font.deriveFont(Font.BOLD));
         deleteButton = new JButton("Supprimer");
 
-        headerPanel.appendChild(titleLabel, 1);
-        headerPanel.appendChild(deleteButton, 0);
+        backupPanel = new RowColPanel();
+        backupPanel.setGap(5);
+        backupInfoLabel = new JLabel();
+        backupInfoLabel.setForeground(Color.RED);
+        useBackupButton = new JButton("Annuler les modifications");
+        useBackupButton.addActionListener((e) -> {
+            JSONObject json = new JSONObject(jsonFrozenState);
+            fromJSON(json);
+        });
+        propagateChangeButton = new JButton("Propager les modifications");
+        propagateChangeButton.addActionListener((e) -> {
+        });
+        backupPanel.appendChild(backupInfoLabel);
+
+        headerPanel.insertChild(titleLabel, 0, 0);
+        headerPanel.insertChild(deleteButton, 1, 0);
+        headerPanel.insertChild(backupPanel, 0, 1, 2, 1);
 
         this.uuid = UUID.randomUUID().toString();
 
@@ -88,15 +116,41 @@ abstract public class BamItem extends ChangingRowColPanel {
         for (BamItem child : this.children) {
             child.parentHasChanged(this);
         }
+        if (isFrozen) {
+            backupInfoLabel.setText(
+                    "Attention, des objets existants dépendent de l'objet que vous venez de modifier!");
+            if (backupPanel.getComponentCount() == 1) {
+                backupPanel.appendChild(useBackupButton);
+                backupPanel.appendChild(propagateChangeButton);
+            }
+        }
+    }
+
+    private void freeze() {
+        isFrozen = true;
+        backupInfoLabel.setText("Cet objet est utilisé par d'autres objets");
+        jsonFrozenState = toJSON().toString();
+    }
+
+    private void unfreeze() {
+        isFrozen = false;
+        backupInfoLabel.setText("");
+        backupPanel.clear();
+        backupPanel.appendChild(backupInfoLabel);
     }
 
     public void addChild(BamItem child) {
-
         children.add(child);
+        if (!isFrozen) {
+            freeze();
+        }
     }
 
     public void removeChild(BamItem child) {
         children.remove(child);
+        if (children.size() == 0) {
+            unfreeze();
+        }
     }
 
     public String getName() {
@@ -122,7 +176,8 @@ abstract public class BamItem extends ChangingRowColPanel {
 
     public abstract void parentHasChanged(BamItem parent);
 
-    public abstract String toJsonString();
+    public abstract JSONObject toJSON();
 
-    public abstract void fromJsonString(String jsonString);
+    public abstract void fromJSON(JSONObject json);
+
 }
