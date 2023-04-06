@@ -1,10 +1,16 @@
 package org.baratinage.ui.baratin;
 
+import java.io.File;
+import java.io.IOException;
+
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
+import javax.swing.JFileChooser;
 import javax.swing.JSeparator;
 import javax.swing.JSplitPane;
+import javax.swing.filechooser.FileFilter;
 
+import org.baratinage.jbam.utils.Write;
 import org.baratinage.ui.bam.BamItem;
 import org.baratinage.ui.bam.BamItemList;
 import org.baratinage.ui.component.Explorer;
@@ -12,6 +18,8 @@ import org.baratinage.ui.component.ExplorerItem;
 // import org.baratinage.ui.component.ImportedData;
 import org.baratinage.ui.component.NoScalingIcon;
 import org.baratinage.ui.container.RowColPanel;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 /**
  *
@@ -78,6 +86,52 @@ public class BaratinProject extends RowColPanel {
             addRatingCurve();
         });
         this.actionBar.appendChild(btnNewRatingCurve);
+
+        JButton btnSaveProject = new JButton();
+        btnSaveProject.setText("Sauvegarder le projet");
+        btnSaveProject.setIcon(new NoScalingIcon("./resources/icons/save_32x32.png"));
+        btnSaveProject.addActionListener(e -> {
+            final JFileChooser fileChooser = new JFileChooser();
+            fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+            fileChooser.setFileFilter(new FileFilter() {
+
+                @Override
+                public boolean accept(File f) {
+                    if (f.isDirectory()) {
+                        return true;
+                    }
+                    if (f.getName().endsWith(".bam")) {
+                        return true;
+                    }
+                    return false;
+                }
+
+                @Override
+                public String getDescription() {
+                    return "Fichier BaRatinAGE (.bam)";
+                }
+
+            });
+            fileChooser.setDialogTitle("Sauvegarder le projet");
+            fileChooser.setAcceptAllFileFilterUsed(false);
+            if (fileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
+                JSONObject json = new JSONObject();
+                JSONArray jsonItems = new JSONArray();
+                for (BamItem item : items) {
+                    jsonItems.put(item.toFullJSON());
+                }
+                json.put("items", jsonItems);
+                String fullFilePath = fileChooser.getSelectedFile().getAbsolutePath();
+                try {
+                    Write.writeLines(new File(fullFilePath), new String[] { json.toString(4) });
+                } catch (IOException saveError) {
+                    System.err.println("Failed to save file");
+                    saveError.printStackTrace();
+                }
+            }
+
+        });
+        this.actionBar.appendChild(btnSaveProject);
 
         this.content = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
         this.content.setBorder(BorderFactory.createEmptyBorder());
