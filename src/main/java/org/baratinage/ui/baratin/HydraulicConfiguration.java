@@ -1,15 +1,17 @@
 package org.baratinage.ui.baratin;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.swing.BorderFactory;
 import javax.swing.JSplitPane;
 
 import org.baratinage.jbam.Parameter;
-// import org.baratinage.jbam.Parameter;
-// import org.baratinage.jbam.PredictionConfig;
-// import org.baratinage.jbam.PredictionInput;
 import org.baratinage.ui.bam.BamItem;
 import org.baratinage.ui.bam.IModelDefinition;
 import org.baratinage.ui.bam.IPriors;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 class HydraulicConfiguration extends BaRatinItem
         implements IModelDefinition, IPriors {
@@ -22,12 +24,16 @@ class HydraulicConfiguration extends BaRatinItem
     private HydraulicControls hydraulicControls;
 
     public HydraulicConfiguration() {
+        this(String.format(
+                defaultNameTemplate,
+                nInstance + 1 + ""));
+        nInstance++;
+    }
+
+    public HydraulicConfiguration(String name) {
         super(TYPE);
 
-        nInstance++;
-        setName(String.format(
-                defaultNameTemplate,
-                nInstance + ""));
+        setName(name);
         setDescription("");
 
         setNameFieldLabel("Nom de la configuration hydraulique");
@@ -35,14 +41,12 @@ class HydraulicConfiguration extends BaRatinItem
 
         controlMatrix = new ControlMatrix();
         controlMatrix.addFollower((o) -> {
-            System.out.println("Control matrix has changed!");
             hasChanged();
             updateControls(controlMatrix.getControlMatrix());
         });
 
         hydraulicControls = new HydraulicControls();
         hydraulicControls.addFollower((o) -> {
-            System.out.println("Hydraulic controls have changed!");
             hasChanged();
         });
 
@@ -59,8 +63,7 @@ class HydraulicConfiguration extends BaRatinItem
     }
 
     private void updateControls(boolean[][] controlMatrix) {
-        hydraulicControls.setNumberOfControls(controlMatrix.length);
-
+        hydraulicControls.updateHydraulicControlListFromNumberOfControls(controlMatrix.length);
     }
 
     @Override
@@ -115,15 +118,85 @@ class HydraulicConfiguration extends BaRatinItem
     }
 
     @Override
-    public String toJsonString() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'toJsonString'");
+    public JSONObject toJSON() {
+        JSONObject json = new JSONObject();
+        json.put("name", getName());
+        json.put("description", getName());
+
+        boolean[][] matrix = controlMatrix.getControlMatrix();
+        String stringMatrix = "";
+        int n = matrix.length;
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                stringMatrix += matrix[i][j] ? "0" : "1";
+            }
+            stringMatrix += ";";
+        }
+        json.put("controlMatrix", stringMatrix);
+
+        List<OneHydraulicControl> hydraulicControlList = hydraulicControls.getHydraulicControls();
+
+        JSONArray jsonHydraulicControls = new JSONArray();
+        for (OneHydraulicControl hc : hydraulicControlList) {
+            JSONObject jsonHydraulicControl = new JSONObject();
+            jsonHydraulicControl.put("name", hc.getName());
+            jsonHydraulicControl.put("activationStage", hc.getActivationStage());
+            jsonHydraulicControl.put("activationStageUncertainty", hc.getActivationStageUncertainty());
+            jsonHydraulicControl.put("coefficient", hc.getCoefficient());
+            jsonHydraulicControl.put("coefficientUncertainty", hc.getCoefficientUncertainty());
+            jsonHydraulicControl.put("exponent", hc.getExponent());
+            jsonHydraulicControl.put("exponentUncertainty", hc.getExponentUncertainty());
+
+            jsonHydraulicControls.put(jsonHydraulicControl);
+        }
+
+        json.put("hydraulicControls", jsonHydraulicControls);
+        return json;
     }
 
     @Override
-    public void fromJsonString(String jsonString) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'fromJsonString'");
+    public void fromJSON(JSONObject json) {
+
+        setName((String) json.get("name"));
+        setDescription((String) json.get("description"));
+
+        String stringMatrix = (String) json.get("controlMatrix");
+        String[] stringMatrixRow = stringMatrix.split(";");
+        int n = stringMatrixRow.length;
+        boolean[][] matrix = new boolean[n][n];
+        char one = "1".charAt(0);
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                matrix[i][j] = stringMatrixRow[i].charAt(j) != one;
+            }
+        }
+        controlMatrix.setFromBooleanMatrix(matrix);
+
+        // hydraulicControls.fromJSON((JSONObject) json.get("hydraulicControls"));
+        JSONArray jsonHydraulicControls = (JSONArray) json.get("hydraulicControls");
+
+        List<OneHydraulicControl> hydraulicControlList = new ArrayList<>();
+
+        for (int k = 0; k < jsonHydraulicControls.length(); k++) {
+            JSONObject jsonHydraulicControl = (JSONObject) jsonHydraulicControls.get(k);
+
+            OneHydraulicControl hydraulicControl = new OneHydraulicControl();
+            hydraulicControl.setName((String) jsonHydraulicControl.get("name"));
+            hydraulicControl.setActivationStage(((Number) jsonHydraulicControl.get("activationStage")).doubleValue());
+            hydraulicControl
+                    .setActivationStageUncertainty(
+                            ((Number) jsonHydraulicControl.get("activationStageUncertainty")).doubleValue());
+            hydraulicControl.setCoefficient(((Number) jsonHydraulicControl.get("coefficient")).doubleValue());
+            hydraulicControl.setCoefficientUncertainty(
+                    ((Number) jsonHydraulicControl.get("coefficientUncertainty")).doubleValue());
+            hydraulicControl.setExponent(((Number) jsonHydraulicControl.get("exponent")).doubleValue());
+            hydraulicControl
+                    .setExponentUncertainty(((Number) jsonHydraulicControl.get("exponentUncertainty")).doubleValue());
+
+            hydraulicControlList.add(hydraulicControl);
+        }
+
+        hydraulicControls.setHydraulicControls(hydraulicControlList);
     }
 
 }
