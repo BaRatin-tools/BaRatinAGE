@@ -297,7 +297,7 @@ public class GridPanel extends JPanel {
         }
         // if there's a row after, add gap to botom, otherwise, add global
         // padding.bottom
-        if (y < this.lastRowIndex + 1) {
+        if ((y + ySpan - 1) < this.lastRowIndex + 1) {
             bottom = bottom + this.rowGap / 2;
         } else {
             bottom = bottom + this.padding.bottom;
@@ -311,7 +311,7 @@ public class GridPanel extends JPanel {
         }
         // if there's a column after, add gap to right, otherwise, add global
         // padding.right
-        if (x < this.lastColIndex + 1) {
+        if ((x + xSpan - 1) < this.lastColIndex + 1) {
             right = right + this.colGap / 2;
         } else {
             right = right + this.padding.right;
