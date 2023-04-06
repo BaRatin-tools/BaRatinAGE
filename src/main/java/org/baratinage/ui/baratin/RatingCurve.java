@@ -83,6 +83,13 @@ public class RatingCurve extends BaRatinItem implements ICalibratedModel, IMcmc 
         content.appendChild(ratingCurves, 1, 5);
 
         setContent(content);
+
+        BamItemList siblings = getSiblings();
+        siblings.addChangeListener(s -> {
+            updateHydraulicConfigCombobox();
+        });
+        updateHydraulicConfigCombobox();
+
     }
 
     private void setHydraulicConfig(HydraulicConfiguration newHydraulicConfig) {
@@ -103,24 +110,12 @@ public class RatingCurve extends BaRatinItem implements ICalibratedModel, IMcmc 
     }
 
     public void updateHydraulicConfigCombobox() {
-        if (this.siblings != null) {
-            // boolean unset = hydraulicConfigComboBox.getSelectedIndex() == -1;
+        BamItemList siblings = getSiblings();
+        if (siblings != null) {
             hydraulicConfigComboBox.syncWithBamItemList(
-                    this.siblings
+                    siblings
                             .filterByType(HydraulicConfiguration.TYPE));
-            // if (unset) {
-            // hydraulicConfigComboBox.setSelectedItem(null);
-            // }
         }
-    }
-
-    @Override
-    public void setSiblings(BamItemList siblings) {
-        super.setSiblings(siblings);
-        siblings.addChangeListener(s -> {
-            updateHydraulicConfigCombobox();
-        });
-        updateHydraulicConfigCombobox();
     }
 
     @Override
