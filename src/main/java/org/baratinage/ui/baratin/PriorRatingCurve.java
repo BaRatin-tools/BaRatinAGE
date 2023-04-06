@@ -10,7 +10,6 @@ import org.baratinage.jbam.BaM;
 import org.baratinage.jbam.CalDataResidualConfig;
 import org.baratinage.jbam.CalibrationConfig;
 import org.baratinage.jbam.CalibrationData;
-import org.baratinage.jbam.CalibrationResult;
 import org.baratinage.jbam.McmcConfig;
 import org.baratinage.jbam.McmcCookingConfig;
 import org.baratinage.jbam.McmcSummaryConfig;
@@ -50,7 +49,6 @@ public class PriorRatingCurve extends GridPanel implements IPriorPredictionExper
 
                 JButton runButton = new JButton("Compute prior rating curve");
                 runButton.addActionListener((e) -> {
-                        System.out.println("Run BaM");
                         runBaM();
                 });
                 insertChild(runButton, 0, 0,
@@ -65,55 +63,7 @@ public class PriorRatingCurve extends GridPanel implements IPriorPredictionExper
                 insertChild(plotPanel, 0, 1,
                                 ANCHOR.C, FILL.BOTH);
 
-                buildFakePlot();
         }
-
-        private void buildFakePlot() {
-                double[] x = { 0, 1, 2, 3, 4, 5, 6, 10, 15, 20 };
-                double[] y = { 5, 4, 6, 3, 7, 8, 9, 13, 10, 11 };
-                double[] ylow = new double[y.length];
-                double[] yhigh = new double[y.length];
-
-                for (int k = 0; k < y.length; k++) {
-                        ylow[k] = y[k] * 0.7;
-                        yhigh[k] = y[k] * 1.1 + 2;
-                }
-                Plot plot = new Plot("xlabe", "ylab", true);
-
-                plot.addXYItem(new PlotBand(
-                                "test",
-                                x,
-                                y,
-                                ylow, yhigh,
-                                new Color(255, 100, 100, 100),
-                                Color.RED,
-                                5,
-                                PlotBand.SHAPE.CIRCLE,
-                                10
-
-                ));
-
-                // plot.addXYItem(new PlotBand(
-                // "test",
-                // x,
-                // ylow, yhigh,
-                // new Color(255, 0, 100, 100)
-
-                // ));
-
-                PlotContainer plotContainer = new PlotContainer(plot);
-
-                plotPanel.clear();
-                plotPanel.appendChild(plotContainer);
-
-                plot.setAxisLogY(true);
-        }
-
-        // buildPlot(
-        // predConfig.getPredictionInputs()[0],
-        // predConfig.getPredictionOutputs()[0],
-        // predRes[1],
-        // 0);
 
         private void buildRatingCurvePlot(
                         PredictionConfig predictionConfig,
@@ -156,8 +106,6 @@ public class PriorRatingCurve extends GridPanel implements IPriorPredictionExper
         }
 
         private void runBaM() {
-
-                System.out.println("-".repeat(70));
 
                 String workspace = "test/newTestWS";
 
@@ -234,11 +182,9 @@ public class PriorRatingCurve extends GridPanel implements IPriorPredictionExper
                                 null,
                                 null);
 
-                System.out.println(bam);
-
                 try {
                         bam.run(workspace, txt -> {
-                                System.out.println("txt => " + txt);
+                                System.out.println("log => " + txt);
                         });
                 } catch (IOException e) {
                         e.printStackTrace();
@@ -247,16 +193,8 @@ public class PriorRatingCurve extends GridPanel implements IPriorPredictionExper
                 bam.readResults(workspace);
 
                 PredictionResult[] predRes = bam.getPredictionsResults();
-                System.out.println(predRes);
 
-                CalibrationResult calRes = bam.getCalibrationResults();
-                System.out.println(calRes);
-
-                // buildPlot(
-                // predConfig.getPredictionInputs()[0],
-                // predConfig.getPredictionOutputs()[0],
-                // predRes[1],
-                // 0);
+                // CalibrationResult calRes = bam.getCalibrationResults();
 
                 buildRatingCurvePlot(predConfig, predRes[0], predRes[1]);
 
