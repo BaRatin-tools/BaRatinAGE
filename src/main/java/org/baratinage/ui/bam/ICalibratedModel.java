@@ -10,4 +10,6 @@ public interface ICalibratedModel {
 
     public CalibrationResult getCalibrationResults();
 
+    // add public void runBaM()?
+
 }
