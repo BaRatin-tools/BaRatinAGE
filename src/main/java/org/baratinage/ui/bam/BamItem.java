@@ -19,10 +19,10 @@ abstract public class BamItem extends ChangingRowColPanel {
 
     private String uuid;
 
-    protected BamItemList children;
-    protected BamItemList siblings;
-    protected String name;
-    protected String description;
+    private BamItemList children;
+    private BamItemList siblings;
+    private String name;
+    private String description;
 
     private JLabel titleLabel;
     private JButton deleteButton;
@@ -67,6 +67,9 @@ abstract public class BamItem extends ChangingRowColPanel {
         useBackupButton.addActionListener((e) -> {
             JSONObject json = new JSONObject(jsonFrozenState);
             fromJSON(json);
+            backupPanel.clear();
+            backupInfoLabel.setText("Cet objet est utilisé par d'autres objets");
+            backupPanel.appendChild(backupInfoLabel);
         });
         propagateChangeButton = new JButton("Propager les modifications");
         propagateChangeButton.addActionListener((e) -> {
@@ -83,8 +86,23 @@ abstract public class BamItem extends ChangingRowColPanel {
         this.children = new BamItemList();
     }
 
-    public void setSiblings(BamItemList siblings) {
-        this.siblings = siblings;
+    public void updateSiblings(BamItemList bamItems) {
+        // add missing siblings
+        for (BamItem item : bamItems) {
+            if (!siblings.contains(item)) {
+                siblings.add(item);
+            }
+        }
+        // remove no longer existing siblings
+        for (BamItem item : siblings) {
+            if (!bamItems.contains(item)) {
+                siblings.remove(item);
+            }
+        }
+    }
+
+    public BamItemList getSiblings() {
+        return this.siblings;
     }
 
     public void addDeleteAction(ActionListener action) {
@@ -162,7 +180,7 @@ abstract public class BamItem extends ChangingRowColPanel {
     }
 
     public String getDescription() {
-        return this.name;
+        return this.description;
     }
 
     public void setDescription(String description) {
