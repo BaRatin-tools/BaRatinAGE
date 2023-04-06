@@ -1,88 +1,91 @@
 package org.baratinage.ui.baratin;
 
+import java.awt.Component;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
+import java.util.stream.Collectors;
 
 import javax.swing.BorderFactory;
+import javax.swing.DefaultListCellRenderer;
 import javax.swing.DefaultListModel;
 import javax.swing.JLabel;
 import javax.swing.JList;
 
 import javax.swing.JScrollPane;
-import javax.swing.JSeparator;
 import javax.swing.JSplitPane;
 import javax.swing.ListSelectionModel;
 
 import org.baratinage.jbam.Distribution;
 import org.baratinage.jbam.Parameter;
 import org.baratinage.ui.bam.IPriors;
-import org.baratinage.ui.component.NumberField;
-// import org.baratinage.ui.component.ToBeNotified;
 import org.baratinage.ui.container.ChangingRowColPanel;
-import org.baratinage.ui.container.GridPanel;
 import org.baratinage.ui.container.RowColPanel;
 
 public class HydraulicControls extends ChangingRowColPanel implements IPriors {
-
-    private record ControlItem(String id, String label, String icon) {
-        public String toString() {
-            return label();
-        }
-    }
-
-    // private ToBeNotified toBeNotified = new ChangingRowColPanel.ToBeNotified() {
-    // @Override
-    // public void notify(ChangingRowColPanel object) {
-    // notifyFollowers();
-    // }
-    // };
 
     private ToBeNotified toBeNotified = (ChangingRowColPanel panel) -> {
         notifyFollowers();
     };
 
-    JList<ControlItem> controlSelector;
-    DefaultListModel<ControlItem> controlSelectorModel;
+    JList<OneHydraulicControl> controlSelector;
+    DefaultListModel<OneHydraulicControl> controlSelectorModel;
 
-    List<HydraulicControl> controls;
-    RowColPanel currentControl;
+    List<OneHydraulicControl> hydraulicControlList;
+    RowColPanel currentHydraulicControl;
 
     JSplitPane splitPaneContainer;
 
     public HydraulicControls() {
         super(AXIS.COL);
 
-        controls = new ArrayList<>();
+        hydraulicControlList = new ArrayList<>();
 
         controlSelector = new JList<>();
         controlSelector.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         controlSelector.addListSelectionListener(e -> {
             if (!e.getValueIsAdjusting()) {
-                ControlItem controlItem = controlSelector.getSelectedValue();
-                if (controlItem != null) {
-                    controls.stream()
-                            .filter(ctrl -> ctrl.id.equals(controlItem.id()))
+                OneHydraulicControl selectedHydraulicControl = controlSelector.getSelectedValue();
+                if (selectedHydraulicControl != null) {
+                    hydraulicControlList.stream()
+                            .filter(hc -> hc.equals(selectedHydraulicControl))
                             .findFirst()
-                            .ifPresentOrElse((ctrl) -> {
-                                currentControl.clear();
-                                currentControl.appendChild(ctrl);
-                                currentControl.updateUI();
+                            .ifPresentOrElse((hc) -> {
+                                currentHydraulicControl.clear();
+                                currentHydraulicControl.appendChild(hc);
+                                currentHydraulicControl.updateUI();
                             }, () -> {
-                                currentControl.clear();
-                                currentControl.updateUI();
+                                currentHydraulicControl.clear();
+                                currentHydraulicControl.updateUI();
                             });
                 } else {
-                    currentControl.clear();
-                    currentControl.updateUI();
+                    currentHydraulicControl.clear();
+                    currentHydraulicControl.updateUI();
                 }
 
             }
         });
-        controlSelectorModel = new DefaultListModel<>();
-        controlSelector.setModel(controlSelectorModel);
+        controlSelectorModel = new DefaultListModel<>() {
 
-        currentControl = new RowColPanel();
+        };
+        controlSelector.setModel(controlSelectorModel);
+        // NOTE: I could have juste implemented toString for OneHydraulicControl
+        // but this way, we now we can do much more thing. DefaultListCellRenderer
+        // extends a JLabel so we can customize the label with icons and so on while
+        // keeping the nice default formatting when selected/focused that I think
+        // comes from the LookAndFeel...
+        controlSelector.setCellRenderer(new DefaultListCellRenderer() {
+            @Override
+            public Component getListCellRendererComponent(JList<? extends Object> list,
+                    Object value, int index, boolean isSelected, boolean cellHasFocus) {
+                JLabel comp = (JLabel) super.getListCellRendererComponent(list, value,
+                        index, isSelected, cellHasFocus);
+                OneHydraulicControl hc = (OneHydraulicControl) value;
+                comp.setText(hc.getName());
+                return comp;
+            }
+        });
+
+        currentHydraulicControl = new RowColPanel();
 
         RowColPanel listPanel = new RowColPanel(AXIS.COL);
 
@@ -94,129 +97,78 @@ public class HydraulicControls extends ChangingRowColPanel implements IPriors {
         splitPaneContainer.setBorder(BorderFactory.createEmptyBorder());
 
         splitPaneContainer.setLeftComponent(listScrollContainer);
-        splitPaneContainer.setRightComponent(currentControl);
+        splitPaneContainer.setRightComponent(currentHydraulicControl);
 
         this.appendChild(splitPaneContainer);
 
     }
 
-    public void setNumberOfControls(int n) {
+    public void updateHydraulicControlListFromNumberOfControls(int n) {
         int m = controlSelectorModel.size();
         if (m > n) {
             int d = m - n;
-            System.out.println("Deleting the " + d + " no longer needed controls");
             for (int k = 0; k < d; k++) {
+                OneHydraulicControl hc = controlSelectorModel.get(m - k - 1);
+                hydraulicControlList = hydraulicControlList.stream()
+                        .filter(ctrl -> !ctrl.equals(hc))
+                        .collect(Collectors.toCollection(ArrayList::new));
                 controlSelectorModel.remove(m - k - 1);
             }
+
         } else if (m < n) {
-            // int d = n - m;q
             for (int k = m; k < n; k++) {
-                ControlItem ctrl = new ControlItem(UUID.randomUUID().toString(),
-                        "Contrôle #" + (k + 1), null);
-                controlSelectorModel.addElement(ctrl);
-                HydraulicControl newHydraulicControl = new HydraulicControl(ctrl.id(), ctrl.label());
-                // newHydraulicControl.addChangeListener(() -> fireChangeListeners());
+
+                OneHydraulicControl newHydraulicControl = new OneHydraulicControl();
+                newHydraulicControl.setName("Contrôle #" + (k + 1));
                 newHydraulicControl.addFollower(toBeNotified);
-                controls.add(newHydraulicControl);
+
+                controlSelectorModel.addElement(newHydraulicControl);
+                hydraulicControlList.add(newHydraulicControl);
+
             }
-        } else {
-            System.out.println("Number of controls are already matching!");
         }
-    }
-
-    private class HydraulicControl extends ChangingRowColPanel {
-        public final String id;
-
-        private GridPanel parametersPanel;
-        public NumberField activationStage;
-        public NumberField activationStageUncertainty;
-        public NumberField coefficient;
-        public NumberField coefficientUncertainty;
-        public NumberField exponent;
-        public NumberField exponentUncertainty;
-
-        public HydraulicControl(String id, String label) {
-            super(AXIS.COL);
-            this.id = id;
-
-            this.appendChild(new JLabel(label), 0, 5);
-            this.appendChild(new JSeparator(), 0);
-
-            parametersPanel = new GridPanel();
-            parametersPanel.setAnchor(ANCHOR.N);
-            parametersPanel.setGap(5);
-            parametersPanel.setPadding(5);
-            parametersPanel.setColWeight(1, 1);
-            parametersPanel.setColWeight(2, 1);
-
-            parametersPanel.insertChild(new JLabel("<html>Valeur <i>a priori</i></html> "), 1, 0);
-            parametersPanel.insertChild(new JLabel("+/- (Incertitude élargie)"), 2, 0);
-
-            JLabel activationStageLabel = new JLabel("k - Hauteur d'activation");
-            activationStage = new NumberField();
-            // activationStage.addChangeListener(() -> fireChangeListeners());
-            activationStage.addFollower(toBeNotified);
-            activationStageUncertainty = new NumberField();
-            // activationStageUncertainty.addChangeListener(() -> fireChangeListeners());
-            activationStageUncertainty.addFollower(toBeNotified);
-            parametersPanel.insertChild(activationStageLabel, 0, 1);
-            parametersPanel.insertChild(activationStage, 1, 1);
-            parametersPanel.insertChild(activationStageUncertainty, 2, 1);
-
-            JLabel coefficientLabel = new JLabel("a - Coefficient");
-            coefficient = new NumberField();
-            // .addChangeListener(() -> fireChangeListeners());
-            coefficient.addFollower(toBeNotified);
-            coefficientUncertainty = new NumberField();
-            // coefficientUncertainty.addChangeListener(() -> fireChangeListeners());
-            coefficientUncertainty.addFollower(toBeNotified);
-            parametersPanel.insertChild(coefficientLabel, 0, 2);
-            parametersPanel.insertChild(coefficient, 1, 2);
-            parametersPanel.insertChild(coefficientUncertainty, 2, 2);
-
-            JLabel exponentLabel = new JLabel("c - Exposant");
-            exponent = new NumberField();
-            // exponent.addChangeListener(() -> fireChangeListeners());
-            exponent.addFollower(toBeNotified);
-            exponentUncertainty = new NumberField();
-            // exponentUncertainty.addChangeListener(() -> fireChangeListeners());
-            exponentUncertainty.addFollower(toBeNotified);
-            parametersPanel.insertChild(exponentLabel, 0, 3);
-            parametersPanel.insertChild(exponent, 1, 3);
-            parametersPanel.insertChild(exponentUncertainty, 2, 3);
-
-            this.appendChild(parametersPanel);
-
-        }
-
     }
 
     @Override
     public Parameter[] getParameters() {
-        int nControls = controls.size();
+        int nControls = hydraulicControlList.size();
         Parameter[] parameters = new Parameter[nControls * 3];
         for (int k = 0; k < nControls; k++) {
-            HydraulicControl hc = controls.get(k);
+            OneHydraulicControl hc = hydraulicControlList.get(k);
             Distribution activationStageDistribution = Distribution.Gaussian(
-                    hc.activationStage.getValue(),
-                    hc.activationStageUncertainty.getValue() / 2);
+                    hc.getActivationStage(),
+                    hc.getActivationStageUncertainty() / 2);
             parameters[k * 3 + 0] = new Parameter("k_" + k,
-                    hc.activationStage.getValue(),
+                    hc.getActivationStage(),
                     activationStageDistribution);
             Distribution coefficientDistribution = Distribution.Gaussian(
-                    hc.coefficient.getValue(),
-                    hc.coefficientUncertainty.getValue() / 2);
+                    hc.getCoefficient(),
+                    hc.getCoefficientUncertainty() / 2);
             parameters[k * 3 + 1] = new Parameter("a_" + k,
-                    hc.coefficient.getValue(),
+                    hc.getCoefficient(),
                     coefficientDistribution);
             Distribution exponentDistribution = Distribution.Gaussian(
-                    hc.exponent.getValue(),
-                    hc.exponentUncertainty.getValue() / 2);
+                    hc.getExponent(),
+                    hc.getExponentUncertainty() / 2);
             parameters[k * 3 + 2] = new Parameter("c_" + k,
-                    hc.coefficient.getValue(),
+                    hc.getExponent(),
                     exponentDistribution);
         }
         return parameters;
+    }
+
+    public void setHydraulicControls(List<OneHydraulicControl> hydraulicControls) {
+        hydraulicControlList.clear();
+        controlSelectorModel.clear();
+        for (OneHydraulicControl hc : hydraulicControls) {
+            hc.addFollower(toBeNotified);
+            controlSelectorModel.addElement(hc);
+            hydraulicControlList.add(hc);
+        }
+    }
+
+    public List<OneHydraulicControl> getHydraulicControls() {
+        return this.hydraulicControlList;
     }
 
 }
