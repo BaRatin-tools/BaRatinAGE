@@ -25,7 +25,9 @@ public abstract class BaRatinItem extends BamItem {
                 super.setName(newName);
                 setTitle(newName);
 
-                hasChanged();
+                // notifyFollowers has less consequences than hasChanged
+                // hasChanged();
+                notifyFollowers();
             }
         });
 
@@ -45,17 +47,9 @@ public abstract class BaRatinItem extends BamItem {
         header.setNameFieldLabel(label);
     }
 
-    // protected void setNameField(String text) {
-    // header.setName(text);
-    // }
-
     protected void setDescriptionFieldLabel(String label) {
         header.setDescriptionFieldLabel(label);
     }
-
-    // protected void setDescriptionField(String text) {
-    // header.setDescription(text);
-    // }
 
     @Override
     public void setContent(Component component) {
