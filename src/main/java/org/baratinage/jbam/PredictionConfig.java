@@ -38,12 +38,28 @@ public class PredictionConfig {
         return String.format(ConfigFile.CONFIG_PREDICTION, this.name);
     }
 
+    public PredictionOutput[] getPredictionStates() {
+        return this.states;
+    }
+
     public PredictionOutput[] getPredictionOutputs() {
         return this.outputs;
     }
 
     public PredictionInput[] getPredictionInputs() {
         return this.inputs;
+    }
+
+    public boolean getPropagateParametricUncertainty() {
+        return this.propagateParametricUncertainty;
+    }
+
+    public boolean getPrintProgress() {
+        return this.printProgress;
+    }
+
+    public int getNPriorReplicates() {
+        return this.nPriorReplicates;
     }
 
     public void toFiles(String workspace) {
