@@ -27,7 +27,7 @@ import org.baratinage.jbam.UncertainData;
 import org.baratinage.ui.bam.DefaultStructuralErrorProvider;
 import org.baratinage.ui.bam.IModelDefinition;
 import org.baratinage.ui.bam.IPredictionData;
-import org.baratinage.ui.bam.IPriorPredictionExperiment;
+import org.baratinage.ui.bam.IPriorPredictionExperiments;
 import org.baratinage.ui.bam.IPriors;
 import org.baratinage.ui.bam.IStructuralError;
 
@@ -40,9 +40,18 @@ import org.baratinage.ui.plot.PlotItem;
 import org.baratinage.ui.plot.PlotLine;
 import org.baratinage.ui.plot.PlotBand;
 
-public class PriorRatingCurve extends GridPanel implements IPriorPredictionExperiment {
+public class PriorRatingCurve extends GridPanel implements IPriorPredictionExperiments {
 
         RowColPanel plotPanel;
+
+        private IPredictionData predictionDataProvider;
+        private IPriors priorsProvider;
+        private IStructuralError structuralErrorProvider = new DefaultStructuralErrorProvider(
+                        DefaultStructuralErrorProvider.TYPE.LINEAR);
+        private IModelDefinition modelDefinitionProvider;
+
+        private PredictionResult[] predictionResults;
+        private boolean hasResults = false;
 
         public PriorRatingCurve() {
                 // appendChild(new JLabel("Prior rating curve"));
@@ -105,7 +114,8 @@ public class PriorRatingCurve extends GridPanel implements IPriorPredictionExper
 
         }
 
-        private void runBaM() {
+        @Override
+        public void runBaM() {
 
                 String workspace = "test/newTestWS";
 
@@ -165,19 +175,11 @@ public class PriorRatingCurve extends GridPanel implements IPriorPredictionExper
                                 true,
                                 true);
 
-                PredictionConfig predConfig = getPredictionConfig();
-                PredictionConfig predConfigMaxPost = new PredictionConfig(
-                                predConfig.getName() + "_maxpost",
-                                predConfig.getPredictionInputs(),
-                                predConfig.getPredictionOutputs(),
-                                new PredictionOutput[] {},
-                                false,
-                                true,
-                                500);
+                PredictionConfig[] predConfigs = getPredictionConfigs();
 
                 BaM bam = new BaM(
                                 fakeCalibrationConfig,
-                                new PredictionConfig[] { predConfig, predConfigMaxPost },
+                                predConfigs,
                                 runOptions,
                                 null,
                                 null);
@@ -195,12 +197,17 @@ public class PriorRatingCurve extends GridPanel implements IPriorPredictionExper
                 PredictionResult[] predRes = bam.getPredictionsResults();
 
                 // CalibrationResult calRes = bam.getCalibrationResults();
+                // maxpostPredictionResult = predRes[1];
+                // parametricUncertaintyPredictionResult = predRes[0];
+                predictionResults = predRes;
+                hasResults = true;
 
-                buildRatingCurvePlot(predConfig, predRes[0], predRes[1]);
+                buildRatingCurvePlot(
+                                predConfigs[0],
+                                predictionResults[0],
+                                predictionResults[1]);
 
         }
-
-        private IPredictionData predictionDataProvider;
 
         @Override
         public void setPredictionDataProvider(IPredictionData predictionDataProvider) {
@@ -208,10 +215,16 @@ public class PriorRatingCurve extends GridPanel implements IPriorPredictionExper
         }
 
         @Override
-        public PredictionConfig getPredictionConfig() {
-                PredictionInput[] predInputs = predictionDataProvider.getPredictionInputs();
+        public PredictionConfig[] getPredictionConfigs() {
 
-                String[] outputNames = modelDefinitionProvider.getOutputNames();
+                PredictionInput[] predInputs = predictionDataProvider != null
+                                ? predictionDataProvider.getPredictionInputs()
+                                : new PredictionInput[0];
+
+                String[] outputNames = modelDefinitionProvider != null
+                                ? modelDefinitionProvider.getOutputNames()
+                                : new String[0];
+
                 PredictionOutput[] predOutputs = new PredictionOutput[outputNames.length];
                 for (int k = 0; k < outputNames.length; k++) {
                         predOutputs[k] = new PredictionOutput(
@@ -221,37 +234,58 @@ public class PriorRatingCurve extends GridPanel implements IPriorPredictionExper
                                         true);
                 }
 
-                return new PredictionConfig(
-                                getName(),
+                PredictionConfig parametricUncertaintyPredConfig = new PredictionConfig(
+                                getName() + "_param_uncertainty",
                                 predInputs,
                                 predOutputs,
                                 new PredictionOutput[] {},
                                 true,
                                 true,
                                 500);
-
+                PredictionConfig maxpostPredConfig = new PredictionConfig(
+                                getName() + "_maxpost",
+                                predInputs,
+                                predOutputs,
+                                new PredictionOutput[] {},
+                                false,
+                                true,
+                                500);
+                return new PredictionConfig[] { parametricUncertaintyPredConfig, maxpostPredConfig };
         }
-
-        private IPriors priorsProvider;
 
         @Override
         public void setPriorsProvider(IPriors priorsProvider) {
                 this.priorsProvider = priorsProvider;
         }
 
-        private IStructuralError structuralErrorProvider = new DefaultStructuralErrorProvider(
-                        DefaultStructuralErrorProvider.TYPE.LINEAR);
-
         @Override
         public void setStructuralErrorProvider(IStructuralError structuralErrorProvider) {
                 this.structuralErrorProvider = structuralErrorProvider;
         }
 
-        private IModelDefinition modelDefinitionProvider;
-
         @Override
         public void setModelDefintionProvider(IModelDefinition modelDefinitionProvider) {
                 this.modelDefinitionProvider = modelDefinitionProvider;
+        }
+
+        @Override
+        public boolean isPredicted() {
+                return this.hasResults;
+        }
+
+        @Override
+        public PredictionResult[] getPredictionResults() {
+                if (isPredicted()) {
+                        return predictionResults;
+                }
+                return null;
+        }
+
+        public void setPredictionResults(PredictionResult[] predictionResults) {
+                this.predictionResults = predictionResults;
+                if (predictionResults != null) {
+                        this.hasResults = true;
+                }
         }
 
 }

@@ -8,13 +8,18 @@ import org.baratinage.jbam.CalibrationConfig;
 import org.baratinage.jbam.CalibrationResult;
 import org.baratinage.jbam.McmcConfig;
 import org.baratinage.jbam.McmcCookingConfig;
+import org.baratinage.jbam.PredictionConfig;
+import org.baratinage.jbam.PredictionInput;
+import org.baratinage.jbam.PredictionResult;
 import org.baratinage.ui.bam.BamItem;
 import org.baratinage.ui.bam.BamItemCombobox;
 import org.baratinage.ui.bam.BamItemList;
 import org.baratinage.ui.bam.ICalibratedModel;
 import org.baratinage.ui.bam.IMcmc;
+import org.baratinage.ui.bam.JsonJbamConverter;
 import org.baratinage.ui.container.RowColPanel;
 import org.json.JSONObject;
+import org.json.JSONArray;
 
 public class RatingCurve extends BaRatinItem implements ICalibratedModel, IMcmc {
 
@@ -157,7 +162,48 @@ public class RatingCurve extends BaRatinItem implements ICalibratedModel, IMcmc 
     @Override
     public JSONObject toJSON() {
         // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'toJSON'");
+        // throw new UnsupportedOperationException("Unimplemented method 'toJSON'");
+
+        // HydraulicConfiguration hydraulicConfig;
+        // RatingCurveStageGrid ratingCurveGrid;
+        // PriorRatingCurve priorRatingCurve;
+        // PosteriorRatingCurve posteriorRatingCurve;
+
+        JSONObject json = new JSONObject();
+        json.put("name", getName());
+        json.put("description", getName());
+        json.put("hydraulicConfigurationId", hydraulicConfig != null ? hydraulicConfig.getUUID() : null);
+
+        RatingCurveStageGrid.StageGridConfig stageGridConfig = ratingCurveGrid.getStageGridConfig();
+        JSONObject jsonStageGridConfig = new JSONObject();
+        jsonStageGridConfig.put("min", stageGridConfig.min());
+        jsonStageGridConfig.put("max", stageGridConfig.max());
+        jsonStageGridConfig.put("step", stageGridConfig.step());
+
+        json.put("stageGridConfig", jsonStageGridConfig);
+
+        JSONObject jsonPriorRatingCurve = new JSONObject();
+
+        PredictionConfig[] predConfigs = priorRatingCurve.getPredictionConfigs();
+        JSONArray jsonPredConfigs = new JSONArray();
+        for (PredictionConfig predConfig : predConfigs) {
+            jsonPredConfigs.put(JsonJbamConverter.toJSON(predConfig));
+        }
+
+        PredictionResult[] predResults = priorRatingCurve.getPredictionResults();
+        JSONArray jsonPredResults = new JSONArray();
+        if (predResults != null) {
+            for (PredictionResult predRes : predResults) {
+                jsonPredResults.put(JsonJbamConverter.toJSON(predRes));
+            }
+        }
+
+        jsonPriorRatingCurve.put("predictionConfigs", jsonPredConfigs);
+        jsonPriorRatingCurve.put("predictionResults", jsonPredResults);
+
+        json.put("priorRatingCurve", jsonPriorRatingCurve);
+
+        return json;
     }
 
     @Override

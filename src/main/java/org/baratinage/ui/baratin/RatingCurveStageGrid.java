@@ -35,7 +35,7 @@ public class RatingCurveStageGrid extends ChangingRowColPanel implements IPredic
     // private double stepValue;
     private StageGridConfig stageGridConfig;
 
-    private record StageGridConfig(double min, double max, double step) {
+    public record StageGridConfig(double min, double max, double step) {
     }
 
     private boolean isValueValid;
@@ -138,6 +138,17 @@ public class RatingCurveStageGrid extends ChangingRowColPanel implements IPredic
 
     public boolean isValueValid() {
         return isValueValid;
+    }
+
+    public StageGridConfig getStageGridConfig() {
+        return stageGridConfig;
+    }
+
+    public void setStageGridConfig(StageGridConfig stagegridConfig) {
+        this.stageGridConfig = new StageGridConfig(
+                stageGridConfig.min(),
+                stageGridConfig.max(),
+                stageGridConfig.step());
     }
 
     @Override
