@@ -2,6 +2,7 @@ package org.baratinage.ui.component;
 
 import org.baratinage.ui.bam.BamItem;
 import org.baratinage.ui.bam.IDataset;
+import org.json.JSONObject;
 
 public class ImportedData extends BamItem implements IDataset {
 
@@ -60,15 +61,15 @@ public class ImportedData extends BamItem implements IDataset {
     }
 
     @Override
-    public String toJsonString() {
+    public JSONObject toJSON() {
         // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'toJsonString'");
+        throw new UnsupportedOperationException("Unimplemented method 'toJSON'");
     }
 
     @Override
-    public void fromJsonString(String jsonString) {
+    public void fromJSON(JSONObject jsonString) {
         // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'fromJsonString'");
+        throw new UnsupportedOperationException("Unimplemented method 'fromJSON'");
     }
 
 }

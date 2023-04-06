@@ -14,6 +14,7 @@ import org.baratinage.ui.bam.BamItemList;
 import org.baratinage.ui.bam.ICalibratedModel;
 import org.baratinage.ui.bam.IMcmc;
 import org.baratinage.ui.container.RowColPanel;
+import org.json.JSONObject;
 
 public class RatingCurve extends BaRatinItem implements ICalibratedModel, IMcmc {
 
@@ -54,7 +55,6 @@ public class RatingCurve extends BaRatinItem implements ICalibratedModel, IMcmc 
         hydraulicConfigPanel.appendChild(hydraulicConfigComboBox, 0);
         hydraulicConfigComboBox.addActionListener(e -> {
             BamItem selectedHydraulicConf = (BamItem) hydraulicConfigComboBox.getSelectedItem();
-
             if (hydraulicConfig != null) {
                 if (!hydraulicConfig.equals(selectedHydraulicConf)) {
                     setHydraulicConfig((HydraulicConfiguration) selectedHydraulicConf);
@@ -86,12 +86,10 @@ public class RatingCurve extends BaRatinItem implements ICalibratedModel, IMcmc 
     }
 
     private void setHydraulicConfig(HydraulicConfiguration newHydraulicConfig) {
-        System.out.println("setHydraulicConfig");
         if (hydraulicConfig != null) {
             hydraulicConfig.removeChild(this);
         }
         if (newHydraulicConfig == null) {
-            System.out.println("No hydraulic configuration to set");
             hydraulicConfig = null;
             priorRatingCurve.setModelDefintionProvider(hydraulicConfig);
             priorRatingCurve.setPriorsProvider(hydraulicConfig);
@@ -105,15 +103,14 @@ public class RatingCurve extends BaRatinItem implements ICalibratedModel, IMcmc 
     }
 
     public void updateHydraulicConfigCombobox() {
-        System.out.println("UpdateHydraulicConfigCombobox");
         if (this.siblings != null) {
-            boolean unset = hydraulicConfigComboBox.getSelectedIndex() == -1;
+            // boolean unset = hydraulicConfigComboBox.getSelectedIndex() == -1;
             hydraulicConfigComboBox.syncWithBamItemList(
                     this.siblings
                             .filterByType(HydraulicConfiguration.TYPE));
-            if (unset) {
-                hydraulicConfigComboBox.setSelectedItem(null);
-            }
+            // if (unset) {
+            // hydraulicConfigComboBox.setSelectedItem(null);
+            // }
         }
     }
 
@@ -121,7 +118,6 @@ public class RatingCurve extends BaRatinItem implements ICalibratedModel, IMcmc 
     public void setSiblings(BamItemList siblings) {
         super.setSiblings(siblings);
         siblings.addChangeListener(s -> {
-            System.out.println("List has hange");
             updateHydraulicConfigCombobox();
         });
         updateHydraulicConfigCombobox();
@@ -164,15 +160,15 @@ public class RatingCurve extends BaRatinItem implements ICalibratedModel, IMcmc 
     }
 
     @Override
-    public String toJsonString() {
+    public JSONObject toJSON() {
         // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'toJsonString'");
+        throw new UnsupportedOperationException("Unimplemented method 'toJSON'");
     }
 
     @Override
-    public void fromJsonString(String jsonString) {
+    public void fromJSON(JSONObject jsonString) {
         // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'fromJsonString'");
+        throw new UnsupportedOperationException("Unimplemented method 'fromJSON'");
     }
 
 }

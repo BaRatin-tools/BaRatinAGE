@@ -3,6 +3,7 @@ package org.baratinage.ui.baratin;
 import org.baratinage.jbam.UncertainData;
 import org.baratinage.ui.bam.BamItem;
 import org.baratinage.ui.bam.ICalibrationData;
+import org.json.JSONObject;
 
 public class Gaugings extends BamItem implements ICalibrationData {
 
@@ -38,15 +39,15 @@ public class Gaugings extends BamItem implements ICalibrationData {
     }
 
     @Override
-    public String toJsonString() {
+    public void fromJSON(JSONObject jsonString) {
         // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'toJsonString'");
+        throw new UnsupportedOperationException("Unimplemented method 'fromJSON'");
     }
 
     @Override
-    public void fromJsonString(String jsonString) {
+    public JSONObject toJSON() {
         // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'fromJsonString'");
+        throw new UnsupportedOperationException("Unimplemented method 'toJSON'");
     }
 
 }

@@ -3,6 +3,7 @@ package org.baratinage.ui.baratin;
 import org.baratinage.jbam.PredictionInput;
 import org.baratinage.ui.bam.BamItem;
 import org.baratinage.ui.bam.IPredictionData;
+import org.json.JSONObject;
 
 public class Limnigraph extends BamItem implements IPredictionData {
 
@@ -31,15 +32,15 @@ public class Limnigraph extends BamItem implements IPredictionData {
     }
 
     @Override
-    public String toJsonString() {
+    public JSONObject toJSON() {
         // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'toJsonString'");
+        throw new UnsupportedOperationException("Unimplemented method 'toJSON'");
     }
 
     @Override
-    public void fromJsonString(String jsonString) {
+    public void fromJSON(JSONObject jsonString) {
         // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'fromJsonString'");
+        throw new UnsupportedOperationException("Unimplemented method 'fromJSON'");
     }
 
 }
