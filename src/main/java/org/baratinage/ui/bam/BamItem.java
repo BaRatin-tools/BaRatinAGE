@@ -192,6 +192,22 @@ abstract public class BamItem extends ChangingRowColPanel {
         return "BamItem | " + this.type + " : " + this.name + " (" + this.uuid + ")";
     }
 
+    public JSONObject toFullJSON() {
+        JSONObject json = new JSONObject();
+        json.put("uuid", uuid);
+        json.put("name", name);
+        json.put("description", description);
+        json.put("content", toJSON());
+        return json;
+    }
+
+    public void fromFullJSON(JSONObject json) {
+        uuid = (String) json.get("uuid");
+        name = (String) json.get("name");
+        description = (String) json.get("description");
+        fromJSON((JSONObject) json.get("content"));
+    }
+
     public abstract void parentHasChanged(BamItem parent);
 
     public abstract JSONObject toJSON();
