@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Insets;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,6 +22,29 @@ import org.baratinage.ui.container.GridPanel;
 public class ControlMatrix extends ChangingRowColPanel {
 
     private record ControlCheckBox(int segment, int control, CheckBox checkbox) {
+    }
+
+    private class CheckBox extends JCheckBox {
+
+        private int grayRGBvalue = 225;
+        private Color uncheckedColor = new Color(grayRGBvalue, grayRGBvalue, grayRGBvalue);
+        private Color checkedColor = new Color(50, 200, 50);
+
+        public CheckBox(String text) {
+            super(text);
+            this.setOpaque(true);
+            this.setBackground(uncheckedColor);
+            this.setPreferredSize(new Dimension(50, 30));
+            this.setHorizontalAlignment(CENTER);
+            this.addItemListener(e -> {
+                CheckBox ccb = (CheckBox) e.getItem();
+                if (ccb.isSelected()) {
+                    ccb.setBackground(checkedColor);
+                } else {
+                    ccb.setBackground(uncheckedColor);
+                }
+            });
+        }
     }
 
     private int nControls;
@@ -179,27 +203,20 @@ public class ControlMatrix extends ChangingRowColPanel {
         return matrix;
     }
 
-    private class CheckBox extends JCheckBox {
-
-        private int grayRGBvalue = 225;
-        private Color uncheckedColor = new Color(grayRGBvalue, grayRGBvalue, grayRGBvalue);
-        private Color checkedColor = new Color(50, 200, 50);
-
-        public CheckBox(String text) {
-            super(text);
-            this.setOpaque(true);
-            this.setBackground(uncheckedColor);
-            this.setPreferredSize(new Dimension(50, 30));
-            this.setHorizontalAlignment(CENTER);
-            this.addItemListener(e -> {
-                CheckBox ccb = (CheckBox) e.getItem();
-                if (ccb.isSelected()) {
-                    ccb.setBackground(checkedColor);
-                } else {
-                    ccb.setBackground(uncheckedColor);
-                }
-            });
+    public void setFromBooleanMatrix(boolean[][] matrix) {
+        int n = matrix.length;
+        for (int k = 0; k < n; k++) {
+            if (matrix[k].length != n) {
+                System.err.println("ERROR: All rows of control matrix are not equal!");
+                return;
+            }
         }
+        nControls = n;
+        createMatrixPanel();
+        updateStateFromBooleanMatrix(matrix);
+        revalidate();
+        updateEditability();
+        notifyFollowers();
     }
 
 }
