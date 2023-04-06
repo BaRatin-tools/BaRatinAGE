@@ -10,10 +10,11 @@ import org.baratinage.ui.container.ChangingRowColPanel;
 
 public class NumberField extends ChangingRowColPanel {
 
+    private static final double NaN = -9999.9999;
     private TextField textField;
     private boolean integerOnly;
     private boolean isValueValid;
-    private double value;
+    private double value = NaN;
 
     public NumberField(boolean integerOnly) {
 
@@ -23,6 +24,7 @@ public class NumberField extends ChangingRowColPanel {
         });
 
         this.integerOnly = integerOnly;
+
         addValidator((nbr) -> true);
         if (integerOnly) {
             addValidator((nbr) -> {
@@ -39,7 +41,6 @@ public class NumberField extends ChangingRowColPanel {
             @Override
             public void focusLost(FocusEvent e) {
                 if (isValueValid()) {
-
                     updateTextField();
                 }
             }
@@ -72,7 +73,7 @@ public class NumberField extends ChangingRowColPanel {
     }
 
     public void setValue(String value) {
-        double doubleValue = Double.NaN;
+        double doubleValue = NaN;
         try {
             doubleValue = Double.parseDouble(value);
 
@@ -103,6 +104,10 @@ public class NumberField extends ChangingRowColPanel {
     }
 
     public void updateTextField() {
+        if (value == NaN) {
+            textField.setTextWithoutFiringChangeListeners("");
+            return;
+        }
         if (integerOnly) {
             textField.setTextWithoutFiringChangeListeners(Integer.toString((int) value));
         } else {
