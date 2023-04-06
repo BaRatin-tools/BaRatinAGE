@@ -1,15 +1,17 @@
 package org.baratinage.ui.bam;
 
 import java.awt.Component;
-
-import javax.swing.DefaultComboBoxModel;
+import java.util.ArrayList;
+import java.util.List;
+import javax.swing.AbstractListModel;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JComboBox;
 import javax.swing.JList;
+import javax.swing.MutableComboBoxModel;
 
 public class BamItemCombobox extends JComboBox<BamItem> {
 
-    private DefaultComboBoxModel<BamItem> model;
+    private BamItemComboBoxModel model;
 
     public BamItemCombobox() {
         super();
@@ -34,25 +36,15 @@ public class BamItemCombobox extends JComboBox<BamItem> {
             }
         });
 
-        model = new DefaultComboBoxModel<>();
+        model = new BamItemComboBoxModel();
+
         setModel(model);
-    }
-
-    @Override
-    public void addItem(BamItem item) {
-        if (model.getIndexOf(item) == -1) {
-            super.addItem(item);
-        }
-        // else {
-        // System.out.println("Item " + item + " ignored");
-        // }
-
     }
 
     public void syncWithBamItemList(BamItemList bamItemList) {
         for (BamItem item : bamItemList) {
             if (model.getIndexOf(item) == -1) {
-                super.addItem(item);
+                model.addElement(item);
             }
         }
         for (int k = 0; k < model.getSize(); k++) {
@@ -67,4 +59,69 @@ public class BamItemCombobox extends JComboBox<BamItem> {
         }
 
     }
+
+    private class BamItemComboBoxModel extends AbstractListModel<BamItem>
+            implements MutableComboBoxModel<BamItem> {
+
+        private List<BamItem> items = new ArrayList<>();
+        private BamItem selectedItem = null;
+
+        @Override
+        public void setSelectedItem(Object anItem) {
+            if (anItem instanceof BamItem) {
+                BamItem candidateItem = (BamItem) anItem;
+                int index = items.indexOf(candidateItem);
+                if (index != -1) {
+                    selectedItem = items.get(index);
+                    fireContentsChanged(this, -1, -1);
+                }
+            }
+        }
+
+        @Override
+        public Object getSelectedItem() {
+            return selectedItem;
+        }
+
+        @Override
+        public int getSize() {
+            return items.size();
+        }
+
+        @Override
+        public BamItem getElementAt(int index) {
+            return items.get(index);
+        }
+
+        @Override
+        public void addElement(BamItem item) {
+            items.add(item);
+        }
+
+        @Override
+        public void removeElement(Object obj) {
+            if (obj instanceof BamItem) {
+                BamItem item = (BamItem) obj;
+                items.remove(item);
+            }
+        }
+
+        @Override
+        public void insertElementAt(BamItem item, int index) {
+            // TODO Auto-generated method stub
+            throw new UnsupportedOperationException("Unimplemented method 'insertElementAt'");
+        }
+
+        @Override
+        public void removeElementAt(int index) {
+            // TODO Auto-generated method stub
+            throw new UnsupportedOperationException("Unimplemented method 'removeElementAt'");
+        }
+
+        public int getIndexOf(BamItem item) {
+            return items.indexOf(item);
+        }
+
+    }
+
 }
