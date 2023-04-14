@@ -1,19 +1,45 @@
 package org.baratinage.ui.bam;
 
+import java.awt.Color;
 import java.awt.Component;
-import java.util.ArrayList;
-import java.util.List;
-import javax.swing.AbstractListModel;
+
+// import java.awt.Component;
+// import java.util.ArrayList;
+// import java.util.List;
+// import javax.swing.AbstractListModel;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListCellRenderer;
+// import javax.swing.DefaultListCellRenderer;
 import javax.swing.JComboBox;
+// import javax.swing.JList;
+// import javax.swing.MutableComboBoxModel;
 import javax.swing.JList;
-import javax.swing.MutableComboBoxModel;
+import javax.swing.plaf.basic.BasicBorders;
+
+import org.json.JSONObject;
 
 public class BamItemCombobox extends JComboBox<BamItem> {
 
-    private BamItemComboBoxModel model;
+    // private BamItemComboBoxModel model;
+    private DefaultComboBoxModel<BamItem> model;
+    private final BamItem EMPTY_BAMITEM = new BamItem(0) {
 
-    public BamItemCombobox() {
+        @Override
+        public void parentHasChanged(BamItem parent) {
+        }
+
+        @Override
+        public JSONObject toJSON() {
+            return null;
+        }
+
+        @Override
+        public void fromJSON(JSONObject json) {
+        }
+
+    };
+
+    public BamItemCombobox(String defaultItemName) {
         super();
 
         setRenderer(new DefaultListCellRenderer() {
@@ -27,101 +53,70 @@ public class BamItemCombobox extends JComboBox<BamItem> {
 
                 BamItem item = (BamItem) value;
 
+                String itemString = "...";
                 if (item != null) {
-                    return super.getListCellRendererComponent(list, item.getName(), index, isSelected, cellHasFocus);
+                    itemString = item.getName();
                 } else {
-                    return super.getListCellRendererComponent(list, item, index, isSelected, cellHasFocus);
+                    itemString = String.format("<html><i>%s</i></html>", EMPTY_BAMITEM.getName());
                 }
 
+                return super.getListCellRendererComponent(list, itemString, index, isSelected,
+                        cellHasFocus);
             }
         });
 
-        model = new BamItemComboBoxModel();
+        model = new DefaultComboBoxModel<>();
+
+        addActionListener((e) -> {
+            BamItem selectedItem = getSelectedItem();
+            setValidity(selectedItem != null);
+        });
+        setValidity(false);
+
+        EMPTY_BAMITEM.setName(defaultItemName);
+        model.addElement(EMPTY_BAMITEM);
 
         setModel(model);
+
+    }
+
+    private void setValidity(boolean isValid) {
+        Color color = new Color(125, 255, 125, 0);
+
+        if (!isValid) {
+            color = new Color(255, 125, 125, 200);
+        }
+
+        setBorder(new BasicBorders.FieldBorder(color, color, color, color));
+
     }
 
     public void syncWithBamItemList(BamItemList bamItemList) {
+        // adding missing item to the list
         for (BamItem item : bamItemList) {
             if (model.getIndexOf(item) == -1) {
                 model.addElement(item);
             }
         }
+        // removing items that are no longer needed
         for (int k = 0; k < model.getSize(); k++) {
             BamItem item = model.getElementAt(k);
+            if (item.equals(EMPTY_BAMITEM)) {
+                continue;
+            }
             if (bamItemList.indexOf(item) == -1) {
-                BamItem selectedItem = (BamItem) model.getSelectedItem();
-                if (selectedItem.equals(item)) {
-                    model.setSelectedItem(null);
+                BamItem selectedItem = getSelectedItem();
+                if (selectedItem != null && selectedItem.equals(item)) {
+                    model.setSelectedItem(EMPTY_BAMITEM);
                 }
                 model.removeElement(item);
             }
         }
-
     }
 
-    private class BamItemComboBoxModel extends AbstractListModel<BamItem>
-            implements MutableComboBoxModel<BamItem> {
-
-        private List<BamItem> items = new ArrayList<>();
-        private BamItem selectedItem = null;
-
-        @Override
-        public void setSelectedItem(Object anItem) {
-            if (anItem instanceof BamItem) {
-                BamItem candidateItem = (BamItem) anItem;
-                int index = items.indexOf(candidateItem);
-                if (index != -1) {
-                    selectedItem = items.get(index);
-                    fireContentsChanged(this, -1, -1);
-                }
-            }
-        }
-
-        @Override
-        public Object getSelectedItem() {
-            return selectedItem;
-        }
-
-        @Override
-        public int getSize() {
-            return items.size();
-        }
-
-        @Override
-        public BamItem getElementAt(int index) {
-            return items.get(index);
-        }
-
-        @Override
-        public void addElement(BamItem item) {
-            items.add(item);
-        }
-
-        @Override
-        public void removeElement(Object obj) {
-            if (obj instanceof BamItem) {
-                BamItem item = (BamItem) obj;
-                items.remove(item);
-            }
-        }
-
-        @Override
-        public void insertElementAt(BamItem item, int index) {
-            // TODO Auto-generated method stub
-            throw new UnsupportedOperationException("Unimplemented method 'insertElementAt'");
-        }
-
-        @Override
-        public void removeElementAt(int index) {
-            // TODO Auto-generated method stub
-            throw new UnsupportedOperationException("Unimplemented method 'removeElementAt'");
-        }
-
-        public int getIndexOf(BamItem item) {
-            return items.indexOf(item);
-        }
-
+    @Override
+    public BamItem getSelectedItem() {
+        BamItem selectedItem = (BamItem) super.getSelectedItem();
+        return selectedItem.equals(EMPTY_BAMITEM) ? null : selectedItem;
     }
-
 }

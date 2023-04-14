@@ -56,17 +56,21 @@ public class RatingCurve extends BaRatinItem implements ICalibratedModel, IMcmc,
         hydraulicConfigPanel.setPadding(5);
 
         hydraulicConfigPanel.appendChild(new JLabel("Configuration hydraulique"));
-        hydraulicConfigComboBox = new BamItemCombobox();
+        hydraulicConfigComboBox = new BamItemCombobox("Veulliez selectionner une configuration hydraulique");
         hydraulicConfigPanel.appendChild(hydraulicConfigComboBox, 0);
         hydraulicConfigComboBox.addActionListener(e -> {
             BamItem selectedHydraulicConf = (BamItem) hydraulicConfigComboBox.getSelectedItem();
-            if (hydraulicConfig != null) {
-                if (!hydraulicConfig.equals(selectedHydraulicConf)) {
-                    setHydraulicConfig((HydraulicConfiguration) selectedHydraulicConf);
-                }
-            } else {
-                setHydraulicConfig((HydraulicConfiguration) selectedHydraulicConf);
+            if (selectedHydraulicConf == null) {
+                setHydraulicConfig(null);
+                return;
             }
+            // if (hydraulicConfig != null &&
+            // !hydraulicConfig.equals(selectedHydraulicConf)) {
+
+            // setHydraulicConfig((HydraulicConfiguration) selectedHydraulicConf);
+            // } else {
+            setHydraulicConfig((HydraulicConfiguration) selectedHydraulicConf);
+            // }
         });
 
         ratingCurveGrid = new RatingCurveStageGrid();
