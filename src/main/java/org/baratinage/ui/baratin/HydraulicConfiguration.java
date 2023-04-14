@@ -40,13 +40,13 @@ class HydraulicConfiguration extends BaRatinItem
         setDescriptionFieldLabel("Description de la configuration hydraulique");
 
         controlMatrix = new ControlMatrix();
-        controlMatrix.addFollower((o) -> {
+        controlMatrix.addPropertyChangeListener("controlMatrix", (e) -> {
             hasChanged();
-            updateControls(controlMatrix.getControlMatrix());
+            updateHydraulicControls(controlMatrix.getControlMatrix());
         });
 
         hydraulicControls = new HydraulicControls();
-        hydraulicControls.addFollower((o) -> {
+        hydraulicControls.addPropertyChangeListener("hydraulicControls", (e) -> {
             hasChanged();
         });
 
@@ -58,11 +58,11 @@ class HydraulicConfiguration extends BaRatinItem
 
         setContent(splitPaneContainer);
 
-        updateControls(controlMatrix.getControlMatrix());
+        updateHydraulicControls(controlMatrix.getControlMatrix());
 
     }
 
-    private void updateControls(boolean[][] controlMatrix) {
+    private void updateHydraulicControls(boolean[][] controlMatrix) {
         hydraulicControls.updateHydraulicControlListFromNumberOfControls(controlMatrix.length);
     }
 
@@ -172,7 +172,6 @@ class HydraulicConfiguration extends BaRatinItem
         }
         controlMatrix.setFromBooleanMatrix(matrix);
 
-        // hydraulicControls.fromJSON((JSONObject) json.get("hydraulicControls"));
         JSONArray jsonHydraulicControls = (JSONArray) json.get("hydraulicControls");
 
         List<OneHydraulicControl> hydraulicControlList = new ArrayList<>();

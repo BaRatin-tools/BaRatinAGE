@@ -9,7 +9,7 @@ import org.baratinage.jbam.CalibrationResult;
 import org.baratinage.jbam.McmcConfig;
 import org.baratinage.jbam.McmcCookingConfig;
 import org.baratinage.jbam.PredictionConfig;
-import org.baratinage.jbam.PredictionInput;
+// import org.baratinage.jbam.PredictionInput;
 import org.baratinage.jbam.PredictionResult;
 import org.baratinage.ui.bam.BamItem;
 import org.baratinage.ui.bam.BamItemCombobox;
@@ -21,7 +21,7 @@ import org.baratinage.ui.container.RowColPanel;
 import org.json.JSONObject;
 import org.json.JSONArray;
 
-public class RatingCurve extends BaRatinItem implements ICalibratedModel, IMcmc {
+public class RatingCurve extends BaRatinItem implements ICalibratedModel, IMcmc, BamItemList.BamItemListChangeListener {
 
     static private final String defaultNameTemplate = "Courbe de tarage #%s";
     static private int nInstance = 0;
@@ -88,13 +88,6 @@ public class RatingCurve extends BaRatinItem implements ICalibratedModel, IMcmc 
         content.appendChild(ratingCurves, 1, 5);
 
         setContent(content);
-
-        BamItemList siblings = getSiblings();
-        siblings.addChangeListener(s -> {
-            updateHydraulicConfigCombobox();
-        });
-        updateHydraulicConfigCombobox();
-
     }
 
     private void setHydraulicConfig(HydraulicConfiguration newHydraulicConfig) {
@@ -108,19 +101,13 @@ public class RatingCurve extends BaRatinItem implements ICalibratedModel, IMcmc 
             return;
         }
         hydraulicConfig = newHydraulicConfig;
+        newHydraulicConfig.addPropertyChangeListener("bamItemName", (e) -> {
+            System.out.println("NAME HAS CHANGED => " + e.getNewValue() + " (" + e.getOldValue() + ")");
+        });
         priorRatingCurve.setModelDefintionProvider(hydraulicConfig);
         priorRatingCurve.setPriorsProvider(hydraulicConfig);
         hydraulicConfig.addChild(this);
 
-    }
-
-    public void updateHydraulicConfigCombobox() {
-        BamItemList siblings = getSiblings();
-        if (siblings != null) {
-            hydraulicConfigComboBox.syncWithBamItemList(
-                    siblings
-                            .filterByType(HydraulicConfiguration.TYPE));
-        }
     }
 
     @Override
@@ -161,13 +148,6 @@ public class RatingCurve extends BaRatinItem implements ICalibratedModel, IMcmc 
 
     @Override
     public JSONObject toJSON() {
-        // TODO Auto-generated method stub
-        // throw new UnsupportedOperationException("Unimplemented method 'toJSON'");
-
-        // HydraulicConfiguration hydraulicConfig;
-        // RatingCurveStageGrid ratingCurveGrid;
-        // PriorRatingCurve priorRatingCurve;
-        // PosteriorRatingCurve posteriorRatingCurve;
 
         JSONObject json = new JSONObject();
         json.put("name", getName());
@@ -210,6 +190,14 @@ public class RatingCurve extends BaRatinItem implements ICalibratedModel, IMcmc 
     public void fromJSON(JSONObject jsonString) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'fromJSON'");
+    }
+
+    // FIXME: innappropiate name!!
+    @Override
+    public void onChange(BamItemList bamItemList) {
+        System.out.println("UPDATING COMBOBOX ==> " + this);
+        BamItemList listOfHydraulicConfigs = bamItemList.filterByType(HydraulicConfiguration.TYPE);
+        hydraulicConfigComboBox.syncWithBamItemList(listOfHydraulicConfigs);
     }
 
 }

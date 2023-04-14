@@ -20,14 +20,8 @@ public abstract class BaRatinItem extends BamItem {
         header.addPropertyChangeListener(e -> {
             if (e.getPropertyName().equals("name")) {
                 String newName = (String) e.getNewValue();
-
-                // setName cannot be used directly!
-                super.setName(newName);
+                super.setName(newName); // must use super!
                 setTitle(newName);
-
-                // notifyFollowers has less consequences than hasChanged
-                // hasChanged();
-                notifyFollowers();
             }
         });
 

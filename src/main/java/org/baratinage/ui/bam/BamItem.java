@@ -10,17 +10,15 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JSeparator;
 
-import org.baratinage.ui.container.ChangingRowColPanel;
 import org.baratinage.ui.container.GridPanel;
 import org.baratinage.ui.container.RowColPanel;
 import org.json.JSONObject;
 
-abstract public class BamItem extends ChangingRowColPanel {
+abstract public class BamItem extends RowColPanel {
 
     private String uuid;
 
     private BamItemList children;
-    private BamItemList siblings;
     private String name;
     private String description;
 
@@ -82,27 +80,7 @@ abstract public class BamItem extends ChangingRowColPanel {
 
         this.uuid = UUID.randomUUID().toString();
 
-        this.siblings = new BamItemList();
         this.children = new BamItemList();
-    }
-
-    public void updateSiblings(BamItemList bamItems) {
-        // add missing siblings
-        for (BamItem item : bamItems) {
-            if (!siblings.contains(item)) {
-                siblings.add(item);
-            }
-        }
-        // remove no longer existing siblings
-        for (BamItem item : siblings) {
-            if (!bamItems.contains(item)) {
-                siblings.remove(item);
-            }
-        }
-    }
-
-    public BamItemList getSiblings() {
-        return this.siblings;
     }
 
     public void addDeleteAction(ActionListener action) {
@@ -130,7 +108,6 @@ abstract public class BamItem extends ChangingRowColPanel {
     }
 
     public void hasChanged() {
-        notifyFollowers();
         for (BamItem child : this.children) {
             child.parentHasChanged(this);
         }
@@ -176,6 +153,8 @@ abstract public class BamItem extends ChangingRowColPanel {
     }
 
     public void setName(String name) {
+        String oldName = getName();
+        firePropertyChange("bamItemName", oldName, name);
         this.name = name;
     }
 

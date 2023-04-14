@@ -6,9 +6,9 @@ import java.awt.event.FocusListener;
 
 import javax.swing.plaf.basic.BasicBorders;
 
-import org.baratinage.ui.container.ChangingRowColPanel;
+import org.baratinage.ui.container.RowColPanel;
 
-public class NumberField extends ChangingRowColPanel {
+public class NumberField extends RowColPanel {
 
     private static final double NaN = -9999.9999;
     private TextField textField;
@@ -91,11 +91,11 @@ public class NumberField extends ChangingRowColPanel {
 
     public void setValue(double value, boolean doNotNotifyFollowers) {
         setValueValidity(textField.isTextValid());
+        double oldValue = this.value;
         this.value = value;
 
         if (!doNotNotifyFollowers) {
-            notifyFollowers();
-
+            firePropertyChange("value", oldValue, value);
         }
     }
 

@@ -41,10 +41,6 @@ import org.json.JSONObject;
 
 public class BaratinProject extends RowColPanel {
 
-    // private record ProjectBamItem(BamItem bamItem, ExplorerItem explorerItem) {
-    // }
-
-    // private List<BamItem> items;
     private BamItemList items;
 
     private ExplorerItem hydraulicConfig;
@@ -198,20 +194,26 @@ public class BaratinProject extends RowColPanel {
 
     }
 
+    public BamItemList getBamItems() {
+        return this.items;
+    }
+
     private void addItem(BamItem bamItem, ExplorerItem explorerItem) {
 
         items.add(bamItem);
-        bamItem.updateSiblings(items);
-        // bamItem.setSiblings(items);
+        // bamItem.updateSiblings(items);
 
-        bamItem.addFollower(o -> {
-            String newName = bamItem.getName();
-            if (newName.equals("")) {
-                newName = "<html><div style='color: red; font-style: italic'>Sans nom</div></html>";
+        bamItem.addPropertyChangeListener((p) -> {
+            if (p.getPropertyName().equals("name")) {
+                String newName = (String) p.getNewValue();
+                if (newName.equals("")) {
+                    newName = "<html><div style='color: red; font-style: italic'>Sansnom</div></html>";
+                }
+                explorerItem.label = newName;
+                explorer.updateItemView(explorerItem);
             }
-            explorerItem.label = newName;
-            explorer.updateItemView(explorerItem);
         });
+
         bamItem.addDeleteAction(e -> {
             deleteItem(bamItem, explorerItem);
         });
@@ -222,9 +224,11 @@ public class BaratinProject extends RowColPanel {
 
     }
 
-    // private void deleteItem(String id) {
     private void deleteItem(BamItem bamItem, ExplorerItem explorerItem) {
-        // BamItem item = findBamItem(id);
+        if (bamItem instanceof RatingCurve) {
+            RatingCurve rc = (RatingCurve) bamItem;
+            this.getBamItems().removeChangeListener(rc);
+        }
         items.remove(bamItem);
         this.explorer.removeItem(explorerItem);
         this.explorer.selectItem(explorerItem.parentItem);
@@ -243,6 +247,7 @@ public class BaratinProject extends RowColPanel {
 
     private void addRatingCurve() {
         RatingCurve ratingCurveItem = new RatingCurve();
+        this.getBamItems().addChangeListener(ratingCurveItem);
         ExplorerItem explorerItem = new ExplorerItem(
                 ratingCurveItem.getUUID(),
                 ratingCurveItem.getName(),
@@ -260,9 +265,4 @@ public class BaratinProject extends RowColPanel {
         }
         return null;
     }
-
-    // private ExplorerItem findExplorerItem(String id) {
-
-    // }
-
 }

@@ -16,10 +16,10 @@ import javax.swing.JScrollPane;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
-import org.baratinage.ui.container.ChangingRowColPanel;
 import org.baratinage.ui.container.GridPanel;
+import org.baratinage.ui.container.RowColPanel;
 
-public class ControlMatrix extends ChangingRowColPanel {
+public class ControlMatrix extends RowColPanel {
 
     private record ControlCheckBox(int segment, int control, CheckBox checkbox) {
     }
@@ -105,7 +105,7 @@ public class ControlMatrix extends ChangingRowColPanel {
 
                 checkBox.addItemListener(e -> {
                     updateEditability();
-                    notifyFollowers();
+                    firePropertyChange("controlMatrix", null, null);
                 });
                 if (i == 1 && j == 2) {
 
@@ -138,7 +138,7 @@ public class ControlMatrix extends ChangingRowColPanel {
         updateStateFromBooleanMatrix(oldControlMatrix);
         revalidate();
         updateEditability();
-        notifyFollowers();
+        firePropertyChange("controlMatrix", null, null);
     }
 
     private void addNewControl() {
@@ -148,7 +148,7 @@ public class ControlMatrix extends ChangingRowColPanel {
         updateStateFromBooleanMatrix(oldControlMatrix);
         revalidate();
         updateEditability();
-        notifyFollowers();
+        firePropertyChange("controlMatrix", null, null);
     }
 
     // for quick debugging purposes...
@@ -216,7 +216,7 @@ public class ControlMatrix extends ChangingRowColPanel {
         updateStateFromBooleanMatrix(matrix);
         revalidate();
         updateEditability();
-        notifyFollowers();
+        firePropertyChange("controlMatrix", null, null);
     }
 
 }

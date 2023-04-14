@@ -18,14 +18,9 @@ import javax.swing.ListSelectionModel;
 import org.baratinage.jbam.Distribution;
 import org.baratinage.jbam.Parameter;
 import org.baratinage.ui.bam.IPriors;
-import org.baratinage.ui.container.ChangingRowColPanel;
 import org.baratinage.ui.container.RowColPanel;
 
-public class HydraulicControls extends ChangingRowColPanel implements IPriors {
-
-    private ToBeNotified toBeNotified = (ChangingRowColPanel panel) -> {
-        notifyFollowers();
-    };
+public class HydraulicControls extends RowColPanel implements IPriors {
 
     JList<OneHydraulicControl> controlSelector;
     DefaultListModel<OneHydraulicControl> controlSelectorModel;
@@ -69,7 +64,7 @@ public class HydraulicControls extends ChangingRowColPanel implements IPriors {
         };
         controlSelector.setModel(controlSelectorModel);
         // NOTE: I could have juste implemented toString for OneHydraulicControl
-        // but this way, we now we can do much more thing. DefaultListCellRenderer
+        // but this way, we can do much more things. DefaultListCellRenderer
         // extends a JLabel so we can customize the label with icons and so on while
         // keeping the nice default formatting when selected/focused that I think
         // comes from the LookAndFeel...
@@ -120,7 +115,9 @@ public class HydraulicControls extends ChangingRowColPanel implements IPriors {
 
                 OneHydraulicControl newHydraulicControl = new OneHydraulicControl();
                 newHydraulicControl.setName("Contrôle #" + (k + 1));
-                newHydraulicControl.addFollower(toBeNotified);
+                newHydraulicControl.addPropertyChangeListener("hydraulicControl", (e) -> {
+                    firePropertyChange("hydraulicControl", null, null);
+                });
 
                 controlSelectorModel.addElement(newHydraulicControl);
                 hydraulicControlList.add(newHydraulicControl);
@@ -161,7 +158,9 @@ public class HydraulicControls extends ChangingRowColPanel implements IPriors {
         hydraulicControlList.clear();
         controlSelectorModel.clear();
         for (OneHydraulicControl hc : hydraulicControls) {
-            hc.addFollower(toBeNotified);
+            hc.addPropertyChangeListener("hydraulicControl", (e) -> {
+                firePropertyChange("hydraulicControl", null, null);
+            });
             controlSelectorModel.addElement(hc);
             hydraulicControlList.add(hc);
         }

@@ -1,38 +1,27 @@
 package org.baratinage.ui.baratin;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.List;
 
-// import java.awt.Color;
-// import javax.swing.plaf.basic.BasicBorders;
-
 import javax.swing.JLabel;
-import javax.swing.SwingUtilities;
+// import javax.swing.SwingUtilities;
 
 import org.baratinage.jbam.PredictionInput;
 import org.baratinage.ui.bam.IPredictionData;
 
-// import javax.swing.SwingUtilities;
-
-// import org.baratinage.ui.component.DoubleNumberField;
-// import org.baratinage.ui.component.IntegerNumberField;
 import org.baratinage.ui.component.NumberField;
-// import org.baratinage.ui.component.ToBeNotified;
-import org.baratinage.ui.container.ChangingRowColPanel;
 import org.baratinage.ui.container.GridPanel;
+import org.baratinage.ui.container.RowColPanel;
 
-// public class RatingCurveStageGrid extends ChangingRowColPanel implements ToBeNotified {
-public class RatingCurveStageGrid extends ChangingRowColPanel implements IPredictionData {
+public class RatingCurveStageGrid extends RowColPanel implements IPredictionData, PropertyChangeListener {
 
     private NumberField minStageField;
     private NumberField maxStageField;
     private NumberField nbrStepField;
     private NumberField valStepField;
 
-    // private double[] stageGrid;
-    // private double minValue;
-    // private double maxValue;
-    // private double stepValue;
     private StageGridConfig stageGridConfig;
 
     public record StageGridConfig(double min, double max, double step) {
@@ -50,17 +39,17 @@ public class RatingCurveStageGrid extends ChangingRowColPanel implements IPredic
         this.appendChild(gridPanel, 1);
 
         minStageField = new NumberField();
-        minStageField.addFollower(toBeNotified);
+        minStageField.addPropertyChangeListener("value", this);
 
         maxStageField = new NumberField();
-        maxStageField.addFollower(toBeNotified);
+        maxStageField.addPropertyChangeListener("value", this);
 
         nbrStepField = new NumberField(true);
-        nbrStepField.addFollower(toBeNotified);
+        nbrStepField.addPropertyChangeListener("value", this);
         nbrStepField.addValidator(n -> n > 0);
 
         valStepField = new NumberField();
-        valStepField.addFollower(toBeNotified);
+        valStepField.addPropertyChangeListener("value", this);
         valStepField.addValidator(n -> n > 0);
 
         gridPanel.setGap(5);
@@ -79,49 +68,7 @@ public class RatingCurveStageGrid extends ChangingRowColPanel implements IPredic
 
         isValueValid = false;
         stageGridConfig = new StageGridConfig(0, 0, 0);
-
-        // updateApperanceBasedOnValueValidity();
     }
-
-    ToBeNotified toBeNotified = (ChangingRowColPanel followed) -> {
-
-        isValueValid = false;
-        stageGridConfig = new StageGridConfig(0, 0, 0);
-        if (minStageField.isValueValid() && maxStageField.isValueValid()) {
-            double min = minStageField.getValue();
-            double max = maxStageField.getValue();
-            if (followed == nbrStepField) {
-                int n = (int) nbrStepField.getValue();
-                if (n > 0) {
-                    double step = (max - min) / n;
-                    isValueValid = true;
-                    stageGridConfig = new StageGridConfig(min, max, step);
-                    SwingUtilities.invokeLater(() -> {
-                        valStepField.setValue(step, true);
-                        valStepField.updateTextField();
-                        // updateApperanceBasedOnValueValidity();
-                    });
-
-                }
-
-            } else {
-                if (valStepField.isValueValid()) {
-                    double step = valStepField.getValue();
-                    if (step > 0) {
-                        int n = (int) Math.floor((max - min) / step);
-                        nbrStepField.setValue(n, true);
-                        nbrStepField.updateTextField();
-                        if (max > min && step > 0 && step <= ((max - min) / 1)) {
-                            isValueValid = true;
-                            stageGridConfig = new StageGridConfig(min, max, step);
-                        }
-                    }
-                }
-            }
-        }
-
-        notifyFollowers();
-    };
 
     public double[] getStageGrid() {
         if (!isValueValid()) {
@@ -157,6 +104,12 @@ public class RatingCurveStageGrid extends ChangingRowColPanel implements IPredic
         stageGrid.add(getStageGrid());
         PredictionInput predInput = new PredictionInput("stage_grid", stageGrid);
         return new PredictionInput[] { predInput };
+    }
+
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        System.out.println(
+                "RatingCurveStageGrid // propertyChange // " + evt.getPropertyName() + " // " + evt.getNewValue());
     }
 
 }

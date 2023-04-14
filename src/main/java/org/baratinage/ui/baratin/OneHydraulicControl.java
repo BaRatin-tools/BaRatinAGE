@@ -1,16 +1,16 @@
 package org.baratinage.ui.baratin;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+
 import javax.swing.JLabel;
 import javax.swing.JSeparator;
 
 import org.baratinage.ui.component.NumberField;
-import org.baratinage.ui.container.ChangingRowColPanel;
 import org.baratinage.ui.container.GridPanel;
-// import org.json.JSONObject;
+import org.baratinage.ui.container.RowColPanel;
 
-public class OneHydraulicControl extends ChangingRowColPanel {
-
-    // private String name;
+public class OneHydraulicControl extends RowColPanel implements PropertyChangeListener {
 
     private GridPanel parametersPanel;
     private JLabel nameLabel;
@@ -21,14 +21,8 @@ public class OneHydraulicControl extends ChangingRowColPanel {
     private NumberField exponent;
     private NumberField exponentUncertainty;
 
-    private ToBeNotified toBeNotified = (ChangingRowColPanel panel) -> {
-        notifyFollowers();
-    };
-
     public OneHydraulicControl() {
         super(AXIS.COL);
-
-        // this.name = "";
 
         nameLabel = new JLabel("");
         this.appendChild(nameLabel, 0, 5);
@@ -46,33 +40,27 @@ public class OneHydraulicControl extends ChangingRowColPanel {
 
         JLabel activationStageLabel = new JLabel("k - Hauteur d'activation");
         activationStage = new NumberField();
-        // activationStage.addChangeListener(() -> fireChangeListeners());
-        activationStage.addFollower(toBeNotified);
+        activationStage.addPropertyChangeListener("value", this);
         activationStageUncertainty = new NumberField();
-        // activationStageUncertainty.addChangeListener(() -> fireChangeListeners());
-        activationStageUncertainty.addFollower(toBeNotified);
+        activationStageUncertainty.addPropertyChangeListener("value", this);
         parametersPanel.insertChild(activationStageLabel, 0, 1);
         parametersPanel.insertChild(activationStage, 1, 1);
         parametersPanel.insertChild(activationStageUncertainty, 2, 1);
 
         JLabel coefficientLabel = new JLabel("a - Coefficient");
         coefficient = new NumberField();
-        // .addChangeListener(() -> fireChangeListeners());
-        coefficient.addFollower(toBeNotified);
+        coefficient.addPropertyChangeListener("value", this);
         coefficientUncertainty = new NumberField();
-        // coefficientUncertainty.addChangeListener(() -> fireChangeListeners());
-        coefficientUncertainty.addFollower(toBeNotified);
+        coefficientUncertainty.addPropertyChangeListener("value", this);
         parametersPanel.insertChild(coefficientLabel, 0, 2);
         parametersPanel.insertChild(coefficient, 1, 2);
         parametersPanel.insertChild(coefficientUncertainty, 2, 2);
 
         JLabel exponentLabel = new JLabel("c - Exposant");
         exponent = new NumberField();
-        // exponent.addChangeListener(() -> fireChangeListeners());
-        exponent.addFollower(toBeNotified);
+        exponent.addPropertyChangeListener("value", this);
         exponentUncertainty = new NumberField();
-        // exponentUncertainty.addChangeListener(() -> fireChangeListeners());
-        exponentUncertainty.addFollower(toBeNotified);
+        exponentUncertainty.addPropertyChangeListener("value", this);
         parametersPanel.insertChild(exponentLabel, 0, 3);
         parametersPanel.insertChild(exponent, 1, 3);
         parametersPanel.insertChild(exponentUncertainty, 2, 3);
@@ -141,6 +129,11 @@ public class OneHydraulicControl extends ChangingRowColPanel {
 
     public void setName(String name) {
         this.nameLabel.setText(name);
+    }
+
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        firePropertyChange("hydraulicControl", null, null);
     }
 
 }
