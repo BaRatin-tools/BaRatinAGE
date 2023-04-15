@@ -3,21 +3,16 @@ package org.baratinage.ui.baratin;
 import java.io.File;
 import java.io.IOException;
 
-import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
-import javax.swing.JSeparator;
-import javax.swing.JSplitPane;
 import javax.swing.filechooser.FileFilter;
 
 import org.baratinage.jbam.utils.Write;
 import org.baratinage.ui.bam.BamItem;
-import org.baratinage.ui.bam.BamItemList;
-import org.baratinage.ui.component.Explorer;
+import org.baratinage.ui.bam.BamProject;
 import org.baratinage.ui.component.ExplorerItem;
 // import org.baratinage.ui.component.ImportedData;
 import org.baratinage.ui.component.NoScalingIcon;
-import org.baratinage.ui.container.RowColPanel;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -39,9 +34,7 @@ import org.json.JSONObject;
  * 
  */
 
-public class BaratinProject extends RowColPanel {
-
-    private BamItemList items;
+public class BaratinProject extends BamProject {
 
     private ExplorerItem hydraulicConfig;
     private ExplorerItem gaugings;
@@ -53,20 +46,9 @@ public class BaratinProject extends RowColPanel {
     static private final String structuralErrIconPath = "./resources/icons/Error_icon.png";
     static private final String ratingCurveIconPath = "./resources/icons/RC_icon.png";
 
-    private RowColPanel actionBar;
-    JSplitPane content;
-
-    private Explorer explorer;
-    private RowColPanel currentPanel;
-
     public BaratinProject() {
-        super(AXIS.COL);
+        super();
 
-        this.items = new BamItemList();
-        this.actionBar = new RowColPanel(AXIS.ROW, ALIGN.START, ALIGN.STRETCH);
-        this.actionBar.setPadding(5);
-        this.actionBar.setGap(5);
-        this.appendChild(this.actionBar, 0);
         JButton btnNewHydraulicConfig = new JButton();
         btnNewHydraulicConfig.setText("Nouvelle configuration hydraulique");
         btnNewHydraulicConfig.setIcon(new NoScalingIcon(hydraulicConfigIconPath));
@@ -129,20 +111,7 @@ public class BaratinProject extends RowColPanel {
         });
         this.actionBar.appendChild(btnSaveProject);
 
-        this.content = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
-        this.content.setBorder(BorderFactory.createEmptyBorder());
-        this.appendChild(new JSeparator(), 0);
-        this.appendChild(this.content, 1);
-
-        this.explorer = new Explorer("Explorateur");
-        this.setupExplorer();
-
-        this.currentPanel = new RowColPanel(AXIS.COL);
-        this.currentPanel.setGap(5);
-
-        this.content.setLeftComponent(this.explorer);
-        this.content.setRightComponent(this.currentPanel);
-        this.content.setResizeWeight(0);
+        setupExplorer();
 
         addHydraulicConfig(); // FIXME: feels like default should be empty to be able to set a default
                               // elsewhere and import content from a file
@@ -152,21 +121,6 @@ public class BaratinProject extends RowColPanel {
     // FIXME: this method is typically something that should be set in a parent
     // class that represents BaM project (as an abstract method...)
     private void setupExplorer() {
-
-        this.explorer.addTreeSelectionListener(e -> {
-            ExplorerItem explorerItem = explorer.getLastSelectedPathComponent();
-            if (explorerItem != null) {
-                BamItem bamItem = findBamItem(explorerItem.id);
-                if (bamItem != null) {
-                    this.currentPanel.clear();
-                    this.currentPanel.appendChild(bamItem, 1);
-
-                } else {
-                    this.currentPanel.clear();
-                }
-                this.updateUI();
-            }
-        });
 
         hydraulicConfig = new ExplorerItem(
                 "hc",
@@ -194,44 +148,13 @@ public class BaratinProject extends RowColPanel {
 
     }
 
-    public BamItemList getBamItems() {
-        return this.items;
-    }
-
-    private void addItem(BamItem bamItem, ExplorerItem explorerItem) {
-
-        items.add(bamItem);
-        // bamItem.updateSiblings(items);
-
-        bamItem.addPropertyChangeListener((p) -> {
-            if (p.getPropertyName().equals("name")) {
-                String newName = (String) p.getNewValue();
-                if (newName.equals("")) {
-                    newName = "<html><div style='color: red; font-style: italic'>Sansnom</div></html>";
-                }
-                explorerItem.label = newName;
-                explorer.updateItemView(explorerItem);
-            }
-        });
-
-        bamItem.addDeleteAction(e -> {
-            deleteItem(bamItem, explorerItem);
-        });
-
-        this.explorer.appendItem(explorerItem);
-        this.explorer.expandItem(hydraulicConfig);
-        this.explorer.selectItem(explorerItem);
-
-    }
-
-    private void deleteItem(BamItem bamItem, ExplorerItem explorerItem) {
+    @Override
+    public void deleteItem(BamItem bamItem, ExplorerItem explorerItem) {
         if (bamItem instanceof RatingCurve) {
             RatingCurve rc = (RatingCurve) bamItem;
             this.getBamItems().removeChangeListener(rc);
         }
-        items.remove(bamItem);
-        this.explorer.removeItem(explorerItem);
-        this.explorer.selectItem(explorerItem.parentItem);
+        super.deleteItem(bamItem, explorerItem);
     }
 
     private void addHydraulicConfig() {
@@ -254,15 +177,6 @@ public class BaratinProject extends RowColPanel {
                 ratingCurveIconPath,
                 ratingCurve);
         addItem(ratingCurveItem, explorerItem);
-
     }
 
-    private BamItem findBamItem(String id) {
-        for (BamItem item : this.items) {
-            if (item.getUUID().equals(id)) {
-                return item;
-            }
-        }
-        return null;
-    }
 }
