@@ -58,7 +58,12 @@ public class PriorRatingCurve extends GridPanel implements IPriorPredictionExper
 
                 JButton runButton = new JButton("Compute prior rating curve");
                 runButton.addActionListener((e) -> {
-                        runBaM();
+                        try {
+                                runBaM();
+                        } catch (Exception error) {
+                                System.err.println("An error occured while running BaM!");
+                        }
+                        firePropertyChange("bamHasRun", null, null);
                 });
                 insertChild(runButton, 0, 0,
                                 ANCHOR.C, FILL.NONE);
@@ -142,6 +147,7 @@ public class PriorRatingCurve extends GridPanel implements IPriorPredictionExper
                         modelOutputs[k] = new ModelOutput(outputNames[k], linearErrModel);
                 }
 
+                // FIXME: create a generic class to handle this
                 double[] fakeCalibrationData = new double[] { 0 };
                 UncertainData[] inputs = new UncertainData[inputNames.length];
                 for (int k = 0; k < inputNames.length; k++) {

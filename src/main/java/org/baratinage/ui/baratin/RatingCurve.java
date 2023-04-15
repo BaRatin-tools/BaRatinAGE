@@ -28,6 +28,7 @@ public class RatingCurve extends BaRatinItem implements ICalibratedModel, IMcmc,
 
     BamItemCombobox hydraulicConfigComboBox;
     HydraulicConfiguration hydraulicConfig;
+    String hydraulicConfigBackupString;
 
     RatingCurveStageGrid ratingCurveGrid;
 
@@ -56,7 +57,7 @@ public class RatingCurve extends BaRatinItem implements ICalibratedModel, IMcmc,
         hydraulicConfigPanel.setPadding(5);
 
         hydraulicConfigPanel.appendChild(new JLabel("Configuration hydraulique"));
-        hydraulicConfigComboBox = new BamItemCombobox("Veulliez selectionner une configuration hydraulique");
+        hydraulicConfigComboBox = new BamItemCombobox("Selectionner une configuration hydraulique");
         hydraulicConfigPanel.appendChild(hydraulicConfigComboBox, 0);
         hydraulicConfigComboBox.addActionListener(e -> {
             BamItem selectedHydraulicConf = (BamItem) hydraulicConfigComboBox.getSelectedItem();
@@ -80,6 +81,12 @@ public class RatingCurve extends BaRatinItem implements ICalibratedModel, IMcmc,
 
         priorRatingCurve = new PriorRatingCurve();
         priorRatingCurve.setPredictionDataProvider(ratingCurveGrid);
+        priorRatingCurve.addPropertyChangeListener("bamHasRun", (e) -> {
+            if (hydraulicConfig != null) {
+                hydraulicConfigBackupString = hydraulicConfig.toJSON().toString();
+                // hydraulicConfig.addBamItemChild(this);
+            }
+        });
 
         posteriorRatingCurve = new PosteriorRatingCurve();
 
@@ -96,7 +103,7 @@ public class RatingCurve extends BaRatinItem implements ICalibratedModel, IMcmc,
 
     private void setHydraulicConfig(HydraulicConfiguration newHydraulicConfig) {
         if (hydraulicConfig != null) {
-            hydraulicConfig.removeChild(this);
+            hydraulicConfig.removeBamItemChild(this);
         }
         if (newHydraulicConfig == null) {
             hydraulicConfig = null;
@@ -105,13 +112,9 @@ public class RatingCurve extends BaRatinItem implements ICalibratedModel, IMcmc,
             return;
         }
         hydraulicConfig = newHydraulicConfig;
-        newHydraulicConfig.addPropertyChangeListener("bamItemName", (e) -> {
-            System.out.println("NAME HAS CHANGED => " + e.getNewValue() + " (" + e.getOldValue() + ")");
-        });
         priorRatingCurve.setModelDefintionProvider(hydraulicConfig);
         priorRatingCurve.setPriorsProvider(hydraulicConfig);
-        hydraulicConfig.addChild(this);
-
+        hydraulicConfig.addBamItemChild(this);
     }
 
     @Override
@@ -144,8 +147,9 @@ public class RatingCurve extends BaRatinItem implements ICalibratedModel, IMcmc,
 
     @Override
     public void parentHasChanged(BamItem parent) {
-        System.out.println("PARENT HAS CHANGED - " + parent);
-        if (parent.type == HydraulicConfiguration.TYPE) {
+        System.out.println("PARENT HAS CHANGED DECTECTED FROM '" + this + "'");
+        if (parent.equals(hydraulicConfig)) {
+            System.out.println("HYDRAULIC CONFIF '" + parent + "'' IS THE PARENT THAT HAS CHANGED");
 
         }
     }
