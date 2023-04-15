@@ -2,7 +2,6 @@ package org.baratinage.ui.bam;
 
 import java.awt.Font;
 import java.awt.event.ActionListener;
-import java.awt.Color;
 import java.awt.Component;
 import java.util.UUID;
 
@@ -27,13 +26,14 @@ abstract public class BamItem extends RowColPanel {
     private GridPanel headerPanel;
     private RowColPanel contentPanel;
 
-    private boolean isFrozen = false;
-    private String jsonFrozenState;
+    // private boolean isFrozen = false;
+    // private String jsonFrozenState;
 
-    private RowColPanel backupPanel;
-    private JLabel backupInfoLabel;
-    private JButton useBackupButton;
-    private JButton propagateChangeButton;
+    // private RowColPanel backupPanel;
+    // private JLabel backupInfoLabel;
+    // private JButton useBackupButton;
+    // private JButton propagateChangeButton;
+    // public boolean locked;
 
     public final int type;
 
@@ -57,26 +57,8 @@ abstract public class BamItem extends RowColPanel {
         titleLabel.setFont(font.deriveFont(Font.BOLD));
         deleteButton = new JButton("Supprimer");
 
-        backupPanel = new RowColPanel();
-        backupPanel.setGap(5);
-        backupInfoLabel = new JLabel();
-        backupInfoLabel.setForeground(Color.RED);
-        useBackupButton = new JButton("Annuler les modifications");
-        useBackupButton.addActionListener((e) -> {
-            JSONObject json = new JSONObject(jsonFrozenState);
-            fromJSON(json);
-            backupPanel.clear();
-            backupInfoLabel.setText("Cet objet est utilisé par d'autres objets");
-            backupPanel.appendChild(backupInfoLabel);
-        });
-        propagateChangeButton = new JButton("Propager les modifications");
-        propagateChangeButton.addActionListener((e) -> {
-        });
-        backupPanel.appendChild(backupInfoLabel);
-
         headerPanel.insertChild(titleLabel, 0, 0);
         headerPanel.insertChild(deleteButton, 1, 0);
-        headerPanel.insertChild(backupPanel, 0, 1, 2, 1);
 
         this.uuid = UUID.randomUUID().toString();
 
@@ -111,41 +93,14 @@ abstract public class BamItem extends RowColPanel {
         for (BamItem child : this.children) {
             child.parentHasChanged(this);
         }
-        if (isFrozen) {
-            backupInfoLabel.setText(
-                    "Attention, des objets existants dépendent de l'objet que vous venez de modifier!");
-            if (backupPanel.getComponentCount() == 1) {
-                backupPanel.appendChild(useBackupButton);
-                backupPanel.appendChild(propagateChangeButton);
-            }
-        }
     }
 
-    private void freeze() {
-        isFrozen = true;
-        backupInfoLabel.setText("Cet objet est utilisé par d'autres objets");
-        jsonFrozenState = toJSON().toString();
+    public void addBamItemChild(BamItem childBamItem) {
+        children.add(childBamItem);
     }
 
-    private void unfreeze() {
-        isFrozen = false;
-        backupInfoLabel.setText("");
-        backupPanel.clear();
-        backupPanel.appendChild(backupInfoLabel);
-    }
-
-    public void addChild(BamItem child) {
-        children.add(child);
-        if (!isFrozen) {
-            freeze();
-        }
-    }
-
-    public void removeChild(BamItem child) {
-        children.remove(child);
-        if (children.size() == 0) {
-            unfreeze();
-        }
+    public void removeBamItemChild(BamItem childBamItem) {
+        children.remove(childBamItem);
     }
 
     public String getName() {
