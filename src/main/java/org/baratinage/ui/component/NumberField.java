@@ -10,7 +10,7 @@ import org.baratinage.ui.container.RowColPanel;
 
 public class NumberField extends RowColPanel {
 
-    private static final double NaN = -9999.9999;
+    public static final double NaN = -9999.9999;
     private TextField textField;
     private boolean integerOnly;
     private boolean isValueValid;
@@ -86,17 +86,18 @@ public class NumberField extends RowColPanel {
     }
 
     public void setValue(double value) {
-        setValue(value, false);
+        setValue(value, true);
     }
 
-    public void setValue(double value, boolean doNotNotifyFollowers) {
+    public void setValue(double value, boolean firePropertyChange) {
         setValueValidity(textField.isTextValid());
         double oldValue = this.value;
         this.value = value;
 
-        if (!doNotNotifyFollowers) {
+        if (firePropertyChange) {
             firePropertyChange("value", oldValue, value);
         }
+
     }
 
     public double getValue() {
