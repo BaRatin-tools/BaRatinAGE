@@ -20,8 +20,7 @@ public abstract class BaRatinItem extends BamItem {
         header.addPropertyChangeListener(e -> {
             if (e.getPropertyName().equals("name")) {
                 String newName = (String) e.getNewValue();
-                super.setName(newName); // must use super!
-                setTitle(newName);
+                super.setName(newName);// must use super!
             }
         });
 
@@ -54,7 +53,6 @@ public abstract class BaRatinItem extends BamItem {
     @Override
     public void setName(String name) {
         super.setName(name);
-        setTitle(name);
         header.setName(name);
     }
 }

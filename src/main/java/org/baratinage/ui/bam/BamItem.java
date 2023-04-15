@@ -111,6 +111,7 @@ abstract public class BamItem extends RowColPanel {
         String oldName = getName();
         firePropertyChange("bamItemName", oldName, name);
         this.name = name;
+        setTitle(name);
     }
 
     public String getDescription() {
