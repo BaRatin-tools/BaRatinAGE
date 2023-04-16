@@ -1,36 +1,18 @@
 package org.baratinage.ui.baratin;
 
 import java.awt.Color;
-import java.io.IOException;
 import java.util.List;
 
 import javax.swing.JButton;
 
-import org.baratinage.jbam.BaM;
-import org.baratinage.jbam.CalDataResidualConfig;
-import org.baratinage.jbam.CalibrationConfig;
-import org.baratinage.jbam.CalibrationData;
-import org.baratinage.jbam.McmcConfig;
-import org.baratinage.jbam.McmcCookingConfig;
-import org.baratinage.jbam.McmcSummaryConfig;
-import org.baratinage.jbam.Model;
-import org.baratinage.jbam.ModelOutput;
-import org.baratinage.jbam.Parameter;
 import org.baratinage.jbam.PredictionConfig;
-import org.baratinage.jbam.PredictionInput;
-import org.baratinage.jbam.PredictionOutput;
 import org.baratinage.jbam.PredictionResult;
-import org.baratinage.jbam.RunOptions;
-import org.baratinage.jbam.StructuralErrorModel;
-import org.baratinage.jbam.UncertainData;
 
-import org.baratinage.ui.bam.DefaultStructuralErrorProvider;
 import org.baratinage.ui.bam.IModelDefinition;
 import org.baratinage.ui.bam.IPredictionData;
-import org.baratinage.ui.bam.IPriorPredictionExperiments;
 import org.baratinage.ui.bam.IPriors;
-import org.baratinage.ui.bam.IStructuralError;
-
+import org.baratinage.ui.bam.PriorPredictionExperiment;
+import org.baratinage.ui.bam.RunBamPrior;
 import org.baratinage.ui.container.GridPanel;
 import org.baratinage.ui.container.RowColPanel;
 
@@ -40,14 +22,13 @@ import org.baratinage.ui.plot.PlotItem;
 import org.baratinage.ui.plot.PlotLine;
 import org.baratinage.ui.plot.PlotBand;
 
-public class PriorRatingCurve extends GridPanel implements IPriorPredictionExperiments {
+// public class PriorRatingCurve extends GridPanel implements IPriorPredictionExperiments {
+public class PriorRatingCurve extends GridPanel {
 
         RowColPanel plotPanel;
 
         private IPredictionData predictionDataProvider;
         private IPriors priorsProvider;
-        private IStructuralError structuralErrorProvider = new DefaultStructuralErrorProvider(
-                        DefaultStructuralErrorProvider.TYPE.LINEAR);
         private IModelDefinition modelDefinitionProvider;
 
         private PredictionResult[] predictionResults;
@@ -58,12 +39,7 @@ public class PriorRatingCurve extends GridPanel implements IPriorPredictionExper
 
                 JButton runButton = new JButton("Compute prior rating curve");
                 runButton.addActionListener((e) -> {
-                        try {
-                                runBaM();
-                        } catch (Exception error) {
-                                System.err.println("An error occured while running BaM!");
-                        }
-                        firePropertyChange("bamHasRun", null, null);
+                        computePriorRatingCurve();
                 });
                 insertChild(runButton, 0, 0,
                                 ANCHOR.C, FILL.NONE);
@@ -77,6 +53,41 @@ public class PriorRatingCurve extends GridPanel implements IPriorPredictionExper
                 insertChild(plotPanel, 0, 1,
                                 ANCHOR.C, FILL.BOTH);
 
+        }
+
+        private void computePriorRatingCurve() {
+                try {
+
+                        PriorPredictionExperiment[] ppes = new PriorPredictionExperiment[] {
+                                        getMaxpostPriorPredictionExperiment(),
+                                        getParametricUncertaintyPriorPredictionExperiment()
+                        };
+
+                        RunBamPrior runBmPrior = new RunBamPrior();
+
+                        runBmPrior.configure(
+                                        "test/newTestWS",
+                                        modelDefinitionProvider,
+                                        priorsProvider,
+                                        ppes);
+
+                        runBmPrior.run();
+
+                        PredictionResult[] predictionResults = runBmPrior.getPredictionResults();
+
+                        PredictionConfig predConfig = ppes[0].getPredictionConfig();
+                        hasResults = true;
+
+                        buildRatingCurvePlot(
+                                        predConfig,
+                                        predictionResults[1],
+                                        predictionResults[0]);
+
+                } catch (Exception error) {
+                        System.err.println("ERROR: An error occured while running BaM!");
+                        error.printStackTrace();
+                }
+                firePropertyChange("bamHasRun", null, null);
         }
 
         private void buildRatingCurvePlot(
@@ -119,167 +130,39 @@ public class PriorRatingCurve extends GridPanel implements IPriorPredictionExper
 
         }
 
-        @Override
-        public void runBaM() {
-
-                String workspace = "test/newTestWS";
-
-                String xTra = modelDefinitionProvider.getXtra(workspace);
-
-                Parameter[] parameters = priorsProvider.getParameters();
-
-                String[] inputNames = modelDefinitionProvider.getInputNames();
-                String[] outputNames = modelDefinitionProvider.getOutputNames();
-
-                Model model = new Model(
-                                modelDefinitionProvider.getModelId(),
-                                inputNames.length,
-                                outputNames.length,
-                                parameters,
-                                xTra);
-
-                // we can use only one default error model since prior predictions
-                // often don't propagate structural errors
-                StructuralErrorModel linearErrModel = structuralErrorProvider.getStructuralErrorModel();
-
-                ModelOutput[] modelOutputs = new ModelOutput[outputNames.length];
-                for (int k = 0; k < outputNames.length; k++) {
-                        modelOutputs[k] = new ModelOutput(outputNames[k], linearErrModel);
-                }
-
-                // FIXME: create a generic class to handle this
-                double[] fakeCalibrationData = new double[] { 0 };
-                UncertainData[] inputs = new UncertainData[inputNames.length];
-                for (int k = 0; k < inputNames.length; k++) {
-                        inputs[k] = new UncertainData(inputNames[k], fakeCalibrationData);
-                }
-                UncertainData[] outputs = new UncertainData[inputNames.length];
-                for (int k = 0; k < outputNames.length; k++) {
-                        outputs[k] = new UncertainData(outputNames[k], fakeCalibrationData);
-                }
-
-                CalibrationData calibrationData = new CalibrationData("fakeCalibrationData",
-                                inputs, outputs);
-
-                CalDataResidualConfig calDataResidualConfig = new CalDataResidualConfig();
-                McmcConfig mcmcConfig = new McmcConfig();
-                McmcCookingConfig mcmcCookingConfig = new McmcCookingConfig();
-                McmcSummaryConfig mcmcSummaryConfig = new McmcSummaryConfig();
-
-                CalibrationConfig fakeCalibrationConfig = new CalibrationConfig(
-                                model,
-                                modelOutputs,
-                                calibrationData,
-                                mcmcConfig,
-                                mcmcCookingConfig,
-                                mcmcSummaryConfig,
-                                calDataResidualConfig);
-
-                RunOptions runOptions = new RunOptions(
-                                true,
-                                true,
-                                true,
-                                true);
-
-                PredictionConfig[] predConfigs = getPredictionConfigs();
-
-                BaM bam = new BaM(
-                                fakeCalibrationConfig,
-                                predConfigs,
-                                runOptions,
-                                null,
-                                null);
-
-                try {
-                        bam.run(workspace, txt -> {
-                                System.out.println("log => " + txt);
-                        });
-                } catch (IOException e) {
-                        e.printStackTrace();
-                }
-
-                bam.readResults(workspace);
-
-                PredictionResult[] predRes = bam.getPredictionsResults();
-
-                // CalibrationResult calRes = bam.getCalibrationResults();
-                // maxpostPredictionResult = predRes[1];
-                // parametricUncertaintyPredictionResult = predRes[0];
-                predictionResults = predRes;
-                hasResults = true;
-
-                buildRatingCurvePlot(
-                                predConfigs[0],
-                                predictionResults[0],
-                                predictionResults[1]);
-
-        }
-
-        @Override
         public void setPredictionDataProvider(IPredictionData predictionDataProvider) {
                 this.predictionDataProvider = predictionDataProvider;
         }
 
-        @Override
-        public PredictionConfig[] getPredictionConfigs() {
-
-                PredictionInput[] predInputs = predictionDataProvider != null
-                                ? predictionDataProvider.getPredictionInputs()
-                                : new PredictionInput[0];
-
-                String[] outputNames = modelDefinitionProvider != null
-                                ? modelDefinitionProvider.getOutputNames()
-                                : new String[0];
-
-                PredictionOutput[] predOutputs = new PredictionOutput[outputNames.length];
-                for (int k = 0; k < outputNames.length; k++) {
-                        predOutputs[k] = new PredictionOutput(
-                                        outputNames[k],
-                                        false,
-                                        true,
-                                        true);
-                }
-
-                PredictionConfig parametricUncertaintyPredConfig = new PredictionConfig(
-                                getName() + "_param_uncertainty",
-                                predInputs,
-                                predOutputs,
-                                new PredictionOutput[] {},
-                                true,
-                                true,
-                                500);
-                PredictionConfig maxpostPredConfig = new PredictionConfig(
-                                getName() + "_maxpost",
-                                predInputs,
-                                predOutputs,
-                                new PredictionOutput[] {},
-                                false,
-                                true,
-                                500);
-                return new PredictionConfig[] { parametricUncertaintyPredConfig, maxpostPredConfig };
+        public PriorPredictionExperiment getMaxpostPriorPredictionExperiment() {
+                PriorPredictionExperiment ppeMaxpost = new PriorPredictionExperiment(getName() + "_maxpost",
+                                false, 500);
+                ppeMaxpost.setModelDefintionProvider(modelDefinitionProvider);
+                ppeMaxpost.setPredictionDataProvider(predictionDataProvider);
+                return ppeMaxpost;
         }
 
-        @Override
+        public PriorPredictionExperiment getParametricUncertaintyPriorPredictionExperiment() {
+                PriorPredictionExperiment ppeParamUncertainty = new PriorPredictionExperiment(
+                                getName() + "_parametricUncertainty",
+                                true, 500);
+                ppeParamUncertainty.setModelDefintionProvider(modelDefinitionProvider);
+                ppeParamUncertainty.setPredictionDataProvider(predictionDataProvider);
+                return ppeParamUncertainty;
+        }
+
         public void setPriorsProvider(IPriors priorsProvider) {
                 this.priorsProvider = priorsProvider;
         }
 
-        @Override
-        public void setStructuralErrorProvider(IStructuralError structuralErrorProvider) {
-                this.structuralErrorProvider = structuralErrorProvider;
-        }
-
-        @Override
         public void setModelDefintionProvider(IModelDefinition modelDefinitionProvider) {
                 this.modelDefinitionProvider = modelDefinitionProvider;
         }
 
-        @Override
         public boolean isPredicted() {
                 return this.hasResults;
         }
 
-        @Override
         public PredictionResult[] getPredictionResults() {
                 if (isPredicted()) {
                         return predictionResults;
