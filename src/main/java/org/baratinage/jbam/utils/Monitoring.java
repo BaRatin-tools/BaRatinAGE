@@ -68,7 +68,7 @@ public class Monitoring {
         if (bam.getRunOptions().doPrediction) {
             int cookedMcmcSamples = bam.getCalibrationConfig().getMcmcCookingConfig()
                     .numberOfCookedMcmcSamples(mcmcSamples);
-            for (PredictionConfig predConfig : bam.getPredictionsConfigs()) {
+            for (PredictionConfig predConfig : bam.getPredictionConfigs()) {
                 this.monitoringSteps.add(
                         new MonitoringStep(
                                 "Prediction_" + predConfig.getName(),

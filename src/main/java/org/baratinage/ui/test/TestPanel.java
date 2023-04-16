@@ -140,7 +140,7 @@ public class TestPanel extends FlexPanel {
 
                                 bam.readResults(workspace);
                                 CalibrationResult calRes = bam.getCalibrationResults();
-                                PredictionResult[] predRes = bam.getPredictionsResults();
+                                PredictionResult[] predRes = bam.getPredictionResults();
                                 System.out.println(calRes);
                                 System.out.println(predRes);
                                 resultsPanel.setResults(calRes, predRes);

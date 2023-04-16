@@ -55,11 +55,11 @@ public class BaM {
         return this.calibrationResult;
     }
 
-    public PredictionConfig[] getPredictionsConfigs() {
+    public PredictionConfig[] getPredictionConfigs() {
         return this.predictionConfigs;
     }
 
-    public PredictionResult[] getPredictionsResults() {
+    public PredictionResult[] getPredictionResults() {
         return this.predictionResults;
     }
 
