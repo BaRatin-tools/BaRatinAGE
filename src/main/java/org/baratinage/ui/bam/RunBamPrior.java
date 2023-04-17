@@ -43,7 +43,7 @@ public class RunBamPrior {
     // "baratinage_runbackup", "TEST");
     // "baratinage_runbackup", UUID.randomUUID().toString());
     private BaM bam;
-    private Path workspace = Path.of("test/newTestWS");
+    private Path workspace;
     private boolean isConfigured = false;
     private boolean hasResults = false;
 
@@ -54,7 +54,7 @@ public class RunBamPrior {
             PriorPredictionExperiment[] priorPredictionExperiment
 
     ) {
-        // String workspace = "test/newTestWS";
+
         this.workspace = Path.of(workspace);
 
         String xTra = modelDefinition.getXtra(workspace);

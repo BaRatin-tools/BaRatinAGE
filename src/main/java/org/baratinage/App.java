@@ -17,6 +17,8 @@ public class App {
     public final static String TEMP_DIR = Path.of(System.getProperty("java.io.tmpdir"),
             "baratinage").toString();
 
+    public final static String BAM_RUN_DIR = "test/newTestWS";
+
     public static void main(String[] args) {
 
         try {
