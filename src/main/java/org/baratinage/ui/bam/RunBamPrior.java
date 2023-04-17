@@ -1,7 +1,15 @@
 package org.baratinage.ui.bam;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.UUID;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
+import org.baratinage.App;
 import org.baratinage.jbam.BaM;
 import org.baratinage.jbam.CalDataResidualConfig;
 import org.baratinage.jbam.CalibrationConfig;
@@ -21,8 +29,21 @@ import org.baratinage.jbam.UncertainData;
 
 public class RunBamPrior {
 
+    // FIXME: this should be stored at the much higher level (Project or even App
+    // level)
+    // public static final String baratinageTempDir =
+    // Path.of(System.getProperty("java.io.tmpdir"),
+    // "baratinage").toString();
+    // public static final String baratinageTempDir = App.TEMP_DIR;
+
+    private final String uuid = UUID.randomUUID().toString() + ".zip";
+    private final Path runZipFile = Path.of(App.TEMP_DIR, uuid);
+    // private final Path tempDirPath =
+    // Path.of(System.getProperty("java.io.tmpdir"),
+    // "baratinage_runbackup", "TEST");
+    // "baratinage_runbackup", UUID.randomUUID().toString());
     private BaM bam;
-    private String workspace;
+    private Path workspace = Path.of("test/newTestWS");
     private boolean isConfigured = false;
     private boolean hasResults = false;
 
@@ -34,7 +55,7 @@ public class RunBamPrior {
 
     ) {
         // String workspace = "test/newTestWS";
-        this.workspace = workspace;
+        this.workspace = Path.of(workspace);
 
         String xTra = modelDefinition.getXtra(workspace);
 
@@ -118,16 +139,60 @@ public class RunBamPrior {
             return;
         }
         try {
-            bam.run(workspace, txt -> {
+            bam.run(workspace.toString(), txt -> {
                 System.out.println("log => " + txt);
             });
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        bam.readResults(workspace);
+        bam.readResults(workspace.toString());
         hasResults = true;
 
+        try {
+            backupBamRun();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void backupBamRun() throws IOException {
+        // 1/ creata temporary dir
+
+        System.out.println("App.TEMP_DIR; ==> " + App.TEMP_DIR);
+        File tD = new File(App.TEMP_DIR);
+        boolean created = tD.mkdirs();
+        System.out.println("Created ==> " + created);
+
+        // 2/ create zip containing BaM run files
+
+        File zipFile = new File(runZipFile.toString());
+        FileOutputStream zipFileOutStream = new FileOutputStream(zipFile);
+        ZipOutputStream zipOutStream = new ZipOutputStream(zipFileOutStream);
+
+        File[] files = workspace.toFile().listFiles();
+        if (files != null) {
+            for (File f : files) {
+                System.out.println("File '" + f + "'.");
+                ZipEntry ze = new ZipEntry(f.getName());
+                zipOutStream.putNextEntry(ze);
+                Files.copy(f.toPath(), zipOutStream);
+            }
+        }
+        zipOutStream.close();
+        // Filesdd
+    }
+
+    // public String getPathToZip() {
+    // return runZipFile.toString();
+    // }
+
+    public String getUUID() {
+        return this.uuid;
+    }
+
+    public BaM getBaM() {
+        return bam;
     }
 
     public CalibrationResult getCalibrationResult() {

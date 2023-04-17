@@ -7,7 +7,6 @@ import javax.swing.JButton;
 
 import org.baratinage.jbam.PredictionConfig;
 import org.baratinage.jbam.PredictionResult;
-
 import org.baratinage.ui.bam.IModelDefinition;
 import org.baratinage.ui.bam.IPredictionData;
 import org.baratinage.ui.bam.IPriors;
@@ -25,7 +24,7 @@ import org.baratinage.ui.plot.PlotBand;
 // public class PriorRatingCurve extends GridPanel implements IPriorPredictionExperiments {
 public class PriorRatingCurve extends GridPanel {
 
-        RowColPanel plotPanel;
+        private RowColPanel plotPanel;
 
         private IPredictionData predictionDataProvider;
         private IPriors priorsProvider;
@@ -33,6 +32,8 @@ public class PriorRatingCurve extends GridPanel {
 
         private PredictionResult[] predictionResults;
         private boolean hasResults = false;
+
+        private RunBamPrior runBamPrior;
 
         public PriorRatingCurve() {
                 // appendChild(new JLabel("Prior rating curve"));
@@ -63,17 +64,17 @@ public class PriorRatingCurve extends GridPanel {
                                         getParametricUncertaintyPriorPredictionExperiment()
                         };
 
-                        RunBamPrior runBmPrior = new RunBamPrior();
+                        runBamPrior = new RunBamPrior();
 
-                        runBmPrior.configure(
+                        runBamPrior.configure(
                                         "test/newTestWS",
                                         modelDefinitionProvider,
                                         priorsProvider,
                                         ppes);
 
-                        runBmPrior.run();
+                        runBamPrior.run();
 
-                        PredictionResult[] predictionResults = runBmPrior.getPredictionResults();
+                        PredictionResult[] predictionResults = runBamPrior.getPredictionResults();
 
                         PredictionConfig predConfig = ppes[0].getPredictionConfig();
                         hasResults = true;
@@ -175,6 +176,10 @@ public class PriorRatingCurve extends GridPanel {
                 if (predictionResults != null) {
                         this.hasResults = true;
                 }
+        }
+
+        public String getBamRunUUID() {
+                return runBamPrior.getUUID();
         }
 
 }

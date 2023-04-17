@@ -8,18 +8,15 @@ import org.baratinage.jbam.CalibrationConfig;
 import org.baratinage.jbam.CalibrationResult;
 import org.baratinage.jbam.McmcConfig;
 import org.baratinage.jbam.McmcCookingConfig;
-import org.baratinage.jbam.PredictionConfig;
 // import org.baratinage.jbam.PredictionInput;
-import org.baratinage.jbam.PredictionResult;
 import org.baratinage.ui.bam.BamItem;
 import org.baratinage.ui.bam.BamItemCombobox;
 import org.baratinage.ui.bam.BamItemList;
 import org.baratinage.ui.bam.ICalibratedModel;
 import org.baratinage.ui.bam.IMcmc;
-import org.baratinage.ui.bam.JsonJbamConverter;
+// import org.baratinage.ui.bam.JsonJbamConverter;
 import org.baratinage.ui.container.RowColPanel;
 import org.json.JSONObject;
-import org.json.JSONArray;
 
 public class RatingCurve extends BaRatinItem implements ICalibratedModel, IMcmc, BamItemList.BamItemListChangeListener {
 
@@ -172,22 +169,7 @@ public class RatingCurve extends BaRatinItem implements ICalibratedModel, IMcmc,
 
         JSONObject jsonPriorRatingCurve = new JSONObject();
 
-        PredictionConfig[] predConfigs = priorRatingCurve.getPredictionConfigs();
-        JSONArray jsonPredConfigs = new JSONArray();
-        for (PredictionConfig predConfig : predConfigs) {
-            jsonPredConfigs.put(JsonJbamConverter.toJSON(predConfig));
-        }
-
-        PredictionResult[] predResults = priorRatingCurve.getPredictionResults();
-        JSONArray jsonPredResults = new JSONArray();
-        if (predResults != null) {
-            for (PredictionResult predRes : predResults) {
-                jsonPredResults.put(JsonJbamConverter.toJSON(predRes));
-            }
-        }
-
-        jsonPriorRatingCurve.put("predictionConfigs", jsonPredConfigs);
-        jsonPriorRatingCurve.put("predictionResults", jsonPredResults);
+        jsonPriorRatingCurve.put("zipFile", priorRatingCurve.getBamRunUUID());
 
         json.put("priorRatingCurve", jsonPriorRatingCurve);
 
@@ -208,4 +190,8 @@ public class RatingCurve extends BaRatinItem implements ICalibratedModel, IMcmc,
         hydraulicConfigComboBox.syncWithBamItemList(listOfHydraulicConfigs);
     }
 
+    @Override
+    public String[] getZipUUIDS() {
+        return new String[] { priorRatingCurve.getBamRunUUID() };
+    }
 }

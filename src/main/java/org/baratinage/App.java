@@ -7,11 +7,16 @@ import javax.swing.UIManager;
 import java.awt.EventQueue;
 import java.awt.Font;
 import java.net.URL;
+import java.nio.file.Path;
 import java.util.Set;
 
 import org.baratinage.ui.MainFrame;
 
 public class App {
+
+    public final static String TEMP_DIR = Path.of(System.getProperty("java.io.tmpdir"),
+            "baratinage").toString();
+
     public static void main(String[] args) {
 
         try {

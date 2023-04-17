@@ -1,12 +1,18 @@
 package org.baratinage.ui.baratin;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileFilter;
 
+import org.baratinage.App;
 import org.baratinage.jbam.utils.Write;
 import org.baratinage.ui.bam.BamItem;
 import org.baratinage.ui.bam.BamProject;
@@ -99,12 +105,45 @@ public class BaratinProject extends BamProject {
                     jsonItems.put(item.toFullJSON());
                 }
                 json.put("items", jsonItems);
-                String fullFilePath = fileChooser.getSelectedFile().getAbsolutePath();
+
+                String mainConfigFilePath = Path.of(App.TEMP_DIR, "main_config.json").toString();
+                File mainConfigFile = new File(mainConfigFilePath);
                 try {
-                    Write.writeLines(new File(fullFilePath), new String[] { json.toString(4) });
+                    Write.writeLines(mainConfigFile, new String[] { json.toString(4) });
                 } catch (IOException saveError) {
                     System.err.println("Failed to save file");
                     saveError.printStackTrace();
+                }
+
+                try {
+                    String fullFilePath = fileChooser.getSelectedFile().getAbsolutePath();
+                    fullFilePath = fullFilePath.endsWith(".bam") ? fullFilePath : fullFilePath + ".bam";
+                    File zipFile = new File(fullFilePath);
+                    FileOutputStream zipFileOutStream = new FileOutputStream(zipFile);
+
+                    ZipOutputStream zipOutStream = new ZipOutputStream(zipFileOutStream);
+
+                    System.out.println("File '" + mainConfigFile + "'.");
+                    ZipEntry zipEntry = new ZipEntry(mainConfigFile.getName());
+
+                    zipOutStream.putNextEntry(zipEntry);
+
+                    Files.copy(mainConfigFile.toPath(), zipOutStream);
+
+                    for (BamItem item : items) {
+                        String[] zipFiles = item.getZipUUIDS();
+                        for (String zf : zipFiles) {
+                            File f = new File(Path.of(App.TEMP_DIR, zf).toString());
+                            System.out.println("File '" + f + "'.");
+                            ZipEntry ze = new ZipEntry(f.getName());
+                            zipOutStream.putNextEntry(ze);
+                            Files.copy(f.toPath(), zipOutStream);
+                        }
+                    }
+
+                    zipOutStream.close();
+                } catch (IOException e1) {
+                    e1.printStackTrace();
                 }
             }
 

@@ -143,6 +143,10 @@ abstract public class BamItem extends RowColPanel {
         fromJSON((JSONObject) json.get("content"));
     }
 
+    public String[] getZipUUIDS() {
+        return new String[] {};
+    }
+
     public abstract void parentHasChanged(BamItem parent);
 
     public abstract JSONObject toJSON();
