@@ -132,7 +132,7 @@ public class Lg {
 
     private void setLocaleFromKey(String languageKey) {
         key = languageKey;
-        locale = new Locale(languageKey);
+        locale = Locale.forLanguageTag(languageKey);
         try {
             for (String resourceId : RESSOURCE_IDS) {
                 Path p = Path.of(I18N_RESSOURCE_DIR, resourceId + "_" + key + ".properties");
