@@ -124,7 +124,7 @@ public class OneHydraulicControl extends RowColPanel implements PropertyChangeLi
     }
 
     public String getName() {
-        return this.nameLabel.getText();
+        return nameLabel == null ? "" : nameLabel.getText();
     }
 
     public void setName(String name) {

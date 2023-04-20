@@ -42,7 +42,7 @@ public class NameDescriptionItemHeader extends GridPanel {
     }
 
     public String getName() {
-        return nameField.getText();
+        return nameField == null ? "" : nameField.getText();
     }
 
     public void setDescription(String name) {
