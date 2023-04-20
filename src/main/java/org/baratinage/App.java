@@ -3,6 +3,7 @@ package org.baratinage;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.UIManager;
+// import javax.swing.UIManager.LookAndFeelInfo;
 
 import java.awt.EventQueue;
 import java.awt.Font;
@@ -20,11 +21,14 @@ public class App {
     public final static String BAM_RUN_DIR = "test/newTestWS";
 
     public static void main(String[] args) {
-
         try {
             String sysLookAndFeel = UIManager.getSystemLookAndFeelClassName();
             UIManager.setLookAndFeel(sysLookAndFeel);
-
+            // String crossPlatformLookAndFeel = UIManager.getCrossPlatformLookAndFeelClassName();
+            // UIManager.setLookAndFeel(crossPlatformLookAndFeel);
+            // for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
+            //     System.out.println(info);
+            // }
             setDefaultSize(14);
         } catch (Exception e) {
             e.printStackTrace();
