@@ -18,7 +18,7 @@ public class BaM {
     private static final String EXE_NAME = "BaM";
     private static final String EXE_COMMAND = OS.startsWith("windows")
             ? Path.of(EXE_DIR, String.format("%s.exe", EXE_NAME)).toString()
-            : EXE_NAME;
+            : String.format("./%s", EXE_NAME);
 
     @FunctionalInterface
     public interface ConsoleOutputFollower {
