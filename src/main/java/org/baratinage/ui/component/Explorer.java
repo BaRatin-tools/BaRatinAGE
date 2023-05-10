@@ -1,6 +1,7 @@
 package org.baratinage.ui.component;
 
 import java.awt.Component;
+import java.awt.Dimension;
 
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
@@ -24,6 +25,8 @@ public class Explorer extends RowColPanel {
         super(AXIS.COL, ALIGN.STRETCH, ALIGN.STRETCH);
 
         this.setGap(5);
+
+        setMinimumSize(new Dimension(200, 100));
 
         JLabel header = new JLabel(label);
         this.appendChild(header, 0);
