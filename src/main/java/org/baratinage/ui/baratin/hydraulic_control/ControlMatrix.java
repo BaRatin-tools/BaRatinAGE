@@ -1,4 +1,4 @@
-package org.baratinage.ui.baratin.ControlMatrix;
+package org.baratinage.ui.baratin.hydraulic_control;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -7,8 +7,7 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 
-import org.baratinage.ui.baratin.ControlMatrix.ControlMatrixColumn.HasChangeListener;
-
+import org.baratinage.ui.baratin.hydraulic_control.ControlMatrixColumn.HasChangeListener;
 import org.baratinage.ui.container.GridPanel;
 import org.baratinage.ui.container.RowColPanel;
 

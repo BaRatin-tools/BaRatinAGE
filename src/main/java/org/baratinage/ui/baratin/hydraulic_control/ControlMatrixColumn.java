@@ -1,4 +1,4 @@
-package org.baratinage.ui.baratin.ControlMatrix;
+package org.baratinage.ui.baratin.hydraulic_control;
 
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;

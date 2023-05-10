@@ -10,7 +10,9 @@ import org.baratinage.jbam.Parameter;
 import org.baratinage.ui.bam.BamItem;
 import org.baratinage.ui.bam.IModelDefinition;
 import org.baratinage.ui.bam.IPriors;
-import org.baratinage.ui.baratin.ControlMatrix.ControlMatrix;
+import org.baratinage.ui.baratin.hydraulic_control.ControlMatrix;
+import org.baratinage.ui.baratin.hydraulic_control.AllHydraulicControls;
+import org.baratinage.ui.baratin.hydraulic_control.OneHydraulicControl;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -22,7 +24,7 @@ class HydraulicConfiguration extends BaRatinItem
     static private int nInstance = 0;
 
     private ControlMatrix controlMatrix;
-    private HydraulicControls hydraulicControls;
+    private AllHydraulicControls hydraulicControls;
 
     public HydraulicConfiguration() {
         this(String.format(
@@ -47,7 +49,7 @@ class HydraulicConfiguration extends BaRatinItem
             updateHydraulicControls(controlMatrix.getControlMatrix());
         });
 
-        hydraulicControls = new HydraulicControls();
+        hydraulicControls = new AllHydraulicControls();
         hydraulicControls.addPropertyChangeListener("hydraulicControls", (e) -> {
             hasChanged();
         });

@@ -1,4 +1,4 @@
-package org.baratinage.ui.baratin;
+package org.baratinage.ui.baratin.hydraulic_control;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;

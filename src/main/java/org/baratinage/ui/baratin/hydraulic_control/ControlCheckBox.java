@@ -1,4 +1,4 @@
-package org.baratinage.ui.baratin.ControlMatrix;
+package org.baratinage.ui.baratin.hydraulic_control;
 
 import java.awt.Color;
 import java.awt.Container;

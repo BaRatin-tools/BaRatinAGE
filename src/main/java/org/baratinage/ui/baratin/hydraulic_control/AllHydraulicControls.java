@@ -1,4 +1,4 @@
-package org.baratinage.ui.baratin;
+package org.baratinage.ui.baratin.hydraulic_control;
 
 import java.awt.Component;
 import java.util.ArrayList;
@@ -20,7 +20,7 @@ import org.baratinage.jbam.Parameter;
 import org.baratinage.ui.bam.IPriors;
 import org.baratinage.ui.container.RowColPanel;
 
-public class HydraulicControls extends RowColPanel implements IPriors {
+public class AllHydraulicControls extends RowColPanel implements IPriors {
 
     JList<OneHydraulicControl> controlSelector;
     DefaultListModel<OneHydraulicControl> controlSelectorModel;
@@ -30,7 +30,7 @@ public class HydraulicControls extends RowColPanel implements IPriors {
 
     JSplitPane splitPaneContainer;
 
-    public HydraulicControls() {
+    public AllHydraulicControls() {
         super(AXIS.COL);
 
         hydraulicControlList = new ArrayList<>();
