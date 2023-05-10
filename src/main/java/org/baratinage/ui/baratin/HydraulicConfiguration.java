@@ -10,6 +10,7 @@ import org.baratinage.jbam.Parameter;
 import org.baratinage.ui.bam.BamItem;
 import org.baratinage.ui.bam.IModelDefinition;
 import org.baratinage.ui.bam.IPriors;
+import org.baratinage.ui.baratin.ControlMatrix.ControlMatrix;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -39,6 +40,7 @@ class HydraulicConfiguration extends BaRatinItem
         setNameFieldLabel("Nom de la configuration hydraulique");
         setDescriptionFieldLabel("Description de la configuration hydraulique");
 
+        // controlMatrix = new ControlMatrixOld();
         controlMatrix = new ControlMatrix();
         controlMatrix.addPropertyChangeListener("controlMatrix", (e) -> {
             hasChanged();
@@ -58,7 +60,8 @@ class HydraulicConfiguration extends BaRatinItem
 
         setContent(splitPaneContainer);
 
-        updateHydraulicControls(controlMatrix.getControlMatrix());
+        boolean[][] mat = controlMatrix.getControlMatrix();
+        updateHydraulicControls(mat);
 
     }
 
@@ -170,7 +173,8 @@ class HydraulicConfiguration extends BaRatinItem
                 matrix[i][j] = stringMatrixRow[i].charAt(j) != one;
             }
         }
-        controlMatrix.setFromBooleanMatrix(matrix);
+        // controlMatrix.setFromBooleanMatrix(matrix);
+        controlMatrix.setControlMatrix(matrix);
 
         JSONArray jsonHydraulicControls = (JSONArray) json.get("hydraulicControls");
 
