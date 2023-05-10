@@ -184,6 +184,9 @@ public class ControlMatrix extends RowColPanel implements HasChangeListener {
             }
         }
         controlCheckBoxPanel.updateUI();
+        addControlButton.setText("Ajouter un contrôle  (" + "Contrôle #" + (nCtrl + 1) + ")");
+        removeControlButton.setText("Supprimer le dernier contrôle (" + "Contrôle #" + nCtrl + ")");
+        removeControlButton.setEnabled(nCtrl > 1);
     }
 
     @Override
