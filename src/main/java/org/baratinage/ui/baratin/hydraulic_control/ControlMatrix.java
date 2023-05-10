@@ -3,9 +3,11 @@ package org.baratinage.ui.baratin.hydraulic_control;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
+import javax.swing.JScrollPane;
 
 import org.baratinage.ui.baratin.hydraulic_control.ControlMatrixColumn.HasChangeListener;
 import org.baratinage.ui.container.GridPanel;
@@ -23,7 +25,7 @@ public class ControlMatrix extends RowColPanel implements HasChangeListener {
     public ControlMatrix() {
         super(AXIS.COL);
 
-        RowColPanel buttonsPanel = new RowColPanel(AXIS.ROW, ALIGN.STRETCH);
+        RowColPanel buttonsPanel = new RowColPanel(AXIS.COL, ALIGN.STRETCH);
 
         addControlButton = new JButton("Ajouter un contrôle");
         addControlButton.addActionListener((e) -> {
@@ -46,7 +48,9 @@ public class ControlMatrix extends RowColPanel implements HasChangeListener {
         controlCheckBoxPanel.setGap(5);
 
         appendChild(buttonsPanel, 0);
-        appendChild(controlCheckBoxPanel, 1);
+        JScrollPane controlGridScrollPane = new JScrollPane(controlCheckBoxPanel);
+        controlGridScrollPane.setBorder(BorderFactory.createEmptyBorder());
+        appendChild(controlGridScrollPane, 1);
 
         revservedOrderCheckBox = new JCheckBox("Inverser l'ordre des segments");
         revservedOrderCheckBox.setSelected(true);
