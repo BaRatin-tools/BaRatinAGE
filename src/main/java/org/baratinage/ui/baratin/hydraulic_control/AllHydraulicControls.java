@@ -1,6 +1,7 @@
 package org.baratinage.ui.baratin.hydraulic_control;
 
 import java.awt.Component;
+import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -81,12 +82,12 @@ public class AllHydraulicControls extends RowColPanel implements IPriors {
         });
 
         currentHydraulicControl = new RowColPanel();
-
+        currentHydraulicControl.setMinimumSize(new Dimension(500, 300));
         RowColPanel listPanel = new RowColPanel(AXIS.COL);
 
         JScrollPane listScrollContainer = new JScrollPane(listPanel);
         listScrollContainer.setBorder(BorderFactory.createEmptyBorder());
-
+        listScrollContainer.setMinimumSize(new Dimension(100, 100));
         listPanel.appendChild(controlSelector);
         JSplitPane splitPaneContainer = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
         splitPaneContainer.setBorder(BorderFactory.createEmptyBorder());
