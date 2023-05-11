@@ -29,7 +29,7 @@ public class RatingCurve extends BaRatinItem implements ICalibratedModel, IMcmc,
 
     RatingCurveStageGrid ratingCurveGrid;
 
-    PriorRatingCurve priorRatingCurve;
+    // PriorRatingCurve priorRatingCurve;
     PosteriorRatingCurve posteriorRatingCurve;
 
     public static final int TYPE = (int) Math.floor(Math.random() * Integer.MAX_VALUE);
@@ -76,19 +76,23 @@ public class RatingCurve extends BaRatinItem implements ICalibratedModel, IMcmc,
         mainConfigPanel.appendChild(new JSeparator(JSeparator.VERTICAL), 0);
         mainConfigPanel.appendChild(ratingCurveGrid);
 
-        priorRatingCurve = new PriorRatingCurve();
-        priorRatingCurve.setPredictionDataProvider(ratingCurveGrid);
-        priorRatingCurve.addPropertyChangeListener("bamHasRun", (e) -> {
-            if (hydraulicConfig != null) {
-                hydraulicConfigBackupString = hydraulicConfig.toJSON().toString();
-                // hydraulicConfig.addBamItemChild(this);
-            }
-        });
+        // priorRatingCurve = new PriorRatingCurve(
+        // ratingCurveGrid,
+        // null,
+        // null);
+        // // priorRatingCurve.setPredictionDataProvider(ratingCurveGrid);
+        // priorRatingCurve.addPropertyChangeListener("bamHasRun", (e) -> {
+        // if (hydraulicConfig != null) {
+        // hydraulicConfigBackupString = hydraulicConfig.toJSON().toString();
+        // // hydraulicConfig.addBamItemChild(this);
+        // }
+        // });
 
         posteriorRatingCurve = new PosteriorRatingCurve();
 
         JTabbedPane ratingCurves = new JTabbedPane();
-        ratingCurves.add("<html><i>a priori</i>&nbsp;&nbsp;</html>", priorRatingCurve);
+        // ratingCurves.add("<html><i>a priori</i>&nbsp;&nbsp;</html>",
+        // priorRatingCurve);
         ratingCurves.add("<html><i>a posteriori</i>&nbsp;&nbsp;</html>", posteriorRatingCurve);
 
         content.appendChild(mainConfigPanel, 0);
@@ -104,13 +108,13 @@ public class RatingCurve extends BaRatinItem implements ICalibratedModel, IMcmc,
         }
         if (newHydraulicConfig == null) {
             hydraulicConfig = null;
-            priorRatingCurve.setModelDefintionProvider(hydraulicConfig);
-            priorRatingCurve.setPriorsProvider(hydraulicConfig);
+            // priorRatingCurve.setModelDefintionProvider(hydraulicConfig);
+            // priorRatingCurve.setPriorsProvider(hydraulicConfig);
             return;
         }
         hydraulicConfig = newHydraulicConfig;
-        priorRatingCurve.setModelDefintionProvider(hydraulicConfig);
-        priorRatingCurve.setPriorsProvider(hydraulicConfig);
+        // priorRatingCurve.setModelDefintionProvider(hydraulicConfig);
+        // priorRatingCurve.setPriorsProvider(hydraulicConfig);
         hydraulicConfig.addBamItemChild(this);
     }
 
@@ -167,11 +171,9 @@ public class RatingCurve extends BaRatinItem implements ICalibratedModel, IMcmc,
 
         json.put("stageGridConfig", jsonStageGridConfig);
 
-        JSONObject jsonPriorRatingCurve = new JSONObject();
-
-        jsonPriorRatingCurve.put("zipFile", priorRatingCurve.getBamRunUUID());
-
-        json.put("priorRatingCurve", jsonPriorRatingCurve);
+        // JSONObject jsonPriorRatingCurve = new JSONObject();
+        // jsonPriorRatingCurve.put("zipFile", priorRatingCurve.getBamRunUUID());
+        // json.put("priorRatingCurve", jsonPriorRatingCurve);
 
         return json;
     }
@@ -192,6 +194,7 @@ public class RatingCurve extends BaRatinItem implements ICalibratedModel, IMcmc,
 
     @Override
     public String[] getZipUUIDS() {
-        return new String[] { priorRatingCurve.getBamRunUUID() };
+        // return new String[] { priorRatingCurve.getBamRunUUID() };
+        return new String[] {};
     }
 }

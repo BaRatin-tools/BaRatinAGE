@@ -36,8 +36,15 @@ public class PriorRatingCurve extends GridPanel {
 
         private RunBamPrior runBamPrior;
 
-        public PriorRatingCurve() {
+        public PriorRatingCurve(
+                        IPredictionData predictionDataProvider,
+                        IPriors priorsProvider,
+                        IModelDefinition modelDefinitionProvider) {
                 // appendChild(new JLabel("Prior rating curve"));
+
+                this.predictionDataProvider = predictionDataProvider;
+                this.priorsProvider = priorsProvider;
+                this.modelDefinitionProvider = modelDefinitionProvider;
 
                 JButton runButton = new JButton("Compute prior rating curve");
                 runButton.addActionListener((e) -> {

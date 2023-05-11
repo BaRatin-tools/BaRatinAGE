@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.BorderFactory;
+import javax.swing.JSeparator;
 import javax.swing.JSplitPane;
 
 import org.baratinage.jbam.Parameter;
@@ -13,6 +14,7 @@ import org.baratinage.ui.bam.IPriors;
 import org.baratinage.ui.baratin.hydraulic_control.ControlMatrix;
 import org.baratinage.ui.baratin.hydraulic_control.AllHydraulicControls;
 import org.baratinage.ui.baratin.hydraulic_control.OneHydraulicControl;
+import org.baratinage.ui.container.RowColPanel;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -25,6 +27,8 @@ class HydraulicConfiguration extends BaRatinItem
 
     private ControlMatrix controlMatrix;
     private AllHydraulicControls hydraulicControls;
+    private RatingCurveStageGrid priorRatingCurveStageGrid;
+    private PriorRatingCurve priorRatingCurve;
 
     public HydraulicConfiguration() {
         this(String.format(
@@ -60,7 +64,22 @@ class HydraulicConfiguration extends BaRatinItem
         splitPaneContainer.setRightComponent(hydraulicControls);
         splitPaneContainer.setResizeWeight(0.5);
 
-        setContent(splitPaneContainer);
+        RowColPanel priorRatingCurvePanel = new RowColPanel(AXIS.COL);
+        priorRatingCurve = new PriorRatingCurve(
+                priorRatingCurveStageGrid,
+                this, this);
+        priorRatingCurveStageGrid = new RatingCurveStageGrid();
+        priorRatingCurve.setPredictionDataProvider(priorRatingCurveStageGrid);
+
+        priorRatingCurvePanel.appendChild(priorRatingCurveStageGrid, 0);
+        priorRatingCurvePanel.appendChild(new JSeparator(), 0);
+        priorRatingCurvePanel.appendChild(priorRatingCurve, 1);
+
+        JSplitPane mainSplitPaneContainer = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
+        mainSplitPaneContainer.setBorder(BorderFactory.createEmptyBorder());
+        mainSplitPaneContainer.setLeftComponent(splitPaneContainer);
+        mainSplitPaneContainer.setRightComponent(priorRatingCurvePanel);
+        setContent(mainSplitPaneContainer);
 
         boolean[][] mat = controlMatrix.getControlMatrix();
         updateHydraulicControls(mat);
