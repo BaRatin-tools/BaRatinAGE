@@ -139,7 +139,7 @@ public class Read {
         int i = 0;
         String line = reader.readLine();
         while (line != null) {
-            if (i > nRow)
+            if (i >= nRow)
                 break;
             if (k >= nRowSkip) {
                 double[] row = parseStringArray(parseString(line, sep, trim), missingValueString, nColSkip);
