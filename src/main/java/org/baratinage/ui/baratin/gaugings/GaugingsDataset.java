@@ -4,8 +4,6 @@ import java.util.List;
 
 import org.baratinage.ui.component.ImportedDataset;
 
-import org.jfree.data.xy.XYIntervalSeries;
-
 public class GaugingsDataset extends ImportedDataset {
 
     boolean[] gaugingsActiveState;
@@ -35,22 +33,6 @@ public class GaugingsDataset extends ImportedDataset {
     public boolean[] getActiveState() {
         return gaugingsActiveState;
     }
-
-    // public double[] getDischargeLowValues() {
-    // double[] v = new double[nRow];
-    // for (int k = 0; k < nRow; k++) {
-    // v[k] = data.get(1)[k] * (1 + data.get(2)[k] / 100);
-    // }
-    // return v;
-    // }
-
-    // public double[] getDischargeHighValues() {
-    // double[] v = new double[nRow];
-    // for (int k = 0; k < nRow; k++) {
-    // v[k] = data.get(1)[k] * (1 - data.get(2)[k] / 100);
-    // }
-    // return v;
-    // }
 
     public Gauging getGauging(int gaugingIndex) {
         double[] row = getRow(gaugingIndex);

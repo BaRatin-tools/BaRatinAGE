@@ -1,7 +1,5 @@
 package org.baratinage.ui.baratin;
 
-import java.awt.Color;
-
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -14,12 +12,8 @@ import org.baratinage.ui.baratin.gaugings.GaugingsDataset;
 import org.baratinage.ui.baratin.gaugings.GaugingsImporter;
 import org.baratinage.ui.baratin.gaugings.GaugingsPlot;
 import org.baratinage.ui.baratin.gaugings.GaugingsTable;
-import org.baratinage.ui.component.ImportedDataset;
 import org.baratinage.ui.container.RowColPanel;
-import org.baratinage.ui.plot.Plot;
 import org.baratinage.ui.plot.PlotContainer;
-import org.baratinage.ui.plot.PlotPoints;
-import org.baratinage.ui.plot.PlotItem.SHAPE;
 import org.baratinage.ui.bam.BamItemList;
 import org.json.JSONObject;
 
