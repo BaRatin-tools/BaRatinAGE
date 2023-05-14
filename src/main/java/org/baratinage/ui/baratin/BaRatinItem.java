@@ -23,6 +23,12 @@ public abstract class BaRatinItem extends BamItem {
                 super.setName(newName);// must use super!
             }
         });
+        header.addPropertyChangeListener(e -> {
+            if (e.getPropertyName().equals("description")) {
+                String newDesc = (String) e.getNewValue();
+                super.setDescription(newDesc);// must use super!
+            }
+        });
 
         contentContainer = new RowColPanel(RowColPanel.AXIS.COL);
         contentContainer.appendChild(header, 0);
@@ -54,5 +60,11 @@ public abstract class BaRatinItem extends BamItem {
     public void setName(String name) {
         super.setName(name);
         header.setName(name);
+    }
+
+    @Override
+    public void setDescription(String desc) {
+        super.setDescription(desc);
+        header.setDescription(desc);
     }
 }
