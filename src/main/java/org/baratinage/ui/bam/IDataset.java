@@ -11,7 +11,7 @@ public interface IDataset {
 
     public double[] getRow(int index);
 
-    public int getNumgeberOfColumns();
+    public int getNumberOfColumns();
 
     public int getNumberOfRows();
 }
