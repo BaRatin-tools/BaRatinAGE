@@ -20,14 +20,19 @@ public class App {
 
     public final static String BAM_RUN_DIR = "test/newTestWS";
 
+    public final static String TEST_DIR = "test";
+
+    public static JFrame MAIN_FRAME;
+
     public static void main(String[] args) {
         try {
             String sysLookAndFeel = UIManager.getSystemLookAndFeelClassName();
             UIManager.setLookAndFeel(sysLookAndFeel);
-            // String crossPlatformLookAndFeel = UIManager.getCrossPlatformLookAndFeelClassName();
+            // String crossPlatformLookAndFeel =
+            // UIManager.getCrossPlatformLookAndFeelClassName();
             // UIManager.setLookAndFeel(crossPlatformLookAndFeel);
             // for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
-            //     System.out.println(info);
+            // System.out.println(info);
             // }
             setDefaultSize(14);
         } catch (Exception e) {
@@ -36,9 +41,9 @@ public class App {
         EventQueue.invokeLater(new Runnable() {
             public void run() {
                 try {
-                    JFrame maineFrame = new MainFrame();
+                    MAIN_FRAME = new MainFrame();
 
-                    maineFrame.setTitle("BaRatinAGE V3");
+                    MAIN_FRAME.setTitle("BaRatinAGE V3");
 
                     // FIXME: where should such resource files be stored?
                     // here it cannot be accessed after packaging wherease
@@ -46,7 +51,7 @@ public class App {
                     // the resource files after packaging...
                     URL iconUrl = this.getClass().getResource("/icon/64x64.png");
                     ImageIcon iconImg = new ImageIcon(iconUrl);
-                    maineFrame.setIconImage(iconImg.getImage());
+                    MAIN_FRAME.setIconImage(iconImg.getImage());
 
                 } catch (Exception e) {
                     e.printStackTrace();
