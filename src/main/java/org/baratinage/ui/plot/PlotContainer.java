@@ -3,7 +3,6 @@ package org.baratinage.ui.plot;
 import java.awt.Color;
 import java.awt.Dimension;
 
-import java.awt.event.ActionEvent;
 import java.awt.geom.Rectangle2D;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -12,10 +11,10 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import javax.swing.AbstractAction;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -38,21 +37,22 @@ public class PlotContainer extends RowColPanel {
 
     public PlotContainer(Plot plot) {
         super(AXIS.COL);
-        this.setBackground(Color.WHITE);
+        setBackground(Color.WHITE);
+        setGap(10);
 
         this.plot = plot;
-        this.chart = plot.getChart();
-        this.chartPanel = new ChartPanel(chart);
-        this.chartPanel.setMinimumDrawWidth(100);
-        this.chartPanel.setMinimumDrawHeight(100);
+        chart = plot.getChart();
+        chartPanel = new ChartPanel(chart);
+        chartPanel.setMinimumDrawWidth(100);
+        chartPanel.setMinimumDrawHeight(100);
 
-        this.chartPanel.setMaximumDrawWidth(10000);
-        this.chartPanel.setMaximumDrawHeight(10000);
+        chartPanel.setMaximumDrawWidth(10000);
+        chartPanel.setMaximumDrawHeight(10000);
 
         RowColPanel topPanel = new RowColPanel();
 
-        this.appendChild(topPanel, 0);
-        this.appendChild(chartPanel, 1);
+        appendChild(topPanel, 0);
+        appendChild(chartPanel, 1);
 
         RowColPanel toolsPanel = new RowColPanel(AXIS.ROW, ALIGN.START);
         RowColPanel actionPanel = new RowColPanel(AXIS.ROW, ALIGN.END);
@@ -69,84 +69,6 @@ public class PlotContainer extends RowColPanel {
             plot.setAxisLogY(logYaxis);
         });
 
-        // FIXME: use lambda instead
-        PlotContainer that = this;
-        AbstractAction saveAsSvgAction = new AbstractAction("Save As SVG") {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (that.chartPanel != null) {
-                    // String svg = that.chart.getSvgXML();
-                    JFileChooser fileChooser = new JFileChooser();
-                    fileChooser.setFileFilter(
-                            new FileNameExtensionFilter(
-                                    "Scalable Vector Graphics (SVG)",
-                                    "svg"));
-
-                    fileChooser.showSaveDialog(that);
-                    File file = fileChooser.getSelectedFile();
-                    if (file == null)
-                        return;
-                    if (file.exists()) {
-                        int response = JOptionPane.showConfirmDialog(that,
-                                "This file already exist.\nDo you want to overwrite it?",
-                                "Overwrite file?",
-                                JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
-                        if (response != JOptionPane.YES_OPTION) {
-                            return;
-                        }
-                    }
-                    String filePath = file.toString();
-                    if (!file.getName().toLowerCase().endsWith(".svg")) {
-                        filePath += ".svg";
-                    }
-
-                    that.saveToSvg(filePath);
-                }
-            }
-        };
-        AbstractAction saveAsPngAction = new AbstractAction("Save As PNG") {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (that.chart != null) {
-                    // String svg = that.chart.getSvgXML();
-                    JFileChooser fileChooser = new JFileChooser();
-                    fileChooser.setFileFilter(
-                            new FileNameExtensionFilter(
-                                    "PNG image",
-                                    "png"));
-
-                    fileChooser.showSaveDialog(that);
-                    File file = fileChooser.getSelectedFile();
-                    if (file == null)
-                        return;
-                    if (file.exists()) {
-                        int response = JOptionPane.showConfirmDialog(that,
-                                "This file already exist.\nDo you want to overwrite it?",
-                                "Overwrite file?",
-                                JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
-                        if (response != JOptionPane.YES_OPTION) {
-                            return;
-                        }
-                    }
-                    String filePath = file.toString();
-                    if (!file.getName().toLowerCase().endsWith(".png")) {
-                        filePath += ".png";
-                    }
-
-                    that.saveToPng(filePath);
-                }
-            }
-        };
-
-        AbstractAction copyToClipboard = new AbstractAction("Copy To Clipboard") {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (that.chart != null) {
-                    that.copyToClipboard();
-                }
-            }
-        };
-
         ImageIcon saveIcon = new NoScalingIcon("./resources/icons/save_32x32.png");
         ImageIcon copyIcon = new NoScalingIcon("./resources/icons/copy_32x32.png");
 
@@ -154,43 +76,65 @@ public class PlotContainer extends RowColPanel {
 
         btnSaveAsSvg.setIcon(saveIcon);
         btnSaveAsSvg.setText("SVG");
-        btnSaveAsSvg.setToolTipText("Export to SVG");
-        btnSaveAsSvg.addActionListener(saveAsSvgAction);
+        btnSaveAsSvg.setToolTipText("Exporter au format SVG");
+        btnSaveAsSvg.addActionListener((e) -> {
+            saveAsSvg();
+        });
 
         JButton btnSaveAsPng = new JButton();
         btnSaveAsPng.setIcon(saveIcon);
         btnSaveAsPng.setText("PNG");
-        btnSaveAsPng.setToolTipText("Export to PNG");
-        btnSaveAsPng.addActionListener(saveAsPngAction);
+        btnSaveAsPng.setToolTipText("Exporter au format PNG");
+        btnSaveAsPng.addActionListener((e) -> {
+            saveAsPng();
+        });
 
         JButton btnCopyToClipboard = new JButton();
         btnCopyToClipboard.setIcon(copyIcon);
-        btnCopyToClipboard.setToolTipText("Copy to clipboard");
-        btnCopyToClipboard.addActionListener(copyToClipboard);
+        btnCopyToClipboard.setToolTipText("Copier l'image dans le presse-papier");
+        btnCopyToClipboard.addActionListener((e) -> {
+            copyToClipboard();
+        });
 
         actionPanel.appendChild(btnSaveAsSvg);
         actionPanel.appendChild(btnSaveAsPng);
         actionPanel.appendChild(btnCopyToClipboard);
 
         JPopupMenu popupMenu = new JPopupMenu();
-        popupMenu.add(saveAsSvgAction);
-        popupMenu.add(saveAsPngAction);
-        popupMenu.add(copyToClipboard);
+        JMenuItem m;
+
+        m = new JMenuItem(btnSaveAsSvg.getToolTipText());
+        m.addActionListener((e) -> {
+            saveAsPng();
+        });
+        popupMenu.add(m);
+
+        m = new JMenuItem(btnSaveAsPng.getToolTipText());
+        m.addActionListener(
+                (e) -> {
+                    saveAsPng();
+                });
+        popupMenu.add(m);
+
+        m = new JMenuItem(btnCopyToClipboard.getToolTipText());
+        m.addActionListener((e) -> {
+            copyToClipboard();
+        });
+        popupMenu.add(m);
 
         this.chartPanel.setPopupMenu(popupMenu);
     }
 
     private String getSvgXML() {
-        Dimension dim = this.getSize();
+        Dimension dim = getSize();
         SVGGraphics2D svg2d = new SVGGraphics2D(dim.width, dim.height);
-        this.chart.draw(svg2d, new Rectangle2D.Double(0, 0, dim.width, dim.height));
+        chart.draw(svg2d, new Rectangle2D.Double(0, 0, dim.width, dim.height));
         String svgElement = svg2d.getSVGElement();
         return svgElement;
     }
 
     private byte[] getImageBytes() {
-        JFreeChart chart = this.chart;
-        Dimension dim = this.getSize();
+        Dimension dim = getSize();
         ByteArrayOutputStream bout = new ByteArrayOutputStream();
         int scale = 3; // chart will be rendered at thrice the resolution.
         try {
@@ -201,10 +145,71 @@ public class PlotContainer extends RowColPanel {
         return bout.toByteArray();
     }
 
+    // FIXME: refactorization needed!
+    public void saveAsSvg() {
+        if (chart == null)
+            return;
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setFileFilter(
+                new FileNameExtensionFilter(
+                        "Scalable Vector Graphics (SVG)",
+                        "svg"));
+
+        fileChooser.showSaveDialog(this);
+        File file = fileChooser.getSelectedFile();
+        if (file == null)
+            return;
+        if (file.exists()) {
+            int response = JOptionPane.showConfirmDialog(this,
+                    "This file already exist.\nDo you want to overwrite it?",
+                    "Overwrite file?",
+                    JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+            if (response != JOptionPane.YES_OPTION) {
+                return;
+            }
+        }
+        String filePath = file.toString();
+        if (!file.getName().toLowerCase().endsWith(".svg")) {
+            filePath += ".svg";
+        }
+
+        saveToSvg(filePath);
+    }
+
+    public void saveAsPng() {
+        if (chart == null)
+            return;
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setFileFilter(
+                new FileNameExtensionFilter(
+                        "PNG image",
+                        "png"));
+
+        fileChooser.showSaveDialog(this);
+        File file = fileChooser.getSelectedFile();
+        if (file == null)
+            return;
+        if (file.exists()) {
+            int response = JOptionPane.showConfirmDialog(this,
+                    "This file already exist.\nDo you want to overwrite it?",
+                    "Overwrite file?",
+                    JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+            if (response != JOptionPane.YES_OPTION) {
+                return;
+            }
+        }
+        String filePath = file.toString();
+        if (!file.getName().toLowerCase().endsWith(".png")) {
+            filePath += ".png";
+        }
+
+        saveToPng(filePath);
+    }
+
     public void saveToSvg(String filePath) {
         try {
             FileWriter fileWriter = new FileWriter(new File(filePath));
-            String svg = this.getSvgXML();
+            String svg = getSvgXML();
             fileWriter.write(svg);
             fileWriter.close();
         } catch (IOException e) {
@@ -214,14 +219,16 @@ public class PlotContainer extends RowColPanel {
 
     public void saveToPng(String filePath) {
         try {
-            Files.write(Path.of(filePath), this.getImageBytes());
+            Files.write(Path.of(filePath), getImageBytes());
         } catch (IOException e) {
             System.err.println(e);
         }
     }
 
     public void copyToClipboard() {
-        this.chartPanel.doCopy();
+        if (chart == null)
+            return;
+        chartPanel.doCopy();
     }
 
 }

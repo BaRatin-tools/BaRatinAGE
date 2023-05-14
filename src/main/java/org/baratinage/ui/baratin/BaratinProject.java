@@ -63,6 +63,14 @@ public class BaratinProject extends BamProject {
         });
         this.actionBar.appendChild(btnNewHydraulicConfig);
 
+        JButton btnNewGaugings = new JButton();
+        btnNewGaugings.setText("Nouveau jeu de jaugeages");
+        btnNewGaugings.setIcon(new NoScalingIcon(ratingCurveIconPath));
+        btnNewGaugings.addActionListener(e -> {
+            addGaugings();
+        });
+        this.actionBar.appendChild(btnNewGaugings);
+
         JButton btnNewRatingCurve = new JButton();
         btnNewRatingCurve.setText("Nouvelle courbe de tarage");
         btnNewRatingCurve.setIcon(new NoScalingIcon(ratingCurveIconPath));
@@ -205,6 +213,17 @@ public class BaratinProject extends BamProject {
                 hydraulicConfig);
         addItem(hydroConf, explorerItem);
 
+    }
+
+    private void addGaugings() {
+        Gaugings gaugingsItem = new Gaugings();
+        this.getBamItems().addChangeListener(gaugingsItem);
+        ExplorerItem explorerItem = new ExplorerItem(
+                gaugingsItem.getUUID(),
+                gaugingsItem.getName(),
+                gaugingsIconPath,
+                gaugings);
+        addItem(gaugingsItem, explorerItem);
     }
 
     private void addRatingCurve() {

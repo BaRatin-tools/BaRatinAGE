@@ -1,21 +1,15 @@
 package org.baratinage.ui.plot;
 
 import java.awt.Paint;
-// import java.awt.geom.Ellipse2D;
-// import java.awt.Rectangle;
 import java.awt.BasicStroke;
 
 import org.jfree.chart.renderer.xy.DefaultXYItemRenderer;
 import org.jfree.data.xy.DefaultXYDataset;
 
 public class PlotLine extends PlotItem {
-    // public enum SHAPE {
-    // CIRCLE,
-    // SQUARE
-    // }
 
-    private DefaultXYDataset dataset;
-    private DefaultXYItemRenderer renderer;
+    protected DefaultXYDataset dataset;
+    protected DefaultXYItemRenderer renderer;
 
     public PlotLine(String label, double[] x, double[] y, Paint paint, int lineWidth) {
         this(label, x, y, paint, lineWidth, null, 0);
@@ -47,32 +41,12 @@ public class PlotLine extends PlotItem {
 
     @Override
     public DefaultXYDataset getDataset() {
-        return this.dataset;
+        return dataset;
     }
 
     @Override
     public DefaultXYItemRenderer getRenderer() {
-        return this.renderer;
+        return renderer;
     }
-
-    // private static Ellipse2D.Double buildCircleShape(int size) {
-    // Ellipse2D.Double shape = new Ellipse2D.Double();
-
-    // shape.width = size;
-    // shape.height = size;
-    // shape.x = -size / 2;
-    // shape.y = -size / 2;
-    // return shape;
-
-    // }
-
-    // private static Rectangle buildSquareShape(int size) {
-    // Rectangle shape = new Rectangle(
-    // -size / 2,
-    // -size / 2,
-    // size, size);
-    // return shape;
-
-    // }
 
 }
