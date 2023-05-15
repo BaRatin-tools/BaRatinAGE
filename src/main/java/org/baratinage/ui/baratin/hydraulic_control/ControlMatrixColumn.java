@@ -46,7 +46,7 @@ public class ControlMatrixColumn implements ItemListener {
             ctrlCheckBoxes.get(k).setSelected(selected[k]);
             // FIXME: check consistency
         }
-
+        updateEditability();
     }
 
     private void updateEditability() {
