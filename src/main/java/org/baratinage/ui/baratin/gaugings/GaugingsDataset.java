@@ -10,8 +10,10 @@ public class GaugingsDataset extends ImportedDataset {
 
     public GaugingsDataset(String name, List<double[]> data, String[] headers) {
         super(name, data, headers);
-        // WARNING: data must have three columns! Stage, discharge and discharge
-        // uncertainty!
+        // WARNINGS:
+        // - data must have three columns! Stage, discharge and discharge uncertainty!
+        // - uncertainty is specified in percent and represents extended (+/-)
+        // uncertainty
         gaugingsActiveState = new boolean[nRow];
         for (int k = 0; k < nRow; k++) {
             gaugingsActiveState[k] = true;
@@ -26,8 +28,20 @@ public class GaugingsDataset extends ImportedDataset {
         return data.get(1);
     }
 
-    public double[] getDischargeUncertaintyValues() {
+    // FIXME: change name to a more appropriate one
+    public double[] getDischargeUPercent() {
         return data.get(2);
+    }
+
+    // FIXME: change name to a more appropriate one
+    public double[] getDischargeUAbsolute() {
+        double[] u = new double[nRow];
+        double[] q = getDischargeValues();
+        double[] uqp = getDischargeUPercent();
+        for (int k = 0; k < nRow; k++) {
+            u[k] = q[k] * uqp[k] / 100 / 2;
+        }
+        return u;
     }
 
     public boolean[] getActiveState() {

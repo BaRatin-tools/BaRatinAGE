@@ -13,7 +13,7 @@ public class GaugingsPlot extends Plot {
 
         double[] x = gaugingDataset.getStageValues();
         double[] y = gaugingDataset.getDischargeValues();
-        double[] u = gaugingDataset.getDischargeUncertaintyValues();
+        double[] u = gaugingDataset.getDischargeUPercent();
         boolean[] v = gaugingDataset.getActiveState();
 
         int nTotal = x.length;
