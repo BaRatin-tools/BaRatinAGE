@@ -41,6 +41,8 @@ public class PriorRatingCurve extends GridPanel {
                         IPriors priorsProvider,
                         IModelDefinition modelDefinitionProvider) {
                 // appendChild(new JLabel("Prior rating curve"));
+                setPadding(5);
+                setGap(5);
 
                 this.predictionDataProvider = predictionDataProvider;
                 this.priorsProvider = priorsProvider;
@@ -51,7 +53,7 @@ public class PriorRatingCurve extends GridPanel {
                         computePriorRatingCurve();
                 });
                 insertChild(runButton, 0, 0,
-                                ANCHOR.C, FILL.NONE);
+                                ANCHOR.C, FILL.BOTH);
                 setRowWeight(1, 1);
                 setColWeight(0, 1);
 
