@@ -34,11 +34,10 @@ public class PlotContainer extends RowColPanel {
     JFreeChart chart;
     ChartPanel chartPanel;
     boolean logYaxis;
+    Color backgroundColor = Color.WHITE;
 
     public PlotContainer(Plot plot) {
         super(AXIS.COL);
-        setBackground(Color.WHITE);
-        setGap(10);
 
         this.plot = plot;
         chart = plot.getChart();
@@ -123,6 +122,15 @@ public class PlotContainer extends RowColPanel {
         popupMenu.add(m);
 
         this.chartPanel.setPopupMenu(popupMenu);
+
+        setBackground(backgroundColor);
+        topPanel.setBackground(backgroundColor);
+        topPanel.setPadding(10);
+
+        toolsPanel.setBackground(backgroundColor);
+        actionPanel.setBackground(backgroundColor);
+        toolsPanel.setGap(5);
+        actionPanel.setGap(5);
     }
 
     private String getSvgXML() {
