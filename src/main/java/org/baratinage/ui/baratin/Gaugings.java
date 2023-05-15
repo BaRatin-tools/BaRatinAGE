@@ -99,20 +99,29 @@ public class Gaugings extends BaRatinItem implements ICalibrationData, BamItemLi
 
     @Override
     public UncertainData[] getInputs() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getInputs'");
+        if (gaugingDataset == null) {
+            return null;
+        }
+        UncertainData[] inputs = new UncertainData[1];
+        inputs[0] = new UncertainData("stage", gaugingDataset.getStageValues());
+        return inputs;
     }
 
     @Override
     public UncertainData[] getOutputs() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getOutputs'");
+        if (gaugingDataset == null) {
+            return null;
+        }
+        double[] q = gaugingDataset.getDischargeValues();
+        double[] uq = gaugingDataset.getDischargeUAbsolute();
+        UncertainData[] outputs = new UncertainData[1];
+        outputs[0] = new UncertainData("discharge", q, uq);
+        return outputs;
     }
 
     @Override
     public void parentHasChanged(BamItem parent) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'parentHasChanged'");
+        System.out.println("PARENT HAS CHANGED => PARENT = " + parent);
     }
 
     @Override
