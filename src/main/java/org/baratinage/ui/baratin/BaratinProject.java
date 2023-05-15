@@ -65,7 +65,7 @@ public class BaratinProject extends BamProject {
 
         JButton btnNewGaugings = new JButton();
         btnNewGaugings.setText("Nouveau jeu de jaugeages");
-        btnNewGaugings.setIcon(new NoScalingIcon(ratingCurveIconPath));
+        btnNewGaugings.setIcon(new NoScalingIcon(gaugingsIconPath));
         btnNewGaugings.addActionListener(e -> {
             addGaugings();
         });
