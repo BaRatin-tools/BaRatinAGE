@@ -137,7 +137,7 @@ public class Gaugings extends BaRatinItem implements ICalibrationData, BamItemLi
     }
 
     @Override
-    public void onChange(BamItemList bamItemList) {
+    public void onBamItemListChange(BamItemList bamItemList) {
         // // TODO Auto-generated method stub
         // throw new UnsupportedOperationException("Unimplemented method 'onChange'");
     }

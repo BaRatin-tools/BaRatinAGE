@@ -10,7 +10,7 @@ public class BamItemList extends ArrayList<BamItem> {
 
     @FunctionalInterface
     public interface BamItemListChangeListener extends EventListener {
-        public void onChange(BamItemList bamItemList);
+        public void onBamItemListChange(BamItemList bamItemList);
     }
 
     public BamItemList() {
@@ -50,7 +50,7 @@ public class BamItemList extends ArrayList<BamItem> {
 
     public void fireChangeListeners() {
         for (BamItemListChangeListener listener : bamItemListChangeListeners) {
-            listener.onChange(this);
+            listener.onBamItemListChange(this);
         }
     }
 
