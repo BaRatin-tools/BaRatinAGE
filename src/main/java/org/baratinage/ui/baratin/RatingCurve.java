@@ -8,13 +8,11 @@ import org.baratinage.jbam.CalibrationConfig;
 import org.baratinage.jbam.CalibrationResult;
 import org.baratinage.jbam.McmcConfig;
 import org.baratinage.jbam.McmcCookingConfig;
-// import org.baratinage.jbam.PredictionInput;
 import org.baratinage.ui.bam.BamItem;
 import org.baratinage.ui.bam.BamItemCombobox;
 import org.baratinage.ui.bam.BamItemList;
 import org.baratinage.ui.bam.ICalibratedModel;
 import org.baratinage.ui.bam.IMcmc;
-// import org.baratinage.ui.bam.JsonJbamConverter;
 import org.baratinage.ui.container.RowColPanel;
 import org.json.JSONObject;
 
@@ -23,14 +21,15 @@ public class RatingCurve extends BaRatinItem implements ICalibratedModel, IMcmc,
     static private final String defaultNameTemplate = "Courbe de tarage #%s";
     static private int nInstance = 0;
 
-    BamItemCombobox hydraulicConfigComboBox;
-    HydraulicConfiguration hydraulicConfig;
-    String hydraulicConfigBackupString;
+    private BamItemCombobox hydraulicConfigComboBox;
+    private BamItemCombobox gaugingsComboBox;
+    private BamItemCombobox structErrorComboBox;
+    private HydraulicConfiguration hydraulicConfig;
+    private Gaugings gaugings;
+    // private StructuralError structError;
 
-    RatingCurveStageGrid ratingCurveGrid;
-
-    // PriorRatingCurve priorRatingCurve;
-    PosteriorRatingCurve posteriorRatingCurve;
+    private RatingCurveStageGrid ratingCurveGrid;
+    private PosteriorRatingCurve posteriorRatingCurve;
 
     public static final int TYPE = (int) Math.floor(Math.random() * Integer.MAX_VALUE);
 
@@ -45,59 +44,71 @@ public class RatingCurve extends BaRatinItem implements ICalibratedModel, IMcmc,
         setNameFieldLabel("Nom de la courbe de tarage");
         setDescriptionFieldLabel("Description de la courbe de tarage");
 
-        RowColPanel content = new RowColPanel(RowColPanel.AXIS.COL);
+        RowColPanel content = new RowColPanel(AXIS.COL);
 
-        RowColPanel mainConfigPanel = new RowColPanel();
+        RowColPanel mainConfigPanel = new RowColPanel(AXIS.ROW, ALIGN.START);
+        RowColPanel mainContentPanel = new RowColPanel();
+
+        content.appendChild(mainConfigPanel, 0);
+        content.appendChild(new JSeparator(), 0);
+        content.appendChild(mainContentPanel, 1);
 
         RowColPanel hydraulicConfigPanel = new RowColPanel(AXIS.COL, ALIGN.START);
         hydraulicConfigPanel.setGap(5);
         hydraulicConfigPanel.setPadding(5);
 
-        hydraulicConfigPanel.appendChild(new JLabel("Configuration hydraulique"));
+        JLabel hydraulicConfigLabel = new JLabel("Configuration hydraulique");
+        hydraulicConfigPanel.appendChild(hydraulicConfigLabel);
         hydraulicConfigComboBox = new BamItemCombobox("Selectionner une configuration hydraulique");
         hydraulicConfigPanel.appendChild(hydraulicConfigComboBox, 0);
+
         hydraulicConfigComboBox.addActionListener(e -> {
             BamItem selectedHydraulicConf = (BamItem) hydraulicConfigComboBox.getSelectedItem();
             if (selectedHydraulicConf == null) {
                 setHydraulicConfig(null);
                 return;
             }
-            // if (hydraulicConfig != null &&
-            // !hydraulicConfig.equals(selectedHydraulicConf)) {
-
-            // setHydraulicConfig((HydraulicConfiguration) selectedHydraulicConf);
-            // } else {
             setHydraulicConfig((HydraulicConfiguration) selectedHydraulicConf);
-            // }
         });
 
-        ratingCurveGrid = new RatingCurveStageGrid();
-        mainConfigPanel.appendChild(hydraulicConfigPanel);
-        mainConfigPanel.appendChild(new JSeparator(JSeparator.VERTICAL), 0);
-        mainConfigPanel.appendChild(ratingCurveGrid);
+        RowColPanel gaugingsPanel = new RowColPanel(AXIS.COL, ALIGN.START);
+        gaugingsPanel.setGap(5);
+        gaugingsPanel.setPadding(5);
 
-        // priorRatingCurve = new PriorRatingCurve(
-        // ratingCurveGrid,
-        // null,
-        // null);
-        // // priorRatingCurve.setPredictionDataProvider(ratingCurveGrid);
-        // priorRatingCurve.addPropertyChangeListener("bamHasRun", (e) -> {
-        // if (hydraulicConfig != null) {
-        // hydraulicConfigBackupString = hydraulicConfig.toJSON().toString();
-        // // hydraulicConfig.addBamItemChild(this);
-        // }
-        // });
+        JLabel gaugingsLabel = new JLabel("Jeu de jaugeages");
+        gaugingsPanel.appendChild(gaugingsLabel);
+        gaugingsComboBox = new BamItemCombobox("Selectionner un jeu de jaugeages");
+        gaugingsPanel.appendChild(gaugingsComboBox, 0);
 
-        posteriorRatingCurve = new PosteriorRatingCurve();
+        gaugingsComboBox.addActionListener(e -> {
+            BamItem selectedHydraulicConf = (BamItem) gaugingsComboBox.getSelectedItem();
+            if (selectedHydraulicConf == null) {
+                setHydraulicConfig(null);
+                return;
+            }
+            setGaugings((Gaugings) selectedHydraulicConf);
+        });
+
+        RowColPanel structErrorPanel = new RowColPanel(AXIS.COL, ALIGN.START);
+        structErrorPanel.setGap(5);
+        structErrorPanel.setPadding(5);
+
+        JLabel structErrorLabel = new JLabel("Modèle d'erreur structurelle");
+        structErrorPanel.appendChild(structErrorLabel);
+        structErrorComboBox = new BamItemCombobox("Selectionner un modèle d'erreur structurelle");
+        structErrorPanel.appendChild(structErrorComboBox, 0);
+
+        mainConfigPanel.appendChild(hydraulicConfigPanel, 0);
+        mainConfigPanel.appendChild(new JSeparator(JSeparator.VERTICAL));
+        mainConfigPanel.appendChild(gaugingsPanel, 0);
+        mainConfigPanel.appendChild(new JSeparator(JSeparator.VERTICAL));
+        mainConfigPanel.appendChild(structErrorPanel, 0);
 
         JTabbedPane ratingCurves = new JTabbedPane();
-        // ratingCurves.add("<html><i>a priori</i>&nbsp;&nbsp;</html>",
-        // priorRatingCurve);
-        ratingCurves.add("<html><i>a posteriori</i>&nbsp;&nbsp;</html>", posteriorRatingCurve);
+        mainContentPanel.appendChild(ratingCurves);
 
-        content.appendChild(mainConfigPanel, 0);
-        content.appendChild(new JSeparator(), 0);
-        content.appendChild(ratingCurves, 1, 5);
+        posteriorRatingCurve = new PosteriorRatingCurve();
+        ratingCurves.add("<html>Courbe de tarage <i>a posteriori</i>&nbsp;&nbsp;</html>", posteriorRatingCurve);
 
         setContent(content);
     }
@@ -108,14 +119,22 @@ public class RatingCurve extends BaRatinItem implements ICalibratedModel, IMcmc,
         }
         if (newHydraulicConfig == null) {
             hydraulicConfig = null;
-            // priorRatingCurve.setModelDefintionProvider(hydraulicConfig);
-            // priorRatingCurve.setPriorsProvider(hydraulicConfig);
             return;
         }
         hydraulicConfig = newHydraulicConfig;
-        // priorRatingCurve.setModelDefintionProvider(hydraulicConfig);
-        // priorRatingCurve.setPriorsProvider(hydraulicConfig);
         hydraulicConfig.addBamItemChild(this);
+    }
+
+    private void setGaugings(Gaugings newGaugings) {
+        if (gaugings != null) {
+            gaugings.removeBamItemChild(this);
+        }
+        if (newGaugings == null) {
+            gaugings = null;
+            return;
+        }
+        gaugings = newGaugings;
+        gaugings.addBamItemChild(this);
     }
 
     @Override
@@ -184,12 +203,13 @@ public class RatingCurve extends BaRatinItem implements ICalibratedModel, IMcmc,
         throw new UnsupportedOperationException("Unimplemented method 'fromJSON'");
     }
 
-    // FIXME: innappropiate name!!
     @Override
-    public void onChange(BamItemList bamItemList) {
-        System.out.println("UPDATING COMBOBOX ==> " + this);
+    public void onBamItemListChange(BamItemList bamItemList) {
+        System.out.println("UPDATING COMBOBOXES ==> " + this);
         BamItemList listOfHydraulicConfigs = bamItemList.filterByType(HydraulicConfiguration.TYPE);
         hydraulicConfigComboBox.syncWithBamItemList(listOfHydraulicConfigs);
+        BamItemList listOfGaugingsDataset = bamItemList.filterByType(Gaugings.TYPE);
+        gaugingsComboBox.syncWithBamItemList(listOfGaugingsDataset);
     }
 
     @Override
