@@ -48,7 +48,8 @@ public class PriorRatingCurve extends GridPanel {
                 this.priorsProvider = priorsProvider;
                 this.modelDefinitionProvider = modelDefinitionProvider;
 
-                JButton runButton = new JButton("Compute prior rating curve");
+                JButton runButton = new JButton(
+                                String.format("<html>Calculer la courbe de tarage <i>a priori</i></html>"));
                 runButton.addActionListener((e) -> {
                         computePriorRatingCurve();
                 });
