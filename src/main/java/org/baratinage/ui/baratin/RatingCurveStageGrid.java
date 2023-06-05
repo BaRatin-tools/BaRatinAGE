@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JLabel;
-// import javax.swing.SwingUtilities;
 
 import org.baratinage.jbam.PredictionInput;
 import org.baratinage.ui.bam.IPredictionData;
@@ -174,7 +173,6 @@ public class RatingCurveStageGrid extends RowColPanel implements IPredictionData
     private void updateStageGridConfig() {
         double min = minStageField.getValue();
         double max = maxStageField.getValue();
-        double n = nbrStepField.getValue();
         double step = valStepField.getValue();
 
         // check validity and update config
