@@ -16,7 +16,7 @@ import org.baratinage.App;
 import org.baratinage.jbam.utils.Write;
 import org.baratinage.ui.bam.BamItem;
 import org.baratinage.ui.bam.BamProject;
-import org.baratinage.ui.component.ExplorerItem;
+import org.baratinage.ui.commons.ExplorerItem;
 // import org.baratinage.ui.component.ImportedData;
 import org.baratinage.ui.component.NoScalingIcon;
 import org.json.JSONArray;
@@ -56,7 +56,7 @@ public class BaratinProject extends BamProject {
         super();
 
         JButton btnNewHydraulicConfig = new JButton();
-        btnNewHydraulicConfig.setText("Nouvelle configuration hydraulique");
+        btnNewHydraulicConfig.setText("+");
         btnNewHydraulicConfig.setIcon(new NoScalingIcon(hydraulicConfigIconPath));
         btnNewHydraulicConfig.addActionListener(e -> {
             addHydraulicConfig();
@@ -64,15 +64,23 @@ public class BaratinProject extends BamProject {
         this.actionBar.appendChild(btnNewHydraulicConfig);
 
         JButton btnNewGaugings = new JButton();
-        btnNewGaugings.setText("Nouveau jeu de jaugeages");
+        btnNewGaugings.setText("+");
         btnNewGaugings.setIcon(new NoScalingIcon(gaugingsIconPath));
         btnNewGaugings.addActionListener(e -> {
             addGaugings();
         });
         this.actionBar.appendChild(btnNewGaugings);
 
+        JButton btnNewStructErrorModel = new JButton();
+        btnNewStructErrorModel.setText("+");
+        btnNewStructErrorModel.setIcon(new NoScalingIcon(structuralErrIconPath));
+        btnNewStructErrorModel.addActionListener(e -> {
+            addStructuralErrorModel();
+        });
+        this.actionBar.appendChild(btnNewStructErrorModel);
+
         JButton btnNewRatingCurve = new JButton();
-        btnNewRatingCurve.setText("Nouvelle courbe de tarage");
+        btnNewRatingCurve.setText("+");
         btnNewRatingCurve.setIcon(new NoScalingIcon(ratingCurveIconPath));
         btnNewRatingCurve.addActionListener(e -> {
             addRatingCurve();
@@ -224,6 +232,17 @@ public class BaratinProject extends BamProject {
                 gaugingsIconPath,
                 gaugings);
         addItem(gaugingsItem, explorerItem);
+    }
+
+    private void addStructuralErrorModel() {
+        StructuralError structuralErrorItem = new StructuralError();
+        this.getBamItems().addChangeListener(structuralErrorItem);
+        ExplorerItem explorerItem = new ExplorerItem(
+                structuralErrorItem.getUUID(),
+                structuralErrorItem.getName(),
+                structuralErrIconPath,
+                structuralError);
+        addItem(structuralErrorItem, explorerItem);
     }
 
     private void addRatingCurve() {
