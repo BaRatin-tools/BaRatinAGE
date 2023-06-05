@@ -210,6 +210,8 @@ public class RatingCurve extends BaRatinItem implements ICalibratedModel, IMcmc,
         hydraulicConfigComboBox.syncWithBamItemList(listOfHydraulicConfigs);
         BamItemList listOfGaugingsDataset = bamItemList.filterByType(Gaugings.TYPE);
         gaugingsComboBox.syncWithBamItemList(listOfGaugingsDataset);
+        BamItemList listOfStructuralErrorModels = bamItemList.filterByType(StructuralError.TYPE);
+        structErrorComboBox.syncWithBamItemList(listOfStructuralErrorModels);
     }
 
     @Override
