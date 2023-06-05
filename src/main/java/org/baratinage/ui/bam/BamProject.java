@@ -4,8 +4,8 @@ import javax.swing.BorderFactory;
 import javax.swing.JSeparator;
 import javax.swing.JSplitPane;
 
-import org.baratinage.ui.component.Explorer;
-import org.baratinage.ui.component.ExplorerItem;
+import org.baratinage.ui.commons.Explorer;
+import org.baratinage.ui.commons.ExplorerItem;
 import org.baratinage.ui.container.RowColPanel;
 
 public abstract class BamProject extends RowColPanel {
