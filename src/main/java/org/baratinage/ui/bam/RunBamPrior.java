@@ -30,19 +30,9 @@ import org.baratinage.ui.commons.DefaultStructuralErrorProvider;
 
 public class RunBamPrior {
 
-    // FIXME: this should be stored at the much higher level (Project or even App
-    // level)
-    // public static final String baratinageTempDir =
-    // Path.of(System.getProperty("java.io.tmpdir"),
-    // "baratinage").toString();
-    // public static final String baratinageTempDir = App.TEMP_DIR;
-
+    // FIXME: should be stored at the much higher level (Project or App level)
     private final String uuid = UUID.randomUUID().toString() + ".zip";
     private final Path runZipFile = Path.of(App.TEMP_DIR, uuid);
-    // private final Path tempDirPath =
-    // Path.of(System.getProperty("java.io.tmpdir"),
-    // "baratinage_runbackup", "TEST");
-    // "baratinage_runbackup", UUID.randomUUID().toString());
     private BaM bam;
     private Path workspace;
     private boolean isConfigured = false;
@@ -181,12 +171,7 @@ public class RunBamPrior {
             }
         }
         zipOutStream.close();
-        // Filesdd
     }
-
-    // public String getPathToZip() {
-    // return runZipFile.toString();
-    // }
 
     public String getUUID() {
         return this.uuid;
