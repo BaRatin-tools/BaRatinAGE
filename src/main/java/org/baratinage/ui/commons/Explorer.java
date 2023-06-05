@@ -1,4 +1,4 @@
-package org.baratinage.ui.component;
+package org.baratinage.ui.commons;
 
 import java.awt.Component;
 import java.awt.Dimension;

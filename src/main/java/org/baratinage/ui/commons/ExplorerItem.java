@@ -1,6 +1,8 @@
-package org.baratinage.ui.component;
+package org.baratinage.ui.commons;
 
 import javax.swing.tree.DefaultMutableTreeNode;
+
+import org.baratinage.ui.component.NoScalingIcon;
 
 public class ExplorerItem extends DefaultMutableTreeNode {
 
