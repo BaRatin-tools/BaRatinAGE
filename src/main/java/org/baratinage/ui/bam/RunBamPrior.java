@@ -126,7 +126,7 @@ public class RunBamPrior {
 
     public void run() {
         if (!isConfigured) {
-            System.err.println("Cannot run BaM if configure() method has been called first!");
+            System.err.println("Cannot run BaM if configure() method has not been called first!");
             return;
         }
         try {
