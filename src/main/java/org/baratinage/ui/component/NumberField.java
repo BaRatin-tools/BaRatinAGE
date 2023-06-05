@@ -68,6 +68,10 @@ public class NumberField extends RowColPanel {
         this.isValueValid = isValid;
     }
 
+    public void setPlaceholder(String placeholderText) {
+        textField.setPlaceholder(placeholderText);
+    }
+
     public boolean isValueValid() {
         return this.isValueValid;
     }

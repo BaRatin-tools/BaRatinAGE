@@ -1,6 +1,9 @@
 package org.baratinage.ui.component;
 
 import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.util.ArrayList;
 import java.util.EventListener;
 import java.util.List;
@@ -10,6 +13,8 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
 public class TextField extends JTextField {
+
+    private String placeholder;
 
     public TextField() {
         super();
@@ -36,6 +41,28 @@ public class TextField extends JTextField {
             }
 
         });
+    }
+
+    // Placeholder implementation comes from: https://stackoverflow.com/a/16229082
+    @Override
+    protected void paintComponent(final Graphics pG) {
+        super.paintComponent(pG);
+
+        if (placeholder == null || placeholder.length() == 0 || getText().length() > 0) {
+            return;
+        }
+
+        final Graphics2D g = (Graphics2D) pG;
+        g.setRenderingHint(
+                RenderingHints.KEY_ANTIALIASING,
+                RenderingHints.VALUE_ANTIALIAS_ON);
+        g.setColor(getDisabledTextColor());
+        g.drawString(placeholder, getInsets().left, pG.getFontMetrics()
+                .getMaxAscent() + getInsets().top);
+    }
+
+    public void setPlaceholder(final String s) {
+        placeholder = s;
     }
 
     private boolean doNotFireChange = false;
