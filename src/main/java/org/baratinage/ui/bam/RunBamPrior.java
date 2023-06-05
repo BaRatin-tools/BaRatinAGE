@@ -26,6 +26,7 @@ import org.baratinage.jbam.PredictionResult;
 import org.baratinage.jbam.RunOptions;
 import org.baratinage.jbam.StructuralErrorModel;
 import org.baratinage.jbam.UncertainData;
+import org.baratinage.ui.commons.DefaultStructuralErrorProvider;
 
 public class RunBamPrior {
 
