@@ -18,6 +18,7 @@ import javax.swing.ListSelectionModel;
 
 import org.baratinage.jbam.Distribution;
 import org.baratinage.jbam.Parameter;
+import org.baratinage.jbam.Distribution.DISTRIB;
 import org.baratinage.ui.bam.IPriors;
 import org.baratinage.ui.container.RowColPanel;
 
@@ -133,21 +134,25 @@ public class AllHydraulicControls extends RowColPanel implements IPriors {
         Parameter[] parameters = new Parameter[nControls * 3];
         for (int k = 0; k < nControls; k++) {
             OneHydraulicControl hc = hydraulicControlList.get(k);
-            Distribution activationStageDistribution = Distribution.Gaussian(
+            Distribution activationStageDistribution = new Distribution(
+                    DISTRIB.GAUSSIAN,
                     hc.getActivationStage(),
                     hc.getActivationStageUncertainty() / 2);
+            Distribution coefficientDistribution = new Distribution(
+                    DISTRIB.GAUSSIAN,
+                    hc.getCoefficient(),
+                    hc.getCoefficientUncertainty() / 2);
+            Distribution exponentDistribution = new Distribution(
+                    DISTRIB.GAUSSIAN,
+                    hc.getExponent(),
+                    hc.getExponentUncertainty() / 2);
+
             parameters[k * 3 + 0] = new Parameter("k_" + k,
                     hc.getActivationStage(),
                     activationStageDistribution);
-            Distribution coefficientDistribution = Distribution.Gaussian(
-                    hc.getCoefficient(),
-                    hc.getCoefficientUncertainty() / 2);
             parameters[k * 3 + 1] = new Parameter("a_" + k,
                     hc.getCoefficient(),
                     coefficientDistribution);
-            Distribution exponentDistribution = Distribution.Gaussian(
-                    hc.getExponent(),
-                    hc.getExponentUncertainty() / 2);
             parameters[k * 3 + 2] = new Parameter("c_" + k,
                     hc.getExponent(),
                     exponentDistribution);
