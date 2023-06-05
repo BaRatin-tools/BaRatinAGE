@@ -12,6 +12,7 @@ import java.nio.file.Path;
 import java.util.Set;
 
 import org.baratinage.ui.MainFrame;
+import org.baratinage.ui.lg.Lg;
 
 public class App {
 
@@ -41,6 +42,7 @@ public class App {
         EventQueue.invokeLater(new Runnable() {
             public void run() {
                 try {
+                    Lg.setLocale("fr");
                     MAIN_FRAME = new MainFrame();
 
                     MAIN_FRAME.setTitle("BaRatinAGE V3");
