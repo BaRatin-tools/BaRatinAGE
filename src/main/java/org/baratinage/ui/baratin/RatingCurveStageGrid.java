@@ -12,6 +12,7 @@ import org.baratinage.ui.bam.IPredictionData;
 import org.baratinage.ui.component.NumberField;
 import org.baratinage.ui.container.GridPanel;
 import org.baratinage.ui.container.RowColPanel;
+import org.baratinage.ui.lg.Lg;
 
 public class RatingCurveStageGrid extends RowColPanel implements IPredictionData {
 
@@ -33,7 +34,9 @@ public class RatingCurveStageGrid extends RowColPanel implements IPredictionData
         GridPanel gridPanel = new GridPanel();
         setGap(5);
         setPadding(5);
-        this.appendChild(new JLabel("Grille de hauteurs d'eau"), 0);
+        JLabel stageGridLabel = new JLabel();
+        Lg.registerLabel(stageGridLabel, "ui", "stage_grid");
+        this.appendChild(stageGridLabel, 0);
         this.appendChild(gridPanel, 1);
 
         minStageField = new NumberField();
@@ -73,10 +76,22 @@ public class RatingCurveStageGrid extends RowColPanel implements IPredictionData
         gridPanel.insertChild(maxStageField, 1, 1);
         gridPanel.insertChild(nbrStepField, 2, 1);
         gridPanel.insertChild(valStepField, 3, 1);
-        gridPanel.insertChild(new JLabel("Min"), 0, 0);
-        gridPanel.insertChild(new JLabel("Max"), 1, 0);
-        gridPanel.insertChild(new JLabel("N"), 2, 0);
-        gridPanel.insertChild(new JLabel("Step"), 3, 0);
+
+        JLabel minLabel = new JLabel();
+        Lg.registerLabel(minLabel, "ui", "min");
+        gridPanel.insertChild(minLabel, 0, 0);
+
+        JLabel maxLabel = new JLabel();
+        Lg.registerLabel(maxLabel, "ui", "max");
+        gridPanel.insertChild(maxLabel, 1, 0);
+
+        JLabel nLabel = new JLabel();
+        Lg.registerLabel(nLabel, "ui", "n");
+        gridPanel.insertChild(nLabel, 2, 0);
+
+        JLabel stepLabel = new JLabel();
+        Lg.registerLabel(stepLabel, "ui", "step");
+        gridPanel.insertChild(stepLabel, 3, 0);
 
         isValueValid = false;
         stageGridConfig = new StageGridConfig(0, 0, 0);
@@ -161,11 +176,6 @@ public class RatingCurveStageGrid extends RowColPanel implements IPredictionData
         double max = maxStageField.getValue();
         double n = nbrStepField.getValue();
         double step = valStepField.getValue();
-
-        System.out.println("MIN  => " + min);
-        System.out.println("MAX  => " + max);
-        System.out.println("N    => " + n);
-        System.out.println("STEP => " + step);
 
         // check validity and update config
         if (!nbrStepField.isValueValid() || !valStepField.isValueValid() || !minStageField.isValueValid()
