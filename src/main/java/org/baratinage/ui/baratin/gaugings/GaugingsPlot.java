@@ -8,12 +8,15 @@ import org.baratinage.ui.plot.PlotItem.SHAPE;
 
 public class GaugingsPlot extends Plot {
 
+    PlotPoints gaugingPoints;
+    PlotPoints gaugingPointsInactive;
+
     public GaugingsPlot(String xAxisLabel, String yAxisLabel, boolean includeLegend, GaugingsDataset gaugingDataset) {
         super(xAxisLabel, yAxisLabel, includeLegend);
 
         double[] x = gaugingDataset.getStageValues();
         double[] y = gaugingDataset.getDischargeValues();
-        double[] u = gaugingDataset.getDischargeUPercent();
+        double[] u = gaugingDataset.getDischargePercentUncertainty();
         boolean[] v = gaugingDataset.getActiveState();
 
         int nTotal = x.length;
@@ -50,7 +53,7 @@ public class GaugingsPlot extends Plot {
             }
         }
         if (nActive != 0) {
-            PlotPoints gaugingPoints = new PlotPoints("Jaugeages (actif)",
+            gaugingPoints = new PlotPoints("Jaugeages (actif)",
                     x0, x0, x0,
                     y0, yLow0, yHigh0,
                     Color.BLUE, SHAPE.CIRCLE, 5, 1);
@@ -58,12 +61,20 @@ public class GaugingsPlot extends Plot {
         }
 
         if (nActive != nTotal) {
-            PlotPoints gaugingPointsInactive = new PlotPoints("Jaugeages (inactif)",
+            gaugingPointsInactive = new PlotPoints("Jaugeages (inactif)",
                     x1, x1, x1,
                     y1, yLow1, yHigh1,
                     Color.RED, SHAPE.CIRCLE, 5, 1);
             addXYItem(gaugingPointsInactive);
         }
+    }
+
+    public PlotPoints getGaugingsPoints() {
+        return gaugingPoints;
+    }
+
+    public PlotPoints getGaugingsPointsInactive() {
+        return gaugingPointsInactive;
     }
 
 }
