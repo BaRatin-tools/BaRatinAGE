@@ -1,20 +1,20 @@
 package org.baratinage.ui.bam;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.nio.file.Files;
+// import java.io.File;
+// import java.io.FileOutputStream;
+// import java.io.IOException;
+// import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.UUID;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
+// import java.util.UUID;
+// import java.util.zip.ZipEntry;
+// import java.util.zip.ZipOutputStream;
 
-import org.baratinage.App;
+// import org.baratinage.App;
 import org.baratinage.jbam.BaM;
 import org.baratinage.jbam.CalDataResidualConfig;
 import org.baratinage.jbam.CalibrationConfig;
 import org.baratinage.jbam.CalibrationData;
-import org.baratinage.jbam.CalibrationResult;
+// import org.baratinage.jbam.CalibrationResult;
 import org.baratinage.jbam.McmcConfig;
 import org.baratinage.jbam.McmcCookingConfig;
 import org.baratinage.jbam.McmcSummaryConfig;
@@ -22,21 +22,13 @@ import org.baratinage.jbam.Model;
 import org.baratinage.jbam.ModelOutput;
 import org.baratinage.jbam.Parameter;
 import org.baratinage.jbam.PredictionConfig;
-import org.baratinage.jbam.PredictionResult;
+// import org.baratinage.jbam.PredictionResult;
 import org.baratinage.jbam.RunOptions;
 import org.baratinage.jbam.StructuralErrorModel;
 import org.baratinage.jbam.UncertainData;
 import org.baratinage.ui.commons.DefaultStructuralErrorProvider;
 
-public class RunBamPrior {
-
-    // FIXME: should be stored at the much higher level (Project or App level)
-    private final String uuid = UUID.randomUUID().toString() + ".zip";
-    private final Path runZipFile = Path.of(App.TEMP_DIR, uuid);
-    private BaM bam;
-    private Path workspace;
-    private boolean isConfigured = false;
-    private boolean hasResults = false;
+public class RunBamPrior extends RunBam {
 
     public void configure(
             String workspace,
@@ -124,72 +116,56 @@ public class RunBamPrior {
         isConfigured = true;
     }
 
-    public void run() {
-        if (!isConfigured) {
-            System.err.println("Cannot run BaM if configure() method has not been called first!");
-            return;
-        }
-        try {
-            bam.run(workspace.toString(), txt -> {
-                System.out.println("log => " + txt);
-            });
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    // @Override
+    // public void run() {
+    // if (!isConfigured) {
+    // System.err.println("Cannot run BaM if configure() method has not been called
+    // first!");
+    // return;
+    // }
+    // try {
+    // bam.run(workspace.toString(), txt -> {
+    // System.out.println("log => " + txt);
+    // });
+    // } catch (IOException e) {
+    // e.printStackTrace();
+    // }
 
-        bam.readResults(workspace.toString());
-        hasResults = true;
+    // bam.readResults(workspace.toString());
+    // hasResults = true;
 
-        try {
-            backupBamRun();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
+    // try {
+    // backupBamRun();
+    // } catch (IOException e) {
+    // e.printStackTrace();
+    // }
+    // }
 
-    private void backupBamRun() throws IOException {
-        // 1/ creata temporary dir
+    // @Override
+    // protected void backupBamRun() throws IOException {
+    // // 1/ creata temporary dir
 
-        System.out.println("App.TEMP_DIR; ==> " + App.TEMP_DIR);
-        File tD = new File(App.TEMP_DIR);
-        boolean created = tD.mkdirs();
-        System.out.println("Created ==> " + created);
+    // System.out.println("App.TEMP_DIR; ==> " + App.TEMP_DIR);
+    // File tD = new File(App.TEMP_DIR);
+    // boolean created = tD.mkdirs();
+    // System.out.println("Created ==> " + created);
 
-        // 2/ create zip containing BaM run files
+    // // 2/ create zip containing BaM run files
 
-        File zipFile = new File(runZipFile.toString());
-        FileOutputStream zipFileOutStream = new FileOutputStream(zipFile);
-        ZipOutputStream zipOutStream = new ZipOutputStream(zipFileOutStream);
+    // File zipFile = new File(runZipFile.toString());
+    // FileOutputStream zipFileOutStream = new FileOutputStream(zipFile);
+    // ZipOutputStream zipOutStream = new ZipOutputStream(zipFileOutStream);
 
-        File[] files = workspace.toFile().listFiles();
-        if (files != null) {
-            for (File f : files) {
-                System.out.println("File '" + f + "'.");
-                ZipEntry ze = new ZipEntry(f.getName());
-                zipOutStream.putNextEntry(ze);
-                Files.copy(f.toPath(), zipOutStream);
-            }
-        }
-        zipOutStream.close();
-    }
+    // File[] files = workspace.toFile().listFiles();
+    // if (files != null) {
+    // for (File f : files) {
+    // System.out.println("File '" + f + "'.");
+    // ZipEntry ze = new ZipEntry(f.getName());
+    // zipOutStream.putNextEntry(ze);
+    // Files.copy(f.toPath(), zipOutStream);
+    // }
+    // }
+    // zipOutStream.close();
+    // }
 
-    public String getUUID() {
-        return this.uuid;
-    }
-
-    public BaM getBaM() {
-        return bam;
-    }
-
-    public CalibrationResult getCalibrationResult() {
-        if (!hasResults)
-            return null;
-        return bam.getCalibrationResults();
-    }
-
-    public PredictionResult[] getPredictionResults() {
-        if (!hasResults)
-            return null;
-        return bam.getPredictionResults();
-    }
 }
