@@ -84,7 +84,7 @@ public class GaugingsImporter extends RowColPanel {
             uqColumn.removeAllElements();
             String[] headers = dataFileImporter.getHeaders();
             validateButton.setEnabled(false);
-            if (headers != null && headers.length > 3) {
+            if (headers != null && headers.length >= 3) {
                 for (int k = 0; k < headers.length; k++) {
                     hColumn.addElement(
                             new DataColumnInfo(headers[k], k));
