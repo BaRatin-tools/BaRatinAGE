@@ -36,6 +36,8 @@ public class PriorRatingCurve extends GridPanel {
 
         private RunBamPrior runBamPrior;
 
+        // FIXME: maybe not the role of the constructor to set configuration
+        // FIXME: providers?... setters methods may be more appropriate...
         public PriorRatingCurve(
                         IPredictionData predictionDataProvider,
                         IPriors priorsProvider,
