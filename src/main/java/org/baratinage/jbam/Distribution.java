@@ -5,12 +5,12 @@ public class Distribution {
     private double[] parameterValues;
 
     public static enum DISTRIB {
-        GAUSSIAN("dist_gaussian", new String[] { "mean", "std" }),
-        LOG_NORMAL("dist_log_normal", new String[] { "log_mean", "log_std" }),
-        UNIFORM("dist_uniform", new String[] { "lower_bound", "upper_bound" }),
-        EXPONENTIAL("dist_exponential", new String[] { "location", "scale" }),
-        GEV("dist_gev", new String[] { "location", "scale", "shape" }),
-        FIXED("dist_fixed", new String[] {});
+        GAUSSIAN("Gaussian", new String[] { "mean", "std" }),
+        LOG_NORMAL("LogNormal", new String[] { "log_mean", "log_std" }),
+        UNIFORM("Uniform", new String[] { "lower_bound", "upper_bound" }),
+        EXPONENTIAL("Exponential", new String[] { "location", "scale" }),
+        GEV("GEV", new String[] { "location", "scale", "shape" }),
+        FIXED("Fixed", new String[] {});
 
         public String name;
         public String[] parameterNames;

@@ -48,7 +48,7 @@ public class ParameterPriorDist {
                     boolean isSelected,
                     boolean cellHasFocus) {
                 DISTRIB d = (DISTRIB) value;
-                String text = Lg.getText("ui", d.name);
+                String text = Lg.getText("ui", "dist_" + d.name);
                 super.getListCellRendererComponent(list, text, index, isSelected, cellHasFocus);
                 return this;
             }
