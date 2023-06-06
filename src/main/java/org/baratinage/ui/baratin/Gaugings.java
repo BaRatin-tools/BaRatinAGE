@@ -98,6 +98,10 @@ public class Gaugings extends BaRatinItem implements ICalibrationData, BamItemLi
 
     }
 
+    public GaugingsDataset getGaugingDataset() {
+        return gaugingDataset;
+    }
+
     @Override
     public UncertainData[] getInputs() {
         if (gaugingDataset == null) {
@@ -114,7 +118,7 @@ public class Gaugings extends BaRatinItem implements ICalibrationData, BamItemLi
             return null;
         }
         double[] q = gaugingDataset.getDischargeValues();
-        double[] uq = gaugingDataset.getDischargeUAbsolute();
+        double[] uq = gaugingDataset.getDischargeStdUncertainty();
         UncertainData[] outputs = new UncertainData[1];
         outputs[0] = new UncertainData("discharge", q, uq);
         return outputs;

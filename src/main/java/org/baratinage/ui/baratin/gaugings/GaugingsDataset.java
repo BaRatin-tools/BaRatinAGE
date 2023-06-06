@@ -29,15 +29,15 @@ public class GaugingsDataset extends ImportedDataset {
     }
 
     // FIXME: change name to a more appropriate one
-    public double[] getDischargeUPercent() {
+    public double[] getDischargePercentUncertainty() {
         return data.get(2);
     }
 
     // FIXME: change name to a more appropriate one
-    public double[] getDischargeUAbsolute() {
+    public double[] getDischargeStdUncertainty() {
         double[] u = new double[nRow];
         double[] q = getDischargeValues();
-        double[] uqp = getDischargeUPercent();
+        double[] uqp = getDischargePercentUncertainty();
         for (int k = 0; k < nRow; k++) {
             u[k] = q[k] * uqp[k] / 100 / 2;
         }
