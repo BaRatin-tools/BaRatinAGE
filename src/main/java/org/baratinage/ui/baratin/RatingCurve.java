@@ -26,7 +26,7 @@ public class RatingCurve extends BaRatinItem implements ICalibratedModel, IMcmc,
     private BamItemCombobox structErrorComboBox;
     private HydraulicConfiguration hydraulicConfig;
     private Gaugings gaugings;
-    // private StructuralError structError;
+    private StructuralError structError;
 
     private RatingCurveStageGrid ratingCurveGrid;
     private PosteriorRatingCurve posteriorRatingCurve;
@@ -53,6 +53,9 @@ public class RatingCurve extends BaRatinItem implements ICalibratedModel, IMcmc,
         content.appendChild(new JSeparator(), 0);
         content.appendChild(mainContentPanel, 1);
 
+        // **********************************************************
+        // Hydraulic configuration
+        // **********************************************************
         RowColPanel hydraulicConfigPanel = new RowColPanel(AXIS.COL, ALIGN.START);
         hydraulicConfigPanel.setGap(5);
         hydraulicConfigPanel.setPadding(5);
@@ -62,6 +65,7 @@ public class RatingCurve extends BaRatinItem implements ICalibratedModel, IMcmc,
         hydraulicConfigComboBox = new BamItemCombobox("Selectionner une configuration hydraulique");
         hydraulicConfigPanel.appendChild(hydraulicConfigComboBox, 0);
 
+        // FIXME: this needs refactoring!
         hydraulicConfigComboBox.addActionListener(e -> {
             BamItem selectedHydraulicConf = (BamItem) hydraulicConfigComboBox.getSelectedItem();
             if (selectedHydraulicConf == null) {
@@ -71,6 +75,9 @@ public class RatingCurve extends BaRatinItem implements ICalibratedModel, IMcmc,
             setHydraulicConfig((HydraulicConfiguration) selectedHydraulicConf);
         });
 
+        // **********************************************************
+        // Gaugings
+        // **********************************************************
         RowColPanel gaugingsPanel = new RowColPanel(AXIS.COL, ALIGN.START);
         gaugingsPanel.setGap(5);
         gaugingsPanel.setPadding(5);
@@ -89,14 +96,25 @@ public class RatingCurve extends BaRatinItem implements ICalibratedModel, IMcmc,
             setGaugings((Gaugings) selectedHydraulicConf);
         });
 
+        // **********************************************************
+        // Structural error
+        // **********************************************************
         RowColPanel structErrorPanel = new RowColPanel(AXIS.COL, ALIGN.START);
         structErrorPanel.setGap(5);
         structErrorPanel.setPadding(5);
-
         JLabel structErrorLabel = new JLabel("Modèle d'erreur structurelle");
         structErrorPanel.appendChild(structErrorLabel);
         structErrorComboBox = new BamItemCombobox("Selectionner un modèle d'erreur structurelle");
         structErrorPanel.appendChild(structErrorComboBox, 0);
+        structErrorComboBox.addActionListener(e -> {
+            BamItem selectedStructError = (BamItem) structErrorComboBox.getSelectedItem();
+            if (selectedStructError == null) {
+                setStructuralErrorModel(null);
+                return;
+            }
+            setStructuralErrorModel((StructuralError) selectedStructError);
+        });
+        // **********************************************************
 
         mainConfigPanel.appendChild(hydraulicConfigPanel, 0);
         mainConfigPanel.appendChild(new JSeparator(JSeparator.VERTICAL));
@@ -119,10 +137,14 @@ public class RatingCurve extends BaRatinItem implements ICalibratedModel, IMcmc,
         }
         if (newHydraulicConfig == null) {
             hydraulicConfig = null;
+            posteriorRatingCurve.setModelDefintion(null);
+            posteriorRatingCurve.setPriors(null);
             return;
         }
         hydraulicConfig = newHydraulicConfig;
         hydraulicConfig.addBamItemChild(this);
+        posteriorRatingCurve.setModelDefintion(newHydraulicConfig);
+        posteriorRatingCurve.setPriors(newHydraulicConfig);
     }
 
     private void setGaugings(Gaugings newGaugings) {
@@ -131,10 +153,26 @@ public class RatingCurve extends BaRatinItem implements ICalibratedModel, IMcmc,
         }
         if (newGaugings == null) {
             gaugings = null;
+            posteriorRatingCurve.setCalibrationData(null);
             return;
         }
         gaugings = newGaugings;
         gaugings.addBamItemChild(this);
+        posteriorRatingCurve.setCalibrationData(newGaugings);
+    }
+
+    private void setStructuralErrorModel(StructuralError newStructuralError) {
+        if (structError != null) {
+            structError.removeBamItemChild(this);
+        }
+        if (newStructuralError == null) {
+            structError = null;
+            posteriorRatingCurve.setStructuralErrorModel(null);
+            return;
+        }
+        structError = newStructuralError;
+        structError.addBamItemChild(this);
+        posteriorRatingCurve.setStructuralErrorModel(newStructuralError);
     }
 
     @Override
