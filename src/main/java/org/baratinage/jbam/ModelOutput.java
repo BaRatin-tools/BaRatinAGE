@@ -9,6 +9,10 @@ public class ModelOutput {
         this.structuralErrorModel = structuralErrorModel;
     }
 
+    public String getName() {
+        return name;
+    }
+
     public String getStructErrConfName() {
         return this.structuralErrorModel.getConfigFileName();
     }

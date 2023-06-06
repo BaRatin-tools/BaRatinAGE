@@ -38,6 +38,10 @@ public class CalibrationConfig {
         return this.model;
     }
 
+    public ModelOutput[] getModelOutputs() {
+        return this.modelOutputs;
+    }
+
     public CalibrationData getCalibrationData() {
         return this.calibrationData;
     }
