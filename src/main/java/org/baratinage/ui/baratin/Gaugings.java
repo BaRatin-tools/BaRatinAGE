@@ -5,6 +5,7 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JSplitPane;
 
+import org.baratinage.jbam.CalibrationData;
 import org.baratinage.jbam.UncertainData;
 import org.baratinage.ui.bam.BamItem;
 import org.baratinage.ui.bam.ICalibrationData;
@@ -120,6 +121,11 @@ public class Gaugings extends BaRatinItem implements ICalibrationData, BamItemLi
     }
 
     @Override
+    public CalibrationData getCalibrationData() {
+        return new CalibrationData(getName(), getInputs(), getOutputs());
+    }
+
+    @Override
     public void parentHasChanged(BamItem parent) {
         System.out.println("PARENT HAS CHANGED => PARENT = " + parent);
     }
@@ -141,4 +147,5 @@ public class Gaugings extends BaRatinItem implements ICalibrationData, BamItemLi
         // // TODO Auto-generated method stub
         // throw new UnsupportedOperationException("Unimplemented method 'onChange'");
     }
+
 }
