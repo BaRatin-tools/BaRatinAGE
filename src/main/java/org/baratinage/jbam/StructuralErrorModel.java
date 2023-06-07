@@ -20,6 +20,10 @@ public class StructuralErrorModel {
         return configFileName;
     }
 
+    public Parameter[] getParameters() {
+        return parameters;
+    }
+
     public void toFiles(String workspace) {
         ConfigFile configFile = new ConfigFile();
         configFile.addItem(this.modelId, "Function f used in sdev=f(Qrc) ", true);
