@@ -143,7 +143,7 @@ abstract public class BamItem extends RowColPanel {
         fromJSON((JSONObject) json.get("content"));
     }
 
-    public String[] getZipUUIDS() {
+    public String[] getTempDataFileNames() {
         return new String[] {};
     }
 
