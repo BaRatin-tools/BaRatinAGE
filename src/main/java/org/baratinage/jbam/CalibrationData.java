@@ -41,7 +41,7 @@ public class CalibrationData {
 
     // FIXME: better implementation? it feels like this should be a static method...
     // However it cannot be because of the UncertainDataConfig class
-    private UncertainDataConfig getUncertainDataConfig(UncertainData[] data) {
+    private UncertainDataConfig getUncertainDataConfig(UncertainData[] data, int columnOffset) {
         UncertainDataConfig uDataConfig = new UncertainDataConfig();
         uDataConfig.nCol = 0;
         uDataConfig.nRow = data[0].getNumberOfValues(); // FIXME should check data consistency
@@ -51,18 +51,18 @@ public class CalibrationData {
         uDataConfig.Xb = new int[data.length];
         uDataConfig.Xbi = new int[data.length];
         for (int k = 0; k < data.length; k++) {
-            uDataConfig.X[k] = uDataConfig.nCol + 1;
+            uDataConfig.X[k] = uDataConfig.nCol + 1 + columnOffset;
             uDataConfig.nCol++;
             if (data[k].hasNonSysError()) {
-                uDataConfig.Xu[k] = uDataConfig.nCol + 1;
+                uDataConfig.Xu[k] = uDataConfig.nCol + 1 + columnOffset;
                 uDataConfig.nCol++;
             } else {
                 uDataConfig.Xu[k] = 0;
             }
             if (data[k].hasSysError()) {
-                uDataConfig.Xb[k] = uDataConfig.nCol + 1;
+                uDataConfig.Xb[k] = uDataConfig.nCol + 1 + columnOffset;
                 uDataConfig.nCol++;
-                uDataConfig.Xbi[k] = uDataConfig.nCol + 1;
+                uDataConfig.Xbi[k] = uDataConfig.nCol + 1 + columnOffset;
                 uDataConfig.nCol++;
             } else {
                 uDataConfig.Xb[k] = 0;
@@ -129,8 +129,8 @@ public class CalibrationData {
 
     public void toConfigFile(String workspace) {
 
-        UncertainDataConfig inputsDataConfig = this.getUncertainDataConfig(this.inputs);
-        UncertainDataConfig outputsDataConfig = this.getUncertainDataConfig(this.outputs);
+        UncertainDataConfig inputsDataConfig = this.getUncertainDataConfig(this.inputs, 0);
+        UncertainDataConfig outputsDataConfig = this.getUncertainDataConfig(this.outputs, inputsDataConfig.nCol);
 
         ConfigFile configFile = new ConfigFile();
         configFile.addItem(this.getDataFilePath(workspace), "Absolute path to data file", true);
