@@ -147,10 +147,10 @@ public class BaratinProject extends BamProject {
                     Files.copy(mainConfigFile.toPath(), zipOutStream);
 
                     for (BamItem item : items) {
-                        String[] zipFiles = item.getZipUUIDS();
-                        for (String zf : zipFiles) {
-                            File f = new File(Path.of(App.TEMP_DIR, zf).toString());
-                            System.out.println("File '" + f + "'.");
+                        String[] dataFileNames = item.getTempDataFileNames();
+                        for (String dfp : dataFileNames) {
+                            File f = new File(Path.of(App.TEMP_DIR, dfp).toString());
+                            System.out.println("Including file '" + f + "'...");
                             ZipEntry ze = new ZipEntry(f.getName());
                             zipOutStream.putNextEntry(ze);
                             Files.copy(f.toPath(), zipOutStream);
