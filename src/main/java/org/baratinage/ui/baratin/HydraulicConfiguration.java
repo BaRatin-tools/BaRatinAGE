@@ -46,7 +46,6 @@ class HydraulicConfiguration extends BaRatinItem
         setNameFieldLabel("Nom de la configuration hydraulique");
         setDescriptionFieldLabel("Description de la configuration hydraulique");
 
-        // controlMatrix = new ControlMatrixOld();
         controlMatrix = new ControlMatrix();
         controlMatrix.addPropertyChangeListener("controlMatrix", (e) -> {
             hasChanged();
@@ -142,6 +141,12 @@ class HydraulicConfiguration extends BaRatinItem
     }
 
     @Override
+    public String[] getTempDataFileNames() {
+        String priorRatingCurveZipFileName = priorRatingCurve.getBamRunZipFileName();
+        return priorRatingCurveZipFileName == null ? new String[] {} : new String[] { priorRatingCurveZipFileName };
+    }
+
+    @Override
     public JSONObject toJSON() {
         JSONObject json = new JSONObject();
         json.put("name", getName());
@@ -175,6 +180,16 @@ class HydraulicConfiguration extends BaRatinItem
         }
 
         json.put("hydraulicControls", jsonHydraulicControls);
+
+        JSONObject stageGridConfigJson = new JSONObject();
+        stageGridConfigJson.put("min", priorRatingCurveStageGrid.getMinValue());
+        stageGridConfigJson.put("max", priorRatingCurveStageGrid.getMaxValue());
+        stageGridConfigJson.put("step", priorRatingCurveStageGrid.getStepValue());
+
+        json.put("stageGridConfig", stageGridConfigJson);
+
+        json.put("bamRunZipFileName", priorRatingCurve.getBamRunZipFileName());
+
         return json;
     }
 

@@ -191,8 +191,11 @@ public class PriorRatingCurve extends GridPanel {
                 }
         }
 
-        public String getBamRunUUID() {
-                return runBamPrior.getUUID();
+        public String getBamRunZipFileName() {
+                if (runBamPrior == null) {
+                        return null;
+                }
+                return runBamPrior.getBamRunZipFileName();
         }
 
 }

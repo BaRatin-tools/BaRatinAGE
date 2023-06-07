@@ -25,9 +25,7 @@ public class ConstantStructuralErrorModel extends AbstractStructuralErrorModel {
 
     @Override
     public void applyDefaultConfig() {
-        Parameter g1 = new Parameter("<html>&gamma;<sub>1</sub></html>", 1,
-                new Distribution(DISTRIB.UNIFORM, 0, 1000));
-        g1parameter.setFromParameter(g1);
+        g1parameter.set(DISTRIB.UNIFORM, 1, new double[] { 0, 1000 });
     }
 
     @Override
@@ -38,6 +36,15 @@ public class ConstantStructuralErrorModel extends AbstractStructuralErrorModel {
         StructuralErrorModel structuralErrorModel = new StructuralErrorModel("constant_model", "Constant",
                 modelParameters);
         return structuralErrorModel;
+    }
+
+    @Override
+    public void setFromParameters(Parameter[] parameters) {
+        if (parameters.length == 1) {
+            Parameter p = parameters[0];
+            Distribution d = p.getDistribution();
+            g1parameter.set(d.getDistrib(), p.getInitalGuess(), d.getParameterValues());
+        }
     }
 
 }

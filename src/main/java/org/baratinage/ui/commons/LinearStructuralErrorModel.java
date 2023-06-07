@@ -40,10 +40,8 @@ public class LinearStructuralErrorModel extends AbstractStructuralErrorModel {
 
     @Override
     public void applyDefaultConfig() {
-        Parameter g1 = new Parameter(gamma1LabelString, 1, new Distribution(DISTRIB.UNIFORM, 0, 1000));
-        Parameter g2 = new Parameter(gamma2LabelString, 0.1, new Distribution(DISTRIB.UNIFORM, 0, 1000));
-        g1parameter.setFromParameter(g1);
-        g2parameter.setFromParameter(g2);
+        g1parameter.set(DISTRIB.UNIFORM, 1, new double[] { 0, 10000 });
+        g2parameter.set(DISTRIB.UNIFORM, 0.1, new double[] { 0, 10000 });
         repaint();
     }
 
@@ -57,4 +55,17 @@ public class LinearStructuralErrorModel extends AbstractStructuralErrorModel {
                 modelParameters);
         return structuralErrorModel;
     }
+
+    @Override
+    public void setFromParameters(Parameter[] parameters) {
+        if (parameters.length == 2) {
+            Parameter p1 = parameters[0];
+            Distribution d1 = p1.getDistribution();
+            g1parameter.set(d1.getDistrib(), p1.getInitalGuess(), d1.getParameterValues());
+            Parameter p2 = parameters[1];
+            Distribution d2 = p2.getDistribution();
+            g2parameter.set(d2.getDistrib(), p2.getInitalGuess(), d2.getParameterValues());
+        }
+    }
+
 }

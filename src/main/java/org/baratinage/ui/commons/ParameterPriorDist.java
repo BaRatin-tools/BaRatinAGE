@@ -75,18 +75,17 @@ public class ParameterPriorDist {
         distComboBox.setSelectedItem(DISTRIB.GAUSSIAN);
     }
 
-    public void setFromParameter(Parameter parameter) {
-        nameLabel.setText(parameter.getName());
-        initialGuessField.setValue(parameter.getInitalGuess());
+    public void set(DISTRIB dist, double initialGuess, double[] distParPriors) {
+        distComboBox.setSelectedItem(dist);
+        initialGuessField.setValue(initialGuess);
         initialGuessField.updateTextField();
-        Distribution distribution = parameter.getDistribution();
-        DISTRIB distrib = distribution.getDistrib();
-        distComboBox.setSelectedItem(distrib);
-        int n = distrib.parameterNames.length;
-        double[] parameterValues = distribution.getParameterValues();
-        for (int k = 0; k < n; k++) {
+        if (distParPriors.length != parameterPriorFields.size()) {
+            System.out.println("Inconsistencies in distribution parameter! Aborting.");
+            return;
+        }
+        for (int k = 0; k < distParPriors.length; k++) {
             NumberField p = parameterPriorFields.get(k);
-            p.setValue(parameterValues[k]);
+            p.setValue(distParPriors[k]);
             p.updateTextField();
         }
     }

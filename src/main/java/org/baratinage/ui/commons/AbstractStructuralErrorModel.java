@@ -2,6 +2,8 @@ package org.baratinage.ui.commons;
 
 import javax.swing.JLabel;
 
+import org.baratinage.jbam.Parameter;
+import org.baratinage.jbam.StructuralErrorModel;
 import org.baratinage.ui.bam.IStructuralError;
 import org.baratinage.ui.container.GridPanel;
 
@@ -31,4 +33,8 @@ public abstract class AbstractStructuralErrorModel extends GridPanel implements 
     }
 
     public abstract void applyDefaultConfig();
+
+    public abstract StructuralErrorModel getStructuralErrorModel();
+
+    public abstract void setFromParameters(Parameter[] parameters);
 }

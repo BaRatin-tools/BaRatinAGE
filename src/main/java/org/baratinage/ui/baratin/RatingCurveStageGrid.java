@@ -22,7 +22,7 @@ public class RatingCurveStageGrid extends RowColPanel implements IPredictionData
 
     private StageGridConfig stageGridConfig;
 
-    public record StageGridConfig(double min, double max, double step) {
+    private record StageGridConfig(double min, double max, double step) {
     }
 
     private boolean isValueValid;
@@ -113,16 +113,53 @@ public class RatingCurveStageGrid extends RowColPanel implements IPredictionData
         return isValueValid;
     }
 
-    public StageGridConfig getStageGridConfig() {
-        return stageGridConfig;
+    public double getMinValue() {
+        return stageGridConfig.min;
     }
 
-    public void setStageGridConfig(StageGridConfig stagegridConfig) {
-        this.stageGridConfig = new StageGridConfig(
-                stageGridConfig.min(),
-                stageGridConfig.max(),
-                stageGridConfig.step());
+    public void setMinValue(double value) {
+        // stageGridConfig = new StageGridConfig(value, stageGridConfig.max,
+        // stageGridConfig.step);
+        minStageField.setValue(value);
+        minStageField.updateTextField();
+        updateStageGridConfig();
     }
+
+    public double getMaxValue() {
+        return stageGridConfig.max;
+    }
+
+    public void setMaxValue(double value) {
+        // stageGridConfig = new StageGridConfig(stageGridConfig.min, value,
+        // stageGridConfig.step);
+        maxStageField.setValue(value);
+        maxStageField.updateTextField();
+        updateStageGridConfig();
+    }
+
+    public double getStepValue() {
+        return stageGridConfig.step;
+    }
+
+    public void setStepValue(double value) {
+        // stageGridConfig = new StageGridConfig(stageGridConfig.min,
+        // stageGridConfig.max, value);
+        valStepField.setValue(value);
+        valStepField.updateTextField();
+        updateStageGridConfig();
+    }
+
+    // public StageGridConfig getStageGridConfig() {
+    // return stageGridConfig;
+    // }
+
+    // public void setStageGridConfig(StageGridConfig stagegridConfig) {
+    // this.stageGridConfig = new StageGridConfig(
+    // stageGridConfig.min(),
+    // stageGridConfig.max(),
+    // stageGridConfig.step());
+
+    // }
 
     @Override
     public PredictionInput[] getPredictionInputs() {

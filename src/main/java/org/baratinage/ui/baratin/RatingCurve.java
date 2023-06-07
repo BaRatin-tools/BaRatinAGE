@@ -28,7 +28,6 @@ public class RatingCurve extends BaRatinItem implements ICalibratedModel, IMcmc,
     private Gaugings gaugings;
     private StructuralError structError;
 
-    private RatingCurveStageGrid ratingCurveGrid;
     private PosteriorRatingCurve posteriorRatingCurve;
 
     public static final int TYPE = (int) Math.floor(Math.random() * Integer.MAX_VALUE);
@@ -213,24 +212,30 @@ public class RatingCurve extends BaRatinItem implements ICalibratedModel, IMcmc,
     }
 
     @Override
+    public String[] getTempDataFileNames() {
+        String priorRatingCurveZipFileName = posteriorRatingCurve.getBamRunZipFileName();
+        return priorRatingCurveZipFileName == null ? new String[] {} : new String[] { priorRatingCurveZipFileName };
+    }
+
+    @Override
     public JSONObject toJSON() {
 
         JSONObject json = new JSONObject();
         json.put("name", getName());
-        json.put("description", getName());
+        json.put("description", getDescription());
         json.put("hydraulicConfigurationId", hydraulicConfig != null ? hydraulicConfig.getUUID() : null);
+        json.put("structuralErrorId", structError != null ? structError.getUUID() : null);
+        json.put("gaugingsId", gaugings != null ? gaugings.getUUID() : null);
 
-        RatingCurveStageGrid.StageGridConfig stageGridConfig = ratingCurveGrid.getStageGridConfig();
+        RatingCurveStageGrid ratingCurveGrid = posteriorRatingCurve.getRatingCurveStageGrid();
         JSONObject jsonStageGridConfig = new JSONObject();
-        jsonStageGridConfig.put("min", stageGridConfig.min());
-        jsonStageGridConfig.put("max", stageGridConfig.max());
-        jsonStageGridConfig.put("step", stageGridConfig.step());
+        jsonStageGridConfig.put("min", ratingCurveGrid.getMinValue());
+        jsonStageGridConfig.put("max", ratingCurveGrid.getMaxValue());
+        jsonStageGridConfig.put("step", ratingCurveGrid.getStepValue());
 
         json.put("stageGridConfig", jsonStageGridConfig);
 
-        // JSONObject jsonPriorRatingCurve = new JSONObject();
-        // jsonPriorRatingCurve.put("zipFile", priorRatingCurve.getBamRunUUID());
-        // json.put("priorRatingCurve", jsonPriorRatingCurve);
+        json.put("bamRunZipFileName", posteriorRatingCurve.getBamRunZipFileName());
 
         return json;
     }
@@ -252,9 +257,4 @@ public class RatingCurve extends BaRatinItem implements ICalibratedModel, IMcmc,
         structErrorComboBox.syncWithBamItemList(listOfStructuralErrorModels);
     }
 
-    @Override
-    public String[] getZipUUIDS() {
-        // return new String[] { priorRatingCurve.getBamRunUUID() };
-        return new String[] {};
-    }
 }

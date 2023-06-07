@@ -52,6 +52,8 @@ public class PosteriorRatingCurve extends RowColPanel implements ICalibratedMode
 
     private CalibrationResult calibtrationResult;
 
+    private RunBamPost runBamPost;
+
     public PosteriorRatingCurve() {
         super(AXIS.COL);
         ratingCurveGrid = new RatingCurveStageGrid();
@@ -109,7 +111,7 @@ public class PosteriorRatingCurve extends RowColPanel implements ICalibratedMode
         pe[3].setCalibrationModel(this);
         pe[3].setPredictionData(ratingCurveGrid);
 
-        RunBamPost runBamPost = new RunBamPost();
+        runBamPost = new RunBamPost();
 
         runBamPost.configure(
                 App.BAM_RUN_DIR,
@@ -271,6 +273,17 @@ public class PosteriorRatingCurve extends RowColPanel implements ICalibratedMode
             return null;
         }
         return calibtrationResult;
+    }
+
+    public String getBamRunZipFileName() {
+        if (runBamPost == null) {
+            return null;
+        }
+        return runBamPost.getBamRunZipFileName();
+    }
+
+    public RatingCurveStageGrid getRatingCurveStageGrid() {
+        return ratingCurveGrid;
     }
 
 }
