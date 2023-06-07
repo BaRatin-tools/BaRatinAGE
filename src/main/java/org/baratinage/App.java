@@ -7,6 +7,7 @@ import javax.swing.UIManager;
 
 import java.awt.EventQueue;
 import java.awt.Font;
+import java.io.File;
 import java.net.URL;
 import java.nio.file.Path;
 import java.util.Set;
@@ -26,6 +27,12 @@ public class App {
     public static JFrame MAIN_FRAME;
 
     public static void main(String[] args) {
+
+        System.out.println("App.TEMP_DIR = " + App.TEMP_DIR);
+        File tD = new File(App.TEMP_DIR);
+        boolean created = tD.mkdirs();
+        System.out.println("Temp dir created? " + (created ? "Yes" : "No"));
+
         try {
             String sysLookAndFeel = UIManager.getSystemLookAndFeelClassName();
             UIManager.setLookAndFeel(sysLookAndFeel);
