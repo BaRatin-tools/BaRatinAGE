@@ -18,6 +18,7 @@ import org.baratinage.ui.plot.PlotContainer;
 import org.baratinage.ui.bam.BamItemList;
 import org.json.JSONObject;
 
+// FIXME: should it rather extend ImportedDataset or GaugingDataset?
 public class Gaugings extends BaRatinItem implements ICalibrationData, BamItemList.BamItemListChangeListener {
 
     static private final String defaultNameTemplate = "Jeu de jaugages #%s";
@@ -135,9 +136,21 @@ public class Gaugings extends BaRatinItem implements ICalibrationData, BamItemLi
     }
 
     @Override
+    public String[] getTempDataFileNames() {
+        return gaugingDataset == null ? new String[] {} : gaugingDataset.getTempDataFileNames();
+    }
+
+    @Override
     public JSONObject toJSON() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'toJSON'");
+        JSONObject json = new JSONObject();
+        json.put("name", getName());
+        json.put("description", getName());
+
+        if (gaugingDataset != null) {
+            json.put("gaugingDataset", gaugingDataset.toJSON());
+        }
+
+        return json;
     }
 
     @Override
