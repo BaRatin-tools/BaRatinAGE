@@ -24,6 +24,15 @@ public class Distribution {
         public String toString() {
             return name;
         }
+
+        static public DISTRIB getDistribFromName(String name) {
+            for (DISTRIB d : DISTRIB.values()) {
+                if (d.name.equals(name)) {
+                    return d;
+                }
+            }
+            return null;
+        }
     };
 
     public Distribution(DISTRIB distrib, double... parameterValues) {
