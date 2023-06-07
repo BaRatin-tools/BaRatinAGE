@@ -28,12 +28,10 @@ public class GaugingsDataset extends ImportedDataset {
         return data.get(1);
     }
 
-    // FIXME: change name to a more appropriate one
     public double[] getDischargePercentUncertainty() {
         return data.get(2);
     }
 
-    // FIXME: change name to a more appropriate one
     public double[] getDischargeStdUncertainty() {
         double[] u = new double[nRow];
         double[] q = getDischargeValues();
