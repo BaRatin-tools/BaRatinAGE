@@ -21,7 +21,7 @@ import javax.swing.filechooser.FileFilter;
 import org.baratinage.App;
 import org.baratinage.ui.container.GridPanel;
 import org.baratinage.ui.container.RowColPanel;
-import org.baratinage.utils.FileReadWrite;
+import org.baratinage.utils.ReadFile;
 
 public class DataFileImporter extends RowColPanel {
 
@@ -83,7 +83,7 @@ public class DataFileImporter extends RowColPanel {
         }
         String name = Path.of(importSettings.filePath).getFileName().toString();
         try {
-            List<double[]> data = FileReadWrite.readMatrix(
+            List<double[]> data = ReadFile.readMatrix(
                     importSettings.filePath,
                     importSettings.sep,
                     importSettings.nRowSkip + (importSettings.hasHeaderRow ? 1 : 0),
@@ -232,7 +232,7 @@ public class DataFileImporter extends RowColPanel {
     private void readFile(String filePath) {
 
         try {
-            fileLines = FileReadWrite.getLines(
+            fileLines = ReadFile.getLines(
                     filePath,
                     importSettings.nRowSkip + importSettings.nRowMax,
                     true);
@@ -255,7 +255,7 @@ public class DataFileImporter extends RowColPanel {
         if (fileLines == null || fileLines.length <= importSettings.nRowSkip) {
             return;
         }
-        dataString = FileReadWrite.linesToStringMatrix(
+        dataString = ReadFile.linesToStringMatrix(
                 fileLines,
                 importSettings.sep,
                 importSettings.nRowSkip,
@@ -265,8 +265,8 @@ public class DataFileImporter extends RowColPanel {
         int nCol = dataString.size();
         headers = new String[nCol];
         if (importSettings.hasHeaderRow) {
-            headers = FileReadWrite.getStringRow(dataString, importSettings.nRowSkip);
-            dataString = FileReadWrite.getSubStringMatrix(dataString, 1);
+            headers = ReadFile.getStringRow(dataString, importSettings.nRowSkip);
+            dataString = ReadFile.getSubStringMatrix(dataString, 1);
         } else {
             for (int k = 0; k < nCol; k++) {
                 headers[k] = "col #" + (k + 1);

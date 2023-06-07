@@ -10,7 +10,7 @@ import java.util.List;
 
 import org.mozilla.universalchardet.ReaderFactory;
 
-public class FileReadWrite {
+public class ReadFile {
 
     static BufferedReader createBufferedReader(String filePath, boolean detectEncoding) throws IOException {
         if (detectEncoding) {
