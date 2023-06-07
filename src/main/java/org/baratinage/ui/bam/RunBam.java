@@ -17,8 +17,8 @@ import org.baratinage.jbam.PredictionResult;
 public abstract class RunBam {
 
     // FIXME: should be stored at the much higher level (Project or App level)
-    protected final String uuid = UUID.randomUUID().toString() + ".zip";
-    protected final Path runZipFile = Path.of(App.TEMP_DIR, uuid);
+    protected final String bamRunZipFileName = UUID.randomUUID().toString() + ".zip";
+    protected final Path runZipFile = Path.of(App.TEMP_DIR, bamRunZipFileName);
     protected BaM bam;
     protected Path workspace;
     protected boolean isConfigured = false;
@@ -48,15 +48,6 @@ public abstract class RunBam {
     }
 
     protected void backupBamRun() throws IOException {
-        // 1/ creata temporary dir
-
-        System.out.println("App.TEMP_DIR; ==> " + App.TEMP_DIR);
-        File tD = new File(App.TEMP_DIR);
-        boolean created = tD.mkdirs();
-        System.out.println("Created ==> " + created);
-
-        // 2/ create zip containing BaM run files
-
         File zipFile = new File(runZipFile.toString());
         FileOutputStream zipFileOutStream = new FileOutputStream(zipFile);
         ZipOutputStream zipOutStream = new ZipOutputStream(zipFileOutStream);
@@ -73,8 +64,8 @@ public abstract class RunBam {
         zipOutStream.close();
     }
 
-    public String getUUID() {
-        return this.uuid;
+    public String getBamRunZipFileName() {
+        return this.bamRunZipFileName;
     }
 
     public BaM getBaM() {
