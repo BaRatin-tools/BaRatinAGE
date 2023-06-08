@@ -1,26 +1,14 @@
 package org.baratinage.ui.baratin;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
-
 import javax.swing.JButton;
-import javax.swing.JFileChooser;
-import javax.swing.filechooser.FileFilter;
+import javax.swing.JMenu;
+import javax.swing.JMenuItem;
 
 import org.baratinage.App;
-import org.baratinage.jbam.utils.Write;
 import org.baratinage.ui.bam.BamItem;
 import org.baratinage.ui.bam.BamProject;
 import org.baratinage.ui.commons.ExplorerItem;
-// import org.baratinage.ui.component.ImportedData;
 import org.baratinage.ui.component.NoScalingIcon;
-import org.json.JSONArray;
-import org.json.JSONObject;
 
 /**
  *
@@ -55,116 +43,74 @@ public class BaratinProject extends BamProject {
     public BaratinProject() {
         super();
 
-        JButton btnNewHydraulicConfig = new JButton();
-        btnNewHydraulicConfig.setText("+");
+        if (App.MAIN_FRAME.baratinMenu == null) {
+            App.MAIN_FRAME.baratinMenu = new JMenu();
+            App.MAIN_FRAME.baratinMenu.setText("BaRatin");
+            App.MAIN_FRAME.mainMenuBar.add(App.MAIN_FRAME.baratinMenu);
+        } else {
+            App.MAIN_FRAME.baratinMenu.removeAll();
+        }
+        JMenu baratinMenu = App.MAIN_FRAME.baratinMenu;
+
+        // App.MAIN_FRAME.baratinMenu.add(new JMenuItem("test"));
+
+        // JButton btnNewHydraulicConfig = new JButton();
+        JMenuItem btnNewHydraulicConfig = new JMenuItem();
+        btnNewHydraulicConfig.setText("Créer une nouvelle configuration hydraulique");
         btnNewHydraulicConfig.setIcon(new NoScalingIcon(hydraulicConfigIconPath));
         btnNewHydraulicConfig.addActionListener(e -> {
             addHydraulicConfig();
         });
-        this.actionBar.appendChild(btnNewHydraulicConfig);
+        // this.actionBar.appendChild(btnNewHydraulicConfig);
+        baratinMenu.add(btnNewHydraulicConfig);
 
-        JButton btnNewGaugings = new JButton();
-        btnNewGaugings.setText("+");
+        // JButton btnNewGaugings = new JButton();
+        JMenuItem btnNewGaugings = new JMenuItem();
+        btnNewGaugings.setText("Créer un nouveau jeu de jaugeages");
         btnNewGaugings.setIcon(new NoScalingIcon(gaugingsIconPath));
         btnNewGaugings.addActionListener(e -> {
             addGaugings();
         });
-        this.actionBar.appendChild(btnNewGaugings);
+        // this.actionBar.appendChild(btnNewGaugings);
+        baratinMenu.add(btnNewGaugings);
 
-        JButton btnNewStructErrorModel = new JButton();
-        btnNewStructErrorModel.setText("+");
+        // JButton btnNewStructErrorModel = new JButton();
+        JMenuItem btnNewStructErrorModel = new JMenuItem();
+        btnNewStructErrorModel.setText("Créer un nouveau modèle d'erreur structurelle");
         btnNewStructErrorModel.setIcon(new NoScalingIcon(structuralErrIconPath));
         btnNewStructErrorModel.addActionListener(e -> {
             addStructuralErrorModel();
         });
-        this.actionBar.appendChild(btnNewStructErrorModel);
+        // this.actionBar.appendChild(btnNewStructErrorModel);
+        baratinMenu.add(btnNewStructErrorModel);
 
-        JButton btnNewRatingCurve = new JButton();
-        btnNewRatingCurve.setText("+");
+        // JButton btnNewRatingCurve = new JButton();
+        JMenuItem btnNewRatingCurve = new JMenuItem();
+        btnNewRatingCurve.setText("Créer une nouvelle courbe de tarage");
         btnNewRatingCurve.setIcon(new NoScalingIcon(ratingCurveIconPath));
         btnNewRatingCurve.addActionListener(e -> {
             addRatingCurve();
         });
-        this.actionBar.appendChild(btnNewRatingCurve);
+        // this.actionBar.appendChild(btnNewRatingCurve);
+        baratinMenu.add(btnNewRatingCurve);
 
-        JButton btnSaveProject = new JButton();
-        btnSaveProject.setText("Sauvegarder le projet");
-        btnSaveProject.setIcon(new NoScalingIcon("./resources/icons/save_32x32.png"));
-        btnSaveProject.addActionListener(e -> {
-            final JFileChooser fileChooser = new JFileChooser();
-            fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-            fileChooser.setFileFilter(new FileFilter() {
+        // JButton btnSaveProject = new JButton();
+        // btnSaveProject.setText("Sauvegarder le projet");
+        // btnSaveProject.setIcon(new
+        // NoScalingIcon("./resources/icons/save_32x32.png"));
+        // btnSaveProject.addActionListener(e -> {
+        // saveProject();
+        // });
+        // this.actionBar.appendChild(btnSaveProject);
 
-                @Override
-                public boolean accept(File f) {
-                    if (f.isDirectory()) {
-                        return true;
-                    }
-                    if (f.getName().endsWith(".bam")) {
-                        return true;
-                    }
-                    return false;
-                }
-
-                @Override
-                public String getDescription() {
-                    return "Fichier BaRatinAGE (.bam)";
-                }
-
-            });
-            fileChooser.setDialogTitle("Sauvegarder le projet");
-            fileChooser.setAcceptAllFileFilterUsed(false);
-            if (fileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
-                JSONObject json = new JSONObject();
-                JSONArray jsonItems = new JSONArray();
-                for (BamItem item : items) {
-                    jsonItems.put(item.toFullJSON());
-                }
-                json.put("items", jsonItems);
-
-                String mainConfigFilePath = Path.of(App.TEMP_DIR, "main_config.json").toString();
-                File mainConfigFile = new File(mainConfigFilePath);
-                try {
-                    Write.writeLines(mainConfigFile, new String[] { json.toString(4) });
-                } catch (IOException saveError) {
-                    System.err.println("Failed to save file");
-                    saveError.printStackTrace();
-                }
-
-                try {
-                    String fullFilePath = fileChooser.getSelectedFile().getAbsolutePath();
-                    fullFilePath = fullFilePath.endsWith(".bam") ? fullFilePath : fullFilePath + ".bam";
-                    File zipFile = new File(fullFilePath);
-                    FileOutputStream zipFileOutStream = new FileOutputStream(zipFile);
-
-                    ZipOutputStream zipOutStream = new ZipOutputStream(zipFileOutStream);
-
-                    System.out.println("File '" + mainConfigFile + "'.");
-                    ZipEntry zipEntry = new ZipEntry(mainConfigFile.getName());
-
-                    zipOutStream.putNextEntry(zipEntry);
-
-                    Files.copy(mainConfigFile.toPath(), zipOutStream);
-
-                    for (BamItem item : items) {
-                        String[] dataFileNames = item.getTempDataFileNames();
-                        for (String dfp : dataFileNames) {
-                            File f = new File(Path.of(App.TEMP_DIR, dfp).toString());
-                            System.out.println("Including file '" + f + "'...");
-                            ZipEntry ze = new ZipEntry(f.getName());
-                            zipOutStream.putNextEntry(ze);
-                            Files.copy(f.toPath(), zipOutStream);
-                        }
-                    }
-
-                    zipOutStream.close();
-                } catch (IOException e1) {
-                    e1.printStackTrace();
-                }
-            }
-
-        });
-        this.actionBar.appendChild(btnSaveProject);
+        // JButton btnLoadProject = new JButton();
+        // btnLoadProject.setText("Charger un projet");
+        // btnLoadProject.setIcon(new
+        // NoScalingIcon("./resources/icons/open_forlder_fa_32x32.png"));
+        // btnLoadProject.addActionListener(e -> {
+        // // loadProject();
+        // });
+        // this.actionBar.appendChild(btnLoadProject);
 
         setupExplorer();
 

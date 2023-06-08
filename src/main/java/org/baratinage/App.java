@@ -13,6 +13,7 @@ import java.nio.file.Path;
 import java.util.Set;
 
 import org.baratinage.ui.MainFrame;
+import org.baratinage.ui.baratin.BaratinProject;
 import org.baratinage.ui.lg.Lg;
 
 public class App {
@@ -24,7 +25,7 @@ public class App {
 
     public final static String TEST_DIR = "test";
 
-    public static JFrame MAIN_FRAME;
+    public static MainFrame MAIN_FRAME;
 
     public static void main(String[] args) {
 
@@ -61,6 +62,8 @@ public class App {
                     URL iconUrl = this.getClass().getResource("/icon/64x64.png");
                     ImageIcon iconImg = new ImageIcon(iconUrl);
                     MAIN_FRAME.setIconImage(iconImg.getImage());
+
+                    MAIN_FRAME.setCurrentProject(new BaratinProject());
 
                 } catch (Exception e) {
                     e.printStackTrace();

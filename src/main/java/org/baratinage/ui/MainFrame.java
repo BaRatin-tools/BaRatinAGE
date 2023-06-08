@@ -1,23 +1,31 @@
 package org.baratinage.ui;
 
 import javax.swing.JFrame;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.KeyStroke;
 
-import org.baratinage.ui.baratin.BaratinProject;
-// import org.baratinage.ui.test.TestPanel;
+import org.baratinage.ui.bam.BamProject;
+import org.baratinage.ui.component.NoScalingIcon;
+import org.baratinage.ui.container.RowColPanel;
 
 import java.awt.Dimension;
 import java.awt.Point;
 
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
-
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
-
+import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
-public class MainFrame extends JFrame implements ActionListener {
+public class MainFrame extends JFrame {
+
+    private RowColPanel projectPanel;
+    private BamProject currentProject;
+
+    public JMenuBar mainMenuBar;
+    public JMenu baratinMenu;
 
     public MainFrame() {
 
@@ -31,8 +39,43 @@ public class MainFrame extends JFrame implements ActionListener {
         // TestPanel testPanel = new TestPanel();
         // this.add(testPanel);
 
-        BaratinProject currentProject = new BaratinProject();
-        this.add(currentProject);
+        mainMenuBar = new JMenuBar();
+
+        JMenu fileMenu = new JMenu("Fichier");
+        mainMenuBar.add(fileMenu);
+
+        JMenuItem openProjectMenuItem = new JMenuItem();
+        openProjectMenuItem.setText("Ouvrir un projet");
+        openProjectMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, KeyEvent.CTRL_DOWN_MASK));
+        fileMenu.add(openProjectMenuItem);
+
+        JMenuItem saveProjectMenuItem = new JMenuItem();
+        saveProjectMenuItem.setText("Sauvegarder");
+        saveProjectMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_DOWN_MASK));
+        saveProjectMenuItem.addActionListener((e) -> {
+            if (currentProject != null) {
+                currentProject.saveProject();
+            }
+        });
+        fileMenu.add(saveProjectMenuItem);
+
+        fileMenu.addSeparator();
+
+        JMenuItem closeMenuItem = new JMenuItem();
+        closeMenuItem.setText("Quitter");
+        closeMenuItem.setIcon(new NoScalingIcon("./resources/icons/close_16x16.png"));
+        closeMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q, KeyEvent.CTRL_DOWN_MASK));
+        closeMenuItem.addActionListener((e) -> {
+            close();
+        });
+        fileMenu.add(closeMenuItem);
+
+        this.setJMenuBar(mainMenuBar);
+
+        // currentProject = new BaratinProject();
+
+        projectPanel = new RowColPanel();
+        this.add(projectPanel);
 
         this.addComponentListener(new ComponentAdapter() {
             public void componentResized(ComponentEvent e) {
@@ -56,9 +99,10 @@ public class MainFrame extends JFrame implements ActionListener {
         this.setVisible(true);
     }
 
-    @Override
-    public void actionPerformed(ActionEvent event) {
-
+    public void setCurrentProject(BamProject project) {
+        currentProject = project;
+        projectPanel.clear();
+        projectPanel.appendChild(project);
     }
 
     private void close() {
