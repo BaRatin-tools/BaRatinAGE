@@ -1,6 +1,5 @@
 package org.baratinage.ui.baratin;
 
-import javax.swing.JButton;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 
@@ -52,65 +51,37 @@ public class BaratinProject extends BamProject {
         }
         JMenu baratinMenu = App.MAIN_FRAME.baratinMenu;
 
-        // App.MAIN_FRAME.baratinMenu.add(new JMenuItem("test"));
-
-        // JButton btnNewHydraulicConfig = new JButton();
         JMenuItem btnNewHydraulicConfig = new JMenuItem();
         btnNewHydraulicConfig.setText("Créer une nouvelle configuration hydraulique");
         btnNewHydraulicConfig.setIcon(new NoScalingIcon(hydraulicConfigIconPath));
         btnNewHydraulicConfig.addActionListener(e -> {
             addHydraulicConfig();
         });
-        // this.actionBar.appendChild(btnNewHydraulicConfig);
         baratinMenu.add(btnNewHydraulicConfig);
 
-        // JButton btnNewGaugings = new JButton();
         JMenuItem btnNewGaugings = new JMenuItem();
         btnNewGaugings.setText("Créer un nouveau jeu de jaugeages");
         btnNewGaugings.setIcon(new NoScalingIcon(gaugingsIconPath));
         btnNewGaugings.addActionListener(e -> {
             addGaugings();
         });
-        // this.actionBar.appendChild(btnNewGaugings);
         baratinMenu.add(btnNewGaugings);
 
-        // JButton btnNewStructErrorModel = new JButton();
         JMenuItem btnNewStructErrorModel = new JMenuItem();
         btnNewStructErrorModel.setText("Créer un nouveau modèle d'erreur structurelle");
         btnNewStructErrorModel.setIcon(new NoScalingIcon(structuralErrIconPath));
         btnNewStructErrorModel.addActionListener(e -> {
             addStructuralErrorModel();
         });
-        // this.actionBar.appendChild(btnNewStructErrorModel);
         baratinMenu.add(btnNewStructErrorModel);
 
-        // JButton btnNewRatingCurve = new JButton();
         JMenuItem btnNewRatingCurve = new JMenuItem();
         btnNewRatingCurve.setText("Créer une nouvelle courbe de tarage");
         btnNewRatingCurve.setIcon(new NoScalingIcon(ratingCurveIconPath));
         btnNewRatingCurve.addActionListener(e -> {
             addRatingCurve();
         });
-        // this.actionBar.appendChild(btnNewRatingCurve);
         baratinMenu.add(btnNewRatingCurve);
-
-        // JButton btnSaveProject = new JButton();
-        // btnSaveProject.setText("Sauvegarder le projet");
-        // btnSaveProject.setIcon(new
-        // NoScalingIcon("./resources/icons/save_32x32.png"));
-        // btnSaveProject.addActionListener(e -> {
-        // saveProject();
-        // });
-        // this.actionBar.appendChild(btnSaveProject);
-
-        // JButton btnLoadProject = new JButton();
-        // btnLoadProject.setText("Charger un projet");
-        // btnLoadProject.setIcon(new
-        // NoScalingIcon("./resources/icons/open_forlder_fa_32x32.png"));
-        // btnLoadProject.addActionListener(e -> {
-        // // loadProject();
-        // });
-        // this.actionBar.appendChild(btnLoadProject);
 
         setupExplorer();
 

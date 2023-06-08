@@ -26,7 +26,7 @@ public abstract class BamProject extends RowColPanel {
 
     protected BamItemList items;
 
-    protected RowColPanel actionBar;
+    // protected RowColPanel actionBar;
     protected JSplitPane content;
 
     protected Explorer explorer;
@@ -36,14 +36,9 @@ public abstract class BamProject extends RowColPanel {
         super(AXIS.COL);
 
         this.items = new BamItemList();
-        this.actionBar = new RowColPanel(AXIS.ROW, ALIGN.START, ALIGN.STRETCH);
-        this.actionBar.setPadding(5);
-        this.actionBar.setGap(5);
-        this.appendChild(this.actionBar, 0);
 
         this.content = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
         this.content.setBorder(BorderFactory.createEmptyBorder());
-        this.appendChild(new JSeparator(), 0);
         this.appendChild(this.content, 1);
 
         this.explorer = new Explorer("Explorateur");
