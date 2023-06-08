@@ -122,10 +122,15 @@ abstract public class BamItem extends RowColPanel {
         this.description = description;
     }
 
-    @Override
-    public String toString() {
-        return "BamItem | " + this.type + " : " + this.name + " (" + this.uuid + ")";
+    public abstract void parentHasChanged(BamItem parent);
+
+    public String[] getTempDataFileNames() {
+        return new String[] {};
     }
+
+    public abstract JSONObject toJSON();
+
+    public abstract void fromJSON(JSONObject json);
 
     public JSONObject toFullJSON() {
         JSONObject json = new JSONObject();
@@ -143,14 +148,8 @@ abstract public class BamItem extends RowColPanel {
         fromJSON((JSONObject) json.get("content"));
     }
 
-    public String[] getTempDataFileNames() {
-        return new String[] {};
+    @Override
+    public String toString() {
+        return "BamItem | " + this.type + " : " + this.name + " (" + this.uuid + ")";
     }
-
-    public abstract void parentHasChanged(BamItem parent);
-
-    public abstract JSONObject toJSON();
-
-    public abstract void fromJSON(JSONObject json);
-
 }
