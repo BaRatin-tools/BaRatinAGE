@@ -13,7 +13,7 @@ public abstract class BaRatinItem extends BamItem {
     private RowColPanel contentContainer;
     private RowColPanel content;
 
-    public BaRatinItem(int type) {
+    public BaRatinItem(ITEM_TYPE type) {
         super(type);
 
         header = new NameDescriptionItemHeader();

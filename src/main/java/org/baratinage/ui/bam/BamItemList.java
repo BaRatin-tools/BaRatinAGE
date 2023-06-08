@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.EventListener;
 import java.util.List;
 
+import org.baratinage.ui.bam.BamItem.ITEM_TYPE;
+
 public class BamItemList extends ArrayList<BamItem> {
 
     private ArrayList<BamItemListChangeListener> bamItemListChangeListeners;
@@ -54,11 +56,11 @@ public class BamItemList extends ArrayList<BamItem> {
         }
     }
 
-    public BamItemList filterByType(int type) {
+    public BamItemList filterByType(ITEM_TYPE type) {
         BamItemList filteredList = new BamItemList(
                 this
                         .stream()
-                        .filter(item -> item.type == type)
+                        .filter(item -> item.TYPE == type)
                         .toList());
         return filteredList;
     }

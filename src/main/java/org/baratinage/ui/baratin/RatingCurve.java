@@ -30,10 +30,8 @@ public class RatingCurve extends BaRatinItem implements ICalibratedModel, IMcmc,
 
     private PosteriorRatingCurve posteriorRatingCurve;
 
-    public static final int TYPE = (int) Math.floor(Math.random() * Integer.MAX_VALUE);
-
     public RatingCurve() {
-        super(TYPE);
+        super(ITEM_TYPE.RATING_CURVE);
         nInstance++;
         setName(String.format(
                 defaultNameTemplate,
@@ -233,11 +231,11 @@ public class RatingCurve extends BaRatinItem implements ICalibratedModel, IMcmc,
     @Override
     public void onBamItemListChange(BamItemList bamItemList) {
         System.out.println("UPDATING COMBOBOXES ==> " + this);
-        BamItemList listOfHydraulicConfigs = bamItemList.filterByType(HydraulicConfiguration.TYPE);
+        BamItemList listOfHydraulicConfigs = bamItemList.filterByType(ITEM_TYPE.HYRAULIC_CONFIG);
         hydraulicConfigComboBox.syncWithBamItemList(listOfHydraulicConfigs);
-        BamItemList listOfGaugingsDataset = bamItemList.filterByType(Gaugings.TYPE);
+        BamItemList listOfGaugingsDataset = bamItemList.filterByType(ITEM_TYPE.GAUGINGS);
         gaugingsComboBox.syncWithBamItemList(listOfGaugingsDataset);
-        BamItemList listOfStructuralErrorModels = bamItemList.filterByType(StructuralError.TYPE);
+        BamItemList listOfStructuralErrorModels = bamItemList.filterByType(ITEM_TYPE.STRUCTURAL_ERROR);
         structErrorComboBox.syncWithBamItemList(listOfStructuralErrorModels);
     }
 

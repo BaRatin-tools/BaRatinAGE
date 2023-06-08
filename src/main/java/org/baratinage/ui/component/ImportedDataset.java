@@ -15,9 +15,6 @@ import org.json.JSONObject;
 // FIXME: should this class really extend BamItem?
 public class ImportedDataset extends BamItem implements IDataset {
 
-    public static final int TYPE = (int) Math.floor(Math.random() * Integer.MAX_VALUE);
-
-    // private String name;
     protected List<double[]> data;
     protected String[] headers;
     protected int nCol;
@@ -26,14 +23,14 @@ public class ImportedDataset extends BamItem implements IDataset {
     protected String tempDataFileName;
 
     public ImportedDataset() {
-        super(TYPE);
+        super(ITEM_TYPE.IMPORTED_DATASET);
     }
 
     public ImportedDataset(
             String name,
             List<double[]> data,
             String[] headers) {
-        super(TYPE);
+        super(ITEM_TYPE.IMPORTED_DATASET);
 
         this.nCol = headers.length;
         this.nRow = data.get(0).length;

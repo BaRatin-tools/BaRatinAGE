@@ -22,14 +22,12 @@ public class StructuralError extends BaRatinItem implements IStructuralError, Ba
     static private final String defaultNameTemplate = "Modèle d'erreur structurelle #%s";
     static private int nInstance = 0;
 
-    public static final int TYPE = (int) Math.floor(Math.random() * Integer.MAX_VALUE);
-
     private String currentModelType;
     private AbstractStructuralErrorModel currentStructuralErrorModel;
     private RowColPanel modelParametersPanel;
 
     public StructuralError() {
-        super(TYPE);
+        super(ITEM_TYPE.STRUCTURAL_ERROR);
         nInstance++;
         setName(String.format(defaultNameTemplate, nInstance));
 
@@ -130,7 +128,8 @@ public class StructuralError extends BaRatinItem implements IStructuralError, Ba
     @Override
     public void fromJSON(JSONObject json) {
         // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'fromJSON'");
+        // throw new UnsupportedOperationException("Unimplemented method 'fromJSON'");
+        System.out.println("STRUCTURAL ERROR === " + json.getString("name"));
     }
 
     @Override

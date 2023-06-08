@@ -24,14 +24,12 @@ public class Gaugings extends BaRatinItem implements ICalibrationData, BamItemLi
     static private final String defaultNameTemplate = "Jeu de jaugages #%s";
     static private int nInstance = 0;
 
-    public static final int TYPE = (int) Math.floor(Math.random() * Integer.MAX_VALUE);
-
     private GaugingsTable gaugingsTable;
     private GaugingsDataset gaugingDataset;
     RowColPanel plotPanel;
 
     public Gaugings() {
-        super(TYPE);
+        super(ITEM_TYPE.GAUGINGS);
 
         nInstance++;
         setName(String.format(
@@ -156,7 +154,8 @@ public class Gaugings extends BaRatinItem implements ICalibrationData, BamItemLi
     @Override
     public void fromJSON(JSONObject json) {
         // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'fromJSON'");
+        // throw new UnsupportedOperationException("Unimplemented method 'fromJSON'");
+        System.out.println("GAUGINGS === " + json.getString("name"));
     }
 
     @Override

@@ -9,10 +9,8 @@ import org.json.JSONObject;
 
 public class Hydrograph extends BamItem implements IPredictionExperiment {
 
-    public static final int TYPE = (int) Math.floor(Math.random() * Integer.MAX_VALUE);
-
     public Hydrograph() {
-        super(TYPE);
+        super(ITEM_TYPE.HYDROGRAPH);
     }
 
     @Override

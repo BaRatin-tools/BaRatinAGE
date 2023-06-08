@@ -21,7 +21,6 @@ import org.json.JSONObject;
 class HydraulicConfiguration extends BaRatinItem
         implements IModelDefinition, IPriors {
 
-    public static final int TYPE = (int) Math.floor(Math.random() * Integer.MAX_VALUE);
     static private final String defaultNameTemplate = "Configuration Hydraulique #%s";
     static private int nInstance = 0;
 
@@ -38,7 +37,7 @@ class HydraulicConfiguration extends BaRatinItem
     }
 
     public HydraulicConfiguration(String name) {
-        super(TYPE);
+        super(ITEM_TYPE.HYRAULIC_CONFIG);
 
         setName(name);
         setDescription("");
@@ -152,6 +151,8 @@ class HydraulicConfiguration extends BaRatinItem
         json.put("name", getName());
         json.put("description", getName());
 
+        // **********************************************************
+        // Control matrix
         boolean[][] matrix = controlMatrix.getControlMatrix();
         String stringMatrix = "";
         int n = matrix.length;
@@ -163,6 +164,8 @@ class HydraulicConfiguration extends BaRatinItem
         }
         json.put("controlMatrix", stringMatrix);
 
+        // **********************************************************
+        // Hydraulic controls
         List<OneHydraulicControl> hydraulicControlList = hydraulicControls.getHydraulicControls();
 
         JSONArray jsonHydraulicControls = new JSONArray();
@@ -181,6 +184,8 @@ class HydraulicConfiguration extends BaRatinItem
 
         json.put("hydraulicControls", jsonHydraulicControls);
 
+        // **********************************************************
+        // Stage grid configuration
         JSONObject stageGridConfigJson = new JSONObject();
         stageGridConfigJson.put("min", priorRatingCurveStageGrid.getMinValue());
         stageGridConfigJson.put("max", priorRatingCurveStageGrid.getMaxValue());
@@ -188,6 +193,8 @@ class HydraulicConfiguration extends BaRatinItem
 
         json.put("stageGridConfig", stageGridConfigJson);
 
+        // **********************************************************
+        // prior rating curve BaM results
         json.put("bamRunZipFileName", priorRatingCurve.getBamRunZipFileName());
 
         return json;
@@ -199,6 +206,8 @@ class HydraulicConfiguration extends BaRatinItem
         setName((String) json.get("name"));
         setDescription((String) json.get("description"));
 
+        // **********************************************************
+        // Control matrix
         String stringMatrix = (String) json.get("controlMatrix");
         String[] stringMatrixRow = stringMatrix.split(";");
         int n = stringMatrixRow.length;
@@ -209,9 +218,10 @@ class HydraulicConfiguration extends BaRatinItem
                 matrix[i][j] = stringMatrixRow[i].charAt(j) != one;
             }
         }
-        // controlMatrix.setFromBooleanMatrix(matrix);
         controlMatrix.setControlMatrix(matrix);
 
+        // **********************************************************
+        // Hydraulic controls
         JSONArray jsonHydraulicControls = (JSONArray) json.get("hydraulicControls");
 
         List<OneHydraulicControl> hydraulicControlList = new ArrayList<>();
@@ -236,6 +246,17 @@ class HydraulicConfiguration extends BaRatinItem
         }
 
         hydraulicControls.setHydraulicControls(hydraulicControlList);
+
+        // **********************************************************
+        // Stage grid configuration
+
+        JSONObject stageGridJson = json.getJSONObject("stageGridConfig");
+        priorRatingCurveStageGrid.setMinValue(stageGridJson.getDouble("min"));
+        priorRatingCurveStageGrid.setMaxValue(stageGridJson.getDouble("max"));
+        priorRatingCurveStageGrid.setStepValue(stageGridJson.getDouble("step"));
+
+        // **********************************************************
+        // prior rating curve BaM results
     }
 
 }

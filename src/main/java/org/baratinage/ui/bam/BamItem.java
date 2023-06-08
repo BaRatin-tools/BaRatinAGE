@@ -26,20 +26,22 @@ abstract public class BamItem extends RowColPanel {
     private GridPanel headerPanel;
     private RowColPanel contentPanel;
 
-    // private boolean isFrozen = false;
-    // private String jsonFrozenState;
+    static public enum ITEM_TYPE {
+        EMPTY_ITEM,
+        HYRAULIC_CONFIG,
+        GAUGINGS,
+        HYDROGRAPH,
+        LIMNIGRAPH,
+        RATING_CURVE,
+        STRUCTURAL_ERROR,
+        IMPORTED_DATASET
+    };
 
-    // private RowColPanel backupPanel;
-    // private JLabel backupInfoLabel;
-    // private JButton useBackupButton;
-    // private JButton propagateChangeButton;
-    // public boolean locked;
+    public final ITEM_TYPE TYPE;
 
-    public final int type;
-
-    public BamItem(int type) {
+    public BamItem(ITEM_TYPE type) {
         super(AXIS.COL);
-        this.type = type;
+        TYPE = type;
 
         headerPanel = new GridPanel();
         headerPanel.setGap(5);
@@ -150,6 +152,6 @@ abstract public class BamItem extends RowColPanel {
 
     @Override
     public String toString() {
-        return "BamItem | " + this.type + " : " + this.name + " (" + this.uuid + ")";
+        return "BamItem | " + TYPE + " | " + name + " (" + uuid + ")";
     }
 }
