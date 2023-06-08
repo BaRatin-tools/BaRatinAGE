@@ -85,6 +85,7 @@ public class BaratinProject extends BamProject {
 
         setupExplorer();
 
+        addStructuralErrorModel();
         addHydraulicConfig(); // FIXME: feels like default should be empty to be able to set a default
                               // elsewhere and import content from a file
 
