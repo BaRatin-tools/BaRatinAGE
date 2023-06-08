@@ -23,7 +23,7 @@ public class ReadFile {
      * @return BufferedReader object that can be used to read through the text file
      * @throws IOException
      */
-    static BufferedReader createBufferedReader(String filePath, boolean detectEncoding) throws IOException {
+    public static BufferedReader createBufferedReader(String filePath, boolean detectEncoding) throws IOException {
         if (detectEncoding) {
             File file = new File(filePath);
             return new BufferedReader(ReaderFactory.createBufferedReader(file));

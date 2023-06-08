@@ -1,14 +1,21 @@
 package org.baratinage.ui;
 
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.KeyStroke;
+import javax.swing.filechooser.FileFilter;
 
+import org.baratinage.App;
 import org.baratinage.ui.bam.BamProject;
 import org.baratinage.ui.component.NoScalingIcon;
 import org.baratinage.ui.container.RowColPanel;
+import org.baratinage.utils.ReadFile;
+import org.baratinage.utils.ReadWriteZip;
+import org.json.JSONObject;
+// import org.json.JSON
 
 import java.awt.Dimension;
 import java.awt.Point;
@@ -18,6 +25,10 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Path;
 
 public class MainFrame extends JFrame {
 
@@ -47,6 +58,9 @@ public class MainFrame extends JFrame {
         JMenuItem openProjectMenuItem = new JMenuItem();
         openProjectMenuItem.setText("Ouvrir un projet");
         openProjectMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, KeyEvent.CTRL_DOWN_MASK));
+        openProjectMenuItem.addActionListener((e) -> {
+            loadProject();
+        });
         fileMenu.add(openProjectMenuItem);
 
         JMenuItem saveProjectMenuItem = new JMenuItem();
@@ -104,6 +118,42 @@ public class MainFrame extends JFrame {
         projectPanel.clear();
         projectPanel.appendChild(project);
     }
+
+    public void loadProject() {
+        final JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        fileChooser.setFileFilter(new FileFilter() {
+
+            @Override
+            public boolean accept(File f) {
+                if (f.isDirectory()) {
+                    return true;
+                }
+                if (f.getName().endsWith(".bam")) {
+                    return true;
+                }
+                return false;
+            }
+
+            @Override
+            public String getDescription() {
+                return "Fichier BaRatinAGE (.bam)";
+            }
+
+        });
+        fileChooser.setDialogTitle("Ouvrir un projet");
+        fileChooser.setAcceptAllFileFilterUsed(false);
+        if (fileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
+            String fullFilePath = fileChooser.getSelectedFile().getAbsolutePath();
+            fullFilePath = fullFilePath.endsWith(".bam") ? fullFilePath : fullFilePath + ".bam";
+            BamProject bamProject = BamProject.loadProject(fullFilePath);
+            setCurrentProject(bamProject);
+        }
+    }
+
+    // public void loadProject(String filePath) {
+
+    // }
 
     private void close() {
         System.exit(0);

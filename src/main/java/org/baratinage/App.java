@@ -62,7 +62,7 @@ public class App {
                     ImageIcon iconImg = new ImageIcon(iconUrl);
                     MAIN_FRAME.setIconImage(iconImg.getImage());
 
-                    MAIN_FRAME.setCurrentProject(new BaratinProject());
+                    // MAIN_FRAME.setCurrentProject(new BaratinProject());
 
                 } catch (Exception e) {
                     e.printStackTrace();

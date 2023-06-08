@@ -8,6 +8,8 @@ import org.baratinage.ui.bam.BamItem;
 import org.baratinage.ui.bam.BamProject;
 import org.baratinage.ui.commons.ExplorerItem;
 import org.baratinage.ui.component.NoScalingIcon;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 /**
  *
@@ -85,10 +87,11 @@ public class BaratinProject extends BamProject {
 
         setupExplorer();
 
-        addStructuralErrorModel();
-        addHydraulicConfig(); // FIXME: feels like default should be empty to be able to set a default
-                              // elsewhere and import content from a file
+    }
 
+    public void addDefaultItem() {
+        addStructuralErrorModel();
+        addHydraulicConfig();
     }
 
     // FIXME: this method is typically something that should be set in a parent
@@ -130,7 +133,7 @@ public class BaratinProject extends BamProject {
         super.deleteItem(bamItem, explorerItem);
     }
 
-    private void addHydraulicConfig() {
+    private HydraulicConfiguration addHydraulicConfig() {
         HydraulicConfiguration hydroConf = new HydraulicConfiguration();
         ExplorerItem explorerItem = new ExplorerItem(
                 hydroConf.getUUID(),
@@ -138,10 +141,11 @@ public class BaratinProject extends BamProject {
                 hydraulicConfigIconPath,
                 hydraulicConfig);
         addItem(hydroConf, explorerItem);
+        return hydroConf;
 
     }
 
-    private void addGaugings() {
+    private Gaugings addGaugings() {
         Gaugings gaugingsItem = new Gaugings();
         this.getBamItems().addChangeListener(gaugingsItem);
         ExplorerItem explorerItem = new ExplorerItem(
@@ -150,9 +154,10 @@ public class BaratinProject extends BamProject {
                 gaugingsIconPath,
                 gaugings);
         addItem(gaugingsItem, explorerItem);
+        return gaugingsItem;
     }
 
-    private void addStructuralErrorModel() {
+    private StructuralError addStructuralErrorModel() {
         StructuralError structuralErrorItem = new StructuralError();
         this.getBamItems().addChangeListener(structuralErrorItem);
         ExplorerItem explorerItem = new ExplorerItem(
@@ -161,9 +166,10 @@ public class BaratinProject extends BamProject {
                 structuralErrIconPath,
                 structuralError);
         addItem(structuralErrorItem, explorerItem);
+        return structuralErrorItem;
     }
 
-    private void addRatingCurve() {
+    private RatingCurve addRatingCurve() {
         RatingCurve ratingCurveItem = new RatingCurve();
         this.getBamItems().addChangeListener(ratingCurveItem);
         ExplorerItem explorerItem = new ExplorerItem(
@@ -172,6 +178,28 @@ public class BaratinProject extends BamProject {
                 ratingCurveIconPath,
                 ratingCurve);
         addItem(ratingCurveItem, explorerItem);
+        return ratingCurveItem;
     }
 
+    @Override
+    public JSONObject toJSON() {
+        JSONObject json = super.toJSON();
+        json.put("model", "baratin");
+        return json;
+    }
+
+    @Override
+    public void fromJSON(JSONObject json) {
+        JSONArray items = json.getJSONArray("items");
+        for (Object item : items) {
+            System.out.println("---");
+            JSONObject jsonObj = (JSONObject) item;
+            BamItem.ITEM_TYPE item_type = BamItem.ITEM_TYPE.valueOf(jsonObj.getString("type"));
+
+            if (item_type == BamItem.ITEM_TYPE.HYRAULIC_CONFIG) {
+                HydraulicConfiguration bamItem = addHydraulicConfig();
+                bamItem.fromFullJSON(jsonObj);
+            }
+        }
+    }
 }

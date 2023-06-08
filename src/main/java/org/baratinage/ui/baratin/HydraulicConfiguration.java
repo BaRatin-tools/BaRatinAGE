@@ -148,8 +148,6 @@ class HydraulicConfiguration extends BaRatinItem
     @Override
     public JSONObject toJSON() {
         JSONObject json = new JSONObject();
-        json.put("name", getName());
-        json.put("description", getName());
 
         // **********************************************************
         // Control matrix
@@ -202,9 +200,6 @@ class HydraulicConfiguration extends BaRatinItem
 
     @Override
     public void fromJSON(JSONObject json) {
-
-        setName((String) json.get("name"));
-        setDescription((String) json.get("description"));
 
         // **********************************************************
         // Control matrix

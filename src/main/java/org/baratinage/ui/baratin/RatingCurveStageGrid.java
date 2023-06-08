@@ -140,6 +140,7 @@ public class RatingCurveStageGrid extends RowColPanel implements IPredictionData
     public void setStepValue(double value) {
         valStepField.setValue(value);
         valStepField.updateTextField();
+        updateStepNbr();
         updateStageGridConfig();
     }
 

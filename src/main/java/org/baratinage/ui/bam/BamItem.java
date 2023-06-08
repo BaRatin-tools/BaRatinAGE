@@ -18,8 +18,6 @@ abstract public class BamItem extends RowColPanel {
     private String uuid;
 
     private BamItemList children;
-    private String name;
-    private String description;
 
     private JLabel titleLabel;
     private JButton deleteButton;
@@ -34,9 +32,11 @@ abstract public class BamItem extends RowColPanel {
         LIMNIGRAPH,
         RATING_CURVE,
         STRUCTURAL_ERROR,
-        IMPORTED_DATASET
+        IMPORTED_DATASET;
     };
 
+    private String name = "";
+    private String description = "";
     public final ITEM_TYPE TYPE;
 
     public BamItem(ITEM_TYPE type) {
@@ -136,6 +136,7 @@ abstract public class BamItem extends RowColPanel {
 
     public JSONObject toFullJSON() {
         JSONObject json = new JSONObject();
+        json.put("type", TYPE);
         json.put("uuid", uuid);
         json.put("name", name);
         json.put("description", description);
@@ -144,10 +145,10 @@ abstract public class BamItem extends RowColPanel {
     }
 
     public void fromFullJSON(JSONObject json) {
-        uuid = (String) json.get("uuid");
-        name = (String) json.get("name");
-        description = (String) json.get("description");
-        fromJSON((JSONObject) json.get("content"));
+        uuid = json.getString("uuid");
+        name = json.getString("name");
+        description = json.getString("description");
+        fromJSON(json.getJSONObject("content"));
     }
 
     @Override

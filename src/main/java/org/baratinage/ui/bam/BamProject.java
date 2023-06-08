@@ -1,5 +1,6 @@
 package org.baratinage.ui.bam;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -15,9 +16,12 @@ import javax.swing.JSplitPane;
 import javax.swing.filechooser.FileFilter;
 
 import org.baratinage.App;
+import org.baratinage.ui.baratin.BaratinProject;
 import org.baratinage.ui.commons.Explorer;
 import org.baratinage.ui.commons.ExplorerItem;
 import org.baratinage.ui.container.RowColPanel;
+import org.baratinage.utils.ReadFile;
+import org.baratinage.utils.ReadWriteZip;
 import org.baratinage.utils.WriteFile;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -147,18 +151,30 @@ public abstract class BamProject extends RowColPanel {
         }
     }
 
-    public void saveProject(String saveFilePath) {
+    public JSONObject toJSON() {
         JSONObject json = new JSONObject();
         JSONArray jsonItems = new JSONArray();
         for (BamItem item : items) {
             jsonItems.put(item.toFullJSON());
         }
+        json.put("version", 0);
         json.put("items", jsonItems);
+        json.put("model", ""); // must be overriden!
+        return json;
+    }
+
+    public abstract void fromJSON(JSONObject json);
+
+    // public void fromJSON(JSONObject json) {
+
+    // }
+
+    public void saveProject(String saveFilePath) {
 
         String mainConfigFilePath = Path.of(App.TEMP_DIR, "main_config.json").toString();
         File mainConfigFile = new File(mainConfigFilePath);
         try {
-            WriteFile.writeLines(mainConfigFile, new String[] { json.toString(4) });
+            WriteFile.writeLines(mainConfigFile, new String[] { toJSON().toString(4) });
         } catch (IOException saveError) {
             System.err.println("Failed to save file");
             saveError.printStackTrace();
@@ -193,6 +209,45 @@ public abstract class BamProject extends RowColPanel {
         } catch (IOException e1) {
             e1.printStackTrace();
         }
+    }
+
+    static public BamProject loadProject(String projectFilePath) {
+
+        // Clear Temp Directory!
+        for (File file : new File(App.TEMP_DIR).listFiles()) {
+            if (!file.isDirectory())
+                file.delete();
+        }
+
+        ReadWriteZip.unzip(projectFilePath, App.TEMP_DIR);
+
+        try {
+            BufferedReader bufReader = ReadFile
+                    .createBufferedReader(Path.of(App.TEMP_DIR, "main_config.json").toString(), true);
+            String jsonString = "";
+            String jsonLine;
+            while ((jsonLine = bufReader.readLine()) != null) {
+                jsonString += jsonLine;
+            }
+            JSONObject json = new JSONObject(jsonString);
+            System.out.println(json);
+
+            // FIXME: is this where version conversion should occur?
+            int version = json.getInt("version");
+            System.out.println("FILE VERSION = " + version);
+            String model = json.getString("model");
+            System.out.println("MODEL = " + model);
+            if (model.equals("baratin")) {
+                BamProject project = new BaratinProject();
+                project.fromJSON(json);
+                return project;
+            }
+
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return null;
     }
 
 }
