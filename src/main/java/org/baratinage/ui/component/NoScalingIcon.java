@@ -65,7 +65,7 @@ public class NoScalingIcon extends ImageIcon {
     public int getIconWidth() {
         int d = super.getIconWidth();
         AffineTransform aT = getAffineTransform();
-        return (int) (d / aT.getScaleY());
+        return (int) (d / aT.getScaleX());
     }
 
     @Override
