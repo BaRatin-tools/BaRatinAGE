@@ -97,7 +97,7 @@ public class RatingCurve extends BaRatinItem implements ICalibratedModel, IMcmc,
         gaugingsPanel.appendChild(gaugingsComboBox, 0);
 
         gaugingsComboBox.addActionListener(e -> {
-            BamItem selectedBamItem = (BamItem) hydraulicConfigComboBox.getSelectedItem();
+            BamItem selectedBamItem = (BamItem) gaugingsComboBox.getSelectedItem();
 
             if (selectedBamItem == null) {
                 if (gaugings != null) {
@@ -124,7 +124,7 @@ public class RatingCurve extends BaRatinItem implements ICalibratedModel, IMcmc,
         structErrorComboBox = new BamItemCombobox("Selectionner un modèle d'erreur structurelle");
         structErrorPanel.appendChild(structErrorComboBox, 0);
         structErrorComboBox.addActionListener(e -> {
-            BamItem selectedBamItem = (BamItem) hydraulicConfigComboBox.getSelectedItem();
+            BamItem selectedBamItem = (BamItem) structErrorComboBox.getSelectedItem();
 
             if (selectedBamItem == null) {
                 if (structError != null) {
@@ -224,9 +224,10 @@ public class RatingCurve extends BaRatinItem implements ICalibratedModel, IMcmc,
     }
 
     @Override
-    public void fromJSON(JSONObject jsonString) {
+    public void fromJSON(JSONObject json) {
         // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'fromJSON'");
+        // throw new UnsupportedOperationException("Unimplemented method 'fromJSON'");
+        System.out.println("RATING CURVE === " + json.getString("name"));
     }
 
     @Override
