@@ -4,7 +4,6 @@ import javax.swing.JLabel;
 
 import org.baratinage.jbam.Parameter;
 import org.baratinage.jbam.StructuralErrorModel;
-import org.baratinage.jbam.Distribution.DISTRIB;
 import org.baratinage.ui.bam.BamItem;
 import org.baratinage.ui.bam.IStructuralError;
 import org.baratinage.ui.commons.AbstractStructuralErrorModel;
@@ -70,6 +69,9 @@ public class StructuralError extends BaRatinItem implements IStructuralError, Ba
         content.appendChild(modelParametersPanel);
 
         setContent(content);
+
+        modelTypeRadioButtons.setSelectedValue("linear");
+        updateModelType("linear");
     }
 
     private void updateModelType(String newModelType) {
