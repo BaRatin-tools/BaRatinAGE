@@ -8,6 +8,10 @@ public class GaugingsDataset extends ImportedDataset {
 
     boolean[] gaugingsActiveState;
 
+    public GaugingsDataset() {
+        super();
+    }
+
     public GaugingsDataset(String name, List<double[]> data, String[] headers) {
         super(name, data, headers);
         // WARNINGS:

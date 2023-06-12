@@ -156,6 +156,13 @@ public class Gaugings extends BaRatinItem implements ICalibrationData, BamItemLi
         // TODO Auto-generated method stub
         // throw new UnsupportedOperationException("Unimplemented method 'fromJSON'");
         System.out.println("GAUGINGS === " + json.getString("name"));
+        setName(json.getString("name"));
+        setDescription(json.getString("description"));
+
+        if (json.has("gaugingDataset")) {
+            gaugingDataset = new GaugingsDataset();
+            gaugingDataset.fromJSON(json.getJSONObject("gaugingDataset"));
+        }
     }
 
     @Override
