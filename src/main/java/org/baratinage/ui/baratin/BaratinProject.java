@@ -194,12 +194,19 @@ public class BaratinProject extends BamProject {
         for (Object item : items) {
             System.out.println("---");
             JSONObject jsonObj = (JSONObject) item;
-            BamItem.ITEM_TYPE item_type = BamItem.ITEM_TYPE.valueOf(jsonObj.getString("type"));
+            BamItem.ITEM_TYPE itemType = BamItem.ITEM_TYPE.valueOf(jsonObj.getString("type"));
 
-            if (item_type == BamItem.ITEM_TYPE.HYRAULIC_CONFIG) {
-                HydraulicConfiguration bamItem = addHydraulicConfig();
-                bamItem.fromFullJSON(jsonObj);
+            BamItem bamItem;
+            if (itemType == BamItem.ITEM_TYPE.HYRAULIC_CONFIG) {
+                bamItem = addHydraulicConfig();
+
+            } else if (itemType == BamItem.ITEM_TYPE.GAUGINGS) {
+                bamItem = addGaugings();
+            } else {
+                System.out.println("unknown bam item, skipping => " + itemType);
+                continue;
             }
+            bamItem.fromFullJSON(jsonObj);
         }
     }
 }
