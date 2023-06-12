@@ -8,7 +8,6 @@ import java.util.List;
 import javax.swing.JButton;
 
 import org.baratinage.App;
-import org.baratinage.jbam.BaM;
 import org.baratinage.jbam.PredictionConfig;
 import org.baratinage.jbam.PredictionResult;
 import org.baratinage.ui.bam.IModelDefinition;
