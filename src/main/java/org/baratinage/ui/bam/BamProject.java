@@ -68,6 +68,7 @@ public abstract class BamProject extends RowColPanel {
                     this.currentPanel.appendChild(bamItem, 1);
 
                 } else {
+                    System.out.println("selected BamItem is null");
                     this.currentPanel.clear();
                 }
                 this.updateUI();
