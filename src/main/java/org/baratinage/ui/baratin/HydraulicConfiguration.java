@@ -252,6 +252,9 @@ class HydraulicConfiguration extends BaRatinItem
 
         // **********************************************************
         // prior rating curve BaM results
+        String bamRunZipFileName = json.getString("bamRunZipFileName");
+        priorRatingCurve.setBamRunZipFileName(bamRunZipFileName);
+
     }
 
 }

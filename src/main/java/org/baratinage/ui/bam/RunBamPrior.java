@@ -30,6 +30,14 @@ import org.baratinage.ui.commons.DefaultStructuralErrorProvider;
 
 public class RunBamPrior extends RunBam {
 
+        public RunBamPrior() {
+                super();
+        }
+
+        public RunBamPrior(String bamRunZipFileName) {
+                super(bamRunZipFileName);
+        }
+
         public void configure(
                         String workspace,
                         IModelDefinition modelDefinition,

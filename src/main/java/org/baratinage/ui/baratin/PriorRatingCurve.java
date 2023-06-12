@@ -1,11 +1,14 @@
 package org.baratinage.ui.baratin;
 
 import java.awt.Color;
+import java.io.File;
+import java.nio.file.Path;
 import java.util.List;
 
 import javax.swing.JButton;
 
 import org.baratinage.App;
+import org.baratinage.jbam.BaM;
 import org.baratinage.jbam.PredictionConfig;
 import org.baratinage.jbam.PredictionResult;
 import org.baratinage.ui.bam.IModelDefinition;
@@ -20,9 +23,9 @@ import org.baratinage.ui.plot.Plot;
 import org.baratinage.ui.plot.PlotContainer;
 import org.baratinage.ui.plot.PlotItem;
 import org.baratinage.ui.plot.PlotLine;
+import org.baratinage.utils.ReadWriteZip;
 import org.baratinage.ui.plot.PlotBand;
 
-// public class PriorRatingCurve extends GridPanel implements IPriorPredictionExperiments {
 public class PriorRatingCurve extends GridPanel {
 
         private RowColPanel plotPanel;
@@ -42,7 +45,6 @@ public class PriorRatingCurve extends GridPanel {
                         IPredictionData predictionDataProvider,
                         IPriors priorsProvider,
                         IModelDefinition modelDefinitionProvider) {
-                // appendChild(new JLabel("Prior rating curve"));
                 setPadding(5);
                 setGap(5);
 
@@ -87,7 +89,7 @@ public class PriorRatingCurve extends GridPanel {
 
                         runBamPrior.run();
 
-                        PredictionResult[] predictionResults = runBamPrior.getPredictionResults();
+                        predictionResults = runBamPrior.getPredictionResults();
 
                         PredictionConfig predConfig = ppes[0].getPredictionConfig();
                         hasResults = true;
@@ -198,4 +200,27 @@ public class PriorRatingCurve extends GridPanel {
                 return runBamPrior.getBamRunZipFileName();
         }
 
+        public void setBamRunZipFileName(String bamRunZipFileName) {
+
+                File targetTempDir = Path.of(App.TEMP_DIR, "unzip").toFile();
+                targetTempDir.mkdir();
+                System.out.println("Target dir = " + targetTempDir);
+                boolean unzipSuccess = ReadWriteZip.unzip(Path.of(App.TEMP_DIR, bamRunZipFileName).toString(),
+                                targetTempDir.toString());
+                System.out.println("Unzip success = " + unzipSuccess);
+
+                PriorPredictionExperiment[] ppes = new PriorPredictionExperiment[] {
+                                getMaxpostPriorPredictionExperiment(),
+                                getParametricUncertaintyPriorPredictionExperiment()
+                };
+
+                runBamPrior = new RunBamPrior(bamRunZipFileName);
+                runBamPrior.configure(targetTempDir.toString(),
+                                modelDefinitionProvider, priorsProvider, ppes);
+
+                runBamPrior.readResultsFromWorkspace();
+
+                PredictionResult[] pprs = runBamPrior.getPredictionResults();
+                buildRatingCurvePlot(ppes[0].getPredictionConfig(), pprs[1], pprs[0]);
+        }
 }

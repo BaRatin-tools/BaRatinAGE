@@ -23,12 +23,21 @@ public abstract class RunBam {
     // - an actual bam workspace should be unique to each bam run
     // - when closing a project all associated workspaces should be deleted
     // - when importing a project all associated workspaces should be re-created.
-    protected final String bamRunZipFileName = UUID.randomUUID().toString() + ".zip";
-    protected final Path runZipFile = Path.of(App.TEMP_DIR, bamRunZipFileName);
+    protected final String bamRunZipFileName;
+    protected final Path runZipFile;
     protected BaM bam;
     protected Path workspace;
     protected boolean isConfigured = false;
     protected boolean hasResults = false;
+
+    public RunBam() {
+        this(UUID.randomUUID().toString() + ".zip");
+    }
+
+    public RunBam(String bamRunZipFileName) {
+        this.bamRunZipFileName = bamRunZipFileName;
+        this.runZipFile = Path.of(App.TEMP_DIR, bamRunZipFileName);
+    }
 
     public void run() {
         if (!isConfigured) {
@@ -43,8 +52,7 @@ public abstract class RunBam {
             e.printStackTrace();
         }
 
-        bam.readResults(workspace.toString());
-        hasResults = true;
+        readResultsFromWorkspace();
 
         try {
             backupBamRun();
@@ -74,6 +82,11 @@ public abstract class RunBam {
 
     public String getBamRunZipFileName() {
         return this.bamRunZipFileName;
+    }
+
+    public void readResultsFromWorkspace() {
+        bam.readResults(workspace.toString());
+        hasResults = true;
     }
 
     public BaM getBaM() {
