@@ -9,8 +9,8 @@ import org.json.JSONObject;
 
 public class Hydrograph extends BamItem implements IPredictionExperiment {
 
-    public Hydrograph() {
-        super(ITEM_TYPE.HYDROGRAPH);
+    public Hydrograph(String uuid) {
+        super(ITEM_TYPE.HYDROGRAPH, uuid);
     }
 
     @Override

@@ -114,7 +114,7 @@ public abstract class BamProject extends RowColPanel {
 
     public BamItem findBamItem(String id) {
         for (BamItem item : this.items) {
-            if (item.getUUID().equals(id)) {
+            if (item.ID.equals(id)) {
                 return item;
             }
         }

@@ -29,17 +29,12 @@ class HydraulicConfiguration extends BaRatinItem
     private RatingCurveStageGrid priorRatingCurveStageGrid;
     private PriorRatingCurve priorRatingCurve;
 
-    public HydraulicConfiguration() {
-        this(String.format(
+    public HydraulicConfiguration(String uuid) {
+        super(ITEM_TYPE.HYRAULIC_CONFIG, uuid);
+
+        setName(String.format(
                 defaultNameTemplate,
                 nInstance + 1 + ""));
-        nInstance++;
-    }
-
-    public HydraulicConfiguration(String name) {
-        super(ITEM_TYPE.HYRAULIC_CONFIG);
-
-        setName(name);
         setDescription("");
 
         setNameFieldLabel("Nom de la configuration hydraulique");

@@ -1,6 +1,7 @@
 package org.baratinage.ui.baratin.gaugings;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.baratinage.ui.component.ImportedDataset;
 
@@ -9,11 +10,11 @@ public class GaugingsDataset extends ImportedDataset {
     boolean[] gaugingsActiveState;
 
     public GaugingsDataset() {
-        super();
+        super(UUID.randomUUID().toString());
     }
 
     public GaugingsDataset(String name, List<double[]> data, String[] headers) {
-        super(name, data, headers);
+        super(UUID.randomUUID().toString(), name, data, headers);
         // WARNINGS:
         // - data must have three columns! Stage, discharge and discharge uncertainty!
         // - uncertainty is specified in percent and represents extended (+/-)

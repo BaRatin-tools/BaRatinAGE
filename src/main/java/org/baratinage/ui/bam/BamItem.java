@@ -3,7 +3,6 @@ package org.baratinage.ui.bam;
 import java.awt.Font;
 import java.awt.event.ActionListener;
 import java.awt.Component;
-import java.util.UUID;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -14,15 +13,6 @@ import org.baratinage.ui.container.RowColPanel;
 import org.json.JSONObject;
 
 abstract public class BamItem extends RowColPanel {
-
-    private String uuid;
-
-    private BamItemList children;
-
-    private JLabel titleLabel;
-    private JButton deleteButton;
-    private GridPanel headerPanel;
-    private RowColPanel contentPanel;
 
     static public enum ITEM_TYPE {
         EMPTY_ITEM,
@@ -35,13 +25,22 @@ abstract public class BamItem extends RowColPanel {
         IMPORTED_DATASET;
     };
 
+    public final ITEM_TYPE TYPE;
+    public final String ID;
     private String name = "";
     private String description = "";
-    public final ITEM_TYPE TYPE;
 
-    public BamItem(ITEM_TYPE type) {
+    private BamItemList children;
+
+    private JLabel titleLabel;
+    private JButton deleteButton;
+    private GridPanel headerPanel;
+    private RowColPanel contentPanel;
+
+    public BamItem(ITEM_TYPE type, String uuid) {
         super(AXIS.COL);
         TYPE = type;
+        ID = uuid;
 
         headerPanel = new GridPanel();
         headerPanel.setGap(5);
@@ -61,8 +60,6 @@ abstract public class BamItem extends RowColPanel {
 
         headerPanel.insertChild(titleLabel, 0, 0);
         headerPanel.insertChild(deleteButton, 1, 0);
-
-        this.uuid = UUID.randomUUID().toString();
 
         this.children = new BamItemList();
     }
@@ -85,10 +82,6 @@ abstract public class BamItem extends RowColPanel {
             int topPadding, int rightPadding,
             int bottomPadding, int leftPadding) {
         throw new UnsupportedOperationException("Use setContent method! AppendChild is disabled for BamItem");
-    }
-
-    public String getUUID() {
-        return this.uuid;
     }
 
     public void hasChanged() {
@@ -137,7 +130,7 @@ abstract public class BamItem extends RowColPanel {
     public JSONObject toFullJSON() {
         JSONObject json = new JSONObject();
         json.put("type", TYPE);
-        json.put("uuid", uuid);
+        json.put("uuid", ID);
         json.put("name", name);
         json.put("description", description);
         json.put("content", toJSON());
@@ -145,7 +138,6 @@ abstract public class BamItem extends RowColPanel {
     }
 
     public void fromFullJSON(JSONObject json) {
-        uuid = json.getString("uuid");
         name = json.getString("name");
         description = json.getString("description");
         fromJSON(json.getJSONObject("content"));
@@ -153,6 +145,6 @@ abstract public class BamItem extends RowColPanel {
 
     @Override
     public String toString() {
-        return "BamItem | " + TYPE + " | " + name + " (" + uuid + ")";
+        return "BamItem | " + TYPE + " | " + name + " (" + ID + ")";
     }
 }

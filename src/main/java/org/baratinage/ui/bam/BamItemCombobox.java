@@ -2,6 +2,7 @@ package org.baratinage.ui.bam;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.util.UUID;
 
 // import java.awt.Component;
 // import java.util.ArrayList;
@@ -23,7 +24,7 @@ public class BamItemCombobox extends JComboBox<BamItem> {
 
     // private BamItemComboBoxModel model;
     private DefaultComboBoxModel<BamItem> model;
-    private final BamItem EMPTY_BAMITEM = new BamItem(ITEM_TYPE.EMPTY_ITEM) {
+    private final BamItem EMPTY_BAMITEM = new BamItem(ITEM_TYPE.EMPTY_ITEM, UUID.randomUUID().toString()) {
 
         @Override
         public void parentHasChanged(BamItem parent) {

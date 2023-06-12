@@ -26,8 +26,8 @@ public class StructuralError extends BaRatinItem implements IStructuralError, Ba
     private AbstractStructuralErrorModel currentStructuralErrorModel;
     private RowColPanel modelParametersPanel;
 
-    public StructuralError() {
-        super(ITEM_TYPE.STRUCTURAL_ERROR);
+    public StructuralError(String uuid) {
+        super(ITEM_TYPE.STRUCTURAL_ERROR, uuid);
         nInstance++;
         setName(String.format(defaultNameTemplate, nInstance));
 

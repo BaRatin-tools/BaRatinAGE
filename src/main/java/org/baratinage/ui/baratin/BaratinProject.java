@@ -1,5 +1,7 @@
 package org.baratinage.ui.baratin;
 
+import java.util.UUID;
+
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 
@@ -134,22 +136,29 @@ public class BaratinProject extends BamProject {
     }
 
     private HydraulicConfiguration addHydraulicConfig() {
-        HydraulicConfiguration hydroConf = new HydraulicConfiguration();
+        return addHydraulicConfiguration(UUID.randomUUID().toString());
+    }
+
+    private HydraulicConfiguration addHydraulicConfiguration(String uuid) {
+        HydraulicConfiguration hydroConf = new HydraulicConfiguration(uuid);
         ExplorerItem explorerItem = new ExplorerItem(
-                hydroConf.getUUID(),
+                uuid,
                 hydroConf.getName(),
                 hydraulicConfigIconPath,
                 hydraulicConfig);
         addItem(hydroConf, explorerItem);
         return hydroConf;
-
     }
 
     private Gaugings addGaugings() {
-        Gaugings gaugingsItem = new Gaugings();
+        return addGaugings(UUID.randomUUID().toString());
+    }
+
+    private Gaugings addGaugings(String uuid) {
+        Gaugings gaugingsItem = new Gaugings(uuid);
         this.getBamItems().addChangeListener(gaugingsItem);
         ExplorerItem explorerItem = new ExplorerItem(
-                gaugingsItem.getUUID(),
+                uuid,
                 gaugingsItem.getName(),
                 gaugingsIconPath,
                 gaugings);
@@ -158,10 +167,14 @@ public class BaratinProject extends BamProject {
     }
 
     private StructuralError addStructuralErrorModel() {
-        StructuralError structuralErrorItem = new StructuralError();
+        return addStructuralErrorModel(UUID.randomUUID().toString());
+    }
+
+    private StructuralError addStructuralErrorModel(String uuid) {
+        StructuralError structuralErrorItem = new StructuralError(uuid);
         this.getBamItems().addChangeListener(structuralErrorItem);
         ExplorerItem explorerItem = new ExplorerItem(
-                structuralErrorItem.getUUID(),
+                uuid,
                 structuralErrorItem.getName(),
                 structuralErrIconPath,
                 structuralError);
@@ -170,10 +183,14 @@ public class BaratinProject extends BamProject {
     }
 
     private RatingCurve addRatingCurve() {
-        RatingCurve ratingCurveItem = new RatingCurve();
+        return addRatingCurve(UUID.randomUUID().toString());
+    }
+
+    private RatingCurve addRatingCurve(String uuid) {
+        RatingCurve ratingCurveItem = new RatingCurve(uuid);
         this.getBamItems().addChangeListener(ratingCurveItem);
         ExplorerItem explorerItem = new ExplorerItem(
-                ratingCurveItem.getUUID(),
+                uuid,
                 ratingCurveItem.getName(),
                 ratingCurveIconPath,
                 ratingCurve);

@@ -13,8 +13,8 @@ public abstract class BaRatinItem extends BamItem {
     private RowColPanel contentContainer;
     private RowColPanel content;
 
-    public BaRatinItem(ITEM_TYPE type) {
-        super(type);
+    public BaRatinItem(ITEM_TYPE type, String uuid) {
+        super(type, uuid);
 
         header = new NameDescriptionItemHeader();
         header.addPropertyChangeListener(e -> {

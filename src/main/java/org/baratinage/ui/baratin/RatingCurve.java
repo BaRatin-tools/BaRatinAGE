@@ -30,8 +30,8 @@ public class RatingCurve extends BaRatinItem implements ICalibratedModel, IMcmc,
 
     private PosteriorRatingCurve posteriorRatingCurve;
 
-    public RatingCurve() {
-        super(ITEM_TYPE.RATING_CURVE);
+    public RatingCurve(String uuid) {
+        super(ITEM_TYPE.RATING_CURVE, uuid);
         nInstance++;
         setName(String.format(
                 defaultNameTemplate,
@@ -204,9 +204,9 @@ public class RatingCurve extends BaRatinItem implements ICalibratedModel, IMcmc,
         JSONObject json = new JSONObject();
         json.put("name", getName());
         json.put("description", getDescription());
-        json.put("hydraulicConfigurationId", hydraulicConfig != null ? hydraulicConfig.getUUID() : null);
-        json.put("structuralErrorId", structError != null ? structError.getUUID() : null);
-        json.put("gaugingsId", gaugings != null ? gaugings.getUUID() : null);
+        json.put("hydraulicConfigurationId", hydraulicConfig != null ? hydraulicConfig.ID : null);
+        json.put("structuralErrorId", structError != null ? structError.ID : null);
+        json.put("gaugingsId", gaugings != null ? gaugings.ID : null);
 
         RatingCurveStageGrid ratingCurveGrid = posteriorRatingCurve.getRatingCurveStageGrid();
         JSONObject jsonStageGridConfig = new JSONObject();

@@ -28,8 +28,8 @@ public class Gaugings extends BaRatinItem implements ICalibrationData, BamItemLi
     private GaugingsDataset gaugingDataset;
     RowColPanel plotPanel;
 
-    public Gaugings() {
-        super(ITEM_TYPE.GAUGINGS);
+    public Gaugings(String uuid) {
+        super(ITEM_TYPE.GAUGINGS, uuid);
 
         nInstance++;
         setName(String.format(

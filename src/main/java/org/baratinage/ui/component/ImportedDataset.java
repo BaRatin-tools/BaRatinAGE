@@ -22,15 +22,16 @@ public class ImportedDataset extends BamItem implements IDataset {
 
     protected String tempDataFileName;
 
-    public ImportedDataset() {
-        super(ITEM_TYPE.IMPORTED_DATASET);
+    public ImportedDataset(String uuid) {
+        super(ITEM_TYPE.IMPORTED_DATASET, uuid);
     }
 
     public ImportedDataset(
+            String uuid,
             String name,
             List<double[]> data,
             String[] headers) {
-        super(ITEM_TYPE.IMPORTED_DATASET);
+        super(ITEM_TYPE.IMPORTED_DATASET, uuid);
 
         this.nCol = headers.length;
         this.nRow = data.get(0).length;

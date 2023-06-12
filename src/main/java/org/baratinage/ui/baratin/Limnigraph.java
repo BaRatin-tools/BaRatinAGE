@@ -7,8 +7,8 @@ import org.json.JSONObject;
 
 public class Limnigraph extends BamItem implements IPredictionData {
 
-    public Limnigraph() {
-        super(ITEM_TYPE.LIMNIGRAPH);
+    public Limnigraph(String uuid) {
+        super(ITEM_TYPE.LIMNIGRAPH, uuid);
     }
 
     @Override
