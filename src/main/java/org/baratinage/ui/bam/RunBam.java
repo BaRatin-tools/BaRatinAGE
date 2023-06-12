@@ -16,7 +16,13 @@ import org.baratinage.jbam.PredictionResult;
 
 public abstract class RunBam {
 
-    // FIXME: should be stored at the much higher level (Project or App level)
+    // FIXME: should be stored at the much higher level (Project or App level)?
+    // FIXME: workspace should be handled here and be named according to date/time
+    // Ideas about workspace:
+    // - a parent folder (e.g.named "bam_workspace") contains all current bam run
+    // - an actual bam workspace should be unique to each bam run
+    // - when closing a project all associated workspaces should be deleted
+    // - when importing a project all associated workspaces should be re-created.
     protected final String bamRunZipFileName = UUID.randomUUID().toString() + ".zip";
     protected final Path runZipFile = Path.of(App.TEMP_DIR, bamRunZipFileName);
     protected BaM bam;
