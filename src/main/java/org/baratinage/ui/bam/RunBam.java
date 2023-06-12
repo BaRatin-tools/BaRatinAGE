@@ -53,7 +53,9 @@ public abstract class RunBam {
         }
     }
 
+    @Deprecated
     protected void backupBamRun() throws IOException {
+        // FIXME: use ReadWriteZip.zip method instead
         File zipFile = new File(runZipFile.toString());
         FileOutputStream zipFileOutStream = new FileOutputStream(zipFile);
         ZipOutputStream zipOutStream = new ZipOutputStream(zipFileOutStream);
