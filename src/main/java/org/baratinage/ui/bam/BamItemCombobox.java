@@ -2,20 +2,11 @@ package org.baratinage.ui.bam;
 
 import java.awt.Color;
 import java.awt.Component;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
-// import java.awt.Component;
-// import java.util.ArrayList;
-// import java.util.List;
-// import javax.swing.AbstractListModel;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListCellRenderer;
-// import javax.swing.DefaultListCellRenderer;
 import javax.swing.JComboBox;
-// import javax.swing.JList;
-// import javax.swing.MutableComboBoxModel;
 import javax.swing.JList;
 import javax.swing.plaf.basic.BasicBorders;
 
@@ -24,7 +15,6 @@ import org.json.JSONObject;
 
 public class BamItemCombobox extends JComboBox<BamItem> {
 
-    // private BamItemComboBoxModel model;
     private DefaultComboBoxModel<BamItem> model;
     private final BamItem EMPTY_BAMITEM = new BamItem(ITEM_TYPE.EMPTY_ITEM, UUID.randomUUID().toString()) {
 
