@@ -6,7 +6,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
-import java.util.UUID;
 
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
@@ -91,8 +90,7 @@ public class DataFileImporter extends RowColPanel {
                     Integer.MAX_VALUE,
                     importSettings.missingValueString,
                     true, true);
-            ImportedDataset dataset = new ImportedDataset(UUID.randomUUID().toString(),
-                    name, data, headers);
+            ImportedDataset dataset = new ImportedDataset(name, data, headers);
             return dataset;
         } catch (IOException e) {
             e.printStackTrace();

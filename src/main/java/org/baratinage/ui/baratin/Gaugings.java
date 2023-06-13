@@ -1,10 +1,13 @@
 package org.baratinage.ui.baratin;
 
+import java.nio.file.Path;
+
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JSplitPane;
 
+import org.baratinage.App;
 import org.baratinage.jbam.CalibrationData;
 import org.baratinage.jbam.UncertainData;
 import org.baratinage.ui.bam.BamItem;
@@ -18,7 +21,6 @@ import org.baratinage.ui.plot.PlotContainer;
 import org.baratinage.ui.bam.BamItemList;
 import org.json.JSONObject;
 
-// FIXME: should it rather extend ImportedDataset or GaugingDataset?
 public class Gaugings extends BaRatinItem implements ICalibrationData, BamItemList.BamItemListChangeListener {
 
     static private final String defaultNameTemplate = "Jeu de jaugages #%s";
@@ -26,7 +28,7 @@ public class Gaugings extends BaRatinItem implements ICalibrationData, BamItemLi
 
     private GaugingsTable gaugingsTable;
     private GaugingsDataset gaugingDataset;
-    RowColPanel plotPanel;
+    private RowColPanel plotPanel;
 
     public Gaugings(String uuid) {
         super(ITEM_TYPE.GAUGINGS, uuid);
@@ -135,7 +137,11 @@ public class Gaugings extends BaRatinItem implements ICalibrationData, BamItemLi
 
     @Override
     public String[] getTempDataFileNames() {
-        return gaugingDataset == null ? new String[] {} : gaugingDataset.getTempDataFileNames();
+        return gaugingDataset == null ? new String[] {} : new String[] { getDataFileName() };
+    }
+
+    public String getDataFileName() {
+        return gaugingDataset == null ? null : gaugingDataset.getName() + "_" + ID + ".txt";
     }
 
     @Override
@@ -145,7 +151,13 @@ public class Gaugings extends BaRatinItem implements ICalibrationData, BamItemLi
         json.put("description", getName());
 
         if (gaugingDataset != null) {
-            json.put("gaugingDataset", gaugingDataset.toJSON());
+            JSONObject gaugingDatasetJson = new JSONObject();
+            gaugingDatasetJson.put("name", gaugingDataset.getName());
+            String dataFileName = getDataFileName();
+            String dataFilePath = Path.of(App.TEMP_DIR, dataFileName).toString();
+            gaugingDataset.writeDataFile(dataFilePath);
+            gaugingDatasetJson.put("dataFileName", dataFileName);
+            json.put("gaugingDataset", gaugingDatasetJson);
         }
 
         return json;
@@ -160,8 +172,15 @@ public class Gaugings extends BaRatinItem implements ICalibrationData, BamItemLi
         setDescription(json.getString("description"));
 
         if (json.has("gaugingDataset")) {
+            JSONObject gaugingDatasetJson = json.getJSONObject("gaugingDataset");
+
+            String name = gaugingDatasetJson.getString("name");
+            String dataFileName = gaugingDatasetJson.getString("dataFileName");
             gaugingDataset = new GaugingsDataset();
-            gaugingDataset.fromJSON(json.getJSONObject("gaugingDataset"));
+            gaugingDataset.setName(name);
+            String dataFilePath = Path.of(App.TEMP_DIR, dataFileName).toString();
+            gaugingDataset.setDataFromFile(dataFilePath);
+
         }
     }
 
