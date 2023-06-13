@@ -32,7 +32,7 @@ public class StructuralError extends BaRatinItem implements IStructuralError, Ba
         nInstance++;
         setName(String.format(defaultNameTemplate, nInstance));
 
-        RowColPanel content = new RowColPanel(AXIS.COL, ALIGN.START);
+        RowColPanel content = new RowColPanel(RowColPanel.AXIS.COL, RowColPanel.ALIGN.START);
         content.setPadding(5);
 
         JLabel headerLabel = new JLabel();
@@ -57,7 +57,7 @@ public class StructuralError extends BaRatinItem implements IStructuralError, Ba
         });
 
         RowColPanel headerPanel = new RowColPanel();
-        headerPanel.setMainAxisAlign(ALIGN.START);
+        headerPanel.setMainAxisAlign(RowColPanel.ALIGN.START);
         headerPanel.setGap(5);
         headerPanel.appendChild(headerLabel, 0);
         headerPanel.appendChild(modelTypeRadioButtons, 0);

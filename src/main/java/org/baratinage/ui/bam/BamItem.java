@@ -12,7 +12,7 @@ import org.baratinage.ui.container.GridPanel;
 import org.baratinage.ui.container.RowColPanel;
 import org.json.JSONObject;
 
-abstract public class BamItem extends RowColPanel {
+abstract public class BamItem extends GridPanel {
 
     static public enum ITEM_TYPE {
         EMPTY_ITEM,
@@ -38,7 +38,7 @@ abstract public class BamItem extends RowColPanel {
     private RowColPanel contentPanel;
 
     public BamItem(ITEM_TYPE type, String uuid) {
-        super(AXIS.COL);
+        // super(AXIS.COL);
         TYPE = type;
         ID = uuid;
 
@@ -49,9 +49,12 @@ abstract public class BamItem extends RowColPanel {
 
         contentPanel = new RowColPanel();
 
-        super.appendChild(headerPanel, 0, 0, 0, 0, 0);
-        super.appendChild(new JSeparator(), 0, 0, 0, 0, 0);
-        super.appendChild(contentPanel, 1, 0, 0, 0, 0);
+        insertChild(headerPanel, 0, 0);
+        insertChild(new JSeparator(), 0, 1);
+        insertChild(contentPanel, 0, 2);
+
+        setColWeight(0, 1);
+        setRowWeight(2, 1);
 
         titleLabel = new JLabel(getName());
         Font font = titleLabel.getFont();
@@ -75,13 +78,6 @@ abstract public class BamItem extends RowColPanel {
     public void setContent(Component component) {
         this.contentPanel.clear();
         this.contentPanel.appendChild(component);
-    }
-
-    @Override
-    public void appendChild(Component component, double weight,
-            int topPadding, int rightPadding,
-            int bottomPadding, int leftPadding) {
-        throw new UnsupportedOperationException("Use setContent method! AppendChild is disabled for BamItem");
     }
 
     public void hasChanged() {

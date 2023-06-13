@@ -46,7 +46,7 @@ public class Gaugings extends BaRatinItem implements ICalibrationData, BamItemLi
         JSplitPane content = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
         content.setBorder(BorderFactory.createEmptyBorder());
 
-        RowColPanel importGaugingsPanel = new RowColPanel(AXIS.COL);
+        RowColPanel importGaugingsPanel = new RowColPanel(RowColPanel.AXIS.COL);
         importGaugingsPanel.setPadding(5);
         importGaugingsPanel.setGap(5);
         content.setLeftComponent(importGaugingsPanel);

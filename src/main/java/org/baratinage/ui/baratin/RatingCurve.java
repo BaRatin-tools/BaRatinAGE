@@ -41,9 +41,9 @@ public class RatingCurve extends BaRatinItem implements ICalibratedModel, IMcmc,
         setNameFieldLabel("Nom de la courbe de tarage");
         setDescriptionFieldLabel("Description de la courbe de tarage");
 
-        RowColPanel content = new RowColPanel(AXIS.COL);
+        RowColPanel content = new RowColPanel(RowColPanel.AXIS.COL);
 
-        RowColPanel mainConfigPanel = new RowColPanel(AXIS.ROW, ALIGN.START);
+        RowColPanel mainConfigPanel = new RowColPanel(RowColPanel.AXIS.ROW, RowColPanel.ALIGN.START);
         RowColPanel mainContentPanel = new RowColPanel();
 
         content.appendChild(mainConfigPanel, 0);
@@ -53,7 +53,7 @@ public class RatingCurve extends BaRatinItem implements ICalibratedModel, IMcmc,
         // **********************************************************
         // Hydraulic configuration
         // **********************************************************
-        RowColPanel hydraulicConfigPanel = new RowColPanel(AXIS.COL, ALIGN.START);
+        RowColPanel hydraulicConfigPanel = new RowColPanel(RowColPanel.AXIS.COL, RowColPanel.ALIGN.START);
         hydraulicConfigPanel.setGap(5);
         hydraulicConfigPanel.setPadding(5);
 
@@ -85,7 +85,7 @@ public class RatingCurve extends BaRatinItem implements ICalibratedModel, IMcmc,
         // **********************************************************
         // Gaugings
         // **********************************************************
-        RowColPanel gaugingsPanel = new RowColPanel(AXIS.COL, ALIGN.START);
+        RowColPanel gaugingsPanel = new RowColPanel(RowColPanel.AXIS.COL, RowColPanel.ALIGN.START);
         gaugingsPanel.setGap(5);
         gaugingsPanel.setPadding(5);
 
@@ -114,7 +114,7 @@ public class RatingCurve extends BaRatinItem implements ICalibratedModel, IMcmc,
         // **********************************************************
         // Structural error
         // **********************************************************
-        RowColPanel structErrorPanel = new RowColPanel(AXIS.COL, ALIGN.START);
+        RowColPanel structErrorPanel = new RowColPanel(RowColPanel.AXIS.COL, RowColPanel.ALIGN.START);
         structErrorPanel.setGap(5);
         structErrorPanel.setPadding(5);
         JLabel structErrorLabel = new JLabel("Modèle d'erreur structurelle");
