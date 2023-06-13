@@ -91,7 +91,7 @@ public class BaratinProject extends BamProject {
 
     }
 
-    public void addDefaultItem() {
+    public void addDefaultItems() {
         addStructuralErrorModel();
         addHydraulicConfig();
     }
