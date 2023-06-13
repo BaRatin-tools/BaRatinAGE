@@ -136,10 +136,10 @@ public class BaratinProject extends BamProject {
     }
 
     private HydraulicConfiguration addHydraulicConfig() {
-        return addHydraulicConfiguration(UUID.randomUUID().toString());
+        return addHydraulicConfig(UUID.randomUUID().toString());
     }
 
-    private HydraulicConfiguration addHydraulicConfiguration(String uuid) {
+    private HydraulicConfiguration addHydraulicConfig(String uuid) {
         HydraulicConfiguration hydroConf = new HydraulicConfiguration(uuid);
         ExplorerItem explorerItem = new ExplorerItem(
                 uuid,
@@ -212,13 +212,15 @@ public class BaratinProject extends BamProject {
             System.out.println("---");
             JSONObject jsonObj = (JSONObject) item;
             BamItem.ITEM_TYPE itemType = BamItem.ITEM_TYPE.valueOf(jsonObj.getString("type"));
+            String uuid = jsonObj.getString("uuid");
 
             BamItem bamItem;
             if (itemType == BamItem.ITEM_TYPE.HYRAULIC_CONFIG) {
-                bamItem = addHydraulicConfig();
-
+                bamItem = addHydraulicConfig(uuid);
             } else if (itemType == BamItem.ITEM_TYPE.GAUGINGS) {
-                bamItem = addGaugings();
+                bamItem = addGaugings(uuid);
+            } else if (itemType == BamItem.ITEM_TYPE.STRUCTURAL_ERROR) {
+                bamItem = addStructuralErrorModel(uuid);
             } else {
                 System.out.println("unknown bam item, skipping => " + itemType);
                 continue;

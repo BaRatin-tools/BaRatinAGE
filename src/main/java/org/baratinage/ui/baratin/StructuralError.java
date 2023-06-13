@@ -2,6 +2,7 @@ package org.baratinage.ui.baratin;
 
 import javax.swing.JLabel;
 
+import org.baratinage.jbam.Distribution;
 import org.baratinage.jbam.Parameter;
 import org.baratinage.jbam.StructuralErrorModel;
 import org.baratinage.ui.bam.BamItem;
@@ -111,7 +112,7 @@ public class StructuralError extends BaRatinItem implements IStructuralError, Ba
         JSONArray structErrModelParsJson = new JSONArray();
         for (Parameter p : sem.getParameters()) {
             JSONObject pJson = new JSONObject();
-            pJson.put("distrib", p.getDistribution().getDistrib().name);
+            pJson.put("distrib", p.getDistribution().getDistrib());
             pJson.put("initialGuess", p.getInitalGuess());
             JSONArray pPriorsJson = new JSONArray();
             for (double prior : p.getDistribution().getParameterValues()) {
@@ -127,9 +128,32 @@ public class StructuralError extends BaRatinItem implements IStructuralError, Ba
 
     @Override
     public void fromJSON(JSONObject json) {
-        // TODO Auto-generated method stub
-        // throw new UnsupportedOperationException("Unimplemented method 'fromJSON'");
         System.out.println("STRUCTURAL ERROR === " + json.getString("name"));
+        setName(json.getString("name"));
+        setDescription(json.getString("description"));
+        currentModelType = json.getString("modelType");
+
+        updateModelType(currentModelType);
+
+        JSONArray structErrModelParsJson = json.getJSONArray("modelPriors");
+        Parameter[] modelParameters = new Parameter[structErrModelParsJson.length()];
+        for (int i = 0; i < structErrModelParsJson.length(); i++) {
+            JSONObject pJson = structErrModelParsJson.getJSONObject(i);
+            String distribName = pJson.getString("distrib");
+            double initialGuess = pJson.getDouble("initialGuess");
+            JSONArray pPriorsJson = pJson.getJSONArray("priors");
+            double[] priors = new double[pPriorsJson.length()];
+            for (int j = 0; j < pPriorsJson.length(); j++) {
+                priors[j] = pPriorsJson.getDouble(j);
+            }
+
+            Distribution distribution = new Distribution(
+                    Distribution.DISTRIB.valueOf(distribName),
+                    priors);
+            modelParameters[i] = new Parameter("gamma_" + i, initialGuess, distribution);
+        }
+
+        currentStructuralErrorModel.setFromParameters(modelParameters);
     }
 
     @Override
