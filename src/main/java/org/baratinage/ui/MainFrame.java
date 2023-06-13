@@ -8,15 +8,10 @@ import javax.swing.JMenuItem;
 import javax.swing.KeyStroke;
 import javax.swing.filechooser.FileFilter;
 
-import org.baratinage.App;
 import org.baratinage.ui.bam.BamProject;
+import org.baratinage.ui.baratin.BaratinProject;
 import org.baratinage.ui.component.NoScalingIcon;
 import org.baratinage.ui.container.RowColPanel;
-import org.baratinage.utils.ReadFile;
-import org.baratinage.utils.ReadWriteZip;
-import org.json.JSONObject;
-// import org.json.JSON
-
 import java.awt.Dimension;
 import java.awt.Point;
 
@@ -25,10 +20,7 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.Path;
 
 public class MainFrame extends JFrame {
 
@@ -54,6 +46,14 @@ public class MainFrame extends JFrame {
 
         JMenu fileMenu = new JMenu("Fichier");
         mainMenuBar.add(fileMenu);
+
+        JMenuItem newProjectMenuItem = new JMenuItem();
+        newProjectMenuItem.setText("Nouveau projet BaRatin");
+        newProjectMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, KeyEvent.CTRL_DOWN_MASK));
+        newProjectMenuItem.addActionListener((e) -> {
+            newProject();
+        });
+        fileMenu.add(newProjectMenuItem);
 
         JMenuItem openProjectMenuItem = new JMenuItem();
         openProjectMenuItem.setText("Ouvrir un projet");
@@ -117,6 +117,12 @@ public class MainFrame extends JFrame {
         currentProject = project;
         projectPanel.clear();
         projectPanel.appendChild(project);
+    }
+
+    public void newProject() {
+        BaratinProject newProject = new BaratinProject();
+        newProject.addDefaultItems();
+        setCurrentProject(newProject);
     }
 
     public void loadProject() {
