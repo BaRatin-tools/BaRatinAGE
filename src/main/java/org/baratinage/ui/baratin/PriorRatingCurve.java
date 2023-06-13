@@ -199,6 +199,7 @@ public class PriorRatingCurve extends GridPanel {
                 return runBamPrior.getBamRunZipFileName();
         }
 
+        // FIXME: general approach may be questionnable? think through. refactor?
         public void setBamRunZipFileName(String bamRunZipFileName) {
 
                 File targetTempDir = Path.of(App.TEMP_DIR, "unzip").toFile();
