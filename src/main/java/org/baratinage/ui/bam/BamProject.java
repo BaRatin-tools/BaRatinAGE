@@ -11,7 +11,6 @@ import java.util.zip.ZipOutputStream;
 
 import javax.swing.BorderFactory;
 import javax.swing.JFileChooser;
-import javax.swing.JSeparator;
 import javax.swing.JSplitPane;
 import javax.swing.filechooser.FileFilter;
 
