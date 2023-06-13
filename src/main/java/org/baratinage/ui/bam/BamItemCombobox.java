@@ -2,6 +2,8 @@ package org.baratinage.ui.bam;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 // import java.awt.Component;
@@ -120,5 +122,16 @@ public class BamItemCombobox extends JComboBox<BamItem> {
     public BamItem getSelectedItem() {
         BamItem selectedItem = (BamItem) super.getSelectedItem();
         return selectedItem.equals(EMPTY_BAMITEM) ? null : selectedItem;
+    }
+
+    public BamItem getBamItemWithId(String id) {
+        int n = model.getSize();
+        for (int k = 0; k < n; k++) {
+            BamItem item = model.getElementAt(k);
+            if (item.ID.equals(id)) {
+                return item;
+            }
+        }
+        return null;
     }
 }
