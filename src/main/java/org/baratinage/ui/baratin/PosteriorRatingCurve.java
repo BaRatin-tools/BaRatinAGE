@@ -24,7 +24,6 @@ import org.baratinage.ui.bam.ICalibratedModel;
 import org.baratinage.ui.bam.ICalibrationData;
 import org.baratinage.ui.bam.IMcmc;
 import org.baratinage.ui.bam.IModelDefinition;
-import org.baratinage.ui.bam.IPredictionExperiment;
 import org.baratinage.ui.bam.IPriors;
 import org.baratinage.ui.bam.IStructuralError;
 import org.baratinage.ui.bam.PredictionExperiment;
@@ -47,7 +46,6 @@ public class PosteriorRatingCurve extends RowColPanel implements ICalibratedMode
     private IPriors priors;
     private IStructuralError structuralError;
     private ICalibrationData calibrationData;
-    private IPredictionExperiment[] predictionExperiments;
 
     private RowColPanel plotPanel;
 
@@ -227,10 +225,6 @@ public class PosteriorRatingCurve extends RowColPanel implements ICalibratedMode
 
     public void setCalibrationData(ICalibrationData cd) {
         calibrationData = cd;
-    }
-
-    public void setPredictionExperiments(IPredictionExperiment[] pe) {
-        predictionExperiments = pe;
     }
 
     @Override
