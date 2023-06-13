@@ -57,10 +57,11 @@ class HydraulicConfiguration extends BaRatinItem
         splitPaneContainer.setRightComponent(hydraulicControls);
         splitPaneContainer.setResizeWeight(0.5);
 
-        RowColPanel priorRatingCurvePanel = new RowColPanel(AXIS.COL);
+        RowColPanel priorRatingCurvePanel = new RowColPanel(RowColPanel.AXIS.COL);
         priorRatingCurve = new PriorRatingCurve(
                 priorRatingCurveStageGrid,
                 this, this);
+
         priorRatingCurveStageGrid = new RatingCurveStageGrid();
         priorRatingCurve.setPredictionDataProvider(priorRatingCurveStageGrid);
 
@@ -72,6 +73,7 @@ class HydraulicConfiguration extends BaRatinItem
         mainSplitPaneContainer.setBorder(BorderFactory.createEmptyBorder());
         mainSplitPaneContainer.setLeftComponent(splitPaneContainer);
         mainSplitPaneContainer.setRightComponent(priorRatingCurvePanel);
+
         setContent(mainSplitPaneContainer);
 
         boolean[][] mat = controlMatrix.getControlMatrix();
