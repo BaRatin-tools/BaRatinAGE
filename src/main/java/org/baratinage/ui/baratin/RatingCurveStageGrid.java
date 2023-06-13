@@ -191,6 +191,9 @@ public class RatingCurveStageGrid extends RowColPanel implements IPredictionData
     }
 
     private void updateStageGridConfig() {
+
+        StageGridConfig oldStageGridConfig = stageGridConfig;
+
         double min = minStageField.getValue();
         double max = maxStageField.getValue();
         double step = valStepField.getValue();
@@ -205,6 +208,7 @@ public class RatingCurveStageGrid extends RowColPanel implements IPredictionData
             stageGridConfig = new StageGridConfig(min, max, step);
         }
 
+        firePropertyChange("stageGridConfigChanged", oldStageGridConfig, stageGridConfig);
     }
 
 }
