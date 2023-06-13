@@ -1,6 +1,8 @@
 package org.baratinage.ui.baratin;
 
 import java.awt.Color;
+import java.io.File;
+import java.nio.file.Path;
 import java.util.List;
 
 import javax.swing.JButton;
@@ -33,6 +35,7 @@ import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.ui.plot.Plot;
 import org.baratinage.ui.plot.PlotItem;
 import org.baratinage.ui.plot.PlotLine;
+import org.baratinage.utils.ReadWriteZip;
 import org.baratinage.ui.plot.PlotBand;
 import org.baratinage.ui.plot.PlotContainer;
 
@@ -80,8 +83,38 @@ public class PosteriorRatingCurve extends RowColPanel implements ICalibratedMode
             return;
         }
 
+        PredictionExperiment[] pe = getPredictionExperiments();
+
         isCalibrated = false;
 
+        runBamPost = new RunBamPost();
+
+        runBamPost.configure(
+                App.BAM_RUN_DIR,
+                modelDefinition,
+                priors,
+                structuralError,
+                calibrationData,
+                pe);
+
+        runBamPost.run();
+
+        calibtrationResult = runBamPost.getCalibrationResult();
+        isCalibrated = true;
+
+        PredictionResult[] predictionResults = runBamPost.getPredictionResults();
+
+        buildRatingCurvePlot(
+                predictionResults[0].getPredictionConfig(),
+                predictionResults[1],
+                predictionResults[2],
+                predictionResults[3],
+                predictionResults[0],
+                ((Gaugings) calibrationData).getGaugingDataset());
+        System.out.println("DONE");
+    }
+
+    public PredictionExperiment[] getPredictionExperiments() {
         PredictionExperiment[] pe = new PredictionExperiment[4];
         pe[0] = new PredictionExperiment(
                 getName() + "_maxpost",
@@ -111,31 +144,7 @@ public class PosteriorRatingCurve extends RowColPanel implements ICalibratedMode
         pe[3].setCalibrationModel(this);
         pe[3].setPredictionData(ratingCurveGrid);
 
-        runBamPost = new RunBamPost();
-
-        runBamPost.configure(
-                App.BAM_RUN_DIR,
-                modelDefinition,
-                priors,
-                structuralError,
-                calibrationData,
-                pe);
-
-        runBamPost.run();
-
-        calibtrationResult = runBamPost.getCalibrationResult();
-        isCalibrated = true;
-
-        PredictionResult[] predictionResults = runBamPost.getPredictionResults();
-
-        buildRatingCurvePlot(
-                predictionResults[0].getPredictionConfig(),
-                predictionResults[1],
-                predictionResults[2],
-                predictionResults[3],
-                predictionResults[0],
-                ((Gaugings) calibrationData).getGaugingDataset());
-        System.out.println("DONE");
+        return pe;
     }
 
     private void buildRatingCurvePlot(
@@ -284,6 +293,39 @@ public class PosteriorRatingCurve extends RowColPanel implements ICalibratedMode
 
     public RatingCurveStageGrid getRatingCurveStageGrid() {
         return ratingCurveGrid;
+    }
+
+    public void setBamRunZipFileName(String bamRunZipFileName) {
+
+        File targetTempDir = Path.of(App.TEMP_DIR, "unzip").toFile();
+        targetTempDir.mkdir();
+        System.out.println("Target dir = " + targetTempDir);
+        boolean unzipSuccess = ReadWriteZip.unzip(Path.of(App.TEMP_DIR, bamRunZipFileName).toString(),
+                targetTempDir.toString());
+        System.out.println("Unzip success = " + unzipSuccess);
+
+        PredictionExperiment[] pe = getPredictionExperiments();
+
+        runBamPost = new RunBamPost(bamRunZipFileName);
+        runBamPost.configure(
+                targetTempDir.toString(),
+                modelDefinition,
+                priors,
+                structuralError,
+                calibrationData,
+                pe);
+
+        runBamPost.readResultsFromWorkspace();
+
+        PredictionResult[] pr = runBamPost.getPredictionResults();
+
+        buildRatingCurvePlot(
+                pr[0].getPredictionConfig(),
+                pr[1],
+                pr[2],
+                pr[3],
+                pr[0],
+                ((Gaugings) calibrationData).getGaugingDataset());
     }
 
 }

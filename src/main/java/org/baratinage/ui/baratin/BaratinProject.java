@@ -221,6 +221,8 @@ public class BaratinProject extends BamProject {
                 bamItem = addGaugings(uuid);
             } else if (itemType == BamItem.ITEM_TYPE.STRUCTURAL_ERROR) {
                 bamItem = addStructuralErrorModel(uuid);
+            } else if (itemType == BamItem.ITEM_TYPE.RATING_CURVE) {
+                bamItem = addRatingCurve(uuid);
             } else {
                 System.out.println("unknown bam item, skipping => " + itemType);
                 continue;

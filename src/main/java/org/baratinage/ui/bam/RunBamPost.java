@@ -17,6 +17,14 @@ import org.baratinage.jbam.StructuralErrorModel;
 
 public class RunBamPost extends RunBam {
 
+        public RunBamPost() {
+                super();
+        }
+
+        public RunBamPost(String bamRunZipFileName) {
+                super(bamRunZipFileName);
+        }
+
         public void configure(
                         String workspace,
                         IModelDefinition modelDefinition,

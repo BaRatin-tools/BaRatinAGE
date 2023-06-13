@@ -226,6 +226,29 @@ public class RatingCurve extends BaRatinItem implements ICalibratedModel, IMcmc,
         // TODO Auto-generated method stub
         // throw new UnsupportedOperationException("Unimplemented method 'fromJSON'");
         System.out.println("RATING CURVE === " + json.getString("name"));
+
+        setName(json.getString("name"));
+        setDescription(json.getString("description"));
+
+        hydraulicConfigComboBox.setSelectedItem(
+                hydraulicConfigComboBox.getBamItemWithId(
+                        json.getString("hydraulicConfigurationId")));
+        gaugingsComboBox.setSelectedItem(
+                gaugingsComboBox.getBamItemWithId(
+                        json.getString("gaugingsId")));
+        structErrorComboBox.setSelectedItem(
+                structErrorComboBox.getBamItemWithId(
+                        json.getString("structuralErrorId")));
+
+        RatingCurveStageGrid ratingCurveGrid = posteriorRatingCurve.getRatingCurveStageGrid();
+        JSONObject stageGridJson = json.getJSONObject("stageGridConfig");
+        ratingCurveGrid.setMinValue(stageGridJson.getDouble("min"));
+        ratingCurveGrid.setMaxValue(stageGridJson.getDouble("max"));
+        ratingCurveGrid.setStepValue(stageGridJson.getDouble("step"));
+
+        String bamRunZipFileName = json.getString("bamRunZipFileName");
+        posteriorRatingCurve.setBamRunZipFileName(bamRunZipFileName);
+
     }
 
     @Override
