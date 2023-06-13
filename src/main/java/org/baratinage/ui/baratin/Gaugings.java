@@ -29,6 +29,7 @@ public class Gaugings extends BaRatinItem implements ICalibrationData, BamItemLi
     private GaugingsTable gaugingsTable;
     private GaugingsDataset gaugingDataset;
     private RowColPanel plotPanel;
+    private JLabel importedDataSetSourceLabel;
 
     public Gaugings(String uuid) {
         super(ITEM_TYPE.GAUGINGS, uuid);
@@ -52,7 +53,7 @@ public class Gaugings extends BaRatinItem implements ICalibrationData, BamItemLi
         plotPanel = new RowColPanel();
         content.setRightComponent(plotPanel);
 
-        JLabel importedDataSetSourceLabel = new JLabel("Jeu de jaugeages vide.");
+        importedDataSetSourceLabel = new JLabel("Jeu de jaugeages vide.");
 
         JButton importDataButton = new JButton("Importer un jeu de jaugeage");
         importDataButton.addActionListener((e) -> {
@@ -61,14 +62,7 @@ public class Gaugings extends BaRatinItem implements ICalibrationData, BamItemLi
             GaugingsDataset newGaugingDataset = gaugingsImporter.getDataset();
             if (newGaugingDataset != null && newGaugingDataset.getNumberOfColumns() == 3) {
                 gaugingDataset = newGaugingDataset;
-                gaugingsTable.set(newGaugingDataset);
-                String desc = String.format("Jeu de jaugeages importé depuis le fichier '%s'",
-                        gaugingDataset.getName());
-                importedDataSetSourceLabel.setText(desc);
-                if (getDescription() == null || getDescription().equals("")) {
-                    setDescription(desc);
-                }
-
+                updateTable();
             }
         });
 
@@ -83,6 +77,17 @@ public class Gaugings extends BaRatinItem implements ICalibrationData, BamItemLi
         importGaugingsPanel.appendChild(gaugingsTable, 1);
 
         setContent(content);
+    }
+
+    public void updateTable() {
+        gaugingsTable.set(gaugingDataset);
+        String desc = String.format("Jeu de jaugeages importé depuis le fichier '%s'",
+                gaugingDataset.getName());
+        importedDataSetSourceLabel.setText(desc);
+        if (getDescription() == null || getDescription().equals("")) {
+            setDescription(desc);
+        }
+
     }
 
     private void setPlot() {
@@ -180,7 +185,7 @@ public class Gaugings extends BaRatinItem implements ICalibrationData, BamItemLi
             gaugingDataset.setName(name);
             String dataFilePath = Path.of(App.TEMP_DIR, dataFileName).toString();
             gaugingDataset.setDataFromFile(dataFilePath);
-
+            updateTable();
         }
     }
 
