@@ -1,11 +1,13 @@
 package org.baratinage.ui.baratin;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.io.File;
 import java.nio.file.Path;
 import java.util.List;
 
 import javax.swing.JButton;
+import javax.swing.JLabel;
 
 import org.baratinage.App;
 import org.baratinage.jbam.PredictionConfig;
@@ -40,12 +42,18 @@ public class PriorRatingCurve extends GridPanel {
 
         // FIXME: maybe not the role of the constructor to set configuration
         // FIXME: providers?... setters methods may be more appropriate...
+        //
+        // FIXME: this has a few features in common with PosteriorRatingCurve
+        // FIXME: refactoring may be needed; consider including RunBam class as well
         public PriorRatingCurve(
                         IPredictionData predictionDataProvider,
                         IPriors priorsProvider,
                         IModelDefinition modelDefinitionProvider) {
+
                 setPadding(5);
                 setGap(5);
+
+                setName("prior_rating_curve");
 
                 this.predictionDataProvider = predictionDataProvider;
                 this.priorsProvider = priorsProvider;
@@ -53,21 +61,20 @@ public class PriorRatingCurve extends GridPanel {
 
                 JButton runButton = new JButton(
                                 String.format("<html>Calculer la courbe de tarage <i>a priori</i></html>"));
+                runButton.setFont(runButton.getFont().deriveFont(Font.BOLD));
                 runButton.addActionListener((e) -> {
                         computePriorRatingCurve();
                 });
-                insertChild(runButton, 0, 0,
-                                ANCHOR.C, FILL.BOTH);
-                setRowWeight(1, 1);
-                setColWeight(0, 1);
-
-                setName("prior_rating_curve");
 
                 plotPanel = new RowColPanel(RowColPanel.AXIS.COL);
 
+                insertChild(runButton, 0, 0,
+                                ANCHOR.C, FILL.BOTH);
                 insertChild(plotPanel, 0, 1,
                                 ANCHOR.C, FILL.BOTH);
 
+                setRowWeight(1, 1);
+                setColWeight(0, 1);
         }
 
         private void computePriorRatingCurve() {
@@ -102,7 +109,6 @@ public class PriorRatingCurve extends GridPanel {
                         System.err.println("ERROR: An error occured while running BaM!");
                         error.printStackTrace();
                 }
-                firePropertyChange("bamHasRun", null, null);
         }
 
         private void buildRatingCurvePlot(
@@ -201,6 +207,11 @@ public class PriorRatingCurve extends GridPanel {
 
         // FIXME: general approach may be questionnable? think through. refactor?
         public void setBamRunZipFileName(String bamRunZipFileName) {
+
+                if (bamRunZipFileName == null) {
+                        System.out.println("No prior rating curve computed...");
+                        return;
+                }
 
                 File targetTempDir = Path.of(App.TEMP_DIR, "unzip").toFile();
                 targetTempDir.mkdir();
