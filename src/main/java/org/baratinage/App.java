@@ -4,6 +4,7 @@ import javax.swing.ImageIcon;
 import javax.swing.UIManager;
 // import javax.swing.UIManager.LookAndFeelInfo;
 
+import java.awt.Color;
 import java.awt.EventQueue;
 import java.awt.Font;
 import java.io.File;
@@ -25,6 +26,8 @@ public class App {
     public final static String TEST_DIR = "test";
 
     public static MainFrame MAIN_FRAME;
+
+    public static Color INVALID_COLLOR = new Color(255, 125, 125, 200);
 
     public static void main(String[] args) {
 

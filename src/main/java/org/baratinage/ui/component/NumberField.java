@@ -6,6 +6,7 @@ import java.awt.event.FocusListener;
 
 import javax.swing.plaf.basic.BasicBorders;
 
+import org.baratinage.App;
 import org.baratinage.ui.container.RowColPanel;
 
 public class NumberField extends RowColPanel {
@@ -60,7 +61,7 @@ public class NumberField extends RowColPanel {
         Color color = new Color(125, 255, 125, 0);
 
         if (!isValid) {
-            color = new Color(255, 125, 125, 200);
+            color = App.INVALID_COLLOR;
         }
 
         setBorder(new BasicBorders.FieldBorder(color, color, color, color));
