@@ -153,7 +153,7 @@ public class Gaugings extends BaRatinItem implements ICalibrationData, BamItemLi
     public JSONObject toJSON() {
         JSONObject json = new JSONObject();
         json.put("name", getName());
-        json.put("description", getName());
+        json.put("description", getDescription());
 
         if (gaugingDataset != null) {
             JSONObject gaugingDatasetJson = new JSONObject();
