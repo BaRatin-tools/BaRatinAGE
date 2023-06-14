@@ -19,7 +19,6 @@ public class ControlMatrix extends RowColPanel {
     private JButton addControlButton;
     private JButton removeControlButton;
     private JCheckBox reversedOrderCheckBox;
-    // private boolean reversed;
 
     public ControlMatrix() {
         super(AXIS.COL);
@@ -51,9 +50,7 @@ public class ControlMatrix extends RowColPanel {
 
         reversedOrderCheckBox = new JCheckBox("Inverser l'ordre des segments");
         reversedOrderCheckBox.setSelected(true);
-        // reversed = true;
         reversedOrderCheckBox.addItemListener((e) -> {
-            // reversed = reversedOrderCheckBox.isSelected();
             updateControlMatrixView();
         });
         appendChild(reversedOrderCheckBox, 0);
@@ -68,12 +65,10 @@ public class ControlMatrix extends RowColPanel {
     }
 
     public boolean getIsReversed() {
-        // return reversed;
         return reversedOrderCheckBox.isSelected();
     }
 
     public void setIsReversed(boolean isReversed) {
-        // reversed = isReversed;
         reversedOrderCheckBox.setSelected(isReversed);
         updateControlMatrixView();
     }
@@ -84,8 +79,6 @@ public class ControlMatrix extends RowColPanel {
         for (int i = 0; i < nCtrl; i++) {
             for (int j = 0; j < nCtrl; j++) {
                 if (j >= i) {
-                    System.out.println(controls.get(i));
-                    System.out.println(controls.get(i).ctrlCheckBoxes.size());
                     controlMatrix[j][i] = controls.get(i).ctrlCheckBoxes.get(j - i).isSelected();
                 } else {
                     controlMatrix[j][i] = false;
@@ -175,7 +168,6 @@ public class ControlMatrix extends RowColPanel {
         controlCheckBoxPanel.clear();
         int nCtrl = controls.size();
 
-        // boolean revers = false;
         for (int k = 0; k < nCtrl; k++) {
             String labelPostfix = "";
             if (k == 0 && k == nCtrl - 1) {
