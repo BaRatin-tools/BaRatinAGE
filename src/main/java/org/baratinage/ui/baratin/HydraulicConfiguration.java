@@ -44,11 +44,13 @@ class HydraulicConfiguration extends BaRatinItem
         controlMatrix.addPropertyChangeListener("controlMatrix", (e) -> {
             hasChanged();
             updateHydraulicControls(controlMatrix.getControlMatrix());
+            checkPriorRatingCurveSync();
         });
 
         hydraulicControls = new AllHydraulicControls();
-        hydraulicControls.addPropertyChangeListener("hydraulicControls", (e) -> {
+        hydraulicControls.addPropertyChangeListener("hydraulicControl", (e) -> {
             hasChanged();
+            checkPriorRatingCurveSync();
         });
 
         JSplitPane splitPaneContainer = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
@@ -57,13 +59,21 @@ class HydraulicConfiguration extends BaRatinItem
         splitPaneContainer.setRightComponent(hydraulicControls);
         splitPaneContainer.setResizeWeight(0.5);
 
-        RowColPanel priorRatingCurvePanel = new RowColPanel(RowColPanel.AXIS.COL);
-        priorRatingCurve = new PriorRatingCurve(
-                priorRatingCurveStageGrid,
-                this, this);
-
         priorRatingCurveStageGrid = new RatingCurveStageGrid();
+        priorRatingCurveStageGrid.addPropertyChangeListener("stageGridConfigChanged", (e) -> {
+            hasChanged();
+            checkPriorRatingCurveSync();
+        });
+
+        RowColPanel priorRatingCurvePanel = new RowColPanel(RowColPanel.AXIS.COL);
+        priorRatingCurve = new PriorRatingCurve();
+        priorRatingCurve.addPropertyChangeListener("bamHasRun", (e) -> {
+            createBackup("prior_rc");
+            checkPriorRatingCurveSync();
+        });
         priorRatingCurve.setPredictionDataProvider(priorRatingCurveStageGrid);
+        priorRatingCurve.setPriorsProvider(this);
+        priorRatingCurve.setModelDefintionProvider(this);
 
         priorRatingCurvePanel.appendChild(priorRatingCurveStageGrid, 0);
         priorRatingCurvePanel.appendChild(new JSeparator(), 0);
@@ -79,6 +89,12 @@ class HydraulicConfiguration extends BaRatinItem
         boolean[][] mat = controlMatrix.getControlMatrix();
         updateHydraulicControls(mat);
 
+    }
+
+    private void checkPriorRatingCurveSync() {
+        if (hasBackup("prior_rc")) {
+            priorRatingCurve.setOutdated(!isBackupInSync("prior_rc"));
+        }
     }
 
     private void updateHydraulicControls(boolean[][] controlMatrix) {
@@ -145,6 +161,12 @@ class HydraulicConfiguration extends BaRatinItem
     @Override
     public JSONObject toJSON() {
         JSONObject json = new JSONObject();
+
+        // **********************************************************
+        // ui only elements
+        JSONObject uiJson = new JSONObject();
+        uiJson.put("reversedControlMatrix", controlMatrix.getIsReversed());
+        json.put("ui", uiJson);
 
         // **********************************************************
         // Control matrix
@@ -252,6 +274,12 @@ class HydraulicConfiguration extends BaRatinItem
         String bamRunZipFileName = json.getString("bamRunZipFileName");
         priorRatingCurve.setBamRunZipFileName(bamRunZipFileName);
 
+        // **********************************************************
+        // ui only elements
+        // if (json.has("ui")) {
+        // JSONObject uiJson = json.getJSONObject("ui");
+        // controlMatrix.setIsReversed(uiJson.getBoolean("reversedControlMatrix"));
+        // }
     }
 
 }

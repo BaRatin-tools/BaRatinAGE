@@ -39,25 +39,19 @@ public class PriorRatingCurve extends GridPanel {
         private boolean hasResults = false;
 
         private RunBamPrior runBamPrior;
+        private JLabel outdatedLabel;
 
-        // FIXME: maybe not the role of the constructor to set configuration
-        // FIXME: providers?... setters methods may be more appropriate...
-        //
         // FIXME: this has a few features in common with PosteriorRatingCurve
         // FIXME: refactoring may be needed; consider including RunBam class as well
-        public PriorRatingCurve(
-                        IPredictionData predictionDataProvider,
-                        IPriors priorsProvider,
-                        IModelDefinition modelDefinitionProvider) {
+        public PriorRatingCurve() {
 
                 setPadding(5);
                 setGap(5);
 
                 setName("prior_rating_curve");
 
-                this.predictionDataProvider = predictionDataProvider;
-                this.priorsProvider = priorsProvider;
-                this.modelDefinitionProvider = modelDefinitionProvider;
+                outdatedLabel = new JLabel();
+                outdatedLabel.setForeground(Color.RED);
 
                 JButton runButton = new JButton(
                                 String.format("<html>Calculer la courbe de tarage <i>a priori</i></html>"));
@@ -68,13 +62,23 @@ public class PriorRatingCurve extends GridPanel {
 
                 plotPanel = new RowColPanel(RowColPanel.AXIS.COL);
 
-                insertChild(runButton, 0, 0,
+                insertChild(outdatedLabel, 0, 0,
                                 ANCHOR.C, FILL.BOTH);
-                insertChild(plotPanel, 0, 1,
+                insertChild(runButton, 0, 1,
+                                ANCHOR.C, FILL.BOTH);
+                insertChild(plotPanel, 0, 2,
                                 ANCHOR.C, FILL.BOTH);
 
-                setRowWeight(1, 1);
+                setRowWeight(2, 1);
                 setColWeight(0, 1);
+        }
+
+        public void setOutdated(boolean isOutdated) {
+                if (isOutdated) {
+                        outdatedLabel.setText("La courbe de tarage n'est plus à jour et doit être recalculé!");
+                } else {
+                        outdatedLabel.setText("");
+                }
         }
 
         private void computePriorRatingCurve() {
@@ -94,6 +98,7 @@ public class PriorRatingCurve extends GridPanel {
                                         ppes);
 
                         runBamPrior.run();
+                        firePropertyChange("bamHasRun", null, null);
 
                         predictionResults = runBamPrior.getPredictionResults();
 
@@ -228,7 +233,6 @@ public class PriorRatingCurve extends GridPanel {
                 runBamPrior = new RunBamPrior(bamRunZipFileName);
                 runBamPrior.configure(targetTempDir.toString(),
                                 modelDefinitionProvider, priorsProvider, ppes);
-
                 runBamPrior.readResultsFromWorkspace();
 
                 PredictionResult[] pprs = runBamPrior.getPredictionResults();
