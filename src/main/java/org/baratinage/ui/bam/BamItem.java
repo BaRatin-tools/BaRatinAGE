@@ -2,6 +2,8 @@ package org.baratinage.ui.bam;
 
 import java.awt.Font;
 import java.awt.event.ActionListener;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.awt.Component;
 
 import javax.swing.JButton;
@@ -130,17 +132,56 @@ abstract public class BamItem extends GridPanel {
         json.put("name", name);
         json.put("description", description);
         json.put("content", toJSON());
+        json.put("backups", backups);
         return json;
     }
 
     public void fromFullJSON(JSONObject json) {
         name = json.getString("name");
         description = json.getString("description");
+
+        JSONObject backupsJson = json.getJSONObject("backups");
+        Iterator<String> it = backupsJson.keys();
+        while (it.hasNext()) {
+            String key = it.next();
+            backups.put(key, backupsJson.getString(key));
+        }
+
         fromJSON(json.getJSONObject("content"));
     }
 
     @Override
     public String toString() {
         return "BamItem | " + TYPE + " | " + name + " (" + ID + ")";
+    }
+
+    private HashMap<String, String> backups = new HashMap<>();
+
+    private String createBackupString() {
+        JSONObject json = toJSON();
+        json.remove("ui");
+        return json.toString();
+    }
+
+    public void createBackup(String id) {
+        backups.put(id, createBackupString());
+    }
+
+    public boolean hasBackup(String id) {
+        return backups.containsKey(id);
+    }
+
+    public String getBackup(String id) {
+        return backups.get(id);
+    }
+
+    public void deleteBackup(String id) {
+        backups.remove(id);
+    }
+
+    public boolean isBackupInSync(String id) {
+        String currentState = createBackupString();
+        String backupState = getBackup(id);
+        return currentState.equals(backupState);
     }
 }
