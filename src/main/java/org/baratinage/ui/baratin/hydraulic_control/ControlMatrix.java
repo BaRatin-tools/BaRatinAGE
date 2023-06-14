@@ -9,18 +9,17 @@ import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 
-import org.baratinage.ui.baratin.hydraulic_control.ControlMatrixColumn.HasChangeListener;
 import org.baratinage.ui.container.GridPanel;
 import org.baratinage.ui.container.RowColPanel;
 
-public class ControlMatrix extends RowColPanel implements HasChangeListener {
+public class ControlMatrix extends RowColPanel {
 
     private List<ControlMatrixColumn> controls;
     private GridPanel controlCheckBoxPanel;
     private JButton addControlButton;
     private JButton removeControlButton;
-    private JCheckBox revservedOrderCheckBox;
-    private boolean reversed;
+    private JCheckBox reversedOrderCheckBox;
+    // private boolean reversed;
 
     public ControlMatrix() {
         super(AXIS.COL);
@@ -31,7 +30,6 @@ public class ControlMatrix extends RowColPanel implements HasChangeListener {
         addControlButton.addActionListener((e) -> {
             System.out.println("Add control");
             addControl();
-            hasChange();
         });
 
         buttonsPanel.appendChild(addControlButton);
@@ -40,7 +38,6 @@ public class ControlMatrix extends RowColPanel implements HasChangeListener {
         removeControlButton.addActionListener((e) -> {
             System.out.println("Remove control");
             removeControl();
-            hasChange();
         });
         buttonsPanel.appendChild(removeControlButton);
 
@@ -52,19 +49,32 @@ public class ControlMatrix extends RowColPanel implements HasChangeListener {
         controlGridScrollPane.setBorder(BorderFactory.createEmptyBorder());
         appendChild(controlGridScrollPane, 1);
 
-        revservedOrderCheckBox = new JCheckBox("Inverser l'ordre des segments");
-        revservedOrderCheckBox.setSelected(true);
-        reversed = true;
-        revservedOrderCheckBox.addItemListener((e) -> {
-            reversed = revservedOrderCheckBox.isSelected();
+        reversedOrderCheckBox = new JCheckBox("Inverser l'ordre des segments");
+        reversedOrderCheckBox.setSelected(true);
+        // reversed = true;
+        reversedOrderCheckBox.addItemListener((e) -> {
+            // reversed = reversedOrderCheckBox.isSelected();
             updateControlMatrixView();
         });
-        appendChild(revservedOrderCheckBox, 0);
+        appendChild(reversedOrderCheckBox, 0);
 
         controls = new ArrayList<>();
         controls.add(
-                new ControlMatrixColumn(this, 1));
+                new ControlMatrixColumn(() -> {
+                    firePropertyChange("controlMatrixChange", null, null);
+                }, 1));
 
+        updateControlMatrixView();
+    }
+
+    public boolean getIsReversed() {
+        // return reversed;
+        return reversedOrderCheckBox.isSelected();
+    }
+
+    public void setIsReversed(boolean isReversed) {
+        // reversed = isReversed;
+        reversedOrderCheckBox.setSelected(isReversed);
         updateControlMatrixView();
     }
 
@@ -74,6 +84,8 @@ public class ControlMatrix extends RowColPanel implements HasChangeListener {
         for (int i = 0; i < nCtrl; i++) {
             for (int j = 0; j < nCtrl; j++) {
                 if (j >= i) {
+                    System.out.println(controls.get(i));
+                    System.out.println(controls.get(i).ctrlCheckBoxes.size());
                     controlMatrix[j][i] = controls.get(i).ctrlCheckBoxes.get(j - i).isSelected();
                 } else {
                     controlMatrix[j][i] = false;
@@ -109,7 +121,9 @@ public class ControlMatrix extends RowColPanel implements HasChangeListener {
             }
         } else if (nDiff < 0) { // not enough controls
             for (int k = 1; k <= -nDiff; k++) {
-                controls.add(new ControlMatrixColumn(this, nSeg));
+                controls.add(new ControlMatrixColumn(() -> {
+                    firePropertyChange("controlMatrixChange", null, null);
+                }, nSeg));
             }
         }
 
@@ -122,6 +136,7 @@ public class ControlMatrix extends RowColPanel implements HasChangeListener {
             controls.get(k).update(selected);
         }
         updateControlMatrixView();
+        firePropertyChange("controlMatrixChange", null, null);
     }
 
     private void addControl() {
@@ -170,7 +185,7 @@ public class ControlMatrix extends RowColPanel implements HasChangeListener {
             } else if (k == nCtrl - 1) {
                 labelPostfix = " (haut)";
             }
-            int index = reversed ? k + 1 : nCtrl - k;
+            int index = reversedOrderCheckBox.isSelected() ? k + 1 : nCtrl - k;
             JLabel lbl = new JLabel("Segment #" + (k + 1) + labelPostfix);
             controlCheckBoxPanel.insertChild(lbl, 0, index);
         }
@@ -183,18 +198,13 @@ public class ControlMatrix extends RowColPanel implements HasChangeListener {
             for (int j = i; j < nCtrl; j++) {
                 controlCheckBoxPanel.insertChild(
                         controls.get(i).ctrlCheckBoxes.get(j - i),
-                        i + 1, reversed ? j + 1 : nCtrl - j);
+                        i + 1, reversedOrderCheckBox.isSelected() ? j + 1 : nCtrl - j);
             }
         }
         controlCheckBoxPanel.updateUI();
         addControlButton.setText("Ajouter un contrôle  (" + "Contrôle #" + (nCtrl + 1) + ")");
         removeControlButton.setText("Supprimer le dernier contrôle (" + "Contrôle #" + nCtrl + ")");
         removeControlButton.setEnabled(nCtrl > 1);
-    }
-
-    @Override
-    public void hasChange() {
-        firePropertyChange("controlMatrix", null, null);
     }
 
 }

@@ -8,15 +8,16 @@ import java.util.List;
 public class ControlMatrixColumn implements ItemListener {
 
     public List<ControlCheckBox> ctrlCheckBoxes;
-    private HasChangeListener listener;
 
     @FunctionalInterface
-    protected interface HasChangeListener {
-        public void hasChange();
+    public interface IControleMatrixColumnHasChanged {
+        public void controlMatrixColumnHasChanged();
     }
 
-    public ControlMatrixColumn(HasChangeListener listener, int nSegments) {
-        this.listener = listener;
+    private IControleMatrixColumnHasChanged controleMatrixColumnHasChanged;
+
+    public ControlMatrixColumn(IControleMatrixColumnHasChanged controleMatrixColumnHasChanged, int nSegments) {
+        this.controleMatrixColumnHasChanged = controleMatrixColumnHasChanged;
         ctrlCheckBoxes = new ArrayList<>();
         for (int k = 0; k < nSegments; k++) {
             ctrlCheckBoxes.add(new ControlCheckBox("k=" + k, this));
@@ -76,7 +77,7 @@ public class ControlMatrixColumn implements ItemListener {
     @Override
     public void itemStateChanged(ItemEvent e) {
         updateEditability();
-        listener.hasChange();
+        controleMatrixColumnHasChanged.controlMatrixColumnHasChanged();
     }
 
 }
