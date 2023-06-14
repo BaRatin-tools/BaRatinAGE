@@ -18,7 +18,7 @@ abstract public class BamItem extends GridPanel {
 
     static public enum ITEM_TYPE {
         EMPTY_ITEM,
-        HYRAULIC_CONFIG,
+        HYRAULIC_CONFIG, // FIXME: typo
         GAUGINGS,
         HYDROGRAPH,
         LIMNIGRAPH,
@@ -157,14 +157,8 @@ abstract public class BamItem extends GridPanel {
 
     private HashMap<String, String> backups = new HashMap<>();
 
-    private String createBackupString() {
-        JSONObject json = toJSON();
-        json.remove("ui");
-        return json.toString();
-    }
-
     public void createBackup(String id) {
-        backups.put(id, createBackupString());
+        backups.put(id, toJSON().toString());
     }
 
     public boolean hasBackup(String id) {
@@ -179,9 +173,45 @@ abstract public class BamItem extends GridPanel {
         backups.remove(id);
     }
 
-    public boolean isBackupInSync(String id) {
-        String currentState = createBackupString();
-        String backupState = getBackup(id);
+    public boolean isBackupInSync(String id, String[] keysToIgnoreOrConsider, boolean ignoreKeys) {
+        JSONObject currentStateJson = toJSON();
+        String backupStateString = getBackup(id);
+        if (backupStateString == null) {
+            System.out.println("no backup with id '" + id + "'!");
+            return true;
+        }
+        JSONObject backupStateJson = new JSONObject(backupStateString);
+        if (ignoreKeys) {
+            for (String key : keysToIgnoreOrConsider) {
+                if (currentStateJson.has(key)) {
+                    currentStateJson.remove(key);
+                }
+                if (backupStateJson.has(key)) {
+                    backupStateJson.remove(key);
+                }
+            }
+        } else {
+            JSONObject filteredCurrentStateJson = new JSONObject();
+            JSONObject filteredBackupStateJson = new JSONObject();
+            for (String key : keysToIgnoreOrConsider) {
+                if (currentStateJson.has(key)) {
+                    filteredCurrentStateJson.put(key, currentStateJson.get(key));
+                }
+                if (backupStateJson.has(key)) {
+                    filteredBackupStateJson.put(key, backupStateJson.get(key));
+                }
+            }
+            currentStateJson = filteredCurrentStateJson;
+            backupStateJson = filteredBackupStateJson;
+        }
+
+        String currentState = currentStateJson.toString();
+        String backupState = backupStateJson.toString();
+        System.out.println("*************************************");
+        System.out.println(currentState);
+        System.out.println("---");
+        System.out.println(backupState);
+        System.out.println("-------------------------------------");
         return currentState.equals(backupState);
     }
 }

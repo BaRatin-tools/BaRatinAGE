@@ -135,11 +135,21 @@ public class BaratinProject extends BamProject {
         super.deleteItem(bamItem, explorerItem);
     }
 
-    private HydraulicConfiguration addHydraulicConfig() {
+    public HydraulicConfiguration addHydraulicConfig(HydraulicConfiguration hydroConf) {
+        ExplorerItem explorerItem = new ExplorerItem(
+                hydroConf.ID,
+                hydroConf.getName(),
+                hydraulicConfigIconPath,
+                hydraulicConfig);
+        addItem(hydroConf, explorerItem);
+        return hydroConf;
+    }
+
+    public HydraulicConfiguration addHydraulicConfig() {
         return addHydraulicConfig(UUID.randomUUID().toString());
     }
 
-    private HydraulicConfiguration addHydraulicConfig(String uuid) {
+    public HydraulicConfiguration addHydraulicConfig(String uuid) {
         HydraulicConfiguration hydroConf = new HydraulicConfiguration(uuid);
         ExplorerItem explorerItem = new ExplorerItem(
                 uuid,

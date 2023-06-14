@@ -13,6 +13,7 @@ import org.baratinage.ui.container.GridPanel;
 import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.ui.lg.Lg;
 
+// FIXME: should have a fromJSON / toJSON methods
 public class RatingCurveStageGrid extends RowColPanel implements IPredictionData {
 
     private NumberField minStageField;

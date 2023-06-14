@@ -93,7 +93,8 @@ class HydraulicConfiguration extends BaRatinItem
 
     private void checkPriorRatingCurveSync() {
         if (hasBackup("prior_rc")) {
-            priorRatingCurve.setOutdated(!isBackupInSync("prior_rc"));
+            priorRatingCurve
+                    .setOutdated(!isBackupInSync("prior_rc", new String[] { "ui", "name", "description" }, true));
         }
     }
 
@@ -162,6 +163,9 @@ class HydraulicConfiguration extends BaRatinItem
     public JSONObject toJSON() {
         JSONObject json = new JSONObject();
 
+        json.put("name", getName());
+        json.put("description", getDescription());
+
         // **********************************************************
         // ui only elements
         JSONObject uiJson = new JSONObject();
@@ -220,6 +224,9 @@ class HydraulicConfiguration extends BaRatinItem
     @Override
     public void fromJSON(JSONObject json) {
 
+        setName(json.getString("name"));
+        setDescription(json.getString("description"));
+
         // **********************************************************
         // ui only elements
         JSONObject uiJson = json.getJSONObject("ui");
@@ -276,10 +283,18 @@ class HydraulicConfiguration extends BaRatinItem
 
         // **********************************************************
         // prior rating curve BaM results
-        String bamRunZipFileName = json.getString("bamRunZipFileName");
-        priorRatingCurve.setBamRunZipFileName(bamRunZipFileName);
+        if (json.has("bamRunZipFileName")) {
+            String bamRunZipFileName = json.getString("bamRunZipFileName");
+            priorRatingCurve.setBamRunZipFileName(bamRunZipFileName);
+        }
 
         checkPriorRatingCurveSync();
+    }
+
+    public HydraulicConfiguration clone(String uuid) {
+        HydraulicConfiguration cloned = new HydraulicConfiguration(uuid);
+        cloned.fromFullJSON(toFullJSON());
+        return cloned;
     }
 
 }

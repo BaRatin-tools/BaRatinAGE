@@ -1,12 +1,15 @@
 package org.baratinage.ui.baratin;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.io.File;
 import java.nio.file.Path;
 import java.util.List;
 
 import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.JSeparator;
+import javax.swing.JTabbedPane;
 
 import org.baratinage.App;
 import org.baratinage.jbam.CalDataResidualConfig;
@@ -55,20 +58,47 @@ public class PosteriorRatingCurve extends RowColPanel implements ICalibratedMode
 
     private RunBamPost runBamPost;
 
+    public RowColPanel outdatedPanel;
+    private JLabel outdatedStageGridLabel;
+
     public PosteriorRatingCurve() {
         super(AXIS.COL);
         ratingCurveGrid = new RatingCurveStageGrid();
+        ratingCurveGrid.addPropertyChangeListener("stageGridConfigChanged", (e) -> {
+            firePropertyChange("stageGridConfigChanged", null, null);
+        });
         appendChild(ratingCurveGrid, 0);
-        appendChild(new JSeparator(JSeparator.VERTICAL), 0);
+        appendChild(new JSeparator(JSeparator.HORIZONTAL), 0);
 
         JButton runBamButton = new JButton("<html>Calculer la courbe de tarage <i>a posteriori</i></html>");
+        runBamButton.setFont(runBamButton.getFont().deriveFont(Font.BOLD));
         runBamButton.addActionListener((e) -> {
             computePosteriorRatingCurve();
         });
-        appendChild(runBamButton, 0);
+        outdatedPanel = new RowColPanel();
+        outdatedStageGridLabel = new JLabel();
+        outdatedStageGridLabel.setForeground(Color.RED);
+
+        appendChild(outdatedPanel, 0, 5);
+        appendChild(outdatedStageGridLabel, 0, 5);
+        appendChild(runBamButton, 0, 5);
+
+        JTabbedPane resultsTabs = new JTabbedPane();
 
         plotPanel = new RowColPanel(AXIS.COL);
-        appendChild(plotPanel, 1);
+
+        resultsTabs.add("<html>Courbe de tarage <i>a posteriori</i>&nbsp;&nbsp;</html>", plotPanel);
+
+        appendChild(resultsTabs, 1);
+
+    }
+
+    public void setOutdated(boolean isOutdated) {
+        if (isOutdated) {
+            outdatedStageGridLabel.setText("La courbe de tarage n'est plus à jour avec la grille de hauteur d'eau !");
+        } else {
+            outdatedStageGridLabel.setText("");
+        }
     }
 
     public void computePosteriorRatingCurve() {
@@ -96,6 +126,8 @@ public class PosteriorRatingCurve extends RowColPanel implements ICalibratedMode
                 pe);
 
         runBamPost.run();
+
+        firePropertyChange("bamHasRun", null, null);
 
         calibtrationResult = runBamPost.getCalibrationResult();
         isCalibrated = true;

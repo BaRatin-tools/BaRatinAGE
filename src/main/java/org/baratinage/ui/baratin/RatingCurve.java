@@ -1,9 +1,13 @@
 package org.baratinage.ui.baratin;
 
+import java.awt.Color;
+import java.awt.Font;
+import java.util.UUID;
+
 import javax.swing.JLabel;
 import javax.swing.JSeparator;
-import javax.swing.JTabbedPane;
 
+import org.baratinage.App;
 import org.baratinage.jbam.CalibrationConfig;
 import org.baratinage.jbam.CalibrationResult;
 import org.baratinage.jbam.McmcConfig;
@@ -13,6 +17,8 @@ import org.baratinage.ui.bam.BamItemCombobox;
 import org.baratinage.ui.bam.BamItemList;
 import org.baratinage.ui.bam.ICalibratedModel;
 import org.baratinage.ui.bam.IMcmc;
+import org.baratinage.ui.commons.OutOfSyncWarning;
+import org.baratinage.ui.container.GridPanel;
 import org.baratinage.ui.container.RowColPanel;
 import org.json.JSONObject;
 
@@ -29,6 +35,8 @@ public class RatingCurve extends BaRatinItem implements ICalibratedModel, IMcmc,
     private StructuralError structError;
 
     private PosteriorRatingCurve posteriorRatingCurve;
+
+    private GridPanel outdatedInfoPanel;
 
     public RatingCurve(String uuid) {
         super(ITEM_TYPE.RATING_CURVE, uuid);
@@ -76,10 +84,12 @@ public class RatingCurve extends BaRatinItem implements ICalibratedModel, IMcmc,
             }
 
             hydraulicConfig = (HydraulicConfiguration) selectedBamItem;
-            ;
+
             hydraulicConfig.addBamItemChild(this);
             posteriorRatingCurve.setModelDefintion(hydraulicConfig);
             posteriorRatingCurve.setPriors(hydraulicConfig);
+
+            checkSynchronicity();
         });
 
         // **********************************************************
@@ -146,13 +156,24 @@ public class RatingCurve extends BaRatinItem implements ICalibratedModel, IMcmc,
         mainConfigPanel.appendChild(new JSeparator(JSeparator.VERTICAL));
         mainConfigPanel.appendChild(structErrorPanel, 0);
 
-        JTabbedPane ratingCurves = new JTabbedPane();
-        mainContentPanel.appendChild(ratingCurves);
-
         posteriorRatingCurve = new PosteriorRatingCurve();
-        ratingCurves.add("<html>Courbe de tarage <i>a posteriori</i>&nbsp;&nbsp;</html>", posteriorRatingCurve);
+        posteriorRatingCurve.addPropertyChangeListener("bamHasRun", (e) -> {
+            hydraulicConfig.createBackup("post_rc_" + ID);
+            gaugings.createBackup("post_rc_" + ID);
+            structError.createBackup("post_rc_" + ID);
+            createBackup("post_rc");
+            checkSynchronicity();
+        });
+        posteriorRatingCurve.addPropertyChangeListener("stageGridConfigChanged", (e) -> {
+            checkSynchronicity();
+        });
+        mainContentPanel.appendChild(posteriorRatingCurve);
 
         setContent(content);
+
+        outdatedInfoPanel = new GridPanel();
+        outdatedInfoPanel.setGap(2);
+        outdatedInfoPanel.setColWeight(0, 1);
     }
 
     @Override
@@ -186,10 +207,99 @@ public class RatingCurve extends BaRatinItem implements ICalibratedModel, IMcmc,
     @Override
     public void parentHasChanged(BamItem parent) {
         System.out.println("PARENT HAS CHANGED DECTECTED FROM '" + this + "'");
-        if (parent.equals(hydraulicConfig)) {
-            System.out.println("HYDRAULIC CONFIF '" + parent + "'' IS THE PARENT THAT HAS CHANGED");
+        checkSynchronicity();
+    }
 
+    public void checkSynchronicity() {
+
+        outdatedInfoPanel.clear();
+        boolean isOutdated = false;
+        int insertionIndex = 1;
+
+        // synchronicity with hydraulic configuration
+        if (hydraulicConfig != null) {
+            System.out.println();
+            if (hydraulicConfig.hasBackup("post_rc_" + ID)) {
+                if (!hydraulicConfig.isBackupInSync("post_rc_" + ID,
+                        new String[] { "ui", "name", "description", "bamRunZipFileName" },
+                        true)) {
+                    isOutdated = true;
+                    OutOfSyncWarning outdatedHydrauConf = new OutOfSyncWarning();
+                    outdatedHydrauConf
+                            .setMessageText("La configuration hydraulique a été modifiée!");
+                    outdatedHydrauConf.setCancelButtonText(
+                            "Annuler les modifications (duplique de la configuration hydraulique sans les modifications)");
+                    outdatedHydrauConf.addActionListener((e) -> {
+                        String backupString = hydraulicConfig.getBackup("post_rc_" + ID);
+                        if (backupString != null) {
+                            BaratinProject project = (BaratinProject) App.MAIN_FRAME.getCurrentProject();
+                            HydraulicConfiguration duplicatedHydrauConf = hydraulicConfig
+                                    .clone(UUID.randomUUID().toString());
+                            project.addHydraulicConfig(duplicatedHydrauConf);
+
+                            // FIXME: everything that has changed since bam has run that isn't
+                            // part of the out of sync identification must be reset manually.
+                            // Here this is shown with name and description, but ti should also be
+                            // the case of the UI component...
+
+                            // A possible solution would be to:
+                            // - in fromJSON(), make sure that has(key) is used for every item
+                            // - filter out the json object beforehand
+
+                            String name = duplicatedHydrauConf.getName();
+                            String desc = duplicatedHydrauConf.getDescription();
+                            duplicatedHydrauConf.fromJSON(new JSONObject(hydraulicConfig.getBackup("post_rc_" + ID)));
+                            duplicatedHydrauConf.setName(name + " (copie)");
+                            duplicatedHydrauConf.setDescription(desc);
+
+                            hydraulicConfigComboBox.setSelectedItem(duplicatedHydrauConf);
+                            project.setCurrentBamItem(this);
+                            checkSynchronicity();
+                        }
+                    });
+                    outdatedInfoPanel.insertChild(outdatedHydrauConf, 0, insertionIndex);
+                    insertionIndex++;
+                }
+
+            }
         }
+
+        // synchronicity with stage grid
+        if (hasBackup("post_rc")) {
+            if (!isBackupInSync(
+                    "post_rc",
+                    new String[] { "stageGridConfig" },
+                    false)) {
+                isOutdated = true;
+                OutOfSyncWarning stageGridConfigWarning = new OutOfSyncWarning();
+                stageGridConfigWarning.setMessageText("La grille de hauteur d'eau a été modifiée!");
+                stageGridConfigWarning.setCancelButtonText("Annuler les modifications");
+                stageGridConfigWarning.addActionListener((e) -> {
+                    JSONObject backup = new JSONObject(getBackup("post_rc"));
+                    JSONObject stageGridJson = backup.getJSONObject("stageGridConfig");
+                    RatingCurveStageGrid ratingCurveGrid = posteriorRatingCurve.getRatingCurveStageGrid();
+                    ratingCurveGrid.setMinValue(stageGridJson.getDouble("min"));
+                    ratingCurveGrid.setMaxValue(stageGridJson.getDouble("max"));
+                    ratingCurveGrid.setStepValue(stageGridJson.getDouble("step"));
+                    checkSynchronicity();
+                });
+                outdatedInfoPanel.insertChild(stageGridConfigWarning, 0, insertionIndex);
+                insertionIndex++;
+            }
+        }
+
+        if (isOutdated) {
+            JLabel outdatedMainLabel = new JLabel();
+            outdatedMainLabel.setForeground(Color.RED);
+            outdatedMainLabel.setFont(outdatedMainLabel.getFont().deriveFont(Font.BOLD));
+            outdatedMainLabel.setText("Résultats obsolètes!");
+            outdatedInfoPanel.insertChild(outdatedMainLabel, 0, 0);
+
+            posteriorRatingCurve.outdatedPanel.clear();
+            posteriorRatingCurve.outdatedPanel.appendChild(outdatedInfoPanel);
+        }
+
+        outdatedInfoPanel.updateUI();
     }
 
     @Override
@@ -223,9 +333,6 @@ public class RatingCurve extends BaRatinItem implements ICalibratedModel, IMcmc,
 
     @Override
     public void fromJSON(JSONObject json) {
-        // TODO Auto-generated method stub
-        // throw new UnsupportedOperationException("Unimplemented method 'fromJSON'");
-        System.out.println("RATING CURVE === " + json.getString("name"));
 
         setName(json.getString("name"));
         setDescription(json.getString("description"));
@@ -246,8 +353,10 @@ public class RatingCurve extends BaRatinItem implements ICalibratedModel, IMcmc,
         ratingCurveGrid.setMaxValue(stageGridJson.getDouble("max"));
         ratingCurveGrid.setStepValue(stageGridJson.getDouble("step"));
 
-        String bamRunZipFileName = json.getString("bamRunZipFileName");
-        posteriorRatingCurve.setBamRunZipFileName(bamRunZipFileName);
+        if (json.has("bamRunZipFileName")) {
+            String bamRunZipFileName = json.getString("bamRunZipFileName");
+            posteriorRatingCurve.setBamRunZipFileName(bamRunZipFileName);
+        }
 
     }
 
