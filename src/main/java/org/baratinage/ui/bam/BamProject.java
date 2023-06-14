@@ -6,6 +6,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -28,6 +30,7 @@ import org.json.JSONObject;
 public abstract class BamProject extends RowColPanel {
 
     protected BamItemList items;
+    protected List<ExplorerItem> explorerItems;
 
     // protected RowColPanel actionBar;
     protected JSplitPane content;
@@ -39,6 +42,7 @@ public abstract class BamProject extends RowColPanel {
         super(AXIS.COL);
 
         this.items = new BamItemList();
+        this.explorerItems = new ArrayList<>();
 
         this.content = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
         this.content.setBorder(BorderFactory.createEmptyBorder());
@@ -76,6 +80,13 @@ public abstract class BamProject extends RowColPanel {
 
     }
 
+    public void setCurrentBamItem(BamItem bamItem) {
+        ExplorerItem item = findExplorerBamItem(bamItem.ID);
+        if (item != null) {
+            explorer.selectItem(item);
+        }
+    }
+
     public BamItemList getBamItems() {
         return this.items;
     }
@@ -83,6 +94,7 @@ public abstract class BamProject extends RowColPanel {
     public void addItem(BamItem bamItem, ExplorerItem explorerItem) {
 
         items.add(bamItem);
+        explorerItems.add(explorerItem);
         // bamItem.updateSiblings(items);
 
         bamItem.addPropertyChangeListener((p) -> {
@@ -107,6 +119,7 @@ public abstract class BamProject extends RowColPanel {
 
     public void deleteItem(BamItem bamItem, ExplorerItem explorerItem) {
         items.remove(bamItem);
+        explorerItems.remove(explorerItem);
         this.explorer.removeItem(explorerItem);
         this.explorer.selectItem(explorerItem.parentItem);
     }
@@ -114,6 +127,15 @@ public abstract class BamProject extends RowColPanel {
     public BamItem findBamItem(String id) {
         for (BamItem item : this.items) {
             if (item.ID.equals(id)) {
+                return item;
+            }
+        }
+        return null;
+    }
+
+    private ExplorerItem findExplorerBamItem(String id) {
+        for (ExplorerItem item : this.explorerItems) {
+            if (item.id.equals(id)) {
                 return item;
             }
         }
