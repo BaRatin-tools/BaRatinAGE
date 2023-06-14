@@ -41,7 +41,7 @@ class HydraulicConfiguration extends BaRatinItem
         setDescriptionFieldLabel("Description de la configuration hydraulique");
 
         controlMatrix = new ControlMatrix();
-        controlMatrix.addPropertyChangeListener("controlMatrix", (e) -> {
+        controlMatrix.addPropertyChangeListener("controlMatrixChange", (e) -> {
             hasChanged();
             updateHydraulicControls(controlMatrix.getControlMatrix());
             checkPriorRatingCurveSync();
@@ -221,6 +221,11 @@ class HydraulicConfiguration extends BaRatinItem
     public void fromJSON(JSONObject json) {
 
         // **********************************************************
+        // ui only elements
+        JSONObject uiJson = json.getJSONObject("ui");
+        controlMatrix.setIsReversed(uiJson.getBoolean("reversedControlMatrix"));
+
+        // **********************************************************
         // Control matrix
         String stringMatrix = (String) json.get("controlMatrix");
         String[] stringMatrixRow = stringMatrix.split(";");
@@ -274,12 +279,7 @@ class HydraulicConfiguration extends BaRatinItem
         String bamRunZipFileName = json.getString("bamRunZipFileName");
         priorRatingCurve.setBamRunZipFileName(bamRunZipFileName);
 
-        // **********************************************************
-        // ui only elements
-        // if (json.has("ui")) {
-        // JSONObject uiJson = json.getJSONObject("ui");
-        // controlMatrix.setIsReversed(uiJson.getBoolean("reversedControlMatrix"));
-        // }
+        checkPriorRatingCurveSync();
     }
 
 }
