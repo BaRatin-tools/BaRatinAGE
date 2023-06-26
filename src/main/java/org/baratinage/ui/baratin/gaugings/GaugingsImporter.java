@@ -39,7 +39,6 @@ public class GaugingsImporter extends RowColPanel {
         qColumn = new DefaultComboBoxModel<>();
         uqColumn = new DefaultComboBoxModel<>();
 
-        // RowColPanel panel = new RowColPanel(RowColPanel.);
         dataset = null;
 
         DataFileImporter dataFileImporter = new DataFileImporter();
@@ -57,9 +56,6 @@ public class GaugingsImporter extends RowColPanel {
             data.add(rawDataset.getColumn(hIndex));
             data.add(rawDataset.getColumn(qIndex));
             data.add(rawDataset.getColumn(uqIndex));
-            // String[] headers = new String[] {
-            // "h", "Q", "uQ_percent"
-            // };
             dataset = new GaugingsDataset(
                     rawDataset.getName(),
                     data);
@@ -71,7 +67,6 @@ public class GaugingsImporter extends RowColPanel {
             dialog.setVisible(false);
         });
 
-        // JOptionPane
         actionPanel.appendChild(cancelButton, 0);
         actionPanel.appendChild(new Component() {
         }, 1);

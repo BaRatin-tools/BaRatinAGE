@@ -9,15 +9,11 @@ import org.baratinage.utils.WriteFile;
 
 public class GaugingsDataset extends ImportedDataset {
 
-    // boolean[] gaugingsActiveState;
-
     public GaugingsDataset() {
         super();
     }
 
     public GaugingsDataset(String name, List<double[]> data) {
-        // super(name, data, headers);
-        // super(name, data, headers);
         // WARNINGS:
         // - data must have three columns! Stage, discharge and discharge uncertainty!
         // - uncertainty is specified in percent and represents extended (+/-)
@@ -28,12 +24,6 @@ public class GaugingsDataset extends ImportedDataset {
             gaugingsActiveState[k] = 1;
         }
         data.add(gaugingsActiveState);
-        // String[] fullHeaders = new String[headers.length];
-        // for (int k = 0; k < data.size() - 1; k++) {
-        // fullHeaders[k] = headers[k];
-        // }
-        // fullHeaders[3] = "active";
-
         setData(data, new String[] { "h", "Q", "uQ_percent", "active" });
     }
 
@@ -117,9 +107,7 @@ public class GaugingsDataset extends ImportedDataset {
                     false,
                     false);
 
-            // setData(dataToLoad.subList(0, 3), new String[] { "h", "Q", "uQ" });
             super.setData(dataToLoad, new String[] { "h", "Q", "uQ_percent", "active" });
-            // setActiveStateFromDouble(dataToLoad.get(3));
 
         } catch (IOException e2) {
             System.out.println("Failed to read data file ...(" + getName() + ")");
