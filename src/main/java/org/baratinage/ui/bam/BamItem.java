@@ -8,6 +8,7 @@ import java.awt.Component;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JSeparator;
 
 import org.baratinage.ui.container.GridPanel;
@@ -70,7 +71,14 @@ abstract public class BamItem extends GridPanel {
     }
 
     public void addDeleteAction(ActionListener action) {
-        this.deleteButton.addActionListener(action);
+        this.deleteButton.addActionListener((e) -> {
+            int response = JOptionPane.showConfirmDialog(this, "<html>Êtes-vous sûr de vouloir supprimer <b>" + name
+                    + "</b>? <br/> Cette opération ne peut pas être annulée!</html>", "Attention!",
+                    JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+            if (response == JOptionPane.YES_OPTION) {
+                action.actionPerformed(e);
+            }
+        });
     }
 
     public void setTitle(String title) {
