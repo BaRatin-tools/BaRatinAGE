@@ -239,7 +239,8 @@ public class RatingCurve extends BaRatinItem implements ICalibratedModel, IMcmc,
 
                             // FIXME: everything that has changed since bam has run that isn't
                             // part of the out of sync identification must be reset manually.
-                            // Here this is shown with name and description, but it should also be
+                            // Here this is shown with name, description and bamRunZipFileName
+                            // fields, but it should also be
                             // the case of the UI component...
 
                             // A possible solution would be to:
@@ -251,7 +252,9 @@ public class RatingCurve extends BaRatinItem implements ICalibratedModel, IMcmc,
                             String name = duplicatedHydrauConf.getName() + " (copie " + timeStamp + ")";
 
                             JSONObject json = new JSONObject(hydraulicConfig.getBackup("post_rc_" + ID));
+                            json.remove("name");
                             json.remove("description");
+                            json.remove("bamRunZipFileName");
                             duplicatedHydrauConf.fromJSON(json);
                             duplicatedHydrauConf.setName(name);
 
