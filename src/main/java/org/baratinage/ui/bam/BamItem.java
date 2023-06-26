@@ -173,8 +173,9 @@ abstract public class BamItem extends GridPanel {
         return backups.containsKey(id);
     }
 
-    public String getBackup(String id) {
-        return backups.get(id);
+    public JSONObject getBackup(String id) {
+        String backupString = backups.get(id);
+        return backupString == null ? null : new JSONObject(backupString);
     }
 
     public void deleteBackup(String id) {
@@ -183,12 +184,11 @@ abstract public class BamItem extends GridPanel {
 
     public boolean isBackupInSyncIgnoringKeys(String id, String[] keysToIgnore) {
         JSONObject currentStateJson = toJSON();
-        String backupStateString = getBackup(id);
-        if (backupStateString == null) {
+        JSONObject backupStateJson = getBackup(id);
+        if (backupStateJson == null) {
             System.out.println("no backup with id '" + id + "'!");
             return true;
         }
-        JSONObject backupStateJson = new JSONObject(backupStateString);
 
         for (String key : keysToIgnore) {
             if (currentStateJson.has(key)) {
@@ -215,12 +215,11 @@ abstract public class BamItem extends GridPanel {
 
     public boolean isBackupInSyncIncludingKeys(String id, String[] keysToInclude) {
         JSONObject currentStateJson = toJSON();
-        String backupStateString = getBackup(id);
-        if (backupStateString == null) {
+        JSONObject backupStateJson = getBackup(id);
+        if (backupStateJson == null) {
             System.out.println("no backup with id '" + id + "'!");
             return true;
         }
-        JSONObject backupStateJson = new JSONObject(backupStateString);
 
         JSONObject filteredCurrentStateJson = new JSONObject();
         JSONObject filteredBackupStateJson = new JSONObject();
@@ -251,12 +250,11 @@ abstract public class BamItem extends GridPanel {
 
     public boolean isBackupInSync(String id) {
         JSONObject currentStateJson = toJSON();
-        String backupStateString = getBackup(id);
-        if (backupStateString == null) {
+        JSONObject backupStateJson = getBackup(id);
+        if (backupStateJson == null) {
             System.out.println("no backup with id '" + id + "'!");
             return true;
         }
-        JSONObject backupStateJson = new JSONObject(backupStateString);
 
         String currentState = currentStateJson.toString();
         String backupState = backupStateJson.toString();

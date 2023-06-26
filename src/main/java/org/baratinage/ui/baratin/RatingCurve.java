@@ -226,7 +226,7 @@ public class RatingCurve extends BaRatinItem implements ICalibratedModel, IMcmc,
         if (hasBackup("post_rc")) {
             if (!isBackupInSyncIncludingKeys("post_rc", new String[] { "hydraulicConfigurationId" })) {
                 boolean canBeRestore = false;
-                JSONObject json = new JSONObject(getBackup("post_rc"));
+                JSONObject json = getBackup("post_rc");
                 if (json.has("hydraulicConfigurationId")) {
                     BamItem prevHydrauConfig = hydraulicConfigComboBox.getBamItemWithId(
                             json.getString("hydraulicConfigurationId"));
@@ -245,7 +245,7 @@ public class RatingCurve extends BaRatinItem implements ICalibratedModel, IMcmc,
                 outdatedHydrauConf.setCancelButtonText(
                         canBeRestore ? "Annuler" : "...");
                 outdatedHydrauConf.addActionListener((e) -> {
-                    JSONObject json2 = new JSONObject(getBackup("post_rc"));
+                    JSONObject json2 = getBackup("post_rc");
                     if (json2.has("hydraulicConfigurationId")) {
                         BamItem toRestoreHydraulicConfig = hydraulicConfigComboBox.getBamItemWithId(
                                 json2.getString("hydraulicConfigurationId"));
@@ -276,8 +276,8 @@ public class RatingCurve extends BaRatinItem implements ICalibratedModel, IMcmc,
                     outdatedHydrauConf.setCancelButtonText(
                             "Annuler les modifications (duplique de la configuration hydraulique sans les modifications)");
                     outdatedHydrauConf.addActionListener((e) -> {
-                        String backupString = hydraulicConfig.getBackup("post_rc_" + ID);
-                        if (backupString != null) {
+                        JSONObject backupJson = hydraulicConfig.getBackup("post_rc_" + ID);
+                        if (backupJson != null) {
                             BaratinProject project = (BaratinProject) App.MAIN_FRAME.getCurrentProject();
                             HydraulicConfiguration duplicatedHydrauConf = hydraulicConfig
                                     .clone(UUID.randomUUID().toString());
@@ -297,7 +297,7 @@ public class RatingCurve extends BaRatinItem implements ICalibratedModel, IMcmc,
                             String timeStamp = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(new java.util.Date());
                             String name = duplicatedHydrauConf.getName() + " (copie " + timeStamp + ")";
 
-                            JSONObject json = new JSONObject(hydraulicConfig.getBackup("post_rc_" + ID));
+                            JSONObject json = hydraulicConfig.getBackup("post_rc_" + ID);
                             json.remove("name");
                             json.remove("description");
                             json.remove("bamRunZipFileName");
@@ -328,7 +328,7 @@ public class RatingCurve extends BaRatinItem implements ICalibratedModel, IMcmc,
                 stageGridConfigWarning.setMessageText("La grille de hauteur d'eau a été modifiée!");
                 stageGridConfigWarning.setCancelButtonText("Annuler les modifications");
                 stageGridConfigWarning.addActionListener((e) -> {
-                    JSONObject backup = new JSONObject(getBackup("post_rc"));
+                    JSONObject backup = getBackup("post_rc");
                     JSONObject stageGridJson = backup.getJSONObject("stageGridConfig");
                     RatingCurveStageGrid ratingCurveGrid = posteriorRatingCurve.getRatingCurveStageGrid();
                     ratingCurveGrid.setMinValue(stageGridJson.getDouble("min"));
