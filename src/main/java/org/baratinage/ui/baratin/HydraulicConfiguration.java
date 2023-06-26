@@ -224,69 +224,103 @@ class HydraulicConfiguration extends BaRatinItem
 
     @Override
     public void fromJSON(JSONObject json) {
+        System.out.println("#######################################");
+        System.out.println("#######################################");
+        System.out.println("#######################################");
+        System.out.println("#######################################");
 
-        setName(json.getString("name"));
-        setDescription(json.getString("description"));
+        if (json.has("name")) {
+            setName(json.getString("name"));
+        } else {
+            System.out.println("MISSING 'name'");
+        }
+
+        if (json.has("description")) {
+            setDescription(json.getString("description"));
+        } else {
+            System.out.println("MISSING 'description'");
+        }
 
         // **********************************************************
         // ui only elements
-        JSONObject uiJson = json.getJSONObject("ui");
-        controlMatrix.setIsReversed(uiJson.getBoolean("reversedControlMatrix"));
+        if (json.has("ui")) {
+            JSONObject uiJson = json.getJSONObject("ui");
+            controlMatrix.setIsReversed(uiJson.getBoolean("reversedControlMatrix"));
+        } else {
+            System.out.println("MISSING 'ui'");
+        }
 
         // **********************************************************
         // Control matrix
-        String stringMatrix = (String) json.get("controlMatrix");
-        String[] stringMatrixRow = stringMatrix.split(";");
-        int n = stringMatrixRow.length;
-        boolean[][] matrix = new boolean[n][n];
-        char one = "1".charAt(0);
-        for (int i = 0; i < n; i++) {
-            for (int j = 0; j < n; j++) {
-                matrix[i][j] = stringMatrixRow[i].charAt(j) != one;
+        if (json.has("controlMatrix")) {
+            String stringMatrix = (String) json.get("controlMatrix");
+            String[] stringMatrixRow = stringMatrix.split(";");
+            int n = stringMatrixRow.length;
+            boolean[][] matrix = new boolean[n][n];
+            char one = "1".charAt(0);
+            for (int i = 0; i < n; i++) {
+                for (int j = 0; j < n; j++) {
+                    matrix[i][j] = stringMatrixRow[i].charAt(j) != one;
+                }
             }
+            controlMatrix.setControlMatrix(matrix);
+        } else {
+            System.out.println("MISSING 'controlMatrix'");
         }
-        controlMatrix.setControlMatrix(matrix);
 
         // **********************************************************
         // Hydraulic controls
-        JSONArray jsonHydraulicControls = (JSONArray) json.get("hydraulicControls");
+        if (json.has("hydraulicControls")) {
+            JSONArray jsonHydraulicControls = (JSONArray) json.get("hydraulicControls");
 
-        List<OneHydraulicControl> hydraulicControlList = new ArrayList<>();
+            List<OneHydraulicControl> hydraulicControlList = new ArrayList<>();
 
-        for (int k = 0; k < jsonHydraulicControls.length(); k++) {
-            JSONObject jsonHydraulicControl = (JSONObject) jsonHydraulicControls.get(k);
+            for (int k = 0; k < jsonHydraulicControls.length(); k++) {
+                JSONObject jsonHydraulicControl = (JSONObject) jsonHydraulicControls.get(k);
 
-            OneHydraulicControl hydraulicControl = new OneHydraulicControl();
-            hydraulicControl.setName((String) jsonHydraulicControl.get("name"));
-            hydraulicControl.setActivationStage(((Number) jsonHydraulicControl.get("activationStage")).doubleValue());
-            hydraulicControl
-                    .setActivationStageUncertainty(
-                            ((Number) jsonHydraulicControl.get("activationStageUncertainty")).doubleValue());
-            hydraulicControl.setCoefficient(((Number) jsonHydraulicControl.get("coefficient")).doubleValue());
-            hydraulicControl.setCoefficientUncertainty(
-                    ((Number) jsonHydraulicControl.get("coefficientUncertainty")).doubleValue());
-            hydraulicControl.setExponent(((Number) jsonHydraulicControl.get("exponent")).doubleValue());
-            hydraulicControl
-                    .setExponentUncertainty(((Number) jsonHydraulicControl.get("exponentUncertainty")).doubleValue());
+                OneHydraulicControl hydraulicControl = new OneHydraulicControl();
+                hydraulicControl.setName((String) jsonHydraulicControl.get("name"));
+                hydraulicControl
+                        .setActivationStage(((Number) jsonHydraulicControl.get("activationStage")).doubleValue());
+                hydraulicControl
+                        .setActivationStageUncertainty(
+                                ((Number) jsonHydraulicControl.get("activationStageUncertainty")).doubleValue());
+                hydraulicControl.setCoefficient(((Number) jsonHydraulicControl.get("coefficient")).doubleValue());
+                hydraulicControl.setCoefficientUncertainty(
+                        ((Number) jsonHydraulicControl.get("coefficientUncertainty")).doubleValue());
+                hydraulicControl.setExponent(((Number) jsonHydraulicControl.get("exponent")).doubleValue());
+                hydraulicControl
+                        .setExponentUncertainty(
+                                ((Number) jsonHydraulicControl.get("exponentUncertainty")).doubleValue());
 
-            hydraulicControlList.add(hydraulicControl);
+                hydraulicControlList.add(hydraulicControl);
+            }
+
+            hydraulicControls.setHydraulicControls(hydraulicControlList);
+
+        } else {
+            System.out.println("MISSING 'hydraulicControls'");
         }
-
-        hydraulicControls.setHydraulicControls(hydraulicControlList);
-
         // **********************************************************
         // Stage grid configuration
 
-        JSONObject stageGridJson = json.getJSONObject("stageGridConfig");
-        priorRatingCurveStageGrid.setMinValue(stageGridJson.getDouble("min"));
-        priorRatingCurveStageGrid.setMaxValue(stageGridJson.getDouble("max"));
-        priorRatingCurveStageGrid.setStepValue(stageGridJson.getDouble("step"));
+        if (json.has("stageGridConfig")) {
 
+            JSONObject stageGridJson = json.getJSONObject("stageGridConfig");
+            priorRatingCurveStageGrid.setMinValue(stageGridJson.getDouble("min"));
+            priorRatingCurveStageGrid.setMaxValue(stageGridJson.getDouble("max"));
+            priorRatingCurveStageGrid.setStepValue(stageGridJson.getDouble("step"));
+
+        } else {
+            System.out.println("MISSING 'stageGridConfig'");
+        }
         // **********************************************************
         // prior rating curve BaM results
         if (json.has("bamRunZipFileName")) {
             String bamRunZipFileName = json.getString("bamRunZipFileName");
             priorRatingCurve.setBamRunZipFileName(bamRunZipFileName);
+        } else {
+            System.out.println("MISSING 'bamRunZipFileName'");
         }
 
         checkPriorRatingCurveSync();
