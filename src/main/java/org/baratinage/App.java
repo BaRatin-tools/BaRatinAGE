@@ -31,6 +31,11 @@ public class App {
 
     public static void main(String[] args) {
 
+        // TODO: implement opening .bam file from OS file explorer
+        for (String arg : args) {
+            System.out.println(arg);
+        }
+
         System.out.println("App.TEMP_DIR = " + App.TEMP_DIR);
         File tD = new File(App.TEMP_DIR);
         boolean created = tD.mkdirs();
