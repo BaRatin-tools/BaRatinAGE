@@ -1,6 +1,7 @@
 package org.baratinage.ui.component;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import org.baratinage.ui.bam.IDataset;
 import org.baratinage.utils.ReadFile;
@@ -37,6 +38,29 @@ public class ImportedDataset implements IDataset {
 
         this.data = data;
         this.headers = headers;
+    }
+
+    public List<double[]> getData() {
+        // Note: only copy the main data container!
+        List<double[]> dataCopy = new ArrayList<>();
+        for (int k = 0; k < data.size(); k++) {
+            dataCopy.add(data.get(k));
+        }
+        return dataCopy;
+    }
+
+    @Override
+    public int hashCode() {
+        Integer hashSum = 0;
+        for (int k = 0; k < data.size(); k++) {
+            hashSum += headers[k].hashCode();
+            int s = 0;
+            for (Double d : data.get(k)) {
+                s += d.hashCode();
+            }
+            hashSum += s;
+        }
+        return hashSum.hashCode();
     }
 
     public void writeDataFile(String dataFilePath) {
