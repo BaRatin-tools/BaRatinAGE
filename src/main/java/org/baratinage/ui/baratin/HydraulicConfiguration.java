@@ -93,8 +93,9 @@ class HydraulicConfiguration extends BaRatinItem
 
     private void checkPriorRatingCurveSync() {
         if (hasBackup("prior_rc")) {
+            String[] keysToIgnore = new String[] { "ui", "name", "description" };
             priorRatingCurve
-                    .setOutdated(!isBackupInSync("prior_rc", new String[] { "ui", "name", "description" }, true));
+                    .setOutdated(!isBackupInSyncIgnoringKeys("prior_rc", keysToIgnore));
         }
     }
 

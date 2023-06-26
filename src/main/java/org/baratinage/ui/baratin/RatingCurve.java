@@ -220,9 +220,8 @@ public class RatingCurve extends BaRatinItem implements ICalibratedModel, IMcmc,
         if (hydraulicConfig != null) {
             System.out.println();
             if (hydraulicConfig.hasBackup("post_rc_" + ID)) {
-                if (!hydraulicConfig.isBackupInSync("post_rc_" + ID,
-                        new String[] { "ui", "name", "description", "bamRunZipFileName" },
-                        true)) {
+                String[] keysToIgnore = new String[] { "ui", "name", "description", "bamRunZipFileName" };
+                if (!hydraulicConfig.isBackupInSyncIgnoringKeys("post_rc_" + ID, keysToIgnore)) {
                     isOutdated = true;
                     OutOfSyncWarning outdatedHydrauConf = new OutOfSyncWarning();
                     outdatedHydrauConf
@@ -266,10 +265,8 @@ public class RatingCurve extends BaRatinItem implements ICalibratedModel, IMcmc,
 
         // synchronicity with stage grid
         if (hasBackup("post_rc")) {
-            if (!isBackupInSync(
-                    "post_rc",
-                    new String[] { "stageGridConfig" },
-                    false)) {
+            String[] keysToInclude = new String[] { "stageGridConfig" };
+            if (!isBackupInSyncIncludingKeys("post_rc", keysToInclude)) {
                 isOutdated = true;
                 OutOfSyncWarning stageGridConfigWarning = new OutOfSyncWarning();
                 stageGridConfigWarning.setMessageText("La grille de hauteur d'eau a été modifiée!");

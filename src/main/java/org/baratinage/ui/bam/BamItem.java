@@ -173,7 +173,7 @@ abstract public class BamItem extends GridPanel {
         backups.remove(id);
     }
 
-    public boolean isBackupInSync(String id, String[] keysToIgnoreOrConsider, boolean ignoreKeys) {
+    public boolean isBackupInSyncIgnoringKeys(String id, String[] keysToIgnore) {
         JSONObject currentStateJson = toJSON();
         String backupStateString = getBackup(id);
         if (backupStateString == null) {
@@ -181,29 +181,57 @@ abstract public class BamItem extends GridPanel {
             return true;
         }
         JSONObject backupStateJson = new JSONObject(backupStateString);
-        if (ignoreKeys) {
-            for (String key : keysToIgnoreOrConsider) {
-                if (currentStateJson.has(key)) {
-                    currentStateJson.remove(key);
-                }
-                if (backupStateJson.has(key)) {
-                    backupStateJson.remove(key);
-                }
+
+        for (String key : keysToIgnore) {
+            if (currentStateJson.has(key)) {
+                currentStateJson.remove(key);
             }
-        } else {
-            JSONObject filteredCurrentStateJson = new JSONObject();
-            JSONObject filteredBackupStateJson = new JSONObject();
-            for (String key : keysToIgnoreOrConsider) {
-                if (currentStateJson.has(key)) {
-                    filteredCurrentStateJson.put(key, currentStateJson.get(key));
-                }
-                if (backupStateJson.has(key)) {
-                    filteredBackupStateJson.put(key, backupStateJson.get(key));
-                }
+            if (backupStateJson.has(key)) {
+                backupStateJson.remove(key);
             }
-            currentStateJson = filteredCurrentStateJson;
-            backupStateJson = filteredBackupStateJson;
         }
+
+        String currentState = currentStateJson.toString();
+        String backupState = backupStateJson.toString();
+        return currentState.equals(backupState);
+    }
+
+    public boolean isBackupInSyncIncludingKeys(String id, String[] keysToInclude) {
+        JSONObject currentStateJson = toJSON();
+        String backupStateString = getBackup(id);
+        if (backupStateString == null) {
+            System.out.println("no backup with id '" + id + "'!");
+            return true;
+        }
+        JSONObject backupStateJson = new JSONObject(backupStateString);
+
+        JSONObject filteredCurrentStateJson = new JSONObject();
+        JSONObject filteredBackupStateJson = new JSONObject();
+        for (String key : keysToInclude) {
+            if (currentStateJson.has(key)) {
+                filteredCurrentStateJson.put(key, currentStateJson.get(key));
+            }
+            if (backupStateJson.has(key)) {
+                filteredBackupStateJson.put(key, backupStateJson.get(key));
+            }
+        }
+        currentStateJson = filteredCurrentStateJson;
+        backupStateJson = filteredBackupStateJson;
+
+        String currentState = currentStateJson.toString();
+        String backupState = backupStateJson.toString();
+
+        return currentState.equals(backupState);
+    }
+
+    public boolean isBackupInSync(String id) {
+        JSONObject currentStateJson = toJSON();
+        String backupStateString = getBackup(id);
+        if (backupStateString == null) {
+            System.out.println("no backup with id '" + id + "'!");
+            return true;
+        }
+        JSONObject backupStateJson = new JSONObject(backupStateString);
 
         String currentState = currentStateJson.toString();
         String backupState = backupStateJson.toString();
