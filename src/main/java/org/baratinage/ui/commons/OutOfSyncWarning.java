@@ -38,6 +38,10 @@ public class OutOfSyncWarning extends RowColPanel {
         cancelChangeBtn.setText(text);
     }
 
+    public void setCancelButtonEnable(boolean enable) {
+        cancelChangeBtn.setEnabled(enable);
+    }
+
     public void addActionListener(ActionListener l) {
         cancelChangeBtn.addActionListener(l);
     }
