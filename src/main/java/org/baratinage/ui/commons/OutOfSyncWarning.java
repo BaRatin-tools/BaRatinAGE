@@ -13,12 +13,16 @@ public class OutOfSyncWarning extends RowColPanel {
     private JLabel messageLabel;
     private JButton cancelChangeBtn;
 
-    public OutOfSyncWarning() {
+    public OutOfSyncWarning(boolean showButton) {
+
         messageLabel = new JLabel();
         cancelChangeBtn = new JButton();
 
         appendChild(messageLabel, 1);
-        appendChild(cancelChangeBtn, 0);
+
+        if (showButton) {
+            appendChild(cancelChangeBtn, 0);
+        }
 
         setBackground(App.INVALID_COLLOR);
 
