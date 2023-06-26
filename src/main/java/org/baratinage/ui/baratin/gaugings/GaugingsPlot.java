@@ -17,7 +17,7 @@ public class GaugingsPlot extends Plot {
         double[] x = gaugingDataset.getStageValues();
         double[] y = gaugingDataset.getDischargeValues();
         double[] u = gaugingDataset.getDischargePercentUncertainty();
-        boolean[] v = gaugingDataset.getActiveState();
+        boolean[] v = gaugingDataset.getActiveStateAsBoolean();
 
         int nTotal = x.length;
         int nActive = 0;

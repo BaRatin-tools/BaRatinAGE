@@ -1,7 +1,6 @@
 package org.baratinage.ui.baratin.gaugings;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.baratinage.ui.component.ImportedDataset;
@@ -10,22 +9,32 @@ import org.baratinage.utils.WriteFile;
 
 public class GaugingsDataset extends ImportedDataset {
 
-    boolean[] gaugingsActiveState;
+    // boolean[] gaugingsActiveState;
 
     public GaugingsDataset() {
         super();
     }
 
-    public GaugingsDataset(String name, List<double[]> data, String[] headers) {
-        super(name, data, headers);
+    public GaugingsDataset(String name, List<double[]> data) {
+        // super(name, data, headers);
+        // super(name, data, headers);
         // WARNINGS:
         // - data must have three columns! Stage, discharge and discharge uncertainty!
         // - uncertainty is specified in percent and represents extended (+/-)
         // uncertainty
-        gaugingsActiveState = new boolean[nRow];
+
+        double[] gaugingsActiveState = new double[nRow];
         for (int k = 0; k < nRow; k++) {
-            gaugingsActiveState[k] = true;
+            gaugingsActiveState[k] = 1;
         }
+        data.add(gaugingsActiveState);
+        // String[] fullHeaders = new String[headers.length];
+        // for (int k = 0; k < data.size() - 1; k++) {
+        // fullHeaders[k] = headers[k];
+        // }
+        // fullHeaders[3] = "active";
+
+        setData(data, new String[] { "h", "Q", "uQ_percent", "active" });
     }
 
     public double[] getStageValues() {
@@ -50,8 +59,17 @@ public class GaugingsDataset extends ImportedDataset {
         return u;
     }
 
-    public boolean[] getActiveState() {
-        return gaugingsActiveState;
+    public double[] getActiveStateAsDouble() {
+        return data.get(3);
+    }
+
+    public boolean[] getActiveStateAsBoolean() {
+        double[] activeStateAsDouble = getActiveStateAsDouble();
+        boolean[] activeStateAsBoolean = new boolean[activeStateAsDouble.length];
+        for (int k = 0; k < nRow; k++) {
+            activeStateAsBoolean[k] = activeStateAsDouble[k] == 1.0;
+        }
+        return activeStateAsBoolean;
     }
 
     public Gauging getGauging(int gaugingIndex) {
@@ -60,45 +78,28 @@ public class GaugingsDataset extends ImportedDataset {
                 row[0],
                 row[1],
                 row[2],
-                gaugingsActiveState[gaugingIndex]);
+                row[3] == 1.0);
     }
 
     public void setGauging(int gaugingIndex, Gauging newGauging) {
         data.get(0)[gaugingIndex] = newGauging.stage;
         data.get(1)[gaugingIndex] = newGauging.discharge;
         data.get(2)[gaugingIndex] = newGauging.dischargeUncertainty;
-        gaugingsActiveState[gaugingIndex] = newGauging.activeState;
-    }
-
-    private double[] getActiveStateAsDouble() {
-        double[] activeStateAsDouble = new double[nRow];
-        for (int k = 0; k < nRow; k++) {
-            activeStateAsDouble[k] = gaugingsActiveState[k] ? 1 : 0;
-        }
-        return activeStateAsDouble;
-    }
-
-    private void setActiveStateFromDouble(double[] activeStateAsDouble) {
-        gaugingsActiveState = new boolean[nRow];
-        for (int k = 0; k < nRow; k++) {
-            gaugingsActiveState[k] = activeStateAsDouble[k] == 1;
-        }
+        data.get(3)[gaugingIndex] = newGauging.activeState ? 1 : 0;
     }
 
     public void writeDataFile(String dataFilePath) {
-        List<double[]> dataToSave = new ArrayList<>();
-        for (double[] column : data) {
-            dataToSave.add(column);
-        }
-        dataToSave.add(getActiveStateAsDouble());
+        List<double[]> dataToSave = getData();
+
         try {
             WriteFile.writeMatrix(
                     dataFilePath,
                     dataToSave,
                     ";",
                     "NA",
-                    new String[] { "h", "Q", "uQ", "active" }); // unused on load, just to make it clear when opening
-                                                                // file outside of BaRatinage
+                    new String[] { "h", "Q", "uQ_percent", "active" }); // unused on load, just to make it clear when
+                                                                        // opening
+            // file outside of BaRatinage
         } catch (IOException e) {
             System.err.println("Failed to write data to file... (" + getName() + ")");
             e.printStackTrace();
@@ -116,8 +117,9 @@ public class GaugingsDataset extends ImportedDataset {
                     false,
                     false);
 
-            setData(dataToLoad.subList(0, 3), new String[] { "h", "Q", "uQ" });
-            setActiveStateFromDouble(dataToLoad.get(3));
+            // setData(dataToLoad.subList(0, 3), new String[] { "h", "Q", "uQ" });
+            super.setData(dataToLoad, new String[] { "h", "Q", "uQ_percent", "active" });
+            // setActiveStateFromDouble(dataToLoad.get(3));
 
         } catch (IOException e2) {
             System.out.println("Failed to read data file ...(" + getName() + ")");

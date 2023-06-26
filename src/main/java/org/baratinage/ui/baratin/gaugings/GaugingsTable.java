@@ -55,30 +55,10 @@ public class GaugingsTable extends RowColPanel {
 
     private class GaugingsTableModel extends AbstractTableModel {
 
-        // private double[] stageData;
-        // private double[] streamflowData;
-        // private double[] streamflowUncertaintyData;
-        // private boolean[] activeGaugings;
-        // private int nGaugings = 0;
         GaugingsDataset gaugingDataset;
 
         public void set(GaugingsDataset gaugingDataset) {
             this.gaugingDataset = gaugingDataset;
-            // int n = stageData.length;
-            // if (streamflowData.length != n)
-            // return;
-            // if (streamflowUncertaintyData.length != n)
-            // return;
-            // nGaugings = n;
-
-            // // this.stageData = stageData;
-            // // this.streamflowData = streamflowData;
-            // // this.streamflowUncertaintyData = streamflowUncertaintyData;
-
-            // activeGaugings = new boolean[n];
-            // for (int k = 0; k < n; k++) {
-            // activeGaugings[k] = true;
-            // }
         }
 
         @Override

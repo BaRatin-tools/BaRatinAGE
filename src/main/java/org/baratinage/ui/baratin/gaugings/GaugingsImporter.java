@@ -57,13 +57,12 @@ public class GaugingsImporter extends RowColPanel {
             data.add(rawDataset.getColumn(hIndex));
             data.add(rawDataset.getColumn(qIndex));
             data.add(rawDataset.getColumn(uqIndex));
-            String[] headers = new String[] {
-                    "h", "Q", "uQ_percent"
-            };
+            // String[] headers = new String[] {
+            // "h", "Q", "uQ_percent"
+            // };
             dataset = new GaugingsDataset(
                     rawDataset.getName(),
-                    data,
-                    headers);
+                    data);
             dialog.setVisible(false);
 
         });
