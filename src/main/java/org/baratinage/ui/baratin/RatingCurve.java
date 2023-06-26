@@ -72,12 +72,13 @@ public class RatingCurve extends BaRatinItem implements ICalibratedModel, IMcmc,
         hydraulicConfigPanel.appendChild(hydraulicConfigComboBox, 0);
 
         hydraulicConfigComboBox.addActionListener(e -> {
-            BamItem selectedBamItem = (BamItem) hydraulicConfigComboBox.getSelectedItem();
+            BamItem selectedBamItem = hydraulicConfigComboBox.getSelectedItem();
+
+            if (hydraulicConfig != null) {
+                hydraulicConfig.removeBamItemChild(this);
+            }
 
             if (selectedBamItem == null) {
-                if (hydraulicConfig != null) {
-                    hydraulicConfig.removeBamItemChild(this);
-                }
                 posteriorRatingCurve.setModelDefintion(null);
                 posteriorRatingCurve.setPriors(null);
                 hydraulicConfig = null;
@@ -106,12 +107,13 @@ public class RatingCurve extends BaRatinItem implements ICalibratedModel, IMcmc,
         gaugingsPanel.appendChild(gaugingsComboBox, 0);
 
         gaugingsComboBox.addActionListener(e -> {
-            BamItem selectedBamItem = (BamItem) gaugingsComboBox.getSelectedItem();
+            BamItem selectedBamItem = gaugingsComboBox.getSelectedItem();
+
+            if (gaugings != null) {
+                gaugings.removeBamItemChild(this);
+            }
 
             if (selectedBamItem == null) {
-                if (gaugings != null) {
-                    gaugings.removeBamItemChild(this);
-                }
                 posteriorRatingCurve.setCalibrationData(null);
                 gaugings = null;
                 return;
@@ -133,12 +135,13 @@ public class RatingCurve extends BaRatinItem implements ICalibratedModel, IMcmc,
         structErrorComboBox = new BamItemCombobox("Selectionner un modèle d'erreur structurelle");
         structErrorPanel.appendChild(structErrorComboBox, 0);
         structErrorComboBox.addActionListener(e -> {
-            BamItem selectedBamItem = (BamItem) structErrorComboBox.getSelectedItem();
+            BamItem selectedBamItem = structErrorComboBox.getSelectedItem();
+
+            if (structError != null) {
+                structError.removeBamItemChild(this);
+            }
 
             if (selectedBamItem == null) {
-                if (structError != null) {
-                    structError.removeBamItemChild(this);
-                }
                 posteriorRatingCurve.setStructuralErrorModel(null);
                 structError = null;
                 return;
@@ -217,14 +220,57 @@ public class RatingCurve extends BaRatinItem implements ICalibratedModel, IMcmc,
         boolean isOutdated = false;
         int insertionIndex = 1;
 
+        // ----------------------------------------------------------
+        // check if comboboxes have changed
+        boolean ignoreHydraulicConfigCheck = false;
+        if (hasBackup("post_rc")) {
+            if (!isBackupInSyncIncludingKeys("post_rc", new String[] { "hydraulicConfigurationId" })) {
+                boolean canBeRestore = false;
+                JSONObject json = new JSONObject(getBackup("post_rc"));
+                if (json.has("hydraulicConfigurationId")) {
+                    BamItem prevHydrauConfig = hydraulicConfigComboBox.getBamItemWithId(
+                            json.getString("hydraulicConfigurationId"));
+                    if (prevHydrauConfig != null) {
+                        canBeRestore = true;
+                    }
+                }
+
+                isOutdated = true;
+
+                OutOfSyncWarning outdatedHydrauConf = new OutOfSyncWarning(canBeRestore);
+                outdatedHydrauConf
+                        .setMessageText(canBeRestore ? "Vous avez changé de configuration hydraulique!"
+                                : "La configuration hydraulique a été supprimée!");
+
+                outdatedHydrauConf.setCancelButtonText(
+                        canBeRestore ? "Annuler" : "...");
+                outdatedHydrauConf.addActionListener((e) -> {
+                    JSONObject json2 = new JSONObject(getBackup("post_rc"));
+                    if (json2.has("hydraulicConfigurationId")) {
+                        BamItem toRestoreHydraulicConfig = hydraulicConfigComboBox.getBamItemWithId(
+                                json2.getString("hydraulicConfigurationId"));
+                        if (toRestoreHydraulicConfig != null) {
+                            hydraulicConfigComboBox.setSelectedItem(toRestoreHydraulicConfig);
+                            createBackup("post_rc");
+                        }
+                    }
+                });
+
+                outdatedInfoPanel.insertChild(outdatedHydrauConf, 0, insertionIndex);
+                insertionIndex++;
+
+                ignoreHydraulicConfigCheck = true;
+            }
+        }
+
         // synchronicity with hydraulic configuration
-        if (hydraulicConfig != null) {
+        if (hydraulicConfig != null && !ignoreHydraulicConfigCheck) {
             System.out.println();
             if (hydraulicConfig.hasBackup("post_rc_" + ID)) {
                 String[] keysToIgnore = new String[] { "ui", "name", "description", "bamRunZipFileName" };
                 if (!hydraulicConfig.isBackupInSyncIgnoringKeys("post_rc_" + ID, keysToIgnore)) {
                     isOutdated = true;
-                    OutOfSyncWarning outdatedHydrauConf = new OutOfSyncWarning();
+                    OutOfSyncWarning outdatedHydrauConf = new OutOfSyncWarning(true);
                     outdatedHydrauConf
                             .setMessageText("La configuration hydraulique a été modifiée!");
                     outdatedHydrauConf.setCancelButtonText(
@@ -259,6 +305,9 @@ public class RatingCurve extends BaRatinItem implements ICalibratedModel, IMcmc,
                             duplicatedHydrauConf.setName(name);
 
                             hydraulicConfigComboBox.setSelectedItem(duplicatedHydrauConf);
+
+                            createBackup("post_rc");
+
                             project.setCurrentBamItem(this);
                             checkSynchronicity();
                         }
@@ -275,7 +324,7 @@ public class RatingCurve extends BaRatinItem implements ICalibratedModel, IMcmc,
             String[] keysToInclude = new String[] { "stageGridConfig" };
             if (!isBackupInSyncIncludingKeys("post_rc", keysToInclude)) {
                 isOutdated = true;
-                OutOfSyncWarning stageGridConfigWarning = new OutOfSyncWarning();
+                OutOfSyncWarning stageGridConfigWarning = new OutOfSyncWarning(true);
                 stageGridConfigWarning.setMessageText("La grille de hauteur d'eau a été modifiée!");
                 stageGridConfigWarning.setCancelButtonText("Annuler les modifications");
                 stageGridConfigWarning.addActionListener((e) -> {
@@ -373,6 +422,8 @@ public class RatingCurve extends BaRatinItem implements ICalibratedModel, IMcmc,
         gaugingsComboBox.syncWithBamItemList(listOfGaugingsDataset);
         BamItemList listOfStructuralErrorModels = bamItemList.filterByType(ITEM_TYPE.STRUCTURAL_ERROR);
         structErrorComboBox.syncWithBamItemList(listOfStructuralErrorModels);
+
+        checkSynchronicity();
     }
 
 }
