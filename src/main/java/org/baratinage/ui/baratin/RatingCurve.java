@@ -214,6 +214,19 @@ public class RatingCurve extends BaRatinItem implements ICalibratedModel, IMcmc,
         checkSynchronicity();
     }
 
+    private HydraulicConfiguration getBackupHydraulicConfiguration() {
+        JSONObject json = getBackup("post_rc");
+        if (json.has("hydraulicConfigurationId")) {
+            BamItem backupHydraulicConfig = hydraulicConfigComboBox.getBamItemWithId(
+                    json.getString("hydraulicConfigurationId"));
+            if (backupHydraulicConfig != null) {
+
+                return (HydraulicConfiguration) backupHydraulicConfig;
+            }
+        }
+        return null;
+    }
+
     public void checkSynchronicity() {
 
         outdatedInfoPanel.clear();
@@ -225,34 +238,27 @@ public class RatingCurve extends BaRatinItem implements ICalibratedModel, IMcmc,
         boolean ignoreHydraulicConfigCheck = false;
         if (hasBackup("post_rc")) {
             if (!isBackupInSyncIncludingKeys("post_rc", new String[] { "hydraulicConfigurationId" })) {
-                boolean canBeRestore = false;
-                JSONObject json = getBackup("post_rc");
-                if (json.has("hydraulicConfigurationId")) {
-                    BamItem prevHydrauConfig = hydraulicConfigComboBox.getBamItemWithId(
-                            json.getString("hydraulicConfigurationId"));
-                    if (prevHydrauConfig != null) {
-                        canBeRestore = true;
-                    }
-                }
+                HydraulicConfiguration backupHydraulicConfig = getBackupHydraulicConfiguration();
 
                 isOutdated = true;
 
-                OutOfSyncWarning outdatedHydrauConf = new OutOfSyncWarning(canBeRestore);
-                outdatedHydrauConf
-                        .setMessageText(canBeRestore ? "Vous avez changé de configuration hydraulique!"
-                                : "La configuration hydraulique a été supprimée!");
-
-                outdatedHydrauConf.setCancelButtonText(
-                        canBeRestore ? "Annuler" : "...");
+                OutOfSyncWarning outdatedHydrauConf = new OutOfSyncWarning(true);
+                String message = "Vous avez changé de configuration hydraulique!";
+                // if (backupHydraulicConfig == null) {
+                // message = message += ""
+                // }
+                // message = backupHydraulicConfig == null ? message
+                // outdatedHydrauConf
+                // .setMessageText(backupHydraulicConfig != null ? "Vous avez changé de
+                // configuration hydraulique!"
+                // : "La configuration hydraulique a été supprimée!");
+                outdatedHydrauConf.setMessageText(message);
+                outdatedHydrauConf.setCancelButtonText("Annuler");
+                outdatedHydrauConf.setCancelButtonEnable(backupHydraulicConfig != null);
                 outdatedHydrauConf.addActionListener((e) -> {
-                    JSONObject json2 = getBackup("post_rc");
-                    if (json2.has("hydraulicConfigurationId")) {
-                        BamItem toRestoreHydraulicConfig = hydraulicConfigComboBox.getBamItemWithId(
-                                json2.getString("hydraulicConfigurationId"));
-                        if (toRestoreHydraulicConfig != null) {
-                            hydraulicConfigComboBox.setSelectedItem(toRestoreHydraulicConfig);
-                            createBackup("post_rc");
-                        }
+                    if (backupHydraulicConfig != null) {
+                        hydraulicConfigComboBox.setSelectedItem(backupHydraulicConfig);
+                        createBackup("post_rc");
                     }
                 });
 
