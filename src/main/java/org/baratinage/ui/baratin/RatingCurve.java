@@ -245,13 +245,15 @@ public class RatingCurve extends BaRatinItem implements ICalibratedModel, IMcmc,
                             // A possible solution would be to:
                             // - in fromJSON(), make sure that has(key) is used for every item
                             // - filter out the json object beforehand
+                            // see below.
 
-                            String name = duplicatedHydrauConf.getName();
-                            String desc = duplicatedHydrauConf.getDescription();
-                            duplicatedHydrauConf.fromJSON(new JSONObject(hydraulicConfig.getBackup("post_rc_" + ID)));
                             String timeStamp = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(new java.util.Date());
-                            duplicatedHydrauConf.setName(name + " (copie " + timeStamp + ")");
-                            duplicatedHydrauConf.setDescription(desc);
+                            String name = duplicatedHydrauConf.getName() + " (copie " + timeStamp + ")";
+
+                            JSONObject json = new JSONObject(hydraulicConfig.getBackup("post_rc_" + ID));
+                            json.remove("description");
+                            duplicatedHydrauConf.fromJSON(json);
+                            duplicatedHydrauConf.setName(name);
 
                             hydraulicConfigComboBox.setSelectedItem(duplicatedHydrauConf);
                             project.setCurrentBamItem(this);
