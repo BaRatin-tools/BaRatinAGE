@@ -244,6 +244,18 @@ public class RatingCurve extends BaRatinItem implements ICalibratedModel, IMcmc,
         return null;
     }
 
+    private StructuralError getBackupStructuralError() {
+        JSONObject json = getBackup("post_rc");
+        if (json.has("structuralErrorId")) {
+            BamItem backupStructError = structErrorComboBox.getBamItemWithId(
+                    json.getString("structuralErrorId"));
+            if (backupStructError != null) {
+                return (StructuralError) backupStructError;
+            }
+        }
+        return null;
+    }
+
     public void checkSynchronicity() {
 
         outdatedInfoPanel.clear();
@@ -254,6 +266,7 @@ public class RatingCurve extends BaRatinItem implements ICalibratedModel, IMcmc,
         // check if comboboxes have changed
         boolean ignoreHydraulicConfigCheck = false;
         boolean ignoreGaugingsCheck = false;
+        boolean ignoreStructErrorCheck = false;
         if (hasBackup("post_rc")) {
             if (!isBackupInSyncIncludingKeys("post_rc", new String[] { "hydraulicConfigurationId" })) {
                 HydraulicConfiguration backupHydraulicConfig = getBackupHydraulicConfiguration();
@@ -301,6 +314,29 @@ public class RatingCurve extends BaRatinItem implements ICalibratedModel, IMcmc,
 
                 ignoreGaugingsCheck = true;
             }
+            if (!isBackupInSyncIncludingKeys("post_rc", new String[] { "structuralErrorId" })) {
+                StructuralError backupStructError = getBackupStructuralError();
+
+                isOutdated = true;
+
+                OutOfSyncWarning outdatedStructError = new OutOfSyncWarning(true);
+                String message = "Vous avez changé de modèle d'erreur structurelle!";
+
+                outdatedStructError.setMessageText(message);
+                outdatedStructError.setCancelButtonText("Annuler");
+                outdatedStructError.setCancelButtonEnable(backupStructError != null);
+                outdatedStructError.addActionListener((e) -> {
+                    if (backupStructError != null) {
+                        structErrorComboBox.setSelectedItem(backupStructError);
+                        createBackup("post_rc");
+                    }
+                });
+
+                outdatedInfoPanel.insertChild(outdatedStructError, 0, insertionIndex);
+                insertionIndex++;
+
+                ignoreStructErrorCheck = true;
+            }
         }
 
         // synchronicity with hydraulic configuration
@@ -314,7 +350,7 @@ public class RatingCurve extends BaRatinItem implements ICalibratedModel, IMcmc,
                     outdatedHydrauConf
                             .setMessageText("La configuration hydraulique a été modifiée!");
                     outdatedHydrauConf.setCancelButtonText(
-                            "Annuler les modifications (duplique de la configuration hydraulique sans les modifications)");
+                            "Annuler les modifications (créer une copie sans modifications)");
                     outdatedHydrauConf.addActionListener((e) -> {
                         JSONObject backupJson = hydraulicConfig.getBackup("post_rc_" + ID);
                         if (backupJson != null) {
@@ -371,12 +407,12 @@ public class RatingCurve extends BaRatinItem implements ICalibratedModel, IMcmc,
                     outdatedGaugings
                             .setMessageText("Le jeu de jaugeages a été modifié!");
                     outdatedGaugings.setCancelButtonText(
-                            "Annuler les modifications (duplique le jeu de jaugeages sans les modifications)");
+                            "Annuler les modifications (créer une copie sans modifications)");
                     outdatedGaugings.addActionListener((e) -> {
                         JSONObject backupJson = gaugings.getBackup("post_rc_" + ID);
                         if (backupJson != null) {
                             BaratinProject project = (BaratinProject) App.MAIN_FRAME.getCurrentProject();
-                            Gaugings duplicatedGaugings = gaugings.clone(UUID.randomUUID().toString());
+                            Gaugings duplicatedGaugings = (Gaugings) gaugings.clone(UUID.randomUUID().toString());
                             project.addGaugings(duplicatedGaugings);
 
                             // FIXME: same as above
@@ -399,6 +435,52 @@ public class RatingCurve extends BaRatinItem implements ICalibratedModel, IMcmc,
                         }
                     });
                     outdatedInfoPanel.insertChild(outdatedGaugings, 0, insertionIndex);
+                    insertionIndex++;
+                }
+
+            }
+        }
+
+        // synchronicity with structural error
+        if (structError != null && !ignoreStructErrorCheck) {
+            if (structError.hasBackup("post_rc_" + ID)) {
+
+                // gaugings.
+                String[] keysToIgnore = new String[] { "name", "description" };
+                if (!structError.isBackupInSyncIgnoringKeys("post_rc_" + ID, keysToIgnore)) {
+                    isOutdated = true;
+                    OutOfSyncWarning outdatedStructError = new OutOfSyncWarning(true);
+                    outdatedStructError
+                            .setMessageText("Le modèle d'erreur structurelle a été modifié!");
+                    outdatedStructError.setCancelButtonText(
+                            "Annuler les modification (créer une copie sans modifications)");
+                    outdatedStructError.addActionListener((e) -> {
+                        JSONObject backupJson = structError.getBackup("post_rc_" + ID);
+                        if (backupJson != null) {
+                            BaratinProject project = (BaratinProject) App.MAIN_FRAME.getCurrentProject();
+                            StructuralError duplicatedStructError = structError.clone(UUID.randomUUID().toString());
+                            project.addStructuralErrorModel(duplicatedStructError);
+
+                            // FIXME: same as above
+
+                            String timeStamp = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(new java.util.Date());
+                            String name = duplicatedStructError.getName() + " (copie " + timeStamp + ")";
+
+                            JSONObject json = structError.getBackup("post_rc_" + ID);
+                            json.remove("name");
+                            json.remove("description");
+                            duplicatedStructError.fromJSON(json);
+                            duplicatedStructError.setName(name);
+
+                            structErrorComboBox.setSelectedItem(duplicatedStructError);
+
+                            createBackup("post_rc");
+
+                            project.setCurrentBamItem(this);
+                            checkSynchronicity();
+                        }
+                    });
+                    outdatedInfoPanel.insertChild(outdatedStructError, 0, insertionIndex);
                     insertionIndex++;
                 }
 
