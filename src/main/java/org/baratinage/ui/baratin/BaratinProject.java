@@ -160,11 +160,21 @@ public class BaratinProject extends BamProject {
         return hydroConf;
     }
 
-    private Gaugings addGaugings() {
+    public Gaugings addGaugings(Gaugings gaugingsItem) {
+        ExplorerItem explorerItem = new ExplorerItem(
+                gaugingsItem.ID,
+                gaugingsItem.getName(),
+                gaugingsIconPath,
+                gaugings);
+        addItem(gaugingsItem, explorerItem);
+        return gaugingsItem;
+    }
+
+    public Gaugings addGaugings() {
         return addGaugings(UUID.randomUUID().toString());
     }
 
-    private Gaugings addGaugings(String uuid) {
+    public Gaugings addGaugings(String uuid) {
         Gaugings gaugingsItem = new Gaugings(uuid);
         this.getBamItems().addChangeListener(gaugingsItem);
         ExplorerItem explorerItem = new ExplorerItem(
@@ -218,8 +228,12 @@ public class BaratinProject extends BamProject {
     @Override
     public void fromJSON(JSONObject json) {
         JSONArray items = json.getJSONArray("items");
+        // FIXME: order matter! Children should come last!
+
+        // Dealing with root items (items with no parent)
+
         for (Object item : items) {
-            System.out.println("---");
+            // System.out.println("---");
             JSONObject jsonObj = (JSONObject) item;
             BamItem.ITEM_TYPE itemType = BamItem.ITEM_TYPE.valueOf(jsonObj.getString("type"));
             String uuid = jsonObj.getString("uuid");
@@ -232,9 +246,24 @@ public class BaratinProject extends BamProject {
             } else if (itemType == BamItem.ITEM_TYPE.STRUCTURAL_ERROR) {
                 bamItem = addStructuralErrorModel(uuid);
             } else if (itemType == BamItem.ITEM_TYPE.RATING_CURVE) {
-                bamItem = addRatingCurve(uuid);
+                continue;
             } else {
                 System.out.println("unknown bam item, skipping => " + itemType);
+                continue;
+            }
+            bamItem.fromFullJSON(jsonObj);
+        }
+
+        // Dealing with children (rating curve);
+        for (Object item : items) {
+            JSONObject jsonObj = (JSONObject) item;
+            BamItem.ITEM_TYPE itemType = BamItem.ITEM_TYPE.valueOf(jsonObj.getString("type"));
+            String uuid = jsonObj.getString("uuid");
+
+            BamItem bamItem;
+            if (itemType == BamItem.ITEM_TYPE.RATING_CURVE) {
+                bamItem = addRatingCurve(uuid);
+            } else {
                 continue;
             }
             bamItem.fromFullJSON(jsonObj);
