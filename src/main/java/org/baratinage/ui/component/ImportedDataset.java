@@ -60,7 +60,8 @@ public class ImportedDataset implements IDataset {
             }
             hashSum += s;
         }
-        return hashSum.hashCode();
+        int hc = hashSum.hashCode();
+        return hc < 0 ? hc * -1 : hc;
     }
 
     public void writeDataFile(String dataFilePath) {
