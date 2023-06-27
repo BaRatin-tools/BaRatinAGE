@@ -1,11 +1,8 @@
 package org.baratinage.ui.baratin.gaugings;
 
-import java.io.IOException;
 import java.util.List;
 
 import org.baratinage.ui.component.ImportedDataset;
-import org.baratinage.utils.ReadFile;
-import org.baratinage.utils.WriteFile;
 
 public class GaugingsDataset extends ImportedDataset {
 
@@ -19,12 +16,14 @@ public class GaugingsDataset extends ImportedDataset {
         // - uncertainty is specified in percent and represents extended (+/-)
         // uncertainty
 
+        int nRow = data.get(0).length;
         double[] gaugingsActiveState = new double[nRow];
         for (int k = 0; k < nRow; k++) {
             gaugingsActiveState[k] = 1;
         }
         data.add(gaugingsActiveState);
         setData(data, new String[] { "h", "Q", "uQ_percent", "active" });
+        setName(name);
     }
 
     public double[] getStageValues() {
@@ -76,43 +75,6 @@ public class GaugingsDataset extends ImportedDataset {
         data.get(1)[gaugingIndex] = newGauging.discharge;
         data.get(2)[gaugingIndex] = newGauging.dischargeUncertainty;
         data.get(3)[gaugingIndex] = newGauging.activeState ? 1 : 0;
-    }
-
-    public void writeDataFile(String dataFilePath) {
-        List<double[]> dataToSave = getData();
-
-        try {
-            WriteFile.writeMatrix(
-                    dataFilePath,
-                    dataToSave,
-                    ";",
-                    "NA",
-                    new String[] { "h", "Q", "uQ_percent", "active" }); // unused on load, just to make it clear when
-                                                                        // opening
-            // file outside of BaRatinage
-        } catch (IOException e) {
-            System.err.println("Failed to write data to file... (" + getName() + ")");
-            e.printStackTrace();
-        }
-    }
-
-    public void setDataFromFile(String dataFilePath) {
-        try {
-            List<double[]> dataToLoad = ReadFile.readMatrix(
-                    dataFilePath,
-                    ";",
-                    1,
-                    Integer.MAX_VALUE,
-                    "NA",
-                    false,
-                    false);
-
-            super.setData(dataToLoad, new String[] { "h", "Q", "uQ_percent", "active" });
-
-        } catch (IOException e2) {
-            System.out.println("Failed to read data file ...(" + getName() + ")");
-            e2.printStackTrace();
-        }
     }
 
 }
