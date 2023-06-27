@@ -202,13 +202,11 @@ abstract public class BamItem extends GridPanel {
         String currentState = currentStateJson.toString();
         String backupState = backupStateJson.toString();
 
-        System.out.println("*************************************");
-        System.out.println(this);
-        System.out.println("*************************************");
+        System.out.println("***********************************");
         System.out.println(currentState);
-        System.out.println("---");
+        System.out.println("--");
         System.out.println(backupState);
-        System.out.println("-------------------------------------");
+        System.out.println("***********************************");
 
         return currentState.equals(backupState);
     }
@@ -236,15 +234,6 @@ abstract public class BamItem extends GridPanel {
 
         String currentState = currentStateJson.toString();
         String backupState = backupStateJson.toString();
-
-        System.out.println("*************************************");
-        System.out.println(this);
-        System.out.println("*************************************");
-        System.out.println(currentState);
-        System.out.println("---");
-        System.out.println(backupState);
-        System.out.println("-------------------------------------");
-
         return currentState.equals(backupState);
     }
 
@@ -258,14 +247,6 @@ abstract public class BamItem extends GridPanel {
 
         String currentState = currentStateJson.toString();
         String backupState = backupStateJson.toString();
-
-        System.out.println("*************************************");
-        System.out.println(this);
-        System.out.println("*************************************");
-        System.out.println(currentState);
-        System.out.println("---");
-        System.out.println(backupState);
-        System.out.println("-------------------------------------");
         return currentState.equals(backupState);
     }
 }
