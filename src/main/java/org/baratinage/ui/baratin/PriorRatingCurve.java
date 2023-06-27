@@ -218,7 +218,7 @@ public class PriorRatingCurve extends GridPanel {
                         return;
                 }
 
-                File targetTempDir = Path.of(App.TEMP_DIR, "unzip").toFile();
+                File targetTempDir = Path.of(App.TEMP_DIR, bamRunZipFileName + "_unzip").toFile();
                 targetTempDir.mkdir();
                 System.out.println("Target dir = " + targetTempDir);
                 boolean unzipSuccess = ReadWriteZip.unzip(Path.of(App.TEMP_DIR, bamRunZipFileName).toString(),

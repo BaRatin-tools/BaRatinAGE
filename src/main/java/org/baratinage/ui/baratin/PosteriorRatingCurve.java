@@ -324,7 +324,7 @@ public class PosteriorRatingCurve extends RowColPanel implements ICalibratedMode
     // FIXME: general approach may be questionnable? think through. refactor?
     public void setBamRunZipFileName(String bamRunZipFileName) {
 
-        File targetTempDir = Path.of(App.TEMP_DIR, "unzip").toFile();
+        File targetTempDir = Path.of(App.TEMP_DIR, bamRunZipFileName + "_unzip").toFile();
         targetTempDir.mkdir();
         System.out.println("Target dir = " + targetTempDir);
         boolean unzipSuccess = ReadWriteZip.unzip(Path.of(App.TEMP_DIR, bamRunZipFileName).toString(),
