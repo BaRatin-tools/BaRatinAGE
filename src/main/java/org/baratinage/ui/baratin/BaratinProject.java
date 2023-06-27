@@ -135,14 +135,14 @@ public class BaratinProject extends BamProject {
         super.deleteItem(bamItem, explorerItem);
     }
 
-    public HydraulicConfiguration addHydraulicConfig(HydraulicConfiguration hydroConf) {
+    public HydraulicConfiguration addHydraulicConfig(HydraulicConfiguration newHydrauConf) {
         ExplorerItem explorerItem = new ExplorerItem(
-                hydroConf.ID,
-                hydroConf.getName(),
+                newHydrauConf.ID,
+                newHydrauConf.getName(),
                 hydraulicConfigIconPath,
                 hydraulicConfig);
-        addItem(hydroConf, explorerItem);
-        return hydroConf;
+        addItem(newHydrauConf, explorerItem);
+        return newHydrauConf;
     }
 
     public HydraulicConfiguration addHydraulicConfig() {
@@ -160,14 +160,14 @@ public class BaratinProject extends BamProject {
         return hydroConf;
     }
 
-    public Gaugings addGaugings(Gaugings gaugingsItem) {
+    public Gaugings addGaugings(Gaugings newGaugings) {
         ExplorerItem explorerItem = new ExplorerItem(
-                gaugingsItem.ID,
-                gaugingsItem.getName(),
+                newGaugings.ID,
+                newGaugings.getName(),
                 gaugingsIconPath,
                 gaugings);
-        addItem(gaugingsItem, explorerItem);
-        return gaugingsItem;
+        addItem(newGaugings, explorerItem);
+        return newGaugings;
     }
 
     public Gaugings addGaugings() {
@@ -186,11 +186,22 @@ public class BaratinProject extends BamProject {
         return gaugingsItem;
     }
 
-    private StructuralError addStructuralErrorModel() {
+    public StructuralError addStructuralErrorModel(StructuralError newStructError) {
+        this.getBamItems().addChangeListener(newStructError);
+        ExplorerItem explorerItem = new ExplorerItem(
+                newStructError.ID,
+                newStructError.getName(),
+                structuralErrIconPath,
+                structuralError);
+        addItem(newStructError, explorerItem);
+        return newStructError;
+    }
+
+    public StructuralError addStructuralErrorModel() {
         return addStructuralErrorModel(UUID.randomUUID().toString());
     }
 
-    private StructuralError addStructuralErrorModel(String uuid) {
+    public StructuralError addStructuralErrorModel(String uuid) {
         StructuralError structuralErrorItem = new StructuralError(uuid);
         this.getBamItems().addChangeListener(structuralErrorItem);
         ExplorerItem explorerItem = new ExplorerItem(
