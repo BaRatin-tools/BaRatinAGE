@@ -29,6 +29,8 @@ class HydraulicConfiguration extends BaRatinItem
     private RatingCurveStageGrid priorRatingCurveStageGrid;
     private PriorRatingCurve priorRatingCurve;
 
+    private String jsonStringBackup;
+
     public HydraulicConfiguration(String uuid) {
         super(ITEM_TYPE.HYRAULIC_CONFIG, uuid);
 
@@ -68,7 +70,8 @@ class HydraulicConfiguration extends BaRatinItem
         RowColPanel priorRatingCurvePanel = new RowColPanel(RowColPanel.AXIS.COL);
         priorRatingCurve = new PriorRatingCurve();
         priorRatingCurve.addPropertyChangeListener("bamHasRun", (e) -> {
-            createBackup("prior_rc");
+            // createBackup("prior_rc");
+            jsonStringBackup = toJSON().toString();
             checkPriorRatingCurveSync();
         });
         priorRatingCurve.setPredictionDataProvider(priorRatingCurveStageGrid);
@@ -92,10 +95,11 @@ class HydraulicConfiguration extends BaRatinItem
     }
 
     private void checkPriorRatingCurveSync() {
-        if (hasBackup("prior_rc")) {
+        if (jsonStringBackup != null) {
             String[] keysToIgnore = new String[] { "ui", "name", "description" };
             priorRatingCurve
-                    .setOutdated(!isBackupInSyncIgnoringKeys("prior_rc", keysToIgnore));
+                    .setOutdated(!isMatchingWith(jsonStringBackup, keysToIgnore, true));
+            // .setOutdated(!isBackupInSyncIgnoringKeys("prior_rc", keysToIgnore));
         }
     }
 

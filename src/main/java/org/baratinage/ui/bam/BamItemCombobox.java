@@ -33,7 +33,7 @@ public class BamItemCombobox extends JComboBox<BamItem> {
 
     };
 
-    public BamItemCombobox(String defaultItemName) {
+    public BamItemCombobox() {
         super();
 
         setRenderer(new DefaultListCellRenderer() {
@@ -67,11 +67,15 @@ public class BamItemCombobox extends JComboBox<BamItem> {
         });
         setValidity(false);
 
-        EMPTY_BAMITEM.setName(defaultItemName);
+        EMPTY_BAMITEM.setName("empty");
         model.addElement(EMPTY_BAMITEM);
 
         setModel(model);
 
+    }
+
+    public void setEmptyItemText(String text) {
+        EMPTY_BAMITEM.setName(text);
     }
 
     private void setValidity(boolean isValid) {
@@ -123,5 +127,12 @@ public class BamItemCombobox extends JComboBox<BamItem> {
             }
         }
         return null;
+    }
+
+    public void setSelectedBamItem(String id) {
+        BamItem item = getBamItemWithId(id);
+        if (item != null) {
+            setSelectedItem(item);
+        }
     }
 }

@@ -17,6 +17,7 @@ import org.json.JSONObject;
 
 abstract public class BamItem extends GridPanel {
 
+    // FIXME: should be in its own file.
     static public enum ITEM_TYPE {
         EMPTY_ITEM,
         HYRAULIC_CONFIG, // FIXME: typo
@@ -140,7 +141,7 @@ abstract public class BamItem extends GridPanel {
         json.put("name", name);
         json.put("description", description);
         json.put("content", toJSON());
-        json.put("backups", backups);
+        // json.put("backups", backups);
         return json;
     }
 
@@ -148,12 +149,12 @@ abstract public class BamItem extends GridPanel {
         name = json.getString("name");
         description = json.getString("description");
 
-        JSONObject backupsJson = json.getJSONObject("backups");
-        Iterator<String> it = backupsJson.keys();
-        while (it.hasNext()) {
-            String key = it.next();
-            backups.put(key, backupsJson.getString(key));
-        }
+        // JSONObject backupsJson = json.getJSONObject("backups");
+        // Iterator<String> it = backupsJson.keys();
+        // while (it.hasNext()) {
+        // String key = it.next();
+        // backups.put(key, backupsJson.getString(key));
+        // }
 
         fromJSON(json.getJSONObject("content"));
     }
@@ -163,90 +164,150 @@ abstract public class BamItem extends GridPanel {
         return "BamItem | " + TYPE + " | " + name + " (" + ID + ")";
     }
 
-    private HashMap<String, String> backups = new HashMap<>();
+    // private HashMap<String, String> backups = new HashMap<>();
 
-    public void createBackup(String id) {
-        backups.put(id, toJSON().toString());
-    }
+    // public void createBackup(String id) {
+    // backups.put(id, toJSON().toString());
+    // }
 
-    public boolean hasBackup(String id) {
-        return backups.containsKey(id);
-    }
+    // public boolean hasBackup(String id) {
+    // return backups.containsKey(id);
+    // }
 
-    public JSONObject getBackup(String id) {
-        String backupString = backups.get(id);
-        return backupString == null ? null : new JSONObject(backupString);
-    }
+    // public JSONObject getBackup(String id) {
+    // String backupString = backups.get(id);
+    // return backupString == null ? null : new JSONObject(backupString);
+    // }
 
-    public void deleteBackup(String id) {
-        backups.remove(id);
-    }
+    // public void deleteBackup(String id) {
+    // backups.remove(id);
+    // }
 
-    public boolean isBackupInSyncIgnoringKeys(String id, String[] keysToIgnore) {
-        JSONObject currentStateJson = toJSON();
-        JSONObject backupStateJson = getBackup(id);
-        if (backupStateJson == null) {
-            System.out.println("no backup with id '" + id + "'!");
-            return true;
+    // public boolean isMatchingWith(String backupId, String[] keys, boolean
+    // exclude) {
+    // if (!hasBackup(backupId)) {
+    // return false;
+    // }
+    // return isMatchingWith(getBackup(backupId), keys, exclude);
+    // }
+
+    public static boolean areMatching(JSONObject jsonA, JSONObject jsonB, String[] keys, boolean exclude) {
+        // JSONObject currentStateJson = toJSON();
+        // JSONObject compareStateJson = json;
+
+        if (exclude) {
+            for (String key : keys) {
+                if (jsonA.has(key)) {
+                    jsonA.remove(key);
+                }
+                if (jsonB.has(key)) {
+                    jsonB.remove(key);
+                }
+            }
+        } else {
+            JSONObject filteredJsonA = new JSONObject();
+            JSONObject filteredJsonB = new JSONObject();
+            for (String key : keys) {
+                if (jsonA.has(key)) {
+                    filteredJsonA.put(key, jsonA.get(key));
+                }
+                if (jsonB.has(key)) {
+                    filteredJsonB.put(key, jsonB.get(key));
+                }
+            }
+            jsonA = filteredJsonA;
+            jsonB = filteredJsonB;
         }
 
-        for (String key : keysToIgnore) {
-            if (currentStateJson.has(key)) {
-                currentStateJson.remove(key);
-            }
-            if (backupStateJson.has(key)) {
-                backupStateJson.remove(key);
-            }
-        }
-
-        String currentState = currentStateJson.toString();
-        String backupState = backupStateJson.toString();
+        String jsonStringA = jsonA.toString();
+        String jsonStringB = jsonB.toString();
 
         System.out.println("***********************************");
-        System.out.println(currentState);
+        System.out.println(jsonStringA);
         System.out.println("--");
-        System.out.println(backupState);
+        System.out.println(jsonStringB);
         System.out.println("***********************************");
 
-        return currentState.equals(backupState);
+        return jsonStringA.equals(jsonStringB);
     }
 
-    public boolean isBackupInSyncIncludingKeys(String id, String[] keysToInclude) {
-        JSONObject currentStateJson = toJSON();
-        JSONObject backupStateJson = getBackup(id);
-        if (backupStateJson == null) {
-            System.out.println("no backup with id '" + id + "'!");
-            return true;
-        }
-
-        JSONObject filteredCurrentStateJson = new JSONObject();
-        JSONObject filteredBackupStateJson = new JSONObject();
-        for (String key : keysToInclude) {
-            if (currentStateJson.has(key)) {
-                filteredCurrentStateJson.put(key, currentStateJson.get(key));
-            }
-            if (backupStateJson.has(key)) {
-                filteredBackupStateJson.put(key, backupStateJson.get(key));
-            }
-        }
-        currentStateJson = filteredCurrentStateJson;
-        backupStateJson = filteredBackupStateJson;
-
-        String currentState = currentStateJson.toString();
-        String backupState = backupStateJson.toString();
-        return currentState.equals(backupState);
+    public boolean isMatchingWith(String jsonString, String[] keys, boolean exclude) {
+        return isMatchingWith(new JSONObject(jsonString), keys, exclude);
     }
 
-    public boolean isBackupInSync(String id) {
-        JSONObject currentStateJson = toJSON();
-        JSONObject backupStateJson = getBackup(id);
-        if (backupStateJson == null) {
-            System.out.println("no backup with id '" + id + "'!");
-            return true;
-        }
-
-        String currentState = currentStateJson.toString();
-        String backupState = backupStateJson.toString();
-        return currentState.equals(backupState);
+    public boolean isMatchingWith(JSONObject json, String[] keys, boolean exclude) {
+        return areMatching(toJSON(), json, keys, exclude);
     }
+
+    // @Deprecated
+    // public boolean isBackupInSyncIgnoringKeys(String id, String[] keysToIgnore) {
+    // JSONObject currentStateJson = toJSON();
+    // JSONObject backupStateJson = getBackup(id);
+    // if (backupStateJson == null) {
+    // System.out.println("no backup with id '" + id + "'!");
+    // return true;
+    // }
+
+    // for (String key : keysToIgnore) {
+    // if (currentStateJson.has(key)) {
+    // currentStateJson.remove(key);
+    // }
+    // if (backupStateJson.has(key)) {
+    // backupStateJson.remove(key);
+    // }
+    // }
+
+    // String currentState = currentStateJson.toString();
+    // String backupState = backupStateJson.toString();
+
+    // System.out.println("***********************************");
+    // System.out.println(currentState);
+    // System.out.println("--");
+    // System.out.println(backupState);
+    // System.out.println("***********************************");
+
+    // return currentState.equals(backupState);
+    // }
+
+    // @Deprecated
+    // public boolean isBackupInSyncIncludingKeys(String id, String[] keysToInclude)
+    // {
+    // JSONObject currentStateJson = toJSON();
+    // JSONObject backupStateJson = getBackup(id);
+    // if (backupStateJson == null) {
+    // System.out.println("no backup with id '" + id + "'!");
+    // return true;
+    // }
+
+    // JSONObject filteredCurrentStateJson = new JSONObject();
+    // JSONObject filteredBackupStateJson = new JSONObject();
+    // for (String key : keysToInclude) {
+    // if (currentStateJson.has(key)) {
+    // filteredCurrentStateJson.put(key, currentStateJson.get(key));
+    // }
+    // if (backupStateJson.has(key)) {
+    // filteredBackupStateJson.put(key, backupStateJson.get(key));
+    // }
+    // }
+    // currentStateJson = filteredCurrentStateJson;
+    // backupStateJson = filteredBackupStateJson;
+
+    // String currentState = currentStateJson.toString();
+    // String backupState = backupStateJson.toString();
+    // return currentState.equals(backupState);
+    // }
+
+    // @Deprecated
+    // public boolean isBackupInSync(String id) {
+    // JSONObject currentStateJson = toJSON();
+    // JSONObject backupStateJson = getBackup(id);
+    // if (backupStateJson == null) {
+    // System.out.println("no backup with id '" + id + "'!");
+    // return true;
+    // }
+
+    // String currentState = currentStateJson.toString();
+    // String backupState = backupStateJson.toString();
+    // return currentState.equals(backupState);
+    // }
 }
