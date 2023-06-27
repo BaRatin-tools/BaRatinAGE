@@ -224,10 +224,6 @@ class HydraulicConfiguration extends BaRatinItem
 
     @Override
     public void fromJSON(JSONObject json) {
-        System.out.println("#######################################");
-        System.out.println("#######################################");
-        System.out.println("#######################################");
-        System.out.println("#######################################");
 
         if (json.has("name")) {
             setName(json.getString("name"));
