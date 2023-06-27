@@ -122,6 +122,8 @@ public class RatingCurve extends BaRatinItem implements ICalibratedModel, IMcmc,
             gaugings = (Gaugings) selectedBamItem;
             gaugings.addBamItemChild(this);
             posteriorRatingCurve.setCalibrationData(gaugings);
+
+            checkSynchronicity();
         });
 
         // **********************************************************
@@ -151,6 +153,7 @@ public class RatingCurve extends BaRatinItem implements ICalibratedModel, IMcmc,
             structError.addBamItemChild(this);
             posteriorRatingCurve.setStructuralErrorModel(structError);
 
+            checkSynchronicity();
         });
         // **********************************************************
 
@@ -227,6 +230,20 @@ public class RatingCurve extends BaRatinItem implements ICalibratedModel, IMcmc,
         return null;
     }
 
+    // FIXME: is there some refactoring possible with
+    // getBackupHydraulicConfiguration()?
+    private Gaugings getBackupGaugings() {
+        JSONObject json = getBackup("post_rc");
+        if (json.has("gaugingsId")) {
+            BamItem backupGaugings = gaugingsComboBox.getBamItemWithId(
+                    json.getString("gaugingsId"));
+            if (backupGaugings != null) {
+                return (Gaugings) backupGaugings;
+            }
+        }
+        return null;
+    }
+
     public void checkSynchronicity() {
 
         outdatedInfoPanel.clear();
@@ -236,6 +253,7 @@ public class RatingCurve extends BaRatinItem implements ICalibratedModel, IMcmc,
         // ----------------------------------------------------------
         // check if comboboxes have changed
         boolean ignoreHydraulicConfigCheck = false;
+        boolean ignoreGaugingsCheck = false;
         if (hasBackup("post_rc")) {
             if (!isBackupInSyncIncludingKeys("post_rc", new String[] { "hydraulicConfigurationId" })) {
                 HydraulicConfiguration backupHydraulicConfig = getBackupHydraulicConfiguration();
@@ -244,14 +262,7 @@ public class RatingCurve extends BaRatinItem implements ICalibratedModel, IMcmc,
 
                 OutOfSyncWarning outdatedHydrauConf = new OutOfSyncWarning(true);
                 String message = "Vous avez changé de configuration hydraulique!";
-                // if (backupHydraulicConfig == null) {
-                // message = message += ""
-                // }
-                // message = backupHydraulicConfig == null ? message
-                // outdatedHydrauConf
-                // .setMessageText(backupHydraulicConfig != null ? "Vous avez changé de
-                // configuration hydraulique!"
-                // : "La configuration hydraulique a été supprimée!");
+
                 outdatedHydrauConf.setMessageText(message);
                 outdatedHydrauConf.setCancelButtonText("Annuler");
                 outdatedHydrauConf.setCancelButtonEnable(backupHydraulicConfig != null);
@@ -267,11 +278,34 @@ public class RatingCurve extends BaRatinItem implements ICalibratedModel, IMcmc,
 
                 ignoreHydraulicConfigCheck = true;
             }
+            if (!isBackupInSyncIncludingKeys("post_rc", new String[] { "gaugingsId" })) {
+                Gaugings backupGaugings = getBackupGaugings();
+
+                isOutdated = true;
+
+                OutOfSyncWarning outdatedGaugings = new OutOfSyncWarning(true);
+                String message = "Vous avez changé de configuration hydraulique!";
+
+                outdatedGaugings.setMessageText(message);
+                outdatedGaugings.setCancelButtonText("Annuler");
+                outdatedGaugings.setCancelButtonEnable(backupGaugings != null);
+                outdatedGaugings.addActionListener((e) -> {
+                    if (backupGaugings != null) {
+                        gaugingsComboBox.setSelectedItem(backupGaugings);
+                        createBackup("post_rc");
+                    }
+                });
+
+                outdatedInfoPanel.insertChild(outdatedGaugings, 0, insertionIndex);
+                insertionIndex++;
+
+                ignoreGaugingsCheck = true;
+            }
         }
 
         // synchronicity with hydraulic configuration
         if (hydraulicConfig != null && !ignoreHydraulicConfigCheck) {
-            System.out.println();
+
             if (hydraulicConfig.hasBackup("post_rc_" + ID)) {
                 String[] keysToIgnore = new String[] { "ui", "name", "description", "bamRunZipFileName" };
                 if (!hydraulicConfig.isBackupInSyncIgnoringKeys("post_rc_" + ID, keysToIgnore)) {
@@ -319,6 +353,52 @@ public class RatingCurve extends BaRatinItem implements ICalibratedModel, IMcmc,
                         }
                     });
                     outdatedInfoPanel.insertChild(outdatedHydrauConf, 0, insertionIndex);
+                    insertionIndex++;
+                }
+
+            }
+        }
+
+        // synchronicity with gaugings
+        if (gaugings != null && !ignoreGaugingsCheck) {
+            if (gaugings.hasBackup("post_rc_" + ID)) {
+
+                // gaugings.
+                String[] keysToIgnore = new String[] { "name", "description" };
+                if (!gaugings.isBackupInSyncIgnoringKeys("post_rc_" + ID, keysToIgnore)) {
+                    isOutdated = true;
+                    OutOfSyncWarning outdatedGaugings = new OutOfSyncWarning(true);
+                    outdatedGaugings
+                            .setMessageText("Le jeu de jaugeages a été modifié!");
+                    outdatedGaugings.setCancelButtonText(
+                            "Annuler les modifications (duplique le jeu de jaugeages sans les modifications)");
+                    outdatedGaugings.addActionListener((e) -> {
+                        JSONObject backupJson = gaugings.getBackup("post_rc_" + ID);
+                        if (backupJson != null) {
+                            BaratinProject project = (BaratinProject) App.MAIN_FRAME.getCurrentProject();
+                            Gaugings duplicatedGaugings = gaugings.clone(UUID.randomUUID().toString());
+                            project.addGaugings(duplicatedGaugings);
+
+                            // FIXME: same as above
+
+                            String timeStamp = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(new java.util.Date());
+                            String name = duplicatedGaugings.getName() + " (copie " + timeStamp + ")";
+
+                            JSONObject json = gaugings.getBackup("post_rc_" + ID);
+                            json.remove("name");
+                            json.remove("description");
+                            duplicatedGaugings.fromJSON(json);
+                            duplicatedGaugings.setName(name);
+
+                            gaugingsComboBox.setSelectedItem(duplicatedGaugings);
+
+                            createBackup("post_rc");
+
+                            project.setCurrentBamItem(this);
+                            checkSynchronicity();
+                        }
+                    });
+                    outdatedInfoPanel.insertChild(outdatedGaugings, 0, insertionIndex);
                     insertionIndex++;
                 }
 
