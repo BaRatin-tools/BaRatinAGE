@@ -9,6 +9,8 @@ import javax.swing.DefaultListCellRenderer;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import org.baratinage.jbam.Distribution;
 import org.baratinage.jbam.Parameter;
@@ -35,6 +37,10 @@ public class ParameterPriorDist {
         nameLabel = new JLabel();
         initialGuessField = new NumberField();
         initialGuessField.setPlaceholder(Lg.getText("ui", "initial_guess"));
+        initialGuessField.addPropertyChangeListener("value", (e) -> {
+            fireChangeListener();
+        });
+
         parametersInputsPanel = new RowColPanel();
         parametersInputsPanel.setGap(5);
         parameterPriorFields = new ArrayList<>();
@@ -64,12 +70,16 @@ public class ParameterPriorDist {
                 for (String parameterName : currentDistribution.parameterNames) {
                     NumberField numberField = new NumberField();
                     numberField.setPlaceholder(Lg.getText("ui", parameterName));
+                    numberField.addPropertyChangeListener("value", (v) -> {
+                        fireChangeListener();
+                    });
                     parameterPriorFields.add(numberField);
                     parametersInputsPanel.appendChild(numberField);
 
                 }
                 parametersInputsPanel.repaint();
             }
+            fireChangeListener();
         });
 
         distComboBox.setSelectedItem(DISTRIB.GAUSSIAN);
@@ -91,14 +101,14 @@ public class ParameterPriorDist {
     }
 
     public Parameter getParameter() {
-        if (distComboBox.getSelectedItem() == null) {
-            return null;
-        }
+        // if (distComboBox.getSelectedItem() == null) {
+        // return null;
+        // }
         double initialGuess = initialGuessField.getValue();
 
-        if (initialGuess == NumberField.NaN) {
-            return null;
-        }
+        // if (initialGuess == NumberField.NaN) {
+        // return null;
+        // }
         DISTRIB d = (DISTRIB) distComboBox.getSelectedItem();
         int n = d.parameterNames.length;
         double[] parameterValues = new double[n];
@@ -108,6 +118,18 @@ public class ParameterPriorDist {
         Distribution distribution = new Distribution(d, parameterValues);
 
         return new Parameter(nameLabel.getText(), initialGuess, distribution);
+    }
+
+    private List<ChangeListener> changeListenerers = new ArrayList<>();
+
+    public void addChangeListener(ChangeListener l) {
+        changeListenerers.add(l);
+    }
+
+    private void fireChangeListener() {
+        for (ChangeListener l : changeListenerers) {
+            l.stateChanged(new ChangeEvent(this));
+        }
     }
 
 }
