@@ -19,6 +19,7 @@ import org.baratinage.ui.baratin.gaugings.GaugingsPlot;
 import org.baratinage.ui.baratin.gaugings.GaugingsTable;
 import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.ui.plot.PlotContainer;
+import org.baratinage.utils.Misc;
 import org.baratinage.ui.bam.BamItemList;
 import org.json.JSONObject;
 
@@ -133,7 +134,9 @@ public class Gaugings extends BaRatinItem implements ICalibrationData, BamItemLi
 
     @Override
     public CalibrationData getCalibrationData() {
-        return new CalibrationData(getName(), getInputs(), getOutputs());
+        String sanitizedName = Misc.sanitizeName(getName());
+        System.out.println(sanitizedName);
+        return new CalibrationData(sanitizedName, getInputs(), getOutputs());
     }
 
     @Override
