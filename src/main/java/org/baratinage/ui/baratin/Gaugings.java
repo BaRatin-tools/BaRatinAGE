@@ -1,5 +1,6 @@
 package org.baratinage.ui.baratin;
 
+import java.nio.file.Files;
 import java.nio.file.Path;
 
 import javax.swing.BorderFactory;
@@ -60,7 +61,7 @@ public class Gaugings extends BaRatinItem implements ICalibrationData, BamItemLi
             GaugingsImporter gaugingsImporter = new GaugingsImporter();
             gaugingsImporter.showDialog();
             GaugingsDataset newGaugingDataset = gaugingsImporter.getDataset();
-            if (newGaugingDataset != null && newGaugingDataset.getNumberOfColumns() == 3) {
+            if (newGaugingDataset != null && newGaugingDataset.getNumberOfColumns() == 4) {
                 gaugingDataset = newGaugingDataset;
                 updateTable();
             }
@@ -68,8 +69,8 @@ public class Gaugings extends BaRatinItem implements ICalibrationData, BamItemLi
 
         gaugingsTable = new GaugingsTable();
         gaugingsTable.getTableModel().addTableModelListener((e) -> {
-            System.out.println("Table has changed!");
             setPlot();
+            hasChanged();
         });
 
         importGaugingsPanel.appendChild(importDataButton, 0);
@@ -142,15 +143,18 @@ public class Gaugings extends BaRatinItem implements ICalibrationData, BamItemLi
 
     @Override
     public String[] getTempDataFileNames() {
-        return gaugingDataset == null ? new String[] {} : new String[] { getDataFileName() };
+        // writeDataFile();
+        return gaugingDataset == null ? new String[] {}
+                : new String[] { getDataFileName(gaugingDataset.getName(), gaugingDataset.hashCode()) };
     }
 
-    public String getDataFileName() {
-        return gaugingDataset == null ? null : gaugingDataset.getName() + "_" + ID + ".txt";
+    public String getDataFileName(String name, int hashCode) {
+        return gaugingDataset == null ? null : name + "_" + hashCode + ".txt";
     }
 
     @Override
     public JSONObject toJSON() {
+
         JSONObject json = new JSONObject();
         json.put("name", getName());
         json.put("description", getDescription());
@@ -158,11 +162,12 @@ public class Gaugings extends BaRatinItem implements ICalibrationData, BamItemLi
         if (gaugingDataset != null) {
             JSONObject gaugingDatasetJson = new JSONObject();
             gaugingDatasetJson.put("name", gaugingDataset.getName());
-            String dataFileName = getDataFileName();
-            String dataFilePath = Path.of(App.TEMP_DIR, dataFileName).toString();
-            gaugingDataset.writeDataFile(dataFilePath);
-            gaugingDatasetJson.put("dataFileName", dataFileName);
+            gaugingDatasetJson.put("hashCode", gaugingDataset.hashCode());
             json.put("gaugingDataset", gaugingDatasetJson);
+            String dataFilePath = Path.of(App.TEMP_DIR, getDataFileName(
+                    gaugingDataset.getName(),
+                    gaugingDataset.hashCode())).toString();
+            gaugingDataset.writeDataFile(dataFilePath);
         }
 
         return json;
@@ -170,29 +175,41 @@ public class Gaugings extends BaRatinItem implements ICalibrationData, BamItemLi
 
     @Override
     public void fromJSON(JSONObject json) {
-        // TODO Auto-generated method stub
-        // throw new UnsupportedOperationException("Unimplemented method 'fromJSON'");
-        System.out.println("GAUGINGS === " + json.getString("name"));
-        setName(json.getString("name"));
-        setDescription(json.getString("description"));
+
+        if (json.has("name")) {
+            setName(json.getString("name"));
+        }
+
+        if (json.has("description")) {
+            setDescription(json.getString("description"));
+        }
 
         if (json.has("gaugingDataset")) {
             JSONObject gaugingDatasetJson = json.getJSONObject("gaugingDataset");
-
             String name = gaugingDatasetJson.getString("name");
-            String dataFileName = gaugingDatasetJson.getString("dataFileName");
+            int hashCode = gaugingDatasetJson.getInt("hashCode");
+            // String dataFileName = gaugingDatasetJson.getString("dataFileName");
             gaugingDataset = new GaugingsDataset();
             gaugingDataset.setName(name);
-            String dataFilePath = Path.of(App.TEMP_DIR, dataFileName).toString();
-            gaugingDataset.setDataFromFile(dataFilePath);
+
+            String dataFilePath = Path.of(App.TEMP_DIR, getDataFileName(name, hashCode)).toString();
+            if (Files.exists(Path.of(dataFilePath))) {
+                System.out.println("Reading file ... (" + dataFilePath + ")");
+                gaugingDataset.setDataFromFile(dataFilePath);
+            } else {
+                System.err.println("No file found (" + dataFilePath + ")");
+            }
             updateTable();
         }
     }
 
     @Override
     public void onBamItemListChange(BamItemList bamItemList) {
-        // // TODO Auto-generated method stub
-        // throw new UnsupportedOperationException("Unimplemented method 'onChange'");
     }
 
+    public Gaugings clone(String uuid) {
+        Gaugings cloned = new Gaugings(uuid);
+        cloned.fromFullJSON(toFullJSON());
+        return cloned;
+    }
 }
