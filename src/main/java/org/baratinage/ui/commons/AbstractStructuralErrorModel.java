@@ -1,6 +1,11 @@
 package org.baratinage.ui.commons;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.swing.JLabel;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import org.baratinage.jbam.Parameter;
 import org.baratinage.jbam.StructuralErrorModel;
@@ -37,4 +42,17 @@ public abstract class AbstractStructuralErrorModel extends GridPanel implements 
     public abstract StructuralErrorModel getStructuralErrorModel();
 
     public abstract void setFromParameters(Parameter[] parameters);
+
+    private List<ChangeListener> changeListenerers = new ArrayList<>();
+
+    public void addChangeListener(ChangeListener l) {
+        changeListenerers.add(l);
+    }
+
+    protected void fireChangeListener() {
+        for (ChangeListener l : changeListenerers) {
+            l.stateChanged(new ChangeEvent(this));
+        }
+    }
+
 }

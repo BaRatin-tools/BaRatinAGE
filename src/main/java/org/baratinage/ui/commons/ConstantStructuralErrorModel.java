@@ -15,6 +15,9 @@ public class ConstantStructuralErrorModel extends AbstractStructuralErrorModel {
 
         g1parameter = new ParameterPriorDist();
         g1parameter.nameLabel.setText("<html>&gamma;<sub>1</sub></html>");
+        g1parameter.addChangeListener((e) -> {
+            fireChangeListener();
+        });
 
         insertChild(g1parameter.nameLabel, 0, 1);
         insertChild(g1parameter.initialGuessField, 1, 1);
