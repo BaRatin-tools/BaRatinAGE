@@ -2,14 +2,16 @@ package org.baratinage.ui.bam;
 
 import java.awt.Font;
 import java.awt.event.ActionListener;
-import java.util.HashMap;
-import java.util.Iterator;
+import java.util.ArrayList;
+import java.util.List;
 import java.awt.Component;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JSeparator;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import org.baratinage.ui.container.GridPanel;
 import org.baratinage.ui.container.RowColPanel;
@@ -18,6 +20,7 @@ import org.json.JSONObject;
 abstract public class BamItem extends GridPanel {
 
     // FIXME: should be in its own file.
+    // FIXME: should associate actual names
     static public enum ITEM_TYPE {
         EMPTY_ITEM,
         HYRAULIC_CONFIG, // FIXME: typo
@@ -95,6 +98,7 @@ abstract public class BamItem extends GridPanel {
         for (BamItem child : this.children) {
             child.parentHasChanged(this);
         }
+        fireChangeListeners();
     }
 
     public void addBamItemChild(BamItem childBamItem) {
@@ -124,6 +128,7 @@ abstract public class BamItem extends GridPanel {
         this.description = description;
     }
 
+    // FIXME: to delete
     public abstract void parentHasChanged(BamItem parent);
 
     public String[] getTempDataFileNames() {
@@ -141,21 +146,12 @@ abstract public class BamItem extends GridPanel {
         json.put("name", name);
         json.put("description", description);
         json.put("content", toJSON());
-        // json.put("backups", backups);
         return json;
     }
 
     public void fromFullJSON(JSONObject json) {
         name = json.getString("name");
         description = json.getString("description");
-
-        // JSONObject backupsJson = json.getJSONObject("backups");
-        // Iterator<String> it = backupsJson.keys();
-        // while (it.hasNext()) {
-        // String key = it.next();
-        // backups.put(key, backupsJson.getString(key));
-        // }
-
         fromJSON(json.getJSONObject("content"));
     }
 
@@ -164,36 +160,7 @@ abstract public class BamItem extends GridPanel {
         return "BamItem | " + TYPE + " | " + name + " (" + ID + ")";
     }
 
-    // private HashMap<String, String> backups = new HashMap<>();
-
-    // public void createBackup(String id) {
-    // backups.put(id, toJSON().toString());
-    // }
-
-    // public boolean hasBackup(String id) {
-    // return backups.containsKey(id);
-    // }
-
-    // public JSONObject getBackup(String id) {
-    // String backupString = backups.get(id);
-    // return backupString == null ? null : new JSONObject(backupString);
-    // }
-
-    // public void deleteBackup(String id) {
-    // backups.remove(id);
-    // }
-
-    // public boolean isMatchingWith(String backupId, String[] keys, boolean
-    // exclude) {
-    // if (!hasBackup(backupId)) {
-    // return false;
-    // }
-    // return isMatchingWith(getBackup(backupId), keys, exclude);
-    // }
-
     public static boolean areMatching(JSONObject jsonA, JSONObject jsonB, String[] keys, boolean exclude) {
-        // JSONObject currentStateJson = toJSON();
-        // JSONObject compareStateJson = json;
 
         if (exclude) {
             for (String key : keys) {
@@ -239,75 +206,19 @@ abstract public class BamItem extends GridPanel {
         return areMatching(toJSON(), json, keys, exclude);
     }
 
-    // @Deprecated
-    // public boolean isBackupInSyncIgnoringKeys(String id, String[] keysToIgnore) {
-    // JSONObject currentStateJson = toJSON();
-    // JSONObject backupStateJson = getBackup(id);
-    // if (backupStateJson == null) {
-    // System.out.println("no backup with id '" + id + "'!");
-    // return true;
-    // }
+    private final List<ChangeListener> changeListeners = new ArrayList<>();
 
-    // for (String key : keysToIgnore) {
-    // if (currentStateJson.has(key)) {
-    // currentStateJson.remove(key);
-    // }
-    // if (backupStateJson.has(key)) {
-    // backupStateJson.remove(key);
-    // }
-    // }
+    public void addChangeListener(ChangeListener l) {
+        changeListeners.add(l);
+    }
 
-    // String currentState = currentStateJson.toString();
-    // String backupState = backupStateJson.toString();
+    public void removeChangeListener(ChangeListener l) {
+        changeListeners.remove(l);
+    }
 
-    // System.out.println("***********************************");
-    // System.out.println(currentState);
-    // System.out.println("--");
-    // System.out.println(backupState);
-    // System.out.println("***********************************");
-
-    // return currentState.equals(backupState);
-    // }
-
-    // @Deprecated
-    // public boolean isBackupInSyncIncludingKeys(String id, String[] keysToInclude)
-    // {
-    // JSONObject currentStateJson = toJSON();
-    // JSONObject backupStateJson = getBackup(id);
-    // if (backupStateJson == null) {
-    // System.out.println("no backup with id '" + id + "'!");
-    // return true;
-    // }
-
-    // JSONObject filteredCurrentStateJson = new JSONObject();
-    // JSONObject filteredBackupStateJson = new JSONObject();
-    // for (String key : keysToInclude) {
-    // if (currentStateJson.has(key)) {
-    // filteredCurrentStateJson.put(key, currentStateJson.get(key));
-    // }
-    // if (backupStateJson.has(key)) {
-    // filteredBackupStateJson.put(key, backupStateJson.get(key));
-    // }
-    // }
-    // currentStateJson = filteredCurrentStateJson;
-    // backupStateJson = filteredBackupStateJson;
-
-    // String currentState = currentStateJson.toString();
-    // String backupState = backupStateJson.toString();
-    // return currentState.equals(backupState);
-    // }
-
-    // @Deprecated
-    // public boolean isBackupInSync(String id) {
-    // JSONObject currentStateJson = toJSON();
-    // JSONObject backupStateJson = getBackup(id);
-    // if (backupStateJson == null) {
-    // System.out.println("no backup with id '" + id + "'!");
-    // return true;
-    // }
-
-    // String currentState = currentStateJson.toString();
-    // String backupState = backupStateJson.toString();
-    // return currentState.equals(backupState);
-    // }
+    public void fireChangeListeners() {
+        for (ChangeListener l : changeListeners) {
+            l.stateChanged(new ChangeEvent(this));
+        }
+    }
 }
