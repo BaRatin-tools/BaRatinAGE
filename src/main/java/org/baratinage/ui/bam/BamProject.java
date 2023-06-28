@@ -216,12 +216,20 @@ public abstract class BamProject extends RowColPanel {
 
             Files.copy(mainConfigFile.toPath(), zipOutStream);
 
+            List<String> usedNames = new ArrayList<>();
             for (BamItem item : items) {
                 String[] dataFileNames = item.getTempDataFileNames();
+
                 for (String dfp : dataFileNames) {
                     File f = new File(Path.of(App.TEMP_DIR, dfp).toString());
                     System.out.println("Including file '" + f + "'...");
-                    ZipEntry ze = new ZipEntry(f.getName());
+                    String name = f.getName();
+                    if (usedNames.stream().anyMatch(s -> s.equals(name))) {
+                        System.out.println("Duplicated zip entry '" + name + "' ignored!");
+                        continue;
+                    }
+                    usedNames.add(name);
+                    ZipEntry ze = new ZipEntry(name);
                     zipOutStream.putNextEntry(ze);
                     Files.copy(f.toPath(), zipOutStream);
                 }
