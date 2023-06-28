@@ -163,6 +163,9 @@ abstract public class BamItem extends GridPanel {
     public static boolean areMatching(JSONObject jsonA, JSONObject jsonB, String[] keys, boolean exclude) {
 
         if (exclude) {
+            // create shallow copies (see: https://stackoverflow.com/a/12809884)
+            jsonA = new JSONObject(jsonA, JSONObject.getNames(jsonA));
+            jsonB = new JSONObject(jsonB, JSONObject.getNames(jsonB));
             for (String key : keys) {
                 if (jsonA.has(key)) {
                     jsonA.remove(key);
