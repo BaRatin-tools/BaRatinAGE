@@ -16,6 +16,7 @@ import org.json.JSONObject;
 public class BamItemCombobox extends JComboBox<BamItem> {
 
     private DefaultComboBoxModel<BamItem> model;
+
     private final BamItem EMPTY_BAMITEM = new BamItem(ITEM_TYPE.EMPTY_ITEM, UUID.randomUUID().toString()) {
 
         @Override
@@ -29,6 +30,11 @@ public class BamItemCombobox extends JComboBox<BamItem> {
 
         @Override
         public void fromJSON(JSONObject json) {
+        }
+
+        @Override
+        public BamItem clone(String uuid) {
+            return EMPTY_BAMITEM;
         }
 
     };
@@ -129,6 +135,7 @@ public class BamItemCombobox extends JComboBox<BamItem> {
         return null;
     }
 
+    // FIXME: should return boolean to check operation success
     public void setSelectedBamItem(String id) {
         BamItem item = getBamItemWithId(id);
         if (item != null) {
