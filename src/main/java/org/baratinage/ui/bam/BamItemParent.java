@@ -1,7 +1,11 @@
 package org.baratinage.ui.bam;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -85,6 +89,17 @@ public class BamItemParent implements ChangeListener {
         excludeJsonKeys = exclude;
     }
 
+    @FunctionalInterface
+    public interface ICreateBackupBamItem {
+        public void onCreateBackupBamItem(String uuid, JSONObject json);
+    }
+
+    private ICreateBackupBamItem createBackupBamItemAction = null;
+
+    public void setCreateBackupBamItemAction(ICreateBackupBamItem l) {
+        createBackupBamItemAction = l;
+    }
+
     public List<WarningAndActions> checkSync() {
         System.out.println("================================================================================");
         System.out.println("Checking sync for parent item of type " + type);
@@ -122,33 +137,47 @@ public class BamItemParent implements ChangeListener {
         boolean selectionHasChanged = !backupItemId.equals(currentItem.ID);
         boolean selectionIsOutOfSync = !currentItem.isMatchingWith(backupItemJson, jsonKeys, excludeJsonKeys);
 
-        if (!selectionHasChanged && !selectionIsOutOfSync) {
+        if (!selectionIsOutOfSync) {
             return warnings;
         }
 
         WarningAndActions warning = new WarningAndActions();
         warnings.add(warning);
         String warningMessage = "";
-        if (selectionHasChanged) {
+        if (selectionHasChanged && selectionIsOutOfSync) {
             System.out.println("> Item selection has changed");
-            warningMessage += "La sélection de '" + type + "' a changé. ";
+            warningMessage = "La sélection de '" + type
+                    + "' a changé et le composant sélectionné n'est pas à jour avec les résultats. ";
             warning.addActionButton(
                     "revert",
                     "Revenir à la sélection précedente",
                     (e) -> {
                         revertToBackup();
                     });
+        } else {
+            warningMessage = "Le composant '" + type + "' sélectionné n'est pas à jour avec les résultats. ";
         }
-        if (selectionIsOutOfSync) {
-            System.out.println("> Current item is out of sync with backup");
-            warningMessage += "Le composant '" + type + "'' sélectionné n'est pas à jour avec les résultats. ";
-            warning.addActionButton(
-                    "duplicate",
-                    "Créer un nouveau composant '" + type + "' à jour avec les résultats.",
-                    (e) -> {
-                        System.out.println("CANCELING / DUPLICATING BACKUP");
-                    });
-        }
+
+        System.out.println("> Current item is out of sync with backup");
+
+        warning.addActionButton(
+                "duplicate",
+                "Créer un nouveau composant '" + type + "' à jour avec les résultats.",
+                (e) -> {
+                    if (createBackupBamItemAction == null) {
+                        return;
+                    }
+                    String timeStamp = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(new java.util.Date());
+                    String name = backupItemJson.has("name") ? backupItemJson.getString("name") : "...";
+                    name += " (copie " + timeStamp + ")";
+                    backupItemJson.put("name", name);
+                    String uuid = UUID.randomUUID().toString();
+                    createBackupBamItemAction.onCreateBackupBamItem(
+                            uuid,
+                            backupItemJson);
+                    combobox.setSelectedBamItem(uuid);
+                });
+
         warning.setWarningMessage(warningMessage);
 
         return warnings;

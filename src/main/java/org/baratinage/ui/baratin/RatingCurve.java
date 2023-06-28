@@ -4,10 +4,12 @@ import java.awt.Color;
 import java.awt.Font;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import javax.swing.JLabel;
 import javax.swing.JSeparator;
 
+import org.baratinage.App;
 import org.baratinage.jbam.CalibrationConfig;
 import org.baratinage.jbam.CalibrationResult;
 import org.baratinage.jbam.McmcConfig;
@@ -75,7 +77,13 @@ public class RatingCurve extends BaRatinItem implements ICalibratedModel, IMcmc,
             checkSync();
         });
         hydrauConfParent.setSyncJsonKeys(new String[] { "name", "description", "ui" }, true);
-
+        hydrauConfParent.setCreateBackupBamItemAction((id, json) -> {
+            BaratinProject project = (BaratinProject) App.MAIN_FRAME.getCurrentProject();
+            HydraulicConfiguration bamItem = new HydraulicConfiguration(id);
+            bamItem.fromJSON(json);
+            project.addHydraulicConfig(bamItem);
+            project.setCurrentBamItem(this);
+        });
         // **********************************************************
         // Gaugings
         // **********************************************************
@@ -93,7 +101,13 @@ public class RatingCurve extends BaRatinItem implements ICalibratedModel, IMcmc,
             checkSync();
         });
         gaugingsParent.setSyncJsonKeys(new String[] { "name", "description" }, true);
-
+        gaugingsParent.setCreateBackupBamItemAction((id, json) -> {
+            BaratinProject project = (BaratinProject) App.MAIN_FRAME.getCurrentProject();
+            Gaugings bamItem = new Gaugings(id);
+            bamItem.fromJSON(json);
+            project.addGaugings(bamItem);
+            project.setCurrentBamItem(this);
+        });
         // **********************************************************
         // Structural error
         // **********************************************************
@@ -111,6 +125,13 @@ public class RatingCurve extends BaRatinItem implements ICalibratedModel, IMcmc,
             checkSync();
         });
         structErrorParent.setSyncJsonKeys(new String[] { "name", "description" }, true);
+        structErrorParent.setCreateBackupBamItemAction((id, json) -> {
+            BaratinProject project = (BaratinProject) App.MAIN_FRAME.getCurrentProject();
+            StructuralError bamItem = new StructuralError(id);
+            bamItem.fromJSON(json);
+            project.addStructuralErrorModel(bamItem);
+            project.setCurrentBamItem(this);
+        });
         // **********************************************************
 
         mainConfigPanel.appendChild(hydrauConfParent.comboboxPanel, 0);
@@ -185,11 +206,11 @@ public class RatingCurve extends BaRatinItem implements ICalibratedModel, IMcmc,
         outdatedInfoPanel.clear();
         if (warnings.size() > 0) {
 
-            JLabel outdatedMainLabel = new JLabel();
-            outdatedMainLabel.setForeground(Color.RED);
-            outdatedMainLabel.setFont(outdatedMainLabel.getFont().deriveFont(Font.BOLD));
-            outdatedMainLabel.setText("Résultats obsolètes!");
-            outdatedInfoPanel.appendChild(outdatedMainLabel);
+            // JLabel outdatedMainLabel = new JLabel();
+            // outdatedMainLabel.setForeground(Color.RED);
+            // outdatedMainLabel.setFont(outdatedMainLabel.getFont().deriveFont(Font.BOLD));
+            // outdatedMainLabel.setText("Résultats obsolètes!");
+            // outdatedInfoPanel.appendChild(outdatedMainLabel);
             for (WarningAndActions w : warnings) {
                 outdatedInfoPanel.appendChild(w);
             }
