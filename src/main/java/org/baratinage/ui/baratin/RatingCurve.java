@@ -281,4 +281,11 @@ public class RatingCurve extends BaRatinItem implements ICalibratedModel, IMcmc,
         // checkSynchronicity();
     }
 
+    @Override
+    public BamItem clone(String uuid) {
+        RatingCurve cloned = new RatingCurve(uuid);
+        cloned.fromFullJSON(toFullJSON());
+        return cloned;
+    }
+
 }

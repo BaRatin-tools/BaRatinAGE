@@ -221,4 +221,6 @@ abstract public class BamItem extends GridPanel {
             l.stateChanged(new ChangeEvent(this));
         }
     }
+
+    public abstract BamItem clone(String uuid);
 }

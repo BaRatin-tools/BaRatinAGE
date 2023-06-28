@@ -55,4 +55,11 @@ public class Hydrograph extends BamItem implements IPredictionExperiment {
         throw new UnsupportedOperationException("Unimplemented method 'setPredictionData'");
     }
 
+    @Override
+    public BamItem clone(String uuid) {
+        Hydrograph cloned = new Hydrograph(uuid);
+        cloned.fromFullJSON(toFullJSON());
+        return cloned;
+    }
+
 }

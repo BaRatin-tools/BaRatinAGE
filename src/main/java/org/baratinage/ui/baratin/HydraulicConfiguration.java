@@ -326,7 +326,8 @@ class HydraulicConfiguration extends BaRatinItem
         checkPriorRatingCurveSync();
     }
 
-    public HydraulicConfiguration clone(String uuid) {
+    @Override
+    public BamItem clone(String uuid) {
         HydraulicConfiguration cloned = new HydraulicConfiguration(uuid);
         cloned.fromFullJSON(toFullJSON());
         return cloned;

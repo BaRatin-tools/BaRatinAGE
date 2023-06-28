@@ -210,7 +210,6 @@ public class Gaugings extends BaRatinItem implements ICalibrationData, BamItemLi
     public void onBamItemListChange(BamItemList bamItemList) {
     }
 
-    // TODO: this should be an abstract class in BamItem
     public BamItem clone(String uuid) {
         Gaugings cloned = new Gaugings(uuid);
         cloned.fromFullJSON(toFullJSON());

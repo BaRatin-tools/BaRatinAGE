@@ -41,4 +41,11 @@ public class Limnigraph extends BamItem implements IPredictionData {
         throw new UnsupportedOperationException("Unimplemented method 'fromJSON'");
     }
 
+    @Override
+    public BamItem clone(String uuid) {
+        Limnigraph cloned = new Limnigraph(uuid);
+        cloned.fromFullJSON(toFullJSON());
+        return cloned;
+    }
+
 }
