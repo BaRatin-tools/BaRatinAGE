@@ -13,14 +13,11 @@ import org.baratinage.jbam.CalibrationResult;
 import org.baratinage.jbam.McmcConfig;
 import org.baratinage.jbam.McmcCookingConfig;
 import org.baratinage.ui.bam.BamItem;
-import org.baratinage.ui.bam.BamItemCombobox;
 import org.baratinage.ui.bam.BamItemList;
 import org.baratinage.ui.bam.BamItemParent;
 import org.baratinage.ui.bam.ICalibratedModel;
 import org.baratinage.ui.bam.IMcmc;
-import org.baratinage.ui.commons.OutOfSyncWarning;
 import org.baratinage.ui.commons.WarningAndActions;
-import org.baratinage.ui.container.GridPanel;
 import org.baratinage.ui.container.RowColPanel;
 import org.json.JSONObject;
 
@@ -125,12 +122,10 @@ public class RatingCurve extends BaRatinItem implements ICalibratedModel, IMcmc,
         posteriorRatingCurve = new PosteriorRatingCurve();
         posteriorRatingCurve.addPropertyChangeListener("bamHasRun", (e) -> {
             jsonStringBackup = toJSON().toString();
-
             hydrauConfParent.updateBackup();
             gaugingsParent.updateBackup();
             structErrorParent.updateBackup();
-
-            // checkSynchronicity();
+            checkSync();
         });
         posteriorRatingCurve.addPropertyChangeListener("stageGridConfigChanged", (e) -> {
             // checkSynchronicity();
@@ -278,7 +273,6 @@ public class RatingCurve extends BaRatinItem implements ICalibratedModel, IMcmc,
         gaugingsParent.updateCombobox(bamItemList);
         structErrorParent.updateCombobox(bamItemList);
 
-        // checkSynchronicity();
     }
 
     @Override
