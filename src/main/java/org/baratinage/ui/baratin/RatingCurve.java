@@ -1,5 +1,11 @@
 package org.baratinage.ui.baratin;
 
+import java.awt.Color;
+import java.awt.Font;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.swing.JLabel;
 import javax.swing.JSeparator;
 
 import org.baratinage.jbam.CalibrationConfig;
@@ -13,6 +19,7 @@ import org.baratinage.ui.bam.BamItemParent;
 import org.baratinage.ui.bam.ICalibratedModel;
 import org.baratinage.ui.bam.IMcmc;
 import org.baratinage.ui.commons.OutOfSyncWarning;
+import org.baratinage.ui.commons.WarningAndActions;
 import org.baratinage.ui.container.GridPanel;
 import org.baratinage.ui.container.RowColPanel;
 import org.json.JSONObject;
@@ -28,7 +35,7 @@ public class RatingCurve extends BaRatinItem implements ICalibratedModel, IMcmc,
 
     private PosteriorRatingCurve posteriorRatingCurve;
 
-    private GridPanel outdatedInfoPanel;
+    private RowColPanel outdatedInfoPanel;
 
     private String jsonStringBackup;
 
@@ -68,7 +75,10 @@ public class RatingCurve extends BaRatinItem implements ICalibratedModel, IMcmc,
                 posteriorRatingCurve.setModelDefintion(hydrauConf);
                 posteriorRatingCurve.setPriors(hydrauConf);
             }
+            checkSync();
         });
+        hydrauConfParent.setSyncJsonKeys(new String[] { "name", "description", "ui" }, true);
+
         // **********************************************************
         // Gaugings
         // **********************************************************
@@ -83,7 +93,9 @@ public class RatingCurve extends BaRatinItem implements ICalibratedModel, IMcmc,
             if (bamItem != null) {
                 posteriorRatingCurve.setCalibrationData((Gaugings) bamItem);
             }
+            checkSync();
         });
+        gaugingsParent.setSyncJsonKeys(new String[] { "name", "description" }, true);
 
         // **********************************************************
         // Structural error
@@ -99,7 +111,9 @@ public class RatingCurve extends BaRatinItem implements ICalibratedModel, IMcmc,
             if (bamItem != null) {
                 posteriorRatingCurve.setStructuralErrorModel((StructuralError) bamItem);
             }
+            checkSync();
         });
+        structErrorParent.setSyncJsonKeys(new String[] { "name", "description" }, true);
         // **********************************************************
 
         mainConfigPanel.appendChild(hydrauConfParent.comboboxPanel, 0);
@@ -125,9 +139,10 @@ public class RatingCurve extends BaRatinItem implements ICalibratedModel, IMcmc,
 
         setContent(content);
 
-        outdatedInfoPanel = new GridPanel();
+        outdatedInfoPanel = new RowColPanel(RowColPanel.AXIS.COL);
         outdatedInfoPanel.setGap(2);
         outdatedInfoPanel.setColWeight(0, 1);
+
     }
 
     @Override
@@ -162,58 +177,32 @@ public class RatingCurve extends BaRatinItem implements ICalibratedModel, IMcmc,
     public void parentHasChanged(BamItem parent) {
         System.out.println("PARENT HAS CHANGED DECTECTED FROM '" + this + "'");
         // checkSynchronicity();
+
     }
 
-    private void checkSynchronicity() {
+    private void checkSync() {
+        List<WarningAndActions> warnings = new ArrayList<>();
+        warnings.addAll(hydrauConfParent.checkSync());
+        warnings.addAll(gaugingsParent.checkSync());
+        warnings.addAll(structErrorParent.checkSync());
 
+        posteriorRatingCurve.outdatedPanel.clear();
         outdatedInfoPanel.clear();
-        boolean isOutdated = false;
-        int insertionIndex = 1;
+        if (warnings.size() > 0) {
 
-        // if there is not backup, no point cheching for sync issues...
-        if (jsonStringBackup == null) {
-            return;
-        }
-
-        // String backupId = "post_rc" + ID;
-        JSONObject json = new JSONObject(jsonStringBackup);
-
-        // ----------------------------------------------------------
-        // check if comboboxes have changed
-
-        String bamItemJsonIdKey = "hydraulicConfigurationId";
-        String[] keysToIgnore = new String[] { "ui", "name", "description", "bamRunZipFileName" };
-        BamItem currentBamItem = hydrauConfParent.getCurrentBamItem();
-        BamItemCombobox currentBamItemCombobox = hydrauConfParent.combobox;
-        String currentBackupString = hydrauConfParent.getBackupString();
-
-        if (currentBamItem != null && json.has(bamItemJsonIdKey)) {
-
-            if (!json.getString(bamItemJsonIdKey).equals(currentBamItem.ID)) {
-                // the current bam item is different than the backup one
-                BamItem backupBamItem = currentBamItemCombobox.getBamItemWithId(json.getString(bamItemJsonIdKey));
-                if (backupBamItem == null) {
-                    // and the backup bam item no longer exists
-                } else {
-                    JSONObject referenceJson = new JSONObject(currentBackupString);
-                    if (currentBamItem.isMatchingWith(referenceJson, keysToIgnore, true)) {
-                        // the current bam item is "identical" to the backup one
-                    } else {
-                        // the current bam item is different than the backup one
-                    }
-                }
-            } else {
-                JSONObject referenceJson = new JSONObject(currentBackupString);
-                // the curremt bam item has not been changed (with another bam item)
-                if (!currentBamItem.isMatchingWith(referenceJson, keysToIgnore, true)) {
-                    // the item has not been modified
-                } else {
-                    // the item has been modified
-                }
+            JLabel outdatedMainLabel = new JLabel();
+            outdatedMainLabel.setForeground(Color.RED);
+            outdatedMainLabel.setFont(outdatedMainLabel.getFont().deriveFont(Font.BOLD));
+            outdatedMainLabel.setText("Résultats obsolètes!");
+            outdatedInfoPanel.appendChild(outdatedMainLabel);
+            for (WarningAndActions w : warnings) {
+                outdatedInfoPanel.appendChild(w);
             }
-        } else {
-            // there is no hydraulic config, invalid config
+            posteriorRatingCurve.outdatedPanel.appendChild(outdatedInfoPanel);
         }
+
+        posteriorRatingCurve.updateUI();
+
     }
 
     @Override

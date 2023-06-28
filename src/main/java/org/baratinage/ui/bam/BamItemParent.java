@@ -4,13 +4,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import org.baratinage.App;
+import org.baratinage.ui.commons.WarningAndActions;
 import org.baratinage.ui.container.RowColPanel;
 import org.json.JSONObject;
 
-public class BamItemParent {
+public class BamItemParent implements ChangeListener {
 
     public final BamItem.ITEM_TYPE type;
 
@@ -20,9 +23,12 @@ public class BamItemParent {
 
     public final BamItem child;
 
-    private String backupString;
-
+    private String backupItemString = null;
+    private String backupItemId = null;
     private BamItem currentItem = null;
+
+    private String[] jsonKeys = new String[] {};
+    private boolean excludeJsonKeys = true;
 
     public BamItemParent(
             BamItem child,
@@ -36,6 +42,7 @@ public class BamItemParent {
             BamItem selected = combobox.getSelectedItem();
             if (currentItem != null) {
                 currentItem.removeBamItemChild(child);
+                currentItem.removeChangeListener(this);
             }
 
             if (selected == null) {
@@ -46,6 +53,7 @@ public class BamItemParent {
 
             selected.addBamItemChild(child);
             currentItem = selected;
+            currentItem.addChangeListener(this);
             fireChangeListeners();
         });
 
@@ -63,11 +71,8 @@ public class BamItemParent {
     }
 
     public void updateBackup() {
-        backupString = currentItem.toJSON().toString();
-    }
-
-    public String getBackupString() {
-        return backupString;
+        backupItemId = currentItem.ID;
+        backupItemString = currentItem.toJSON().toString();
     }
 
     public void updateCombobox(BamItemList bamItemList) {
@@ -75,13 +80,103 @@ public class BamItemParent {
         combobox.syncWithBamItemList(filteredBamItemList);
     }
 
+    public void setSyncJsonKeys(String[] keys, boolean exclude) {
+        jsonKeys = keys;
+        excludeJsonKeys = exclude;
+    }
+
+    public List<WarningAndActions> checkSync() {
+        System.out.println("================================================================================");
+        System.out.println("Checking sync for parent item of type " + type);
+
+        List<WarningAndActions> warnings = new ArrayList<>();
+
+        if (backupItemString == null) {
+            if (currentItem == null) {
+                System.out.println("> Invalid configuration");
+            }
+            System.out.println("> No backup");
+            return warnings;
+        }
+
+        if (currentItem == null) {
+            System.out.println("> Invalid configuration");
+            System.out.println("> Item selection has changed");
+
+            WarningAndActions warning = new WarningAndActions();
+            warning.setWarningMessage("La sélection de '" + type + "' a changé et n'est plus valide.");
+            warning.addActionButton(
+                    "revert",
+                    "Revenir à la sélection précedente",
+                    (e) -> {
+                        revertToBackup();
+                    });
+
+            warnings.add(warning);
+
+            return warnings;
+        }
+
+        JSONObject backupItemJson = new JSONObject(backupItemString);
+
+        boolean selectionHasChanged = !backupItemId.equals(currentItem.ID);
+        boolean selectionIsOutOfSync = !currentItem.isMatchingWith(backupItemJson, jsonKeys, excludeJsonKeys);
+
+        if (!selectionHasChanged && !selectionIsOutOfSync) {
+            return warnings;
+        }
+
+        WarningAndActions warning = new WarningAndActions();
+        warnings.add(warning);
+        String warningMessage = "";
+        if (selectionHasChanged) {
+            System.out.println("> Item selection has changed");
+            warningMessage += "La sélection de '" + type + "' a changé. ";
+            warning.addActionButton(
+                    "revert",
+                    "Revenir à la sélection précedente",
+                    (e) -> {
+                        revertToBackup();
+                    });
+        }
+        if (selectionIsOutOfSync) {
+            System.out.println("> Current item is out of sync with backup");
+            warningMessage += "Le composant '" + type + "'' sélectionné n'est pas à jour avec les résultats. ";
+            warning.addActionButton(
+                    "duplicate",
+                    "Créer un nouveau composant '" + type + "' à jour avec les résultats.",
+                    (e) -> {
+                        System.out.println("CANCELING / DUPLICATING BACKUP");
+                    });
+        }
+        warning.setWarningMessage(warningMessage);
+
+        return warnings;
+
+    }
+
+    private void revertToBackup() {
+        BamItem item = combobox.getBamItemWithId(backupItemId);
+        if (item == null) {
+            JOptionPane.showConfirmDialog(
+                    App.MAIN_FRAME,
+                    "Opération impossible, le composant a sans doute été supprimé.",
+                    "Erreur!",
+                    JOptionPane.CLOSED_OPTION,
+                    JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        combobox.setSelectedBamItem(backupItemId);
+    }
+
     public JSONObject toJSON() {
         JSONObject json = new JSONObject();
         if (currentItem != null) {
             json.put("bamItemId", currentItem.ID);
         }
-        if (backupString != null) {
-            json.put("backupString", backupString);
+        if (backupItemString != null) {
+            json.put("backupItemString", backupItemString);
+            json.put("backupItemId", backupItemId);
         }
         return json;
     }
@@ -92,8 +187,9 @@ public class BamItemParent {
             combobox.setSelectedBamItem(bamItemId);
             // currentItem = combobox.getSelectedItem();
         }
-        if (json.has("backupString")) {
-            backupString = json.getString("backupString");
+        if (json.has("backupItemString")) {
+            backupItemString = json.getString("backupItemString");
+            backupItemId = json.getString("backupItemId");
         }
         // fireChangeListeners();
     }
@@ -112,6 +208,12 @@ public class BamItemParent {
         for (ChangeListener l : changeListeners) {
             l.stateChanged(new ChangeEvent(this));
         }
+    }
+
+    @Override
+    public void stateChanged(ChangeEvent e) {
+        System.out.println("Current item has changed!");
+        fireChangeListeners();
     }
 
 }
