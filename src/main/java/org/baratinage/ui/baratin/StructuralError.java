@@ -5,7 +5,6 @@ import javax.swing.JLabel;
 import org.baratinage.jbam.Distribution;
 import org.baratinage.jbam.Parameter;
 import org.baratinage.jbam.StructuralErrorModel;
-import org.baratinage.ui.bam.BamItem;
 import org.baratinage.ui.bam.BamItemType;
 import org.baratinage.ui.bam.IStructuralError;
 import org.baratinage.ui.commons.AbstractStructuralErrorModel;
