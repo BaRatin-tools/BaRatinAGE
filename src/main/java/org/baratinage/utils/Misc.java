@@ -26,7 +26,8 @@ public class Misc {
     public static String getTimeStamp() {
         Locale l = Lg.getLocale();
         LocalDateTime date = LocalDateTime.now();
-        String text = date.format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT).withLocale(l));
+        // SHORT format style omit seconds... which I need here.
+        String text = date.format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM).withLocale(l));
         return text;
     }
 }
