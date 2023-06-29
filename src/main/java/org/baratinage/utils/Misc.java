@@ -1,6 +1,12 @@
 package org.baratinage.utils;
 
 import java.io.File;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
+import java.util.Locale;
+
+import org.baratinage.ui.lg.Lg;
 
 public class Misc {
 
@@ -15,5 +21,12 @@ public class Misc {
         }
 
         return name.replaceAll("[\u0000-\u001f<>:\"/\\\\|?*\u007f]+", "").trim();
+    }
+
+    public static String getTimeStamp() {
+        Locale l = Lg.getLocale();
+        LocalDateTime date = LocalDateTime.now();
+        String text = date.format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT).withLocale(l));
+        return text;
     }
 }
