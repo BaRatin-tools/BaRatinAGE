@@ -1,7 +1,5 @@
 package org.baratinage.ui.bam;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,6 +13,7 @@ import javax.swing.event.ChangeListener;
 import org.baratinage.App;
 import org.baratinage.ui.commons.WarningAndActions;
 import org.baratinage.ui.container.RowColPanel;
+import org.baratinage.ui.lg.Lg;
 import org.json.JSONObject;
 
 public class BamItemParent implements ChangeListener {
@@ -84,6 +83,14 @@ public class BamItemParent implements ChangeListener {
         combobox.syncWithBamItemList(filteredBamItemList);
     }
 
+    private String selectionAndContentMessage;
+    private String contentOnlyMessage;
+
+    public void setOutOfSyncMessages(String selectionAndContent, String contentOnly) {
+        selectionAndContentMessage = selectionAndContent;
+        contentOnlyMessage = contentOnly;
+    }
+
     public void setSyncJsonKeys(String[] keys, boolean exclude) {
         jsonKeys = keys;
         excludeJsonKeys = exclude;
@@ -114,15 +121,18 @@ public class BamItemParent implements ChangeListener {
             return warnings;
         }
 
+        boolean backupItemStillExists = combobox.getBamItemWithId(backupItemId) != null;
+
         if (currentItem == null) {
             System.out.println("> Invalid configuration");
             System.out.println("> Item selection has changed");
 
             WarningAndActions warning = new WarningAndActions();
-            warning.setWarningMessage("La sélection de '" + type + "' a changé et n'est plus valide.");
+            warning.setWarningMessage(selectionAndContentMessage);
             warning.addActionButton(
                     "revert",
-                    "Revenir à la sélection précedente",
+                    Lg.getText("ui", "oos_revert_selection"),
+                    backupItemStillExists,
                     (e) -> {
                         revertToBackup();
                     });
@@ -146,23 +156,24 @@ public class BamItemParent implements ChangeListener {
         String warningMessage = "";
         if (selectionHasChanged && selectionIsOutOfSync) {
             System.out.println("> Item selection has changed");
-            warningMessage = "La sélection de '" + type
-                    + "' a changé et le composant sélectionné n'est pas à jour avec les résultats. ";
+            warningMessage = selectionAndContentMessage;
             warning.addActionButton(
                     "revert",
-                    "Revenir à la sélection précedente",
+                    Lg.getText("ui", "oos_revert_selection"),
+                    backupItemStillExists,
                     (e) -> {
                         revertToBackup();
                     });
         } else {
-            warningMessage = "Le composant '" + type + "' sélectionné n'est pas à jour avec les résultats. ";
+            warningMessage = contentOnlyMessage;
         }
 
         System.out.println("> Current item is out of sync with backup");
 
         warning.addActionButton(
                 "duplicate",
-                "Créer un nouveau composant '" + type + "' à jour avec les résultats.",
+                Lg.getText("ui", "oos_create_new_from_backup"),
+                true,
                 (e) -> {
                     if (createBackupBamItemAction == null) {
                         return;

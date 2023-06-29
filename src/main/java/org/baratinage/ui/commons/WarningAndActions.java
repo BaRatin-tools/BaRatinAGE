@@ -36,6 +36,7 @@ public class WarningAndActions extends RowColPanel {
     public void addActionButton(
             String id,
             String label,
+            boolean enable,
             ActionListener action) {
         JButton btn = new JButton();
         btn.setText(label);

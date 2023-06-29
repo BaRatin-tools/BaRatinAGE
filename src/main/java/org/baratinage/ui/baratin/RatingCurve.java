@@ -77,6 +77,7 @@ public class RatingCurve extends BaRatinItem implements ICalibratedModel, IMcmc,
             }
             checkSync();
         });
+        hydrauConfParent.setOutOfSyncMessages("oos_select_and_content_hc", "oos_content_hc");
         hydrauConfParent.setSyncJsonKeys(new String[] { "name", "description", "ui" }, true);
         hydrauConfParent.setCreateBackupBamItemAction((id, json) -> {
             BaratinProject project = (BaratinProject) App.MAIN_FRAME.getCurrentProject();
@@ -101,6 +102,7 @@ public class RatingCurve extends BaRatinItem implements ICalibratedModel, IMcmc,
             }
             checkSync();
         });
+        gaugingsParent.setOutOfSyncMessages("oos_select_and_content_g", "oos_content_g");
         gaugingsParent.setSyncJsonKeys(new String[] { "name", "description" }, true);
         gaugingsParent.setCreateBackupBamItemAction((id, json) -> {
             BaratinProject project = (BaratinProject) App.MAIN_FRAME.getCurrentProject();
@@ -125,6 +127,7 @@ public class RatingCurve extends BaRatinItem implements ICalibratedModel, IMcmc,
             }
             checkSync();
         });
+        structErrorParent.setOutOfSyncMessages("oos_select_and_content_se", "oos_content_se");
         structErrorParent.setSyncJsonKeys(new String[] { "name", "description" }, true);
         structErrorParent.setCreateBackupBamItemAction((id, json) -> {
             BaratinProject project = (BaratinProject) App.MAIN_FRAME.getCurrentProject();
