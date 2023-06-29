@@ -1,15 +1,10 @@
 package org.baratinage.ui.baratin;
 
-import java.awt.Color;
-import java.awt.Font;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
-import javax.swing.JLabel;
 import javax.swing.JSeparator;
 
-import org.baratinage.App;
 import org.baratinage.jbam.CalibrationConfig;
 import org.baratinage.jbam.CalibrationResult;
 import org.baratinage.jbam.McmcConfig;
@@ -209,11 +204,6 @@ public class RatingCurve extends BaRatinItem implements ICalibratedModel, IMcmc,
         outdatedInfoPanel.clear();
         if (warnings.size() > 0) {
 
-            // JLabel outdatedMainLabel = new JLabel();
-            // outdatedMainLabel.setForeground(Color.RED);
-            // outdatedMainLabel.setFont(outdatedMainLabel.getFont().deriveFont(Font.BOLD));
-            // outdatedMainLabel.setText("Résultats obsolètes!");
-            // outdatedInfoPanel.appendChild(outdatedMainLabel);
             for (WarningAndActions w : warnings) {
                 outdatedInfoPanel.appendChild(w);
             }
