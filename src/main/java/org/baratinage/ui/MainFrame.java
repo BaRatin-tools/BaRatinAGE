@@ -113,11 +113,6 @@ public class MainFrame extends JFrame {
         this.setVisible(true);
     }
 
-    @Deprecated
-    public BamProject getCurrentProject() {
-        return currentProject;
-    }
-
     public void setCurrentProject(BamProject project) {
         currentProject = project;
         projectPanel.clear();

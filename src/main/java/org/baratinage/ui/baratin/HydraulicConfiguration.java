@@ -32,8 +32,8 @@ class HydraulicConfiguration extends BaRatinItem
 
     private String jsonStringBackup;
 
-    public HydraulicConfiguration(String uuid) {
-        super(BamItemType.HYDRAULIC_CONFIG, uuid);
+    public HydraulicConfiguration(String uuid, BaratinProject project) {
+        super(BamItemType.HYDRAULIC_CONFIG, uuid, project);
 
         setName(String.format(
                 defaultNameTemplate,
@@ -329,7 +329,7 @@ class HydraulicConfiguration extends BaRatinItem
 
     @Override
     public BamItem clone(String uuid) {
-        HydraulicConfiguration cloned = new HydraulicConfiguration(uuid);
+        HydraulicConfiguration cloned = new HydraulicConfiguration(uuid, (BaratinProject) PROJECT);
         cloned.fromFullJSON(toFullJSON());
         return cloned;
     }

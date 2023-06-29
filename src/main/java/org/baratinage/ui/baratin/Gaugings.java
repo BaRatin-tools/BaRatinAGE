@@ -34,8 +34,8 @@ public class Gaugings extends BaRatinItem implements ICalibrationData, BamItemLi
     private RowColPanel plotPanel;
     private JLabel importedDataSetSourceLabel;
 
-    public Gaugings(String uuid) {
-        super(BamItemType.GAUGINGS, uuid);
+    public Gaugings(String uuid, BaratinProject project) {
+        super(BamItemType.GAUGINGS, uuid, project);
 
         nInstance++;
         setName(String.format(
@@ -212,7 +212,7 @@ public class Gaugings extends BaRatinItem implements ICalibrationData, BamItemLi
     }
 
     public BamItem clone(String uuid) {
-        Gaugings cloned = new Gaugings(uuid);
+        Gaugings cloned = new Gaugings(uuid, (BaratinProject) PROJECT);
         cloned.fromFullJSON(toFullJSON());
         return cloned;
     }

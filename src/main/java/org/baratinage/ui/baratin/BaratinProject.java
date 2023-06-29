@@ -157,7 +157,7 @@ public class BaratinProject extends BamProject {
     }
 
     public HydraulicConfiguration addHydraulicConfig(String uuid) {
-        HydraulicConfiguration hc = new HydraulicConfiguration(uuid);
+        HydraulicConfiguration hc = new HydraulicConfiguration(uuid, this);
         return addHydraulicConfig(hc);
     }
 
@@ -179,7 +179,7 @@ public class BaratinProject extends BamProject {
     }
 
     public Gaugings addGaugings(String uuid) {
-        Gaugings g = new Gaugings(uuid);
+        Gaugings g = new Gaugings(uuid, this);
         return addGaugings(g);
     }
 
@@ -202,7 +202,7 @@ public class BaratinProject extends BamProject {
     }
 
     public StructuralError addStructuralErrorModel(String uuid) {
-        StructuralError se = new StructuralError(uuid);
+        StructuralError se = new StructuralError(uuid, this);
         return addStructuralErrorModel(se);
     }
 
@@ -225,7 +225,7 @@ public class BaratinProject extends BamProject {
     }
 
     public RatingCurve addRatingCurve(String uuid) {
-        RatingCurve rc = new RatingCurve(uuid);
+        RatingCurve rc = new RatingCurve(uuid, this);
         return addRatingCurve(rc);
     }
 

@@ -22,6 +22,8 @@ abstract public class BamItem extends GridPanel {
 
     public final BamItemType TYPE;
     public final String ID;
+    public final BamProject PROJECT;
+
     private String name = "";
     private String description = "";
 
@@ -33,10 +35,11 @@ abstract public class BamItem extends GridPanel {
     private GridPanel headerPanel;
     private RowColPanel contentPanel;
 
-    public BamItem(BamItemType type, String uuid) {
+    public BamItem(BamItemType type, String uuid, BamProject project) {
         // super(AXIS.COL);
         TYPE = type;
         ID = uuid;
+        PROJECT = project;
 
         headerPanel = new GridPanel();
         headerPanel.setGap(5);

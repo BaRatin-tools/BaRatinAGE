@@ -10,8 +10,8 @@ import org.json.JSONObject;
 
 public class Hydrograph extends BamItem implements IPredictionExperiment {
 
-    public Hydrograph(String uuid) {
-        super(BamItemType.HYDROGRAPH, uuid);
+    public Hydrograph(String uuid, BaratinProject project) {
+        super(BamItemType.HYDROGRAPH, uuid, project);
     }
 
     @Override
@@ -58,7 +58,7 @@ public class Hydrograph extends BamItem implements IPredictionExperiment {
 
     @Override
     public BamItem clone(String uuid) {
-        Hydrograph cloned = new Hydrograph(uuid);
+        Hydrograph cloned = new Hydrograph(uuid, (BaratinProject) PROJECT);
         cloned.fromFullJSON(toFullJSON());
         return cloned;
     }

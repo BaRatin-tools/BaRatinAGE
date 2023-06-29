@@ -28,8 +28,8 @@ public class StructuralError extends BaRatinItem implements IStructuralError, Ba
     private AbstractStructuralErrorModel currentStructuralErrorModel;
     private RowColPanel modelParametersPanel;
 
-    public StructuralError(String uuid) {
-        super(BamItemType.STRUCTURAL_ERROR, uuid);
+    public StructuralError(String uuid, BaratinProject project) {
+        super(BamItemType.STRUCTURAL_ERROR, uuid, project);
         nInstance++;
         setName(String.format(defaultNameTemplate, nInstance));
 
@@ -175,7 +175,7 @@ public class StructuralError extends BaRatinItem implements IStructuralError, Ba
     }
 
     public StructuralError clone(String uuid) {
-        StructuralError cloned = new StructuralError(uuid);
+        StructuralError cloned = new StructuralError(uuid, (BaratinProject) PROJECT);
         cloned.fromFullJSON(toFullJSON());
         return cloned;
     }

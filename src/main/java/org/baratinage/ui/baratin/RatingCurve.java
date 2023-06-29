@@ -39,8 +39,8 @@ public class RatingCurve extends BaRatinItem implements ICalibratedModel, IMcmc,
 
     private String jsonStringBackup;
 
-    public RatingCurve(String uuid) {
-        super(BamItemType.RATING_CURVE, uuid);
+    public RatingCurve(String uuid, BaratinProject project) {
+        super(BamItemType.RATING_CURVE, uuid, project);
         nInstance++;
         setName(String.format(
                 defaultNameTemplate,
@@ -80,8 +80,7 @@ public class RatingCurve extends BaRatinItem implements ICalibratedModel, IMcmc,
         hydrauConfParent.setOutOfSyncMessages("oos_select_and_content_hc", "oos_content_hc");
         hydrauConfParent.setSyncJsonKeys(new String[] { "name", "description", "ui" }, true);
         hydrauConfParent.setCreateBackupBamItemAction((id, json) -> {
-            BaratinProject project = (BaratinProject) App.MAIN_FRAME.getCurrentProject();
-            HydraulicConfiguration bamItem = new HydraulicConfiguration(id);
+            HydraulicConfiguration bamItem = new HydraulicConfiguration(id, (BaratinProject) PROJECT);
             bamItem.fromJSON(json);
             project.addHydraulicConfig(bamItem);
             project.setCurrentBamItem(this);
@@ -105,8 +104,7 @@ public class RatingCurve extends BaRatinItem implements ICalibratedModel, IMcmc,
         gaugingsParent.setOutOfSyncMessages("oos_select_and_content_g", "oos_content_g");
         gaugingsParent.setSyncJsonKeys(new String[] { "name", "description" }, true);
         gaugingsParent.setCreateBackupBamItemAction((id, json) -> {
-            BaratinProject project = (BaratinProject) App.MAIN_FRAME.getCurrentProject();
-            Gaugings bamItem = new Gaugings(id);
+            Gaugings bamItem = new Gaugings(id, (BaratinProject) PROJECT);
             bamItem.fromJSON(json);
             project.addGaugings(bamItem);
             project.setCurrentBamItem(this);
@@ -130,8 +128,7 @@ public class RatingCurve extends BaRatinItem implements ICalibratedModel, IMcmc,
         structErrorParent.setOutOfSyncMessages("oos_select_and_content_se", "oos_content_se");
         structErrorParent.setSyncJsonKeys(new String[] { "name", "description" }, true);
         structErrorParent.setCreateBackupBamItemAction((id, json) -> {
-            BaratinProject project = (BaratinProject) App.MAIN_FRAME.getCurrentProject();
-            StructuralError bamItem = new StructuralError(id);
+            StructuralError bamItem = new StructuralError(id, (BaratinProject) PROJECT);
             bamItem.fromJSON(json);
             project.addStructuralErrorModel(bamItem);
             project.setCurrentBamItem(this);
@@ -163,12 +160,8 @@ public class RatingCurve extends BaRatinItem implements ICalibratedModel, IMcmc,
         outdatedInfoPanel.setGap(2);
         outdatedInfoPanel.setColWeight(0, 1);
 
-        // FIXME: ugly way to get the parent project...
-        // MAIN_FRAME may not have a reference to any project or to the right project
-        BaratinProject project = (BaratinProject) App.MAIN_FRAME.getCurrentProject();
-        if (project != null) {
-            onBamItemListChange(project.getBamItems());
-        }
+        onBamItemListChange(PROJECT.getBamItems());
+
     }
 
     @Override
@@ -308,7 +301,7 @@ public class RatingCurve extends BaRatinItem implements ICalibratedModel, IMcmc,
 
     @Override
     public BamItem clone(String uuid) {
-        RatingCurve cloned = new RatingCurve(uuid);
+        RatingCurve cloned = new RatingCurve(uuid, (BaratinProject) PROJECT);
         cloned.fromFullJSON(toFullJSON());
         return cloned;
     }

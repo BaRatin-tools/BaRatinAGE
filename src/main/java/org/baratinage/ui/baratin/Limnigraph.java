@@ -8,8 +8,8 @@ import org.json.JSONObject;
 
 public class Limnigraph extends BamItem implements IPredictionData {
 
-    public Limnigraph(String uuid) {
-        super(BamItemType.LIMNIGRAPH, uuid);
+    public Limnigraph(String uuid, BaratinProject project) {
+        super(BamItemType.LIMNIGRAPH, uuid, project);
     }
 
     @Override
@@ -44,7 +44,7 @@ public class Limnigraph extends BamItem implements IPredictionData {
 
     @Override
     public BamItem clone(String uuid) {
-        Limnigraph cloned = new Limnigraph(uuid);
+        Limnigraph cloned = new Limnigraph(uuid, (BaratinProject) PROJECT);
         cloned.fromFullJSON(toFullJSON());
         return cloned;
     }
