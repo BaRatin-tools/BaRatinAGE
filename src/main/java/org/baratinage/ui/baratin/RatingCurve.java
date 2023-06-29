@@ -3,6 +3,7 @@ package org.baratinage.ui.baratin;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.JLabel;
 import javax.swing.JSeparator;
 
 import org.baratinage.jbam.CalibrationConfig;
@@ -18,6 +19,7 @@ import org.baratinage.ui.bam.IMcmc;
 import org.baratinage.ui.commons.WarningAndActions;
 import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.ui.lg.Lg;
+import org.baratinage.ui.lg.LgElement;
 import org.json.JSONObject;
 
 public class RatingCurve extends BaRatinItem implements ICalibratedModel, IMcmc, BamItemList.BamItemListChangeListener {
@@ -73,7 +75,14 @@ public class RatingCurve extends BaRatinItem implements ICalibratedModel, IMcmc,
             }
             checkSync();
         });
-        hydrauConfParent.setOutOfSyncMessages("oos_select_and_content_hc", "oos_content_hc");
+        Lg.register(new LgElement<BamItemParent>(hydrauConfParent) {
+            @Override
+            public void setTranslatedText() {
+                String selAndCont = Lg.getText("ui", "oos_select_and_content_hc");
+                String contOnly = Lg.getText("ui", "oos_content_hc");
+                component.setOutOfSyncMessages(selAndCont, contOnly);
+            }
+        });
         hydrauConfParent.setSyncJsonKeys(new String[] { "name", "description", "ui" }, true);
         hydrauConfParent.setCreateBackupBamItemAction((id, json) -> {
             HydraulicConfiguration bamItem = new HydraulicConfiguration(id, (BaratinProject) PROJECT);
@@ -97,7 +106,14 @@ public class RatingCurve extends BaRatinItem implements ICalibratedModel, IMcmc,
             }
             checkSync();
         });
-        gaugingsParent.setOutOfSyncMessages("oos_select_and_content_g", "oos_content_g");
+        Lg.register(new LgElement<BamItemParent>(gaugingsParent) {
+            @Override
+            public void setTranslatedText() {
+                String selAndCont = Lg.getText("ui", "oos_select_and_content_g");
+                String contOnly = Lg.getText("ui", "oos_content_g");
+                component.setOutOfSyncMessages(selAndCont, contOnly);
+            }
+        });
         gaugingsParent.setSyncJsonKeys(new String[] { "name", "description" }, true);
         gaugingsParent.setCreateBackupBamItemAction((id, json) -> {
             Gaugings bamItem = new Gaugings(id, (BaratinProject) PROJECT);
@@ -121,7 +137,14 @@ public class RatingCurve extends BaRatinItem implements ICalibratedModel, IMcmc,
             }
             checkSync();
         });
-        structErrorParent.setOutOfSyncMessages("oos_select_and_content_se", "oos_content_se");
+        Lg.register(new LgElement<BamItemParent>(structErrorParent) {
+            @Override
+            public void setTranslatedText() {
+                String selAndCont = Lg.getText("ui", "oos_select_and_content_se");
+                String contOnly = Lg.getText("ui", "oos_content_se");
+                component.setOutOfSyncMessages(selAndCont, contOnly);
+            }
+        });
         structErrorParent.setSyncJsonKeys(new String[] { "name", "description" }, true);
         structErrorParent.setCreateBackupBamItemAction((id, json) -> {
             StructuralError bamItem = new StructuralError(id, (BaratinProject) PROJECT);
