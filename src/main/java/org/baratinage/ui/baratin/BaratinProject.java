@@ -7,6 +7,7 @@ import javax.swing.JMenuItem;
 
 import org.baratinage.App;
 import org.baratinage.ui.bam.BamItem;
+import org.baratinage.ui.bam.BamItemType;
 import org.baratinage.ui.bam.BamProject;
 import org.baratinage.ui.commons.ExplorerItem;
 import org.baratinage.ui.component.NoScalingIcon;
@@ -246,17 +247,17 @@ public class BaratinProject extends BamProject {
         for (Object item : items) {
             // System.out.println("---");
             JSONObject jsonObj = (JSONObject) item;
-            BamItem.ITEM_TYPE itemType = BamItem.ITEM_TYPE.valueOf(jsonObj.getString("type"));
+            BamItemType itemType = BamItemType.valueOf(jsonObj.getString("type"));
             String uuid = jsonObj.getString("uuid");
 
             BamItem bamItem;
-            if (itemType == BamItem.ITEM_TYPE.HYRAULIC_CONFIG) {
+            if (itemType == BamItemType.HYDRAULIC_CONFIG) {
                 bamItem = addHydraulicConfig(uuid);
-            } else if (itemType == BamItem.ITEM_TYPE.GAUGINGS) {
+            } else if (itemType == BamItemType.GAUGINGS) {
                 bamItem = addGaugings(uuid);
-            } else if (itemType == BamItem.ITEM_TYPE.STRUCTURAL_ERROR) {
+            } else if (itemType == BamItemType.STRUCTURAL_ERROR) {
                 bamItem = addStructuralErrorModel(uuid);
-            } else if (itemType == BamItem.ITEM_TYPE.RATING_CURVE) {
+            } else if (itemType == BamItemType.RATING_CURVE) {
                 continue;
             } else {
                 System.out.println("unknown bam item, skipping => " + itemType);
@@ -268,11 +269,11 @@ public class BaratinProject extends BamProject {
         // Dealing with children (rating curve);
         for (Object item : items) {
             JSONObject jsonObj = (JSONObject) item;
-            BamItem.ITEM_TYPE itemType = BamItem.ITEM_TYPE.valueOf(jsonObj.getString("type"));
+            BamItemType itemType = BamItemType.valueOf(jsonObj.getString("type"));
             String uuid = jsonObj.getString("uuid");
 
             BamItem bamItem;
-            if (itemType == BamItem.ITEM_TYPE.RATING_CURVE) {
+            if (itemType == BamItemType.RATING_CURVE) {
                 bamItem = addRatingCurve(uuid);
             } else {
                 continue;

@@ -15,6 +15,7 @@ import org.baratinage.jbam.CalibrationResult;
 import org.baratinage.jbam.McmcConfig;
 import org.baratinage.jbam.McmcCookingConfig;
 import org.baratinage.ui.bam.BamItem;
+import org.baratinage.ui.bam.BamItemType;
 import org.baratinage.ui.bam.BamItemList;
 import org.baratinage.ui.bam.BamItemParent;
 import org.baratinage.ui.bam.ICalibratedModel;
@@ -39,7 +40,7 @@ public class RatingCurve extends BaRatinItem implements ICalibratedModel, IMcmc,
     private String jsonStringBackup;
 
     public RatingCurve(String uuid) {
-        super(ITEM_TYPE.RATING_CURVE, uuid);
+        super(BamItemType.RATING_CURVE, uuid);
         nInstance++;
         setName(String.format(
                 defaultNameTemplate,
@@ -63,7 +64,7 @@ public class RatingCurve extends BaRatinItem implements ICalibratedModel, IMcmc,
         // **********************************************************
         hydrauConfParent = new BamItemParent(
                 this,
-                BamItem.ITEM_TYPE.HYRAULIC_CONFIG);
+                BamItemType.HYDRAULIC_CONFIG);
 
         hydrauConfParent.comboboxLabel.setText("Configuration hydraulique");
         hydrauConfParent.combobox.setEmptyItemText("Selectionner une configuration hydraulique");
@@ -89,7 +90,7 @@ public class RatingCurve extends BaRatinItem implements ICalibratedModel, IMcmc,
         // **********************************************************
         gaugingsParent = new BamItemParent(
                 this,
-                BamItem.ITEM_TYPE.GAUGINGS);
+                BamItemType.GAUGINGS);
 
         gaugingsParent.comboboxLabel.setText("Jeu de jaugeages");
         gaugingsParent.combobox.setEmptyItemText("Selectionner un jeu de jaugeages");
@@ -113,7 +114,7 @@ public class RatingCurve extends BaRatinItem implements ICalibratedModel, IMcmc,
         // **********************************************************
         structErrorParent = new BamItemParent(
                 this,
-                BamItem.ITEM_TYPE.STRUCTURAL_ERROR);
+                BamItemType.STRUCTURAL_ERROR);
 
         structErrorParent.comboboxLabel.setText("Modèle d'erreur structurelle");
         structErrorParent.combobox.setEmptyItemText("Selectionner un modèle d'erreur structurelle");

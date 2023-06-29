@@ -9,6 +9,7 @@ import javax.swing.JSplitPane;
 
 import org.baratinage.jbam.Parameter;
 import org.baratinage.ui.bam.BamItem;
+import org.baratinage.ui.bam.BamItemType;
 import org.baratinage.ui.bam.IModelDefinition;
 import org.baratinage.ui.bam.IPriors;
 import org.baratinage.ui.baratin.hydraulic_control.ControlMatrix;
@@ -32,7 +33,7 @@ class HydraulicConfiguration extends BaRatinItem
     private String jsonStringBackup;
 
     public HydraulicConfiguration(String uuid) {
-        super(ITEM_TYPE.HYRAULIC_CONFIG, uuid);
+        super(BamItemType.HYDRAULIC_CONFIG, uuid);
 
         setName(String.format(
                 defaultNameTemplate,

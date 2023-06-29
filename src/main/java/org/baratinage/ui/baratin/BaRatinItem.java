@@ -5,6 +5,7 @@ import java.awt.Component;
 import javax.swing.JSeparator;
 
 import org.baratinage.ui.bam.BamItem;
+import org.baratinage.ui.bam.BamItemType;
 import org.baratinage.ui.container.RowColPanel;
 
 public abstract class BaRatinItem extends BamItem {
@@ -13,7 +14,7 @@ public abstract class BaRatinItem extends BamItem {
     private RowColPanel contentContainer;
     private RowColPanel content;
 
-    public BaRatinItem(ITEM_TYPE type, String uuid) {
+    public BaRatinItem(BamItemType type, String uuid) {
         super(type, uuid);
 
         header = new NameDescriptionItemHeader();

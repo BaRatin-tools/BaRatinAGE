@@ -2,13 +2,14 @@ package org.baratinage.ui.baratin;
 
 import org.baratinage.jbam.PredictionInput;
 import org.baratinage.ui.bam.BamItem;
+import org.baratinage.ui.bam.BamItemType;
 import org.baratinage.ui.bam.IPredictionData;
 import org.json.JSONObject;
 
 public class Limnigraph extends BamItem implements IPredictionData {
 
     public Limnigraph(String uuid) {
-        super(ITEM_TYPE.LIMNIGRAPH, uuid);
+        super(BamItemType.LIMNIGRAPH, uuid);
     }
 
     @Override

@@ -19,7 +19,7 @@ import org.json.JSONObject;
 
 public class BamItemParent implements ChangeListener {
 
-    public final BamItem.ITEM_TYPE type;
+    public final BamItemType type;
 
     public final RowColPanel comboboxPanel;
     public final BamItemCombobox combobox;
@@ -36,7 +36,7 @@ public class BamItemParent implements ChangeListener {
 
     public BamItemParent(
             BamItem child,
-            BamItem.ITEM_TYPE type) {
+            BamItemType type) {
 
         this.type = type;
         this.child = child;

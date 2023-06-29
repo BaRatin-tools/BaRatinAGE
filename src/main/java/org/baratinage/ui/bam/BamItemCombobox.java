@@ -10,14 +10,13 @@ import javax.swing.JComboBox;
 import javax.swing.JList;
 import javax.swing.plaf.basic.BasicBorders;
 
-import org.baratinage.ui.bam.BamItem.ITEM_TYPE;
 import org.json.JSONObject;
 
 public class BamItemCombobox extends JComboBox<BamItem> {
 
     private DefaultComboBoxModel<BamItem> model;
 
-    private final BamItem EMPTY_BAMITEM = new BamItem(ITEM_TYPE.EMPTY_ITEM, UUID.randomUUID().toString()) {
+    private final BamItem EMPTY_BAMITEM = new BamItem(BamItemType.EMPTY_ITEM, UUID.randomUUID().toString()) {
 
         @Override
         public void parentHasChanged(BamItem parent) {

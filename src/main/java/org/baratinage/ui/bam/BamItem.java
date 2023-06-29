@@ -19,20 +19,7 @@ import org.json.JSONObject;
 
 abstract public class BamItem extends GridPanel {
 
-    // FIXME: should be in its own file.
-    // FIXME: should associate actual names
-    static public enum ITEM_TYPE {
-        EMPTY_ITEM,
-        HYRAULIC_CONFIG, // FIXME: typo
-        GAUGINGS,
-        HYDROGRAPH,
-        LIMNIGRAPH,
-        RATING_CURVE,
-        STRUCTURAL_ERROR,
-        IMPORTED_DATASET;
-    };
-
-    public final ITEM_TYPE TYPE;
+    public final BamItemType TYPE;
     public final String ID;
     private String name = "";
     private String description = "";
@@ -44,7 +31,7 @@ abstract public class BamItem extends GridPanel {
     private GridPanel headerPanel;
     private RowColPanel contentPanel;
 
-    public BamItem(ITEM_TYPE type, String uuid) {
+    public BamItem(BamItemType type, String uuid) {
         // super(AXIS.COL);
         TYPE = type;
         ID = uuid;

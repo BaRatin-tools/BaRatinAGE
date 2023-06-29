@@ -2,6 +2,7 @@ package org.baratinage.ui.baratin;
 
 import org.baratinage.jbam.PredictionConfig;
 import org.baratinage.ui.bam.BamItem;
+import org.baratinage.ui.bam.BamItemType;
 import org.baratinage.ui.bam.ICalibratedModel;
 import org.baratinage.ui.bam.IPredictionData;
 import org.baratinage.ui.bam.IPredictionExperiment;
@@ -10,7 +11,7 @@ import org.json.JSONObject;
 public class Hydrograph extends BamItem implements IPredictionExperiment {
 
     public Hydrograph(String uuid) {
-        super(ITEM_TYPE.HYDROGRAPH, uuid);
+        super(BamItemType.HYDROGRAPH, uuid);
     }
 
     @Override

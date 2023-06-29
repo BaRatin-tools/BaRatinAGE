@@ -21,6 +21,7 @@ import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.ui.plot.PlotContainer;
 import org.baratinage.utils.Misc;
 import org.baratinage.ui.bam.BamItemList;
+import org.baratinage.ui.bam.BamItemType;
 import org.json.JSONObject;
 
 public class Gaugings extends BaRatinItem implements ICalibrationData, BamItemList.BamItemListChangeListener {
@@ -34,7 +35,7 @@ public class Gaugings extends BaRatinItem implements ICalibrationData, BamItemLi
     private JLabel importedDataSetSourceLabel;
 
     public Gaugings(String uuid) {
-        super(ITEM_TYPE.GAUGINGS, uuid);
+        super(BamItemType.GAUGINGS, uuid);
 
         nInstance++;
         setName(String.format(

@@ -6,6 +6,7 @@ import org.baratinage.jbam.Distribution;
 import org.baratinage.jbam.Parameter;
 import org.baratinage.jbam.StructuralErrorModel;
 import org.baratinage.ui.bam.BamItem;
+import org.baratinage.ui.bam.BamItemType;
 import org.baratinage.ui.bam.IStructuralError;
 import org.baratinage.ui.commons.AbstractStructuralErrorModel;
 import org.baratinage.ui.commons.ConstantStructuralErrorModel;
@@ -28,7 +29,7 @@ public class StructuralError extends BaRatinItem implements IStructuralError, Ba
     private RowColPanel modelParametersPanel;
 
     public StructuralError(String uuid) {
-        super(ITEM_TYPE.STRUCTURAL_ERROR, uuid);
+        super(BamItemType.STRUCTURAL_ERROR, uuid);
         nInstance++;
         setName(String.format(defaultNameTemplate, nInstance));
 
