@@ -1,6 +1,5 @@
 package org.baratinage.ui.bam;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -176,10 +175,6 @@ public class BamItemParent implements ChangeListener {
                     if (createBackupBamItemAction == null) {
                         return;
                     }
-                    String timeStamp = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(new java.util.Date());
-                    String name = backupItemJson.has("name") ? backupItemJson.getString("name") : "...";
-                    name += " (copie " + timeStamp + ")";
-                    backupItemJson.put("name", name);
                     String uuid = UUID.randomUUID().toString();
                     createBackupBamItemAction.onCreateBackupBamItem(
                             uuid,

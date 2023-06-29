@@ -11,7 +11,6 @@ import org.baratinage.ui.bam.BamItemType;
 import org.baratinage.ui.bam.BamProject;
 import org.baratinage.ui.commons.ExplorerItem;
 import org.baratinage.ui.component.NoScalingIcon;
-import org.baratinage.utils.Misc;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -137,15 +136,11 @@ public class BaratinProject extends BamProject {
         super.deleteItem(bamItem, explorerItem);
     }
 
-    private BamItem cloneBamItem(BamItem item) {
-        BamItem clonedItem = item.clone();
-        clonedItem.setName(clonedItem.getName() + " (" + Misc.getTimeStamp() + ")");
-        return clonedItem;
-    }
-
     public HydraulicConfiguration addHydraulicConfig(HydraulicConfiguration hc) {
         hc.cloneButton.addActionListener((e) -> {
-            addHydraulicConfig((HydraulicConfiguration) cloneBamItem(hc));
+            HydraulicConfiguration newHc = (HydraulicConfiguration) hc.clone();
+            newHc.addTimeStampToName();
+            addHydraulicConfig(newHc);
         });
         ExplorerItem explorerItem = new ExplorerItem(
                 hc.ID,
@@ -167,7 +162,9 @@ public class BaratinProject extends BamProject {
 
     public Gaugings addGaugings(Gaugings g) {
         g.cloneButton.addActionListener((e) -> {
-            addGaugings((Gaugings) cloneBamItem(g));
+            Gaugings newG = (Gaugings) g.clone();
+            newG.addTimeStampToName();
+            addGaugings(newG);
         });
         ExplorerItem explorerItem = new ExplorerItem(
                 g.ID,
@@ -188,9 +185,10 @@ public class BaratinProject extends BamProject {
     }
 
     public StructuralError addStructuralErrorModel(StructuralError se) {
-        // this.getBamItems().addChangeListener(newStructError); // FIXME: not needed
         se.cloneButton.addActionListener((e) -> {
-            addStructuralErrorModel((StructuralError) cloneBamItem(se));
+            StructuralError newSe = (StructuralError) se.clone();
+            newSe.addTimeStampToName();
+            addStructuralErrorModel(newSe);
         });
         ExplorerItem explorerItem = new ExplorerItem(
                 se.ID,
@@ -213,7 +211,9 @@ public class BaratinProject extends BamProject {
     public RatingCurve addRatingCurve(RatingCurve rc) {
         getBamItems().addChangeListener(rc);
         rc.cloneButton.addActionListener((e) -> {
-            addRatingCurve((RatingCurve) cloneBamItem(rc));
+            RatingCurve newRc = (RatingCurve) rc.clone();
+            newRc.addTimeStampToName();
+            addRatingCurve(newRc);
         });
         ExplorerItem explorerItem = new ExplorerItem(
                 rc.ID,

@@ -7,7 +7,6 @@ import java.nio.file.Path;
 import java.util.List;
 
 import javax.swing.JButton;
-import javax.swing.JLabel;
 
 import org.baratinage.App;
 import org.baratinage.jbam.PredictionConfig;

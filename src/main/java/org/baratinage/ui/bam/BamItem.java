@@ -16,6 +16,7 @@ import javax.swing.event.ChangeListener;
 
 import org.baratinage.ui.container.GridPanel;
 import org.baratinage.ui.container.RowColPanel;
+import org.baratinage.utils.Misc;
 import org.json.JSONObject;
 
 abstract public class BamItem extends GridPanel {
@@ -201,5 +202,9 @@ abstract public class BamItem extends GridPanel {
     public BamItem clone() {
         String uuid = UUID.randomUUID().toString();
         return clone(uuid);
+    }
+
+    public void addTimeStampToName() {
+        setName(getName() + " (" + Misc.getTimeStamp() + ")");
     }
 }
