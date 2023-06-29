@@ -4,6 +4,7 @@ import java.awt.Font;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.awt.Component;
 
 import javax.swing.JButton;
@@ -27,7 +28,8 @@ abstract public class BamItem extends GridPanel {
     private BamItemList children;
 
     private JLabel titleLabel;
-    private JButton deleteButton;
+    public final JButton cloneButton = new JButton();
+    public final JButton deleteButton = new JButton();
     private GridPanel headerPanel;
     private RowColPanel contentPanel;
 
@@ -53,10 +55,10 @@ abstract public class BamItem extends GridPanel {
         titleLabel = new JLabel(getName());
         Font font = titleLabel.getFont();
         titleLabel.setFont(font.deriveFont(Font.BOLD));
-        deleteButton = new JButton("Supprimer");
 
         headerPanel.insertChild(titleLabel, 0, 0);
-        headerPanel.insertChild(deleteButton, 1, 0);
+        headerPanel.insertChild(cloneButton, 1, 0);
+        headerPanel.insertChild(deleteButton, 2, 0);
 
         this.children = new BamItemList();
     }
@@ -213,4 +215,9 @@ abstract public class BamItem extends GridPanel {
     }
 
     public abstract BamItem clone(String uuid);
+
+    public BamItem clone() {
+        String uuid = UUID.randomUUID().toString();
+        return clone(uuid);
+    }
 }

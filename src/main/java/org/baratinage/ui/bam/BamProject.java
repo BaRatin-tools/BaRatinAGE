@@ -21,6 +21,7 @@ import org.baratinage.ui.baratin.BaratinProject;
 import org.baratinage.ui.commons.Explorer;
 import org.baratinage.ui.commons.ExplorerItem;
 import org.baratinage.ui.container.RowColPanel;
+import org.baratinage.ui.lg.Lg;
 import org.baratinage.utils.ReadFile;
 import org.baratinage.utils.ReadWriteZip;
 import org.baratinage.utils.WriteFile;
@@ -92,6 +93,9 @@ public abstract class BamProject extends RowColPanel {
     }
 
     public void addItem(BamItem bamItem, ExplorerItem explorerItem) {
+
+        Lg.registerButton(bamItem.cloneButton, "ui", "duplicate");
+        Lg.registerButton(bamItem.deleteButton, "ui", "delete");
 
         items.add(bamItem);
         explorerItems.add(explorerItem);
