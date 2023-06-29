@@ -15,6 +15,7 @@ import org.baratinage.ui.bam.IPriors;
 import org.baratinage.ui.baratin.hydraulic_control.ControlMatrix;
 import org.baratinage.ui.baratin.hydraulic_control.AllHydraulicControls;
 import org.baratinage.ui.baratin.hydraulic_control.OneHydraulicControl;
+import org.baratinage.ui.commons.WarningAndActions;
 import org.baratinage.ui.container.RowColPanel;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -97,10 +98,14 @@ class HydraulicConfiguration extends BaRatinItem
 
     private void checkPriorRatingCurveSync() {
         if (jsonStringBackup != null) {
-            String[] keysToIgnore = new String[] { "ui", "name", "description" };
-            priorRatingCurve
-                    .setOutdated(!isMatchingWith(jsonStringBackup, keysToIgnore, true));
-            // .setOutdated(!isBackupInSyncIgnoringKeys("prior_rc", keysToIgnore));
+            String[] keysToIgnore = new String[] { "ui", "name", "description", "jsonStringBackup" };
+            if (!isMatchingWith(jsonStringBackup, keysToIgnore, true)) {
+                WarningAndActions warning = new WarningAndActions();
+                warning.setWarningMessage("La courbe de tarage n'est plus à jour et doit être recalculé!");
+                priorRatingCurve.setWarnings(new WarningAndActions[] { warning });
+            } else {
+                priorRatingCurve.setWarnings(new WarningAndActions[] {});
+            }
         }
     }
 
@@ -214,6 +219,8 @@ class HydraulicConfiguration extends BaRatinItem
 
         json.put("stageGridConfig", stageGridConfigJson);
 
+        json.put("jsonStringBackup", jsonStringBackup);
+
         // **********************************************************
         // prior rating curve BaM results
         json.put("bamRunZipFileName", priorRatingCurve.getBamRunZipFileName());
@@ -309,6 +316,13 @@ class HydraulicConfiguration extends BaRatinItem
         } else {
             System.out.println("MISSING 'stageGridConfig'");
         }
+
+        if (json.has("jsonStringBackup")) {
+            jsonStringBackup = json.getString("jsonStringBackup");
+        } else {
+            System.out.println("MISSING 'jsonStringBackup'");
+        }
+
         // **********************************************************
         // prior rating curve BaM results
         if (json.has("bamRunZipFileName")) {

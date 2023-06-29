@@ -17,6 +17,7 @@ import org.baratinage.ui.bam.IPredictionData;
 import org.baratinage.ui.bam.IPriors;
 import org.baratinage.ui.bam.PriorPredictionExperiment;
 import org.baratinage.ui.bam.RunBamPrior;
+import org.baratinage.ui.commons.WarningAndActions;
 import org.baratinage.ui.container.GridPanel;
 import org.baratinage.ui.container.RowColPanel;
 
@@ -39,7 +40,7 @@ public class PriorRatingCurve extends GridPanel {
         private boolean hasResults = false;
 
         private RunBamPrior runBamPrior;
-        private JLabel outdatedLabel;
+        private RowColPanel outdatedPanel;
 
         // FIXME: this has a few features in common with PosteriorRatingCurve
         // FIXME: refactoring may be needed; consider including RunBam class as well
@@ -50,8 +51,7 @@ public class PriorRatingCurve extends GridPanel {
 
                 setName("prior_rating_curve");
 
-                outdatedLabel = new JLabel();
-                outdatedLabel.setForeground(Color.RED);
+                outdatedPanel = new RowColPanel();
 
                 JButton runButton = new JButton(
                                 String.format("<html>Calculer la courbe de tarage <i>a priori</i></html>"));
@@ -62,7 +62,7 @@ public class PriorRatingCurve extends GridPanel {
 
                 plotPanel = new RowColPanel(RowColPanel.AXIS.COL);
 
-                insertChild(outdatedLabel, 0, 0,
+                insertChild(outdatedPanel, 0, 0,
                                 ANCHOR.C, FILL.BOTH);
                 insertChild(runButton, 0, 1,
                                 ANCHOR.C, FILL.BOTH);
@@ -73,12 +73,12 @@ public class PriorRatingCurve extends GridPanel {
                 setColWeight(0, 1);
         }
 
-        public void setOutdated(boolean isOutdated) {
-                if (isOutdated) {
-                        outdatedLabel.setText("La courbe de tarage n'est plus à jour et doit être recalculé!");
-                } else {
-                        outdatedLabel.setText("");
+        public void setWarnings(WarningAndActions[] warnings) {
+                outdatedPanel.clear();
+                for (WarningAndActions w : warnings) {
+                        outdatedPanel.appendChild(w);
                 }
+                outdatedPanel.updateUI();
         }
 
         private void computePriorRatingCurve() {
