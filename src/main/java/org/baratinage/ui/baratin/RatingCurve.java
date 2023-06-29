@@ -163,6 +163,12 @@ public class RatingCurve extends BaRatinItem implements ICalibratedModel, IMcmc,
         outdatedInfoPanel.setGap(2);
         outdatedInfoPanel.setColWeight(0, 1);
 
+        // FIXME: ugly way to get the parent project...
+        // MAIN_FRAME may not have a reference to any project or to the right project
+        BaratinProject project = (BaratinProject) App.MAIN_FRAME.getCurrentProject();
+        if (project != null) {
+            onBamItemListChange(project.getBamItems());
+        }
     }
 
     @Override
