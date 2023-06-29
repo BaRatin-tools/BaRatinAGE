@@ -13,7 +13,6 @@ import java.nio.file.Path;
 import java.util.Set;
 
 import org.baratinage.ui.MainFrame;
-import org.baratinage.ui.baratin.BaratinProject;
 import org.baratinage.ui.lg.Lg;
 
 public class App {
