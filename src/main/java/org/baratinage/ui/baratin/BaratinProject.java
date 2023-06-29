@@ -11,6 +11,7 @@ import org.baratinage.ui.bam.BamItemType;
 import org.baratinage.ui.bam.BamProject;
 import org.baratinage.ui.commons.ExplorerItem;
 import org.baratinage.ui.component.NoScalingIcon;
+import org.baratinage.utils.Misc;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -136,98 +137,100 @@ public class BaratinProject extends BamProject {
         super.deleteItem(bamItem, explorerItem);
     }
 
-    public HydraulicConfiguration addHydraulicConfig(HydraulicConfiguration newHydrauConf) {
+    private BamItem cloneBamItem(BamItem item) {
+        BamItem clonedItem = item.clone();
+        clonedItem.setName(clonedItem.getName() + " (" + Misc.getTimeStamp() + ")");
+        return clonedItem;
+    }
+
+    public HydraulicConfiguration addHydraulicConfig(HydraulicConfiguration hc) {
+        hc.cloneButton.addActionListener((e) -> {
+            addHydraulicConfig((HydraulicConfiguration) cloneBamItem(hc));
+        });
         ExplorerItem explorerItem = new ExplorerItem(
-                newHydrauConf.ID,
-                newHydrauConf.getName(),
+                hc.ID,
+                hc.getName(),
                 hydraulicConfigIconPath,
                 hydraulicConfig);
-        addItem(newHydrauConf, explorerItem);
-        return newHydrauConf;
+        addItem(hc, explorerItem);
+        return hc;
+    }
+
+    public HydraulicConfiguration addHydraulicConfig(String uuid) {
+        HydraulicConfiguration hc = new HydraulicConfiguration(uuid);
+        return addHydraulicConfig(hc);
     }
 
     public HydraulicConfiguration addHydraulicConfig() {
         return addHydraulicConfig(UUID.randomUUID().toString());
     }
 
-    public HydraulicConfiguration addHydraulicConfig(String uuid) {
-        HydraulicConfiguration hydroConf = new HydraulicConfiguration(uuid);
+    public Gaugings addGaugings(Gaugings g) {
+        g.cloneButton.addActionListener((e) -> {
+            addGaugings((Gaugings) cloneBamItem(g));
+        });
         ExplorerItem explorerItem = new ExplorerItem(
-                uuid,
-                hydroConf.getName(),
-                hydraulicConfigIconPath,
-                hydraulicConfig);
-        addItem(hydroConf, explorerItem);
-        return hydroConf;
-    }
-
-    public Gaugings addGaugings(Gaugings newGaugings) {
-        ExplorerItem explorerItem = new ExplorerItem(
-                newGaugings.ID,
-                newGaugings.getName(),
+                g.ID,
+                g.getName(),
                 gaugingsIconPath,
                 gaugings);
-        addItem(newGaugings, explorerItem);
-        return newGaugings;
+        addItem(g, explorerItem);
+        return g;
+    }
+
+    public Gaugings addGaugings(String uuid) {
+        Gaugings g = new Gaugings(uuid);
+        return addGaugings(g);
     }
 
     public Gaugings addGaugings() {
         return addGaugings(UUID.randomUUID().toString());
     }
 
-    public Gaugings addGaugings(String uuid) {
-        Gaugings gaugingsItem = new Gaugings(uuid);
-        this.getBamItems().addChangeListener(gaugingsItem);
+    public StructuralError addStructuralErrorModel(StructuralError se) {
+        // this.getBamItems().addChangeListener(newStructError); // FIXME: not needed
+        se.cloneButton.addActionListener((e) -> {
+            addStructuralErrorModel((StructuralError) cloneBamItem(se));
+        });
         ExplorerItem explorerItem = new ExplorerItem(
-                uuid,
-                gaugingsItem.getName(),
-                gaugingsIconPath,
-                gaugings);
-        addItem(gaugingsItem, explorerItem);
-        return gaugingsItem;
-    }
-
-    public StructuralError addStructuralErrorModel(StructuralError newStructError) {
-        this.getBamItems().addChangeListener(newStructError);
-        ExplorerItem explorerItem = new ExplorerItem(
-                newStructError.ID,
-                newStructError.getName(),
+                se.ID,
+                se.getName(),
                 structuralErrIconPath,
                 structuralError);
-        addItem(newStructError, explorerItem);
-        return newStructError;
+        addItem(se, explorerItem);
+        return se;
+    }
+
+    public StructuralError addStructuralErrorModel(String uuid) {
+        StructuralError se = new StructuralError(uuid);
+        return addStructuralErrorModel(se);
     }
 
     public StructuralError addStructuralErrorModel() {
         return addStructuralErrorModel(UUID.randomUUID().toString());
     }
 
-    public StructuralError addStructuralErrorModel(String uuid) {
-        StructuralError structuralErrorItem = new StructuralError(uuid);
-        this.getBamItems().addChangeListener(structuralErrorItem);
+    public RatingCurve addRatingCurve(RatingCurve rc) {
+        getBamItems().addChangeListener(rc);
+        rc.cloneButton.addActionListener((e) -> {
+            addRatingCurve((RatingCurve) cloneBamItem(rc));
+        });
         ExplorerItem explorerItem = new ExplorerItem(
-                uuid,
-                structuralErrorItem.getName(),
-                structuralErrIconPath,
-                structuralError);
-        addItem(structuralErrorItem, explorerItem);
-        return structuralErrorItem;
-    }
-
-    private RatingCurve addRatingCurve() {
-        return addRatingCurve(UUID.randomUUID().toString());
-    }
-
-    private RatingCurve addRatingCurve(String uuid) {
-        RatingCurve ratingCurveItem = new RatingCurve(uuid);
-        this.getBamItems().addChangeListener(ratingCurveItem);
-        ExplorerItem explorerItem = new ExplorerItem(
-                uuid,
-                ratingCurveItem.getName(),
+                rc.ID,
+                rc.getName(),
                 ratingCurveIconPath,
                 ratingCurve);
-        addItem(ratingCurveItem, explorerItem);
-        return ratingCurveItem;
+        addItem(rc, explorerItem);
+        return rc;
+    }
+
+    public RatingCurve addRatingCurve(String uuid) {
+        RatingCurve rc = new RatingCurve(uuid);
+        return addRatingCurve(rc);
+    }
+
+    public RatingCurve addRatingCurve() {
+        return addRatingCurve(UUID.randomUUID().toString());
     }
 
     @Override
