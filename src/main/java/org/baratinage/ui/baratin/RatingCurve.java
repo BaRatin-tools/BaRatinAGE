@@ -17,6 +17,7 @@ import org.baratinage.ui.bam.ICalibratedModel;
 import org.baratinage.ui.bam.IMcmc;
 import org.baratinage.ui.commons.WarningAndActions;
 import org.baratinage.ui.container.RowColPanel;
+import org.baratinage.ui.lg.Lg;
 import org.json.JSONObject;
 
 public class RatingCurve extends BaRatinItem implements ICalibratedModel, IMcmc, BamItemList.BamItemListChangeListener {
@@ -185,13 +186,6 @@ public class RatingCurve extends BaRatinItem implements ICalibratedModel, IMcmc,
     public CalibrationResult getCalibrationResults() {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'getCalibrationResults'");
-    }
-
-    @Override
-    public void parentHasChanged(BamItem parent) {
-        System.out.println("PARENT HAS CHANGED DECTECTED FROM '" + this + "'");
-        // checkSynchronicity();
-
     }
 
     private void checkSync() {

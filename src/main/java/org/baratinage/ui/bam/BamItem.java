@@ -27,8 +27,6 @@ abstract public class BamItem extends GridPanel {
     private String name = "";
     private String description = "";
 
-    private BamItemList children;
-
     private JLabel titleLabel;
     public final JButton cloneButton = new JButton();
     public final JButton deleteButton = new JButton();
@@ -63,7 +61,6 @@ abstract public class BamItem extends GridPanel {
         headerPanel.insertChild(cloneButton, 1, 0);
         headerPanel.insertChild(deleteButton, 2, 0);
 
-        this.children = new BamItemList();
     }
 
     public void addDeleteAction(ActionListener action) {
@@ -86,21 +83,6 @@ abstract public class BamItem extends GridPanel {
         this.contentPanel.appendChild(component);
     }
 
-    public void hasChanged() {
-        for (BamItem child : this.children) {
-            child.parentHasChanged(this);
-        }
-        fireChangeListeners();
-    }
-
-    public void addBamItemChild(BamItem childBamItem) {
-        children.add(childBamItem);
-    }
-
-    public void removeBamItemChild(BamItem childBamItem) {
-        children.remove(childBamItem);
-    }
-
     public String getName() {
         return this.name;
     }
@@ -119,9 +101,6 @@ abstract public class BamItem extends GridPanel {
     public void setDescription(String description) {
         this.description = description;
     }
-
-    // FIXME: to delete
-    public abstract void parentHasChanged(BamItem parent);
 
     public String[] getTempDataFileNames() {
         return new String[] {};

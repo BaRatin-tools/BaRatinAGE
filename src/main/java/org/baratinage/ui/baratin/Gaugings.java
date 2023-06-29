@@ -72,7 +72,7 @@ public class Gaugings extends BaRatinItem implements ICalibrationData, BamItemLi
         gaugingsTable = new GaugingsTable();
         gaugingsTable.getTableModel().addTableModelListener((e) -> {
             setPlot();
-            hasChanged();
+            fireChangeListeners();
         });
 
         importGaugingsPanel.appendChild(importDataButton, 0);
@@ -138,11 +138,6 @@ public class Gaugings extends BaRatinItem implements ICalibrationData, BamItemLi
         String sanitizedName = Misc.sanitizeName(getName());
         System.out.println(sanitizedName);
         return new CalibrationData(sanitizedName, getInputs(), getOutputs());
-    }
-
-    @Override
-    public void parentHasChanged(BamItem parent) {
-        System.out.println("PARENT HAS CHANGED => PARENT = " + parent);
     }
 
     @Override

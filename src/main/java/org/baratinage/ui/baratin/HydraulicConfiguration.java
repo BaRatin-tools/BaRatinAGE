@@ -45,14 +45,14 @@ class HydraulicConfiguration extends BaRatinItem
 
         controlMatrix = new ControlMatrix();
         controlMatrix.addPropertyChangeListener("controlMatrixChange", (e) -> {
-            hasChanged();
+            fireChangeListeners();
             updateHydraulicControls(controlMatrix.getControlMatrix());
             checkPriorRatingCurveSync();
         });
 
         hydraulicControls = new AllHydraulicControls();
         hydraulicControls.addPropertyChangeListener("hydraulicControl", (e) -> {
-            hasChanged();
+            fireChangeListeners();
             checkPriorRatingCurveSync();
         });
 
@@ -64,7 +64,7 @@ class HydraulicConfiguration extends BaRatinItem
 
         priorRatingCurveStageGrid = new RatingCurveStageGrid();
         priorRatingCurveStageGrid.addPropertyChangeListener("stageGridConfigChanged", (e) -> {
-            hasChanged();
+            fireChangeListeners();
             checkPriorRatingCurveSync();
         });
 
@@ -151,12 +151,6 @@ class HydraulicConfiguration extends BaRatinItem
     @Override
     public Parameter[] getParameters() {
         return hydraulicControls.getParameters();
-    }
-
-    @Override
-    public void parentHasChanged(BamItem parent) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'parentHasChanged'");
     }
 
     @Override

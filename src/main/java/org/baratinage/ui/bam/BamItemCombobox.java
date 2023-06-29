@@ -19,10 +19,6 @@ public class BamItemCombobox extends JComboBox<BamItem> {
     private final BamItem EMPTY_BAMITEM = new BamItem(BamItemType.EMPTY_ITEM, UUID.randomUUID().toString(), null) {
 
         @Override
-        public void parentHasChanged(BamItem parent) {
-        }
-
-        @Override
         public JSONObject toJSON() {
             return null;
         }

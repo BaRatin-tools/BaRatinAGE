@@ -79,7 +79,7 @@ public class StructuralError extends BaRatinItem implements IStructuralError, Ba
             currentModelType = newModelType;
             currentStructuralErrorModel = new LinearStructuralErrorModel();
             currentStructuralErrorModel.addChangeListener((e) -> {
-                hasChanged();
+                fireChangeListeners();
             });
             currentStructuralErrorModel.applyDefaultConfig();
             modelParametersPanel.clear();
@@ -90,7 +90,7 @@ public class StructuralError extends BaRatinItem implements IStructuralError, Ba
             modelParametersPanel.clear();
             modelParametersPanel.appendChild(currentStructuralErrorModel);
         }
-        hasChanged();
+        fireChangeListeners();
     }
 
     @Override
@@ -98,12 +98,6 @@ public class StructuralError extends BaRatinItem implements IStructuralError, Ba
         if (currentStructuralErrorModel == null)
             return null;
         return currentStructuralErrorModel.getStructuralErrorModel();
-    }
-
-    @Override
-    public void parentHasChanged(BamItem parent) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'parentHasChanged'");
     }
 
     @Override

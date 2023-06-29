@@ -44,7 +44,6 @@ public class BamItemParent implements ChangeListener {
         combobox.addActionListener(e -> {
             BamItem selected = combobox.getSelectedItem();
             if (currentItem != null) {
-                currentItem.removeBamItemChild(child);
                 currentItem.removeChangeListener(this);
             }
 
@@ -54,7 +53,6 @@ public class BamItemParent implements ChangeListener {
                 return;
             }
 
-            selected.addBamItemChild(child);
             currentItem = selected;
             currentItem.addChangeListener(this);
             fireChangeListeners();
