@@ -3,7 +3,6 @@ package org.baratinage.ui.baratin;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.JLabel;
 import javax.swing.JSeparator;
 
 import org.baratinage.jbam.CalibrationConfig;
