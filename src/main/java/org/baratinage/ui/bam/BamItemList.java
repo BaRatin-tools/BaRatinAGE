@@ -63,4 +63,15 @@ public class BamItemList extends ArrayList<BamItem> {
         return filteredList;
     }
 
+    public BamItem getBamItemWithId(String id) {
+        int n = size();
+        for (int k = 0; k < n; k++) {
+            BamItem item = get(k);
+            if (item.ID.equals(id)) {
+                return item;
+            }
+        }
+        return null;
+    }
+
 }
