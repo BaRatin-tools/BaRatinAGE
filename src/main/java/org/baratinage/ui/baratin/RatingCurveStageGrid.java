@@ -95,6 +95,10 @@ public class RatingCurveStageGrid extends RowColPanel implements IPredictionData
 
         isValueValid = false;
         stageGridConfig = new StageGridConfig(0, 0, 0);
+
+        nbrStepField.setValue(100);
+        nbrStepField.updateTextField();
+        updateStageGridConfig();
     }
 
     public double[] getStageGrid() {
