@@ -20,7 +20,7 @@ public class ControlMatrixColumn implements ItemListener {
         this.controleMatrixColumnHasChanged = controleMatrixColumnHasChanged;
         ctrlCheckBoxes = new ArrayList<>();
         for (int k = 0; k < nSegments; k++) {
-            ctrlCheckBoxes.add(new ControlCheckBox("k=" + k, this));
+            ctrlCheckBoxes.add(new ControlCheckBox("", this));
         }
         ctrlCheckBoxes.get(0).setSelected(true);
     }
@@ -32,7 +32,7 @@ public class ControlMatrixColumn implements ItemListener {
         if (d > 0) {
             // need to add new segments
             for (int k = 0; k < d; k++) {
-                ctrlCheckBoxes.add(new ControlCheckBox("k=" + (k + d - 1), this));
+                ctrlCheckBoxes.add(new ControlCheckBox("", this));
             }
         } else if (d < 0) {
             // need to remove segments
