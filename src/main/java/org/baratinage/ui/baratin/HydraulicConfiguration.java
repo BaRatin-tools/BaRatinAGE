@@ -101,7 +101,7 @@ class HydraulicConfiguration extends BaRatinItem
             String[] keysToIgnore = new String[] { "ui", "name", "description", "jsonStringBackup" };
             if (!isMatchingWith(jsonStringBackup, keysToIgnore, true)) {
                 WarningAndActions warning = new WarningAndActions();
-                warning.setWarningMessage("La courbe de tarage n'est plus à jour et doit être recalculé!");
+                warning.setWarningMessage("La courbe de tarage n'est plus à jour et doit être recalculée!");
                 priorRatingCurve.setWarnings(new WarningAndActions[] { warning });
             } else {
                 priorRatingCurve.setWarnings(new WarningAndActions[] {});
