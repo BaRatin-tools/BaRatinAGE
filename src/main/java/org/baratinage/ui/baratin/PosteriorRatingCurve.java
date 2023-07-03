@@ -138,14 +138,13 @@ public class PosteriorRatingCurve extends RowColPanel implements ICalibratedMode
                 predictionResults[0].getPredictionConfig(),
                 predictionResults[1],
                 predictionResults[2],
-                predictionResults[3],
                 predictionResults[0],
                 ((Gaugings) calibrationData).getGaugingDataset());
         System.out.println("DONE");
     }
 
     public PredictionExperiment[] getPredictionExperiments() {
-        PredictionExperiment[] pe = new PredictionExperiment[4];
+        PredictionExperiment[] pe = new PredictionExperiment[3];
         pe[0] = new PredictionExperiment(
                 getName() + "_maxpost",
                 false,
@@ -161,18 +160,11 @@ public class PosteriorRatingCurve extends RowColPanel implements ICalibratedMode
         pe[1].setPredictionData(ratingCurveGrid);
 
         pe[2] = new PredictionExperiment(
-                getName() + "_structural_uncertainty",
-                false,
-                true);
-        pe[2].setCalibrationModel(this);
-        pe[2].setPredictionData(ratingCurveGrid);
-
-        pe[3] = new PredictionExperiment(
                 getName() + "_total_uncertainty",
                 true,
                 true);
-        pe[3].setCalibrationModel(this);
-        pe[3].setPredictionData(ratingCurveGrid);
+        pe[2].setCalibrationModel(this);
+        pe[2].setPredictionData(ratingCurveGrid);
 
         return pe;
     }
@@ -180,7 +172,6 @@ public class PosteriorRatingCurve extends RowColPanel implements ICalibratedMode
     private void buildRatingCurvePlot(
             PredictionConfig predictionConfig,
             PredictionResult parametricUncertainty,
-            PredictionResult structuralUncertainty,
             PredictionResult totalUncertainty,
             PredictionResult maxpost,
             GaugingsDataset gaugings) {
@@ -190,7 +181,6 @@ public class PosteriorRatingCurve extends RowColPanel implements ICalibratedMode
         double[] dischargeMaxpost = maxpost.getOutputResults().get(outputName).spag().get(0);
 
         List<double[]> dischargeTotalEnv = totalUncertainty.getOutputResults().get(outputName).env();
-        List<double[]> dischargeStructuralEnv = structuralUncertainty.getOutputResults().get(outputName).env();
         List<double[]> dischargeParametricEnv = parametricUncertainty.getOutputResults().get(outputName).env();
 
         // double[] dischargeLow = dischargeParametricEnv.get(1);
@@ -206,18 +196,11 @@ public class PosteriorRatingCurve extends RowColPanel implements ICalibratedMode
                 5);
 
         PlotItem totEnv = new PlotBand(
-                "Total uncertainty",
+                "Structural and parametric uncertainty",
                 stage,
                 dischargeTotalEnv.get(1),
                 dischargeTotalEnv.get(2),
                 new Color(200, 200, 200, 100));
-
-        PlotItem strEnv = new PlotBand(
-                "Structural uncertainty",
-                stage,
-                dischargeStructuralEnv.get(1),
-                dischargeStructuralEnv.get(2),
-                new Color(255, 150, 150, 100));
 
         PlotItem parEnv = new PlotBand(
                 "Parametric uncertainty",
@@ -228,7 +211,6 @@ public class PosteriorRatingCurve extends RowColPanel implements ICalibratedMode
 
         plot.addXYItem(mp);
         plot.addXYItem(parEnv);
-        plot.addXYItem(strEnv);
         plot.addXYItem(totEnv);
 
         GaugingsPlot gaugingsPlot = new GaugingsPlot("", "",
@@ -350,7 +332,6 @@ public class PosteriorRatingCurve extends RowColPanel implements ICalibratedMode
                 pr[0].getPredictionConfig(),
                 pr[1],
                 pr[2],
-                pr[3],
                 pr[0],
                 ((Gaugings) calibrationData).getGaugingDataset());
     }
