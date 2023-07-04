@@ -13,7 +13,7 @@ public class ConstantStructuralErrorModel extends AbstractStructuralErrorModel {
 
         super();
 
-        g1parameter = new ParameterPriorDist();
+        g1parameter = new ParameterPriorDist("gamma1");
         g1parameter.nameLabel.setText("<html>&gamma;<sub>1</sub></html>");
         g1parameter.addChangeListener((e) -> {
             fireChangeListener();

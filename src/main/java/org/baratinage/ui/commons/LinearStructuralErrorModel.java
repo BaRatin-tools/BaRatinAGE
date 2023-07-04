@@ -20,7 +20,7 @@ public class LinearStructuralErrorModel extends AbstractStructuralErrorModel {
         setGap(5);
         setPadding(5);
 
-        g1parameter = new ParameterPriorDist();
+        g1parameter = new ParameterPriorDist("gamma1");
         g1parameter.nameLabel.setText(gamma1LabelString);
         g1parameter.addChangeListener((e) -> {
             fireChangeListener();
@@ -31,7 +31,7 @@ public class LinearStructuralErrorModel extends AbstractStructuralErrorModel {
         insertChild(g1parameter.distComboBox, 2, 1);
         insertChild(g1parameter.parametersInputsPanel, 3, 1);
 
-        g2parameter = new ParameterPriorDist();
+        g2parameter = new ParameterPriorDist("gamma2");
         g2parameter.nameLabel.setText(gamma2LabelString);
         g2parameter.addChangeListener((e) -> {
             fireChangeListener();

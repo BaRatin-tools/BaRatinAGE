@@ -21,13 +21,16 @@ import org.baratinage.ui.lg.Lg;
 
 public class ParameterPriorDist {
 
+    public String shortName;
     public JLabel nameLabel;
     public JComboBox<DISTRIB> distComboBox;
     public NumberField initialGuessField;
     public RowColPanel parametersInputsPanel;
     public List<NumberField> parameterPriorFields;
 
-    public ParameterPriorDist() {
+    public ParameterPriorDist(String shortName) {
+
+        this.shortName = shortName;
 
         DefaultComboBoxModel<DISTRIB> distComboBoxModel = new DefaultComboBoxModel<>();
         for (DISTRIB d : DISTRIB.values()) {
@@ -117,7 +120,7 @@ public class ParameterPriorDist {
         }
         Distribution distribution = new Distribution(d, parameterValues);
 
-        return new Parameter(nameLabel.getText(), initialGuess, distribution);
+        return new Parameter(shortName, initialGuess, distribution);
     }
 
     private List<ChangeListener> changeListenerers = new ArrayList<>();
