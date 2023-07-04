@@ -5,8 +5,8 @@ public class EstimatedParameter {
     private double[] mcmc;
     private double[] summary;
     final private static String[] SUMMARY_STATISTICS_NAMES = new String[] {
-            "N", "Minimum", "Maximum", "Range", "Mean", "Median", "Q10%", "Q25%",
-            "Q75%", "Q90", "St. Dev.", "Variance", "CV", "Skewness", "Kurtosis", "MaxPost"
+            "n", "min", "max", "range", "mean", "mediann", "q10", "q25",
+            "q75", "q90", "std", "var", "cv", "skewness", "kurtosis", "maxpost"
     };
 
     public EstimatedParameter(String name, double[] mcmc, double[] summary) {
@@ -21,6 +21,10 @@ public class EstimatedParameter {
 
     public double[] getMcmc() {
         return this.mcmc;
+    }
+
+    public double[] getSummary() {
+        return this.summary;
     }
 
     @Override
