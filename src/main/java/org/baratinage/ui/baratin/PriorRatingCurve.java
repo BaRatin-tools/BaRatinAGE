@@ -4,13 +4,17 @@ import java.awt.Color;
 import java.awt.Font;
 import java.io.File;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JButton;
 
 import org.baratinage.App;
+import org.baratinage.jbam.Distribution;
+import org.baratinage.jbam.Parameter;
 import org.baratinage.jbam.PredictionConfig;
 import org.baratinage.jbam.PredictionResult;
+import org.baratinage.jbam.Distribution.DISTRIB;
 import org.baratinage.ui.bam.IModelDefinition;
 import org.baratinage.ui.bam.IPredictionData;
 import org.baratinage.ui.bam.IPriors;
@@ -22,6 +26,8 @@ import org.baratinage.ui.container.RowColPanel;
 
 import org.baratinage.ui.plot.Plot;
 import org.baratinage.ui.plot.PlotContainer;
+import org.baratinage.ui.plot.PlotInfiniteLine;
+import org.baratinage.ui.plot.PlotInfiniteBand;
 import org.baratinage.ui.plot.PlotItem;
 import org.baratinage.ui.plot.PlotLine;
 import org.baratinage.utils.ReadWriteZip;
@@ -35,6 +41,7 @@ public class PriorRatingCurve extends GridPanel {
         private IPriors priorsProvider;
         private IModelDefinition modelDefinitionProvider;
 
+        private PriorPredictionExperiment[] predictionConfigs;
         private PredictionResult[] predictionResults;
         private boolean hasResults = false;
 
@@ -83,10 +90,7 @@ public class PriorRatingCurve extends GridPanel {
         private void computePriorRatingCurve() {
                 try {
 
-                        PriorPredictionExperiment[] ppes = new PriorPredictionExperiment[] {
-                                        getMaxpostPriorPredictionExperiment(),
-                                        getParametricUncertaintyPriorPredictionExperiment()
-                        };
+                        buildPriorPredictionExperiments();
 
                         runBamPrior = new RunBamPrior();
 
@@ -94,20 +98,15 @@ public class PriorRatingCurve extends GridPanel {
                                         App.BAM_RUN_DIR,
                                         modelDefinitionProvider,
                                         priorsProvider,
-                                        ppes);
+                                        predictionConfigs);
 
                         runBamPrior.run();
                         firePropertyChange("bamHasRun", null, null);
 
                         predictionResults = runBamPrior.getPredictionResults();
-
-                        PredictionConfig predConfig = ppes[0].getPredictionConfig();
                         hasResults = true;
 
-                        buildRatingCurvePlot(
-                                        predConfig,
-                                        predictionResults[1],
-                                        predictionResults[0]);
+                        buildRatingCurvePlot();
 
                 } catch (Exception error) {
                         System.err.println("ERROR: An error occured while running BaM!");
@@ -115,10 +114,39 @@ public class PriorRatingCurve extends GridPanel {
                 }
         }
 
+        private void buildRatingCurvePlot() {
+                if (runBamPrior == null || priorsProvider == null || predictionConfigs == null) {
+                        return;
+                }
+
+                Parameter[] params = priorsProvider.getParameters();
+                System.out.println(params);
+
+                List<double[]> transitionStages = new ArrayList<>();
+                for (Parameter p : params) {
+                        if (p.getName().startsWith("k_")) {
+                                Distribution d = p.getDistribution();
+                                if (d.getDistrib() == DISTRIB.GAUSSIAN) {
+                                        double[] distParams = d.getParameterValues();
+                                        double mean = distParams[0];
+                                        double std = distParams[1];
+                                        transitionStages.add(new double[] {
+                                                        mean, mean - 2 * std, mean + 2 * std
+                                        });
+                                }
+
+                        }
+                }
+
+                PredictionResult[] pprs = runBamPrior.getPredictionResults();
+                buildRatingCurvePlot(predictionConfigs[0].getPredictionConfig(), pprs[1], pprs[0], transitionStages);
+        }
+
         private void buildRatingCurvePlot(
                         PredictionConfig predictionConfig,
                         PredictionResult parametricUncertainty,
-                        PredictionResult maxpost) {
+                        PredictionResult maxpost,
+                        List<double[]> transitionStages) {
 
                 double[] stage = predictionConfig.getPredictionInputs()[0].getDataColumns().get(0);
                 String outputName = predictionConfig.getPredictionOutputs()[0].getName();
@@ -129,7 +157,7 @@ public class PriorRatingCurve extends GridPanel {
                 double[] dischargeLow = dischargeParametricEnv.get(1);
                 double[] dischargeHigh = dischargeParametricEnv.get(2);
 
-                Plot plot = new Plot("Stage [m]", "Discharge [m3/s]", true);
+                Plot plot = new Plot("Hauteur d'eau [m]", "Débit [m3/s]", true);
 
                 PlotItem mp = new PlotLine(
                                 "Prior rating curve",
@@ -145,6 +173,16 @@ public class PriorRatingCurve extends GridPanel {
                                 dischargeHigh,
                                 new Color(200, 200, 255, 100));
 
+                for (int k = 0; k < transitionStages.size(); k++) {
+                        double[] transitionStage = transitionStages.get(k);
+                        PlotInfiniteLine line = new PlotInfiniteLine("k_" + k, transitionStage[0],
+                                        Color.GREEN, 2);
+                        PlotInfiniteBand band = new PlotInfiniteBand("Hauteur de transition",
+                                        transitionStage[1], transitionStage[2], new Color(100, 255, 100, 100));
+                        plot.addXYItem(line, false);
+                        plot.addXYItem(band, k == 0);
+                }
+
                 plot.addXYItem(mp);
                 plot.addXYItem(parEnv);
 
@@ -159,21 +197,22 @@ public class PriorRatingCurve extends GridPanel {
                 this.predictionDataProvider = predictionDataProvider;
         }
 
-        public PriorPredictionExperiment getMaxpostPriorPredictionExperiment() {
+        private void buildPriorPredictionExperiments() {
+                int nReplicates = 500;
                 PriorPredictionExperiment ppeMaxpost = new PriorPredictionExperiment(getName() + "_maxpost",
-                                false, 500);
+                                false, nReplicates);
                 ppeMaxpost.setModelDefintionProvider(modelDefinitionProvider);
                 ppeMaxpost.setPredictionDataProvider(predictionDataProvider);
-                return ppeMaxpost;
-        }
-
-        public PriorPredictionExperiment getParametricUncertaintyPriorPredictionExperiment() {
                 PriorPredictionExperiment ppeParamUncertainty = new PriorPredictionExperiment(
                                 getName() + "_parametricUncertainty",
-                                true, 500);
+                                true, nReplicates);
                 ppeParamUncertainty.setModelDefintionProvider(modelDefinitionProvider);
                 ppeParamUncertainty.setPredictionDataProvider(predictionDataProvider);
-                return ppeParamUncertainty;
+
+                predictionConfigs = new PriorPredictionExperiment[] {
+                                ppeMaxpost,
+                                ppeParamUncertainty
+                };
         }
 
         public void setPriorsProvider(IPriors priorsProvider) {
@@ -224,17 +263,15 @@ public class PriorRatingCurve extends GridPanel {
                                 targetTempDir.toString());
                 System.out.println("Unzip success = " + unzipSuccess);
 
-                PriorPredictionExperiment[] ppes = new PriorPredictionExperiment[] {
-                                getMaxpostPriorPredictionExperiment(),
-                                getParametricUncertaintyPriorPredictionExperiment()
-                };
+                buildPriorPredictionExperiments();
 
                 runBamPrior = new RunBamPrior(bamRunZipFileName);
                 runBamPrior.configure(targetTempDir.toString(),
-                                modelDefinitionProvider, priorsProvider, ppes);
+                                modelDefinitionProvider, priorsProvider, predictionConfigs);
                 runBamPrior.readResultsFromWorkspace();
 
-                PredictionResult[] pprs = runBamPrior.getPredictionResults();
-                buildRatingCurvePlot(ppes[0].getPredictionConfig(), pprs[1], pprs[0]);
+                hasResults = true;
+
+                buildRatingCurvePlot();
         }
 }
