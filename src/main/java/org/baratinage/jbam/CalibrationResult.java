@@ -40,7 +40,6 @@ public class CalibrationResult {
         }
 
         // FIXME: identify all parameters by name!!
-        // everything after log post should
 
         this.estimatedParameter = null; // FIXME: not sure how this case should be handled...
         if (listCookedMcmcResults != null && listSummaryMcmcResults != null) {
@@ -50,8 +49,7 @@ public class CalibrationResult {
                 return;
             }
 
-            // FIXME: Not ideal... here we assume LogPost values are always the last column
-            // in the MCMC cooked file.
+            // FIXME: should I filter out LogPost and derived values?
             for (int k = 0; k < headers.length; k++) {
                 this.estimatedParameter.put(headers[k], new EstimatedParameter(
                         headers[k],
@@ -59,7 +57,12 @@ public class CalibrationResult {
                         k < listSummaryMcmcResults.size() ? listSummaryMcmcResults.get(k) : null));
 
             }
-            double[] logPost = listCookedMcmcResults.get(headers.length - 1);
+            EstimatedParameter logPostPar = this.estimatedParameter.get("LogPost");
+            if (logPostPar == null) {
+                System.err.println("No 'LogPost' column found in MCMC cooked file!");
+                return;
+            }
+            double[] logPost = logPostPar.getMcmc();
             double maxLogPost = Double.NEGATIVE_INFINITY;
             maxPostIndex = -1;
             for (int k = 0; k < logPost.length; k++) {
