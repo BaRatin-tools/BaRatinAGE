@@ -18,14 +18,14 @@ public class WarningAndActions extends RowColPanel {
     public WarningAndActions() {
         super(AXIS.COL);
 
-        setBackground(App.INVALID_COLLOR);
+        setBackground(App.INVALID_COLOR);
         appendChild(warningMessage);
         appendChild(actionButtonsPanel);
 
         setPadding(2);
         setGap(5);
 
-        actionButtonsPanel.setBackground(App.INVALID_COLLOR);
+        actionButtonsPanel.setBackground(App.INVALID_COLOR);
         actionButtonsPanel.setGap(5);
     }
 

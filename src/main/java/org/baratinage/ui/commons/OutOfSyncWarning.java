@@ -24,7 +24,7 @@ public class OutOfSyncWarning extends RowColPanel {
             appendChild(cancelChangeBtn, 0);
         }
 
-        setBackground(App.INVALID_COLLOR);
+        setBackground(App.INVALID_COLOR);
 
         setPadding(2);
         setGap(5);

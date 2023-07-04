@@ -61,7 +61,7 @@ public class NumberField extends RowColPanel {
         Color color = new Color(125, 255, 125, 0);
 
         if (!isValid) {
-            color = App.INVALID_COLLOR;
+            color = App.INVALID_COLOR;
         }
 
         setBorder(new BasicBorders.FieldBorder(color, color, color, color));

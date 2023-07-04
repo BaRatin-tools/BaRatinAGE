@@ -208,7 +208,7 @@ public class RatingCurve extends BaRatinItem implements ICalibratedModel, IMcmc,
                     object.setText(Lg.getText("ui", "recompute_posterior_rc", true));
                 }
             });
-            posteriorRatingCurve.runBamButton.setForeground(App.INVALID_COLLOR);
+            posteriorRatingCurve.runBamButton.setForeground(App.INVALID_COLOR);
             for (WarningAndActions w : warnings) {
                 outdatedInfoPanel.appendChild(w);
             }
