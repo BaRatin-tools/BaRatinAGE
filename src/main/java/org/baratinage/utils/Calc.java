@@ -1,5 +1,7 @@
 package org.baratinage.utils;
 
+import java.util.Arrays;
+
 public class Calc {
 
     public static double sum(double[] values) {
@@ -37,5 +39,33 @@ public class Calc {
 
     public static double[] range(double[] values) {
         return new double[] { Calc.min(values), Calc.max(values) };
+    }
+
+    public static double[] copy(double[] values) {
+        int n = values.length;
+        double[] copy = new double[n];
+        for (int k = 0; k < n; k++) {
+            copy[k] = values[k];
+        }
+        return copy;
+    }
+
+    public static double[] percentiles(double[] values, double probabilities[]) {
+
+        double[] copy = copy(values);
+        Arrays.sort(copy);
+        int n = values.length;
+        int m = probabilities.length;
+        double[] percentiles = new double[m];
+        for (int k = 0; k < m; k++) {
+            double p = probabilities[k];
+            if (p > 1)
+                p = 1;
+            if (p < 0)
+                p = 0;
+            int index = (int) Math.floor(p * n);
+            percentiles[k] = copy[index];
+        }
+        return percentiles;
     }
 }
