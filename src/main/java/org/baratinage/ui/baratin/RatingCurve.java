@@ -164,7 +164,9 @@ public class RatingCurve extends BaRatinItem implements ICalibratedModel, IMcmc,
 
         posteriorRatingCurve = new PosteriorRatingCurve();
         posteriorRatingCurve.addPropertyChangeListener("bamHasRun", (e) -> {
-            jsonStringBackup = toJSON().toString();
+            JSONObject json = toJSON();
+            json.remove("jsonStringBackup");
+            jsonStringBackup = json.toString();
             hydrauConfParent.updateBackup();
             gaugingsParent.updateBackup();
             structErrorParent.updateBackup();
@@ -260,6 +262,7 @@ public class RatingCurve extends BaRatinItem implements ICalibratedModel, IMcmc,
 
         json.put("bamRunZipFileName", posteriorRatingCurve.getBamRunZipFileName());
 
+        json.put("jsonStringBackup", jsonStringBackup);
         return json;
     }
 
@@ -295,6 +298,10 @@ public class RatingCurve extends BaRatinItem implements ICalibratedModel, IMcmc,
         if (json.has("bamRunZipFileName")) {
             String bamRunZipFileName = json.getString("bamRunZipFileName");
             posteriorRatingCurve.setBamRunZipFileName(bamRunZipFileName);
+        }
+
+        if (json.has("jsonStringBackup")) {
+            jsonStringBackup = json.getString("jsonStringBackup");
         }
 
     }

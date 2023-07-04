@@ -73,7 +73,9 @@ class HydraulicConfiguration extends BaRatinItem
         priorRatingCurve = new PriorRatingCurve();
         priorRatingCurve.addPropertyChangeListener("bamHasRun", (e) -> {
             // createBackup("prior_rc");
-            jsonStringBackup = toJSON().toString();
+            JSONObject json = toJSON();
+            json.remove("jsonStringBackup");
+            jsonStringBackup = json.toString();
             checkPriorRatingCurveSync();
         });
         priorRatingCurve.setPredictionDataProvider(priorRatingCurveStageGrid);
