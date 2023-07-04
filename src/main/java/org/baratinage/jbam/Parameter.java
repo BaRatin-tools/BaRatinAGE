@@ -15,7 +15,8 @@ public class Parameter {
         return this.name;
     }
 
-    public double getInitalGuess() {
+==
+    public double getInitialGuess() {
         return this.initalGuess;
     }
 

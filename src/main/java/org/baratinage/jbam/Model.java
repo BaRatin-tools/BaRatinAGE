@@ -36,7 +36,7 @@ public class Model {
 
         for (Parameter p : this.parameters) {
             configFile.addItem(p.getName(), "Parameter name -----", true);
-            configFile.addItem(p.getInitalGuess(), "Initial guess");
+            configFile.addItem(p.getInitialGuess(), "Initial guess");
             Distribution d = p.getDistribution();
             configFile.addItem(d.getName(), "Prior distribution", true);
             configFile.addItem(d.getParameterValues(), "Prior parameters");

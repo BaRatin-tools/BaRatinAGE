@@ -111,7 +111,7 @@ public class StructuralError extends BaRatinItem implements IStructuralError, Ba
         for (Parameter p : sem.getParameters()) {
             JSONObject pJson = new JSONObject();
             pJson.put("distrib", p.getDistribution().getDistrib().name());
-            pJson.put("initialGuess", p.getInitalGuess());
+            pJson.put("initialGuess", p.getInitialGuess());
             JSONArray pPriorsJson = new JSONArray();
             for (double prior : p.getDistribution().getParameterValues()) {
                 pPriorsJson.put(prior);
