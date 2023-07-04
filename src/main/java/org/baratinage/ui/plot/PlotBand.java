@@ -58,21 +58,7 @@ public class PlotBand extends PlotItem {
         dataset = new YIntervalSeriesCollection();
         dataset.addSeries(series);
 
-        renderer = new DeviationRenderer() {
-            @Override
-            public LegendItem getLegendItem(int datasetIndex, int series) {
-                LegendItem defaultLegendItem = super.getLegendItem(datasetIndex, series);
-                if (lineWidth == 0) {
-                    return new LegendItem(
-                            defaultLegendItem.getLabel(),
-                            defaultLegendItem.getDescription(),
-                            defaultLegendItem.getToolTipText(),
-                            defaultLegendItem.getURLText(),
-                            buildSquareShape(10), fillPaint);
-                }
-                return defaultLegendItem;
-            }
-        };
+        renderer = new BandRenderer(fillPaint, lineWidth == 0 ? 10 : 0);
 
         renderer.setSeriesStroke(0,
                 new BasicStroke(lineWidth,
