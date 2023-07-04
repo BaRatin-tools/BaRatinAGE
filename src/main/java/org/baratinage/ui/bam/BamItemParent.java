@@ -80,14 +80,6 @@ public class BamItemParent implements ChangeListener {
         combobox.syncWithBamItemList(filteredBamItemList);
     }
 
-    private String selectionAndContentMessage;
-    private String contentOnlyMessage;
-
-    public void setOutOfSyncMessages(String selectionAndContent, String contentOnly) {
-        selectionAndContentMessage = selectionAndContent;
-        contentOnlyMessage = contentOnly;
-    }
-
     public void setSyncJsonKeys(String[] keys, boolean exclude) {
         jsonKeys = keys;
         excludeJsonKeys = exclude;
@@ -125,10 +117,10 @@ public class BamItemParent implements ChangeListener {
             System.out.println("> Item selection has changed");
 
             WarningAndActions warning = new WarningAndActions();
-            warning.setWarningMessage(selectionAndContentMessage);
+            warning.setWarningMessage(Lg.getText("ui", "oos_select_and_content"));
             warning.addActionButton(
                     "revert",
-                    Lg.getText("ui", "oos_revert_selection"),
+                    Lg.getText("ui", "oos_revert_select"),
                     backupItemStillExists,
                     (e) -> {
                         revertToBackup();
@@ -153,23 +145,25 @@ public class BamItemParent implements ChangeListener {
         String warningMessage = "";
         if (selectionHasChanged && selectionIsOutOfSync) {
             System.out.println("> Item selection has changed");
-            warningMessage = selectionAndContentMessage;
+
+            warningMessage = Lg.format(Lg.getText("ui", "oos_select_and_content", true), comboboxLabel.getText());
+
             warning.addActionButton(
                     "revert",
-                    Lg.getText("ui", "oos_revert_selection"),
+                    Lg.getText("ui", "oos_revert_select"),
                     backupItemStillExists,
                     (e) -> {
                         revertToBackup();
                     });
         } else {
-            warningMessage = contentOnlyMessage;
+            warningMessage = Lg.format(Lg.getText("ui", "oos_content", true), comboboxLabel.getText());
         }
 
         System.out.println("> Current item is out of sync with backup");
 
         warning.addActionButton(
                 "duplicate",
-                Lg.getText("ui", "oos_create_new_from_backup"),
+                Lg.format(Lg.getText("ui", "oos_create_from_backup", true), comboboxLabel.getText()),
                 true,
                 (e) -> {
                     if (createBackupBamItemAction == null) {
@@ -218,13 +212,11 @@ public class BamItemParent implements ChangeListener {
         if (json.has("bamItemId")) {
             String bamItemId = json.getString("bamItemId");
             combobox.setSelectedBamItem(bamItemId);
-            // currentItem = combobox.getSelectedItem();
         }
         if (json.has("backupItemString")) {
             backupItemString = json.getString("backupItemString");
             backupItemId = json.getString("backupItemId");
         }
-        // fireChangeListeners();
     }
 
     private final List<ChangeListener> changeListeners = new ArrayList<>();

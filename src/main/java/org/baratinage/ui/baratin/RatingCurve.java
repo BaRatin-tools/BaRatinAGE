@@ -3,8 +3,10 @@ package org.baratinage.ui.baratin;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.JButton;
 import javax.swing.JSeparator;
 
+import org.baratinage.App;
 import org.baratinage.jbam.CalibrationConfig;
 import org.baratinage.jbam.CalibrationResult;
 import org.baratinage.jbam.McmcConfig;
@@ -63,7 +65,7 @@ public class RatingCurve extends BaRatinItem implements ICalibratedModel, IMcmc,
                 this,
                 BamItemType.HYDRAULIC_CONFIG);
 
-        hydrauConfParent.comboboxLabel.setText("Configuration hydraulique");
+        Lg.registerLabel(hydrauConfParent.comboboxLabel, "ui", "hydraulic_config");
         hydrauConfParent.combobox.setEmptyItemText("Selectionner une configuration hydraulique");
         hydrauConfParent.addChangeListener((e) -> {
             BamItem bamItem = hydrauConfParent.getCurrentBamItem();
@@ -73,14 +75,6 @@ public class RatingCurve extends BaRatinItem implements ICalibratedModel, IMcmc,
                 posteriorRatingCurve.setPriors(hydrauConf);
             }
             checkSync();
-        });
-        Lg.register(new LgElement<BamItemParent>(hydrauConfParent) {
-            @Override
-            public void setTranslatedText() {
-                String selAndCont = Lg.getText("ui", "oos_select_and_content_hc");
-                String contOnly = Lg.getText("ui", "oos_content_hc");
-                component.setOutOfSyncMessages(selAndCont, contOnly);
-            }
         });
         hydrauConfParent.setSyncJsonKeys(new String[] { "name", "description", "ui" }, true);
         hydrauConfParent.setCreateBackupBamItemAction((id, json) -> {
@@ -97,7 +91,7 @@ public class RatingCurve extends BaRatinItem implements ICalibratedModel, IMcmc,
                 this,
                 BamItemType.GAUGINGS);
 
-        gaugingsParent.comboboxLabel.setText("Jeu de jaugeages");
+        Lg.registerLabel(gaugingsParent.comboboxLabel, "ui", "gaugings");
         gaugingsParent.combobox.setEmptyItemText("Selectionner un jeu de jaugeages");
         gaugingsParent.addChangeListener((e) -> {
             BamItem bamItem = gaugingsParent.getCurrentBamItem();
@@ -105,14 +99,6 @@ public class RatingCurve extends BaRatinItem implements ICalibratedModel, IMcmc,
                 posteriorRatingCurve.setCalibrationData((Gaugings) bamItem);
             }
             checkSync();
-        });
-        Lg.register(new LgElement<BamItemParent>(gaugingsParent) {
-            @Override
-            public void setTranslatedText() {
-                String selAndCont = Lg.getText("ui", "oos_select_and_content_g");
-                String contOnly = Lg.getText("ui", "oos_content_g");
-                component.setOutOfSyncMessages(selAndCont, contOnly);
-            }
         });
         gaugingsParent.setSyncJsonKeys(new String[] { "name", "description" }, true);
         gaugingsParent.setCreateBackupBamItemAction((id, json) -> {
@@ -129,7 +115,7 @@ public class RatingCurve extends BaRatinItem implements ICalibratedModel, IMcmc,
                 this,
                 BamItemType.STRUCTURAL_ERROR);
 
-        structErrorParent.comboboxLabel.setText("Modèle d'erreur structurelle");
+        Lg.registerLabel(structErrorParent.comboboxLabel, "ui", "structural_error_model");
         structErrorParent.combobox.setEmptyItemText("Selectionner un modèle d'erreur structurelle");
         structErrorParent.addChangeListener((e) -> {
             BamItem bamItem = structErrorParent.getCurrentBamItem();
@@ -137,14 +123,6 @@ public class RatingCurve extends BaRatinItem implements ICalibratedModel, IMcmc,
                 posteriorRatingCurve.setStructuralErrorModel((StructuralError) bamItem);
             }
             checkSync();
-        });
-        Lg.register(new LgElement<BamItemParent>(structErrorParent) {
-            @Override
-            public void setTranslatedText() {
-                String selAndCont = Lg.getText("ui", "oos_select_and_content_se");
-                String contOnly = Lg.getText("ui", "oos_content_se");
-                component.setOutOfSyncMessages(selAndCont, contOnly);
-            }
         });
         structErrorParent.setSyncJsonKeys(new String[] { "name", "description" }, true);
         structErrorParent.setCreateBackupBamItemAction((id, json) -> {
@@ -224,11 +202,25 @@ public class RatingCurve extends BaRatinItem implements ICalibratedModel, IMcmc,
         posteriorRatingCurve.outdatedPanel.clear();
         outdatedInfoPanel.clear();
         if (warnings.size() > 0) {
-
+            Lg.register(new LgElement<JButton>(posteriorRatingCurve.runBamButton) {
+                @Override
+                public void setTranslatedText() {
+                    object.setText(Lg.getText("ui", "recompute_posterior_rc", true));
+                }
+            });
+            posteriorRatingCurve.runBamButton.setForeground(App.INVALID_COLLOR);
             for (WarningAndActions w : warnings) {
                 outdatedInfoPanel.appendChild(w);
             }
             posteriorRatingCurve.outdatedPanel.appendChild(outdatedInfoPanel);
+        } else {
+            Lg.register(new LgElement<JButton>(posteriorRatingCurve.runBamButton) {
+                @Override
+                public void setTranslatedText() {
+                    object.setText(Lg.getText("ui", "compute_posterior_rc", true));
+                }
+            });
+            posteriorRatingCurve.runBamButton.setForeground(new JButton().getForeground());
         }
 
         posteriorRatingCurve.updateUI();

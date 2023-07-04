@@ -9,7 +9,6 @@ import java.util.HashMap;
 import java.util.List;
 
 import javax.swing.JButton;
-import javax.swing.JLabel;
 import javax.swing.JSeparator;
 import javax.swing.JTabbedPane;
 
@@ -37,6 +36,7 @@ import org.baratinage.ui.bam.RunBamPost;
 import org.baratinage.ui.baratin.gaugings.GaugingsDataset;
 import org.baratinage.ui.baratin.gaugings.GaugingsPlot;
 import org.baratinage.ui.container.RowColPanel;
+import org.baratinage.ui.lg.Lg;
 import org.baratinage.ui.plot.Plot;
 import org.baratinage.ui.plot.PlotItem;
 import org.baratinage.ui.plot.PlotLine;
@@ -67,8 +67,8 @@ public class PosteriorRatingCurve extends RowColPanel implements ICalibratedMode
 
     private RunBamPost runBamPost;
 
-    public RowColPanel outdatedPanel;
-    private JLabel outdatedStageGridLabel;
+    public final JButton runBamButton;
+    public final RowColPanel outdatedPanel;
 
     public PosteriorRatingCurve() {
         super(AXIS.COL);
@@ -79,17 +79,15 @@ public class PosteriorRatingCurve extends RowColPanel implements ICalibratedMode
         appendChild(ratingCurveGrid, 0);
         appendChild(new JSeparator(JSeparator.HORIZONTAL), 0);
 
-        JButton runBamButton = new JButton("<html>Calculer la courbe de tarage <i>a posteriori</i></html>");
+        runBamButton = new JButton();
+        Lg.registerButton(runBamButton, "ui", "compute_posterior_rc");
         runBamButton.setFont(runBamButton.getFont().deriveFont(Font.BOLD));
         runBamButton.addActionListener((e) -> {
             computePosteriorRatingCurve();
         });
         outdatedPanel = new RowColPanel();
-        outdatedStageGridLabel = new JLabel();
-        outdatedStageGridLabel.setForeground(Color.RED);
 
         appendChild(outdatedPanel, 0, 5);
-        appendChild(outdatedStageGridLabel, 0, 5);
         appendChild(runBamButton, 0, 5);
 
         JTabbedPane resultsTabs = new JTabbedPane();
@@ -100,14 +98,6 @@ public class PosteriorRatingCurve extends RowColPanel implements ICalibratedMode
 
         appendChild(resultsTabs, 1);
 
-    }
-
-    public void setOutdated(boolean isOutdated) {
-        if (isOutdated) {
-            outdatedStageGridLabel.setText("La courbe de tarage n'est plus à jour avec la grille de hauteur d'eau !");
-        } else {
-            outdatedStageGridLabel.setText("");
-        }
     }
 
     public void computePosteriorRatingCurve() {
@@ -210,9 +200,6 @@ public class PosteriorRatingCurve extends RowColPanel implements ICalibratedMode
 
         List<double[]> dischargeTotalEnv = totalUncertainty.getOutputResults().get(outputName).env();
         List<double[]> dischargeParametricEnv = parametricUncertainty.getOutputResults().get(outputName).env();
-
-        // double[] dischargeLow = dischargeParametricEnv.get(1);
-        // double[] dischargeHigh = dischargeParametricEnv.get(2);
 
         Plot plot = new Plot("Stage [m]", "Discharge [m3/s]", true);
 
@@ -351,8 +338,6 @@ public class PosteriorRatingCurve extends RowColPanel implements ICalibratedMode
                 targetTempDir.toString());
         System.out.println("Unzip success = " + unzipSuccess);
 
-        // PredictionExperiment[] pe = getPredictionExperiments();
-
         buildPredictionExperiments();
 
         runBamPost = new RunBamPost(bamRunZipFileName);
@@ -368,14 +353,6 @@ public class PosteriorRatingCurve extends RowColPanel implements ICalibratedMode
         isCalibrated = true;
 
         buildRatingCurvePlot();
-        // PredictionResult[] pr = runBamPost.getPredictionResults();
-
-        // buildRatingCurvePlot(
-        // pr[0].getPredictionConfig(),
-        // pr[1],
-        // pr[2],
-        // pr[0],
-        // ((Gaugings) calibrationData).getGaugingDataset());
     }
 
 }
