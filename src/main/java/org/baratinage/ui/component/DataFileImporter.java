@@ -206,10 +206,10 @@ public class DataFileImporter extends RowColPanel {
         JLabel label = new JLabel("Aperçu des données");
         dataTable = new ImportPreviewTable();
 
-        JLabel nPreloadLabel = new JLabel("Nombre de lignes à pré-charger: ");
+        JLabel nPreloadLabel = new JLabel("Nombre de lignes à pré-charger (>10): ");
         RowColPanel nPreloadPanel = new RowColPanel();
         nPreloadPanel.setGap(5);
-        SpinnerNumberModel nPreloadSpinnerModel = new SpinnerNumberModel(importSettings.nRowMax, 10,
+        SpinnerNumberModel nPreloadSpinnerModel = new SpinnerNumberModel(importSettings.nRowMax, 11,
                 Integer.MAX_VALUE,
                 1);
         JSpinner nPreloadSpinner = new JSpinner(nPreloadSpinnerModel);
