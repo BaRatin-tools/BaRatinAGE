@@ -4,11 +4,12 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
-import java.util.UUID;
 
 import javax.swing.AbstractButton;
 import javax.swing.JLabel;
@@ -33,8 +34,8 @@ public class Lg {
     static public void setLocale(String languageKey) {
         Lg instance = getInstance();
         instance.setLocaleFromKey(languageKey);
-        for (String k : instance.elements.keySet()) {
-            updateText(k);
+        for (LgElement<?> lge : instance.elements) {
+            lge.setTranslatedText();
         }
     }
 
@@ -49,56 +50,65 @@ public class Lg {
     }
 
     public static String getText(String resourceKey, String textKey) {
+        return getText(resourceKey, textKey, false);
+    }
+
+    public static String getText(String resourceKey, String textKey, boolean html) {
         Lg instance = getInstance();
         ResourceBundle resource = instance.text.get(resourceKey);
+        String rawText = "<not-found>";
         if (resource != null) {
             if (resource.containsKey(textKey)) {
-                return resource.getString(textKey);
+                rawText = resource.getString(textKey);
             } else {
                 resource = instance.textFallback.get(resourceKey);
                 if (resource != null) {
                     if (resource.containsKey(textKey)) {
-                        return resource.getString(textKey);
+                        rawText = resource.getString(textKey);
                     }
                 }
             }
         }
-        return "<not-found>";
+        return html ? "<html>" + rawText + "</html>" : rawText;
     }
 
-    public static String register(LgElement<? extends Object> element) {
-        String id = UUID.randomUUID().toString();
+    public static void register(LgElement<?> element) {
+        ;
         Lg instance = getInstance();
-        instance.elements.put(id, element);
-        updateText(id);
-        return id;
-    }
-
-    public static String registerButton(AbstractButton button, String resourceKey, String textKey) {
-        return register(new LgElement<AbstractButton>(button) {
-            @Override
-            public void setTranslatedText() {
-                String text = Lg.getText(resourceKey, textKey);
-                component.setText(text);
+        LgElement<?> elementToDelete = null;
+        for (LgElement<?> lge : instance.elements) {
+            if (lge.object == element.object) {
+                System.out.println("Lg // Duplicated registered element overwritten!");
+                elementToDelete = lge;
             }
-        });
-    }
-
-    public static String registerLabel(JLabel label, String resourceKey, String textKey) {
-        return register(new LgElement<JLabel>(label) {
-            @Override
-            public void setTranslatedText() {
-                String text = Lg.getText(resourceKey, textKey);
-                component.setText(text);
-            }
-        });
-    }
-
-    public static void updateText(String id) {
-        Lg instance = getInstance();
-        for (LgElement<? extends Object> e : instance.elements.values()) {
-            e.setTranslatedText();
         }
+        if (elementToDelete != null) {
+            instance.elements.remove(elementToDelete);
+        }
+        instance.elements.add(element);
+        System.out.println("Lg // Registered elements: " + instance.elements.size());
+        element.setTranslatedText();
+    }
+
+    public static void registerButton(AbstractButton button, String resourceKey, String textKey) {
+        register(new LgElement<AbstractButton>(button) {
+
+            @Override
+            public void setTranslatedText() {
+                String text = Lg.getText(resourceKey, textKey);
+                object.setText(text);
+            }
+        });
+    }
+
+    public static void registerLabel(JLabel label, String resourceKey, String textKey) {
+        register(new LgElement<JLabel>(label) {
+            @Override
+            public void setTranslatedText() {
+                String text = Lg.getText(resourceKey, textKey);
+                object.setText(text);
+            }
+        });
     }
 
     public static String format(String template, Object... args) {
@@ -107,14 +117,17 @@ public class Lg {
         return msgFormat.format(args);
     }
 
-    private HashMap<String, LgElement<? extends Object>> elements;
+    private List<LgElement<?>> elements;
+
     private Map<String, ResourceBundle> textFallback;
     private Map<String, ResourceBundle> text;
     private String key;
     private Locale locale;
 
     private Lg() {
-        elements = new HashMap<>();
+        // elements = new HashMap<>();
+        elements = new ArrayList<>();
+
         textFallback = new HashMap<>();
         text = new HashMap<>();
         try {

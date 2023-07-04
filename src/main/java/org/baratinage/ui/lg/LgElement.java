@@ -1,10 +1,11 @@
 package org.baratinage.ui.lg;
 
 public abstract class LgElement<T> {
-    public T component;
 
-    public LgElement(T component) {
-        this.component = component;
+    public final T object;
+
+    public LgElement(T obj) {
+        object = obj;
     }
 
     public abstract void setTranslatedText();
