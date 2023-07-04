@@ -19,28 +19,39 @@ import org.jfree.chart.ui.RectangleAnchor;
 import org.jfree.chart.ui.RectangleEdge;
 import org.jfree.chart.ui.TextAnchor;
 import org.jfree.data.Range;
+import org.jfree.data.xy.XYDataset;
 
 public class Plot {
 
-    private XYPlot plot;
+    public final XYPlot plot;
     private JFreeChart chart;
 
     private NumberAxis axisX;
     private NumberAxis axisY;
-    private ArrayList<PlotLine> lines;
-    private ArrayList<PlotItem> items;
+
+    private List<PlotItem> items = new ArrayList<>();
+    private List<Integer> ignoreInRangeAndDomainIndices = new ArrayList<>();
 
     public Plot(String xAxisLabel, String yAxisLabel, boolean includeLegend) {
-        lines = new ArrayList<>();
-        items = new ArrayList<>();
 
         axisX = new NumberAxis(xAxisLabel);
         axisX.setAutoRangeIncludesZero(false);
         axisY = new NumberAxis(yAxisLabel);
-
         axisY.setAutoRangeIncludesZero(false);
 
-        plot = new XYPlot();
+        plot = new XYPlot() {
+            @Override
+            public XYDataset getDataset(int index) {
+                if (index < items.size()) {
+                    PlotItem item = items.get(index);
+                    item.setPlot(this);
+                    return item.getDataset();
+                } else {
+                    return super.getDataset(index);
+                }
+            }
+        };
+
         plot.setDatasetRenderingOrder(DatasetRenderingOrder.FORWARD);
         plot.setDomainAxis(axisX);
         plot.setRangeAxis(axisY);
@@ -52,14 +63,11 @@ public class Plot {
         chart.removeLegend();
 
         // Change legend location
-
         if (includeLegend) {
-
             LegendTitle legendTitle = new LegendTitle(plot);
             legendTitle.setBackgroundPaint(Color.WHITE);
             legendTitle.setPadding(5, 5, 5, 5);
             legendTitle.setFrame(new BlockBorder(0.25, 0.25, 0.25, 0.25, Color.BLACK));
-            // legendTitle.setPosition(RectangleEdge.LEFT);
             legendTitle.setPosition(RectangleEdge.TOP);
             XYTitleAnnotation titleAnnot = new XYTitleAnnotation(
                     0.5, 1,
@@ -69,20 +77,6 @@ public class Plot {
         }
 
     }
-
-    // FIXME: (re) enable when needed
-    // public void setAxisLogX(boolean log) {
-    // if (log) {
-    // LogarithmicAxis newAxisX = new LogarithmicAxis(axisX.getLabel());
-    // newAxisX.setAutoRangeIncludesZero(false);
-    // newAxisX.setAllowNegativesFlag(true);
-    // axisX = newAxisX;
-    // } else {
-    // axisX = new NumberAxis(axisX.getLabel());
-    // axisX.setAutoRangeIncludesZero(false);
-    // }
-    // plot.setDomainAxis(axisX);
-    // }
 
     public void setAxisLogY(boolean log) {
         if (log) {
@@ -140,16 +134,50 @@ public class Plot {
         return this.chart;
     }
 
-    @Deprecated
-    public void addLine(PlotLine line) {
-        plot.setDataset(lines.size(), line.getDataset());
-        plot.setRenderer(lines.size(), line.getRenderer());
-        lines.add(line);
-    }
-
     public void addXYItem(PlotItem item) {
         plot.setDataset(items.size(), item.getDataset());
         plot.setRenderer(items.size(), item.getRenderer());
         items.add(item);
+    }
+
+    public void addXYItem(PlotItem item, boolean isVisibleInLegend) {
+        addXYItem(item);
+        item.getRenderer().setSeriesVisibleInLegend(0, isVisibleInLegend);
+
+    }
+
+    public void addXYItem(PlotItem item, boolean isVisibleInLegend, boolean ignoreInRangeAndDomain) {
+        addXYItem(item, isVisibleInLegend);
+        if (ignoreInRangeAndDomain) {
+            ignoreInRangeAndDomainIndices.add(items.size() - 1);
+        }
+    }
+
+    public Range getDomainBounds() {
+        Range range = null;
+        for (int k = 0; k < items.size(); k++) {
+            PlotItem item = items.get(k);
+            if (!ignoreInRangeAndDomainIndices.contains(k)) {
+                Range r = item.getDomainBounds();
+                if (r != null) {
+                    range = range == null ? r : Range.combine(range, r);
+                }
+            }
+        }
+        return range;
+    }
+
+    public Range getRangeBounds() {
+        Range range = null;
+        for (int k = 0; k < items.size(); k++) {
+            PlotItem item = items.get(k);
+            if (!ignoreInRangeAndDomainIndices.contains(k)) {
+                Range r = item.getRangeBounds();
+                if (r != null) {
+                    range = range == null ? r : Range.combine(range, r);
+                }
+            }
+        }
+        return range;
     }
 }

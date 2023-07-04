@@ -22,10 +22,10 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.ChartUtils;
 import org.jfree.chart.JFreeChart;
+import org.jfree.data.Range;
 import org.jfree.svg.SVGGraphics2D;
 
 import org.baratinage.ui.component.NoScalingIcon;
-// import org.baratinage.ui.container.FlexPanel;
 import org.baratinage.ui.container.RowColPanel;
 
 public class PlotContainer extends RowColPanel {
@@ -41,7 +41,27 @@ public class PlotContainer extends RowColPanel {
 
         this.plot = plot;
         chart = plot.getChart();
-        chartPanel = new ChartPanel(chart);
+
+        // modified restoreAutoBounds methods to ignore
+        // dataset marked to be ignored in Plot.
+        chartPanel = new ChartPanel(chart) {
+            @Override
+            public void restoreAutoBounds() {
+                super.restoreAutoDomainBounds();
+                super.restoreAutoRangeBounds();
+                Range domainBounds = plot.getDomainBounds();
+                Range rangeBounds = plot.getRangeBounds();
+                if (domainBounds != null) {
+                    plot.plot.getDomainAxis().setRange(domainBounds);
+                }
+                if (domainBounds != null) {
+                    plot.plot.getRangeAxis().setRange(rangeBounds);
+
+                }
+            }
+        };
+        chartPanel.restoreAutoBounds();
+
         chartPanel.setMinimumDrawWidth(100);
         chartPanel.setMinimumDrawHeight(100);
 
@@ -66,6 +86,7 @@ public class PlotContainer extends RowColPanel {
             logYaxis = !logYaxis;
             toggleYaxisLogButton.setText(logYaxis ? "Axe Y linéaire" : "Axe Y logarithmique");
             plot.setAxisLogY(logYaxis);
+            chartPanel.restoreAutoBounds();
         });
 
         ImageIcon saveIcon = new NoScalingIcon("./resources/icons/save_32x32.png");
