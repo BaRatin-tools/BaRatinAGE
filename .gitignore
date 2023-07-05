@@ -16,6 +16,8 @@
 /dist
 *.jar
 *.bar.zip
+/resources/icons/feather/*
+!/resources/icons/feather/trash.svg
 
 # V2 related folder to ignore
 /externalLib
