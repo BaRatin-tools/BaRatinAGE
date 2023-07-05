@@ -90,6 +90,7 @@ public class Lg {
         element.setTranslatedText();
     }
 
+    @Deprecated
     public static void registerButton(AbstractButton button, String resourceKey, String textKey) {
         register(new LgElement<AbstractButton>(button) {
 
@@ -101,6 +102,7 @@ public class Lg {
         });
     }
 
+    @Deprecated
     public static void registerLabel(JLabel label, String resourceKey, String textKey) {
         register(new LgElement<JLabel>(label) {
             @Override
