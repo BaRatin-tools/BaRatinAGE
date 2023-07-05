@@ -137,21 +137,21 @@ public class PosteriorRatingCurve extends RowColPanel implements ICalibratedMode
     private void buildPredictionExperiments() {
         predictionConfigs = new PredictionExperiment[3];
         predictionConfigs[0] = new PredictionExperiment(
-                getName() + "_maxpost",
+                "maxpost",
                 false,
                 false);
         predictionConfigs[0].setCalibrationModel(this);
         predictionConfigs[0].setPredictionData(ratingCurveGrid);
 
         predictionConfigs[1] = new PredictionExperiment(
-                getName() + "_parametric_uncertainty",
+                "parametric_uncertainty",
                 true,
                 false);
         predictionConfigs[1].setCalibrationModel(this);
         predictionConfigs[1].setPredictionData(ratingCurveGrid);
 
         predictionConfigs[2] = new PredictionExperiment(
-                getName() + "_total_uncertainty",
+                "total_uncertainty",
                 true,
                 true);
         predictionConfigs[2].setCalibrationModel(this);

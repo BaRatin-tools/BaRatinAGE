@@ -55,8 +55,6 @@ public class PriorRatingCurve extends GridPanel {
                 setPadding(5);
                 setGap(5);
 
-                setName("prior_rating_curve");
-
                 outdatedPanel = new RowColPanel();
 
                 JButton runButton = new JButton(
@@ -199,12 +197,12 @@ public class PriorRatingCurve extends GridPanel {
 
         private void buildPriorPredictionExperiments() {
                 int nReplicates = 500;
-                PriorPredictionExperiment ppeMaxpost = new PriorPredictionExperiment(getName() + "_maxpost",
+                PriorPredictionExperiment ppeMaxpost = new PriorPredictionExperiment("maxpost",
                                 false, nReplicates);
                 ppeMaxpost.setModelDefintionProvider(modelDefinitionProvider);
                 ppeMaxpost.setPredictionDataProvider(predictionDataProvider);
                 PriorPredictionExperiment ppeParamUncertainty = new PriorPredictionExperiment(
-                                getName() + "_parametricUncertainty",
+                                "parametricUncertainty",
                                 true, nReplicates);
                 ppeParamUncertainty.setModelDefintionProvider(modelDefinitionProvider);
                 ppeParamUncertainty.setPredictionDataProvider(predictionDataProvider);

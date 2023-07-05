@@ -11,6 +11,8 @@ import org.baratinage.ui.bam.BamItemType;
 import org.baratinage.ui.bam.BamProject;
 import org.baratinage.ui.commons.ExplorerItem;
 import org.baratinage.ui.component.NoScalingIcon;
+import org.baratinage.ui.lg.LgElement;
+import org.baratinage.utils.Misc;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -93,8 +95,10 @@ public class BaratinProject extends BamProject {
     }
 
     public void addDefaultItems() {
-        addStructuralErrorModel();
-        addHydraulicConfig();
+        BamItem sem = addStructuralErrorModel();
+        sem.bamItemNameField.setText("par défault");
+        BamItem hc = addHydraulicConfig();
+        hc.bamItemNameField.setText("par défaut");
     }
 
     // FIXME: this method is typically something that should be set in a parent
@@ -131,23 +135,29 @@ public class BaratinProject extends BamProject {
     public void deleteItem(BamItem bamItem, ExplorerItem explorerItem) {
         if (bamItem instanceof RatingCurve) {
             RatingCurve rc = (RatingCurve) bamItem;
-            this.getBamItems().removeChangeListener(rc);
+            BAM_ITEMS.removeChangeListener(rc);
         }
         super.deleteItem(bamItem, explorerItem);
     }
 
     public HydraulicConfiguration addHydraulicConfig(HydraulicConfiguration hc) {
+
+        ExplorerItem explorerItem = new ExplorerItem(
+                hc.ID,
+                hc.bamItemNameField.getText(),
+                hydraulicConfigIconPath,
+                hydraulicConfig);
+        addItem(hc, explorerItem);
+        LgElement.registerLabel(hc.bamItemTypeLabel, "ui", "hydraulic_config");
+        hc.bamItemTypeLabel.setIcon(new NoScalingIcon(hydraulicConfigIconPath));
         hc.cloneButton.addActionListener((e) -> {
             HydraulicConfiguration newHc = (HydraulicConfiguration) hc.clone();
             newHc.addTimeStampToName();
             addHydraulicConfig(newHc);
         });
-        ExplorerItem explorerItem = new ExplorerItem(
-                hc.ID,
-                hc.getName(),
-                hydraulicConfigIconPath,
-                hydraulicConfig);
-        addItem(hc, explorerItem);
+
+        hc.bamItemNameField.setText(Misc.getTimeStamp());
+
         return hc;
     }
 
@@ -168,10 +178,12 @@ public class BaratinProject extends BamProject {
         });
         ExplorerItem explorerItem = new ExplorerItem(
                 g.ID,
-                g.getName(),
+                g.bamItemNameField.getText(),
                 gaugingsIconPath,
                 gaugings);
         addItem(g, explorerItem);
+        LgElement.registerLabel(g.bamItemTypeLabel, "ui", "gaugings");
+        g.bamItemNameField.setText(Misc.getTimeStamp());
         return g;
     }
 
@@ -192,10 +204,12 @@ public class BaratinProject extends BamProject {
         });
         ExplorerItem explorerItem = new ExplorerItem(
                 se.ID,
-                se.getName(),
+                se.bamItemNameField.getText(),
                 structuralErrIconPath,
                 structuralError);
         addItem(se, explorerItem);
+        LgElement.registerLabel(se.bamItemTypeLabel, "ui", "structural_error_model");
+        se.bamItemNameField.setText(Misc.getTimeStamp());
         return se;
     }
 
@@ -209,7 +223,7 @@ public class BaratinProject extends BamProject {
     }
 
     public RatingCurve addRatingCurve(RatingCurve rc) {
-        getBamItems().addChangeListener(rc);
+        BAM_ITEMS.addChangeListener(rc);
         rc.cloneButton.addActionListener((e) -> {
             RatingCurve newRc = (RatingCurve) rc.clone();
             newRc.addTimeStampToName();
@@ -217,10 +231,12 @@ public class BaratinProject extends BamProject {
         });
         ExplorerItem explorerItem = new ExplorerItem(
                 rc.ID,
-                rc.getName(),
+                rc.bamItemNameField.getText(),
                 ratingCurveIconPath,
                 ratingCurve);
         addItem(rc, explorerItem);
+        LgElement.registerLabel(rc.bamItemTypeLabel, "ui", "rating_curve");
+        rc.bamItemNameField.setText(Misc.getTimeStamp());
         return rc;
     }
 

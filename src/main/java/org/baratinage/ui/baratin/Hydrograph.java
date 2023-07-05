@@ -21,12 +21,6 @@ public class Hydrograph extends BamItem implements IPredictionExperiment {
     }
 
     @Override
-    public String getName() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getName'");
-    }
-
-    @Override
     public JSONObject toJSON() {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'toJSON'");

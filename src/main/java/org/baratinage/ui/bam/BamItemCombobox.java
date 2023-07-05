@@ -50,9 +50,9 @@ public class BamItemCombobox extends JComboBox<BamItem> {
 
                 String itemString = "...";
                 if (item != null) {
-                    itemString = item.getName();
+                    itemString = item.bamItemNameField.getText();
                 } else {
-                    itemString = String.format("<html><i>%s</i></html>", EMPTY_BAMITEM.getName());
+                    itemString = String.format("<html><i>%s</i></html>", EMPTY_BAMITEM.bamItemNameField.getText());
                 }
 
                 return super.getListCellRendererComponent(list, itemString, index, isSelected,
@@ -68,7 +68,7 @@ public class BamItemCombobox extends JComboBox<BamItem> {
         });
         setValidity(false);
 
-        EMPTY_BAMITEM.setName("empty");
+        EMPTY_BAMITEM.bamItemNameField.setText("empty");
         model.addElement(EMPTY_BAMITEM);
 
         setModel(model);
@@ -76,7 +76,7 @@ public class BamItemCombobox extends JComboBox<BamItem> {
     }
 
     public void setEmptyItemText(String text) {
-        EMPTY_BAMITEM.setName(text);
+        EMPTY_BAMITEM.bamItemNameField.setText(text);
     }
 
     private void setValidity(boolean isValid) {

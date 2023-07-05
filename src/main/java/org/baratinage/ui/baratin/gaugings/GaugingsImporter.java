@@ -57,7 +57,7 @@ public class GaugingsImporter extends RowColPanel {
             data.add(rawDataset.getColumn(qIndex));
             data.add(rawDataset.getColumn(uqIndex));
             dataset = new GaugingsDataset(
-                    rawDataset.getName(),
+                    rawDataset.getDatasetName(),
                     data);
             dialog.setVisible(false);
 

@@ -1,7 +1,6 @@
 package org.baratinage.ui.bam;
 
 import java.awt.Font;
-import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -9,13 +8,14 @@ import java.awt.Component;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JSeparator;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import org.baratinage.ui.component.TextField;
 import org.baratinage.ui.container.GridPanel;
 import org.baratinage.ui.container.RowColPanel;
+import org.baratinage.ui.lg.LgElement;
 import org.baratinage.utils.Misc;
 import org.json.JSONObject;
 
@@ -25,17 +25,16 @@ abstract public class BamItem extends GridPanel {
     public final String ID;
     public final BamProject PROJECT;
 
-    private String name = "";
-    private String description = "";
-
-    private JLabel titleLabel;
+    public final JLabel bamItemTypeLabel = new JLabel();
+    public final TextField bamItemNameField = new TextField();
+    public final TextField bamItemDescriptionField = new TextField();
     public final JButton cloneButton = new JButton();
     public final JButton deleteButton = new JButton();
+
     private GridPanel headerPanel;
     private RowColPanel contentPanel;
 
     public BamItem(BamItemType type, String uuid, BamProject project) {
-        // super(AXIS.COL);
         TYPE = type;
         ID = uuid;
         PROJECT = project;
@@ -43,7 +42,21 @@ abstract public class BamItem extends GridPanel {
         headerPanel = new GridPanel();
         headerPanel.setGap(5);
         headerPanel.setPadding(5);
-        headerPanel.setColWeight(0, 1);
+        headerPanel.setColWeight(1, 1);
+
+        bamItemTypeLabel.setText("BamItem");
+        bamItemTypeLabel.setFont(bamItemTypeLabel.getFont().deriveFont(Font.BOLD));
+        bamItemNameField.setText("Unnamed");
+        bamItemNameField.setFont(bamItemNameField.getFont().deriveFont(Font.BOLD));
+
+        LgElement.registerTextFieldPlaceholder(bamItemNameField, "ui", "name");
+        LgElement.registerTextFieldPlaceholder(bamItemDescriptionField, "ui", "description");
+
+        headerPanel.insertChild(bamItemTypeLabel, 0, 0);
+        headerPanel.insertChild(bamItemNameField, 1, 0);
+        headerPanel.insertChild(cloneButton, 2, 0);
+        headerPanel.insertChild(deleteButton, 3, 0);
+        headerPanel.insertChild(bamItemDescriptionField, 0, 1, 4, 1);
 
         contentPanel = new RowColPanel();
 
@@ -54,53 +67,11 @@ abstract public class BamItem extends GridPanel {
         setColWeight(0, 1);
         setRowWeight(2, 1);
 
-        titleLabel = new JLabel(getName());
-        Font font = titleLabel.getFont();
-        titleLabel.setFont(font.deriveFont(Font.BOLD));
-
-        headerPanel.insertChild(titleLabel, 0, 0);
-        headerPanel.insertChild(cloneButton, 1, 0);
-        headerPanel.insertChild(deleteButton, 2, 0);
-
-    }
-
-    public void addDeleteAction(ActionListener action) {
-        this.deleteButton.addActionListener((e) -> {
-            int response = JOptionPane.showConfirmDialog(this, "<html>Êtes-vous sûr de vouloir supprimer <b>" + name
-                    + "</b>? <br/> Cette opération ne peut pas être annulée!</html>", "Attention!",
-                    JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
-            if (response == JOptionPane.YES_OPTION) {
-                action.actionPerformed(e);
-            }
-        });
-    }
-
-    public void setTitle(String title) {
-        this.titleLabel.setText(title);
     }
 
     public void setContent(Component component) {
         this.contentPanel.clear();
         this.contentPanel.appendChild(component);
-    }
-
-    public String getName() {
-        return this.name;
-    }
-
-    public void setName(String name) {
-        String oldName = getName();
-        firePropertyChange("bamItemName", oldName, name);
-        this.name = name;
-        setTitle(name);
-    }
-
-    public String getDescription() {
-        return this.description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
     }
 
     public String[] getTempDataFileNames() {
@@ -115,21 +86,21 @@ abstract public class BamItem extends GridPanel {
         JSONObject json = new JSONObject();
         json.put("type", TYPE);
         json.put("uuid", ID);
-        json.put("name", name);
-        json.put("description", description);
+        json.put("name", bamItemNameField.getText());
+        json.put("description", bamItemDescriptionField.getText());
         json.put("content", toJSON());
         return json;
     }
 
     public void fromFullJSON(JSONObject json) {
-        name = json.getString("name");
-        description = json.getString("description");
+        bamItemNameField.setText(json.getString("name"));
+        bamItemDescriptionField.setText(json.getString("description"));
         fromJSON(json.getJSONObject("content"));
     }
 
     @Override
     public String toString() {
-        return "BamItem | " + TYPE + " | " + name + " (" + ID + ")";
+        return "BamItem | " + TYPE + " | " + bamItemNameField.getText() + " (" + ID + ")";
     }
 
     public static boolean areMatching(JSONObject jsonA, JSONObject jsonB, String[] keys, boolean exclude) {
@@ -205,6 +176,7 @@ abstract public class BamItem extends GridPanel {
     }
 
     public void addTimeStampToName() {
-        setName(getName() + " (" + Misc.getTimeStamp() + ")");
+        String currentName = bamItemNameField.getText();
+        bamItemNameField.setText(currentName + " (" + Misc.getTimeStamp() + ")");
     }
 }

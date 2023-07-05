@@ -77,7 +77,7 @@ public class AllHydraulicControls extends RowColPanel implements IPriors {
                 JLabel comp = (JLabel) super.getListCellRendererComponent(list, value,
                         index, isSelected, cellHasFocus);
                 OneHydraulicControl hc = (OneHydraulicControl) value;
-                comp.setText(hc.getName());
+                comp.setText(hc.nameLabel.getText());
                 return comp;
             }
         });
@@ -116,7 +116,7 @@ public class AllHydraulicControls extends RowColPanel implements IPriors {
             for (int k = m; k < n; k++) {
 
                 OneHydraulicControl newHydraulicControl = new OneHydraulicControl();
-                newHydraulicControl.setName("Contrôle #" + (k + 1));
+                newHydraulicControl.nameLabel.setText("Contrôle #" + (k + 1));
                 newHydraulicControl.addPropertyChangeListener("hydraulicControl", (e) -> {
                     firePropertyChange("hydraulicControl", null, null);
                 });

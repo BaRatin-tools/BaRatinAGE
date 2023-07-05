@@ -20,11 +20,9 @@ import org.baratinage.ui.container.RowColPanel;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-class HydraulicConfiguration extends BaRatinItem
-        implements IModelDefinition, IPriors {
+class HydraulicConfiguration extends BamItem
 
-    static private final String defaultNameTemplate = "Configuration Hydraulique #%s";
-    static private int nInstance = 0;
+        implements IModelDefinition, IPriors {
 
     private ControlMatrix controlMatrix;
     private AllHydraulicControls hydraulicControls;
@@ -35,14 +33,6 @@ class HydraulicConfiguration extends BaRatinItem
 
     public HydraulicConfiguration(String uuid, BaratinProject project) {
         super(BamItemType.HYDRAULIC_CONFIG, uuid, project);
-
-        setName(String.format(
-                defaultNameTemplate,
-                nInstance + 1 + ""));
-        setDescription("");
-
-        setNameFieldLabel("Nom de la configuration hydraulique");
-        setDescriptionFieldLabel("Description de la configuration hydraulique");
 
         controlMatrix = new ControlMatrix();
         controlMatrix.addPropertyChangeListener("controlMatrixChange", (e) -> {
@@ -72,7 +62,6 @@ class HydraulicConfiguration extends BaRatinItem
         RowColPanel priorRatingCurvePanel = new RowColPanel(RowColPanel.AXIS.COL);
         priorRatingCurve = new PriorRatingCurve();
         priorRatingCurve.addPropertyChangeListener("bamHasRun", (e) -> {
-            // createBackup("prior_rc");
             JSONObject json = toJSON();
             json.remove("jsonStringBackup");
             jsonStringBackup = json.toString();
@@ -95,7 +84,6 @@ class HydraulicConfiguration extends BaRatinItem
 
         boolean[][] mat = controlMatrix.getControlMatrix();
         updateHydraulicControls(mat);
-
     }
 
     private void checkPriorRatingCurveSync() {
@@ -170,9 +158,6 @@ class HydraulicConfiguration extends BaRatinItem
     public JSONObject toJSON() {
         JSONObject json = new JSONObject();
 
-        json.put("name", getName());
-        json.put("description", getDescription());
-
         // **********************************************************
         // ui only elements
         JSONObject uiJson = new JSONObject();
@@ -199,7 +184,7 @@ class HydraulicConfiguration extends BaRatinItem
         JSONArray jsonHydraulicControls = new JSONArray();
         for (OneHydraulicControl hc : hydraulicControlList) {
             JSONObject jsonHydraulicControl = new JSONObject();
-            jsonHydraulicControl.put("name", hc.getName());
+            jsonHydraulicControl.put("name", hc.nameLabel.getText());
             jsonHydraulicControl.put("activationStage", hc.getActivationStage());
             jsonHydraulicControl.put("activationStageUncertainty", hc.getActivationStageUncertainty());
             jsonHydraulicControl.put("coefficient", hc.getCoefficient());
@@ -232,18 +217,6 @@ class HydraulicConfiguration extends BaRatinItem
 
     @Override
     public void fromJSON(JSONObject json) {
-
-        if (json.has("name")) {
-            setName(json.getString("name"));
-        } else {
-            System.out.println("MISSING 'name'");
-        }
-
-        if (json.has("description")) {
-            setDescription(json.getString("description"));
-        } else {
-            System.out.println("MISSING 'description'");
-        }
 
         // **********************************************************
         // ui only elements
@@ -283,7 +256,7 @@ class HydraulicConfiguration extends BaRatinItem
                 JSONObject jsonHydraulicControl = (JSONObject) jsonHydraulicControls.get(k);
 
                 OneHydraulicControl hydraulicControl = new OneHydraulicControl();
-                hydraulicControl.setName((String) jsonHydraulicControl.get("name"));
+                hydraulicControl.nameLabel.setText((String) jsonHydraulicControl.get("name"));
                 hydraulicControl
                         .setActivationStage(((Number) jsonHydraulicControl.get("activationStage")).doubleValue());
                 hydraulicControl
@@ -338,7 +311,7 @@ class HydraulicConfiguration extends BaRatinItem
     }
 
     @Override
-    public BamItem clone(String uuid) {
+    public HydraulicConfiguration clone(String uuid) {
         HydraulicConfiguration cloned = new HydraulicConfiguration(uuid, (BaratinProject) PROJECT);
         cloned.fromFullJSON(toFullJSON());
         return cloned;

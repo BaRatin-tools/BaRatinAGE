@@ -14,14 +14,11 @@ import org.baratinage.ui.component.RadioButtons;
 import org.baratinage.ui.component.RadioButtons.RadioButton;
 import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.ui.lg.Lg;
-import org.baratinage.ui.bam.BamItemList;
+import org.baratinage.ui.bam.BamItem;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-public class StructuralError extends BaRatinItem implements IStructuralError, BamItemList.BamItemListChangeListener {
-
-    static private final String defaultNameTemplate = "Modèle d'erreur structurelle #%s";
-    static private int nInstance = 0;
+public class StructuralError extends BamItem implements IStructuralError {
 
     private String currentModelType;
     private AbstractStructuralErrorModel currentStructuralErrorModel;
@@ -29,8 +26,6 @@ public class StructuralError extends BaRatinItem implements IStructuralError, Ba
 
     public StructuralError(String uuid, BaratinProject project) {
         super(BamItemType.STRUCTURAL_ERROR, uuid, project);
-        nInstance++;
-        setName(String.format(defaultNameTemplate, nInstance));
 
         RowColPanel content = new RowColPanel(RowColPanel.AXIS.COL, RowColPanel.ALIGN.START);
         content.setPadding(5);
@@ -102,8 +97,7 @@ public class StructuralError extends BaRatinItem implements IStructuralError, Ba
     @Override
     public JSONObject toJSON() {
         JSONObject json = new JSONObject();
-        json.put("name", getName());
-        json.put("description", getDescription());
+
         json.put("modelType", currentModelType);
 
         StructuralErrorModel sem = currentStructuralErrorModel.getStructuralErrorModel();
@@ -127,13 +121,6 @@ public class StructuralError extends BaRatinItem implements IStructuralError, Ba
     @Override
     public void fromJSON(JSONObject json) {
 
-        if (json.has("name")) {
-
-            setName(json.getString("name"));
-        }
-        if (json.has("description")) {
-            setDescription(json.getString("description"));
-        }
         if (json.has("modelType")) {
             currentModelType = json.getString("modelType");
             updateModelType(currentModelType);
@@ -160,11 +147,6 @@ public class StructuralError extends BaRatinItem implements IStructuralError, Ba
 
             currentStructuralErrorModel.setFromParameters(modelParameters);
         }
-    }
-
-    @Override
-    public void onBamItemListChange(BamItemList bamItemList) {
-        // System.out.println();
     }
 
     public StructuralError clone(String uuid) {

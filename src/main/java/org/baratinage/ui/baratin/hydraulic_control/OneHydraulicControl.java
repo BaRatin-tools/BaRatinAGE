@@ -13,7 +13,9 @@ import org.baratinage.ui.container.RowColPanel;
 public class OneHydraulicControl extends RowColPanel implements PropertyChangeListener {
 
     private GridPanel parametersPanel;
-    private JLabel nameLabel;
+
+    public final JLabel nameLabel = new JLabel("");
+
     private NumberField activationStage;
     private NumberField activationStageUncertainty;
     private NumberField coefficient;
@@ -24,7 +26,6 @@ public class OneHydraulicControl extends RowColPanel implements PropertyChangeLi
     public OneHydraulicControl() {
         super(AXIS.COL);
 
-        nameLabel = new JLabel("");
         this.appendChild(nameLabel, 0, 5);
         this.appendChild(new JSeparator(), 0);
 
@@ -121,14 +122,6 @@ public class OneHydraulicControl extends RowColPanel implements PropertyChangeLi
     public void setExponentUncertainty(double value) {
         exponentUncertainty.setValue(value);
         exponentUncertainty.updateTextField();
-    }
-
-    public String getName() {
-        return nameLabel == null ? "" : nameLabel.getText();
-    }
-
-    public void setName(String name) {
-        this.nameLabel.setText(name);
     }
 
     @Override

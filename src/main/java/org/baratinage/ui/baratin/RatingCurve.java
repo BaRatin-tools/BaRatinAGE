@@ -23,10 +23,7 @@ import org.baratinage.ui.lg.Lg;
 import org.baratinage.ui.lg.LgElement;
 import org.json.JSONObject;
 
-public class RatingCurve extends BaRatinItem implements ICalibratedModel, IMcmc, BamItemList.BamItemListChangeListener {
-
-    static private final String defaultNameTemplate = "Courbe de tarage #%s";
-    static private int nInstance = 0;
+public class RatingCurve extends BamItem implements ICalibratedModel, IMcmc, BamItemList.BamItemListChangeListener {
 
     private BamItemParent hydrauConfParent;
     private BamItemParent gaugingsParent;
@@ -40,14 +37,6 @@ public class RatingCurve extends BaRatinItem implements ICalibratedModel, IMcmc,
 
     public RatingCurve(String uuid, BaratinProject project) {
         super(BamItemType.RATING_CURVE, uuid, project);
-        nInstance++;
-        setName(String.format(
-                defaultNameTemplate,
-                nInstance + ""));
-        setDescription("");
-
-        setNameFieldLabel("Nom de la courbe de tarage");
-        setDescriptionFieldLabel("Description de la courbe de tarage");
 
         RowColPanel content = new RowColPanel(RowColPanel.AXIS.COL);
 
@@ -161,7 +150,7 @@ public class RatingCurve extends BaRatinItem implements ICalibratedModel, IMcmc,
         outdatedInfoPanel.setGap(2);
         outdatedInfoPanel.setColWeight(0, 1);
 
-        onBamItemListChange(PROJECT.getBamItems());
+        onBamItemListChange(PROJECT.BAM_ITEMS);
 
     }
 
@@ -237,8 +226,6 @@ public class RatingCurve extends BaRatinItem implements ICalibratedModel, IMcmc,
     public JSONObject toJSON() {
 
         JSONObject json = new JSONObject();
-        json.put("name", getName());
-        json.put("description", getDescription());
 
         json.put("hydrauConfig", hydrauConfParent.toJSON());
         json.put("gaugings", gaugingsParent.toJSON());
@@ -261,12 +248,6 @@ public class RatingCurve extends BaRatinItem implements ICalibratedModel, IMcmc,
     @Override
     public void fromJSON(JSONObject json) {
 
-        if (json.has("name")) {
-            setName(json.getString("name"));
-        }
-        if (json.has("description")) {
-            setDescription(json.getString("description"));
-        }
         if (json.has("hydrauConfig")) {
             hydrauConfParent.fromJSON(json.getJSONObject("hydrauConfig"));
         }
@@ -300,15 +281,15 @@ public class RatingCurve extends BaRatinItem implements ICalibratedModel, IMcmc,
 
     @Override
     public void onBamItemListChange(BamItemList bamItemList) {
-
+        System.out.println(">>>++++++++++++++++++++++++++++++++++");
         hydrauConfParent.updateCombobox(bamItemList);
+        System.out.println("<<<++++++++++++++++++++++++++++++++++");
         gaugingsParent.updateCombobox(bamItemList);
         structErrorParent.updateCombobox(bamItemList);
-
     }
 
     @Override
-    public BamItem clone(String uuid) {
+    public RatingCurve clone(String uuid) {
         RatingCurve cloned = new RatingCurve(uuid, (BaratinProject) PROJECT);
         cloned.fromFullJSON(toFullJSON());
         return cloned;

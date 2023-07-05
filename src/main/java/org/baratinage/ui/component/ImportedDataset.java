@@ -24,11 +24,11 @@ public class ImportedDataset implements IDataset {
             String name,
             List<double[]> data,
             String[] headers) {
-        setName(name);
+        setDatasetName(name);
         setData(data, headers);
     }
 
-    public void setName(String name) {
+    public void setDatasetName(String name) {
         this.name = name;
     }
 
@@ -73,7 +73,7 @@ public class ImportedDataset implements IDataset {
                     "NA",
                     headers);
         } catch (IOException e) {
-            System.err.println("Failed to write data to file... (" + getName() + ")");
+            System.err.println("Failed to write data to file... (" + getDatasetName() + ")");
             e.printStackTrace();
         }
     }
@@ -85,7 +85,7 @@ public class ImportedDataset implements IDataset {
             headers = ReadFile.parseString(headerLine, ";", false);
             nCol = headers.length;
         } catch (IOException e1) {
-            System.out.println("Failed to read data file ...(" + getName() + ")");
+            System.out.println("Failed to read data file ...(" + getDatasetName() + ")");
             e1.printStackTrace();
         }
 
@@ -100,7 +100,7 @@ public class ImportedDataset implements IDataset {
                     false);
             nRow = data.get(0).length;
         } catch (IOException e2) {
-            System.out.println("Failed to read data file ...(" + getName() + ")");
+            System.out.println("Failed to read data file ...(" + getDatasetName() + ")");
             e2.printStackTrace();
         }
     }
@@ -147,7 +147,7 @@ public class ImportedDataset implements IDataset {
     }
 
     @Override
-    public String getName() {
+    public String getDatasetName() {
         return name;
     }
 

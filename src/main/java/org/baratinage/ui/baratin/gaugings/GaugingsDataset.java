@@ -23,7 +23,7 @@ public class GaugingsDataset extends ImportedDataset {
         }
         data.add(gaugingsActiveState);
         setData(data, new String[] { "h", "Q", "uQ_percent", "active" });
-        setName(name);
+        setDatasetName(name);
     }
 
     public double[] getStageValues() {

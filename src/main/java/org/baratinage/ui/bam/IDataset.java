@@ -1,7 +1,7 @@
 package org.baratinage.ui.bam;
 
 public interface IDataset {
-    public String getName();
+    public String getDatasetName();
 
     public String[] getColumnNames();
 

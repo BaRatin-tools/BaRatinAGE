@@ -13,6 +13,7 @@ import java.util.zip.ZipOutputStream;
 
 import javax.swing.BorderFactory;
 import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
 import javax.swing.JSplitPane;
 import javax.swing.filechooser.FileFilter;
 
@@ -20,6 +21,7 @@ import org.baratinage.App;
 import org.baratinage.ui.baratin.BaratinProject;
 import org.baratinage.ui.commons.Explorer;
 import org.baratinage.ui.commons.ExplorerItem;
+import org.baratinage.ui.component.NoScalingIcon;
 import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.ui.lg.Lg;
 import org.baratinage.utils.ReadFile;
@@ -30,8 +32,8 @@ import org.json.JSONObject;
 
 public abstract class BamProject extends RowColPanel {
 
-    protected BamItemList items;
-    protected List<ExplorerItem> explorerItems;
+    public final BamItemList BAM_ITEMS;
+    public final List<ExplorerItem> EXPLORER_ITEMS;
 
     // protected RowColPanel actionBar;
     protected JSplitPane content;
@@ -42,8 +44,8 @@ public abstract class BamProject extends RowColPanel {
     public BamProject() {
         super(AXIS.COL);
 
-        this.items = new BamItemList();
-        this.explorerItems = new ArrayList<>();
+        BAM_ITEMS = new BamItemList();
+        EXPLORER_ITEMS = new ArrayList<>();
 
         this.content = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
         this.content.setBorder(BorderFactory.createEmptyBorder());
@@ -88,32 +90,37 @@ public abstract class BamProject extends RowColPanel {
         }
     }
 
-    public BamItemList getBamItems() {
-        return this.items;
-    }
+    // public BamItemList getBamItems() {
+    // return this.items;
+    // }
 
     public void addItem(BamItem bamItem, ExplorerItem explorerItem) {
 
+        bamItem.cloneButton.setIcon(new NoScalingIcon("./resources/icons/feather/trash.svg"));
         Lg.registerButton(bamItem.cloneButton, "ui", "duplicate");
         Lg.registerButton(bamItem.deleteButton, "ui", "delete");
 
-        items.add(bamItem);
-        explorerItems.add(explorerItem);
-        // bamItem.updateSiblings(items);
+        BAM_ITEMS.add(bamItem);
+        EXPLORER_ITEMS.add(explorerItem);
 
-        bamItem.addPropertyChangeListener((p) -> {
-            if (p.getPropertyName().equals("bamItemName")) {
-                String newName = (String) p.getNewValue();
-                if (newName.equals("")) {
-                    newName = "<html><div style='color: red; font-style: italic'>Sansnom</div></html>";
-                }
-                explorerItem.label = newName;
-                explorer.updateItemView(explorerItem);
+        bamItem.bamItemNameField.addChangeListener((e) -> {
+            String newName = bamItem.bamItemNameField.getText();
+            if (newName.equals("")) {
+                newName = "<html><div style='color: red; font-style: italic'>Sansnom</div></html>";
             }
+            explorerItem.label = newName;
+            explorer.updateItemView(explorerItem);
         });
 
-        bamItem.addDeleteAction(e -> {
-            deleteItem(bamItem, explorerItem);
+        bamItem.deleteButton.addActionListener((e) -> {
+            int response = JOptionPane.showConfirmDialog(this,
+                    "<html>Êtes-vous sûr de vouloir supprimer <b>" + bamItem.bamItemNameField.getText()
+                            + "</b>? <br/> Cette opération ne peut pas être annulée!</html>",
+                    "Attention!",
+                    JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+            if (response == JOptionPane.YES_OPTION) {
+                deleteItem(bamItem, explorerItem);
+            }
         });
 
         this.explorer.appendItem(explorerItem);
@@ -122,14 +129,14 @@ public abstract class BamProject extends RowColPanel {
     }
 
     public void deleteItem(BamItem bamItem, ExplorerItem explorerItem) {
-        items.remove(bamItem);
-        explorerItems.remove(explorerItem);
+        BAM_ITEMS.remove(bamItem);
+        EXPLORER_ITEMS.remove(explorerItem);
         this.explorer.removeItem(explorerItem);
         this.explorer.selectItem(explorerItem.parentItem);
     }
 
     public BamItem findBamItem(String id) {
-        for (BamItem item : this.items) {
+        for (BamItem item : BAM_ITEMS) {
             if (item.ID.equals(id)) {
                 return item;
             }
@@ -138,7 +145,7 @@ public abstract class BamProject extends RowColPanel {
     }
 
     private ExplorerItem findExplorerBamItem(String id) {
-        for (ExplorerItem item : this.explorerItems) {
+        for (ExplorerItem item : EXPLORER_ITEMS) {
             if (item.id.equals(id)) {
                 return item;
             }
@@ -180,7 +187,7 @@ public abstract class BamProject extends RowColPanel {
     public JSONObject toJSON() {
         JSONObject json = new JSONObject();
         JSONArray jsonItems = new JSONArray();
-        for (BamItem item : items) {
+        for (BamItem item : BAM_ITEMS) {
             jsonItems.put(item.toFullJSON());
         }
         json.put("version", 0);
@@ -190,10 +197,6 @@ public abstract class BamProject extends RowColPanel {
     }
 
     public abstract void fromJSON(JSONObject json);
-
-    // public void fromJSON(JSONObject json) {
-
-    // }
 
     public void saveProject(String saveFilePath) {
 
@@ -221,7 +224,7 @@ public abstract class BamProject extends RowColPanel {
             Files.copy(mainConfigFile.toPath(), zipOutStream);
 
             List<String> usedNames = new ArrayList<>();
-            for (BamItem item : items) {
+            for (BamItem item : BAM_ITEMS) {
                 String[] dataFileNames = item.getTempDataFileNames();
 
                 for (String dfp : dataFileNames) {
