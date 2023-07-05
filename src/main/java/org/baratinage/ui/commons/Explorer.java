@@ -42,7 +42,7 @@ public class Explorer extends RowColPanel {
 
         this.appendChild(treeViewScrollableArea);
 
-        this.rootNode = new ExplorerItem("root", "Root", null);
+        this.rootNode = new ExplorerItem("root", "Root");
         this.explorerTreeModel = new DefaultTreeModel(rootNode);
         this.explorerTree.setModel(this.explorerTreeModel);
 

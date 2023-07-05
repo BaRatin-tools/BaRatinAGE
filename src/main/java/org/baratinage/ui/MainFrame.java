@@ -10,7 +10,7 @@ import javax.swing.filechooser.FileFilter;
 
 import org.baratinage.ui.bam.BamProject;
 import org.baratinage.ui.baratin.BaratinProject;
-import org.baratinage.ui.component.NoScalingIcon;
+import org.baratinage.ui.component.SvgIcon;
 import org.baratinage.ui.container.RowColPanel;
 
 import java.awt.Dimension;
@@ -78,7 +78,6 @@ public class MainFrame extends JFrame {
 
         JMenuItem closeMenuItem = new JMenuItem();
         closeMenuItem.setText("Quitter");
-        closeMenuItem.setIcon(new NoScalingIcon("./resources/icons/close_16x16.png"));
         closeMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q, KeyEvent.CTRL_DOWN_MASK));
         closeMenuItem.addActionListener((e) -> {
             close();

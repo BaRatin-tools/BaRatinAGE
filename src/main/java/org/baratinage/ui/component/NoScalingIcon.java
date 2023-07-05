@@ -13,8 +13,6 @@ public class NoScalingIcon extends ImageIcon {
     private Component component;
 
     /**
-     * FIXME: I may wan't to use different version (different resolution)
-     * FIXME: of an image file to adapt to different resolution instead?
      * Currently, the image stays small even if the user preferences are
      * to have everything zoomed 200%... But at least, it's no longer
      * pixelated...
@@ -48,13 +46,7 @@ public class NoScalingIcon extends ImageIcon {
         Graphics2D g2d = (Graphics2D) g.create();
         AffineTransform at = g2d.getTransform();
 
-        // Reset scaling to 1.0 by concatenating an inverse scale transfom
-        AffineTransform scaled = AffineTransform.getScaleInstance(
-                1.0 / at.getScaleX(),
-                1.0 / at.getScaleY());
-
-        at.concatenate(scaled);
-        g2d.setTransform(at);
+        g2d.scale(1 / at.getScaleX(), 1 / at.getScaleY());
 
         super.paintIcon(c, g2d, x, y);
         g2d.dispose();

@@ -18,6 +18,8 @@
 *.bar.zip
 /resources/icons/feather/*
 !/resources/icons/feather/trash.svg
+!/resources/icons/feather/copy.svg
+!/resources/icons/feather/save.svg
 
 # V2 related folder to ignore
 /externalLib

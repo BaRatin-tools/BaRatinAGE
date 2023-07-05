@@ -2,6 +2,7 @@ package org.baratinage.ui.baratin;
 
 import java.util.UUID;
 
+import javax.swing.ImageIcon;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 
@@ -11,6 +12,7 @@ import org.baratinage.ui.bam.BamItemType;
 import org.baratinage.ui.bam.BamProject;
 import org.baratinage.ui.commons.ExplorerItem;
 import org.baratinage.ui.component.NoScalingIcon;
+import org.baratinage.ui.component.SvgIcon;
 import org.baratinage.ui.lg.LgElement;
 import org.baratinage.utils.Misc;
 import org.json.JSONArray;
@@ -41,10 +43,38 @@ public class BaratinProject extends BamProject {
     private ExplorerItem structuralError;
     private ExplorerItem ratingCurve;
 
-    static private final String hydraulicConfigIconPath = "./resources/icons/Hydraulic_icon.png";
-    static private final String gaugingsIconPath = "./resources/icons/Gauging_icon.png";
-    static private final String structuralErrIconPath = "./resources/icons/Error_icon.png";
-    static private final String ratingCurveIconPath = "./resources/icons/RC_icon.png";
+    // static private final String hydraulicConfigIconPath =
+    // "./resources/icons/Hydraulic_icon.png";
+    // static private final String gaugingsIconPath =
+    // "./resources/icons/Gauging_icon.png";
+    // static private final String structuralErrIconPath =
+    // "./resources/icons/Error_icon.png";
+    // static private final String ratingCurveIconPath =
+    // "./resources/icons/RC_icon.png";
+
+    static private final ImageIcon hydraulicConfigIcon = SvgIcon
+            .buildNoScalingIcon("./resources/icons/custom/hydraulic_config.svg", 42);
+
+    static private final ImageIcon gaugingsIcon = SvgIcon
+            .buildNoScalingIcon("./resources/icons/custom/gaugings.svg", 42);
+
+    static private final ImageIcon structuralErrorIcon = SvgIcon
+            .buildNoScalingIcon("./resources/icons/custom/structural_error.svg", 42);
+
+    static private final ImageIcon ratingCurveIcon = SvgIcon
+            .buildNoScalingIcon("./resources/icons/custom/rating_curve.svg", 42);
+
+    static private final ImageIcon addHydraulicConfigIcon = SvgIcon
+            .buildNoScalingIcon("./resources/icons/custom/hydraulic_config_add.svg", 42);
+
+    static private final ImageIcon addGaugingsIcon = SvgIcon
+            .buildNoScalingIcon("./resources/icons/custom/gaugings_add.svg", 42);
+
+    static private final ImageIcon addStructuralErrorIcon = SvgIcon
+            .buildNoScalingIcon("./resources/icons/custom/structural_error_add.svg", 42);
+
+    static private final ImageIcon addRatingCurveIcon = SvgIcon
+            .buildNoScalingIcon("./resources/icons/custom/rating_curve_add.svg", 42);
 
     public BaratinProject() {
         super();
@@ -60,7 +90,7 @@ public class BaratinProject extends BamProject {
 
         JMenuItem btnNewHydraulicConfig = new JMenuItem();
         btnNewHydraulicConfig.setText("Créer une nouvelle configuration hydraulique");
-        btnNewHydraulicConfig.setIcon(new NoScalingIcon(hydraulicConfigIconPath));
+        btnNewHydraulicConfig.setIcon(addHydraulicConfigIcon);
         btnNewHydraulicConfig.addActionListener(e -> {
             addHydraulicConfig();
         });
@@ -68,7 +98,7 @@ public class BaratinProject extends BamProject {
 
         JMenuItem btnNewGaugings = new JMenuItem();
         btnNewGaugings.setText("Créer un nouveau jeu de jaugeages");
-        btnNewGaugings.setIcon(new NoScalingIcon(gaugingsIconPath));
+        btnNewGaugings.setIcon(addGaugingsIcon);
         btnNewGaugings.addActionListener(e -> {
             addGaugings();
         });
@@ -76,7 +106,7 @@ public class BaratinProject extends BamProject {
 
         JMenuItem btnNewStructErrorModel = new JMenuItem();
         btnNewStructErrorModel.setText("Créer un nouveau modèle d'erreur structurelle");
-        btnNewStructErrorModel.setIcon(new NoScalingIcon(structuralErrIconPath));
+        btnNewStructErrorModel.setIcon(addStructuralErrorIcon);
         btnNewStructErrorModel.addActionListener(e -> {
             addStructuralErrorModel();
         });
@@ -84,7 +114,7 @@ public class BaratinProject extends BamProject {
 
         JMenuItem btnNewRatingCurve = new JMenuItem();
         btnNewRatingCurve.setText("Créer une nouvelle courbe de tarage");
-        btnNewRatingCurve.setIcon(new NoScalingIcon(ratingCurveIconPath));
+        btnNewRatingCurve.setIcon(addRatingCurveIcon);
         btnNewRatingCurve.addActionListener(e -> {
             addRatingCurve();
         });
@@ -108,25 +138,25 @@ public class BaratinProject extends BamProject {
         hydraulicConfig = new ExplorerItem(
                 "hc",
                 "Configurations hydrauliques",
-                hydraulicConfigIconPath);
+                hydraulicConfigIcon);
         this.explorer.appendItem(hydraulicConfig);
 
         gaugings = new ExplorerItem(
                 "g",
                 "Jeux de jaugeages",
-                gaugingsIconPath);
+                gaugingsIcon);
         this.explorer.appendItem(gaugings);
 
         structuralError = new ExplorerItem(
                 "se",
                 "Modèles d'erreur structurelle",
-                structuralErrIconPath);
+                structuralErrorIcon);
         this.explorer.appendItem(structuralError);
 
         ratingCurve = new ExplorerItem(
                 "rc",
                 "Courbes de tarage",
-                ratingCurveIconPath);
+                ratingCurveIcon);
         this.explorer.appendItem(ratingCurve);
 
     }
@@ -145,11 +175,11 @@ public class BaratinProject extends BamProject {
         ExplorerItem explorerItem = new ExplorerItem(
                 hc.ID,
                 hc.bamItemNameField.getText(),
-                hydraulicConfigIconPath,
+                hydraulicConfigIcon,
                 hydraulicConfig);
         addItem(hc, explorerItem);
         LgElement.registerLabel(hc.bamItemTypeLabel, "ui", "hydraulic_config");
-        hc.bamItemTypeLabel.setIcon(new NoScalingIcon(hydraulicConfigIconPath));
+        hc.bamItemTypeLabel.setIcon(hydraulicConfigIcon);
         hc.cloneButton.addActionListener((e) -> {
             HydraulicConfiguration newHc = (HydraulicConfiguration) hc.clone();
             newHc.addTimeStampToName();
@@ -179,10 +209,11 @@ public class BaratinProject extends BamProject {
         ExplorerItem explorerItem = new ExplorerItem(
                 g.ID,
                 g.bamItemNameField.getText(),
-                gaugingsIconPath,
+                gaugingsIcon,
                 gaugings);
         addItem(g, explorerItem);
         LgElement.registerLabel(g.bamItemTypeLabel, "ui", "gaugings");
+        g.bamItemTypeLabel.setIcon(gaugingsIcon);
         g.bamItemNameField.setText(Misc.getTimeStamp());
         return g;
     }
@@ -205,10 +236,11 @@ public class BaratinProject extends BamProject {
         ExplorerItem explorerItem = new ExplorerItem(
                 se.ID,
                 se.bamItemNameField.getText(),
-                structuralErrIconPath,
+                structuralErrorIcon,
                 structuralError);
         addItem(se, explorerItem);
         LgElement.registerLabel(se.bamItemTypeLabel, "ui", "structural_error_model");
+        se.bamItemTypeLabel.setIcon(structuralErrorIcon);
         se.bamItemNameField.setText(Misc.getTimeStamp());
         return se;
     }
@@ -232,10 +264,11 @@ public class BaratinProject extends BamProject {
         ExplorerItem explorerItem = new ExplorerItem(
                 rc.ID,
                 rc.bamItemNameField.getText(),
-                ratingCurveIconPath,
+                ratingCurveIcon,
                 ratingCurve);
         addItem(rc, explorerItem);
         LgElement.registerLabel(rc.bamItemTypeLabel, "ui", "rating_curve");
+        rc.bamItemTypeLabel.setIcon(ratingCurveIcon);
         rc.bamItemNameField.setText(Misc.getTimeStamp());
         return rc;
     }
