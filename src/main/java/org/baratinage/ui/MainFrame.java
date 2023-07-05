@@ -12,6 +12,7 @@ import org.baratinage.ui.bam.BamProject;
 import org.baratinage.ui.baratin.BaratinProject;
 import org.baratinage.ui.component.NoScalingIcon;
 import org.baratinage.ui.container.RowColPanel;
+
 import java.awt.Dimension;
 import java.awt.Point;
 
@@ -88,7 +89,7 @@ public class MainFrame extends JFrame {
 
         // currentProject = new BaratinProject();
 
-        projectPanel = new RowColPanel();
+        projectPanel = new RowColPanel(RowColPanel.AXIS.COL);
         this.add(projectPanel);
 
         this.addComponentListener(new ComponentAdapter() {

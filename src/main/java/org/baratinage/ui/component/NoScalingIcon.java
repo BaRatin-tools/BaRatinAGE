@@ -3,6 +3,7 @@ package org.baratinage.ui.component;
 import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Image;
 import java.awt.geom.AffineTransform;
 import java.awt.Frame;
 import javax.swing.ImageIcon;
@@ -21,6 +22,16 @@ public class NoScalingIcon extends ImageIcon {
 
     public NoScalingIcon(String iconFilePath) {
         super(iconFilePath);
+        this.setComponent();
+    }
+
+    public NoScalingIcon(Image image) {
+        super(image);
+        this.setComponent();
+    }
+
+    public NoScalingIcon(ImageIcon icon) {
+        super(icon.getImage());
         this.setComponent();
     }
 
