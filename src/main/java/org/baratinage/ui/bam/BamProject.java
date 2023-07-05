@@ -23,7 +23,7 @@ import org.baratinage.ui.commons.Explorer;
 import org.baratinage.ui.commons.ExplorerItem;
 import org.baratinage.ui.component.NoScalingIcon;
 import org.baratinage.ui.container.RowColPanel;
-import org.baratinage.ui.lg.Lg;
+import org.baratinage.ui.lg.LgElement;
 import org.baratinage.utils.ReadFile;
 import org.baratinage.utils.ReadWriteZip;
 import org.baratinage.utils.WriteFile;
@@ -97,8 +97,8 @@ public abstract class BamProject extends RowColPanel {
     public void addItem(BamItem bamItem, ExplorerItem explorerItem) {
 
         bamItem.cloneButton.setIcon(new NoScalingIcon("./resources/icons/feather/trash.svg"));
-        Lg.registerButton(bamItem.cloneButton, "ui", "duplicate");
-        Lg.registerButton(bamItem.deleteButton, "ui", "delete");
+        LgElement.registerButton(bamItem.cloneButton, "ui", "duplicate");
+        LgElement.registerButton(bamItem.deleteButton, "ui", "delete");
 
         BAM_ITEMS.add(bamItem);
         EXPLORER_ITEMS.add(explorerItem);

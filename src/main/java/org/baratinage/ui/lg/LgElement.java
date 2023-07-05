@@ -28,10 +28,15 @@ public abstract class LgElement<T> {
     }
 
     public static LgElement<AbstractButton> registerButton(AbstractButton button, String resourceKey, String textKey) {
+        return registerButton(button, resourceKey, textKey, false);
+    }
+
+    public static LgElement<AbstractButton> registerButton(AbstractButton button, String resourceKey, String textKey,
+            boolean html) {
         LgElement<AbstractButton> lge = new LgElement<AbstractButton>(button) {
             @Override
             public void setTranslatedText() {
-                String text = Lg.getText(resourceKey, textKey);
+                String text = Lg.getText(resourceKey, textKey, html);
                 object.setText(text);
             }
         };

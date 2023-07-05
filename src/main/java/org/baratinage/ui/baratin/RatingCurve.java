@@ -19,7 +19,6 @@ import org.baratinage.ui.bam.ICalibratedModel;
 import org.baratinage.ui.bam.IMcmc;
 import org.baratinage.ui.commons.WarningAndActions;
 import org.baratinage.ui.container.RowColPanel;
-import org.baratinage.ui.lg.Lg;
 import org.baratinage.ui.lg.LgElement;
 import org.json.JSONObject;
 
@@ -54,7 +53,7 @@ public class RatingCurve extends BamItem implements ICalibratedModel, IMcmc, Bam
                 this,
                 BamItemType.HYDRAULIC_CONFIG);
 
-        Lg.registerLabel(hydrauConfParent.comboboxLabel, "ui", "hydraulic_config");
+        LgElement.registerLabel(hydrauConfParent.comboboxLabel, "ui", "hydraulic_config");
         hydrauConfParent.combobox.setEmptyItemText("Selectionner une configuration hydraulique");
         hydrauConfParent.addChangeListener((e) -> {
             BamItem bamItem = hydrauConfParent.getCurrentBamItem();
@@ -80,7 +79,7 @@ public class RatingCurve extends BamItem implements ICalibratedModel, IMcmc, Bam
                 this,
                 BamItemType.GAUGINGS);
 
-        Lg.registerLabel(gaugingsParent.comboboxLabel, "ui", "gaugings");
+        LgElement.registerLabel(gaugingsParent.comboboxLabel, "ui", "gaugings");
         gaugingsParent.combobox.setEmptyItemText("Selectionner un jeu de jaugeages");
         gaugingsParent.addChangeListener((e) -> {
             BamItem bamItem = gaugingsParent.getCurrentBamItem();
@@ -104,7 +103,7 @@ public class RatingCurve extends BamItem implements ICalibratedModel, IMcmc, Bam
                 this,
                 BamItemType.STRUCTURAL_ERROR);
 
-        Lg.registerLabel(structErrorParent.comboboxLabel, "ui", "structural_error_model");
+        LgElement.registerLabel(structErrorParent.comboboxLabel, "ui", "structural_error_model");
         structErrorParent.combobox.setEmptyItemText("Selectionner un modèle d'erreur structurelle");
         structErrorParent.addChangeListener((e) -> {
             BamItem bamItem = structErrorParent.getCurrentBamItem();
@@ -191,24 +190,26 @@ public class RatingCurve extends BamItem implements ICalibratedModel, IMcmc, Bam
         posteriorRatingCurve.outdatedPanel.clear();
         outdatedInfoPanel.clear();
         if (warnings.size() > 0) {
-            Lg.register(new LgElement<JButton>(posteriorRatingCurve.runBamButton) {
-                @Override
-                public void setTranslatedText() {
-                    object.setText(Lg.getText("ui", "recompute_posterior_rc", true));
-                }
-            });
+            LgElement.registerButton(posteriorRatingCurve.runBamButton, "ui", "recompute_posterior_rc", true);
+            // Lg.register(new LgElement<JButton>(posteriorRatingCurve.runBamButton) {
+            // @Override
+            // public void setTranslatedText() {
+            // object.setText(Lg.getText("ui", "recompute_posterior_rc", true));
+            // }
+            // });
             posteriorRatingCurve.runBamButton.setForeground(App.INVALID_COLOR);
             for (WarningAndActions w : warnings) {
                 outdatedInfoPanel.appendChild(w);
             }
             posteriorRatingCurve.outdatedPanel.appendChild(outdatedInfoPanel);
         } else {
-            Lg.register(new LgElement<JButton>(posteriorRatingCurve.runBamButton) {
-                @Override
-                public void setTranslatedText() {
-                    object.setText(Lg.getText("ui", "compute_posterior_rc", true));
-                }
-            });
+            LgElement.registerButton(posteriorRatingCurve.runBamButton, "ui", "compute_posterior_rc", true);
+            // Lg.register(new LgElement<JButton>(posteriorRatingCurve.runBamButton) {
+            // @Override
+            // public void setTranslatedText() {
+            // object.setText(Lg.getText("ui", "compute_posterior_rc", true));
+            // }
+            // });
             posteriorRatingCurve.runBamButton.setForeground(new JButton().getForeground());
         }
 

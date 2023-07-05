@@ -11,9 +11,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
 
-import javax.swing.AbstractButton;
-import javax.swing.JLabel;
-
 import java.util.PropertyResourceBundle;
 
 public class Lg {
@@ -88,29 +85,6 @@ public class Lg {
         instance.elements.add(element);
         System.out.println("Lg // Registered elements: " + instance.elements.size());
         element.setTranslatedText();
-    }
-
-    @Deprecated
-    public static void registerButton(AbstractButton button, String resourceKey, String textKey) {
-        register(new LgElement<AbstractButton>(button) {
-
-            @Override
-            public void setTranslatedText() {
-                String text = Lg.getText(resourceKey, textKey);
-                object.setText(text);
-            }
-        });
-    }
-
-    @Deprecated
-    public static void registerLabel(JLabel label, String resourceKey, String textKey) {
-        register(new LgElement<JLabel>(label) {
-            @Override
-            public void setTranslatedText() {
-                String text = Lg.getText(resourceKey, textKey);
-                object.setText(text);
-            }
-        });
     }
 
     public static String format(String template, Object... args) {

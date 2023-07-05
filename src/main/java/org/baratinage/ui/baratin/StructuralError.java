@@ -13,7 +13,7 @@ import org.baratinage.ui.commons.LinearStructuralErrorModel;
 import org.baratinage.ui.component.RadioButtons;
 import org.baratinage.ui.component.RadioButtons.RadioButton;
 import org.baratinage.ui.container.RowColPanel;
-import org.baratinage.ui.lg.Lg;
+import org.baratinage.ui.lg.LgElement;
 import org.baratinage.ui.bam.BamItem;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -31,7 +31,7 @@ public class StructuralError extends BamItem implements IStructuralError {
         content.setPadding(5);
 
         JLabel headerLabel = new JLabel();
-        Lg.registerLabel(headerLabel, "ui", "choose_structural_error_model_type");
+        LgElement.registerLabel(headerLabel, "ui", "choose_structural_error_model_type");
 
         RadioButtons modelTypeRadioButtons = new RadioButtons();
         // if using <sub> html tag, labels are not longer centered correctly.

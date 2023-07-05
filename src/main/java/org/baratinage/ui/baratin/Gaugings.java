@@ -20,7 +20,6 @@ import org.baratinage.ui.baratin.gaugings.GaugingsTable;
 import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.ui.plot.PlotContainer;
 import org.baratinage.utils.Misc;
-import org.baratinage.ui.bam.BamItemList;
 import org.baratinage.ui.bam.BamItemType;
 import org.json.JSONObject;
 

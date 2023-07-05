@@ -11,7 +11,7 @@ import org.baratinage.ui.bam.IPredictionData;
 import org.baratinage.ui.component.NumberField;
 import org.baratinage.ui.container.GridPanel;
 import org.baratinage.ui.container.RowColPanel;
-import org.baratinage.ui.lg.Lg;
+import org.baratinage.ui.lg.LgElement;
 
 // FIXME: should have a fromJSON / toJSON methods
 public class RatingCurveStageGrid extends RowColPanel implements IPredictionData {
@@ -35,7 +35,7 @@ public class RatingCurveStageGrid extends RowColPanel implements IPredictionData
         setGap(5);
         setPadding(5);
         JLabel stageGridLabel = new JLabel();
-        Lg.registerLabel(stageGridLabel, "ui", "stage_grid");
+        LgElement.registerLabel(stageGridLabel, "ui", "stage_grid");
         this.appendChild(stageGridLabel, 0);
         this.appendChild(gridPanel, 1);
 
@@ -78,19 +78,19 @@ public class RatingCurveStageGrid extends RowColPanel implements IPredictionData
         gridPanel.insertChild(valStepField, 3, 1);
 
         JLabel minLabel = new JLabel();
-        Lg.registerLabel(minLabel, "ui", "min");
+        LgElement.registerLabel(minLabel, "ui", "min");
         gridPanel.insertChild(minLabel, 0, 0);
 
         JLabel maxLabel = new JLabel();
-        Lg.registerLabel(maxLabel, "ui", "max");
+        LgElement.registerLabel(maxLabel, "ui", "max");
         gridPanel.insertChild(maxLabel, 1, 0);
 
         JLabel nLabel = new JLabel();
-        Lg.registerLabel(nLabel, "ui", "n");
+        LgElement.registerLabel(nLabel, "ui", "n");
         gridPanel.insertChild(nLabel, 2, 0);
 
         JLabel stepLabel = new JLabel();
-        Lg.registerLabel(stepLabel, "ui", "step");
+        LgElement.registerLabel(stepLabel, "ui", "step");
         gridPanel.insertChild(stepLabel, 3, 0);
 
         isValueValid = false;
