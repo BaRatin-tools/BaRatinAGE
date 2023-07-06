@@ -4,7 +4,6 @@ import java.awt.Paint;
 import java.awt.BasicStroke;
 import java.awt.Color;
 
-import org.jfree.chart.LegendItem;
 import org.jfree.chart.renderer.xy.AbstractXYItemRenderer;
 import org.jfree.chart.renderer.xy.DeviationRenderer;
 import org.jfree.data.xy.AbstractXYDataset;

@@ -11,7 +11,6 @@ import org.baratinage.ui.bam.BamItem;
 import org.baratinage.ui.bam.BamItemType;
 import org.baratinage.ui.bam.BamProject;
 import org.baratinage.ui.commons.ExplorerItem;
-import org.baratinage.ui.component.NoScalingIcon;
 import org.baratinage.ui.component.SvgIcon;
 import org.baratinage.ui.lg.LgElement;
 import org.baratinage.utils.Misc;

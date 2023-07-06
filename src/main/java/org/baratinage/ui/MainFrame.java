@@ -10,7 +10,6 @@ import javax.swing.filechooser.FileFilter;
 
 import org.baratinage.ui.bam.BamProject;
 import org.baratinage.ui.baratin.BaratinProject;
-import org.baratinage.ui.component.SvgIcon;
 import org.baratinage.ui.container.RowColPanel;
 
 import java.awt.Dimension;
