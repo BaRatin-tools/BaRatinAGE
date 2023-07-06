@@ -105,6 +105,14 @@ abstract public class BamItem extends GridPanel {
 
     public static boolean areMatching(JSONObject jsonA, JSONObject jsonB, String[] keys, boolean exclude) {
 
+        String[] namesA = JSONObject.getNames(jsonA);
+        String[] namesB = JSONObject.getNames(jsonB);
+
+        if (namesA == null || namesB == null) {
+            System.err.println("At least one of the JSON object to compare is empty!");
+            return namesA == null && namesB == null;
+        }
+
         if (exclude) {
             // create shallow copies (see: https://stackoverflow.com/a/12809884)
             jsonA = new JSONObject(jsonA, JSONObject.getNames(jsonA));
