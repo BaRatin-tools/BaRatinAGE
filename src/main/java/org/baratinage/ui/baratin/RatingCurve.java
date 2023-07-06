@@ -64,7 +64,7 @@ public class RatingCurve extends BamItem implements ICalibratedModel, IMcmc, Bam
             }
             checkSync();
         });
-        hydrauConfParent.setSyncJsonKeys(new String[] { "name", "description", "ui" }, true);
+        hydrauConfParent.setSyncJsonKeys(new String[] { "ui" }, true);
         hydrauConfParent.setCreateBackupBamItemAction((id, json) -> {
             HydraulicConfiguration bamItem = new HydraulicConfiguration(id, (BaratinProject) PROJECT);
             bamItem.fromJSON(json);
@@ -88,7 +88,6 @@ public class RatingCurve extends BamItem implements ICalibratedModel, IMcmc, Bam
             }
             checkSync();
         });
-        gaugingsParent.setSyncJsonKeys(new String[] { "name", "description" }, true);
         gaugingsParent.setCreateBackupBamItemAction((id, json) -> {
             Gaugings bamItem = new Gaugings(id, (BaratinProject) PROJECT);
             bamItem.fromJSON(json);
@@ -112,7 +111,6 @@ public class RatingCurve extends BamItem implements ICalibratedModel, IMcmc, Bam
             }
             checkSync();
         });
-        structErrorParent.setSyncJsonKeys(new String[] { "name", "description" }, true);
         structErrorParent.setCreateBackupBamItemAction((id, json) -> {
             StructuralError bamItem = new StructuralError(id, (BaratinProject) PROJECT);
             bamItem.fromJSON(json);
