@@ -11,7 +11,7 @@
    class="feather feather-activity"
    version="1.1"
    id="svg4"
-   sodipodi:docname="structural_error_2_add.svg"
+   sodipodi:docname="structural_error_add.svg"
    inkscape:version="1.2.1 (9c6d41e410, 2022-07-14)"
    xml:space="preserve"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
@@ -39,7 +39,7 @@
      inkscape:deskcolor="#505050"
      showgrid="false"
      inkscape:zoom="27.812867"
-     inkscape:cx="9.2583048"
+     inkscape:cx="9.3122367"
      inkscape:cy="14.525651"
      inkscape:window-width="2520"
      inkscape:window-height="1574"
@@ -110,7 +110,7 @@
      d="M 22.199649,22.406359 V 1.9033002"
      id="path21057" /><g
      id="g8858"
-     transform="matrix(0.54940394,0,0,0.55531207,9.973491,25.864167)"
+     transform="matrix(0.54940394,0,0,0.55531207,14.982117,20.808363)"
      style="stroke-width:1.81045;stroke-dasharray:none"><circle
        cx="-5.4279141"
        cy="-15.862006"
