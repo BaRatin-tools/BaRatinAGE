@@ -10,9 +10,9 @@ public enum BamItemType {
     STRUCTURAL_ERROR("structural_error"),
     IMPORTED_DATASET("imported_dataset");
 
-    public String name;
+    public String id;
 
-    private BamItemType(String name) {
-        this.name = name;
+    private BamItemType(String id) {
+        this.id = id;
     }
 }
