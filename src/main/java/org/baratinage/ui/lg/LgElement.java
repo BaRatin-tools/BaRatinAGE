@@ -23,7 +23,7 @@ public abstract class LgElement<T> {
         LgElement<JLabel> lge = new LgElement<JLabel>(label) {
             @Override
             public void setTranslatedText() {
-                String text = Lg.getText(resourceKey, textKey);
+                String text = Lg.getText(resourceKey, textKey, html);
                 object.setText(text);
             }
         };

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.event.ChangeEvent;
@@ -13,6 +14,7 @@ import org.baratinage.App;
 import org.baratinage.ui.commons.WarningAndActions;
 import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.ui.lg.Lg;
+import org.baratinage.ui.lg.LgElement;
 import org.json.JSONObject;
 
 public class BamItemParent implements ChangeListener {
@@ -24,6 +26,10 @@ public class BamItemParent implements ChangeListener {
     public final JLabel comboboxLabel;
 
     public final BamItem child;
+
+    public final WarningAndActions outOfSyncWarning;
+    public final JButton outOfSyncSelectOriginalButton;
+    public final JButton outOfSyncCreateNewFromOriginalButton;
 
     private String backupItemString = null;
     private String backupItemId = null;
@@ -64,6 +70,53 @@ public class BamItemParent implements ChangeListener {
         comboboxPanel.appendChild(comboboxLabel);
         comboboxPanel.appendChild(combobox);
 
+        outOfSyncWarning = new WarningAndActions();
+
+        outOfSyncSelectOriginalButton = new JButton();
+        Lg.register(new LgElement<JButton>(outOfSyncSelectOriginalButton) {
+            @Override
+            public void setTranslatedText() {
+                String text = Lg.getText("ui", "oos_revert_select", true);
+                String name = getBackupItemName();
+                text = Lg.format(text, name);
+                object.setText(text);
+            }
+        });
+        outOfSyncSelectOriginalButton.addActionListener((e) -> {
+            revertToBackup();
+        });
+
+        outOfSyncCreateNewFromOriginalButton = new JButton();
+        Lg.register(new LgElement<JButton>(outOfSyncCreateNewFromOriginalButton) {
+            @Override
+            public void setTranslatedText() {
+                String text = Lg.getText("ui", "oos_create_from_backup", true);
+                text = Lg.format(text, Lg.getText("ui", type.id));
+                object.setText(text);
+            }
+        });
+        outOfSyncCreateNewFromOriginalButton.addActionListener((e) -> {
+            if (createBackupBamItemAction == null) {
+                return;
+            }
+            String uuid = UUID.randomUUID().toString();
+            createBackupBamItemAction.onCreateBackupBamItem(
+                    uuid,
+                    new JSONObject(backupItemString));
+            combobox.setSelectedBamItem(uuid);
+        });
+    }
+
+    private String getBackupItemName() {
+        String name = "?";
+        if (backupItemId != null) {
+            BamItem item = combobox.getBamItemWithId(backupItemId);
+            if (item != null) {
+                name = item.bamItemNameField.getText();
+            }
+        }
+        return name;
+
     }
 
     public BamItem getCurrentBamItem() {
@@ -96,39 +149,36 @@ public class BamItemParent implements ChangeListener {
         createBackupBamItemAction = l;
     }
 
-    public List<WarningAndActions> checkSync() {
-        System.out.println("================================================================================");
-        System.out.println("Checking sync for parent item of type " + type);
-
-        List<WarningAndActions> warnings = new ArrayList<>();
+    public WarningAndActions getOutOfSyncWarning() {
 
         if (backupItemString == null) {
             if (currentItem == null) {
                 System.out.println("> Invalid configuration");
             }
             System.out.println("> No backup");
-            return warnings;
+            return null;
         }
 
         boolean backupItemStillExists = combobox.getBamItemWithId(backupItemId) != null;
 
+        outOfSyncSelectOriginalButton.setEnabled(backupItemStillExists);
+
+        Lg.register(new LgElement<JLabel>(outOfSyncWarning.message) {
+            @Override
+            public void setTranslatedText() {
+                String text = Lg.getText("ui", "oos_select_and_content", true);
+                text = Lg.format(text, Lg.getText("ui", type.id));
+                object.setText(text);
+            }
+        });
+
+        outOfSyncWarning.clearButtons();
+
         if (currentItem == null) {
             System.out.println("> Invalid configuration");
             System.out.println("> Item selection has changed");
-
-            WarningAndActions warning = new WarningAndActions();
-            warning.setWarningMessage(Lg.getText("ui", "oos_select_and_content"));
-            warning.addActionButton(
-                    "revert",
-                    Lg.getText("ui", "oos_revert_select"),
-                    backupItemStillExists,
-                    (e) -> {
-                        revertToBackup();
-                    });
-
-            warnings.add(warning);
-
-            return warnings;
+            outOfSyncWarning.addButton(outOfSyncSelectOriginalButton);
+            return outOfSyncWarning;
         }
 
         JSONObject backupItemJson = new JSONObject(backupItemString);
@@ -136,49 +186,31 @@ public class BamItemParent implements ChangeListener {
         boolean selectionHasChanged = !backupItemId.equals(currentItem.ID);
         boolean selectionIsOutOfSync = !currentItem.isMatchingWith(backupItemJson, jsonKeys, excludeJsonKeys);
 
+        // JButton createBamItemFromBackupButton =
+
         if (!selectionIsOutOfSync) {
-            return warnings;
+            return null;
         }
-
-        WarningAndActions warning = new WarningAndActions();
-        warnings.add(warning);
-        String warningMessage = "";
-        if (selectionHasChanged && selectionIsOutOfSync) {
-            System.out.println("> Item selection has changed");
-
-            warningMessage = Lg.format(Lg.getText("ui", "oos_select_and_content", true), comboboxLabel.getText());
-
-            warning.addActionButton(
-                    "revert",
-                    Lg.getText("ui", "oos_revert_select"),
-                    backupItemStillExists,
-                    (e) -> {
-                        revertToBackup();
-                    });
-        } else {
-            warningMessage = Lg.format(Lg.getText("ui", "oos_content", true), comboboxLabel.getText());
-        }
-
         System.out.println("> Current item is out of sync with backup");
 
-        warning.addActionButton(
-                "duplicate",
-                Lg.format(Lg.getText("ui", "oos_create_from_backup", true), comboboxLabel.getText()),
-                true,
-                (e) -> {
-                    if (createBackupBamItemAction == null) {
-                        return;
-                    }
-                    String uuid = UUID.randomUUID().toString();
-                    createBackupBamItemAction.onCreateBackupBamItem(
-                            uuid,
-                            backupItemJson);
-                    combobox.setSelectedBamItem(uuid);
-                });
+        if (selectionHasChanged) {
+            System.out.println("> Item selection has changed");
+            outOfSyncWarning.addButton(outOfSyncSelectOriginalButton);
+        } else {
+            System.out.println("> Item selection has not changed");
+            Lg.register(new LgElement<JLabel>(outOfSyncWarning.message) {
+                @Override
+                public void setTranslatedText() {
+                    String text = Lg.getText("ui", "oos_content", true);
+                    String name = getBackupItemName();
+                    text = Lg.format(text, Lg.getText("ui", type.id), name);
+                    object.setText(text);
+                }
+            });
+        }
+        outOfSyncWarning.addButton(outOfSyncCreateNewFromOriginalButton);
 
-        warning.setWarningMessage(warningMessage);
-
-        return warnings;
+        return outOfSyncWarning;
 
     }
 

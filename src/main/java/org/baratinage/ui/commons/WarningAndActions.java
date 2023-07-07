@@ -1,8 +1,9 @@
 package org.baratinage.ui.commons;
 
-import java.awt.event.ActionListener;
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.List;
 
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 
@@ -11,53 +12,48 @@ import org.baratinage.ui.container.RowColPanel;
 
 public class WarningAndActions extends RowColPanel {
 
-    private JLabel warningMessage = new JLabel();
-    private HashMap<String, JButton> actionButtons = new HashMap<>();
-    private RowColPanel actionButtonsPanel = new RowColPanel(AXIS.ROW);
+    public final JLabel message = new JLabel();
+    private final List<JButton> buttons = new ArrayList<>();
+    private final RowColPanel actionButtonsPanel = new RowColPanel(AXIS.ROW);
 
     public WarningAndActions() {
         super(AXIS.COL);
 
-        setBackground(App.INVALID_COLOR);
-        appendChild(warningMessage);
+        message.setForeground(App.INVALID_COLOR);
+        setBorder(BorderFactory.createLineBorder(App.INVALID_COLOR, 2));
+        appendChild(message);
         appendChild(actionButtonsPanel);
 
         setPadding(2);
         setGap(5);
 
-        actionButtonsPanel.setBackground(App.INVALID_COLOR);
         actionButtonsPanel.setGap(5);
     }
 
-    public void setWarningMessage(String text) {
-        warningMessage.setText(text);
-    }
-
-    public void addActionButton(
-            String id,
-            String label,
-            boolean enable,
-            ActionListener action) {
-        JButton btn = new JButton();
-        btn.setText(label);
-        btn.addActionListener(action);
-        actionButtons.put(id, btn);
-        updateActionButtonsPanel();
-
-    }
-
-    public void removeActionButton(String id) {
-        actionButtons.remove(id);
-        updateActionButtonsPanel();
-    }
-
-    private void updateActionButtonsPanel() {
-        actionButtonsPanel.clear();
-        for (String id : actionButtons.keySet()) {
-            JButton btn = actionButtons.get(id);
-            actionButtonsPanel.appendChild(btn);
-        }
-        actionButtonsPanel.updateUI();
+    public void addButton(JButton button) {
+        buttons.add(button);
         updateUI();
+    }
+
+    public void removeButton(JButton button) {
+        buttons.remove(button);
+        updateUI();
+    }
+
+    public void clearButtons() {
+        buttons.clear();
+        updateUI();
+    }
+
+    @Override
+    public void updateUI() {
+        if (actionButtonsPanel != null && buttons != null) {
+            actionButtonsPanel.clear();
+            for (JButton btn : buttons) {
+                actionButtonsPanel.appendChild(btn);
+            }
+            actionButtonsPanel.updateUI();
+        }
+        super.updateUI();
     }
 }

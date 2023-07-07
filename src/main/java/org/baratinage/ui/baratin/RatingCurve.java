@@ -19,6 +19,7 @@ import org.baratinage.ui.bam.ICalibratedModel;
 import org.baratinage.ui.bam.IMcmc;
 import org.baratinage.ui.commons.WarningAndActions;
 import org.baratinage.ui.container.RowColPanel;
+import org.baratinage.ui.lg.Lg;
 import org.baratinage.ui.lg.LgElement;
 import org.json.JSONObject;
 
@@ -181,20 +182,24 @@ public class RatingCurve extends BamItem implements ICalibratedModel, IMcmc, Bam
 
     private void checkSync() {
         List<WarningAndActions> warnings = new ArrayList<>();
-        warnings.addAll(hydrauConfParent.checkSync());
-        warnings.addAll(gaugingsParent.checkSync());
-        warnings.addAll(structErrorParent.checkSync());
+        WarningAndActions warning;
+        warning = hydrauConfParent.getOutOfSyncWarning();
+        if (warning != null) {
+            warnings.add(warning);
+        }
+        warning = gaugingsParent.getOutOfSyncWarning();
+        if (warning != null) {
+            warnings.add(warning);
+        }
+        warning = structErrorParent.getOutOfSyncWarning();
+        if (warning != null) {
+            warnings.add(warning);
+        }
 
         posteriorRatingCurve.outdatedPanel.clear();
         outdatedInfoPanel.clear();
         if (warnings.size() > 0) {
             LgElement.registerButton(posteriorRatingCurve.runBamButton, "ui", "recompute_posterior_rc", true);
-            // Lg.register(new LgElement<JButton>(posteriorRatingCurve.runBamButton) {
-            // @Override
-            // public void setTranslatedText() {
-            // object.setText(Lg.getText("ui", "recompute_posterior_rc", true));
-            // }
-            // });
             posteriorRatingCurve.runBamButton.setForeground(App.INVALID_COLOR);
             for (WarningAndActions w : warnings) {
                 outdatedInfoPanel.appendChild(w);
@@ -202,15 +207,12 @@ public class RatingCurve extends BamItem implements ICalibratedModel, IMcmc, Bam
             posteriorRatingCurve.outdatedPanel.appendChild(outdatedInfoPanel);
         } else {
             LgElement.registerButton(posteriorRatingCurve.runBamButton, "ui", "compute_posterior_rc", true);
-            // Lg.register(new LgElement<JButton>(posteriorRatingCurve.runBamButton) {
-            // @Override
-            // public void setTranslatedText() {
-            // object.setText(Lg.getText("ui", "compute_posterior_rc", true));
-            // }
-            // });
             posteriorRatingCurve.runBamButton.setForeground(new JButton().getForeground());
         }
 
+        // since text within warnings changes, it is necessary to
+        // call Lg.updateTexts() so changes are accounted for.
+        Lg.updateTexts();
         posteriorRatingCurve.updateUI();
 
     }
@@ -280,11 +282,10 @@ public class RatingCurve extends BamItem implements ICalibratedModel, IMcmc, Bam
 
     @Override
     public void onBamItemListChange(BamItemList bamItemList) {
-        System.out.println(">>>++++++++++++++++++++++++++++++++++");
         hydrauConfParent.updateCombobox(bamItemList);
-        System.out.println("<<<++++++++++++++++++++++++++++++++++");
         gaugingsParent.updateCombobox(bamItemList);
         structErrorParent.updateCombobox(bamItemList);
+        checkSync();
     }
 
     @Override

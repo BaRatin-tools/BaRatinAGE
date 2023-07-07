@@ -70,7 +70,8 @@ public class Lg {
     }
 
     public static void register(LgElement<?> element) {
-        ;
+        System.out.println("-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-");
+        System.out.println(element.object);
         Lg instance = getInstance();
         LgElement<?> elementToDelete = null;
         for (LgElement<?> lge : instance.elements) {
@@ -91,6 +92,13 @@ public class Lg {
         MessageFormat msgFormat = new MessageFormat(template);
         msgFormat.setLocale(getLocale());
         return msgFormat.format(args);
+    }
+
+    public static void updateTexts() {
+        Lg instance = getInstance();
+        for (LgElement<?> lge : instance.elements) {
+            lge.setTranslatedText();
+        }
     }
 
     private List<LgElement<?>> elements;
