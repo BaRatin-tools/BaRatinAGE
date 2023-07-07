@@ -26,7 +26,7 @@ public class App {
 
     public static MainFrame MAIN_FRAME;
 
-    public static Color INVALID_COLOR = new Color(255, 125, 125, 200);
+    public static Color INVALID_COLOR = new Color(200, 50, 40);
 
     public static void main(String[] args) {
 
