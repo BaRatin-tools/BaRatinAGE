@@ -48,15 +48,15 @@ abstract public class BamItem extends GridPanel {
         bamItemTypeLabel.setText("BamItem");
         bamItemTypeLabel.setFont(bamItemTypeLabel.getFont().deriveFont(Font.BOLD));
         bamItemNameField.setText("Unnamed");
-        bamItemNameField.setFont(bamItemNameField.getFont().deriveFont(Font.BOLD));
+        // bamItemNameField.setFont(bamItemNameField.getFont().deriveFont(Font.BOLD));
 
         LgElement.registerTextFieldPlaceholder(bamItemNameField, "ui", "name");
         LgElement.registerTextFieldPlaceholder(bamItemDescriptionField, "ui", "description");
 
         headerPanel.insertChild(bamItemTypeLabel, 0, 0);
-        headerPanel.insertChild(bamItemNameField, 1, 0);
-        headerPanel.insertChild(cloneButton, 2, 0);
-        headerPanel.insertChild(deleteButton, 3, 0);
+        headerPanel.insertChild(bamItemNameField, 1, 0, ANCHOR.C, FILL.H);
+        headerPanel.insertChild(cloneButton, 2, 0, ANCHOR.C, FILL.H);
+        headerPanel.insertChild(deleteButton, 3, 0, ANCHOR.C, FILL.H);
         headerPanel.insertChild(bamItemDescriptionField, 0, 1, 4, 1);
 
         contentPanel = new RowColPanel();
