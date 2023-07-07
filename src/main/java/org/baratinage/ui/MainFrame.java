@@ -1,5 +1,6 @@
 package org.baratinage.ui;
 
+import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
@@ -11,6 +12,8 @@ import javax.swing.filechooser.FileFilter;
 import org.baratinage.ui.bam.BamProject;
 import org.baratinage.ui.baratin.BaratinProject;
 import org.baratinage.ui.container.RowColPanel;
+import org.baratinage.ui.lg.Lg;
+import org.baratinage.ui.lg.LgElement;
 
 import java.awt.Dimension;
 import java.awt.Point;
@@ -21,6 +24,9 @@ import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class MainFrame extends JFrame {
 
@@ -33,14 +39,9 @@ public class MainFrame extends JFrame {
     public MainFrame() {
 
         this.setSize(new Dimension(1200, 900));
-        // this.setSize(new Dimension(773, 1118));
-        // this.setLocation(new Point(1986, 0));
 
-        // this.setSize(new Dimension(966, 1398));
-        // this.setLocation(new Point(2482, 0));
-
-        // TestPanel testPanel = new TestPanel();
-        // this.add(testPanel);
+        // this.setSize(new Dimension(1936, 1048));
+        // this.setLocation(new Point(2512, -8));
 
         mainMenuBar = new JMenuBar();
 
@@ -83,9 +84,13 @@ public class MainFrame extends JFrame {
         });
         fileMenu.add(closeMenuItem);
 
-        this.setJMenuBar(mainMenuBar);
+        JMenu optionMenu = new JMenu("Options");
+        mainMenuBar.add(optionMenu);
 
-        // currentProject = new BaratinProject();
+        JMenu lgSwitcherMenu = createLanguageSwitcherMenu();
+        optionMenu.add(lgSwitcherMenu);
+
+        this.setJMenuBar(mainMenuBar);
 
         projectPanel = new RowColPanel(RowColPanel.AXIS.COL);
         this.add(projectPanel);
@@ -110,6 +115,37 @@ public class MainFrame extends JFrame {
         });
 
         this.setVisible(true);
+    }
+
+    Map<String, JCheckBoxMenuItem> lgMenuItems = new HashMap<>();
+
+    public JMenu createLanguageSwitcherMenu() {
+
+        JMenu switchLanguageMenuItem = new JMenu();
+        LgElement.registerButton(switchLanguageMenuItem, "ui", "change_language");
+
+        List<String> lgKeys = Lg.getAvailableLanguageKeys();
+        for (String lgKey : lgKeys) {
+            JCheckBoxMenuItem item = new JCheckBoxMenuItem();
+            lgMenuItems.put(lgKey, item);
+            LgElement.registerButton(item, "ui", lgKey);
+            item.addActionListener((e) -> {
+                System.out.println("Swtiching language to " + lgKey);
+                Lg.setLocale(lgKey);
+                updateLanguageSwticherMenu();
+                validate();
+            });
+            switchLanguageMenuItem.add(item);
+        }
+        updateLanguageSwticherMenu();
+        return switchLanguageMenuItem;
+    }
+
+    public void updateLanguageSwticherMenu() {
+        String currentLocalKey = Lg.getLocaleKey();
+        for (String key : lgMenuItems.keySet()) {
+            lgMenuItems.get(key).setSelected(key.equals(currentLocalKey));
+        }
     }
 
     public void setCurrentProject(BamProject project) {
@@ -155,10 +191,6 @@ public class MainFrame extends JFrame {
             setCurrentProject(bamProject);
         }
     }
-
-    // public void loadProject(String filePath) {
-
-    // }
 
     private void close() {
         System.exit(0);

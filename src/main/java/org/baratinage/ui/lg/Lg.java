@@ -1,16 +1,21 @@
 package org.baratinage.ui.lg;
 
+import java.io.File;
+import java.io.FileFilter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
-
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.PropertyResourceBundle;
 
 // FIXME: still some issues when a new project is created, many components from the old project remain referenced here. Should registration keep track of the project so unregistration can be done project wize?
@@ -29,12 +34,25 @@ public class Lg {
         return instance;
     }
 
+    static public List<String> getAvailableLanguageKeys() {
+        File resourceDir = Path.of(I18N_RESSOURCE_DIR).toFile();
+        File[] files = resourceDir.listFiles();
+        Set<String> lgKeys = new HashSet<>();
+        for (File f : files) {
+            Matcher m = Pattern.compile("(\\w*)_(\\w*).properties").matcher(f.getName());
+            while (m.find()) {
+                if (m.groupCount() == 2) {
+                    lgKeys.add(m.group(2));
+                }
+            }
+        }
+        return new ArrayList<>(lgKeys);
+    }
+
     static public void setLocale(String languageKey) {
         Lg instance = getInstance();
         instance.setLocaleFromKey(languageKey);
-        for (LgElement<?> lge : instance.elements) {
-            lge.setTranslatedText();
-        }
+        updateTexts();
     }
 
     static public String getLocaleKey() {
