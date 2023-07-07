@@ -14,7 +14,9 @@ import java.util.zip.ZipOutputStream;
 import javax.swing.BorderFactory;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
+import javax.swing.JSeparator;
 import javax.swing.JSplitPane;
+import javax.swing.JToolBar;
 import javax.swing.filechooser.FileFilter;
 
 import org.baratinage.App;
@@ -35,9 +37,8 @@ public abstract class BamProject extends RowColPanel {
     public final BamItemList BAM_ITEMS;
     public final List<ExplorerItem> EXPLORER_ITEMS;
 
-    // protected RowColPanel actionBar;
     protected JSplitPane content;
-
+    protected JToolBar toolBar;
     protected Explorer explorer;
     protected RowColPanel currentPanel;
 
@@ -47,19 +48,26 @@ public abstract class BamProject extends RowColPanel {
         BAM_ITEMS = new BamItemList();
         EXPLORER_ITEMS = new ArrayList<>();
 
-        this.content = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
-        this.content.setBorder(BorderFactory.createEmptyBorder());
-        this.appendChild(this.content, 1);
+        toolBar = new JToolBar();
+        toolBar.setFloatable(false);
+        appendChild(toolBar, 0);
+        appendChild(new JSeparator(), 0);
 
-        this.explorer = new Explorer("Explorateur");
-        this.setupExplorer();
+        content = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
+        content.setBorder(BorderFactory.createEmptyBorder());
+        appendChild(content, 1);
 
-        this.currentPanel = new RowColPanel(AXIS.COL);
-        this.currentPanel.setGap(5);
+        explorer = new Explorer();
+        LgElement.registerLabel(explorer.headerLabel, "ui", "explorer");
 
-        this.content.setLeftComponent(this.explorer);
-        this.content.setRightComponent(this.currentPanel);
-        this.content.setResizeWeight(0);
+        setupExplorer();
+
+        currentPanel = new RowColPanel(AXIS.COL);
+        currentPanel.setGap(5);
+
+        content.setLeftComponent(explorer);
+        content.setRightComponent(currentPanel);
+        content.setResizeWeight(0);
 
     }
 
@@ -89,10 +97,6 @@ public abstract class BamProject extends RowColPanel {
             explorer.selectItem(item);
         }
     }
-
-    // public BamItemList getBamItems() {
-    // return this.items;
-    // }
 
     public void addItem(BamItem bamItem, ExplorerItem explorerItem) {
 

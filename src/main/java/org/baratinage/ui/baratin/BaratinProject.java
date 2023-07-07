@@ -3,6 +3,7 @@ package org.baratinage.ui.baratin;
 import java.util.UUID;
 
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 
@@ -51,29 +52,31 @@ public class BaratinProject extends BamProject {
     // static private final String ratingCurveIconPath =
     // "./resources/icons/RC_icon.png";
 
+    static private final int iconSize = 30;
+
     static private final ImageIcon hydraulicConfigIcon = SvgIcon
-            .buildNoScalingIcon("./resources/icons/custom/hydraulic_config.svg", 42);
+            .buildNoScalingIcon("./resources/icons/custom/hydraulic_config.svg", iconSize);
 
     static private final ImageIcon gaugingsIcon = SvgIcon
-            .buildNoScalingIcon("./resources/icons/custom/gaugings.svg", 42);
+            .buildNoScalingIcon("./resources/icons/custom/gaugings.svg", iconSize);
 
     static private final ImageIcon structuralErrorIcon = SvgIcon
-            .buildNoScalingIcon("./resources/icons/custom/structural_error.svg", 42);
+            .buildNoScalingIcon("./resources/icons/custom/structural_error.svg", iconSize);
 
     static private final ImageIcon ratingCurveIcon = SvgIcon
-            .buildNoScalingIcon("./resources/icons/custom/rating_curve.svg", 42);
+            .buildNoScalingIcon("./resources/icons/custom/rating_curve.svg", iconSize);
 
     static private final ImageIcon addHydraulicConfigIcon = SvgIcon
-            .buildNoScalingIcon("./resources/icons/custom/hydraulic_config_add.svg", 42);
+            .buildNoScalingIcon("./resources/icons/custom/hydraulic_config_add.svg", iconSize);
 
     static private final ImageIcon addGaugingsIcon = SvgIcon
-            .buildNoScalingIcon("./resources/icons/custom/gaugings_add.svg", 42);
+            .buildNoScalingIcon("./resources/icons/custom/gaugings_add.svg", iconSize);
 
     static private final ImageIcon addStructuralErrorIcon = SvgIcon
-            .buildNoScalingIcon("./resources/icons/custom/structural_error_add.svg", 42);
+            .buildNoScalingIcon("./resources/icons/custom/structural_error_add.svg", iconSize);
 
     static private final ImageIcon addRatingCurveIcon = SvgIcon
-            .buildNoScalingIcon("./resources/icons/custom/rating_curve_add.svg", 42);
+            .buildNoScalingIcon("./resources/icons/custom/rating_curve_add.svg", iconSize);
 
     public BaratinProject() {
         super();
@@ -87,37 +90,61 @@ public class BaratinProject extends BamProject {
         }
         JMenu baratinMenu = App.MAIN_FRAME.baratinMenu;
 
-        JMenuItem btnNewHydraulicConfig = new JMenuItem();
-        btnNewHydraulicConfig.setText("Créer une nouvelle configuration hydraulique");
-        btnNewHydraulicConfig.setIcon(addHydraulicConfigIcon);
+        JMenuItem menuBtnNewHydraulicConfig = new JMenuItem();
+        menuBtnNewHydraulicConfig.setText("Créer une nouvelle configuration hydraulique");
+        menuBtnNewHydraulicConfig.setIcon(addHydraulicConfigIcon);
+        menuBtnNewHydraulicConfig.addActionListener(e -> {
+            addHydraulicConfig();
+        });
+        baratinMenu.add(menuBtnNewHydraulicConfig);
+
+        JButton btnNewHydraulicConfig = new JButton(addHydraulicConfigIcon);
         btnNewHydraulicConfig.addActionListener(e -> {
             addHydraulicConfig();
         });
-        baratinMenu.add(btnNewHydraulicConfig);
+        toolBar.add(btnNewHydraulicConfig);
 
-        JMenuItem btnNewGaugings = new JMenuItem();
-        btnNewGaugings.setText("Créer un nouveau jeu de jaugeages");
-        btnNewGaugings.setIcon(addGaugingsIcon);
+        JMenuItem menuBtnNewGaugings = new JMenuItem();
+        menuBtnNewGaugings.setText("Créer un nouveau jeu de jaugeages");
+        menuBtnNewGaugings.setIcon(addGaugingsIcon);
+        menuBtnNewGaugings.addActionListener(e -> {
+            addGaugings();
+        });
+        baratinMenu.add(menuBtnNewGaugings);
+
+        JButton btnNewGaugings = new JButton(addGaugingsIcon);
         btnNewGaugings.addActionListener(e -> {
             addGaugings();
         });
-        baratinMenu.add(btnNewGaugings);
+        toolBar.add(btnNewGaugings);
 
-        JMenuItem btnNewStructErrorModel = new JMenuItem();
-        btnNewStructErrorModel.setText("Créer un nouveau modèle d'erreur structurelle");
-        btnNewStructErrorModel.setIcon(addStructuralErrorIcon);
+        JMenuItem menuBtnNewStructErrorModel = new JMenuItem();
+        menuBtnNewStructErrorModel.setText("Créer un nouveau modèle d'erreur structurelle");
+        menuBtnNewStructErrorModel.setIcon(addStructuralErrorIcon);
+        menuBtnNewStructErrorModel.addActionListener(e -> {
+            addStructuralErrorModel();
+        });
+        baratinMenu.add(menuBtnNewStructErrorModel);
+
+        JButton btnNewStructErrorModel = new JButton(addStructuralErrorIcon);
         btnNewStructErrorModel.addActionListener(e -> {
             addStructuralErrorModel();
         });
-        baratinMenu.add(btnNewStructErrorModel);
+        toolBar.add(btnNewStructErrorModel);
 
-        JMenuItem btnNewRatingCurve = new JMenuItem();
-        btnNewRatingCurve.setText("Créer une nouvelle courbe de tarage");
-        btnNewRatingCurve.setIcon(addRatingCurveIcon);
+        JMenuItem menuBtnNewRatingCurve = new JMenuItem();
+        menuBtnNewRatingCurve.setText("Créer une nouvelle courbe de tarage");
+        menuBtnNewRatingCurve.setIcon(addRatingCurveIcon);
+        menuBtnNewRatingCurve.addActionListener(e -> {
+            addRatingCurve();
+        });
+        baratinMenu.add(menuBtnNewRatingCurve);
+
+        JButton btnNewRatingCurve = new JButton(addRatingCurveIcon);
         btnNewRatingCurve.addActionListener(e -> {
             addRatingCurve();
         });
-        baratinMenu.add(btnNewRatingCurve);
+        toolBar.add(btnNewRatingCurve);
 
         setupExplorer();
 
@@ -130,8 +157,6 @@ public class BaratinProject extends BamProject {
         hc.bamItemNameField.setText("par défaut");
     }
 
-    // FIXME: this method is typically something that should be set in a parent
-    // class that represents BaM project (as an abstract method...)
     private void setupExplorer() {
 
         hydraulicConfig = new ExplorerItem(
