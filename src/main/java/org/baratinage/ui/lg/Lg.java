@@ -70,8 +70,6 @@ public class Lg {
     }
 
     public static void register(LgElement<?> element) {
-        System.out.println("-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-");
-        System.out.println(element.object);
         Lg instance = getInstance();
         LgElement<?> elementToDelete = null;
         for (LgElement<?> lge : instance.elements) {
