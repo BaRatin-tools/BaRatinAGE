@@ -2,6 +2,7 @@ package org.baratinage.ui.commons;
 
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Font;
 
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
@@ -16,11 +17,13 @@ import org.baratinage.ui.container.RowColPanel;
 
 public class Explorer extends RowColPanel {
 
+    public final JLabel headerLabel = new JLabel();
+
     private JTree explorerTree;
     private ExplorerItem rootNode;
     private DefaultTreeModel explorerTreeModel;
 
-    public Explorer(String label) {
+    public Explorer() {
 
         super(AXIS.COL, ALIGN.STRETCH, ALIGN.STRETCH);
 
@@ -28,8 +31,7 @@ public class Explorer extends RowColPanel {
 
         setMinimumSize(new Dimension(200, 100));
 
-        JLabel header = new JLabel(label);
-        this.appendChild(header, 0);
+        this.appendChild(headerLabel, 0);
 
         this.explorerTree = new JTree();
         this.explorerTree.setBorder(BorderFactory.createEmptyBorder());
@@ -114,6 +116,12 @@ public class Explorer extends RowColPanel {
 
             setText(item.label);
             setIcon(item.icon);
+
+            if (item.parentItem == null) {
+                setFont(getFont().deriveFont(Font.BOLD));
+            } else {
+                setFont(getFont().deriveFont(Font.PLAIN));
+            }
 
             return this;
         }
