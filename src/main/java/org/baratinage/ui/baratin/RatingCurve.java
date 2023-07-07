@@ -66,11 +66,11 @@ public class RatingCurve extends BamItem implements ICalibratedModel, IMcmc, Bam
             checkSync();
         });
         hydrauConfParent.setSyncJsonKeys(new String[] { "ui" }, true);
-        hydrauConfParent.setCreateBackupBamItemAction((id, json) -> {
-            HydraulicConfiguration bamItem = new HydraulicConfiguration(id, (BaratinProject) PROJECT);
+        hydrauConfParent.setCreateBackupBamItemAction((json) -> {
+            BamItem bamItem = project.addHydraulicConfig();
             bamItem.fromJSON(json);
-            project.addHydraulicConfig(bamItem);
             project.setCurrentBamItem(this);
+            return bamItem;
         });
         // **********************************************************
         // Gaugings
@@ -88,11 +88,11 @@ public class RatingCurve extends BamItem implements ICalibratedModel, IMcmc, Bam
             }
             checkSync();
         });
-        gaugingsParent.setCreateBackupBamItemAction((id, json) -> {
-            Gaugings bamItem = new Gaugings(id, (BaratinProject) PROJECT);
+        gaugingsParent.setCreateBackupBamItemAction((json) -> {
+            BamItem bamItem = project.addGaugings();
             bamItem.fromJSON(json);
-            project.addGaugings(bamItem);
             project.setCurrentBamItem(this);
+            return bamItem;
         });
         // **********************************************************
         // Structural error
@@ -101,7 +101,8 @@ public class RatingCurve extends BamItem implements ICalibratedModel, IMcmc, Bam
                 this,
                 BamItemType.STRUCTURAL_ERROR);
 
-        LgElement.registerLabel(structErrorParent.comboboxLabel, "ui", "structural_error_model");
+        LgElement.registerLabel(structErrorParent.comboboxLabel, "ui",
+                "structural_error_model");
         structErrorParent.combobox.setEmptyItemText("Selectionner un modèle d'erreur structurelle");
         structErrorParent.addChangeListener((e) -> {
             BamItem bamItem = structErrorParent.getCurrentBamItem();
@@ -110,11 +111,11 @@ public class RatingCurve extends BamItem implements ICalibratedModel, IMcmc, Bam
             }
             checkSync();
         });
-        structErrorParent.setCreateBackupBamItemAction((id, json) -> {
-            StructuralError bamItem = new StructuralError(id, (BaratinProject) PROJECT);
+        structErrorParent.setCreateBackupBamItemAction((json) -> {
+            BamItem bamItem = project.addGaugings();
             bamItem.fromJSON(json);
-            project.addStructuralErrorModel(bamItem);
             project.setCurrentBamItem(this);
+            return bamItem;
         });
         // **********************************************************
 

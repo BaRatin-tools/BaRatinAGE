@@ -2,7 +2,6 @@ package org.baratinage.ui.bam;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -99,11 +98,8 @@ public class BamItemParent implements ChangeListener {
             if (createBackupBamItemAction == null) {
                 return;
             }
-            String uuid = UUID.randomUUID().toString();
-            createBackupBamItemAction.onCreateBackupBamItem(
-                    uuid,
-                    new JSONObject(backupItemString));
-            combobox.setSelectedBamItem(uuid);
+            BamItem item = createBackupBamItemAction.createBackupBamItem(new JSONObject(backupItemString));
+            combobox.setSelectedBamItem(item.ID);
         });
     }
 
@@ -140,7 +136,7 @@ public class BamItemParent implements ChangeListener {
 
     @FunctionalInterface
     public interface ICreateBackupBamItem {
-        public void onCreateBackupBamItem(String uuid, JSONObject json);
+        public BamItem createBackupBamItem(JSONObject json);
     }
 
     private ICreateBackupBamItem createBackupBamItemAction = null;
