@@ -15,6 +15,7 @@ import javax.swing.event.ChangeListener;
 import org.baratinage.ui.component.TextField;
 import org.baratinage.ui.container.GridPanel;
 import org.baratinage.ui.container.RowColPanel;
+import org.baratinage.ui.lg.Lg;
 import org.baratinage.ui.lg.LgElement;
 import org.baratinage.utils.Misc;
 import org.json.JSONObject;
@@ -143,12 +144,6 @@ abstract public class BamItem extends GridPanel {
         String jsonStringA = jsonA.toString();
         String jsonStringB = jsonB.toString();
 
-        System.out.println("***********************************");
-        System.out.println(jsonStringA);
-        System.out.println("--");
-        System.out.println(jsonStringB);
-        System.out.println("***********************************");
-
         return jsonStringA.equals(jsonStringB);
     }
 
@@ -186,5 +181,12 @@ abstract public class BamItem extends GridPanel {
     public void addTimeStampToName() {
         String currentName = bamItemNameField.getText();
         bamItemNameField.setText(currentName + " (" + Misc.getTimeStamp() + ")");
+    }
+
+    public void setCopyName() {
+        String oldName = bamItemNameField.getText();
+        String newName = Lg.getText("ui", "copy_of");
+        newName = Lg.format(newName, oldName);
+        bamItemNameField.setText(newName);
     }
 }

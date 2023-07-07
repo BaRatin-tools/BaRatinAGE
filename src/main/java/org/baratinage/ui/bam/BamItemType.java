@@ -7,7 +7,7 @@ public enum BamItemType {
     HYDROGRAPH("hydrograph"),
     LIMNIGRAPH("limnigraph"),
     RATING_CURVE("rating_curve"),
-    STRUCTURAL_ERROR("structural_error"),
+    STRUCTURAL_ERROR("structural_error_model"),
     IMPORTED_DATASET("imported_dataset");
 
     public String id;

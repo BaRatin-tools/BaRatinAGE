@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.EventListener;
 import java.util.List;
 
+import org.baratinage.ui.lg.Lg;
+import org.baratinage.utils.Misc;
+
 public class BamItemList extends ArrayList<BamItem> {
 
     private ArrayList<BamItemListChangeListener> bamItemListChangeListeners;
@@ -72,6 +75,23 @@ public class BamItemList extends ArrayList<BamItem> {
             }
         }
         return null;
+    }
+
+    private static String[] getBamItemNames(BamItemList bamItemList) {
+        int n = bamItemList.size();
+        String[] names = new String[n];
+        for (int k = 0; k < n; k++) {
+            names[k] = bamItemList.get(k).bamItemNameField.getText();
+        }
+        return names;
+    }
+
+    public String getDefaultName(BamItemType type) {
+        String shortName = Lg.getText("ui", type.id + "_short");
+        BamItemList filteredList = filterByType(type);
+        String[] filteredNames = getBamItemNames(filteredList);
+        return Misc.getNextName(shortName, filteredNames);
+
     }
 
 }

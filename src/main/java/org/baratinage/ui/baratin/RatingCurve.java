@@ -69,7 +69,6 @@ public class RatingCurve extends BamItem implements ICalibratedModel, IMcmc, Bam
         hydrauConfParent.setCreateBackupBamItemAction((id, json) -> {
             HydraulicConfiguration bamItem = new HydraulicConfiguration(id, (BaratinProject) PROJECT);
             bamItem.fromJSON(json);
-            bamItem.addTimeStampToName();
             project.addHydraulicConfig(bamItem);
             project.setCurrentBamItem(this);
         });
@@ -92,7 +91,6 @@ public class RatingCurve extends BamItem implements ICalibratedModel, IMcmc, Bam
         gaugingsParent.setCreateBackupBamItemAction((id, json) -> {
             Gaugings bamItem = new Gaugings(id, (BaratinProject) PROJECT);
             bamItem.fromJSON(json);
-            bamItem.addTimeStampToName();
             project.addGaugings(bamItem);
             project.setCurrentBamItem(this);
         });
@@ -115,7 +113,6 @@ public class RatingCurve extends BamItem implements ICalibratedModel, IMcmc, Bam
         structErrorParent.setCreateBackupBamItemAction((id, json) -> {
             StructuralError bamItem = new StructuralError(id, (BaratinProject) PROJECT);
             bamItem.fromJSON(json);
-            bamItem.addTimeStampToName();
             project.addStructuralErrorModel(bamItem);
             project.setCurrentBamItem(this);
         });

@@ -14,7 +14,6 @@ import org.baratinage.ui.bam.BamProject;
 import org.baratinage.ui.commons.ExplorerItem;
 import org.baratinage.ui.component.SvgIcon;
 import org.baratinage.ui.lg.LgElement;
-import org.baratinage.utils.Misc;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -43,15 +42,7 @@ public class BaratinProject extends BamProject {
     private ExplorerItem structuralError;
     private ExplorerItem ratingCurve;
 
-    // static private final String hydraulicConfigIconPath =
-    // "./resources/icons/Hydraulic_icon.png";
-    // static private final String gaugingsIconPath =
-    // "./resources/icons/Gauging_icon.png";
-    // static private final String structuralErrIconPath =
-    // "./resources/icons/Error_icon.png";
-    // static private final String ratingCurveIconPath =
-    // "./resources/icons/RC_icon.png";
-
+    // FIXME: best iconSize varies depending on OS scaling
     static private final int iconSize = 30;
 
     static private final ImageIcon hydraulicConfigIcon = SvgIcon
@@ -206,17 +197,16 @@ public class BaratinProject extends BamProject {
         hc.bamItemTypeLabel.setIcon(hydraulicConfigIcon);
         hc.cloneButton.addActionListener((e) -> {
             HydraulicConfiguration newHc = (HydraulicConfiguration) hc.clone();
-            newHc.addTimeStampToName();
+            newHc.setCopyName();
             addHydraulicConfig(newHc);
         });
-
-        hc.bamItemNameField.setText(Misc.getTimeStamp());
 
         return hc;
     }
 
     public HydraulicConfiguration addHydraulicConfig(String uuid) {
         HydraulicConfiguration hc = new HydraulicConfiguration(uuid, this);
+        hc.bamItemNameField.setText(BAM_ITEMS.getDefaultName(BamItemType.HYDRAULIC_CONFIG));
         return addHydraulicConfig(hc);
     }
 
@@ -225,11 +215,6 @@ public class BaratinProject extends BamProject {
     }
 
     public Gaugings addGaugings(Gaugings g) {
-        g.cloneButton.addActionListener((e) -> {
-            Gaugings newG = (Gaugings) g.clone();
-            newG.addTimeStampToName();
-            addGaugings(newG);
-        });
         ExplorerItem explorerItem = new ExplorerItem(
                 g.ID,
                 g.bamItemNameField.getText(),
@@ -238,12 +223,17 @@ public class BaratinProject extends BamProject {
         addItem(g, explorerItem);
         LgElement.registerLabel(g.bamItemTypeLabel, "ui", "gaugings");
         g.bamItemTypeLabel.setIcon(gaugingsIcon);
-        g.bamItemNameField.setText(Misc.getTimeStamp());
+        g.cloneButton.addActionListener((e) -> {
+            Gaugings newG = (Gaugings) g.clone();
+            newG.setCopyName();
+            addGaugings(newG);
+        });
         return g;
     }
 
     public Gaugings addGaugings(String uuid) {
         Gaugings g = new Gaugings(uuid, this);
+        g.bamItemNameField.setText(BAM_ITEMS.getDefaultName(BamItemType.GAUGINGS));
         return addGaugings(g);
     }
 
@@ -252,11 +242,6 @@ public class BaratinProject extends BamProject {
     }
 
     public StructuralError addStructuralErrorModel(StructuralError se) {
-        se.cloneButton.addActionListener((e) -> {
-            StructuralError newSe = (StructuralError) se.clone();
-            newSe.addTimeStampToName();
-            addStructuralErrorModel(newSe);
-        });
         ExplorerItem explorerItem = new ExplorerItem(
                 se.ID,
                 se.bamItemNameField.getText(),
@@ -265,12 +250,17 @@ public class BaratinProject extends BamProject {
         addItem(se, explorerItem);
         LgElement.registerLabel(se.bamItemTypeLabel, "ui", "structural_error_model");
         se.bamItemTypeLabel.setIcon(structuralErrorIcon);
-        se.bamItemNameField.setText(Misc.getTimeStamp());
+        se.cloneButton.addActionListener((e) -> {
+            StructuralError newSe = (StructuralError) se.clone();
+            newSe.setCopyName();
+            addStructuralErrorModel(newSe);
+        });
         return se;
     }
 
     public StructuralError addStructuralErrorModel(String uuid) {
         StructuralError se = new StructuralError(uuid, this);
+        se.bamItemNameField.setText(BAM_ITEMS.getDefaultName(BamItemType.STRUCTURAL_ERROR));
         return addStructuralErrorModel(se);
     }
 
@@ -279,12 +269,7 @@ public class BaratinProject extends BamProject {
     }
 
     public RatingCurve addRatingCurve(RatingCurve rc) {
-        BAM_ITEMS.addChangeListener(rc);
-        rc.cloneButton.addActionListener((e) -> {
-            RatingCurve newRc = (RatingCurve) rc.clone();
-            newRc.addTimeStampToName();
-            addRatingCurve(newRc);
-        });
+        BAM_ITEMS.addChangeListener(rc); // needed because the component has parents
         ExplorerItem explorerItem = new ExplorerItem(
                 rc.ID,
                 rc.bamItemNameField.getText(),
@@ -293,12 +278,17 @@ public class BaratinProject extends BamProject {
         addItem(rc, explorerItem);
         LgElement.registerLabel(rc.bamItemTypeLabel, "ui", "rating_curve");
         rc.bamItemTypeLabel.setIcon(ratingCurveIcon);
-        rc.bamItemNameField.setText(Misc.getTimeStamp());
+        rc.cloneButton.addActionListener((e) -> {
+            RatingCurve newRc = (RatingCurve) rc.clone();
+            newRc.setCopyName();
+            addRatingCurve(newRc);
+        });
         return rc;
     }
 
     public RatingCurve addRatingCurve(String uuid) {
         RatingCurve rc = new RatingCurve(uuid, this);
+        rc.bamItemNameField.setText(BAM_ITEMS.getDefaultName(BamItemType.RATING_CURVE));
         return addRatingCurve(rc);
     }
 
