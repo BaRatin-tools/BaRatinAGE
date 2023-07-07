@@ -67,31 +67,32 @@ public class RatingCurveStageGrid extends RowColPanel implements IPredictionData
         });
         valStepField.addValidator(n -> n > 0);
 
-        gridPanel.setGap(5);
-        gridPanel.setColWeight(0, 1);
-        gridPanel.setColWeight(1, 1);
-        gridPanel.setColWeight(2, 1);
-        gridPanel.setColWeight(3, 1);
-        gridPanel.insertChild(minStageField, 0, 1);
-        gridPanel.insertChild(maxStageField, 1, 1);
-        gridPanel.insertChild(nbrStepField, 2, 1);
-        gridPanel.insertChild(valStepField, 3, 1);
-
         JLabel minLabel = new JLabel();
         LgElement.registerLabel(minLabel, "ui", "min");
-        gridPanel.insertChild(minLabel, 0, 0);
 
         JLabel maxLabel = new JLabel();
         LgElement.registerLabel(maxLabel, "ui", "max");
-        gridPanel.insertChild(maxLabel, 1, 0);
 
         JLabel nLabel = new JLabel();
         LgElement.registerLabel(nLabel, "ui", "n");
-        gridPanel.insertChild(nLabel, 2, 0);
 
         JLabel stepLabel = new JLabel();
         LgElement.registerLabel(stepLabel, "ui", "step");
-        gridPanel.insertChild(stepLabel, 3, 0);
+
+        gridPanel.setGap(5);
+        gridPanel.setColWeight(1, 1);
+        gridPanel.setColWeight(3, 1);
+        gridPanel.setColWeight(5, 1);
+        gridPanel.setColWeight(7, 1);
+        gridPanel.insertChild(minStageField, 1, 0);
+        gridPanel.insertChild(maxStageField, 3, 0);
+        gridPanel.insertChild(nbrStepField, 5, 0);
+        gridPanel.insertChild(valStepField, 7, 0);
+
+        gridPanel.insertChild(minLabel, 0, 0);
+        gridPanel.insertChild(maxLabel, 2, 0);
+        gridPanel.insertChild(nLabel, 4, 0);
+        gridPanel.insertChild(stepLabel, 6, 0);
 
         isValueValid = false;
         stageGridConfig = new StageGridConfig(0, 0, 0);
