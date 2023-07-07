@@ -1,7 +1,6 @@
 package org.baratinage.ui.lg;
 
 import java.io.File;
-import java.io.FileFilter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;

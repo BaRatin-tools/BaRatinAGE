@@ -61,7 +61,6 @@ public class Misc {
         if (!containsDefault) {
             return defaultName;
         }
-        int n = 1;
         for (int k = 1; k < 100; k++) {
             if (!usedInts.contains(k)) {
                 return defaultName + " (" + (k) + ")";
