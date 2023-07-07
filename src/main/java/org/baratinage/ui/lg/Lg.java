@@ -13,6 +13,7 @@ import java.util.ResourceBundle;
 
 import java.util.PropertyResourceBundle;
 
+// FIXME: still some issues when a new project is created, many components from the old project remain referenced here. Should registration keep track of the project so unregistration can be done project wize?
 public class Lg {
 
     static private final String I18N_RESSOURCE_DIR = "resources/i18n";
