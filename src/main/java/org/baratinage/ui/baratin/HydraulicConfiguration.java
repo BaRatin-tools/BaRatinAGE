@@ -17,6 +17,7 @@ import org.baratinage.ui.baratin.hydraulic_control.AllHydraulicControls;
 import org.baratinage.ui.baratin.hydraulic_control.OneHydraulicControl;
 import org.baratinage.ui.commons.WarningAndActions;
 import org.baratinage.ui.container.RowColPanel;
+import org.baratinage.ui.lg.LgElement;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -91,7 +92,7 @@ class HydraulicConfiguration extends BamItem
             String[] keysToIgnore = new String[] { "ui", "name", "description", "jsonStringBackup" };
             if (!isMatchingWith(jsonStringBackup, keysToIgnore, true)) {
                 WarningAndActions warning = new WarningAndActions();
-                warning.setWarningMessage("La courbe de tarage n'est plus à jour et doit être recalculée!");
+                LgElement.registerLabel(warning.message, "ui", "oos_prior_rating_curve", true);
                 priorRatingCurve.setWarnings(new WarningAndActions[] { warning });
             } else {
                 priorRatingCurve.setWarnings(new WarningAndActions[] {});
