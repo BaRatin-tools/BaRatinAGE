@@ -16,6 +16,10 @@ public abstract class LgElement<T> {
     public abstract void setTranslatedText();
 
     public static LgElement<JLabel> registerLabel(JLabel label, String resourceKey, String textKey) {
+        return registerLabel(label, resourceKey, textKey, false);
+    }
+
+    public static LgElement<JLabel> registerLabel(JLabel label, String resourceKey, String textKey, boolean html) {
         LgElement<JLabel> lge = new LgElement<JLabel>(label) {
             @Override
             public void setTranslatedText() {
