@@ -151,7 +151,7 @@ class HydraulicConfiguration extends BamItem
 
     @Override
     public String[] getTempDataFileNames() {
-        String priorRatingCurveZipFileName = priorRatingCurve.getBamRunZipFileName();
+        String priorRatingCurveZipFileName = priorRatingCurve.getBamRunZipName();
         return priorRatingCurveZipFileName == null ? new String[] {} : new String[] { priorRatingCurveZipFileName };
     }
 
@@ -211,7 +211,7 @@ class HydraulicConfiguration extends BamItem
 
         // **********************************************************
         // prior rating curve BaM results
-        json.put("bamRunZipFileName", priorRatingCurve.getBamRunZipFileName());
+        json.put("bamRunZipFileName", priorRatingCurve.getBamRunZipName());
 
         return json;
     }
@@ -303,7 +303,7 @@ class HydraulicConfiguration extends BamItem
         // prior rating curve BaM results
         if (json.has("bamRunZipFileName")) {
             String bamRunZipFileName = json.getString("bamRunZipFileName");
-            priorRatingCurve.setBamRunZipFileName(bamRunZipFileName);
+            priorRatingCurve.setBamRunZipName(bamRunZipFileName);
         } else {
             System.out.println("MISSING 'bamRunZipFileName'");
         }

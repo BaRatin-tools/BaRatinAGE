@@ -1,20 +1,31 @@
 package org.baratinage.ui.bam;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.UUID;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
-
 import org.baratinage.App;
 import org.baratinage.jbam.BaM;
+import org.baratinage.jbam.CalDataResidualConfig;
+import org.baratinage.jbam.CalibrationConfig;
+import org.baratinage.jbam.CalibrationData;
 import org.baratinage.jbam.CalibrationResult;
+import org.baratinage.jbam.McmcConfig;
+import org.baratinage.jbam.McmcCookingConfig;
+import org.baratinage.jbam.McmcSummaryConfig;
+import org.baratinage.jbam.Model;
+import org.baratinage.jbam.ModelOutput;
+import org.baratinage.jbam.Parameter;
+import org.baratinage.jbam.PredictionConfig;
 import org.baratinage.jbam.PredictionResult;
+import org.baratinage.jbam.RunOptions;
+import org.baratinage.jbam.StructuralErrorModel;
+import org.baratinage.jbam.UncertainData;
+import org.baratinage.utils.Misc;
+import org.baratinage.utils.ReadWriteZip;
 
-public abstract class RunBam {
+import org.baratinage.ui.commons.DefaultStructuralErrorProvider;
+
+public class RunBam {
 
     // FIXME: should be stored at the much higher level (Project or App level)?
     // FIXME: workspace should be handled here and be named according to date/time
@@ -23,65 +34,161 @@ public abstract class RunBam {
     // - an actual bam workspace should be unique to each bam run
     // - when closing a project all associated workspaces should be deleted
     // - when importing a project all associated workspaces should be re-created.
-    protected final String bamRunZipFileName;
-    protected final Path runZipFile;
-    protected BaM bam;
-    protected Path workspace;
-    protected boolean isConfigured = false;
-    protected boolean hasResults = false;
 
-    public RunBam() {
-        this(UUID.randomUUID().toString() + ".zip");
+    public final String uuid;
+    public final Path workspace;
+    public final BaM bam;
+
+    // private final String bamRunZipFileName;
+    // private final Path runZipFile;
+
+    // private BaM bam;
+    // private Path workspace;
+    private boolean isConfigured = false;
+    private boolean hasResults = false;
+
+    public RunBam(IModelDefinition modelDefinition,
+            IPriors priors,
+            IStructuralError structuralError,
+            ICalibrationData calibrationData,
+            IPredictionExperiment[] predictionExperiments) {
+
+        this(
+                Misc.getTimeStamp() + "_" + UUID.randomUUID().toString().substring(0, 5),
+                modelDefinition, priors, structuralError, calibrationData, predictionExperiments);
+
     }
 
-    public RunBam(String bamRunZipFileName) {
-        this.bamRunZipFileName = bamRunZipFileName;
-        this.runZipFile = Path.of(App.TEMP_DIR, bamRunZipFileName);
-    }
+    public RunBam(
+            String id,
+            IModelDefinition modelDefinition,
+            IPriors priors,
+            IStructuralError structuralError,
+            ICalibrationData calibrationData,
+            IPredictionExperiment[] predictionExperiments) {
+
+        if (modelDefinition == null) {
+            throw new IllegalArgumentException("'modelDefinition' must non null!");
+        }
+        if (priors == null) {
+            throw new IllegalArgumentException("'priors' must non null!");
+        }
+
+        uuid = id;
+        workspace = Path.of(App.BAM_WORKSPACE, uuid);
+
+        if (!workspace.toFile().exists()) {
+            workspace.toFile().mkdir();
+        }
+
+        // create BaM object
+
+        // 1) model
+
+        String xTra = modelDefinition.getXtra(workspace.toString());
+
+        Parameter[] parameters = priors.getParameters();
+
+        String[] inputNames = modelDefinition.getInputNames();
+        String[] outputNames = modelDefinition.getOutputNames();
+
+        Model model = new Model(
+                modelDefinition.getModelId(),
+                inputNames.length,
+                outputNames.length,
+                parameters,
+                xTra);
+
+        // 2) strucutral error
+        // FIXME currently supporting a single error model for all model outputs
+        if (structuralError == null) {
+            structuralError = new DefaultStructuralErrorProvider(
+                    DefaultStructuralErrorProvider.TYPE.LINEAR);
+        }
+        StructuralErrorModel structErrorModel = structuralError.getStructuralErrorModel();
+        ModelOutput[] modelOutputs = new ModelOutput[outputNames.length];
+        for (int k = 0; k < outputNames.length; k++) {
+            modelOutputs[k] = new ModelOutput(outputNames[k], structErrorModel);
+        }
+
+        // 3) calibration data
+
+        CalibrationData calibData;
+
+        if (calibrationData == null) {
+            double[] fakeDataArray = new double[] { 0 };
+            UncertainData[] inputs = new UncertainData[inputNames.length];
+            for (int k = 0; k < inputNames.length; k++) {
+                inputs[k] = new UncertainData(inputNames[k], fakeDataArray);
+            }
+            UncertainData[] outputs = new UncertainData[inputNames.length];
+            for (int k = 0; k < outputNames.length; k++) {
+                outputs[k] = new UncertainData(outputNames[k], fakeDataArray);
+            }
+
+            calibData = new CalibrationData("fakeCalibrationData",
+                    inputs, outputs);
+
+        } else {
+            calibData = calibrationData.getCalibrationData();
+
+        }
+
+        CalDataResidualConfig calDataResidualConfig = new CalDataResidualConfig();
+
+        McmcCookingConfig mcmcCookingConfig = new McmcCookingConfig();
+        McmcSummaryConfig mcmcSummaryConfig = new McmcSummaryConfig();
+        // FIXME: a IMcmc should be an argument that provides the MCMC configuration
+        McmcConfig mcmcConfig = new McmcConfig();
+
+        CalibrationConfig calibrationConfig = new CalibrationConfig(
+                model,
+                modelOutputs,
+                calibData,
+                mcmcConfig,
+                mcmcCookingConfig,
+                mcmcSummaryConfig,
+                calDataResidualConfig);
+
+        // 4) predictions
+
+        PredictionConfig[] predConfigs = new PredictionConfig[predictionExperiments.length];
+        for (int k = 0; k < predictionExperiments.length; k++) {
+            predConfigs[k] = predictionExperiments[k].getPredictionConfig();
+        }
+
+        // 5) run options
+
+        RunOptions runOptions = new RunOptions(
+                true,
+                true,
+                true,
+                true);
+
+        // 6) BaM
+
+        bam = new BaM(calibrationConfig, predConfigs, runOptions, null, null);
+    };
 
     public void run() {
-        if (!isConfigured) {
-            System.err.println("Cannot run BaM if configure() method has not been called first!");
-            return;
-        }
+
         try {
             bam.run(workspace.toString(), txt -> {
                 System.out.println("log => " + txt);
             });
         } catch (IOException e) {
             e.printStackTrace();
+            return;
         }
 
         readResultsFromWorkspace();
 
-        try {
-            backupBamRun();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        ReadWriteZip.zip(Path.of(App.TEMP_DIR, getBamRunZipName()).toString(), workspace.toString());
+
     }
 
-    @Deprecated
-    protected void backupBamRun() throws IOException {
-        // FIXME: use ReadWriteZip.zip method instead
-        File zipFile = new File(runZipFile.toString());
-        FileOutputStream zipFileOutStream = new FileOutputStream(zipFile);
-        ZipOutputStream zipOutStream = new ZipOutputStream(zipFileOutStream);
-
-        File[] files = workspace.toFile().listFiles();
-        if (files != null) {
-            for (File f : files) {
-                System.out.println("File '" + f + "'.");
-                ZipEntry ze = new ZipEntry(f.getName());
-                zipOutStream.putNextEntry(ze);
-                Files.copy(f.toPath(), zipOutStream);
-            }
-        }
-        zipOutStream.close();
-    }
-
-    public String getBamRunZipFileName() {
-        return this.bamRunZipFileName;
+    public String getBamRunZipName() {
+        return uuid + ".zip";
     }
 
     public void readResultsFromWorkspace() {

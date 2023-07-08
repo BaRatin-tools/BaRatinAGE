@@ -13,6 +13,7 @@ import javax.swing.JSeparator;
 import javax.swing.JTabbedPane;
 
 import org.baratinage.App;
+
 import org.baratinage.jbam.CalDataResidualConfig;
 import org.baratinage.jbam.CalibrationConfig;
 import org.baratinage.jbam.CalibrationResult;
@@ -25,6 +26,7 @@ import org.baratinage.jbam.ModelOutput;
 import org.baratinage.jbam.PredictionConfig;
 import org.baratinage.jbam.PredictionResult;
 import org.baratinage.jbam.StructuralErrorModel;
+
 import org.baratinage.ui.bam.ICalibratedModel;
 import org.baratinage.ui.bam.ICalibrationData;
 import org.baratinage.ui.bam.IMcmc;
@@ -32,20 +34,25 @@ import org.baratinage.ui.bam.IModelDefinition;
 import org.baratinage.ui.bam.IPriors;
 import org.baratinage.ui.bam.IStructuralError;
 import org.baratinage.ui.bam.PredictionExperiment;
-import org.baratinage.ui.bam.RunBamPost;
+// import org.baratinage.ui.bam.RunBamPost;
+import org.baratinage.ui.bam.RunBam;
 import org.baratinage.ui.baratin.gaugings.GaugingsDataset;
 import org.baratinage.ui.baratin.gaugings.GaugingsPlot;
+
 import org.baratinage.ui.container.RowColPanel;
+
 import org.baratinage.ui.lg.LgElement;
+
 import org.baratinage.ui.plot.Plot;
 import org.baratinage.ui.plot.PlotItem;
 import org.baratinage.ui.plot.PlotLine;
-import org.baratinage.utils.Calc;
-import org.baratinage.utils.ReadWriteZip;
 import org.baratinage.ui.plot.PlotBand;
 import org.baratinage.ui.plot.PlotContainer;
 import org.baratinage.ui.plot.PlotInfiniteBand;
 import org.baratinage.ui.plot.PlotInfiniteLine;
+
+import org.baratinage.utils.Calc;
+import org.baratinage.utils.ReadWriteZip;
 
 public class PosteriorRatingCurve extends RowColPanel implements ICalibratedModel, IMcmc {
 
@@ -65,7 +72,8 @@ public class PosteriorRatingCurve extends RowColPanel implements ICalibratedMode
 
     private CalibrationResult calibtrationResult;
 
-    private RunBamPost runBamPost;
+    // private RunBamPost runBamPost;
+    private RunBam runBam;
 
     public final JButton runBamButton;
     public final RowColPanel outdatedPanel;
@@ -114,17 +122,9 @@ public class PosteriorRatingCurve extends RowColPanel implements ICalibratedMode
 
         isCalibrated = false;
 
-        runBamPost = new RunBamPost();
+        runBam = new RunBam(modelDefinition, priors, structuralError, calibrationData, predictionConfigs);
 
-        runBamPost.configure(
-                App.BAM_RUN_DIR,
-                modelDefinition,
-                priors,
-                structuralError,
-                calibrationData,
-                predictionConfigs);
-
-        runBamPost.run();
+        runBam.run();
 
         firePropertyChange("bamHasRun", null, null);
 
@@ -139,29 +139,23 @@ public class PosteriorRatingCurve extends RowColPanel implements ICalibratedMode
         predictionConfigs[0] = new PredictionExperiment(
                 "maxpost",
                 false,
-                false);
-        predictionConfigs[0].setCalibrationModel(this);
-        predictionConfigs[0].setPredictionData(ratingCurveGrid);
+                false, this, ratingCurveGrid);
 
         predictionConfigs[1] = new PredictionExperiment(
                 "parametric_uncertainty",
                 true,
-                false);
-        predictionConfigs[1].setCalibrationModel(this);
-        predictionConfigs[1].setPredictionData(ratingCurveGrid);
+                false, this, ratingCurveGrid);
 
         predictionConfigs[2] = new PredictionExperiment(
                 "total_uncertainty",
                 true,
-                true);
-        predictionConfigs[2].setCalibrationModel(this);
-        predictionConfigs[2].setPredictionData(ratingCurveGrid);
+                true, this, ratingCurveGrid);
     }
 
     private void buildRatingCurvePlot() {
 
-        calibtrationResult = runBamPost.getCalibrationResult();
-        predictionResults = runBamPost.getPredictionResults();
+        calibtrationResult = runBam.getCalibrationResult();
+        predictionResults = runBam.getPredictionResults();
 
         int maxpostIndex = calibtrationResult.getMaxPostIndex();
         HashMap<String, EstimatedParameter> pars = calibtrationResult.getEsimatedParameters();
@@ -317,11 +311,11 @@ public class PosteriorRatingCurve extends RowColPanel implements ICalibratedMode
         return calibtrationResult;
     }
 
-    public String getBamRunZipFileName() {
-        if (runBamPost == null) {
+    public String getBamRunZipName() {
+        if (runBam == null) {
             return null;
         }
-        return runBamPost.getBamRunZipFileName();
+        return runBam.getBamRunZipName();
     }
 
     public RatingCurveStageGrid getRatingCurveStageGrid() {
@@ -329,27 +323,20 @@ public class PosteriorRatingCurve extends RowColPanel implements ICalibratedMode
     }
 
     // FIXME: general approach may be questionnable? think through. refactor?
-    public void setBamRunZipFileName(String bamRunZipFileName) {
+    public void setBamRunZipFileName(String bamRunZipName) {
 
-        File targetTempDir = Path.of(App.TEMP_DIR, bamRunZipFileName + "_unzip").toFile();
-        targetTempDir.mkdir();
-        System.out.println("Target dir = " + targetTempDir);
-        boolean unzipSuccess = ReadWriteZip.unzip(Path.of(App.TEMP_DIR, bamRunZipFileName).toString(),
-                targetTempDir.toString());
+        String bamRunUUID = bamRunZipName.substring(0, bamRunZipName.indexOf(".zip"));
+        File targetDir = Path.of(App.BAM_WORKSPACE, bamRunUUID).toFile();
+        targetDir.mkdir();
+        System.out.println("Target dir = " + targetDir);
+        boolean unzipSuccess = ReadWriteZip.unzip(Path.of(App.TEMP_DIR, bamRunZipName).toString(),
+                targetDir.toString());
         System.out.println("Unzip success = " + unzipSuccess);
-
         buildPredictionExperiments();
 
-        runBamPost = new RunBamPost(bamRunZipFileName);
-        runBamPost.configure(
-                targetTempDir.toString(),
-                modelDefinition,
-                priors,
-                structuralError,
-                calibrationData,
-                predictionConfigs);
+        runBam = new RunBam(bamRunUUID, modelDefinition, priors, structuralError, calibrationData, predictionConfigs);
 
-        runBamPost.readResultsFromWorkspace();
+        runBam.readResultsFromWorkspace();
         isCalibrated = true;
 
         buildRatingCurvePlot();

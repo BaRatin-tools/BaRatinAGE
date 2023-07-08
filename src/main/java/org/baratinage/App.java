@@ -20,6 +20,8 @@ public class App {
     public final static String TEMP_DIR = Path.of(System.getProperty("java.io.tmpdir"),
             "baratinage").toString();
 
+    public final static String BAM_WORKSPACE = "test/bam_workspace";
+
     public final static String BAM_RUN_DIR = "test/newTestWS";
 
     public final static String TEST_DIR = "test";

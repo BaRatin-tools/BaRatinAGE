@@ -10,17 +10,21 @@ import java.util.List;
 import javax.swing.JButton;
 
 import org.baratinage.App;
+
 import org.baratinage.jbam.Distribution;
 import org.baratinage.jbam.Parameter;
 import org.baratinage.jbam.PredictionConfig;
 import org.baratinage.jbam.PredictionResult;
 import org.baratinage.jbam.Distribution.DISTRIB;
+
 import org.baratinage.ui.bam.IModelDefinition;
 import org.baratinage.ui.bam.IPredictionData;
 import org.baratinage.ui.bam.IPriors;
 import org.baratinage.ui.bam.PriorPredictionExperiment;
-import org.baratinage.ui.bam.RunBamPrior;
+// import org.baratinage.ui.bam.RunBamPrior;
+import org.baratinage.ui.bam.RunBam;
 import org.baratinage.ui.commons.WarningAndActions;
+
 import org.baratinage.ui.container.GridPanel;
 import org.baratinage.ui.container.RowColPanel;
 
@@ -30,8 +34,9 @@ import org.baratinage.ui.plot.PlotInfiniteLine;
 import org.baratinage.ui.plot.PlotInfiniteBand;
 import org.baratinage.ui.plot.PlotItem;
 import org.baratinage.ui.plot.PlotLine;
-import org.baratinage.utils.ReadWriteZip;
 import org.baratinage.ui.plot.PlotBand;
+
+import org.baratinage.utils.ReadWriteZip;
 
 public class PriorRatingCurve extends GridPanel {
 
@@ -45,7 +50,8 @@ public class PriorRatingCurve extends GridPanel {
         private PredictionResult[] predictionResults;
         private boolean hasResults = false;
 
-        private RunBamPrior runBamPrior;
+        // private RunBamPrior runBamPrior;
+        private RunBam runBam;
         private RowColPanel outdatedPanel;
 
         // FIXME: this has a few features in common with PosteriorRatingCurve
@@ -77,6 +83,7 @@ public class PriorRatingCurve extends GridPanel {
                 setColWeight(0, 1);
         }
 
+        @Deprecated
         public void setWarnings(WarningAndActions[] warnings) {
                 outdatedPanel.clear();
                 for (WarningAndActions w : warnings) {
@@ -90,18 +97,21 @@ public class PriorRatingCurve extends GridPanel {
 
                         buildPriorPredictionExperiments();
 
-                        runBamPrior = new RunBamPrior();
-
-                        runBamPrior.configure(
-                                        App.BAM_RUN_DIR,
-                                        modelDefinitionProvider,
+                        runBam = new RunBam(modelDefinitionProvider,
                                         priorsProvider,
+                                        null, null,
                                         predictionConfigs);
 
-                        runBamPrior.run();
+                        // runBam.configure(
+                        // App.BAM_RUN_DIR,
+                        // modelDefinitionProvider,
+                        // priorsProvider,
+                        // predictionConfigs);
+
+                        runBam.run();
                         firePropertyChange("bamHasRun", null, null);
 
-                        predictionResults = runBamPrior.getPredictionResults();
+                        predictionResults = runBam.getPredictionResults();
                         hasResults = true;
 
                         buildRatingCurvePlot();
@@ -113,7 +123,7 @@ public class PriorRatingCurve extends GridPanel {
         }
 
         private void buildRatingCurvePlot() {
-                if (runBamPrior == null || priorsProvider == null || predictionConfigs == null) {
+                if (runBam == null || priorsProvider == null || predictionConfigs == null) {
                         return;
                 }
 
@@ -136,7 +146,7 @@ public class PriorRatingCurve extends GridPanel {
                         }
                 }
 
-                PredictionResult[] pprs = runBamPrior.getPredictionResults();
+                PredictionResult[] pprs = runBam.getPredictionResults();
                 buildRatingCurvePlot(predictionConfigs[0].getPredictionConfig(), pprs[1], pprs[0], transitionStages);
         }
 
@@ -198,14 +208,13 @@ public class PriorRatingCurve extends GridPanel {
         private void buildPriorPredictionExperiments() {
                 int nReplicates = 500;
                 PriorPredictionExperiment ppeMaxpost = new PriorPredictionExperiment("maxpost",
-                                false, nReplicates);
-                ppeMaxpost.setModelDefintionProvider(modelDefinitionProvider);
-                ppeMaxpost.setPredictionDataProvider(predictionDataProvider);
+                                false, nReplicates,
+                                modelDefinitionProvider, predictionDataProvider);
+
                 PriorPredictionExperiment ppeParamUncertainty = new PriorPredictionExperiment(
                                 "parametricUncertainty",
-                                true, nReplicates);
-                ppeParamUncertainty.setModelDefintionProvider(modelDefinitionProvider);
-                ppeParamUncertainty.setPredictionDataProvider(predictionDataProvider);
+                                true, nReplicates,
+                                modelDefinitionProvider, predictionDataProvider);
 
                 predictionConfigs = new PriorPredictionExperiment[] {
                                 ppeMaxpost,
@@ -239,34 +248,38 @@ public class PriorRatingCurve extends GridPanel {
                 }
         }
 
-        public String getBamRunZipFileName() {
-                if (runBamPrior == null) {
+        public String getBamRunZipName() {
+                if (runBam == null) {
                         return null;
                 }
-                return runBamPrior.getBamRunZipFileName();
+                return runBam.getBamRunZipName();
         }
 
         // FIXME: general approach may be questionnable? think through. refactor?
-        public void setBamRunZipFileName(String bamRunZipFileName) {
+        public void setBamRunZipName(String bamRunZipName) {
 
-                if (bamRunZipFileName == null) {
+                if (bamRunZipName == null) {
                         System.out.println("No prior rating curve computed...");
                         return;
                 }
 
-                File targetTempDir = Path.of(App.TEMP_DIR, bamRunZipFileName + "_unzip").toFile();
-                targetTempDir.mkdir();
-                System.out.println("Target dir = " + targetTempDir);
-                boolean unzipSuccess = ReadWriteZip.unzip(Path.of(App.TEMP_DIR, bamRunZipFileName).toString(),
-                                targetTempDir.toString());
+                String bamRunUUID = bamRunZipName.substring(0, bamRunZipName.indexOf(".zip"));
+                File targetDir = Path.of(App.BAM_WORKSPACE, bamRunUUID).toFile();
+                targetDir.mkdir();
+                System.out.println("Target dir = " + targetDir);
+                boolean unzipSuccess = ReadWriteZip.unzip(Path.of(App.TEMP_DIR, bamRunZipName).toString(),
+                                targetDir.toString());
                 System.out.println("Unzip success = " + unzipSuccess);
 
                 buildPriorPredictionExperiments();
 
-                runBamPrior = new RunBamPrior(bamRunZipFileName);
-                runBamPrior.configure(targetTempDir.toString(),
-                                modelDefinitionProvider, priorsProvider, predictionConfigs);
-                runBamPrior.readResultsFromWorkspace();
+                runBam = new RunBam(bamRunUUID,
+                                modelDefinitionProvider, priorsProvider,
+                                null, null,
+                                predictionConfigs);
+                // runBam.configure(targetTempDir.toString(),
+                // modelDefinitionProvider, priorsProvider, predictionConfigs);
+                runBam.readResultsFromWorkspace();
 
                 hasResults = true;
 

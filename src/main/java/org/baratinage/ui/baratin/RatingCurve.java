@@ -217,7 +217,7 @@ public class RatingCurve extends BamItem implements ICalibratedModel, IMcmc, Bam
 
     @Override
     public String[] getTempDataFileNames() {
-        String priorRatingCurveZipFileName = posteriorRatingCurve.getBamRunZipFileName();
+        String priorRatingCurveZipFileName = posteriorRatingCurve.getBamRunZipName();
         return priorRatingCurveZipFileName == null ? new String[] {} : new String[] { priorRatingCurveZipFileName };
     }
 
@@ -238,7 +238,7 @@ public class RatingCurve extends BamItem implements ICalibratedModel, IMcmc, Bam
 
         json.put("stageGridConfig", jsonStageGridConfig);
 
-        json.put("bamRunZipFileName", posteriorRatingCurve.getBamRunZipFileName());
+        json.put("bamRunZipFileName", posteriorRatingCurve.getBamRunZipName());
 
         json.put("jsonStringBackup", jsonStringBackup);
         return json;

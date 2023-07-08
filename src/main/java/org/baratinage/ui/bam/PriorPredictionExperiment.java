@@ -5,40 +5,32 @@ import org.baratinage.jbam.PredictionInput;
 import org.baratinage.jbam.PredictionOutput;
 import org.baratinage.jbam.PredictionResult;
 
-public class PriorPredictionExperiment implements IPriorPredictionExperiment {
+public class PriorPredictionExperiment implements IPredictionExperiment {
 
-    private IModelDefinition modelDefinitionProvider;
-    private IPredictionData predictionDataProvider;
+    private final IModelDefinition modelDefinition;
+    private final IPredictionData predictionData;
+    private final String name;
+    private final boolean propageteParametricUncertainty;
+    private final int nReplcates;
 
-    private String name;
-    private boolean propageteParametricUncertainty;
-    private int nReplcates;
-
-    public PriorPredictionExperiment(String name, boolean propageteParametricUncertainty, int nReplcates) {
+    public PriorPredictionExperiment(String name, boolean propageteParametricUncertainty, int nReplcates,
+            IModelDefinition modelDefinition, IPredictionData predictionData) {
         this.name = name;
         this.propageteParametricUncertainty = propageteParametricUncertainty;
         this.nReplcates = nReplcates;
-    }
-
-    @Override
-    public void setModelDefintionProvider(IModelDefinition modelDefinitionProvider) {
-        this.modelDefinitionProvider = modelDefinitionProvider;
-    }
-
-    @Override
-    public void setPredictionDataProvider(IPredictionData predictionDataProvider) {
-        this.predictionDataProvider = predictionDataProvider;
+        this.modelDefinition = modelDefinition;
+        this.predictionData = predictionData;
     }
 
     @Override
     public PredictionConfig getPredictionConfig() {
 
-        PredictionInput[] predInputs = predictionDataProvider != null
-                ? predictionDataProvider.getPredictionInputs()
+        PredictionInput[] predInputs = predictionData != null
+                ? predictionData.getPredictionInputs()
                 : new PredictionInput[0];
 
-        String[] outputNames = modelDefinitionProvider != null
-                ? modelDefinitionProvider.getOutputNames()
+        String[] outputNames = modelDefinition != null
+                ? modelDefinition.getOutputNames()
                 : new String[0];
 
         PredictionOutput[] predOutputs = new PredictionOutput[outputNames.length];
@@ -72,6 +64,11 @@ public class PriorPredictionExperiment implements IPriorPredictionExperiment {
     public PredictionResult getPredictionResult() {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'getPredictionResult'");
+    }
+
+    @Override
+    public boolean isPriorPrediction() {
+        return true;
     }
 
 }
