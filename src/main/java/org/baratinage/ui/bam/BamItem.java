@@ -144,6 +144,8 @@ abstract public class BamItem extends GridPanel {
         String jsonStringA = jsonA.toString();
         String jsonStringB = jsonB.toString();
 
+        printJsonStrings(jsonStringA, jsonStringB);
+
         return jsonStringA.equals(jsonStringB);
     }
 
@@ -153,6 +155,14 @@ abstract public class BamItem extends GridPanel {
 
     public boolean isMatchingWith(JSONObject json, String[] keys, boolean exclude) {
         return areMatching(toJSON(), json, keys, exclude);
+    }
+
+    private static void printJsonStrings(String jsonA, String jsonB) {
+        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+        System.out.println(jsonA);
+        System.out.println("------------------------------------------------");
+        System.out.println(jsonB);
+        System.out.println("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
     }
 
     private final List<ChangeListener> changeListeners = new ArrayList<>();
