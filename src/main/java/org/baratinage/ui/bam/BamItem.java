@@ -178,11 +178,6 @@ abstract public class BamItem extends GridPanel {
         return clone(uuid);
     }
 
-    public void addTimeStampToName() {
-        String currentName = bamItemNameField.getText();
-        bamItemNameField.setText(currentName + " (" + Misc.getTimeStamp() + ")");
-    }
-
     public void setCopyName() {
         String oldName = bamItemNameField.getText();
         String newName = Lg.getText("ui", "copy_of");
