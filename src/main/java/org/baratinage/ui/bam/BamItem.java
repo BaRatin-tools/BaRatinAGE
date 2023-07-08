@@ -17,7 +17,6 @@ import org.baratinage.ui.container.GridPanel;
 import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.ui.lg.Lg;
 import org.baratinage.ui.lg.LgElement;
-import org.baratinage.utils.Misc;
 import org.json.JSONObject;
 
 abstract public class BamItem extends GridPanel {

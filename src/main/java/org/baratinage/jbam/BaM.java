@@ -39,12 +39,14 @@ public class BaM {
             RunOptions runOptions,
             CalibrationResult calibrationResult,
             PredictionResult[] predictionResults) {
+
         this.calibrationConfig = calibrationConfig;
-        this.predictionConfigs = predictionConfigs; // FIXME: should check that there's no conflicting names in the
-                                                    // variables!
+        // FIXME: should check that there's no conflicting names in the variables!
+        this.predictionConfigs = predictionConfigs;
         this.runOptions = runOptions;
         this.calibrationResult = calibrationResult;
         this.predictionResults = predictionResults;
+
     }
 
     public CalibrationConfig getCalibrationConfig() {
@@ -81,7 +83,6 @@ public class BaM {
                 }
             }
         }
-
     }
 
     public void toFiles(String workspace, String exeDir) {
