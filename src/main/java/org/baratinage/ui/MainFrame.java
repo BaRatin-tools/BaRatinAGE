@@ -79,7 +79,7 @@ public class MainFrame extends JFrame {
         fileMenu.addSeparator();
 
         JMenuItem closeMenuItem = new JMenuItem();
-        LgElement.registerButton(saveProjectMenuItem, "ui", "exit");
+        LgElement.registerButton(closeMenuItem, "ui", "exit");
         closeMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q, KeyEvent.CTRL_DOWN_MASK));
         closeMenuItem.addActionListener((e) -> {
             close();
