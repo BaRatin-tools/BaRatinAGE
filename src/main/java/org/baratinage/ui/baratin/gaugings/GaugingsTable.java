@@ -9,6 +9,8 @@ import javax.swing.table.JTableHeader;
 import javax.swing.table.TableColumnModel;
 
 import org.baratinage.ui.container.RowColPanel;
+import org.baratinage.ui.lg.Lg;
+import org.baratinage.ui.lg.LgElement;
 
 public class GaugingsTable extends RowColPanel {
 
@@ -32,6 +34,13 @@ public class GaugingsTable extends RowColPanel {
 
         appendChild(scrollpane);
 
+        Lg.register(new LgElement<GaugingsTable>(this) {
+            @Override
+            public void setTranslatedText() {
+                setHeaders();
+            }
+        });
+
     }
 
     public void set(GaugingsDataset gaugingDataset) {
@@ -43,10 +52,11 @@ public class GaugingsTable extends RowColPanel {
     public void setHeaders() {
         JTableHeader tableHeader = table.getTableHeader();
         TableColumnModel tableColModel = tableHeader.getColumnModel();
-        tableColModel.getColumn(0).setHeaderValue("Hauteur d'eau");
-        tableColModel.getColumn(1).setHeaderValue("Débit");
-        tableColModel.getColumn(2).setHeaderValue("Incertitude (%)");
-        tableColModel.getColumn(3).setHeaderValue("Actif ?");
+        tableColModel.getColumn(0).setHeaderValue(Lg.getText("ui", "stage_level"));
+        tableColModel.getColumn(1).setHeaderValue(Lg.getText("ui", "discharge"));
+        tableColModel.getColumn(2).setHeaderValue(Lg.getText("ui", "uncertainty_percent"));
+        tableColModel.getColumn(3).setHeaderValue(Lg.getText("ui", "active_gauging"));
+        tableHeader.updateUI();
     }
 
     public AbstractTableModel getTableModel() {

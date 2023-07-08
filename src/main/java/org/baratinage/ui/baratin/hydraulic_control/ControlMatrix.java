@@ -11,6 +11,8 @@ import javax.swing.JScrollPane;
 
 import org.baratinage.ui.container.GridPanel;
 import org.baratinage.ui.container.RowColPanel;
+import org.baratinage.ui.lg.Lg;
+import org.baratinage.ui.lg.LgElement;
 
 public class ControlMatrix extends RowColPanel {
 
@@ -25,7 +27,7 @@ public class ControlMatrix extends RowColPanel {
 
         RowColPanel buttonsPanel = new RowColPanel(AXIS.COL, ALIGN.STRETCH);
 
-        addControlButton = new JButton("Ajouter un contrôle");
+        addControlButton = new JButton(" > Ajouter un contrôle");
         addControlButton.addActionListener((e) -> {
             System.out.println("Add control");
             addControl();
@@ -33,7 +35,7 @@ public class ControlMatrix extends RowColPanel {
 
         buttonsPanel.appendChild(addControlButton);
 
-        removeControlButton = new JButton("Supprimer le dernier contrôle");
+        removeControlButton = new JButton(" > Supprimer le dernier contrôle");
         removeControlButton.addActionListener((e) -> {
             System.out.println("Remove control");
             removeControl();
@@ -48,7 +50,8 @@ public class ControlMatrix extends RowColPanel {
         controlGridScrollPane.setBorder(BorderFactory.createEmptyBorder());
         appendChild(controlGridScrollPane, 1);
 
-        reversedOrderCheckBox = new JCheckBox("Inverser l'ordre des segments");
+        reversedOrderCheckBox = new JCheckBox(" > Inverser l'ordre des segments");
+        LgElement.registerButton(reversedOrderCheckBox, "ui", "invert_control_matrix");
         reversedOrderCheckBox.setSelected(true);
         reversedOrderCheckBox.addItemListener((e) -> {
             updateControlMatrixView();
@@ -194,8 +197,20 @@ public class ControlMatrix extends RowColPanel {
             }
         }
         controlCheckBoxPanel.updateUI();
-        addControlButton.setText("Ajouter un contrôle  (" + "Contrôle #" + (nCtrl + 1) + ")");
-        removeControlButton.setText("Supprimer le dernier contrôle (" + "Contrôle #" + nCtrl + ")");
+        addControlButton.setText(" > Ajouter un contrôle  (" + "Contrôle #" + (nCtrl + 1) + ")");
+        removeControlButton.setText(" > Supprimer le dernier contrôle (" + "Contrôle #" + nCtrl + ")");
+        Lg.register(new LgElement<ControlMatrix>(this) {
+            @Override
+            public void setTranslatedText() {
+                String ctrlTemplate = Lg.getText("ui", "control_number");
+                String addCtrlText = Lg.getText("ui", "add_control");
+                addCtrlText = Lg.format(addCtrlText, Lg.format(ctrlTemplate, nCtrl + 1));
+                addControlButton.setText(addCtrlText);
+                String delCtrlText = Lg.getText("ui", "delete_last_control");
+                delCtrlText = Lg.format(delCtrlText, Lg.format(ctrlTemplate, nCtrl));
+                removeControlButton.setText(delCtrlText);
+            }
+        });
         removeControlButton.setEnabled(nCtrl > 1);
     }
 

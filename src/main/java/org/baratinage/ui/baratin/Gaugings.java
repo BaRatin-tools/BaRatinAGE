@@ -18,6 +18,8 @@ import org.baratinage.ui.baratin.gaugings.GaugingsImporter;
 import org.baratinage.ui.baratin.gaugings.GaugingsPlot;
 import org.baratinage.ui.baratin.gaugings.GaugingsTable;
 import org.baratinage.ui.container.RowColPanel;
+import org.baratinage.ui.lg.Lg;
+import org.baratinage.ui.lg.LgElement;
 import org.baratinage.ui.plot.PlotContainer;
 import org.baratinage.utils.Misc;
 import org.baratinage.ui.bam.BamItemType;
@@ -43,9 +45,11 @@ public class Gaugings extends BamItem implements ICalibrationData {
         plotPanel = new RowColPanel();
         content.setRightComponent(plotPanel);
 
-        importedDataSetSourceLabel = new JLabel("Jeu de jaugeages vide.");
+        importedDataSetSourceLabel = new JLabel();
+        LgElement.registerLabel(importedDataSetSourceLabel, "ui", "empty_gauging_set");
 
-        JButton importDataButton = new JButton("Importer un jeu de jaugeage");
+        JButton importDataButton = new JButton();
+        LgElement.registerButton(importDataButton, "ui", "import_gauging_set");
         importDataButton.addActionListener((e) -> {
             GaugingsImporter gaugingsImporter = new GaugingsImporter();
             gaugingsImporter.showDialog();
@@ -71,9 +75,18 @@ public class Gaugings extends BamItem implements ICalibrationData {
 
     public void updateTable() {
         gaugingsTable.set(gaugingDataset);
-        String desc = String.format("Jeu de jaugeages importé depuis le fichier '%s'",
-                gaugingDataset.getDatasetName());
-        importedDataSetSourceLabel.setText(desc);
+        // String desc = String.format("Jeu de jaugeages importé depuis le fichier
+        // '%s'",
+        // gaugingDataset.getDatasetName());
+        // importedDataSetSourceLabel.setText(desc);
+        Lg.register(new LgElement<JLabel>(importedDataSetSourceLabel) {
+            @Override
+            public void setTranslatedText() {
+                String text = Lg.getText("ui", "gauging_set_imported_from", true);
+                text = Lg.format(text, gaugingDataset.getDatasetName());
+                object.setText(text);
+            }
+        });
     }
 
     private void setPlot() {

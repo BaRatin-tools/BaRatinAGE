@@ -2,10 +2,6 @@ package org.baratinage.ui.baratin.gaugings;
 
 import java.awt.Component;
 import java.awt.Dimension;
-// import java.awt.event.ActionEvent;
-// import java.awt.event.ActionListener;
-// import java.util.ArrayList;
-// import java.util.List;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,6 +17,7 @@ import org.baratinage.ui.component.DataFileImporter;
 import org.baratinage.ui.component.ImportedDataset;
 import org.baratinage.ui.container.GridPanel;
 import org.baratinage.ui.container.RowColPanel;
+import org.baratinage.ui.lg.Lg;
 
 public class GaugingsImporter extends RowColPanel {
 
@@ -46,7 +43,7 @@ public class GaugingsImporter extends RowColPanel {
         RowColPanel actionPanel = new RowColPanel();
         actionPanel.setPadding(5);
         actionPanel.setGap(5);
-        JButton validateButton = new JButton("Importer");
+        JButton validateButton = new JButton(Lg.getText("ui", "import"));
         validateButton.addActionListener((e) -> {
             ImportedDataset rawDataset = dataFileImporter.getDataset();
             int hIndex = hColumn.getIndexOf(hColumn.getSelectedItem());
@@ -62,7 +59,7 @@ public class GaugingsImporter extends RowColPanel {
             dialog.setVisible(false);
 
         });
-        JButton cancelButton = new JButton("Annuler");
+        JButton cancelButton = new JButton(Lg.getText("ui", "cancel"));
         cancelButton.addActionListener((e) -> {
             dialog.setVisible(false);
         });
@@ -114,7 +111,7 @@ public class GaugingsImporter extends RowColPanel {
         dialog = new JDialog(App.MAIN_FRAME, true);
         dialog.setContentPane(this);
 
-        dialog.setTitle("Importer un jeu de jaugeages");
+        dialog.setTitle(Lg.getText("ui", "import_gauging_set"));
         dialog.setMinimumSize(new Dimension(600, 400));
         dialog.setPreferredSize(new Dimension(900, 600));
 
@@ -182,19 +179,19 @@ public class GaugingsImporter extends RowColPanel {
         panel.setPadding(5);
         panel.setGap(5);
 
-        JLabel hLabel = new JLabel("Colonne des hauteurs d'eau: ");
+        JLabel hLabel = new JLabel(Lg.getText("ui", "stage_level_column"));
         JComboBox<DataColumnInfo> hComboBox = new JComboBox<>(hColumn);
 
         panel.insertChild(hLabel, 0, 0);
         panel.insertChild(hComboBox, 1, 0);
 
-        JLabel qLabel = new JLabel("Colonne des débits: ");
+        JLabel qLabel = new JLabel(Lg.getText("ui", "discharge_column"));
         JComboBox<DataColumnInfo> qComboBox = new JComboBox<>(qColumn);
 
         panel.insertChild(qLabel, 0, 1);
         panel.insertChild(qComboBox, 1, 1);
 
-        JLabel uqLabel = new JLabel("Colonne des incertiudes de débits: ");
+        JLabel uqLabel = new JLabel(Lg.getText("ui", "discharge_uncertainty_column"));
         JComboBox<DataColumnInfo> uqComboBox = new JComboBox<>(uqColumn);
 
         panel.insertChild(uqLabel, 0, 2);

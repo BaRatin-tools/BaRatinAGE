@@ -82,7 +82,7 @@ public class BaratinProject extends BamProject {
         JMenu baratinMenu = App.MAIN_FRAME.baratinMenu;
 
         JMenuItem menuBtnNewHydraulicConfig = new JMenuItem();
-        menuBtnNewHydraulicConfig.setText("Créer une nouvelle configuration hydraulique");
+        LgElement.registerButton(menuBtnNewHydraulicConfig, "ui", "create_hydraulic_config");
         menuBtnNewHydraulicConfig.setIcon(addHydraulicConfigIcon);
         menuBtnNewHydraulicConfig.addActionListener(e -> {
             addHydraulicConfig();
@@ -96,7 +96,7 @@ public class BaratinProject extends BamProject {
         toolBar.add(btnNewHydraulicConfig);
 
         JMenuItem menuBtnNewGaugings = new JMenuItem();
-        menuBtnNewGaugings.setText("Créer un nouveau jeu de jaugeages");
+        LgElement.registerButton(menuBtnNewGaugings, "ui", "create_gaugings");
         menuBtnNewGaugings.setIcon(addGaugingsIcon);
         menuBtnNewGaugings.addActionListener(e -> {
             addGaugings();
@@ -110,7 +110,7 @@ public class BaratinProject extends BamProject {
         toolBar.add(btnNewGaugings);
 
         JMenuItem menuBtnNewStructErrorModel = new JMenuItem();
-        menuBtnNewStructErrorModel.setText("Créer un nouveau modèle d'erreur structurelle");
+        LgElement.registerButton(menuBtnNewStructErrorModel, "ui", "create_structural_error_model");
         menuBtnNewStructErrorModel.setIcon(addStructuralErrorIcon);
         menuBtnNewStructErrorModel.addActionListener(e -> {
             addStructuralErrorModel();
@@ -124,7 +124,7 @@ public class BaratinProject extends BamProject {
         toolBar.add(btnNewStructErrorModel);
 
         JMenuItem menuBtnNewRatingCurve = new JMenuItem();
-        menuBtnNewRatingCurve.setText("Créer une nouvelle courbe de tarage");
+        LgElement.registerButton(menuBtnNewRatingCurve, "ui", "create_rating_curve");
         menuBtnNewRatingCurve.setIcon(addRatingCurveIcon);
         menuBtnNewRatingCurve.addActionListener(e -> {
             addRatingCurve();
@@ -142,10 +142,8 @@ public class BaratinProject extends BamProject {
     }
 
     public void addDefaultItems() {
-        BamItem sem = addStructuralErrorModel();
-        sem.bamItemNameField.setText("par défault");
-        BamItem hc = addHydraulicConfig();
-        hc.bamItemNameField.setText("par défaut");
+        addStructuralErrorModel();
+        addHydraulicConfig();
     }
 
     private void setupExplorer() {

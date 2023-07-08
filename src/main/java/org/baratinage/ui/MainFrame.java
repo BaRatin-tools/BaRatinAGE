@@ -45,10 +45,12 @@ public class MainFrame extends JFrame {
 
         mainMenuBar = new JMenuBar();
 
-        JMenu fileMenu = new JMenu("Fichier");
+        JMenu fileMenu = new JMenu();
+        LgElement.registerButton(fileMenu, "ui", "files");
         mainMenuBar.add(fileMenu);
 
         JMenuItem newProjectMenuItem = new JMenuItem();
+        LgElement.registerButton(newProjectMenuItem, "ui", "create_baratin_project");
         newProjectMenuItem.setText("Nouveau projet BaRatin");
         newProjectMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, KeyEvent.CTRL_DOWN_MASK));
         newProjectMenuItem.addActionListener((e) -> {
@@ -57,7 +59,7 @@ public class MainFrame extends JFrame {
         fileMenu.add(newProjectMenuItem);
 
         JMenuItem openProjectMenuItem = new JMenuItem();
-        openProjectMenuItem.setText("Ouvrir un projet");
+        LgElement.registerButton(openProjectMenuItem, "ui", "open_project");
         openProjectMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, KeyEvent.CTRL_DOWN_MASK));
         openProjectMenuItem.addActionListener((e) -> {
             loadProject();
@@ -65,7 +67,7 @@ public class MainFrame extends JFrame {
         fileMenu.add(openProjectMenuItem);
 
         JMenuItem saveProjectMenuItem = new JMenuItem();
-        saveProjectMenuItem.setText("Sauvegarder");
+        LgElement.registerButton(saveProjectMenuItem, "ui", "save_project_as");
         saveProjectMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_DOWN_MASK));
         saveProjectMenuItem.addActionListener((e) -> {
             if (currentProject != null) {
@@ -77,7 +79,7 @@ public class MainFrame extends JFrame {
         fileMenu.addSeparator();
 
         JMenuItem closeMenuItem = new JMenuItem();
-        closeMenuItem.setText("Quitter");
+        LgElement.registerButton(saveProjectMenuItem, "ui", "exit");
         closeMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q, KeyEvent.CTRL_DOWN_MASK));
         closeMenuItem.addActionListener((e) -> {
             close();
@@ -133,12 +135,20 @@ public class MainFrame extends JFrame {
                 System.out.println("Swtiching language to " + lgKey);
                 Lg.setLocale(lgKey);
                 updateLanguageSwticherMenu();
-                validate();
+                // FIXME: how to recursively update the whole Frame?
             });
             switchLanguageMenuItem.add(item);
         }
         updateLanguageSwticherMenu();
         return switchLanguageMenuItem;
+    }
+
+    public void updateUI() {
+        projectPanel.updateUI();
+        if (currentProject != null) {
+            currentProject.updateUI();
+        }
+        mainMenuBar.updateUI();
     }
 
     public void updateLanguageSwticherMenu() {
@@ -178,11 +188,11 @@ public class MainFrame extends JFrame {
 
             @Override
             public String getDescription() {
-                return "Fichier BaRatinAGE (.bam)";
+                return Lg.getText("ui", "baratinage_file");
             }
 
         });
-        fileChooser.setDialogTitle("Ouvrir un projet");
+        fileChooser.setDialogTitle(Lg.getText("ui", "open_project"));
         fileChooser.setAcceptAllFileFilterUsed(false);
         if (fileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
             String fullFilePath = fileChooser.getSelectedFile().getAbsolutePath();
