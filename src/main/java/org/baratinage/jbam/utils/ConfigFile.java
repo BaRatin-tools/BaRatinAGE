@@ -1,5 +1,6 @@
 package org.baratinage.jbam.utils;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -111,8 +112,55 @@ public class ConfigFile {
         return output;
     }
 
+    static private String[] splitString(String str) {
+        String[] splittedStr = str.split(", ");
+        int n = splittedStr.length;
+        String[] strArray = new String[n];
+        for (int k = 0; k < n; k++) {
+            strArray[k] = unquoteString(splittedStr[k]);
+        }
+        return strArray;
+    }
+
     static private String quoteString(String str) {
         return String.format("\"%s\"", str);
+    }
+
+    static private String unquoteString(String str) {
+        return (str.startsWith("\"") && str.endsWith("\"")) ? str.substring(1, str.length() - 1) : str;
+    }
+
+    public static ConfigFile readConfigFile(String filePathFirst, String... filePathMore) {
+        String configFilePath = Path.of(filePathFirst, filePathMore).toString();
+        List<String> lines = new ArrayList<>();
+        try {
+            BufferedReader reader = Read.createBufferedReader(configFilePath, false);
+            String line = reader.readLine();
+            while (line != null) {
+                lines.add(line);
+                line = reader.readLine();
+            }
+
+            reader.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+
+        ConfigFile configFile = new ConfigFile();
+        for (String line : lines) {
+            String[] splittedLine = line.split("!");
+            if (splittedLine.length == 2) {
+                configFile.items.add(
+                        new ValueCommentPair(
+                                splittedLine[0].trim(),
+                                splittedLine[1].trim()));
+            } else {
+                System.out.println("Ignoring line '" + line + "' ...");
+            }
+
+        }
+        return configFile;
     }
 
     // --------------------------------------------------------------
@@ -145,6 +193,16 @@ public class ConfigFile {
         addItem(value, comment, false);
     }
 
+    public String getString(int index) {
+        ValueCommentPair item = items.get(index);
+        return unquoteString(item.value);
+    }
+
+    public String[] getStringArray(int index) {
+        ValueCommentPair item = items.get(index);
+        return splitString(item.value);
+    }
+
     // --------------------------------------------------------------
     // Boolean
     // --------------------------------------------------------------
@@ -168,6 +226,32 @@ public class ConfigFile {
 
     public void addItem(boolean[] value) {
         addItem(value, "");
+    }
+
+    private static boolean toBoolean(String value) {
+        if (value.equals(".true.")) {
+            return true;
+        } else if (value.equals(".false.")) {
+            return false;
+        } else {
+            System.err.println("Value is not one of '.true.' or '.false.' as expected! Returning false.");
+            return false;
+        }
+    }
+
+    public boolean getBoolean(int index) {
+        ValueCommentPair item = items.get(index);
+        return toBoolean(item.value);
+    }
+
+    public boolean[] getBooleanArray(int index) {
+        String[] strArray = getStringArray(index);
+        int n = strArray.length;
+        boolean[] booleanArray = new boolean[n];
+        for (int k = 0; k < n; k++) {
+            booleanArray[k] = toBoolean(strArray[k]);
+        }
+        return booleanArray;
     }
 
     // --------------------------------------------------------------
@@ -195,6 +279,31 @@ public class ConfigFile {
         addItem(value, "");
     }
 
+    private static int toInt(String value) {
+        int intValue = -9999;
+        try {
+            intValue = Integer.parseInt(value);
+        } catch (Exception e) {
+            System.err.println("Value cannot be parsed to integer! Returning -9999.");
+        }
+        return intValue;
+    }
+
+    public int getInt(int index) {
+        ValueCommentPair item = items.get(index);
+        return toInt(item.value);
+    }
+
+    public int[] getIntArray(int index) {
+        String[] strArray = getStringArray(index);
+        int n = strArray.length;
+        int[] intArray = new int[n];
+        for (int k = 0; k < n; k++) {
+            intArray[k] = toInt(strArray[k]);
+        }
+        return intArray;
+    }
+
     // --------------------------------------------------------------
     // double
     // --------------------------------------------------------------
@@ -214,6 +323,31 @@ public class ConfigFile {
 
     public void addItem(double value) {
         addItem(value, "");
+    }
+
+    private static double toDouble(String value) {
+        double doubleValue = -9999;
+        try {
+            doubleValue = Double.parseDouble(value);
+        } catch (Exception e) {
+            System.err.println("Value cannot be parsed to double! Returning -9999.");
+        }
+        return doubleValue;
+    }
+
+    public double getDouble(int index) {
+        ValueCommentPair item = items.get(index);
+        return toDouble(item.value);
+    }
+
+    public double[] getDoubleArray(int index) {
+        String[] strArray = getStringArray(index);
+        int n = strArray.length;
+        double[] doubleArray = new double[n];
+        for (int k = 0; k < n; k++) {
+            doubleArray[k] = toDouble(strArray[k]);
+        }
+        return doubleArray;
     }
 
 }

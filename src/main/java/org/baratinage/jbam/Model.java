@@ -5,15 +5,16 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.baratinage.jbam.Distribution.DISTRIB;
 import org.baratinage.jbam.utils.ConfigFile;
 import org.baratinage.jbam.utils.Write;
 
 public class Model {
-    private String modelId;
-    private int nInput;
-    private int nOutput;
-    private Parameter[] parameters;
-    private String xTra;
+    public final String modelId;
+    public final int nInput;
+    public final int nOutput;
+    public final Parameter[] parameters;
+    public final String xTra;
 
     public Model(String modelId, int nInput, int nOutput, Parameter[] parameters, String xTra) {
         this.modelId = modelId;
@@ -21,10 +22,6 @@ public class Model {
         this.nOutput = nOutput;
         this.parameters = parameters;
         this.xTra = xTra;
-    }
-
-    public Parameter[] getParameters() {
-        return this.parameters;
     }
 
     public void toFiles(String workspace) {
@@ -68,5 +65,33 @@ public class Model {
         str.add("--- xTra content end ---");
 
         return String.join("\n", str);
+    }
+
+    // FIXME: this was an attempt at creating jbam objects from an existing
+    // workspace. This works fine in the case of jbam.Model, however, it is not
+    // possible for other objects such as jbam.ModelOutput which require the BaM
+    // master file.
+    public static Model buildModel(String workspace) {
+        ConfigFile configFile = ConfigFile.readConfigFile(workspace, ConfigFile.CONFIG_MODEL);
+
+        String modelId = configFile.getString(0);
+        int nX = configFile.getInt(1);
+        int nY = configFile.getInt(2);
+        int nPar = configFile.getInt(3);
+
+        Parameter[] parameters = new Parameter[nPar];
+        for (int k = 0; k < nPar; k++) {
+            String distribName = configFile.getString(3 + k * 4 + 3);
+            double[] distribParams = configFile.getDoubleArray(3 + k * 4 + 4);
+            Distribution distribution = new Distribution(
+                    DISTRIB.getDistribFromName(distribName),
+                    distribParams);
+            parameters[k] = new Parameter(
+                    configFile.getString(3 + k * 4 + 1),
+                    configFile.getDouble(3 + k * 4 + 2),
+                    distribution);
+        }
+
+        return new Model(modelId, nX, nY, parameters, workspace);
     }
 }
