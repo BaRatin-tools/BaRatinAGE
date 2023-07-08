@@ -1,6 +1,7 @@
 package org.baratinage.utils;
 
 import java.io.File;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
@@ -21,13 +22,22 @@ public class Misc {
         }
 
         if (File.separatorChar == '/') {
-            return name.replaceAll("[\u0000/]+", "").trim();
+            name = name.replaceAll("[\u0000/]+", "").trim();
+        } else {
+            name = name.replaceAll("[\u0000-\u001f<>:\"/\\\\|?*\u007f]+", "").trim();
         }
+        return name;
+    }
 
-        return name.replaceAll("[\u0000-\u001f<>:\"/\\\\|?*\u007f]+", "").trim();
+    public static String getTimeStamp(String format) {
+        return new SimpleDateFormat(format).format(new java.util.Date());
     }
 
     public static String getTimeStamp() {
+        return getTimeStamp("yyyyMMdd_HHmmss");
+    }
+
+    public static String getLocalTimeStamp() {
         Locale l = Lg.getLocale();
         LocalDateTime date = LocalDateTime.now();
         // SHORT format style omit seconds... which I need here.
