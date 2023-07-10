@@ -1,57 +1,29 @@
 package org.baratinage.jbam;
 
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
 
 public class CalibrationDataResiduals {
 
-    // FIXME: should 'InputDataResiduals' and 'OutputDataResiduals'
-    // FIXME: be records instead of classes
-
     // - Xi (obs, true, )
-    public class InputDataResiduals {
-        public String name;
-        // FIXME: better names needed
-        public double[] obsValues;
-        public double[] trueValues;
-
-        InputDataResiduals(String name, double[] obsValues, double[] trueValues) {
-            this.name = name;
-            this.obsValues = obsValues;
-            this.trueValues = trueValues;
-        }
+    // FIXME: better names needed
+    public record InputDataResiduals(String name, double[] obsValues, double[] trueValues) {
 
         @Override
         public String toString() {
-            return String.format("Input data residuals '%s' containing %d rows", this.name, this.obsValues.length);
+            return String.format("Input data residuals '%s' containing %d rows", name, obsValues.length);
         }
     }
 
     // - Yi (obs, unbiased, sim, res, stdres)
-    public class OutputDataResiduals {
-
-        public String name;
-        // FIXME: better names needed
-        public double[] obsValues;
-        public double[] unbiasedValues;
-        public double[] simValues;
-        public double[] resValues;
-        public double[] stdresValues;
-
-        OutputDataResiduals(
-                String name,
-                double[] obsValues,
-                double[] unbiasedValues,
-                double[] simValues,
-                double[] resValues,
-                double[] stdresValues) {
-            this.name = name;
-            this.obsValues = obsValues;
-            this.unbiasedValues = unbiasedValues;
-            this.simValues = simValues;
-            this.resValues = resValues;
-            this.stdresValues = stdresValues;
-        }
+    // FIXME: better names needed
+    public record OutputDataResiduals(
+            String name,
+            double[] obsValues,
+            double[] unbiasedValues,
+            double[] simValues,
+            double[] resValues,
+            double[] stdresValues) {
 
         @Override
         public String toString() {
@@ -59,16 +31,13 @@ public class CalibrationDataResiduals {
         }
     }
 
-    // FIXME: a list might be more appropriate since the order of
-    // FIXME: the inputs/outputs variables matters and is set during configuration.
-    // FIXME: (+ a list is more consistent with configuration approach)
-    private HashMap<String, InputDataResiduals> inputResiduals;
-    private HashMap<String, OutputDataResiduals> outputResiduals;
+    private List<InputDataResiduals> inputResiduals;
+    private List<OutputDataResiduals> outputResiduals;
 
     public CalibrationDataResiduals(List<double[]> calDataResidualMatrix, CalibrationData calibrationData) {
 
-        this.inputResiduals = new HashMap<>();
-        this.outputResiduals = new HashMap<>();
+        inputResiduals = new ArrayList<>();
+        outputResiduals = new ArrayList<>();
 
         // Example columns of a residual matrix with 3 inputs and 2 outputs:
         // X1_obs, X2_obs, X3_obs, X1_true, X2_true, X3_true,
@@ -79,7 +48,7 @@ public class CalibrationDataResiduals {
         int nInputs = inputs.length;
         int k = 0;
         for (UncertainData i : inputs) {
-            this.inputResiduals.put(i.getName(),
+            inputResiduals.add(
                     new InputDataResiduals(
                             i.getName(),
                             calDataResidualMatrix.get(k),
@@ -91,7 +60,7 @@ public class CalibrationDataResiduals {
         int nOuputs = outputs.length;
         k = 0;
         for (UncertainData o : outputs) {
-            this.outputResiduals.put(o.getName(),
+            outputResiduals.add(
                     new OutputDataResiduals(
                             o.getName(),
                             calDataResidualMatrix.get(nInputs * 2 + k),
@@ -110,11 +79,11 @@ public class CalibrationDataResiduals {
     public String toString() {
         String str = "Calibration data residulas: \n";
         str += " - Inputs: \n";
-        for (InputDataResiduals i : this.inputResiduals.values()) {
+        for (InputDataResiduals i : inputResiduals) {
             str += "   > " + i.toString() + "\n";
         }
         str += " - Outputs: \n";
-        for (OutputDataResiduals o : this.outputResiduals.values()) {
+        for (OutputDataResiduals o : outputResiduals) {
             str += "   > " + o.toString() + "\n";
         }
         return str;
