@@ -24,11 +24,10 @@ public class App {
     public final static String TEMP_DIR = Path.of(System.getProperty("java.io.tmpdir"),
             "baratinage").toString();
 
-    public final static String BAM_WORKSPACE = "test/bam_workspace";
+    // public static String LAST_USED_DIR = System.getProperty("user.home");
+    public static String LAST_USED_DIR = "test";
 
-    public final static String BAM_RUN_DIR = "test/newTestWS";
-
-    public final static String TEST_DIR = "test";
+    public final static String BAM_WORKSPACE = "exe/bam_workspace";
 
     public static MainFrame MAIN_FRAME;
 
@@ -74,8 +73,6 @@ public class App {
                     URL iconUrl = this.getClass().getResource("/icon/64x64.png");
                     ImageIcon iconImg = new ImageIcon(iconUrl);
                     MAIN_FRAME.setIconImage(iconImg.getImage());
-
-                    // MAIN_FRAME.setCurrentProject(new BaratinProject());
 
                 } catch (Exception e) {
                     e.printStackTrace();

@@ -73,10 +73,9 @@ public class CalibrationData {
         return uDataConfig;
     }
 
-    public String getDataFilePath(String workspace) {
+    public String getAbsoluteDataFilePath(String workspace) {
         String dataFileName = String.format(ConfigFile.DATA_CALIBRATION, this.name);
-        String dataFilePath = Path.of(workspace, dataFileName).toAbsolutePath().toString();
-        return dataFilePath;
+        return Path.of(workspace, dataFileName).toAbsolutePath().toString();
     }
 
     public void toDataFile(String workspace) {
@@ -114,7 +113,7 @@ public class CalibrationData {
             }
         }
 
-        String dataFilePath = this.getDataFilePath(workspace);
+        String dataFilePath = getAbsoluteDataFilePath(workspace);
         try {
             Write.writeMatrix(
                     dataFilePath,
@@ -133,7 +132,7 @@ public class CalibrationData {
         UncertainDataConfig outputsDataConfig = this.getUncertainDataConfig(this.outputs, inputsDataConfig.nCol);
 
         ConfigFile configFile = new ConfigFile();
-        configFile.addItem(this.getDataFilePath(workspace), "Absolute path to data file", true);
+        configFile.addItem(BaM.relativizePath(getAbsoluteDataFilePath(workspace)), "Absolute path to data file", true);
         configFile.addItem(1, "number of header lines");
         configFile.addItem(inputsDataConfig.nRow, "Nobs, number of rows in data file (excluding header lines)");
         configFile.addItem(inputsDataConfig.nCol + outputsDataConfig.nCol, "number of columns in the data file");

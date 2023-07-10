@@ -118,7 +118,7 @@ public class DataFileImporter extends RowColPanel {
         browseFileSystemButon.addActionListener(e -> {
             final JFileChooser fileChooser = new JFileChooser();
             // fileChooser.setCurrentDirectory(new File(System.getProperty("user.dir")));
-            fileChooser.setCurrentDirectory(new File(App.TEST_DIR));
+            fileChooser.setCurrentDirectory(new File(App.LAST_USED_DIR));
             fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
             fileChooser.setFileFilter(new FileFilter() {
 

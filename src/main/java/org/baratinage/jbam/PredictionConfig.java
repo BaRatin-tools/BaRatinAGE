@@ -34,8 +34,12 @@ public class PredictionConfig {
         return this.name;
     }
 
+    private static String getConfigFileName(String predictionName) {
+        return String.format(ConfigFile.CONFIG_PREDICTION, predictionName);
+    }
+
     public String getConfigFileName() {
-        return String.format(ConfigFile.CONFIG_PREDICTION, this.name);
+        return getConfigFileName(this.name);
     }
 
     public PredictionOutput[] getPredictionStates() {
@@ -64,11 +68,19 @@ public class PredictionConfig {
 
     public void toFiles(String workspace) {
         int n = this.inputs.length;
+        // FIXME: inputFilePaths should be relative to executable so it can work on
+        // any machin...
         String[] inputFilePaths = new String[n];
         int nObs = 0; // FIXME: is zero data allowed?
         int[] nSpag = new int[n];
         for (int k = 0; k < n; k++) {
-            inputFilePaths[k] = Path.of(workspace, this.inputs[k].getDataFileName()).toAbsolutePath().toString();
+            // String absolutePath = Path.of(workspace,
+            // this.inputs[k].getDataFileName()).toAbsolutePath().toString();
+            // String basePath =
+            // String relativePath = ConfigFile.relativize(BaM.EXE_DIR, workspace);
+            String inputFilePath = BaM
+                    .relativizePath(Path.of(workspace, this.inputs[k].getDataFileName()).toAbsolutePath().toString());
+            inputFilePaths[k] = inputFilePath;
             int tmpNobs = this.inputs[k].getNobs();
             if (nObs == 0) {
                 nObs = tmpNobs;
@@ -141,7 +153,7 @@ public class PredictionConfig {
             configFile.addItem(createStateEnvelop, "Post-processing: create envelops? (size nState)");
             configFile.addItem(envStateFileName, "Post-processing: name of envelop files (size nState)");
         }
-        configFile.writeToFile(workspace, this.getConfigFileName());
+        configFile.writeToFile(workspace, getConfigFileName());
     }
 
     @Override

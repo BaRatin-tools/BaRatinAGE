@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -272,4 +273,10 @@ public class BaM {
         return String.join("\n", str);
     }
 
+    static public String relativizePath(String absPathStr) {
+        Path basePath = Path.of(EXE_DIR).toAbsolutePath();
+        Path absPath = Paths.get(absPathStr);
+        Path pathRelative = basePath.relativize(absPath);
+        return pathRelative.toString();
+    }
 }

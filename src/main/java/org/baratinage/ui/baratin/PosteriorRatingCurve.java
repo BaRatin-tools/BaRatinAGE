@@ -281,7 +281,7 @@ public class PosteriorRatingCurve extends RowColPanel implements ICalibratedMode
                         modelDefinition.getInputNames().length,
                         modelDefinition.getOutputNames().length,
                         priors.getParameters(),
-                        modelDefinition.getXtra(App.BAM_RUN_DIR)),
+                        modelDefinition.getXtra(App.BAM_WORKSPACE)),
                 modelOutputs,
                 calibrationData.getCalibrationData(),
                 getMcmcConfig(),
