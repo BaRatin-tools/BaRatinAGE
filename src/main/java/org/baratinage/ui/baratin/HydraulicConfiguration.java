@@ -4,9 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.BorderFactory;
+import javax.swing.JButton;
 import javax.swing.JSeparator;
 import javax.swing.JSplitPane;
 
+import org.baratinage.App;
 import org.baratinage.jbam.Parameter;
 import org.baratinage.ui.bam.BamItem;
 import org.baratinage.ui.bam.BamItemType;
@@ -30,6 +32,8 @@ class HydraulicConfiguration extends BamItem
     private AllHydraulicControls hydraulicControls;
     private RatingCurveStageGrid priorRatingCurveStageGrid;
     private PriorRatingCurve priorRatingCurve;
+
+    private RowColPanel outOufSyncPanel;
 
     private String jsonStringBackup;
 
@@ -63,7 +67,7 @@ class HydraulicConfiguration extends BamItem
 
         RowColPanel priorRatingCurvePanel = new RowColPanel(RowColPanel.AXIS.COL);
         priorRatingCurve = new PriorRatingCurve();
-        priorRatingCurve.runButton.addActionListener((e) -> {
+        priorRatingCurve.addChangeListener((e) -> {
             JSONObject json = toJSON();
             json.remove("jsonStringBackup");
             jsonStringBackup = json.toString();
@@ -73,8 +77,12 @@ class HydraulicConfiguration extends BamItem
         priorRatingCurve.setPriorsProvider(this);
         priorRatingCurve.setModelDefintionProvider(this);
 
+        outOufSyncPanel = new RowColPanel(RowColPanel.AXIS.COL);
+        outOufSyncPanel.setPadding(5);
+
         priorRatingCurvePanel.appendChild(priorRatingCurveStageGrid, 0);
         priorRatingCurvePanel.appendChild(new JSeparator(), 0);
+        priorRatingCurvePanel.appendChild(outOufSyncPanel, 0);
         priorRatingCurvePanel.appendChild(priorRatingCurve, 1);
 
         JSplitPane mainSplitPaneContainer = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
@@ -89,16 +97,21 @@ class HydraulicConfiguration extends BamItem
     }
 
     private void checkPriorRatingCurveSync() {
+        outOufSyncPanel.clear();
         if (jsonStringBackup != null) {
             String[] keysToIgnore = new String[] { "ui", "name", "description", "jsonStringBackup" };
             if (!isMatchingWith(jsonStringBackup, keysToIgnore, true)) {
                 WarningAndActions warning = new WarningAndActions();
                 LgElement.registerLabel(warning.message, "ui", "oos_prior_rating_curve", true);
-                priorRatingCurve.setWarnings(new WarningAndActions[] { warning });
-            } else {
-                priorRatingCurve.setWarnings(new WarningAndActions[] {});
+                outOufSyncPanel.appendChild(warning);
+                LgElement.registerButton(priorRatingCurve.runButton, "ui", "recompute_prior_rc", true);
+                priorRatingCurve.runButton.setForeground(App.INVALID_COLOR);
+                return;
             }
         }
+        LgElement.registerButton(priorRatingCurve.runButton, "ui", "compute_prior_rc", true);
+        priorRatingCurve.runButton.setForeground(new JButton().getForeground());
+        outOufSyncPanel.updateUI();
     }
 
     private void updateHydraulicControls(boolean[][] controlMatrix) {
@@ -186,7 +199,6 @@ class HydraulicConfiguration extends BamItem
         JSONArray jsonHydraulicControls = new JSONArray();
         for (OneHydraulicControl hc : hydraulicControlList) {
             JSONObject jsonHydraulicControl = new JSONObject();
-            jsonHydraulicControl.put("name", hc.nameLabel.getText());
             jsonHydraulicControl.put("activationStage", hc.getActivationStage());
             jsonHydraulicControl.put("activationStageUncertainty", hc.getActivationStageUncertainty());
             jsonHydraulicControl.put("coefficient", hc.getCoefficient());
@@ -261,7 +273,8 @@ class HydraulicConfiguration extends BamItem
                 JSONObject jsonHydraulicControl = (JSONObject) jsonHydraulicControls.get(k);
 
                 OneHydraulicControl hydraulicControl = new OneHydraulicControl();
-                hydraulicControl.nameLabel.setText((String) jsonHydraulicControl.get("name"));
+                // hydraulicControl.nameLabel.setText((String)
+                // jsonHydraulicControl.get("name"));
                 hydraulicControl
                         .setActivationStage(((Number) jsonHydraulicControl.get("activationStage")).doubleValue());
                 hydraulicControl

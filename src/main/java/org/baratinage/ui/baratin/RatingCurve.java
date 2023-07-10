@@ -66,7 +66,9 @@ public class RatingCurve extends BamItem implements ICalibratedModel, IMcmc, Bam
             }
             checkSync();
         });
-        hydrauConfParent.setSyncJsonKeys(new String[] { "ui" }, true);
+        hydrauConfParent.setSyncJsonKeys(
+                new String[] { "ui", "bamRunId", "jsonStringBackup", "stageGridConfig" },
+                true);
         hydrauConfParent.setCreateBackupBamItemAction((json) -> {
             BamItem bamItem = project.addHydraulicConfig();
             bamItem.fromJSON(json);
@@ -127,8 +129,7 @@ public class RatingCurve extends BamItem implements ICalibratedModel, IMcmc, Bam
         mainConfigPanel.appendChild(structErrorParent.comboboxPanel, 0);
 
         posteriorRatingCurve = new PosteriorRatingCurve();
-        posteriorRatingCurve.runBamButton.addActionListener((e) -> {
-            // FIXME: am I sure it is run after the main action (i.e. running BaM?)
+        posteriorRatingCurve.addChangeListener((e) -> {
             JSONObject json = toJSON();
             json.remove("jsonStringBackup");
             jsonStringBackup = json.toString();
@@ -194,6 +195,12 @@ public class RatingCurve extends BamItem implements ICalibratedModel, IMcmc, Bam
         }
         warning = structErrorParent.getOutOfSyncWarning();
         if (warning != null) {
+            warnings.add(warning);
+        }
+
+        if (jsonStringBackup != null && !isMatchingWith(jsonStringBackup, new String[] { "stageGridConfig" }, false)) {
+            warning = new WarningAndActions();
+            LgElement.registerLabel(warning.message, "ui", "oos_stage_grid");
             warnings.add(warning);
         }
 

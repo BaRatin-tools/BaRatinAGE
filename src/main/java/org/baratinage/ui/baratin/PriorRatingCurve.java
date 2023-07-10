@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JButton;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import org.baratinage.jbam.Distribution;
 import org.baratinage.jbam.Parameter;
@@ -55,8 +57,7 @@ public class PriorRatingCurve extends GridPanel {
 
                 outdatedPanel = new RowColPanel();
 
-                runButton = new JButton(
-                                String.format("<html>Calculer la courbe de tarage <i>a priori</i></html>"));
+                runButton = new JButton();
                 runButton.setFont(runButton.getFont().deriveFont(Font.BOLD));
                 runButton.addActionListener((e) -> {
                         computePriorRatingCurve();
@@ -75,15 +76,6 @@ public class PriorRatingCurve extends GridPanel {
                 setColWeight(0, 1);
         }
 
-        @Deprecated
-        public void setWarnings(WarningAndActions[] warnings) {
-                outdatedPanel.clear();
-                for (WarningAndActions w : warnings) {
-                        outdatedPanel.appendChild(w);
-                }
-                outdatedPanel.updateUI();
-        }
-
         private void computePriorRatingCurve() {
                 try {
 
@@ -96,12 +88,17 @@ public class PriorRatingCurve extends GridPanel {
 
                         runBam.run();
 
-                        predictionResults = runBam.bam.getPredictionResults();
-                        if (predictionResults == null) {
-                                System.err.println("ERROR: no prediction results found!");
-                                return;
+                        if (runBam.hasResults()) {
+
+                                predictionResults = runBam.bam.getPredictionResults();
+                                if (predictionResults == null) {
+                                        System.err.println("ERROR: no prediction results found!");
+                                        return;
+                                }
+
+                                fireChangeListeners();
+                                buildRatingCurvePlot();
                         }
-                        buildRatingCurvePlot();
 
                 } catch (Exception error) {
                         System.err.println("ERROR: An error occured while running BaM!");
@@ -249,5 +246,21 @@ public class PriorRatingCurve extends GridPanel {
                 runBam.unzipBamRun();
 
                 buildRatingCurvePlot();
+        }
+
+        private final List<ChangeListener> changeListeners = new ArrayList<>();
+
+        public void addChangeListener(ChangeListener l) {
+                changeListeners.add(l);
+        }
+
+        public void removeChangeListener(ChangeListener l) {
+                changeListeners.remove(l);
+        }
+
+        public void fireChangeListeners() {
+                for (ChangeListener l : changeListeners) {
+                        l.stateChanged(new ChangeEvent(this));
+                }
         }
 }

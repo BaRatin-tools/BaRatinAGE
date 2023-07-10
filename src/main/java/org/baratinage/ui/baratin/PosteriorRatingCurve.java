@@ -75,9 +75,7 @@ public class PosteriorRatingCurve extends RowColPanel implements ICalibratedMode
     public PosteriorRatingCurve() {
         super(AXIS.COL);
         ratingCurveGrid = new RatingCurveStageGrid();
-        // ratingCurveGrid.addChangeListener((e) -> {
-        // firePropertyChange("stageGridConfigChanged", null, null);
-        // });
+
         appendChild(ratingCurveGrid, 0);
         appendChild(new JSeparator(JSeparator.HORIZONTAL), 0);
 
@@ -118,7 +116,10 @@ public class PosteriorRatingCurve extends RowColPanel implements ICalibratedMode
 
         runBam.run();
 
-        buildRatingCurvePlot();
+        if (runBam.hasResults()) {
+            fireChangeListeners();
+            buildRatingCurvePlot();
+        }
     }
 
     private void buildPredictionExperiments() {
