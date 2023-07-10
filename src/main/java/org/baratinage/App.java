@@ -17,6 +17,10 @@ import org.baratinage.ui.lg.Lg;
 
 public class App {
 
+    // FIXME: should have subdirectory for each instance of BaRatinAGE to avoid
+    // conflit if multiple instances are run in parallel. They could be named using
+    // a time stamp which would in turn be used to clean up the temp directory after
+    // some time has passed.
     public final static String TEMP_DIR = Path.of(System.getProperty("java.io.tmpdir"),
             "baratinage").toString();
 
