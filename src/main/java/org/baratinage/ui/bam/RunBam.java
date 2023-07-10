@@ -8,7 +8,6 @@ import org.baratinage.jbam.BaM;
 import org.baratinage.jbam.CalDataResidualConfig;
 import org.baratinage.jbam.CalibrationConfig;
 import org.baratinage.jbam.CalibrationData;
-import org.baratinage.jbam.CalibrationResult;
 import org.baratinage.jbam.McmcConfig;
 import org.baratinage.jbam.McmcCookingConfig;
 import org.baratinage.jbam.McmcSummaryConfig;
@@ -16,7 +15,6 @@ import org.baratinage.jbam.Model;
 import org.baratinage.jbam.ModelOutput;
 import org.baratinage.jbam.Parameter;
 import org.baratinage.jbam.PredictionConfig;
-import org.baratinage.jbam.PredictionResult;
 import org.baratinage.jbam.RunOptions;
 import org.baratinage.jbam.StructuralErrorModel;
 import org.baratinage.jbam.UncertainData;
@@ -35,17 +33,11 @@ public class RunBam {
     // - when closing a project all associated workspaces should be deleted
     // - when importing a project all associated workspaces should be re-created.
 
-    public final String uuid;
-    public final Path workspace;
+    public final String id;
+    public final Path workspacePath;
+    public final Path zipPath;
+    public final String zipName;
     public final BaM bam;
-
-    // private final String bamRunZipFileName;
-    // private final Path runZipFile;
-
-    // private BaM bam;
-    // private Path workspace;
-    private boolean isConfigured = false;
-    private boolean hasResults = false;
 
     public RunBam(IModelDefinition modelDefinition,
             IPriors priors,
@@ -74,18 +66,20 @@ public class RunBam {
             throw new IllegalArgumentException("'priors' must non null!");
         }
 
-        uuid = id;
-        workspace = Path.of(App.BAM_WORKSPACE, uuid);
+        this.id = id;
+        workspacePath = Path.of(App.BAM_WORKSPACE, id);
+        zipName = id + ".zip";
+        zipPath = Path.of(App.TEMP_DIR, zipName);
 
-        if (!workspace.toFile().exists()) {
-            workspace.toFile().mkdir();
+        if (!workspacePath.toFile().exists()) {
+            workspacePath.toFile().mkdir();
         }
 
         // create BaM object
 
         // 1) model
 
-        String xTra = modelDefinition.getXtra(workspace.toString());
+        String xTra = modelDefinition.getXtra(workspacePath.toString());
 
         Parameter[] parameters = priors.getParameters();
 
@@ -173,7 +167,7 @@ public class RunBam {
     public void run() {
 
         try {
-            bam.run(workspace.toString(), txt -> {
+            bam.run(workspacePath.toString(), txt -> {
                 System.out.println("log => " + txt);
             });
         } catch (IOException e) {
@@ -183,32 +177,26 @@ public class RunBam {
 
         readResultsFromWorkspace();
 
-        ReadWriteZip.zip(Path.of(App.TEMP_DIR, getBamRunZipName()).toString(), workspace.toString());
+        // FIXME: inefficient but safer (caller classer doesn't need to call it)
+        zipBamRun();
 
     }
 
-    public String getBamRunZipName() {
-        return uuid + ".zip";
+    private void readResultsFromWorkspace() {
+        bam.readResults(workspacePath.toString());
     }
 
-    public void readResultsFromWorkspace() {
-        bam.readResults(workspace.toString());
-        hasResults = true;
+    public boolean hasResults() {
+        return !(bam.getCalibrationResults() == null && bam.getPredictionResults() == null);
     }
 
-    public BaM getBaM() {
-        return bam;
+    public void zipBamRun() {
+        ReadWriteZip.zip(zipPath.toString(), workspacePath.toString());
     }
 
-    public CalibrationResult getCalibrationResult() {
-        if (!hasResults)
-            return null;
-        return bam.getCalibrationResults();
+    public void unzipBamRun() {
+        ReadWriteZip.unzip(zipPath.toString(), workspacePath.toString());
+        readResultsFromWorkspace();
     }
 
-    public PredictionResult[] getPredictionResults() {
-        if (!hasResults)
-            return null;
-        return bam.getPredictionResults();
-    }
 }

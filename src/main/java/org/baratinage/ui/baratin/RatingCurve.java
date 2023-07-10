@@ -17,6 +17,7 @@ import org.baratinage.ui.bam.BamItemList;
 import org.baratinage.ui.bam.BamItemParent;
 import org.baratinage.ui.bam.ICalibratedModel;
 import org.baratinage.ui.bam.IMcmc;
+import org.baratinage.ui.bam.RunBam;
 import org.baratinage.ui.commons.WarningAndActions;
 import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.ui.lg.Lg;
@@ -217,8 +218,8 @@ public class RatingCurve extends BamItem implements ICalibratedModel, IMcmc, Bam
 
     @Override
     public String[] getTempDataFileNames() {
-        String priorRatingCurveZipFileName = posteriorRatingCurve.getBamRunZipName();
-        return priorRatingCurveZipFileName == null ? new String[] {} : new String[] { priorRatingCurveZipFileName };
+        RunBam runBam = posteriorRatingCurve.getRunBam();
+        return runBam == null ? new String[] {} : new String[] { runBam.zipName };
     }
 
     @Override
@@ -238,7 +239,10 @@ public class RatingCurve extends BamItem implements ICalibratedModel, IMcmc, Bam
 
         json.put("stageGridConfig", jsonStageGridConfig);
 
-        json.put("bamRunZipFileName", posteriorRatingCurve.getBamRunZipName());
+        RunBam runBam = posteriorRatingCurve.getRunBam();
+        if (runBam != null) {
+            json.put("bamRunId", runBam.id);
+        }
 
         json.put("jsonStringBackup", jsonStringBackup);
         return json;
@@ -267,9 +271,9 @@ public class RatingCurve extends BamItem implements ICalibratedModel, IMcmc, Bam
             ratingCurveGrid.setStepValue(stageGridJson.getDouble("step"));
         }
 
-        if (json.has("bamRunZipFileName")) {
-            String bamRunZipFileName = json.getString("bamRunZipFileName");
-            posteriorRatingCurve.setBamRunZipFileName(bamRunZipFileName);
+        if (json.has("bamRunId")) {
+            String bamRunId = json.getString("bamRunId");
+            posteriorRatingCurve.setRunBam(bamRunId);
         }
 
         if (json.has("jsonStringBackup")) {

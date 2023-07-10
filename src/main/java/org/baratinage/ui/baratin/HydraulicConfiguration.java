@@ -12,6 +12,7 @@ import org.baratinage.ui.bam.BamItem;
 import org.baratinage.ui.bam.BamItemType;
 import org.baratinage.ui.bam.IModelDefinition;
 import org.baratinage.ui.bam.IPriors;
+import org.baratinage.ui.bam.RunBam;
 import org.baratinage.ui.baratin.hydraulic_control.ControlMatrix;
 import org.baratinage.ui.baratin.hydraulic_control.AllHydraulicControls;
 import org.baratinage.ui.baratin.hydraulic_control.OneHydraulicControl;
@@ -151,8 +152,8 @@ class HydraulicConfiguration extends BamItem
 
     @Override
     public String[] getTempDataFileNames() {
-        String priorRatingCurveZipFileName = priorRatingCurve.getBamRunZipName();
-        return priorRatingCurveZipFileName == null ? new String[] {} : new String[] { priorRatingCurveZipFileName };
+        RunBam runBam = priorRatingCurve.getRunBam();
+        return runBam == null ? new String[] {} : new String[] { runBam.zipName };
     }
 
     @Override
@@ -211,7 +212,10 @@ class HydraulicConfiguration extends BamItem
 
         // **********************************************************
         // prior rating curve BaM results
-        json.put("bamRunZipFileName", priorRatingCurve.getBamRunZipName());
+        RunBam runBam = priorRatingCurve.getRunBam();
+        if (runBam != null) {
+            json.put("bamRunId", runBam.id);
+        }
 
         return json;
     }
@@ -301,9 +305,9 @@ class HydraulicConfiguration extends BamItem
 
         // **********************************************************
         // prior rating curve BaM results
-        if (json.has("bamRunZipFileName")) {
-            String bamRunZipFileName = json.getString("bamRunZipFileName");
-            priorRatingCurve.setBamRunZipName(bamRunZipFileName);
+        if (json.has("bamRunId")) {
+            String bamRunId = json.getString("bamRunId");
+            priorRatingCurve.setRunBam(bamRunId);
         } else {
             System.out.println("MISSING 'bamRunZipFileName'");
         }
