@@ -20,7 +20,6 @@ import org.baratinage.ui.bam.IPredictionData;
 import org.baratinage.ui.bam.IPriors;
 import org.baratinage.ui.bam.PriorPredictionExperiment;
 import org.baratinage.ui.bam.RunBam;
-import org.baratinage.ui.commons.WarningAndActions;
 
 import org.baratinage.ui.container.GridPanel;
 import org.baratinage.ui.container.RowColPanel;
