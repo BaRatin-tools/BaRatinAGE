@@ -5,19 +5,14 @@ import java.awt.event.ItemListener;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+
 public class ControlMatrixColumn implements ItemListener {
 
     public List<ControlCheckBox> ctrlCheckBoxes;
 
-    @FunctionalInterface
-    public interface IControleMatrixColumnHasChanged {
-        public void controlMatrixColumnHasChanged();
-    }
-
-    private IControleMatrixColumnHasChanged controleMatrixColumnHasChanged;
-
-    public ControlMatrixColumn(IControleMatrixColumnHasChanged controleMatrixColumnHasChanged, int nSegments) {
-        this.controleMatrixColumnHasChanged = controleMatrixColumnHasChanged;
+    public ControlMatrixColumn(int nSegments) {
         ctrlCheckBoxes = new ArrayList<>();
         for (int k = 0; k < nSegments; k++) {
             ctrlCheckBoxes.add(new ControlCheckBox("", this));
@@ -77,7 +72,22 @@ public class ControlMatrixColumn implements ItemListener {
     @Override
     public void itemStateChanged(ItemEvent e) {
         updateEditability();
-        controleMatrixColumnHasChanged.controlMatrixColumnHasChanged();
+        fireChangeListeners();
     }
 
+    private final List<ChangeListener> changeListeners = new ArrayList<>();
+
+    public void addChangeListener(ChangeListener l) {
+        changeListeners.add(l);
+    }
+
+    public void removeChangeListener(ChangeListener l) {
+        changeListeners.remove(l);
+    }
+
+    public void fireChangeListeners() {
+        for (ChangeListener l : changeListeners) {
+            l.stateChanged(new ChangeEvent(this));
+        }
+    }
 }

@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JLabel;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import org.baratinage.jbam.PredictionInput;
 import org.baratinage.ui.bam.IPredictionData;
@@ -40,20 +42,19 @@ public class RatingCurveStageGrid extends RowColPanel implements IPredictionData
         this.appendChild(gridPanel, 1);
 
         minStageField = new NumberField();
-        minStageField.addPropertyChangeListener("value", (e) -> {
-            // updateStepNbr();
+        minStageField.addChangeListener((e) -> {
             updateStepVal();
             updateStageGridConfig();
         });
 
         maxStageField = new NumberField();
-        maxStageField.addPropertyChangeListener("value", (e) -> {
+        maxStageField.addChangeListener((e) -> {
             updateStepVal();
             updateStageGridConfig();
         });
 
         nbrStepField = new NumberField(true);
-        nbrStepField.addPropertyChangeListener("value", (e) -> {
+        nbrStepField.addChangeListener((e) -> {
             updateStepVal();
             updateStageGridConfig();
 
@@ -61,7 +62,7 @@ public class RatingCurveStageGrid extends RowColPanel implements IPredictionData
         nbrStepField.addValidator(n -> n > 0);
 
         valStepField = new NumberField();
-        valStepField.addPropertyChangeListener("value", (e) -> {
+        valStepField.addChangeListener((e) -> {
             updateStepNbr();
             updateStageGridConfig();
         });
@@ -198,8 +199,6 @@ public class RatingCurveStageGrid extends RowColPanel implements IPredictionData
 
     private void updateStageGridConfig() {
 
-        StageGridConfig oldStageGridConfig = stageGridConfig;
-
         double min = minStageField.getValue();
         double max = maxStageField.getValue();
         double step = valStepField.getValue();
@@ -214,7 +213,22 @@ public class RatingCurveStageGrid extends RowColPanel implements IPredictionData
             stageGridConfig = new StageGridConfig(min, max, step);
         }
 
-        firePropertyChange("stageGridConfigChanged", oldStageGridConfig, stageGridConfig);
+        fireChangeListeners();
     }
 
+    private final List<ChangeListener> changeListeners = new ArrayList<>();
+
+    public void addChangeListener(ChangeListener l) {
+        changeListeners.add(l);
+    }
+
+    public void removeChangeListener(ChangeListener l) {
+        changeListeners.remove(l);
+    }
+
+    public void fireChangeListeners() {
+        for (ChangeListener l : changeListeners) {
+            l.stateChanged(new ChangeEvent(this));
+        }
+    }
 }

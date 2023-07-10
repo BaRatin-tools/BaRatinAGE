@@ -40,8 +40,8 @@ public class MainFrame extends JFrame {
 
         this.setSize(new Dimension(1200, 900));
 
-        // this.setSize(new Dimension(1936, 1048));
-        // this.setLocation(new Point(2512, -8));
+        this.setSize(new Dimension(1936, 1048));
+        this.setLocation(new Point(2512, -8));
 
         mainMenuBar = new JMenuBar();
 

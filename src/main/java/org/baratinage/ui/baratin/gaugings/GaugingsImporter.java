@@ -69,7 +69,7 @@ public class GaugingsImporter extends RowColPanel {
         }, 1);
         actionPanel.appendChild(validateButton, 0);
 
-        dataFileImporter.addPropertyChangeListener("changed", (e) -> {
+        dataFileImporter.addChangeListener((e) -> {
             hColumn.removeAllElements();
             qColumn.removeAllElements();
             uqColumn.removeAllElements();

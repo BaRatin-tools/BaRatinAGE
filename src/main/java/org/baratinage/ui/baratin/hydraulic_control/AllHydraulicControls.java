@@ -15,6 +15,8 @@ import javax.swing.JList;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.ListSelectionModel;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import org.baratinage.jbam.Distribution;
 import org.baratinage.jbam.Parameter;
@@ -24,7 +26,7 @@ import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.ui.lg.Lg;
 import org.baratinage.ui.lg.LgElement;
 
-public class AllHydraulicControls extends RowColPanel implements IPriors {
+public class AllHydraulicControls extends RowColPanel implements IPriors, ChangeListener {
 
     JList<OneHydraulicControl> controlSelector;
     DefaultListModel<OneHydraulicControl> controlSelectorModel;
@@ -135,9 +137,7 @@ public class AllHydraulicControls extends RowColPanel implements IPriors {
                 OneHydraulicControl newHydraulicControl = new OneHydraulicControl();
 
                 newHydraulicControl.nameLabel.setText("> Contrôle #" + (k + 1));
-                newHydraulicControl.addPropertyChangeListener("hydraulicControl", (e) -> {
-                    firePropertyChange("hydraulicControl", null, null);
-                });
+                newHydraulicControl.addChangeListener(this);
 
                 controlSelectorModel.addElement(newHydraulicControl);
                 hydraulicControlList.add(newHydraulicControl);
@@ -184,9 +184,7 @@ public class AllHydraulicControls extends RowColPanel implements IPriors {
         hydraulicControlList.clear();
         controlSelectorModel.clear();
         for (OneHydraulicControl hc : hydraulicControls) {
-            hc.addPropertyChangeListener("hydraulicControl", (e) -> {
-                firePropertyChange("hydraulicControl", null, null);
-            });
+            hc.addChangeListener(this);
             controlSelectorModel.addElement(hc);
             hydraulicControlList.add(hc);
         }
@@ -194,6 +192,27 @@ public class AllHydraulicControls extends RowColPanel implements IPriors {
 
     public List<OneHydraulicControl> getHydraulicControls() {
         return this.hydraulicControlList;
+    }
+
+    @Override
+    public void stateChanged(ChangeEvent arg0) {
+        fireChangeListeners();
+    }
+
+    private final List<ChangeListener> changeListeners = new ArrayList<>();
+
+    public void addChangeListener(ChangeListener l) {
+        changeListeners.add(l);
+    }
+
+    public void removeChangeListener(ChangeListener l) {
+        changeListeners.remove(l);
+    }
+
+    public void fireChangeListeners() {
+        for (ChangeListener l : changeListeners) {
+            l.stateChanged(new ChangeEvent(this));
+        }
     }
 
 }

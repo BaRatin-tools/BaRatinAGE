@@ -3,7 +3,11 @@ package org.baratinage.ui.component;
 import java.awt.Color;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.util.ArrayList;
+import java.util.List;
 
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.plaf.basic.BasicBorders;
 
 import org.baratinage.App;
@@ -94,15 +98,29 @@ public class NumberField extends RowColPanel {
         setValue(value, true);
     }
 
-    public void setValue(double value, boolean firePropertyChange) {
+    public void setValue(double value, boolean fireChangeListeners) {
         setValueValidity(textField.isTextValid());
-        double oldValue = this.value;
         this.value = value;
 
-        if (firePropertyChange) {
-            firePropertyChange("value", oldValue, value);
+        if (fireChangeListeners) {
+            fireChangeListeners();
         }
+    }
 
+    private final List<ChangeListener> changeListeners = new ArrayList<>();
+
+    public void addChangeListener(ChangeListener l) {
+        changeListeners.add(l);
+    }
+
+    public void removeChangeListener(ChangeListener l) {
+        changeListeners.remove(l);
+    }
+
+    public void fireChangeListeners() {
+        for (ChangeListener l : changeListeners) {
+            l.stateChanged(new ChangeEvent(this));
+        }
     }
 
     public double getValue() {

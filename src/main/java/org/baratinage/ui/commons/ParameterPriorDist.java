@@ -19,7 +19,7 @@ import org.baratinage.ui.component.NumberField;
 import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.ui.lg.Lg;
 
-public class ParameterPriorDist {
+public class ParameterPriorDist implements ChangeListener {
 
     public String shortName;
     public JLabel nameLabel;
@@ -40,9 +40,7 @@ public class ParameterPriorDist {
         nameLabel = new JLabel();
         initialGuessField = new NumberField();
         initialGuessField.setPlaceholder(Lg.getText("ui", "initial_guess"));
-        initialGuessField.addPropertyChangeListener("value", (e) -> {
-            fireChangeListener();
-        });
+        initialGuessField.addChangeListener(this);
 
         parametersInputsPanel = new RowColPanel();
         parametersInputsPanel.setGap(5);
@@ -73,16 +71,14 @@ public class ParameterPriorDist {
                 for (String parameterName : currentDistribution.parameterNames) {
                     NumberField numberField = new NumberField();
                     numberField.setPlaceholder(Lg.getText("ui", parameterName));
-                    numberField.addPropertyChangeListener("value", (v) -> {
-                        fireChangeListener();
-                    });
+                    numberField.addChangeListener(this);
                     parameterPriorFields.add(numberField);
                     parametersInputsPanel.appendChild(numberField);
 
                 }
                 parametersInputsPanel.repaint();
             }
-            fireChangeListener();
+            fireChangeListeners();
         });
 
         distComboBox.setSelectedItem(DISTRIB.GAUSSIAN);
@@ -123,16 +119,24 @@ public class ParameterPriorDist {
         return new Parameter(shortName, initialGuess, distribution);
     }
 
-    private List<ChangeListener> changeListenerers = new ArrayList<>();
+    private final List<ChangeListener> changeListeners = new ArrayList<>();
 
     public void addChangeListener(ChangeListener l) {
-        changeListenerers.add(l);
+        changeListeners.add(l);
     }
 
-    private void fireChangeListener() {
-        for (ChangeListener l : changeListenerers) {
+    public void removeChangeListener(ChangeListener l) {
+        changeListeners.remove(l);
+    }
+
+    public void fireChangeListeners() {
+        for (ChangeListener l : changeListeners) {
             l.stateChanged(new ChangeEvent(this));
         }
     }
 
+    @Override
+    public void stateChanged(ChangeEvent arg0) {
+        fireChangeListeners();
+    }
 }

@@ -37,14 +37,14 @@ class HydraulicConfiguration extends BamItem
         super(BamItemType.HYDRAULIC_CONFIG, uuid, project);
 
         controlMatrix = new ControlMatrix();
-        controlMatrix.addPropertyChangeListener("controlMatrixChange", (e) -> {
+        controlMatrix.addChangeListener((e) -> {
             fireChangeListeners();
             updateHydraulicControls(controlMatrix.getControlMatrix());
             checkPriorRatingCurveSync();
         });
 
         hydraulicControls = new AllHydraulicControls();
-        hydraulicControls.addPropertyChangeListener("hydraulicControl", (e) -> {
+        hydraulicControls.addChangeListener((e) -> {
             fireChangeListeners();
             checkPriorRatingCurveSync();
         });
@@ -56,14 +56,14 @@ class HydraulicConfiguration extends BamItem
         splitPaneContainer.setResizeWeight(0.5);
 
         priorRatingCurveStageGrid = new RatingCurveStageGrid();
-        priorRatingCurveStageGrid.addPropertyChangeListener("stageGridConfigChanged", (e) -> {
+        priorRatingCurveStageGrid.addChangeListener((e) -> {
             fireChangeListeners();
             checkPriorRatingCurveSync();
         });
 
         RowColPanel priorRatingCurvePanel = new RowColPanel(RowColPanel.AXIS.COL);
         priorRatingCurve = new PriorRatingCurve();
-        priorRatingCurve.addPropertyChangeListener("bamHasRun", (e) -> {
+        priorRatingCurve.runButton.addActionListener((e) -> {
             JSONObject json = toJSON();
             json.remove("jsonStringBackup");
             jsonStringBackup = json.toString();

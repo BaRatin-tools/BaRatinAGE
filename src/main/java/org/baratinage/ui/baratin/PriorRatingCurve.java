@@ -34,6 +34,8 @@ import org.baratinage.ui.plot.PlotBand;
 // FIXME: this class may still be a bit too unnecessarily complicated: simplify?
 public class PriorRatingCurve extends GridPanel {
 
+        public final JButton runButton;
+
         private RowColPanel plotPanel;
 
         private IPredictionData predictionDataProvider;
@@ -53,7 +55,7 @@ public class PriorRatingCurve extends GridPanel {
 
                 outdatedPanel = new RowColPanel();
 
-                JButton runButton = new JButton(
+                runButton = new JButton(
                                 String.format("<html>Calculer la courbe de tarage <i>a priori</i></html>"));
                 runButton.setFont(runButton.getFont().deriveFont(Font.BOLD));
                 runButton.addActionListener((e) -> {
@@ -93,7 +95,6 @@ public class PriorRatingCurve extends GridPanel {
                                         predictionConfigs);
 
                         runBam.run();
-                        firePropertyChange("bamHasRun", null, null);
 
                         predictionResults = runBam.bam.getPredictionResults();
                         if (predictionResults == null) {

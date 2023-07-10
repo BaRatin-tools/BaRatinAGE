@@ -8,13 +8,15 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import org.baratinage.ui.container.GridPanel;
 import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.ui.lg.Lg;
 import org.baratinage.ui.lg.LgElement;
 
-public class ControlMatrix extends RowColPanel {
+public class ControlMatrix extends RowColPanel implements ChangeListener {
 
     private List<ControlMatrixColumn> controls;
     private GridPanel controlCheckBoxPanel;
@@ -59,10 +61,9 @@ public class ControlMatrix extends RowColPanel {
         appendChild(reversedOrderCheckBox, 0);
 
         controls = new ArrayList<>();
-        controls.add(
-                new ControlMatrixColumn(() -> {
-                    firePropertyChange("controlMatrixChange", null, null);
-                }, 1));
+        ControlMatrixColumn cmc = new ControlMatrixColumn(1);
+        cmc.addChangeListener(this);
+        controls.add(cmc);
 
         updateControlMatrixView();
     }
@@ -117,9 +118,9 @@ public class ControlMatrix extends RowColPanel {
             }
         } else if (nDiff < 0) { // not enough controls
             for (int k = 1; k <= -nDiff; k++) {
-                controls.add(new ControlMatrixColumn(() -> {
-                    firePropertyChange("controlMatrixChange", null, null);
-                }, nSeg));
+                ControlMatrixColumn cmc = new ControlMatrixColumn(nSeg);
+                cmc.addChangeListener(this);
+                controls.add(cmc);
             }
         }
 
@@ -214,4 +215,24 @@ public class ControlMatrix extends RowColPanel {
         removeControlButton.setEnabled(nCtrl > 1);
     }
 
+    @Override
+    public void stateChanged(ChangeEvent arg0) {
+        fireChangeListeners();
+    }
+
+    private final List<ChangeListener> changeListeners = new ArrayList<>();
+
+    public void addChangeListener(ChangeListener l) {
+        changeListeners.add(l);
+    }
+
+    public void removeChangeListener(ChangeListener l) {
+        changeListeners.remove(l);
+    }
+
+    public void fireChangeListeners() {
+        for (ChangeListener l : changeListeners) {
+            l.stateChanged(new ChangeEvent(this));
+        }
+    }
 }

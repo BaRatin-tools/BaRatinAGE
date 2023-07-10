@@ -5,6 +5,7 @@ import java.awt.Font;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.ButtonGroup;
@@ -16,6 +17,8 @@ import javax.swing.JRadioButton;
 import javax.swing.JSeparator;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.filechooser.FileFilter;
 
 import org.baratinage.App;
@@ -278,7 +281,7 @@ public class DataFileImporter extends RowColPanel {
                 headers,
                 importSettings.missingValueString);
 
-        firePropertyChange("changed", null, null);
+        fireChangeListeners();
     }
 
     @FunctionalInterface
@@ -312,6 +315,22 @@ public class DataFileImporter extends RowColPanel {
         panel.appendChild(commaOption);
         panel.appendChild(sapaceOption);
         return panel;
+    }
+
+    private final List<ChangeListener> changeListeners = new ArrayList<>();
+
+    public void addChangeListener(ChangeListener l) {
+        changeListeners.add(l);
+    }
+
+    public void removeChangeListener(ChangeListener l) {
+        changeListeners.remove(l);
+    }
+
+    public void fireChangeListeners() {
+        for (ChangeListener l : changeListeners) {
+            l.stateChanged(new ChangeEvent(this));
+        }
     }
 
 }

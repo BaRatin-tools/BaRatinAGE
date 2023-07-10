@@ -9,6 +9,8 @@ import java.util.List;
 import javax.swing.JButton;
 import javax.swing.JSeparator;
 import javax.swing.JTabbedPane;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import org.baratinage.App;
 
@@ -52,7 +54,9 @@ import org.baratinage.utils.Calc;
 
 public class PosteriorRatingCurve extends RowColPanel implements ICalibratedModel, IMcmc {
 
-    private RatingCurveStageGrid ratingCurveGrid;
+    public final RatingCurveStageGrid ratingCurveGrid;
+    public final JButton runBamButton;
+    public final RowColPanel outdatedPanel;
 
     private IModelDefinition modelDefinition;
     private IPriors priors;
@@ -68,15 +72,12 @@ public class PosteriorRatingCurve extends RowColPanel implements ICalibratedMode
 
     private RunBam runBam;
 
-    public final JButton runBamButton;
-    public final RowColPanel outdatedPanel;
-
     public PosteriorRatingCurve() {
         super(AXIS.COL);
         ratingCurveGrid = new RatingCurveStageGrid();
-        ratingCurveGrid.addPropertyChangeListener("stageGridConfigChanged", (e) -> {
-            firePropertyChange("stageGridConfigChanged", null, null);
-        });
+        // ratingCurveGrid.addChangeListener((e) -> {
+        // firePropertyChange("stageGridConfigChanged", null, null);
+        // });
         appendChild(ratingCurveGrid, 0);
         appendChild(new JSeparator(JSeparator.HORIZONTAL), 0);
 
@@ -117,10 +118,7 @@ public class PosteriorRatingCurve extends RowColPanel implements ICalibratedMode
 
         runBam.run();
 
-        firePropertyChange("bamHasRun", null, null);
-
         buildRatingCurvePlot();
-        System.out.println("DONE");
     }
 
     private void buildPredictionExperiments() {
@@ -319,5 +317,21 @@ public class PosteriorRatingCurve extends RowColPanel implements ICalibratedMode
         runBam.unzipBamRun();
 
         buildRatingCurvePlot();
+    }
+
+    private final List<ChangeListener> changeListeners = new ArrayList<>();
+
+    public void addChangeListener(ChangeListener l) {
+        changeListeners.add(l);
+    }
+
+    public void removeChangeListener(ChangeListener l) {
+        changeListeners.remove(l);
+    }
+
+    public void fireChangeListeners() {
+        for (ChangeListener l : changeListeners) {
+            l.stateChanged(new ChangeEvent(this));
+        }
     }
 }

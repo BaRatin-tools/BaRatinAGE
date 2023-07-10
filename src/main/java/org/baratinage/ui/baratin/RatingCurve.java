@@ -127,7 +127,8 @@ public class RatingCurve extends BamItem implements ICalibratedModel, IMcmc, Bam
         mainConfigPanel.appendChild(structErrorParent.comboboxPanel, 0);
 
         posteriorRatingCurve = new PosteriorRatingCurve();
-        posteriorRatingCurve.addPropertyChangeListener("bamHasRun", (e) -> {
+        posteriorRatingCurve.runBamButton.addActionListener((e) -> {
+            // FIXME: am I sure it is run after the main action (i.e. running BaM?)
             JSONObject json = toJSON();
             json.remove("jsonStringBackup");
             jsonStringBackup = json.toString();
@@ -136,9 +137,10 @@ public class RatingCurve extends BamItem implements ICalibratedModel, IMcmc, Bam
             structErrorParent.updateBackup();
             checkSync();
         });
-        posteriorRatingCurve.addPropertyChangeListener("stageGridConfigChanged", (e) -> {
-            // checkSynchronicity();
+        posteriorRatingCurve.ratingCurveGrid.addChangeListener((e) -> {
+            checkSync();
         });
+
         mainContentPanel.appendChild(posteriorRatingCurve);
 
         setContent(content);
