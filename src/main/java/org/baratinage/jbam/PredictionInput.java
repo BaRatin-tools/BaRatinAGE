@@ -4,7 +4,8 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
 
-import org.baratinage.jbam.utils.ConfigFile;
+import org.baratinage.jbam.utils.BamFileNames;
+import org.baratinage.jbam.utils.Read;
 import org.baratinage.jbam.utils.Write;
 
 public class PredictionInput {
@@ -34,8 +35,7 @@ public class PredictionInput {
     }
 
     public String getDataFileName() {
-        String fileName = String.format(ConfigFile.DATA_PREDICTION, this.name);
-        return fileName;
+        return BamFileNames.buildPredictionDataFileName(name);
     }
 
     public String getName() {
@@ -65,5 +65,19 @@ public class PredictionInput {
         return String.format(
                 "Prediction input '%s' contains  %d observations and %d replications ",
                 this.name, this.nObs, this.nSpag);
+    }
+
+    public static PredictionInput readPredictionInput(String workspace, String dataFileName) {
+        String predictionInputName = BamFileNames.getPredictionName(dataFileName);
+        predictionInputName = predictionInputName == null ? dataFileName : predictionInputName;
+
+        try {
+            List<double[]> data = Read.readMatrix(Path.of(workspace, dataFileName).toString(), 0);
+            return new PredictionInput(predictionInputName, data);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+
     }
 }

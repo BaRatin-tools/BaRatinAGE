@@ -2,6 +2,7 @@ package org.baratinage.jbam;
 
 import java.nio.file.Path;
 
+import org.baratinage.jbam.utils.BamFileNames;
 import org.baratinage.jbam.utils.ConfigFile;
 
 public class StructuralErrorModel {
@@ -16,7 +17,7 @@ public class StructuralErrorModel {
     }
 
     public String getConfigFileName() {
-        String configFileName = String.format(ConfigFile.CONFIG_STRUCTURAL_ERRORS, this.name);
+        String configFileName = String.format(BamFileNames.CONFIG_STRUCTURAL_ERRORS, this.name);
         return configFileName;
     }
 

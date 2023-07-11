@@ -1,5 +1,6 @@
 package org.baratinage.jbam;
 
+import org.baratinage.jbam.utils.BamFileNames;
 import org.baratinage.jbam.utils.ConfigFile;
 
 public class McmcCookingConfig {
@@ -8,7 +9,7 @@ public class McmcCookingConfig {
     private int nSlim;
 
     public McmcCookingConfig() {
-        this.outputFileName = ConfigFile.RESULTS_MCMC_COOKING;
+        this.outputFileName = BamFileNames.RESULTS_MCMC_COOKING;
         this.burnFactor = 0.5;
         this.nSlim = 10;
     }
@@ -22,7 +23,7 @@ public class McmcCookingConfig {
         configFile.addItem(this.outputFileName, "Result file");
         configFile.addItem(this.burnFactor, "BurnFactor");
         configFile.addItem(this.nSlim, "Nslim");
-        configFile.writeToFile(workspace, ConfigFile.CONFIG_MCMC_COOKING);
+        configFile.writeToFile(workspace, BamFileNames.CONFIG_MCMC_COOKING);
     }
 
     @Override

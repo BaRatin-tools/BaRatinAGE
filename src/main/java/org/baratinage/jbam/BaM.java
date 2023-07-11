@@ -10,6 +10,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.baratinage.jbam.utils.BamFileNames;
 import org.baratinage.jbam.utils.ConfigFile;
 
 public class BaM {
@@ -101,11 +102,11 @@ public class BaM {
             predMasterConfig.addItem(this.predictionConfigs.length, "Number of prediction experiments");
             for (PredictionConfig p : this.predictionConfigs) {
 
-                predMasterConfig.addItem(p.getConfigFileName(),
+                predMasterConfig.addItem(p.getPredictionConfigFileName(),
                         "Config file for experiments - an many lines as the number above", true);
                 p.toFiles(workspace);
             }
-            predMasterConfig.writeToFile(workspace, ConfigFile.CONFIG_PREDICTION_MASTER);
+            predMasterConfig.writeToFile(workspace, BamFileNames.CONFIG_PREDICTION_MASTER);
         }
 
         // Run options configuraiton file
@@ -117,20 +118,20 @@ public class BaM {
         absoluteWorkspace = String.format("%s/", absoluteWorkspace);
         ConfigFile mainBaMconfig = new ConfigFile();
         mainBaMconfig.addItem(absoluteWorkspace, "workspace", true);
-        mainBaMconfig.addItem(ConfigFile.CONFIG_RUN_OPTIONS, "Config file: run options", true);
-        mainBaMconfig.addItem(ConfigFile.CONFIG_MODEL, "Config file: model", true);
+        mainBaMconfig.addItem(BamFileNames.CONFIG_RUN_OPTIONS, "Config file: run options", true);
+        mainBaMconfig.addItem(BamFileNames.CONFIG_MODEL, "Config file: model", true);
         // NOTE can be empty string
-        mainBaMconfig.addItem(ConfigFile.CONFIG_XTRA, "Config file: xtra model information", true);
+        mainBaMconfig.addItem(BamFileNames.CONFIG_XTRA, "Config file: xtra model information", true);
         // NOTE can be empty string
-        mainBaMconfig.addItem(ConfigFile.CONFIG_CALIBRATION, "Config file: Data", true);
+        mainBaMconfig.addItem(BamFileNames.CONFIG_CALIBRATION, "Config file: Data", true);
         mainBaMconfig.addItem(structErrConfNames,
                 "Config file: Remnant sigma (as many files as there are output variables separated by commas)", true);
-        mainBaMconfig.addItem(ConfigFile.CONFIG_MCMC, "Config file: MCMC", true);
-        mainBaMconfig.addItem(ConfigFile.CONFIG_MCMC_COOKING, "Config file: cooking of MCMC samples", true);
-        mainBaMconfig.addItem(ConfigFile.CONFIG_MCMC_SUMMARY, "Config file: summary of MCMC samples", true);
-        mainBaMconfig.addItem(ConfigFile.CONFIG_RESIDUALS, "Config file: residual diagnostics", true);
-        mainBaMconfig.addItem(ConfigFile.CONFIG_PREDICTION_MASTER, " Config file: prediction experiments", true);
-        mainBaMconfig.writeToFile(exeDir, ConfigFile.CONFIG_BAM);
+        mainBaMconfig.addItem(BamFileNames.CONFIG_MCMC, "Config file: MCMC", true);
+        mainBaMconfig.addItem(BamFileNames.CONFIG_MCMC_COOKING, "Config file: cooking of MCMC samples", true);
+        mainBaMconfig.addItem(BamFileNames.CONFIG_MCMC_SUMMARY, "Config file: summary of MCMC samples", true);
+        mainBaMconfig.addItem(BamFileNames.CONFIG_RESIDUALS, "Config file: residual diagnostics", true);
+        mainBaMconfig.addItem(BamFileNames.CONFIG_PREDICTION_MASTER, " Config file: prediction experiments", true);
+        mainBaMconfig.writeToFile(exeDir, BamFileNames.CONFIG_BAM);
     }
 
     public RunOptions getRunOptions() {
@@ -273,10 +274,16 @@ public class BaM {
         return String.join("\n", str);
     }
 
-    static public String relativizePath(String absPathStr) {
+    static public Path relativizePath(String absPathStr) {
         Path basePath = Path.of(EXE_DIR).toAbsolutePath();
         Path absPath = Paths.get(absPathStr);
         Path pathRelative = basePath.relativize(absPath);
-        return pathRelative.toString();
+        return pathRelative;
+    }
+
+    static public Path absolutizePath(String relPathStr) {
+        Path basePath = Path.of(EXE_DIR).toAbsolutePath();
+        Path absPath = Path.of(basePath.toString(), relPathStr);
+        return absPath;
     }
 }

@@ -1,5 +1,6 @@
 package org.baratinage.jbam;
 
+import org.baratinage.jbam.utils.BamFileNames;
 import org.baratinage.jbam.utils.ConfigFile;
 
 public class McmcSummaryConfig {
@@ -8,13 +9,13 @@ public class McmcSummaryConfig {
     // https://github.com/BaM-tools/BaM/commit/1c22189af4cd00d0e8267c2b95e22c38ac56a517
 
     public McmcSummaryConfig() {
-        this.outputFileName = ConfigFile.RESULTS_MCMC_SUMMARY;
+        this.outputFileName = BamFileNames.RESULTS_MCMC_SUMMARY;
     }
 
     public void toFiles(String workspace) {
         ConfigFile configFile = new ConfigFile();
         configFile.addItem(this.outputFileName, "Result file");
-        configFile.writeToFile(workspace, ConfigFile.CONFIG_MCMC_SUMMARY);
+        configFile.writeToFile(workspace, BamFileNames.CONFIG_MCMC_SUMMARY);
     }
 
     @Override

@@ -1,5 +1,6 @@
 package org.baratinage.jbam;
 
+import org.baratinage.jbam.utils.BamFileNames;
 import org.baratinage.jbam.utils.ConfigFile;
 
 public class CalDataResidualConfig {
@@ -10,13 +11,13 @@ public class CalDataResidualConfig {
     }
 
     public CalDataResidualConfig() {
-        this(ConfigFile.RESULTS_RESIDUALS);
+        this(BamFileNames.RESULTS_RESIDUALS);
     }
 
     public void toFiles(String workspace) {
         ConfigFile configFile = new ConfigFile();
         configFile.addItem(this.outputFileName, "Result file");
-        configFile.writeToFile(workspace, ConfigFile.CONFIG_RESIDUALS);
+        configFile.writeToFile(workspace, BamFileNames.CONFIG_RESIDUALS);
     }
 
     @Override

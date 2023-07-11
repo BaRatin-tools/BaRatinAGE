@@ -5,6 +5,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.baratinage.jbam.utils.BamFileNames;
 import org.baratinage.jbam.utils.ConfigFile;
 import org.baratinage.jbam.utils.Write;
 
@@ -74,7 +75,7 @@ public class CalibrationData {
     }
 
     public String getAbsoluteDataFilePath(String workspace) {
-        String dataFileName = String.format(ConfigFile.DATA_CALIBRATION, this.name);
+        String dataFileName = String.format(BamFileNames.DATA_CALIBRATION, this.name);
         return Path.of(workspace, dataFileName).toAbsolutePath().toString();
     }
 
@@ -132,7 +133,8 @@ public class CalibrationData {
         UncertainDataConfig outputsDataConfig = this.getUncertainDataConfig(this.outputs, inputsDataConfig.nCol);
 
         ConfigFile configFile = new ConfigFile();
-        configFile.addItem(BaM.relativizePath(getAbsoluteDataFilePath(workspace)), "Absolute path to data file", true);
+        configFile.addItem(BaM.relativizePath(getAbsoluteDataFilePath(workspace)).toString(),
+                "Absolute path to data file", true);
         configFile.addItem(1, "number of header lines");
         configFile.addItem(inputsDataConfig.nRow, "Nobs, number of rows in data file (excluding header lines)");
         configFile.addItem(inputsDataConfig.nCol + outputsDataConfig.nCol, "number of columns in the data file");
@@ -153,7 +155,7 @@ public class CalibrationData {
         configFile.addItem(outputsDataConfig.Xbi,
                 "columns for Yb_indx (index of systematic errors in Y - use 0 for a no-error assumption)");
 
-        String configFileName = ConfigFile.CONFIG_CALIBRATION;
+        String configFileName = BamFileNames.CONFIG_CALIBRATION;
         configFile.writeToFile(workspace, configFileName);
     }
 

@@ -1,5 +1,6 @@
 package org.baratinage.jbam;
 
+import org.baratinage.jbam.utils.BamFileNames;
 import org.baratinage.jbam.utils.ConfigFile;
 
 public class McmcConfig {
@@ -16,7 +17,7 @@ public class McmcConfig {
     // private double[] rembMultFactor;
 
     public McmcConfig() {
-        this.outputFileName = ConfigFile.RESULTS_MCMC;
+        this.outputFileName = BamFileNames.RESULTS_MCMC;
         // this.nAdapt = 25; // for testing purposes
         // this.nCycle = 25;
         this.nAdapt = 100;
@@ -49,7 +50,7 @@ public class McmcConfig {
         configFile.addItem(0.1, "MultFactor in default mode (ignored in manual mode)");
         configFile.addItem(new double[] { 0.1, 0.1, 0.1 }, "RC MultFactor in manual mode (ignored in auto mode)");
         configFile.addItem(new double[] { 0.1, 0.1, 0.1 }, "Remnant MultFactor in manual mode (ignored in auto mode)");
-        configFile.writeToFile(workspace, ConfigFile.CONFIG_MCMC);
+        configFile.writeToFile(workspace, BamFileNames.CONFIG_MCMC);
     }
 
     @Override

@@ -1,5 +1,6 @@
 package org.baratinage.jbam;
 
+import org.baratinage.jbam.utils.BamFileNames;
 import org.baratinage.jbam.utils.ConfigFile;
 
 public class RunOptions {
@@ -25,7 +26,7 @@ public class RunOptions {
         configFile.addItem(this.doSummary, "Do MCMC summary?");
         configFile.addItem(this.doResidual, "Do Residual diagnostics?");
         configFile.addItem(this.doPrediction, "Do Predictions?");
-        configFile.writeToFile(workspace, ConfigFile.CONFIG_RUN_OPTIONS);
+        configFile.writeToFile(workspace, BamFileNames.CONFIG_RUN_OPTIONS);
     }
 
     @Override

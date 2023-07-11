@@ -58,7 +58,7 @@ public class Monitoring {
                     .add(new MonitoringStep(
                             "MCMC",
                             Path.of(workspace,
-                                    ConfigFile.CONFIG_MCMC + Monitoring.MONITOR_FILE_SUFFIX),
+                                    BamFileNames.CONFIG_MCMC + Monitoring.MONITOR_FILE_SUFFIX),
                             0,
                             mcmcSamples,
                             0,
@@ -72,7 +72,8 @@ public class Monitoring {
                 this.monitoringSteps.add(
                         new MonitoringStep(
                                 "Prediction_" + predConfig.getName(),
-                                Path.of(workspace, predConfig.getConfigFileName() + Monitoring.MONITOR_FILE_SUFFIX),
+                                Path.of(workspace,
+                                        predConfig.getPredictionConfigFileName() + Monitoring.MONITOR_FILE_SUFFIX),
                                 0,
                                 cookedMcmcSamples,
                                 0,

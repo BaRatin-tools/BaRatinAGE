@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.baratinage.jbam.Distribution.DISTRIB;
+import org.baratinage.jbam.utils.BamFileNames;
 import org.baratinage.jbam.utils.ConfigFile;
 import org.baratinage.jbam.utils.Write;
 
@@ -39,10 +40,10 @@ public class Model {
             configFile.addItem(d.getParameterValues(), "Prior parameters");
         }
 
-        configFile.writeToFile(workspace, ConfigFile.CONFIG_MODEL);
+        configFile.writeToFile(workspace, BamFileNames.CONFIG_MODEL);
 
         try {
-            Write.writeLines(Path.of(workspace, ConfigFile.CONFIG_XTRA),
+            Write.writeLines(Path.of(workspace, BamFileNames.CONFIG_XTRA),
                     new String[] { this.xTra });
         } catch (IOException e) {
             e.printStackTrace();
@@ -72,7 +73,7 @@ public class Model {
     // possible for other objects such as jbam.ModelOutput which require the BaM
     // master file.
     public static Model buildModel(String workspace) {
-        ConfigFile configFile = ConfigFile.readConfigFile(workspace, ConfigFile.CONFIG_MODEL);
+        ConfigFile configFile = ConfigFile.readConfigFile(workspace, BamFileNames.CONFIG_MODEL);
 
         String modelId = configFile.getString(0);
         int nX = configFile.getInt(1);
