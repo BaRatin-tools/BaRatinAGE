@@ -26,7 +26,7 @@ public class RatingCurveStageGrid extends RowColPanel implements IPredictionData
 
     private StageGridConfig stageGridConfig;
 
-    private record StageGridConfig(double min, double max, double step) {
+    private record StageGridConfig(Double min, Double max, Double step) {
     }
 
     private boolean isValueValid;
@@ -97,7 +97,7 @@ public class RatingCurveStageGrid extends RowColPanel implements IPredictionData
         gridPanel.insertChild(stepLabel, 6, 0);
 
         isValueValid = false;
-        stageGridConfig = new StageGridConfig(0, 0, 0);
+        stageGridConfig = new StageGridConfig(null, null, null);
 
         nbrStepField.setValue(100);
         nbrStepField.updateTextField();
@@ -121,7 +121,7 @@ public class RatingCurveStageGrid extends RowColPanel implements IPredictionData
         return isValueValid;
     }
 
-    public double getMinValue() {
+    public Double getMinValue() {
         return stageGridConfig.min;
     }
 
@@ -131,7 +131,7 @@ public class RatingCurveStageGrid extends RowColPanel implements IPredictionData
         updateStageGridConfig();
     }
 
-    public double getMaxValue() {
+    public Double getMaxValue() {
         return stageGridConfig.max;
     }
 
@@ -141,7 +141,7 @@ public class RatingCurveStageGrid extends RowColPanel implements IPredictionData
         updateStageGridConfig();
     }
 
-    public double getStepValue() {
+    public Double getStepValue() {
         return stageGridConfig.step;
     }
 
@@ -212,7 +212,7 @@ public class RatingCurveStageGrid extends RowColPanel implements IPredictionData
         if (!nbrStepField.isValueValid() || !valStepField.isValueValid() || !minStageField.isValueValid()
                 || !maxStageField.isValueValid()) {
             isValueValid = false;
-            stageGridConfig = new StageGridConfig(0, 0, 0);
+            stageGridConfig = new StageGridConfig(null, null, null);
         } else {
             isValueValid = true;
             stageGridConfig = new StageGridConfig(min, max, step);

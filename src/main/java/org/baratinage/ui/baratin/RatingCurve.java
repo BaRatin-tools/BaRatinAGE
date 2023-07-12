@@ -275,9 +275,15 @@ public class RatingCurve extends BamItem implements ICalibratedModel, IMcmc, Bam
         if (json.has("stageGridConfig")) {
             RatingCurveStageGrid ratingCurveGrid = posteriorRatingCurve.getRatingCurveStageGrid();
             JSONObject stageGridJson = json.getJSONObject("stageGridConfig");
-            ratingCurveGrid.setMinValue(stageGridJson.getDouble("min"));
-            ratingCurveGrid.setMaxValue(stageGridJson.getDouble("max"));
-            ratingCurveGrid.setStepValue(stageGridJson.getDouble("step"));
+            if (stageGridJson.has("min")) {
+                ratingCurveGrid.setMinValue(stageGridJson.getDouble("min"));
+            }
+            if (stageGridJson.has("max")) {
+                ratingCurveGrid.setMaxValue(stageGridJson.getDouble("max"));
+            }
+            if (stageGridJson.has("step")) {
+                ratingCurveGrid.setStepValue(stageGridJson.getDouble("step"));
+            }
         }
 
         if (json.has("bamRunId")) {
@@ -289,6 +295,7 @@ public class RatingCurve extends BamItem implements ICalibratedModel, IMcmc, Bam
             jsonStringBackup = json.getString("jsonStringBackup");
         }
 
+        checkSync();
     }
 
     @Override
