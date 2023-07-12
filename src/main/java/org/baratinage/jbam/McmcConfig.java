@@ -1,6 +1,6 @@
 package org.baratinage.jbam;
 
-import org.baratinage.jbam.utils.BamFileNames;
+import org.baratinage.jbam.utils.BamFilesHelpers;
 import org.baratinage.jbam.utils.ConfigFile;
 
 public class McmcConfig {
@@ -17,15 +17,33 @@ public class McmcConfig {
     // private double[] rembMultFactor;
 
     public McmcConfig() {
-        this.outputFileName = BamFileNames.RESULTS_MCMC;
-        // this.nAdapt = 25; // for testing purposes
-        // this.nCycle = 25;
-        this.nAdapt = 100;
-        this.nCycle = 100;
-        this.minMoveRate = 0.1;
-        this.maxMoveRate = 0.5;
-        this.downMult = 0.9;
-        this.upMult = 1.1;
+
+        this(
+                BamFilesHelpers.RESULTS_MCMC,
+                100,
+                100,
+                0.1,
+                0.5,
+                0.9,
+                1.1);
+
+    }
+
+    public McmcConfig(
+            String outputFileName,
+            int nAdapt,
+            int nCycle,
+            double minMoveRate,
+            double maxMoveRate,
+            double downMult,
+            double upMult) {
+        this.outputFileName = outputFileName;
+        this.nAdapt = nAdapt;
+        this.nCycle = nCycle;
+        this.minMoveRate = minMoveRate;
+        this.maxMoveRate = maxMoveRate;
+        this.downMult = downMult;
+        this.upMult = upMult;
         // this.mode = 0;
         // this.multFactor = 0.1;
         // this.rcMultFactor = new double[]{0.1, 0.1, 0.1};
@@ -50,7 +68,7 @@ public class McmcConfig {
         configFile.addItem(0.1, "MultFactor in default mode (ignored in manual mode)");
         configFile.addItem(new double[] { 0.1, 0.1, 0.1 }, "RC MultFactor in manual mode (ignored in auto mode)");
         configFile.addItem(new double[] { 0.1, 0.1, 0.1 }, "Remnant MultFactor in manual mode (ignored in auto mode)");
-        configFile.writeToFile(workspace, BamFileNames.CONFIG_MCMC);
+        configFile.writeToFile(workspace, BamFilesHelpers.CONFIG_MCMC);
     }
 
     @Override
@@ -64,5 +82,18 @@ public class McmcConfig {
         str += String.format("%f; ", this.downMult);
         str += String.format("%f.\n", this.upMult);
         return str;
+    }
+
+    static public McmcConfig readMcmc(String workspace, String mcmcConfigFileName) {
+        ConfigFile configFile = ConfigFile.readConfigFile(workspace, mcmcConfigFileName);
+        String outputFileName = configFile.getString(0);
+        int nAdapt = configFile.getInt(1);
+        int nCycle = configFile.getInt(2);
+        double minMoveRate = configFile.getDouble(3);
+        double maxMoveRate = configFile.getDouble(4);
+        double downMult = configFile.getDouble(5);
+        double upMult = configFile.getDouble(6);
+
+        return new McmcConfig(outputFileName, nAdapt, nCycle, minMoveRate, maxMoveRate, downMult, upMult);
     }
 }

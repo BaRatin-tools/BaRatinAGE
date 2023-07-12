@@ -3,6 +3,7 @@ package org.baratinage.utils;
 import java.io.File;
 import java.io.BufferedOutputStream;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -38,28 +39,82 @@ public class ReadWriteZip {
         return true;
     }
 
-    static public boolean zip(String zipFilePath, String sourceDirPath) {
+    // static public boolean zip(String zipFilePath, String sourceDirPath) {
+    // File zipFile = new File(zipFilePath.toString());
+    // try {
+    // FileOutputStream zipFileOutStream = new FileOutputStream(zipFile);
+    // ZipOutputStream zipOutStream = new ZipOutputStream(zipFileOutStream);
+    // File[] files = new File(sourceDirPath).listFiles();
+    // if (files != null) {
+    // for (File f : files) {
+    // System.out.println("File '" + f + "'.");
+    // ZipEntry ze = new ZipEntry(f.getName());
+
+    // zipOutStream.putNextEntry(ze);
+
+    // Files.copy(f.toPath(), zipOutStream);
+    // }
+    // }
+    // zipOutStream.close();
+    // } catch (IOException e) {
+    // System.err.println("Error while zipping directory!");
+    // e.printStackTrace();
+    // return false;
+    // }
+    // return true;
+    // }
+
+    static public boolean flatZip(String zipFilePath, String... sourceDirs) {
         File zipFile = new File(zipFilePath.toString());
+        // try {
+        FileOutputStream zipFileOutStream;
         try {
-            FileOutputStream zipFileOutStream = new FileOutputStream(zipFile);
-            ZipOutputStream zipOutStream = new ZipOutputStream(zipFileOutStream);
-            File[] files = new File(sourceDirPath).listFiles();
-            if (files != null) {
-                for (File f : files) {
-                    System.out.println("File '" + f + "'.");
-                    ZipEntry ze = new ZipEntry(f.getName());
-
-                    zipOutStream.putNextEntry(ze);
-
-                    Files.copy(f.toPath(), zipOutStream);
-                }
-            }
-            zipOutStream.close();
-        } catch (IOException e) {
-            System.err.println("Error while zipping directory!");
+            zipFileOutStream = new FileOutputStream(zipFile);
+        } catch (FileNotFoundException e) {
+            System.err.println("Cannot create output zipfile '" + zipFilePath + "'!");
             e.printStackTrace();
             return false;
         }
-        return true;
+        ZipOutputStream zipOutStream = new ZipOutputStream(zipFileOutStream);
+
+        boolean success = true;
+        for (String source : sourceDirs) {
+            success &= flatZip(zipOutStream, new File(source));
+        }
+        try {
+            zipOutStream.close();
+        } catch (IOException e) {
+            System.err.println("Cannot close output zipfile '" + zipFilePath + "'!");
+            e.printStackTrace();
+            return false;
+        }
+        return success;
+    }
+
+    static private boolean flatZip(ZipOutputStream zipOutStream, File fileOrDir) {
+        boolean success = true;
+        if (fileOrDir.isDirectory()) {
+            File[] innerFiles = fileOrDir.listFiles();
+            if (innerFiles != null) {
+                for (File f : innerFiles) {
+                    if (!flatZip(zipOutStream, f)) {
+                        success = false;
+                    }
+                }
+            }
+
+        } else if (fileOrDir.isFile()) {
+            System.out.println("Zipping file '" + fileOrDir + "'...");
+            ZipEntry ze = new ZipEntry(fileOrDir.getName());
+            try {
+                zipOutStream.putNextEntry(ze);
+                Files.copy(fileOrDir.toPath(), zipOutStream);
+            } catch (IOException e) {
+                System.err.println("Failed to add file '" + fileOrDir + "'!");
+                success = false;
+            }
+        }
+
+        return success;
     }
 }

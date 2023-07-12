@@ -2,7 +2,7 @@ package org.baratinage.jbam;
 
 import java.nio.file.Path;
 
-import org.baratinage.jbam.utils.BamFileNames;
+import org.baratinage.jbam.utils.BamFilesHelpers;
 import org.baratinage.jbam.utils.ConfigFile;
 
 public class PredictionConfig {
@@ -36,7 +36,7 @@ public class PredictionConfig {
     }
 
     public String getPredictionConfigFileName() {
-        return BamFileNames.buildPredictionConfigFileName(name);
+        return BamFilesHelpers.buildPredictionConfigFileName(name);
     }
 
     public PredictionOutput[] getPredictionStates() {
@@ -71,10 +71,9 @@ public class PredictionConfig {
         int nObs = 0; // FIXME: is zero data allowed?
         int[] nSpag = new int[n];
         for (int k = 0; k < n; k++) {
-            String inputFilePath = BaM
-                    .relativizePath(
-                            Path.of(workspace, this.inputs[k].getDataFileName())
-                                    .toAbsolutePath().toString())
+            String inputFilePath = BamFilesHelpers.relativizePath(
+                    Path.of(workspace, this.inputs[k].getDataFileName())
+                            .toAbsolutePath().toString())
                     .toString();
             inputFilePaths[k] = inputFilePath;
             int tmpNobs = this.inputs[k].getNobs();
@@ -102,8 +101,8 @@ public class PredictionConfig {
         boolean[] createOutputEnvelop = new boolean[n];
         for (int k = 0; k < n; k++) {
             String outputName = this.outputs[k].getName();
-            spagOutputFileName[k] = BamFileNames.buildSpagOutputFileName(name, outputName);
-            envOutputFileName[k] = BamFileNames.buildEnvOutputFileName(name, outputName);
+            spagOutputFileName[k] = BamFilesHelpers.buildSpagOutputFileName(name, outputName);
+            envOutputFileName[k] = BamFilesHelpers.buildEnvOutputFileName(name, outputName);
             includeOutputStructuralError[k] = this.outputs[k].getSructuralError();
             transposeOutput[k] = this.outputs[k].getTranspose();
             createOutputEnvelop[k] = this.outputs[k].getCreateEnvelop();
@@ -118,8 +117,8 @@ public class PredictionConfig {
         for (int k = 0; k < n; k++) {
             doStatePredictions[k] = true;
             String stateName = this.states[k].getName();
-            spagStateFileName[k] = BamFileNames.buildSpagStateFileName(name, stateName);
-            envStateFileName[k] = BamFileNames.buildEnvStateFileName(name, stateName);
+            spagStateFileName[k] = BamFilesHelpers.buildSpagStateFileName(name, stateName);
+            envStateFileName[k] = BamFilesHelpers.buildEnvStateFileName(name, stateName);
             transposeState[k] = this.states[k].getTranspose();
             createStateEnvelop[k] = this.states[k].getCreateEnvelop();
         }
@@ -170,12 +169,10 @@ public class PredictionConfig {
         return str;
     }
 
-    public static PredictionConfig readPredictionConfig(String workspace, String predictionName) {
+    public static PredictionConfig readPredictionConfig(String workspace, String predictionFileName) {
         ConfigFile configFile = ConfigFile.readConfigFile(
                 workspace,
-                BamFileNames.buildPredictionConfigFileName(predictionName));
-
-        System.out.println(configFile);
+                predictionFileName);
 
         String[] inputFilePaths = configFile.getStringArray(0);
         int nInput = inputFilePaths.length;
@@ -183,8 +180,12 @@ public class PredictionConfig {
         PredictionInput[] inputs = new PredictionInput[nInput];
 
         for (int k = 0; k < nInput; k++) {
-            Path absPath = BaM.absolutizePath(inputFilePaths[k]);
-            String dataFileName = absPath.getFileName().toString();
+
+            // FIXME: for simplicity sake, assuming that data file is in workspace folder!
+            String dataFileName = Path.of(inputFilePaths[k]).getFileName().toString();
+            String dataFilePath = Path.of(workspace, dataFileName).toString();
+            // Path absPath = BamFilesHelpers.absolutizePath(inputFilePaths[k]);
+
             inputs[k] = PredictionInput.readPredictionInput(workspace, dataFileName);
         }
 
@@ -198,7 +199,7 @@ public class PredictionConfig {
                 createEnvelops.length != nOutput) {
             System.err.println(
                     "Number of outputs is inconsistant in config file '" +
-                            BamFileNames.buildPredictionConfigFileName(predictionName)
+                            predictionFileName
                             + "'! ");
             return null;
         }
@@ -206,7 +207,7 @@ public class PredictionConfig {
         PredictionOutput[] predictionOutputs = new PredictionOutput[nOutput];
         for (int k = 0; k < nOutput; k++) {
             predictionOutputs[k] = new PredictionOutput(
-                    BamFileNames.getOutputNameFromSpagResultFile(outSpagFileNames[k]),
+                    outSpagFileNames[k],
                     propagateStructuralErrors[k],
                     transposeRes[k],
                     createEnvelops[k]);
@@ -226,7 +227,7 @@ public class PredictionConfig {
                     stateCreateEnvelops.length != nState) {
                 System.err.println(
                         "Number of states is inconsistant in config file '" +
-                                BamFileNames.buildPredictionConfigFileName(predictionName)
+                                predictionFileName
                                 + "'! ");
                 return null;
             }
@@ -234,7 +235,7 @@ public class PredictionConfig {
             predictionState = new PredictionOutput[nState];
             for (int k = 0; k < nState; k++) {
                 predictionState[k] = new PredictionOutput(
-                        BamFileNames.getStateNameFromSpagResultFile(stateSpagFileNames[k]),
+                        stateSpagFileNames[k],
                         false,
                         stateTransposeRes[k],
                         stateCreateEnvelops[k]);
@@ -247,7 +248,7 @@ public class PredictionConfig {
         boolean printProgress = configFile.getBoolean(10);
 
         return new PredictionConfig(
-                predictionName,
+                predictionFileName,
                 inputs,
                 predictionOutputs,
                 predictionOutputs,

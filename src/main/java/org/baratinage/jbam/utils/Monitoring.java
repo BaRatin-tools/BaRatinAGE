@@ -58,7 +58,7 @@ public class Monitoring {
                     .add(new MonitoringStep(
                             "MCMC",
                             Path.of(workspace,
-                                    BamFileNames.CONFIG_MCMC + Monitoring.MONITOR_FILE_SUFFIX),
+                                    BamFilesHelpers.CONFIG_MCMC + Monitoring.MONITOR_FILE_SUFFIX),
                             0,
                             mcmcSamples,
                             0,

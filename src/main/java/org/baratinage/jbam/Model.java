@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.baratinage.jbam.Distribution.DISTRIB;
-import org.baratinage.jbam.utils.BamFileNames;
+import org.baratinage.jbam.utils.BamFilesHelpers;
 import org.baratinage.jbam.utils.ConfigFile;
 import org.baratinage.jbam.utils.Write;
 
@@ -40,10 +40,10 @@ public class Model {
             configFile.addItem(d.getParameterValues(), "Prior parameters");
         }
 
-        configFile.writeToFile(workspace, BamFileNames.CONFIG_MODEL);
+        configFile.writeToFile(workspace, BamFilesHelpers.CONFIG_MODEL);
 
         try {
-            Write.writeLines(Path.of(workspace, BamFileNames.CONFIG_XTRA),
+            Write.writeLines(Path.of(workspace, BamFilesHelpers.CONFIG_XTRA),
                     new String[] { this.xTra });
         } catch (IOException e) {
             e.printStackTrace();
@@ -68,12 +68,8 @@ public class Model {
         return String.join("\n", str);
     }
 
-    // FIXME: this was an attempt at creating jbam objects from an existing
-    // workspace. This works fine in the case of jbam.Model, however, it is not
-    // possible for other objects such as jbam.ModelOutput which require the BaM
-    // master file.
-    public static Model buildModel(String workspace) {
-        ConfigFile configFile = ConfigFile.readConfigFile(workspace, BamFileNames.CONFIG_MODEL);
+    public static Model readModel(String workspace, String modelConfigFileName) {
+        ConfigFile configFile = ConfigFile.readConfigFile(workspace, modelConfigFileName);
 
         String modelId = configFile.getString(0);
         int nX = configFile.getInt(1);

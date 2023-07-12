@@ -1,6 +1,6 @@
 package org.baratinage.jbam;
 
-import org.baratinage.jbam.utils.BamFileNames;
+import org.baratinage.jbam.utils.BamFilesHelpers;
 import org.baratinage.jbam.utils.ConfigFile;
 
 public class McmcCookingConfig {
@@ -9,9 +9,16 @@ public class McmcCookingConfig {
     private int nSlim;
 
     public McmcCookingConfig() {
-        this.outputFileName = BamFileNames.RESULTS_MCMC_COOKING;
-        this.burnFactor = 0.5;
-        this.nSlim = 10;
+        this(BamFilesHelpers.RESULTS_MCMC_COOKING, 0.5, 10);
+    }
+
+    public McmcCookingConfig(
+            String outputFileName,
+            double burnFactor,
+            int nSlim) {
+        this.outputFileName = outputFileName;
+        this.burnFactor = burnFactor;
+        this.nSlim = nSlim;
     }
 
     public int numberOfCookedMcmcSamples(int numberOfMcmcSamples) {
@@ -23,7 +30,7 @@ public class McmcCookingConfig {
         configFile.addItem(this.outputFileName, "Result file");
         configFile.addItem(this.burnFactor, "BurnFactor");
         configFile.addItem(this.nSlim, "Nslim");
-        configFile.writeToFile(workspace, BamFileNames.CONFIG_MCMC_COOKING);
+        configFile.writeToFile(workspace, BamFilesHelpers.CONFIG_MCMC_COOKING);
     }
 
     @Override
@@ -33,5 +40,13 @@ public class McmcCookingConfig {
         str += String.format("%f; ", this.burnFactor);
         str += String.format("%d.\n", this.nSlim);
         return str;
+    }
+
+    static public McmcCookingConfig readMcmcCookingConfig(String workspace, String mcmcCookingConfigFileName) {
+        ConfigFile configFile = ConfigFile.readConfigFile(workspace, mcmcCookingConfigFileName);
+        String outputFileName = configFile.getString(0);
+        double burnFactor = configFile.getDouble(1);
+        int nSlim = configFile.getInt(2);
+        return new McmcCookingConfig(outputFileName, burnFactor, nSlim);
     }
 }

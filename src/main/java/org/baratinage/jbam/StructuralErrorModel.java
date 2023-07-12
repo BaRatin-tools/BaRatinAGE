@@ -2,7 +2,8 @@ package org.baratinage.jbam;
 
 import java.nio.file.Path;
 
-import org.baratinage.jbam.utils.BamFileNames;
+import org.baratinage.jbam.Distribution.DISTRIB;
+import org.baratinage.jbam.utils.BamFilesHelpers;
 import org.baratinage.jbam.utils.ConfigFile;
 
 public class StructuralErrorModel {
@@ -17,7 +18,7 @@ public class StructuralErrorModel {
     }
 
     public String getConfigFileName() {
-        String configFileName = String.format(BamFileNames.CONFIG_STRUCTURAL_ERRORS, this.name);
+        String configFileName = String.format(BamFilesHelpers.CONFIG_STRUCTURAL_ERRORS, this.name);
         return configFileName;
     }
 
@@ -49,5 +50,25 @@ public class StructuralErrorModel {
             str += p.toString() + "\n";
         }
         return str;
+    }
+
+    static public StructuralErrorModel readStructuralErrorModel(String workspace,
+            String structErrorModelConfigFileName) {
+        ConfigFile configFile = ConfigFile.readConfigFile(workspace, structErrorModelConfigFileName);
+
+        String modelId = configFile.getString(0);
+        int nPars = configFile.getInt(1);
+
+        Parameter[] modelParameters = new Parameter[nPars];
+        for (int k = 0; k < nPars; k++) {
+            String parameterName = configFile.getString(1 + k * 4 + 1);
+            double initialGuess = configFile.getDouble(1 + k * 4 + 2);
+            String distName = configFile.getString(1 + k * 4 + 3);
+            double[] distParams = configFile.getDoubleArray(1 + k * 4 + 4);
+            Distribution d = new Distribution(DISTRIB.getDistribFromName(distName), distParams);
+            modelParameters[k] = new Parameter(parameterName, initialGuess, d);
+        }
+
+        return new StructuralErrorModel(structErrorModelConfigFileName, modelId, modelParameters);
     }
 }

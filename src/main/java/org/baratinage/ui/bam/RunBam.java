@@ -18,6 +18,7 @@ import org.baratinage.jbam.PredictionConfig;
 import org.baratinage.jbam.RunOptions;
 import org.baratinage.jbam.StructuralErrorModel;
 import org.baratinage.jbam.UncertainData;
+import org.baratinage.jbam.utils.BamFilesHelpers;
 import org.baratinage.utils.Misc;
 import org.baratinage.utils.ReadWriteZip;
 
@@ -161,7 +162,7 @@ public class RunBam {
 
         // 6) BaM
 
-        bam = new BaM(calibrationConfig, predConfigs, runOptions, null, null);
+        bam = new BaM(calibrationConfig, predConfigs, runOptions);
     };
 
     public void run() {
@@ -191,7 +192,8 @@ public class RunBam {
     }
 
     public void zipBamRun() {
-        ReadWriteZip.zip(zipPath.toString(), workspacePath.toString());
+        String mainConfigFilePath = Path.of(BamFilesHelpers.EXE_DIR, BamFilesHelpers.CONFIG_BAM).toString();
+        ReadWriteZip.flatZip(zipPath.toString(), workspacePath.toString(), mainConfigFilePath);
     }
 
     public void unzipBamRun() {

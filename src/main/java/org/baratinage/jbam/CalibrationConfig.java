@@ -89,4 +89,60 @@ public class CalibrationConfig {
         str += this.calDataResidualConfig.toString();
         return str;
     }
+
+    static public CalibrationConfig readCalibrationConfig(
+            String workspace,
+            String modelConfigFileName,
+            String xTraConfigFileName,
+            String dataConfigFileName,
+            String[] structuralErrorModelFileNames,
+            String mcmcConfigFileName,
+            String mcmcCookingConfigFileName,
+            String mcmcSummaryConfigFileName,
+            String dataResidualConfigFileName) {
+
+        Model model = Model.readModel(workspace, modelConfigFileName);
+        int nOutput = model.nOutput;
+
+        if (structuralErrorModelFileNames.length != nOutput) {
+            System.err.println(
+                    "Number of model output in Model doesn't match the number of stuctural error config file names!");
+            return null;
+        }
+
+        StructuralErrorModel[] structuralErrorModels = new StructuralErrorModel[nOutput];
+        ModelOutput[] modelOutputs = new ModelOutput[nOutput];
+        for (int k = 0; k < nOutput; k++) {
+            // FIXME: cannot infer any name from configuration files....
+            String outputName = "Output_" + (k + 1);
+            structuralErrorModels[k] = StructuralErrorModel.readStructuralErrorModel(
+                    workspace, structuralErrorModelFileNames[k]);
+            modelOutputs[k] = new ModelOutput(outputName, structuralErrorModels[k]);
+        }
+
+        CalibrationData calibrationData = CalibrationData.readCalibrationData(
+                workspace,
+                dataConfigFileName);
+        McmcConfig mcmcConfig = McmcConfig.readMcmc(
+                workspace,
+                mcmcConfigFileName);
+        McmcCookingConfig mcmcCookingConfig = McmcCookingConfig.readMcmcCookingConfig(
+                workspace,
+                mcmcCookingConfigFileName);
+        McmcSummaryConfig mcmcSummaryConfig = McmcSummaryConfig.readMcmcSummaryConfig(
+                workspace,
+                mcmcSummaryConfigFileName);
+        CalDataResidualConfig calDataResidualConfig = CalDataResidualConfig.readCalDataResidualConfig(
+                workspace,
+                dataResidualConfigFileName);
+
+        return new CalibrationConfig(
+                model,
+                modelOutputs,
+                calibrationData,
+                mcmcConfig,
+                mcmcCookingConfig,
+                mcmcSummaryConfig,
+                calDataResidualConfig);
+    }
 }

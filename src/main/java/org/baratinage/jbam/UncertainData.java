@@ -25,7 +25,7 @@ public class UncertainData {
         this.values = values;
         this.nonSysStd = nonSysStd;
         this.sysStd = sysStd;
-        this.sysStd = sysStd;
+        this.sysIndices = sysIndices;
     }
 
     public UncertainData(String name, double[] values, double[] nonSysStd) {

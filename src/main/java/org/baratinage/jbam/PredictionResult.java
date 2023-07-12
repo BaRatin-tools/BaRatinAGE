@@ -5,7 +5,7 @@ import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.List;
 
-import org.baratinage.jbam.utils.BamFileNames;
+import org.baratinage.jbam.utils.BamFilesHelpers;
 import org.baratinage.jbam.utils.Read;
 
 public class PredictionResult {
@@ -58,8 +58,9 @@ public class PredictionResult {
         PredictionOutput[] outputConfigs = predictionConfig.getPredictionOutputs();
         for (PredictionOutput outConfig : outputConfigs) {
             String outputName = outConfig.getName();
-            String envFileName = String.format(BamFileNames.RESULTS_OUTPUT_ENV, predictionConfig.getName(), outputName);
-            String spagFileName = String.format(BamFileNames.RESULTS_OUTPUT_SPAG, predictionConfig.getName(),
+            String envFileName = String.format(BamFilesHelpers.RESULTS_OUTPUT_ENV, predictionConfig.getName(),
+                    outputName);
+            String spagFileName = String.format(BamFilesHelpers.RESULTS_OUTPUT_SPAG, predictionConfig.getName(),
                     outputName);
             List<double[]> env = null;
             List<double[]> spag = null;

@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
 
-import org.baratinage.jbam.utils.BamFileNames;
+import org.baratinage.jbam.utils.BamFilesHelpers;
 import org.baratinage.jbam.utils.Read;
 import org.baratinage.jbam.utils.Write;
 
@@ -35,7 +35,7 @@ public class PredictionInput {
     }
 
     public String getDataFileName() {
-        return BamFileNames.buildPredictionDataFileName(name);
+        return BamFilesHelpers.buildPredictionDataFileName(name);
     }
 
     public String getName() {
@@ -68,7 +68,7 @@ public class PredictionInput {
     }
 
     public static PredictionInput readPredictionInput(String workspace, String dataFileName) {
-        String predictionInputName = BamFileNames.getPredictionName(dataFileName);
+        String predictionInputName = BamFilesHelpers.getPredictionName(dataFileName);
         predictionInputName = predictionInputName == null ? dataFileName : predictionInputName;
 
         try {

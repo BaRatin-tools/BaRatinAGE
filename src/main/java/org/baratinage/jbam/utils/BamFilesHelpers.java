@@ -1,12 +1,19 @@
 package org.baratinage.jbam.utils;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class BamFileNames {
+public class BamFilesHelpers {
+
+    public static final String OS_SEP = System.getProperty("file.separator");
+    public static final String OS = System.getProperty("os.name").toLowerCase();
+    public static final String EXE_DIR = "./exe/";
+    public static final String EXE_NAME = "BaM";
+
     public static final String DATA_CALIBRATION = "Data_%s.txt";
     public static final String DATA_PREDICTION = "Data_%s.txt";
 
@@ -32,32 +39,44 @@ public class BamFileNames {
     public static final String RESULTS_STATE_SPAG = "state_%s_%s.spag";
     public static final String RESULTS_STATE_ENV = "state_%s_%s.env";
 
+    /**
+     * FIXME: remove all the deprecated functions below
+     * I should not assume any predifined format for config and results files
+     * when reading an existing project!
+     */
+    @Deprecated
     public static String buildPredictionDataFileName(String predictionName) {
         return String.format(DATA_PREDICTION, predictionName);
     }
 
+    @Deprecated
     public static String getPredictionNameFromInputDataFileName(String predictionDataFileName) {
         List<String> parsed = parseString(DATA_PREDICTION, predictionDataFileName);
         return parsed.size() == 1 ? parsed.get(0) : null;
     }
 
+    @Deprecated
     public static String buildPredictionConfigFileName(String predictionName) {
         return String.format(CONFIG_PREDICTION, predictionName);
     }
 
+    @Deprecated
     public static String getPredictionName(String predictionDataFileName) {
         List<String> parsed = parseString(DATA_PREDICTION, predictionDataFileName);
         return parsed.size() == 1 ? parsed.get(0) : null;
     }
 
+    @Deprecated
     public static String buildSpagOutputFileName(String predictionName, String outputName) {
         return String.format(RESULTS_OUTPUT_SPAG, predictionName, outputName);
     }
 
+    @Deprecated
     public static String buildEnvOutputFileName(String predictionName, String outputName) {
         return String.format(RESULTS_OUTPUT_ENV, predictionName, outputName);
     }
 
+    @Deprecated
     public static String buildSpagStateFileName(String predictionName, String stateName) {
         return String.format(RESULTS_STATE_SPAG, predictionName, stateName);
     }
@@ -66,11 +85,13 @@ public class BamFileNames {
         return String.format(RESULTS_STATE_ENV, predictionName, stateName);
     }
 
+    @Deprecated
     public static String getOutputNameFromSpagResultFile(String spagOutputFileName) {
         List<String> parsed = parseString(RESULTS_OUTPUT_SPAG, spagOutputFileName);
         return parsed.size() == 2 ? parsed.get(1) : null;
     }
 
+    @Deprecated
     public static String getStateNameFromSpagResultFile(String spagStateFileName) {
         List<String> parsed = parseString(RESULTS_STATE_SPAG, spagStateFileName);
         return parsed.size() == 2 ? parsed.get(1) : null;
@@ -86,6 +107,21 @@ public class BamFileNames {
             }
         }
         return output;
+    }
+
+    // FIXME: move to a BamFilesHelpers class
+    static public Path relativizePath(String absPathStr) {
+        Path basePath = Path.of(EXE_DIR).toAbsolutePath();
+        Path absPath = Paths.get(absPathStr);
+        Path pathRelative = basePath.relativize(absPath);
+        return pathRelative;
+    }
+
+    // FIXME: move to a BamFilesHelpers class
+    static public Path absolutizePath(String relPathStr) {
+        Path basePath = Path.of(EXE_DIR).toAbsolutePath();
+        Path absPath = Path.of(basePath.toString(), relPathStr);
+        return absPath;
     }
 
 }
