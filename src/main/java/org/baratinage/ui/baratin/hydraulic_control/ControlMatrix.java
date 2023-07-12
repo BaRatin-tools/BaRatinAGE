@@ -133,7 +133,7 @@ public class ControlMatrix extends RowColPanel implements ChangeListener {
             controls.get(k).update(selected);
         }
         updateControlMatrixView();
-        firePropertyChange("controlMatrixChange", null, null);
+        fireChangeListeners();
     }
 
     private void addControl() {
