@@ -3,35 +3,27 @@ package org.baratinage.jbam;
 import java.nio.file.Path;
 
 import org.baratinage.jbam.Distribution.DISTRIB;
-import org.baratinage.jbam.utils.BamFilesHelpers;
 import org.baratinage.jbam.utils.ConfigFile;
 
 public class StructuralErrorModel {
-    private String name;
-    private String modelId;
-    private Parameter[] parameters;
+    public final String name;
+    public final String fileName;
+    public final String modelId;
+    public final Parameter[] parameters;
 
-    public StructuralErrorModel(String name, String modelId, Parameter[] parameters) {
+    public StructuralErrorModel(String name, String fileName, String modelId, Parameter[] parameters) {
         this.name = name;
+        this.fileName = fileName;
         this.modelId = modelId;
         this.parameters = parameters;
     }
 
-    public String getConfigFileName() {
-        String configFileName = String.format(BamFilesHelpers.CONFIG_STRUCTURAL_ERRORS, this.name);
-        return configFileName;
-    }
-
-    public Parameter[] getParameters() {
-        return parameters;
-    }
-
     public void toFiles(String workspace) {
         ConfigFile configFile = new ConfigFile();
-        configFile.addItem(this.modelId, "Function f used in sdev=f(Qrc) ", true);
-        configFile.addItem(this.parameters.length, "Number of parameters gamma for f");
+        configFile.addItem(modelId, "Function f used in sdev=f(Qrc) ", true);
+        configFile.addItem(parameters.length, "Number of parameters gamma for f");
 
-        for (Parameter p : this.parameters) {
+        for (Parameter p : parameters) {
             configFile.addItem(p.getName(), "Parameter name -----", true);
             configFile.addItem(p.getInitialGuess(), "Initial guess");
             Distribution d = p.getDistribution();
@@ -39,14 +31,13 @@ public class StructuralErrorModel {
             configFile.addItem(d.getParameterValues(), "Prior parameters");
         }
 
-        String configFileName = this.getConfigFileName();
-        configFile.writeToFile(Path.of(workspace, configFileName).toString());
+        configFile.writeToFile(Path.of(workspace, fileName).toString());
     }
 
     @Override
     public String toString() {
-        String str = String.format("Structural Error Model %s of type '%s':\n", this.name, this.modelId);
-        for (Parameter p : this.parameters) {
+        String str = String.format("Structural Error Model %s of type '%s':\n", name, modelId);
+        for (Parameter p : parameters) {
             str += p.toString() + "\n";
         }
         return str;
@@ -69,6 +60,10 @@ public class StructuralErrorModel {
             modelParameters[k] = new Parameter(parameterName, initialGuess, d);
         }
 
-        return new StructuralErrorModel(structErrorModelConfigFileName, modelId, modelParameters);
+        return new StructuralErrorModel(
+                structErrorModelConfigFileName,
+                structErrorModelConfigFileName,
+                modelId,
+                modelParameters);
     }
 }

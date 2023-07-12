@@ -1,36 +1,26 @@
 package org.baratinage.jbam;
 
 public class PredictionOutput {
-    private String name;
-    private boolean structuralError;
-    private boolean transpose;
-    private boolean createEnvelop;
+    public final String name;
+    public final String spagFileName;
+    public final String envFileName;
+    public final boolean structuralError;
+    public final boolean transpose;
+    public final boolean createEnvelop;
 
     public PredictionOutput(
             String name,
+            String spagFileName,
+            String envFileName,
             boolean structuralError,
             boolean transpose,
             boolean createEnvelop) {
         this.name = name;
+        this.spagFileName = spagFileName;
+        this.envFileName = envFileName;
         this.structuralError = structuralError;
         this.transpose = transpose;
         this.createEnvelop = createEnvelop;
-    }
-
-    public String getName() {
-        return this.name;
-    }
-
-    public boolean getSructuralError() {
-        return this.structuralError;
-    }
-
-    public boolean getTranspose() {
-        return this.transpose;
-    }
-
-    public boolean getCreateEnvelop() {
-        return this.createEnvelop;
     }
 
     @Override

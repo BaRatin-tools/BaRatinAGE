@@ -14,7 +14,7 @@ public class ModelOutput {
     }
 
     public String getStructErrConfName() {
-        return this.structuralErrorModel.getConfigFileName();
+        return this.structuralErrorModel.fileName;
     }
 
     public void toFiles(String workspace) {

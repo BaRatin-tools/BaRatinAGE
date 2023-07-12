@@ -106,11 +106,12 @@ public class PriorRatingCurve extends GridPanel {
         }
 
         private void buildRatingCurvePlot() {
-                if (runBam == null || priorsProvider == null || predictionConfigs == null) {
+                if (runBam == null) {
                         return;
                 }
 
-                Parameter[] params = priorsProvider.getParameters();
+                Parameter[] params = runBam.bam.calibrationConfig.model.parameters;
+
                 System.out.println(params);
 
                 List<double[]> transitionStages = new ArrayList<>();
@@ -134,7 +135,10 @@ public class PriorRatingCurve extends GridPanel {
                         System.err.println("ERROR: not prediction results found!");
                         return;
                 }
-                buildRatingCurvePlot(predictionConfigs[0].getPredictionConfig(), pprs[1], pprs[0], transitionStages);
+
+                PredictionConfig predictionConfig = runBam.bam.predictionConfigs[0];
+
+                buildRatingCurvePlot(predictionConfig, pprs[1], pprs[0], transitionStages);
         }
 
         private void buildRatingCurvePlot(
@@ -143,8 +147,8 @@ public class PriorRatingCurve extends GridPanel {
                         PredictionResult maxpost,
                         List<double[]> transitionStages) {
 
-                double[] stage = predictionConfig.getPredictionInputs()[0].getDataColumns().get(0);
-                String outputName = predictionConfig.getPredictionOutputs()[0].getName();
+                double[] stage = predictionConfig.inputs[0].dataColumns.get(0);
+                String outputName = predictionConfig.outputs[0].name;
                 double[] dischargeMaxpost = maxpost.getOutputResults().get(outputName).spag().get(0);
 
                 List<double[]> dischargeParametricEnv = parametricUncertainty.getOutputResults().get(outputName).env();
@@ -236,13 +240,15 @@ public class PriorRatingCurve extends GridPanel {
                         return;
                 }
 
-                buildPriorPredictionExperiments();
+                runBam = new RunBam(runBamId);
 
-                runBam = new RunBam(runBamId,
-                                modelDefinitionProvider, priorsProvider,
-                                null, null,
-                                predictionConfigs);
-                runBam.unzipBamRun();
+                // buildPriorPredictionExperiments();
+
+                // runBam = new RunBam(runBamId,
+                // modelDefinitionProvider, priorsProvider,
+                // null, null,
+                // predictionConfigs);
+                // runBam.unzipBamRun();
 
                 buildRatingCurvePlot();
         }

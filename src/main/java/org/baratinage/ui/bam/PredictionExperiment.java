@@ -5,6 +5,7 @@ import org.baratinage.jbam.ModelOutput;
 import org.baratinage.jbam.PredictionConfig;
 import org.baratinage.jbam.PredictionOutput;
 import org.baratinage.jbam.PredictionResult;
+import org.baratinage.jbam.utils.BamFilesHelpers;
 
 // FIXME: should be named PosteriorPredictionExperiment
 // FIXME: unclear how isPredicted and getPredictionResult should be implemented...
@@ -44,6 +45,8 @@ public class PredictionExperiment implements IPredictionExperiment {
         for (int k = 0; k < mo.length; k++) {
             predOutputs[k] = new PredictionOutput(
                     mo[k].getName(),
+                    String.format(BamFilesHelpers.RESULTS_OUTPUT_SPAG, mo[k].getName()),
+                    String.format(BamFilesHelpers.RESULTS_OUTPUT_ENV, mo[k].getName()),
                     propagateStructuralUncertainty,
                     true,
                     true);
@@ -51,6 +54,7 @@ public class PredictionExperiment implements IPredictionExperiment {
 
         PredictionConfig predConfig = new PredictionConfig(
                 name,
+                String.format(BamFilesHelpers.CONFIG_PREDICTION, name),
                 predictionData.getPredictionInputs(),
                 predOutputs,
                 new PredictionOutput[] {},

@@ -1,5 +1,6 @@
 package org.baratinage.ui.bam;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.UUID;
@@ -40,20 +41,23 @@ public class RunBam {
     public final String zipName;
     public final BaM bam;
 
-    public RunBam(IModelDefinition modelDefinition,
-            IPriors priors,
-            IStructuralError structuralError,
-            ICalibrationData calibrationData,
-            IPredictionExperiment[] predictionExperiments) {
+    public RunBam(String id) {
+        this.id = id;
+        workspacePath = Path.of(App.BAM_WORKSPACE, id);
+        zipName = id + ".zip";
+        zipPath = Path.of(App.TEMP_DIR, zipName);
 
-        this(
-                Misc.getTimeStamp() + "_" + UUID.randomUUID().toString().substring(0, 5),
-                modelDefinition, priors, structuralError, calibrationData, predictionExperiments);
+        ReadWriteZip.unzip(zipPath.toString(), workspacePath.toString());
 
+        File mainConfigFile = Path.of(workspacePath.toString(), BamFilesHelpers.CONFIG_BAM).toFile();
+        mainConfigFile.renameTo(Path.of(BamFilesHelpers.EXE_DIR, BamFilesHelpers.CONFIG_BAM).toFile());
+
+        bam = BaM.readBaM(mainConfigFile.getAbsolutePath());
+        bam.readResults(workspacePath.toString());
+        System.out.println(bam);
     }
 
     public RunBam(
-            String id,
             IModelDefinition modelDefinition,
             IPriors priors,
             IStructuralError structuralError,
@@ -67,7 +71,7 @@ public class RunBam {
             throw new IllegalArgumentException("'priors' must non null!");
         }
 
-        this.id = id;
+        id = Misc.getTimeStamp() + "_" + UUID.randomUUID().toString().substring(0, 5);
         workspacePath = Path.of(App.BAM_WORKSPACE, id);
         zipName = id + ".zip";
         zipPath = Path.of(App.TEMP_DIR, zipName);
@@ -88,11 +92,13 @@ public class RunBam {
         String[] outputNames = modelDefinition.getOutputNames();
 
         Model model = new Model(
+                BamFilesHelpers.CONFIG_MODEL,
                 modelDefinition.getModelId(),
                 inputNames.length,
                 outputNames.length,
                 parameters,
-                xTra);
+                xTra,
+                BamFilesHelpers.CONFIG_XTRA);
 
         // 2) strucutral error
         // FIXME currently supporting a single error model for all model outputs
@@ -121,8 +127,15 @@ public class RunBam {
                 outputs[k] = new UncertainData(outputNames[k], fakeDataArray);
             }
 
-            calibData = new CalibrationData("fakeCalibrationData",
-                    inputs, outputs);
+            String dataName = "fakeCalibrationData";
+            calibData = new CalibrationData(
+                    dataName,
+                    BamFilesHelpers.CONFIG_CALIBRATION,
+                    Path.of(
+                            workspacePath.toString(),
+                            String.format(BamFilesHelpers.DATA_CALIBRATION, dataName)).toString(),
+                    inputs,
+                    outputs);
 
         } else {
             calibData = calibrationData.getCalibrationData();
@@ -155,6 +168,7 @@ public class RunBam {
         // 5) run options
 
         RunOptions runOptions = new RunOptions(
+                BamFilesHelpers.CONFIG_RUN_OPTIONS,
                 true,
                 true,
                 true,

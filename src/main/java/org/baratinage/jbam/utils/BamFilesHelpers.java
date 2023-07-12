@@ -52,15 +52,16 @@ public class BamFilesHelpers {
         return output;
     }
 
-    // FIXME: move to a BamFilesHelpers class
     static public Path relativizePath(String absPathStr) {
         Path basePath = Path.of(EXE_DIR).toAbsolutePath();
         Path absPath = Paths.get(absPathStr);
+        if (!absPath.isAbsolute()) {
+            absPath = absPath.toAbsolutePath();
+        }
         Path pathRelative = basePath.relativize(absPath);
         return pathRelative;
     }
 
-    // FIXME: move to a BamFilesHelpers class
     static public Path absolutizePath(String relPathStr) {
         Path basePath = Path.of(EXE_DIR).toAbsolutePath();
         Path absPath = Path.of(basePath.toString(), relPathStr);

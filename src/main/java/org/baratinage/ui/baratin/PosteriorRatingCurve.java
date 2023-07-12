@@ -26,7 +26,7 @@ import org.baratinage.jbam.ModelOutput;
 import org.baratinage.jbam.PredictionConfig;
 import org.baratinage.jbam.PredictionResult;
 import org.baratinage.jbam.StructuralErrorModel;
-
+import org.baratinage.jbam.utils.BamFilesHelpers;
 import org.baratinage.ui.bam.ICalibratedModel;
 import org.baratinage.ui.bam.ICalibrationData;
 import org.baratinage.ui.bam.IMcmc;
@@ -180,8 +180,8 @@ public class PosteriorRatingCurve extends RowColPanel implements ICalibratedMode
             GaugingsDataset gaugings,
             List<double[]> transitionStages) {
 
-        double[] stage = predictionConfig.getPredictionInputs()[0].getDataColumns().get(0);
-        String outputName = predictionConfig.getPredictionOutputs()[0].getName();
+        double[] stage = predictionConfig.inputs[0].dataColumns.get(0);
+        String outputName = predictionConfig.outputs[0].name;
         double[] dischargeMaxpost = maxpost.getOutputResults().get(outputName).spag().get(0);
 
         List<double[]> dischargeTotalEnv = totalUncertainty.getOutputResults().get(outputName).env();
@@ -277,11 +277,13 @@ public class PosteriorRatingCurve extends RowColPanel implements ICalibratedMode
 
         return new CalibrationConfig(
                 new Model(
+                        BamFilesHelpers.CONFIG_MODEL,
                         modelDefinition.getModelId(),
                         modelDefinition.getInputNames().length,
                         modelDefinition.getOutputNames().length,
                         priors.getParameters(),
-                        modelDefinition.getXtra(App.BAM_WORKSPACE)),
+                        modelDefinition.getXtra(App.BAM_WORKSPACE),
+                        BamFilesHelpers.CONFIG_XTRA),
                 modelOutputs,
                 calibrationData.getCalibrationData(),
                 getMcmcConfig(),
@@ -311,13 +313,14 @@ public class PosteriorRatingCurve extends RowColPanel implements ICalibratedMode
 
     public void setRunBam(String runBamId) {
 
-        buildPredictionExperiments();
+        // buildPredictionExperiments();
+        runBam = new RunBam(runBamId);
+        // runBam = new RunBam(runBamId, modelDefinition, priors, structuralError,
+        // calibrationData, predictionConfigs);
 
-        runBam = new RunBam(runBamId, modelDefinition, priors, structuralError, calibrationData, predictionConfigs);
+        // runBam.unzipBamRun();
 
-        runBam.unzipBamRun();
-
-        buildRatingCurvePlot();
+        // buildRatingCurvePlot();
     }
 
     private final List<ChangeListener> changeListeners = new ArrayList<>();

@@ -44,7 +44,7 @@ public class CalibrationDataResiduals {
         // Y1_obs, Y2_obs, Y1_unbiased, Y2_unbiased, Y1_sim, Y2_sim
         // Y1_res, Y2_res, Y1_stdres, Y2_stdres
 
-        UncertainData[] inputs = calibrationData.getInputs();
+        UncertainData[] inputs = calibrationData.inputs;
         int nInputs = inputs.length;
         int k = 0;
         for (UncertainData i : inputs) {
@@ -56,7 +56,7 @@ public class CalibrationDataResiduals {
             k++;
         }
 
-        UncertainData[] outputs = calibrationData.getOutputs();
+        UncertainData[] outputs = calibrationData.outputs;
         int nOuputs = outputs.length;
         k = 0;
         for (UncertainData o : outputs) {

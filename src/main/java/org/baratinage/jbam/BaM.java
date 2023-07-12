@@ -25,9 +25,9 @@ public class BaM {
 
     private Process bamExecutionProcess;
 
-    private CalibrationConfig calibrationConfig;
-    private PredictionConfig[] predictionConfigs;
-    private RunOptions runOptions;
+    public final CalibrationConfig calibrationConfig;
+    public final PredictionConfig[] predictionConfigs;
+    public final RunOptions runOptions;
     private CalibrationResult calibrationResult;
     private PredictionResult[] predictionResults;
 
@@ -81,7 +81,15 @@ public class BaM {
         }
     }
 
-    public void toFiles(String workspace, String exeDir) {
+    public void toFiles(
+            String workspace,
+            String exeDir) {
+
+        // FIXME: assuming that that these filenames are fixed which may not
+        // in particular for the prediction master file
+        // FIXME: looks like PredictionMaster class is needed.
+        String bamMasterConfigFileName = BamFilesHelpers.CONFIG_BAM;
+        String predictionMasterConfigFileName = BamFilesHelpers.CONFIG_PREDICTION_MASTER;
 
         // FIXME: should write to files only the necessary files
         // FIXME: (e.g. no need for huge prediction input files if doPrediction is
@@ -96,11 +104,11 @@ public class BaM {
             predMasterConfig.addItem(this.predictionConfigs.length, "Number of prediction experiments");
             for (PredictionConfig p : this.predictionConfigs) {
 
-                predMasterConfig.addItem(p.getPredictionConfigFileName(),
+                predMasterConfig.addItem(p.predictionConfigFileName,
                         "Config file for experiments - an many lines as the number above", true);
                 p.toFiles(workspace);
             }
-            predMasterConfig.writeToFile(workspace, BamFilesHelpers.CONFIG_PREDICTION_MASTER);
+            predMasterConfig.writeToFile(workspace, predictionMasterConfigFileName);
         }
 
         // Run options configuraiton file
@@ -114,20 +122,23 @@ public class BaM {
                 + BamFilesHelpers.OS_SEP;
         ConfigFile mainBaMconfig = new ConfigFile();
         mainBaMconfig.addItem(relativeWorkspace, "workspace", true);
-        mainBaMconfig.addItem(BamFilesHelpers.CONFIG_RUN_OPTIONS, "Config file: run options", true);
-        mainBaMconfig.addItem(BamFilesHelpers.CONFIG_MODEL, "Config file: model", true);
+        mainBaMconfig.addItem(runOptions.fileName, "Config file: run options", true);
+        mainBaMconfig.addItem(calibrationConfig.model.fileName, "Config file: model", true);
         // NOTE can be empty string
-        mainBaMconfig.addItem(BamFilesHelpers.CONFIG_XTRA, "Config file: xtra model information", true);
+        mainBaMconfig.addItem(calibrationConfig.model.xTraFileName, "Config file: xtra model information", true);
         // NOTE can be empty string
-        mainBaMconfig.addItem(BamFilesHelpers.CONFIG_CALIBRATION, "Config file: Data", true);
+        mainBaMconfig.addItem(calibrationConfig.calibrationData.fileName, "Config file: Data", true);
         mainBaMconfig.addItem(structErrConfNames,
                 "Config file: Remnant sigma (as many files as there are output variables separated by commas)", true);
-        mainBaMconfig.addItem(BamFilesHelpers.CONFIG_MCMC, "Config file: MCMC", true);
-        mainBaMconfig.addItem(BamFilesHelpers.CONFIG_MCMC_COOKING, "Config file: cooking of MCMC samples", true);
-        mainBaMconfig.addItem(BamFilesHelpers.CONFIG_MCMC_SUMMARY, "Config file: summary of MCMC samples", true);
-        mainBaMconfig.addItem(BamFilesHelpers.CONFIG_RESIDUALS, "Config file: residual diagnostics", true);
-        mainBaMconfig.addItem(BamFilesHelpers.CONFIG_PREDICTION_MASTER, " Config file: prediction experiments", true);
-        mainBaMconfig.writeToFile(exeDir, BamFilesHelpers.CONFIG_BAM);
+        mainBaMconfig.addItem(calibrationConfig.mcmcConfig.fileName, "Config file: MCMC", true);
+        mainBaMconfig.addItem(calibrationConfig.mcmcCookingConfig.fileName, "Config file: cooking of MCMC samples",
+                true);
+        mainBaMconfig.addItem(calibrationConfig.mcmcSummaryConfig.fileName, "Config file: summary of MCMC samples",
+                true);
+        mainBaMconfig.addItem(calibrationConfig.calDataResidualConfig.fileName, "Config file: residual diagnostics",
+                true);
+        mainBaMconfig.addItem(predictionMasterConfigFileName, " Config file: prediction experiments", true);
+        mainBaMconfig.writeToFile(exeDir, bamMasterConfigFileName);
     }
 
     public RunOptions getRunOptions() {
@@ -138,7 +149,8 @@ public class BaM {
         return this.bamExecutionProcess;
     }
 
-    public String run(String workspace, ConsoleOutputFollower consoleOutputFollower) throws IOException {
+    public String run(String workspace, ConsoleOutputFollower consoleOutputFollower)
+            throws IOException {
 
         // Delete work space content
         File dir = new File(workspace);

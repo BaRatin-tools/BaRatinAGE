@@ -71,9 +71,9 @@ public class Monitoring {
             for (PredictionConfig predConfig : bam.getPredictionConfigs()) {
                 this.monitoringSteps.add(
                         new MonitoringStep(
-                                "Prediction_" + predConfig.getName(),
+                                "Prediction_" + predConfig.predictionConfigFileName,
                                 Path.of(workspace,
-                                        predConfig.getPredictionConfigFileName() + Monitoring.MONITOR_FILE_SUFFIX),
+                                        predConfig.predictionConfigFileName + Monitoring.MONITOR_FILE_SUFFIX),
                                 0,
                                 cookedMcmcSamples,
                                 0,

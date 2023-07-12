@@ -4,32 +4,21 @@ import org.baratinage.jbam.utils.BamFilesHelpers;
 import org.baratinage.jbam.utils.ConfigFile;
 
 public class McmcConfig {
-    private String outputFileName;
-    private int nAdapt;
-    private int nCycle;
-    private double minMoveRate;
-    private double maxMoveRate;
-    private double downMult;
-    private double upMult;
+    public final String fileName;
+    public final String outputFileName;
+    public final int nAdapt;
+    public final int nCycle;
+    public final double minMoveRate;
+    public final double maxMoveRate;
+    public final double downMult;
+    public final double upMult;
     // private int mode;
     // private double multFactor;
     // private double[] rcMultFactor;
     // private double[] rembMultFactor;
 
-    public McmcConfig() {
-
-        this(
-                BamFilesHelpers.RESULTS_MCMC,
-                100,
-                100,
-                0.1,
-                0.5,
-                0.9,
-                1.1);
-
-    }
-
     public McmcConfig(
+            String fileName,
             String outputFileName,
             int nAdapt,
             int nCycle,
@@ -37,6 +26,7 @@ public class McmcConfig {
             double maxMoveRate,
             double downMult,
             double upMult) {
+        this.fileName = fileName;
         this.outputFileName = outputFileName;
         this.nAdapt = nAdapt;
         this.nCycle = nCycle;
@@ -48,6 +38,20 @@ public class McmcConfig {
         // this.multFactor = 0.1;
         // this.rcMultFactor = new double[]{0.1, 0.1, 0.1};
         // this.remnMultFactor = new double[]{0.1, 0.1};
+    }
+
+    public McmcConfig() {
+
+        this(
+                BamFilesHelpers.CONFIG_MCMC,
+                BamFilesHelpers.RESULTS_MCMC,
+                100,
+                100,
+                0.1,
+                0.5,
+                0.9,
+                1.1);
+
     }
 
     public int numberOfMcmcSamples() {
@@ -68,7 +72,7 @@ public class McmcConfig {
         configFile.addItem(0.1, "MultFactor in default mode (ignored in manual mode)");
         configFile.addItem(new double[] { 0.1, 0.1, 0.1 }, "RC MultFactor in manual mode (ignored in auto mode)");
         configFile.addItem(new double[] { 0.1, 0.1, 0.1 }, "Remnant MultFactor in manual mode (ignored in auto mode)");
-        configFile.writeToFile(workspace, BamFilesHelpers.CONFIG_MCMC);
+        configFile.writeToFile(workspace, fileName);
     }
 
     @Override
@@ -94,6 +98,14 @@ public class McmcConfig {
         double downMult = configFile.getDouble(5);
         double upMult = configFile.getDouble(6);
 
-        return new McmcConfig(outputFileName, nAdapt, nCycle, minMoveRate, maxMoveRate, downMult, upMult);
+        return new McmcConfig(
+                mcmcConfigFileName,
+                outputFileName,
+                nAdapt,
+                nCycle,
+                minMoveRate,
+                maxMoveRate,
+                downMult,
+                upMult);
     }
 }

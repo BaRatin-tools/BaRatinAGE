@@ -4,20 +4,24 @@ import org.baratinage.jbam.utils.BamFilesHelpers;
 import org.baratinage.jbam.utils.ConfigFile;
 
 public class CalDataResidualConfig {
-    private String outputFileName;
+    public final String fileName;
+    public final String outputFileName;
 
-    public CalDataResidualConfig(String outputFileName) {
+    public CalDataResidualConfig(String fileName, String outputFileName) {
+        this.fileName = fileName;
         this.outputFileName = outputFileName;
     }
 
     public CalDataResidualConfig() {
-        this(BamFilesHelpers.RESULTS_RESIDUALS);
+        this(
+                BamFilesHelpers.CONFIG_RESIDUALS,
+                BamFilesHelpers.RESULTS_RESIDUALS);
     }
 
     public void toFiles(String workspace) {
         ConfigFile configFile = new ConfigFile();
         configFile.addItem(this.outputFileName, "Result file");
-        configFile.writeToFile(workspace, BamFilesHelpers.CONFIG_RESIDUALS);
+        configFile.writeToFile(workspace, fileName);
     }
 
     @Override
@@ -31,6 +35,6 @@ public class CalDataResidualConfig {
             String calDataResidualConfigFileName) {
         ConfigFile configFile = ConfigFile.readConfigFile(workspace, calDataResidualConfigFileName);
         String outputFileName = configFile.getString(0);
-        return new CalDataResidualConfig(outputFileName);
+        return new CalDataResidualConfig(calDataResidualConfigFileName, outputFileName);
     }
 }

@@ -5,7 +5,6 @@ import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.List;
 
-import org.baratinage.jbam.utils.BamFilesHelpers;
 import org.baratinage.jbam.utils.Read;
 
 public class CalibrationResult {
@@ -23,8 +22,8 @@ public class CalibrationResult {
     public CalibrationResult(String workspace, CalibrationConfig calibrationConfig) {
         this.isValid = false;
 
-        Path cookedMcmcFilePath = Path.of(workspace, BamFilesHelpers.RESULTS_MCMC_COOKING);
-        Path summaryMcmcFilePath = Path.of(workspace, BamFilesHelpers.RESULTS_MCMC_SUMMARY);
+        Path cookedMcmcFilePath = Path.of(workspace, calibrationConfig.mcmcCookingConfig.outputFileName);
+        Path summaryMcmcFilePath = Path.of(workspace, calibrationConfig.mcmcSummaryConfig.outputFileName);
 
         List<double[]> listCookedMcmcResults = null;
         List<double[]> listSummaryMcmcResults = null;
@@ -75,7 +74,7 @@ public class CalibrationResult {
         }
 
         this.calibrationDataResiduals = null;
-        Path calDataResidualFilePath = Path.of(workspace, BamFilesHelpers.RESULTS_RESIDUALS);
+        Path calDataResidualFilePath = Path.of(workspace, calibrationConfig.calDataResidualConfig.outputFileName);
         try {
 
             List<double[]> residualMatrix = Read.readMatrix(calDataResidualFilePath.toString(), 1);

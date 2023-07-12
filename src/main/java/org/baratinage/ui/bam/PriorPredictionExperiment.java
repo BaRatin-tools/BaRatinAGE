@@ -4,6 +4,7 @@ import org.baratinage.jbam.PredictionConfig;
 import org.baratinage.jbam.PredictionInput;
 import org.baratinage.jbam.PredictionOutput;
 import org.baratinage.jbam.PredictionResult;
+import org.baratinage.jbam.utils.BamFilesHelpers;
 
 public class PriorPredictionExperiment implements IPredictionExperiment {
 
@@ -37,13 +38,16 @@ public class PriorPredictionExperiment implements IPredictionExperiment {
         for (int k = 0; k < outputNames.length; k++) {
             predOutputs[k] = new PredictionOutput(
                     outputNames[k],
+                    String.format(BamFilesHelpers.RESULTS_OUTPUT_SPAG, name, outputNames[k]),
+                    String.format(BamFilesHelpers.RESULTS_OUTPUT_ENV, name, outputNames[k]),
                     false,
                     true,
                     true);
         }
 
         PredictionConfig predExperimentConfig = new PredictionConfig(
-                this.name,
+                name,
+                String.format(BamFilesHelpers.CONFIG_PREDICTION, name),
                 predInputs,
                 predOutputs,
                 new PredictionOutput[] {},

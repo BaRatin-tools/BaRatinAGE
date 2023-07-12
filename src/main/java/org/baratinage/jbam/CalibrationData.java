@@ -11,25 +11,26 @@ import org.baratinage.jbam.utils.Read;
 import org.baratinage.jbam.utils.Write;
 
 public class CalibrationData {
-    private String name;
-    private UncertainData[] inputs;
-    private UncertainData[] outputs;
+    public final String name;
+    public final String fileName;
+    public final String dataFilePath;
+    public final UncertainData[] inputs;
+    public final UncertainData[] outputs;
 
-    public CalibrationData(String name, UncertainData[] inputs, UncertainData[] outputs) {
+    public CalibrationData(
+            String name,
+            String fileName,
+            String dataFilePath,
+            UncertainData[] inputs,
+            UncertainData[] outputs) {
         this.name = name;
+        this.fileName = fileName;
+        this.dataFilePath = dataFilePath;
         // FIXME: should check that inputs and outputs have the same number of
         // FIXME: elements/rows
         this.inputs = inputs;
         this.outputs = outputs;
 
-    }
-
-    public UncertainData[] getInputs() {
-        return this.inputs;
-    }
-
-    public UncertainData[] getOutputs() {
-        return this.outputs;
     }
 
     private class UncertainDataConfig {
@@ -75,12 +76,7 @@ public class CalibrationData {
         return uDataConfig;
     }
 
-    public String getAbsoluteDataFilePath(String workspace) {
-        String dataFileName = String.format(BamFilesHelpers.DATA_CALIBRATION, this.name);
-        return Path.of(workspace, dataFileName).toAbsolutePath().toString();
-    }
-
-    public void toDataFile(String workspace) {
+    public void toDataFile() {
 
         List<double[]> dataColumns = new ArrayList<>();
         List<String> headers = new ArrayList<>();
@@ -115,7 +111,6 @@ public class CalibrationData {
             }
         }
 
-        String dataFilePath = getAbsoluteDataFilePath(workspace);
         try {
             Write.writeMatrix(
                     dataFilePath,
@@ -134,7 +129,7 @@ public class CalibrationData {
         UncertainDataConfig outputsDataConfig = this.getUncertainDataConfig(this.outputs, inputsDataConfig.nCol);
 
         ConfigFile configFile = new ConfigFile();
-        configFile.addItem(BamFilesHelpers.relativizePath(getAbsoluteDataFilePath(workspace)).toString(),
+        configFile.addItem(BamFilesHelpers.relativizePath(dataFilePath).toString(),
                 "Absolute path to data file", true);
         configFile.addItem(1, "number of header lines");
         configFile.addItem(inputsDataConfig.nRow, "Nobs, number of rows in data file (excluding header lines)");
@@ -156,8 +151,7 @@ public class CalibrationData {
         configFile.addItem(outputsDataConfig.Xbi,
                 "columns for Yb_indx (index of systematic errors in Y - use 0 for a no-error assumption)");
 
-        String configFileName = BamFilesHelpers.CONFIG_CALIBRATION;
-        configFile.writeToFile(workspace, configFileName);
+        configFile.writeToFile(workspace, fileName);
     }
 
     @Override
@@ -284,7 +278,7 @@ public class CalibrationData {
             outputs[k] = new UncertainData(outputName, values, nonSysStd, sysStd, sysIndices);
         }
 
-        return new CalibrationData(dataFileName, inputs, outputs);
+        return new CalibrationData(dataFileName, calibrationConfigFileName, dataFilePath, inputs, outputs);
     }
 
 }

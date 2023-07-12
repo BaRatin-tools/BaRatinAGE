@@ -11,6 +11,7 @@ import javax.swing.JSplitPane;
 import org.baratinage.App;
 import org.baratinage.jbam.CalibrationData;
 import org.baratinage.jbam.UncertainData;
+import org.baratinage.jbam.utils.BamFilesHelpers;
 import org.baratinage.ui.bam.BamItem;
 import org.baratinage.ui.bam.ICalibrationData;
 import org.baratinage.ui.baratin.gaugings.GaugingsDataset;
@@ -132,8 +133,15 @@ public class Gaugings extends BamItem implements ICalibrationData {
     @Override
     public CalibrationData getCalibrationData() {
         String sanitizedName = Misc.sanitizeName(bamItemNameField.getText());
-        System.out.println(sanitizedName);
-        return new CalibrationData(sanitizedName, getInputs(), getOutputs());
+        // FIXME: writting data at the root of BAM_WORKSPACE... good idea?
+        String dataFileName = String.format(BamFilesHelpers.DATA_CALIBRATION, sanitizedName);
+        String dataFilePath = Path.of(App.BAM_WORKSPACE, dataFileName).toString();
+        return new CalibrationData(
+                sanitizedName,
+                BamFilesHelpers.CONFIG_CALIBRATION,
+                dataFilePath,
+                getInputs(),
+                getOutputs());
     }
 
     @Override

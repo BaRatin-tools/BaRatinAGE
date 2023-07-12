@@ -4,21 +4,28 @@ import org.baratinage.jbam.utils.BamFilesHelpers;
 import org.baratinage.jbam.utils.ConfigFile;
 
 public class McmcCookingConfig {
-    private String outputFileName;
-    private double burnFactor;
-    private int nSlim;
-
-    public McmcCookingConfig() {
-        this(BamFilesHelpers.RESULTS_MCMC_COOKING, 0.5, 10);
-    }
+    public final String fileName;
+    public final String outputFileName;
+    public final double burnFactor;
+    public final int nSlim;
 
     public McmcCookingConfig(
+            String fileName,
             String outputFileName,
             double burnFactor,
             int nSlim) {
+        this.fileName = fileName;
         this.outputFileName = outputFileName;
         this.burnFactor = burnFactor;
         this.nSlim = nSlim;
+    }
+
+    public McmcCookingConfig() {
+        this(
+                BamFilesHelpers.CONFIG_MCMC_COOKING,
+                BamFilesHelpers.RESULTS_MCMC_COOKING,
+                0.5,
+                10);
     }
 
     public int numberOfCookedMcmcSamples(int numberOfMcmcSamples) {
@@ -47,6 +54,6 @@ public class McmcCookingConfig {
         String outputFileName = configFile.getString(0);
         double burnFactor = configFile.getDouble(1);
         int nSlim = configFile.getInt(2);
-        return new McmcCookingConfig(outputFileName, burnFactor, nSlim);
+        return new McmcCookingConfig(mcmcCookingConfigFileName, outputFileName, burnFactor, nSlim);
     }
 }

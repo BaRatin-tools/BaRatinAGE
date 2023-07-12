@@ -5,7 +5,6 @@ import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.List;
 
-import org.baratinage.jbam.utils.BamFilesHelpers;
 import org.baratinage.jbam.utils.Read;
 
 public class PredictionResult {
@@ -36,7 +35,7 @@ public class PredictionResult {
     private boolean isValid;
 
     public String getName() {
-        return this.predictionConfig.getName();
+        return this.predictionConfig.name;
     }
 
     public PredictionConfig getPredictionConfig() {
@@ -55,13 +54,11 @@ public class PredictionResult {
         this.isValid = false;
         this.predictionConfig = predictionConfig;
         this.outputResults = new HashMap<>();
-        PredictionOutput[] outputConfigs = predictionConfig.getPredictionOutputs();
+        PredictionOutput[] outputConfigs = predictionConfig.outputs;
         for (PredictionOutput outConfig : outputConfigs) {
-            String outputName = outConfig.getName();
-            String envFileName = String.format(BamFilesHelpers.RESULTS_OUTPUT_ENV, predictionConfig.getName(),
-                    outputName);
-            String spagFileName = String.format(BamFilesHelpers.RESULTS_OUTPUT_SPAG, predictionConfig.getName(),
-                    outputName);
+            String outputName = outConfig.name;
+            String envFileName = outConfig.envFileName;
+            String spagFileName = outConfig.spagFileName;
             List<double[]> env = null;
             List<double[]> spag = null;
             try {

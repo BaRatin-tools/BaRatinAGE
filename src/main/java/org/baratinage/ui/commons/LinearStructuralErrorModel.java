@@ -4,6 +4,7 @@ import org.baratinage.jbam.Distribution;
 import org.baratinage.jbam.Parameter;
 import org.baratinage.jbam.StructuralErrorModel;
 import org.baratinage.jbam.Distribution.DISTRIB;
+import org.baratinage.jbam.utils.BamFilesHelpers;
 
 public class LinearStructuralErrorModel extends AbstractStructuralErrorModel {
 
@@ -57,7 +58,11 @@ public class LinearStructuralErrorModel extends AbstractStructuralErrorModel {
                 g1parameter.getParameter(),
                 g2parameter.getParameter()
         };
-        StructuralErrorModel structuralErrorModel = new StructuralErrorModel("linear_model", "Linear",
+        String name = "linear_model";
+        StructuralErrorModel structuralErrorModel = new StructuralErrorModel(
+                name,
+                String.format(BamFilesHelpers.CONFIG_STRUCTURAL_ERRORS, name),
+                "Linear",
                 modelParameters);
         return structuralErrorModel;
     }

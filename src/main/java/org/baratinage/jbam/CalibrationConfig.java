@@ -1,13 +1,13 @@
 package org.baratinage.jbam;
 
 public class CalibrationConfig {
-    private Model model;
-    private ModelOutput[] modelOutputs;
-    private CalibrationData calibrationData;
-    private McmcConfig mcmcConfig;
-    private McmcCookingConfig mcmcCookingConfig;
-    private McmcSummaryConfig mcmcSummaryConfig;
-    private CalDataResidualConfig calDataResidualConfig;
+    public final Model model;
+    public final ModelOutput[] modelOutputs;
+    public final CalibrationData calibrationData;
+    public final McmcConfig mcmcConfig;
+    public final McmcCookingConfig mcmcCookingConfig;
+    public final McmcSummaryConfig mcmcSummaryConfig;
+    public final CalDataResidualConfig calDataResidualConfig;
 
     public CalibrationConfig(Model model,
             ModelOutput[] modelOutputs,
@@ -68,7 +68,7 @@ public class CalibrationConfig {
         }
 
         // Calibration data/configuration files
-        this.calibrationData.toDataFile(workspace);
+        this.calibrationData.toDataFile();
         this.calibrationData.toConfigFile(workspace);
         this.calDataResidualConfig.toFiles(workspace);
 
@@ -101,7 +101,7 @@ public class CalibrationConfig {
             String mcmcSummaryConfigFileName,
             String dataResidualConfigFileName) {
 
-        Model model = Model.readModel(workspace, modelConfigFileName);
+        Model model = Model.readModel(workspace, modelConfigFileName, xTraConfigFileName);
         int nOutput = model.nOutput;
 
         if (structuralErrorModelFileNames.length != nOutput) {

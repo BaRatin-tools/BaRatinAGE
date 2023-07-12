@@ -4,17 +4,17 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
 
-import org.baratinage.jbam.utils.BamFilesHelpers;
 import org.baratinage.jbam.utils.Read;
 import org.baratinage.jbam.utils.Write;
 
 public class PredictionInput {
-    private String name;
-    private List<double[]> dataColumns;
-    private int nObs;
-    private int nSpag;
+    public final String name;
+    public final String fileName;
+    public final List<double[]> dataColumns;
+    public final int nObs;
+    public final int nSpag;
 
-    public PredictionInput(String name, List<double[]> dataColumns) {
+    public PredictionInput(String name, String fileName, List<double[]> dataColumns) {
         this.nSpag = dataColumns.size();
         if (this.nSpag == 0) {
             throw new IllegalArgumentException("dataColumns must have at least one element!");
@@ -27,34 +27,18 @@ public class PredictionInput {
         }
         this.nObs = n;
         this.name = name;
+        this.fileName = fileName;
         this.dataColumns = dataColumns;
     }
 
-    public List<double[]> getDataColumns() {
-        return this.dataColumns;
-    }
-
-    public String getDataFileName() {
-        return String.format(BamFilesHelpers.DATA_PREDICTION, name);
-    }
-
-    public String getName() {
-        return this.name;
-    }
-
-    public int getNobs() {
-        return this.nObs;
-    }
-
-    public int getNspag() {
-        return this.nSpag;
-    }
-
     public void toDataFile(String workspace) {
-        String fileName = this.getDataFileName();
         try {
             Write.writeMatrix(
-                    Path.of(workspace, fileName).toString(), this.dataColumns, " ", "-9999", null);
+                    Path.of(workspace, fileName).toString(),
+                    this.dataColumns,
+                    " ",
+                    "-9999",
+                    null);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -71,7 +55,7 @@ public class PredictionInput {
         String dataFileName = Path.of(dataFilePath).getFileName().toString();
         try {
             List<double[]> data = Read.readMatrix(dataFilePath, 0);
-            return new PredictionInput(dataFileName, data);
+            return new PredictionInput(dataFileName, dataFileName, data);
         } catch (IOException e) {
             e.printStackTrace();
             return null;

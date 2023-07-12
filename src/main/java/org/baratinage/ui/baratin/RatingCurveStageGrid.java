@@ -8,6 +8,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import org.baratinage.jbam.PredictionInput;
+import org.baratinage.jbam.utils.BamFilesHelpers;
 import org.baratinage.ui.bam.IPredictionData;
 
 import org.baratinage.ui.component.NumberField;
@@ -155,7 +156,11 @@ public class RatingCurveStageGrid extends RowColPanel implements IPredictionData
     public PredictionInput[] getPredictionInputs() {
         List<double[]> stageGrid = new ArrayList<>();
         stageGrid.add(getStageGrid());
-        PredictionInput predInput = new PredictionInput("stage_grid", stageGrid);
+        String predictionInputName = "stage_grid";
+        PredictionInput predInput = new PredictionInput(
+                predictionInputName,
+                String.format(BamFilesHelpers.DATA_PREDICTION, predictionInputName),
+                stageGrid);
         return new PredictionInput[] { predInput };
     }
 
