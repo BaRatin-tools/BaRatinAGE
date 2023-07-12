@@ -132,14 +132,17 @@ public class Gaugings extends BamItem implements ICalibrationData {
 
     @Override
     public CalibrationData getCalibrationData() {
-        String sanitizedName = Misc.sanitizeName(bamItemNameField.getText());
-        // FIXME: writting data at the root of BAM_WORKSPACE... good idea?
+        if (gaugingDataset == null) {
+            return null;
+        }
+        int hashCode = gaugingDataset.hashCode();
+        String sanitizedName = Misc.sanitizeName(bamItemNameField.getText()) + "_" + hashCode;
+        // FIXME: writting data at the root of BAM_WORKSPACE... good idea? NO!!
         String dataFileName = String.format(BamFilesHelpers.DATA_CALIBRATION, sanitizedName);
-        String dataFilePath = Path.of(App.BAM_WORKSPACE, dataFileName).toString();
         return new CalibrationData(
                 sanitizedName,
                 BamFilesHelpers.CONFIG_CALIBRATION,
-                dataFilePath,
+                dataFileName,
                 getInputs(),
                 getOutputs());
     }

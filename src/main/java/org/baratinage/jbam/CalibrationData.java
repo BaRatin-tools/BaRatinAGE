@@ -13,19 +13,19 @@ import org.baratinage.jbam.utils.Write;
 public class CalibrationData {
     public final String name;
     public final String fileName;
-    public final String dataFilePath;
+    public final String dataFileName; // FIXME: should be dataFilePath instead?
     public final UncertainData[] inputs;
     public final UncertainData[] outputs;
 
     public CalibrationData(
             String name,
             String fileName,
-            String dataFilePath,
+            String dataFileName,
             UncertainData[] inputs,
             UncertainData[] outputs) {
         this.name = name;
         this.fileName = fileName;
-        this.dataFilePath = dataFilePath;
+        this.dataFileName = dataFileName;
         // FIXME: should check that inputs and outputs have the same number of
         // FIXME: elements/rows
         this.inputs = inputs;
@@ -76,7 +76,10 @@ public class CalibrationData {
         return uDataConfig;
     }
 
-    public void toDataFile() {
+    public void toDataFile(String workspace) {
+
+        // FIXME: writing data to workspace
+        String dataFilePath = Path.of(workspace, dataFileName).toString();
 
         List<double[]> dataColumns = new ArrayList<>();
         List<String> headers = new ArrayList<>();
@@ -128,6 +131,9 @@ public class CalibrationData {
         UncertainDataConfig inputsDataConfig = this.getUncertainDataConfig(this.inputs, 0);
         UncertainDataConfig outputsDataConfig = this.getUncertainDataConfig(this.outputs, inputsDataConfig.nCol);
 
+        // FIXME: assuming data file is written to workspace
+        String dataFilePath = Path.of(workspace, dataFileName).toString();
+
         ConfigFile configFile = new ConfigFile();
         configFile.addItem(BamFilesHelpers.relativizePath(dataFilePath).toString(),
                 "Absolute path to data file", true);
@@ -172,9 +178,6 @@ public class CalibrationData {
         return String.join("\n", str);
     }
 
-    // this.name = name;
-    // this.inputs = inputs;
-    // this.outputs = outputs;
     static public CalibrationData readCalibrationData(String workspace, String calibrationConfigFileName) {
         ConfigFile configFile = ConfigFile.readConfigFile(workspace, calibrationConfigFileName);
         String rawPathToDataFile = configFile.getString(0);
@@ -278,7 +281,7 @@ public class CalibrationData {
             outputs[k] = new UncertainData(outputName, values, nonSysStd, sysStd, sysIndices);
         }
 
-        return new CalibrationData(dataFileName, calibrationConfigFileName, dataFilePath, inputs, outputs);
+        return new CalibrationData(dataFileName, calibrationConfigFileName, dataFileName, inputs, outputs);
     }
 
 }

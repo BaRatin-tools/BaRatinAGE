@@ -131,9 +131,7 @@ public class RunBam {
             calibData = new CalibrationData(
                     dataName,
                     BamFilesHelpers.CONFIG_CALIBRATION,
-                    Path.of(
-                            workspacePath.toString(),
-                            String.format(BamFilesHelpers.DATA_CALIBRATION, dataName)).toString(),
+                    String.format(BamFilesHelpers.DATA_CALIBRATION, dataName),
                     inputs,
                     outputs);
 

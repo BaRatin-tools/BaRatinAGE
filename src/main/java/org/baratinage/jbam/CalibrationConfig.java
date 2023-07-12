@@ -68,7 +68,7 @@ public class CalibrationConfig {
         }
 
         // Calibration data/configuration files
-        this.calibrationData.toDataFile();
+        this.calibrationData.toDataFile(workspace);
         this.calibrationData.toConfigFile(workspace);
         this.calDataResidualConfig.toFiles(workspace);
 
