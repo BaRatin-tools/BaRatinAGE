@@ -313,14 +313,13 @@ public class PosteriorRatingCurve extends RowColPanel implements ICalibratedMode
 
     public void setRunBam(String runBamId) {
 
-        // buildPredictionExperiments();
+        if (runBamId == null) {
+            System.out.println("No posterior rating curve computed...");
+            return;
+        }
         runBam = new RunBam(runBamId);
-        // runBam = new RunBam(runBamId, modelDefinition, priors, structuralError,
-        // calibrationData, predictionConfigs);
 
-        // runBam.unzipBamRun();
-
-        // buildRatingCurvePlot();
+        buildRatingCurvePlot();
     }
 
     private final List<ChangeListener> changeListeners = new ArrayList<>();

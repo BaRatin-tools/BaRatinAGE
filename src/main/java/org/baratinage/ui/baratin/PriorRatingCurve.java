@@ -242,14 +242,6 @@ public class PriorRatingCurve extends GridPanel {
 
                 runBam = new RunBam(runBamId);
 
-                // buildPriorPredictionExperiments();
-
-                // runBam = new RunBam(runBamId,
-                // modelDefinitionProvider, priorsProvider,
-                // null, null,
-                // predictionConfigs);
-                // runBam.unzipBamRun();
-
                 buildRatingCurvePlot();
         }
 
