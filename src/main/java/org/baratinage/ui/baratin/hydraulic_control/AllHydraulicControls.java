@@ -136,7 +136,7 @@ public class AllHydraulicControls extends RowColPanel implements IPriors, Change
 
                 OneHydraulicControl newHydraulicControl = new OneHydraulicControl();
 
-                newHydraulicControl.nameLabel.setText("> Contrôle #" + (k + 1));
+                newHydraulicControl.nameLabel.setText(" *** " + (k + 1));
                 newHydraulicControl.addChangeListener(this);
 
                 controlSelectorModel.addElement(newHydraulicControl);
@@ -188,6 +188,7 @@ public class AllHydraulicControls extends RowColPanel implements IPriors, Change
             controlSelectorModel.addElement(hc);
             hydraulicControlList.add(hc);
         }
+        Lg.updateTexts();
     }
 
     public List<OneHydraulicControl> getHydraulicControls() {
