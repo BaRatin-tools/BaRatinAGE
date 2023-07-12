@@ -39,65 +39,8 @@ public class BamFilesHelpers {
     public static final String RESULTS_STATE_SPAG = "state_%s_%s.spag";
     public static final String RESULTS_STATE_ENV = "state_%s_%s.env";
 
-    /**
-     * FIXME: remove all the deprecated functions below
-     * I should not assume any predifined format for config and results files
-     * when reading an existing project!
-     */
-    @Deprecated
-    public static String buildPredictionDataFileName(String predictionName) {
-        return String.format(DATA_PREDICTION, predictionName);
-    }
-
-    @Deprecated
-    public static String getPredictionNameFromInputDataFileName(String predictionDataFileName) {
-        List<String> parsed = parseString(DATA_PREDICTION, predictionDataFileName);
-        return parsed.size() == 1 ? parsed.get(0) : null;
-    }
-
-    @Deprecated
-    public static String buildPredictionConfigFileName(String predictionName) {
-        return String.format(CONFIG_PREDICTION, predictionName);
-    }
-
-    @Deprecated
-    public static String getPredictionName(String predictionDataFileName) {
-        List<String> parsed = parseString(DATA_PREDICTION, predictionDataFileName);
-        return parsed.size() == 1 ? parsed.get(0) : null;
-    }
-
-    @Deprecated
-    public static String buildSpagOutputFileName(String predictionName, String outputName) {
-        return String.format(RESULTS_OUTPUT_SPAG, predictionName, outputName);
-    }
-
-    @Deprecated
-    public static String buildEnvOutputFileName(String predictionName, String outputName) {
-        return String.format(RESULTS_OUTPUT_ENV, predictionName, outputName);
-    }
-
-    @Deprecated
-    public static String buildSpagStateFileName(String predictionName, String stateName) {
-        return String.format(RESULTS_STATE_SPAG, predictionName, stateName);
-    }
-
-    public static String buildEnvStateFileName(String predictionName, String stateName) {
-        return String.format(RESULTS_STATE_ENV, predictionName, stateName);
-    }
-
-    @Deprecated
-    public static String getOutputNameFromSpagResultFile(String spagOutputFileName) {
-        List<String> parsed = parseString(RESULTS_OUTPUT_SPAG, spagOutputFileName);
-        return parsed.size() == 2 ? parsed.get(1) : null;
-    }
-
-    @Deprecated
-    public static String getStateNameFromSpagResultFile(String spagStateFileName) {
-        List<String> parsed = parseString(RESULTS_STATE_SPAG, spagStateFileName);
-        return parsed.size() == 2 ? parsed.get(1) : null;
-    }
-
-    private static List<String> parseString(String template, String stringToParse) {
+    // FIXME: unused, delete?
+    public static List<String> parseString(String template, String stringToParse) {
         String regex = template.replaceAll("%s", "(\\\\w*)");
         Matcher m = Pattern.compile(regex).matcher(stringToParse);
         List<String> output = new ArrayList<>();

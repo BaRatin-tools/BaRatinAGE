@@ -32,39 +32,39 @@ public class PredictionConfig {
     }
 
     public String getName() {
-        return this.name;
+        return name;
     }
 
     public String getPredictionConfigFileName() {
-        return BamFilesHelpers.buildPredictionConfigFileName(name);
+        return String.format(BamFilesHelpers.CONFIG_PREDICTION, name);
     }
 
     public PredictionOutput[] getPredictionStates() {
-        return this.states;
+        return states;
     }
 
     public PredictionOutput[] getPredictionOutputs() {
-        return this.outputs;
+        return outputs;
     }
 
     public PredictionInput[] getPredictionInputs() {
-        return this.inputs;
+        return inputs;
     }
 
     public boolean getPropagateParametricUncertainty() {
-        return this.propagateParametricUncertainty;
+        return propagateParametricUncertainty;
     }
 
     public boolean getPrintProgress() {
-        return this.printProgress;
+        return printProgress;
     }
 
     public int getNPriorReplicates() {
-        return this.nPriorReplicates;
+        return nPriorReplicates;
     }
 
     public void toFiles(String workspace) {
-        int n = this.inputs.length;
+        int n = inputs.length;
         // FIXME: inputFilePaths should be relative to executable so it can work on
         // any machin...
         String[] inputFilePaths = new String[n];
@@ -72,11 +72,11 @@ public class PredictionConfig {
         int[] nSpag = new int[n];
         for (int k = 0; k < n; k++) {
             String inputFilePath = BamFilesHelpers.relativizePath(
-                    Path.of(workspace, this.inputs[k].getDataFileName())
+                    Path.of(workspace, inputs[k].getDataFileName())
                             .toAbsolutePath().toString())
                     .toString();
             inputFilePaths[k] = inputFilePath;
-            int tmpNobs = this.inputs[k].getNobs();
+            int tmpNobs = inputs[k].getNobs();
             if (nObs == 0) {
                 nObs = tmpNobs;
             } else {
@@ -88,27 +88,27 @@ public class PredictionConfig {
                     }
                 }
             }
-            nSpag[k] = this.inputs[k].getNspag();
-            this.inputs[k].toDataFile(workspace);
+            nSpag[k] = inputs[k].getNspag();
+            inputs[k].toDataFile(workspace);
         }
 
         // FIXME: should refactor code?
-        n = this.outputs.length;
+        n = outputs.length;
         String[] spagOutputFileName = new String[n];
         String[] envOutputFileName = new String[n];
         boolean[] includeOutputStructuralError = new boolean[n];
         boolean[] transposeOutput = new boolean[n];
         boolean[] createOutputEnvelop = new boolean[n];
         for (int k = 0; k < n; k++) {
-            String outputName = this.outputs[k].getName();
-            spagOutputFileName[k] = BamFilesHelpers.buildSpagOutputFileName(name, outputName);
-            envOutputFileName[k] = BamFilesHelpers.buildEnvOutputFileName(name, outputName);
-            includeOutputStructuralError[k] = this.outputs[k].getSructuralError();
-            transposeOutput[k] = this.outputs[k].getTranspose();
-            createOutputEnvelop[k] = this.outputs[k].getCreateEnvelop();
+            String outputName = outputs[k].getName();
+            spagOutputFileName[k] = String.format(BamFilesHelpers.RESULTS_OUTPUT_SPAG, name, outputName);
+            envOutputFileName[k] = String.format(BamFilesHelpers.RESULTS_OUTPUT_ENV, name, outputName);
+            includeOutputStructuralError[k] = outputs[k].getSructuralError();
+            transposeOutput[k] = outputs[k].getTranspose();
+            createOutputEnvelop[k] = outputs[k].getCreateEnvelop();
         }
 
-        n = this.states.length;
+        n = states.length;
         boolean[] doStatePredictions = new boolean[n];
         String[] spagStateFileName = new String[n];
         String[] envStateFileName = new String[n];
@@ -116,29 +116,29 @@ public class PredictionConfig {
         boolean[] createStateEnvelop = new boolean[n];
         for (int k = 0; k < n; k++) {
             doStatePredictions[k] = true;
-            String stateName = this.states[k].getName();
-            spagStateFileName[k] = BamFilesHelpers.buildSpagStateFileName(name, stateName);
-            envStateFileName[k] = BamFilesHelpers.buildEnvStateFileName(name, stateName);
-            transposeState[k] = this.states[k].getTranspose();
-            createStateEnvelop[k] = this.states[k].getCreateEnvelop();
+            String stateName = states[k].getName();
+            spagStateFileName[k] = String.format(BamFilesHelpers.RESULTS_STATE_SPAG, name, stateName);
+            envStateFileName[k] = String.format(BamFilesHelpers.RESULTS_STATE_ENV, name, stateName);
+            transposeState[k] = states[k].getTranspose();
+            createStateEnvelop[k] = states[k].getCreateEnvelop();
         }
 
         ConfigFile configFile = new ConfigFile();
         configFile.addItem(inputFilePaths, "Files containing spaghettis for each input variable (size nX)", true);
         configFile.addItem(nObs, "Nobs, number of observations per spaghetti (common to all files!)");
         configFile.addItem(nSpag, "Nspag, number of spaghettis for each input variable (size nX)");
-        configFile.addItem(this.propagateParametricUncertainty, "Propagate parametric uncertainty?");
+        configFile.addItem(propagateParametricUncertainty, "Propagate parametric uncertainty?");
         configFile.addItem(includeOutputStructuralError,
                 "Propagate remnant uncertainty for each output variable? (size nY)");
-        configFile.addItem(this.nPriorReplicates,
+        configFile.addItem(nPriorReplicates,
                 "Nsim[prior]. If <=0: posterior sampling (nsim is given by mcmc sample); if >0: sample nsim replicates from prior distribution");
         configFile.addItem(spagOutputFileName, "Files containing spaghettis for each output variable (size nY)");
         configFile.addItem(transposeOutput,
                 "Post-processing: transpose spag file (so that each column is a spaghetti)? (size nY)");
         configFile.addItem(createOutputEnvelop, "Post-processing: create envelops? (size nY)");
         configFile.addItem(envOutputFileName, "Post-processing: name of envelop files (size nY)");
-        configFile.addItem(this.printProgress, "Print progress in console during computations?");
-        if (this.states.length == 0) {
+        configFile.addItem(printProgress, "Print progress in console during computations?");
+        if (states.length == 0) {
             configFile.addItem(false, "Do state prediction? (size nState)");
         } else {
             configFile.addItem(doStatePredictions, "Do state prediction? (size nState)");
@@ -154,16 +154,16 @@ public class PredictionConfig {
     @Override
     public String toString() {
         String str = String.format("PredictionConfig '%s' (%b, %b, %d):\n",
-                this.name,
-                this.propagateParametricUncertainty,
-                this.printProgress,
-                this.nPriorReplicates);
+                name,
+                propagateParametricUncertainty,
+                printProgress,
+                nPriorReplicates);
         str += " Inputs: \n";
-        for (PredictionInput i : this.inputs) {
+        for (PredictionInput i : inputs) {
             str += i.toString() + "\n";
         }
         str += " Outputs: \n";
-        for (PredictionOutput o : this.outputs) {
+        for (PredictionOutput o : outputs) {
             str += o.toString();
         }
         return str;
@@ -180,13 +180,11 @@ public class PredictionConfig {
         PredictionInput[] inputs = new PredictionInput[nInput];
 
         for (int k = 0; k < nInput; k++) {
-
             // FIXME: for simplicity sake, assuming that data file is in workspace folder!
             String dataFileName = Path.of(inputFilePaths[k]).getFileName().toString();
             String dataFilePath = Path.of(workspace, dataFileName).toString();
             // Path absPath = BamFilesHelpers.absolutizePath(inputFilePaths[k]);
-
-            inputs[k] = PredictionInput.readPredictionInput(workspace, dataFileName);
+            inputs[k] = PredictionInput.readPredictionInput(dataFilePath);
         }
 
         boolean[] propagateStructuralErrors = configFile.getBooleanArray(4);

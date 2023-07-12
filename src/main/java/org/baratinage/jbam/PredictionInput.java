@@ -35,7 +35,7 @@ public class PredictionInput {
     }
 
     public String getDataFileName() {
-        return BamFilesHelpers.buildPredictionDataFileName(name);
+        return String.format(BamFilesHelpers.DATA_PREDICTION, name);
     }
 
     public String getName() {
@@ -67,13 +67,11 @@ public class PredictionInput {
                 this.name, this.nObs, this.nSpag);
     }
 
-    public static PredictionInput readPredictionInput(String workspace, String dataFileName) {
-        String predictionInputName = BamFilesHelpers.getPredictionName(dataFileName);
-        predictionInputName = predictionInputName == null ? dataFileName : predictionInputName;
-
+    public static PredictionInput readPredictionInput(String dataFilePath) {
+        String dataFileName = Path.of(dataFilePath).getFileName().toString();
         try {
-            List<double[]> data = Read.readMatrix(Path.of(workspace, dataFileName).toString(), 0);
-            return new PredictionInput(predictionInputName, data);
+            List<double[]> data = Read.readMatrix(dataFilePath, 0);
+            return new PredictionInput(dataFileName, data);
         } catch (IOException e) {
             e.printStackTrace();
             return null;
