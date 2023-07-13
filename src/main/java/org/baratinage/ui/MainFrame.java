@@ -139,12 +139,12 @@ public class MainFrame extends JFrame {
             item.addActionListener((e) -> {
                 System.out.println("Swtiching language to " + lgKey);
                 Lg.setLocale(lgKey);
-                updateLanguageSwticherMenu();
+                updateLanguageSwitcherMenu();
                 // FIXME: how to recursively update the whole Frame?
             });
             switchLanguageMenuItem.add(item);
         }
-        updateLanguageSwticherMenu();
+        updateLanguageSwitcherMenu();
         return switchLanguageMenuItem;
     }
 
@@ -156,7 +156,7 @@ public class MainFrame extends JFrame {
         mainMenuBar.updateUI();
     }
 
-    public void updateLanguageSwticherMenu() {
+    public void updateLanguageSwitcherMenu() {
         String currentLocalKey = Lg.getLocaleKey();
         for (String key : lgMenuItems.keySet()) {
             lgMenuItems.get(key).setSelected(key.equals(currentLocalKey));
