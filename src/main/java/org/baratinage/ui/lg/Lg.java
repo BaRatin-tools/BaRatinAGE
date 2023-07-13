@@ -87,10 +87,11 @@ public class Lg {
 
     static public void register(Component component, LgTranslator translator) {
         if (registered.containsKey(component)) {
-            System.out.println("Overwriting translator for component " + component);
+            System.out.println("Overwritting translator.");
         }
         registered.put(component, translator);
         translator.setTranslatedText();
+        System.out.println("There are " + registered.size() + " registered components with translators.");
     }
 
     static public void register(JLabel label, String itemKey) {
