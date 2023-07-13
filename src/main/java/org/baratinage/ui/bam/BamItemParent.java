@@ -183,7 +183,7 @@ public class BamItemParent implements ChangeListener {
             System.out.println("> Item selection has not changed");
             Lg.register(outOfSyncWarning.message, () -> {
                 String typeText = Lg.text(type.id);
-                String text = Lg.html("oos_content", typeText);
+                String text = Lg.html("oos_content", typeText, getBackupItemName());
                 outOfSyncWarning.message.setText(text);
             });
         }
