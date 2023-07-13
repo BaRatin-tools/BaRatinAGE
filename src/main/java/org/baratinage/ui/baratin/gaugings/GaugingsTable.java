@@ -10,7 +10,6 @@ import javax.swing.table.TableColumnModel;
 
 import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.ui.lg.Lg;
-import org.baratinage.ui.lg.LgElement;
 
 public class GaugingsTable extends RowColPanel {
 
@@ -34,11 +33,8 @@ public class GaugingsTable extends RowColPanel {
 
         appendChild(scrollpane);
 
-        Lg.register(new LgElement<GaugingsTable>(this) {
-            @Override
-            public void setTranslatedText() {
-                setHeaders();
-            }
+        Lg.register(this, () -> {
+            setHeaders();
         });
 
     }
@@ -52,10 +48,10 @@ public class GaugingsTable extends RowColPanel {
     public void setHeaders() {
         JTableHeader tableHeader = table.getTableHeader();
         TableColumnModel tableColModel = tableHeader.getColumnModel();
-        tableColModel.getColumn(0).setHeaderValue(Lg.getText("ui", "stage_level"));
-        tableColModel.getColumn(1).setHeaderValue(Lg.getText("ui", "discharge"));
-        tableColModel.getColumn(2).setHeaderValue(Lg.getText("ui", "uncertainty_percent"));
-        tableColModel.getColumn(3).setHeaderValue(Lg.getText("ui", "active_gauging"));
+        tableColModel.getColumn(0).setHeaderValue(Lg.text("stage_level"));
+        tableColModel.getColumn(1).setHeaderValue(Lg.text("discharge"));
+        tableColModel.getColumn(2).setHeaderValue(Lg.text("uncertainty_percent"));
+        tableColModel.getColumn(3).setHeaderValue(Lg.text("active_gauging"));
         tableHeader.updateUI();
     }
 

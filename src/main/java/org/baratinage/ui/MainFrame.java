@@ -13,7 +13,6 @@ import org.baratinage.ui.bam.BamProject;
 import org.baratinage.ui.baratin.BaratinProject;
 import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.ui.lg.Lg;
-import org.baratinage.ui.lg.LgElement;
 
 import java.awt.Dimension;
 import java.awt.Point;
@@ -26,6 +25,7 @@ import java.awt.event.WindowEvent;
 import java.io.File;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 public class MainFrame extends JFrame {
@@ -40,18 +40,17 @@ public class MainFrame extends JFrame {
 
         this.setSize(new Dimension(1200, 900));
 
-        this.setSize(new Dimension(1936, 1048));
-        this.setLocation(new Point(2512, -8));
+        // this.setSize(new Dimension(1936, 1048));
+        // this.setLocation(new Point(2512, -8));
 
         mainMenuBar = new JMenuBar();
 
         JMenu fileMenu = new JMenu();
-        LgElement.registerButton(fileMenu, "ui", "files");
+        Lg.register(fileMenu, "files");
         mainMenuBar.add(fileMenu);
 
         JMenuItem newProjectMenuItem = new JMenuItem();
-        LgElement.registerButton(newProjectMenuItem, "ui", "create_baratin_project");
-        newProjectMenuItem.setText("Nouveau projet BaRatin");
+        Lg.register(newProjectMenuItem, "create_baratin_project");
         newProjectMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, KeyEvent.CTRL_DOWN_MASK));
         newProjectMenuItem.addActionListener((e) -> {
             newProject();
@@ -59,7 +58,7 @@ public class MainFrame extends JFrame {
         fileMenu.add(newProjectMenuItem);
 
         JMenuItem openProjectMenuItem = new JMenuItem();
-        LgElement.registerButton(openProjectMenuItem, "ui", "open_project");
+        Lg.register(openProjectMenuItem, "open_project");
         openProjectMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, KeyEvent.CTRL_DOWN_MASK));
         openProjectMenuItem.addActionListener((e) -> {
             loadProject();
@@ -67,7 +66,7 @@ public class MainFrame extends JFrame {
         fileMenu.add(openProjectMenuItem);
 
         JMenuItem saveProjectMenuItem = new JMenuItem();
-        LgElement.registerButton(saveProjectMenuItem, "ui", "save_project_as");
+        Lg.register(saveProjectMenuItem, "save_project_as");
         saveProjectMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_DOWN_MASK));
         saveProjectMenuItem.addActionListener((e) -> {
             if (currentProject != null) {
@@ -79,7 +78,7 @@ public class MainFrame extends JFrame {
         fileMenu.addSeparator();
 
         JMenuItem closeMenuItem = new JMenuItem();
-        LgElement.registerButton(closeMenuItem, "ui", "exit");
+        Lg.register(closeMenuItem, "exit");
         closeMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q, KeyEvent.CTRL_DOWN_MASK));
         closeMenuItem.addActionListener((e) -> {
             close();
@@ -124,13 +123,19 @@ public class MainFrame extends JFrame {
     public JMenu createLanguageSwitcherMenu() {
 
         JMenu switchLanguageMenuItem = new JMenu();
-        LgElement.registerButton(switchLanguageMenuItem, "ui", "change_language");
+        Lg.register(switchLanguageMenuItem, "change_language");
 
-        List<String> lgKeys = Lg.getAvailableLanguageKeys();
+        List<String> lgKeys = Lg.getAvailableLocales();
         for (String lgKey : lgKeys) {
             JCheckBoxMenuItem item = new JCheckBoxMenuItem();
             lgMenuItems.put(lgKey, item);
-            LgElement.registerButton(item, "ui", lgKey);
+            Lg.register(item, () -> {
+                Locale currentLocale = Lg.getLocale();
+                Locale targetLocale = Locale.forLanguageTag(lgKey);
+                String currentLocaleText = targetLocale.getDisplayName(targetLocale);
+                String targetLocaleText = targetLocale.getDisplayName(currentLocale);
+                item.setText(currentLocaleText + " - " + targetLocaleText);
+            });
             item.addActionListener((e) -> {
                 System.out.println("Swtiching language to " + lgKey);
                 Lg.setLocale(lgKey);
@@ -152,7 +157,7 @@ public class MainFrame extends JFrame {
     }
 
     public void updateLanguageSwticherMenu() {
-        String currentLocalKey = Lg.getLocaleKey();
+        String currentLocalKey = Lg.getLocale().getCountry();
         for (String key : lgMenuItems.keySet()) {
             lgMenuItems.get(key).setSelected(key.equals(currentLocalKey));
         }
@@ -188,11 +193,11 @@ public class MainFrame extends JFrame {
 
             @Override
             public String getDescription() {
-                return Lg.getText("ui", "baratinage_file");
+                return Lg.text("baratinage_file");
             }
 
         });
-        fileChooser.setDialogTitle(Lg.getText("ui", "open_project"));
+        fileChooser.setDialogTitle(Lg.text("open_project"));
         fileChooser.setAcceptAllFileFilterUsed(false);
         if (fileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
             String fullFilePath = fileChooser.getSelectedFile().getAbsolutePath();

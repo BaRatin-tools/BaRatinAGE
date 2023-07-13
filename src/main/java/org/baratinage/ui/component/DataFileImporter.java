@@ -25,7 +25,6 @@ import org.baratinage.App;
 import org.baratinage.ui.container.GridPanel;
 import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.ui.lg.Lg;
-import org.baratinage.ui.lg.LgElement;
 import org.baratinage.utils.ReadFile;
 
 public class DataFileImporter extends RowColPanel {
@@ -110,11 +109,11 @@ public class DataFileImporter extends RowColPanel {
         importFilePanel.setColWeight(1, 1);
         // importFilePanel.setRowWeight(2, 10000);
         JLabel explainLabel = new JLabel();
-        LgElement.registerLabel(explainLabel, "ui", "select_file_to_import");
+        Lg.register(explainLabel, "select_file_to_import");
         selectedFilePathLabel = new JLabel();
         selectedFilePathLabel.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 14));
         JButton browseFileSystemButon = new JButton();
-        LgElement.registerButton(browseFileSystemButon, "ui", "browse");
+        Lg.register(browseFileSystemButon, "browse");
         browseFileSystemButon.addActionListener(e -> {
             final JFileChooser fileChooser = new JFileChooser();
             // fileChooser.setCurrentDirectory(new File(System.getProperty("user.dir")));
@@ -134,11 +133,11 @@ public class DataFileImporter extends RowColPanel {
 
                 @Override
                 public String getDescription() {
-                    return Lg.getText("ui", "data_text_file") + " (.txt, .csv, .dat, .bad)";
+                    return Lg.text("data_text_file") + " (.txt, .csv, .dat, .bad)";
                 }
 
             });
-            fileChooser.setDialogTitle(Lg.getText("ui", "select_data_text_file"));
+            fileChooser.setDialogTitle(Lg.text("select_data_text_file"));
             fileChooser.setAcceptAllFileFilterUsed(false);
             if (fileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
                 readFile(fileChooser.getSelectedFile().getAbsolutePath());
@@ -159,7 +158,7 @@ public class DataFileImporter extends RowColPanel {
         panel.setGap(5, 5);
         panel.setPadding(5);
 
-        JLabel separatorLabel = new JLabel(Lg.getText("ui", "separator"));
+        JLabel separatorLabel = new JLabel(Lg.text("separator"));
         // FIXME: need refactorization to account for default value!
         RowColPanel separatorOptions = getSeparatorOptions((txt) -> {
             importSettings.sep = txt;
@@ -169,7 +168,7 @@ public class DataFileImporter extends RowColPanel {
         panel.insertChild(separatorLabel, 0, 0);
         panel.insertChild(separatorOptions, 1, 0);
 
-        JCheckBox hasHeaderCheckBox = new JCheckBox(Lg.getText("ui", "has_header_row"));
+        JCheckBox hasHeaderCheckBox = new JCheckBox(Lg.text("has_header_row"));
         hasHeaderCheckBox.setSelected(importSettings.hasHeaderRow);
         hasHeaderCheckBox.addActionListener((e) -> {
             importSettings.hasHeaderRow = hasHeaderCheckBox.isSelected();
@@ -178,7 +177,7 @@ public class DataFileImporter extends RowColPanel {
 
         panel.insertChild(hasHeaderCheckBox, 0, 1, 2, 1);
 
-        JLabel nSkipRowLabel = new JLabel(Lg.getText("ui", "n_rows_to_skip"));
+        JLabel nSkipRowLabel = new JLabel(Lg.text("n_rows_to_skip"));
         SpinnerNumberModel spinnerModel = new SpinnerNumberModel(0, 0, Integer.MAX_VALUE, 1);
         JSpinner nSkipRowField = new JSpinner(spinnerModel);
         nSkipRowField.addChangeListener((e) -> {
@@ -189,7 +188,7 @@ public class DataFileImporter extends RowColPanel {
         panel.insertChild(nSkipRowLabel, 0, 2);
         panel.insertChild(nSkipRowField, 1, 2);
 
-        JLabel missingValueCodeLabel = new JLabel(Lg.getText("ui", "missing_value_code"));
+        JLabel missingValueCodeLabel = new JLabel(Lg.text("missing_value_code"));
         TextField missingValueCodeField = new TextField();
         missingValueCodeField.setText(importSettings.missingValueString);
         missingValueCodeField.addChangeListener((txt) -> {
@@ -207,17 +206,17 @@ public class DataFileImporter extends RowColPanel {
         RowColPanel panel = new RowColPanel(AXIS.COL);
         panel.setPadding(5);
         panel.setGap(5);
-        JLabel label = new JLabel(Lg.getText("ui", "data_preview"));
+        JLabel label = new JLabel(Lg.text("data_preview"));
         dataTable = new ImportPreviewTable();
 
-        JLabel nPreloadLabel = new JLabel(Lg.getText("ui", "n_rows_to_preload"));
+        JLabel nPreloadLabel = new JLabel(Lg.text("n_rows_to_preload"));
         RowColPanel nPreloadPanel = new RowColPanel();
         nPreloadPanel.setGap(5);
         SpinnerNumberModel nPreloadSpinnerModel = new SpinnerNumberModel(importSettings.nRowMax, 11,
                 Integer.MAX_VALUE,
                 1);
         JSpinner nPreloadSpinner = new JSpinner(nPreloadSpinnerModel);
-        JButton nPreloadButton = new JButton(Lg.getText("ui", "apply"));
+        JButton nPreloadButton = new JButton(Lg.text("apply"));
         nPreloadButton.addActionListener((e) -> {
             importSettings.nRowMax = (int) nPreloadSpinner.getValue();
             readFile(importSettings.filePath);
@@ -293,10 +292,10 @@ public class DataFileImporter extends RowColPanel {
     private RowColPanel getSeparatorOptions(IOptionChange l) {
         RowColPanel panel = new RowColPanel();
 
-        JRadioButton tabOption = new JRadioButton(Lg.getText("ui", "sep_tab"));
-        JRadioButton scOption = new JRadioButton(Lg.getText("ui", "sep_semicolon"));
-        JRadioButton commaOption = new JRadioButton(Lg.getText("ui", "sep_comma"));
-        JRadioButton sapaceOption = new JRadioButton(Lg.getText("ui", "sep_space"));
+        JRadioButton tabOption = new JRadioButton(Lg.text("sep_tab"));
+        JRadioButton scOption = new JRadioButton(Lg.text("sep_semicolon"));
+        JRadioButton commaOption = new JRadioButton(Lg.text("sep_comma"));
+        JRadioButton sapaceOption = new JRadioButton(Lg.text("sep_space"));
 
         ButtonGroup options = new ButtonGroup();
         options.add(tabOption);

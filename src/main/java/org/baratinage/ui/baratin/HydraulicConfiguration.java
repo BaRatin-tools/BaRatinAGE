@@ -20,7 +20,7 @@ import org.baratinage.ui.baratin.hydraulic_control.HydraulicControlPanels;
 import org.baratinage.ui.baratin.hydraulic_control.OneHydraulicControl;
 import org.baratinage.ui.commons.WarningAndActions;
 import org.baratinage.ui.container.RowColPanel;
-import org.baratinage.ui.lg.LgElement;
+import org.baratinage.ui.lg.Lg;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -102,14 +102,14 @@ class HydraulicConfiguration extends BamItem
             String[] keysToIgnore = new String[] { "ui", "name", "description", "jsonStringBackup" };
             if (!isMatchingWith(jsonStringBackup, keysToIgnore, true)) {
                 WarningAndActions warning = new WarningAndActions();
-                LgElement.registerLabel(warning.message, "ui", "oos_prior_rating_curve", true);
+                Lg.register(warning.message, "oos_prior_rating_curve", true);
                 outOufSyncPanel.appendChild(warning);
-                LgElement.registerButton(priorRatingCurve.runButton, "ui", "recompute_prior_rc", true);
+                Lg.register(priorRatingCurve.runButton, "recompute_prior_rc", true);
                 priorRatingCurve.runButton.setForeground(App.INVALID_COLOR);
                 return;
             }
         }
-        LgElement.registerButton(priorRatingCurve.runButton, "ui", "compute_prior_rc", true);
+        Lg.register(priorRatingCurve.runButton, "compute_prior_rc", true);
         priorRatingCurve.runButton.setForeground(new JButton().getForeground());
         outOufSyncPanel.updateUI();
     }

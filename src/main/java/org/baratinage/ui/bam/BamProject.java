@@ -25,7 +25,7 @@ import org.baratinage.ui.commons.Explorer;
 import org.baratinage.ui.commons.ExplorerItem;
 import org.baratinage.ui.component.SvgIcon;
 import org.baratinage.ui.container.RowColPanel;
-import org.baratinage.ui.lg.LgElement;
+import org.baratinage.ui.lg.Lg;
 import org.baratinage.utils.ReadFile;
 import org.baratinage.utils.ReadWriteZip;
 import org.baratinage.utils.WriteFile;
@@ -58,7 +58,8 @@ public abstract class BamProject extends RowColPanel {
         appendChild(content, 1);
 
         explorer = new Explorer();
-        LgElement.registerLabel(explorer.headerLabel, "ui", "explorer");
+        Lg.register(explorer.headerLabel, "explorer");
+        // LgElement.registerLabel(explorer.headerLabel, "ui", "explorer");
 
         setupExplorer();
 
@@ -102,8 +103,9 @@ public abstract class BamProject extends RowColPanel {
 
         bamItem.cloneButton.setIcon(SvgIcon.buildNoScalingIcon("./resources/icons/feather/copy.svg", 24));
         bamItem.deleteButton.setIcon(SvgIcon.buildNoScalingIcon("./resources/icons/feather/trash.svg", 24));
-        LgElement.registerButton(bamItem.cloneButton, "ui", "duplicate");
-        LgElement.registerButton(bamItem.deleteButton, "ui", "delete");
+
+        Lg.register(bamItem.cloneButton, "duplicate");
+        Lg.register(bamItem.deleteButton, "delete");
 
         BAM_ITEMS.add(bamItem);
         EXPLORER_ITEMS.add(explorerItem);

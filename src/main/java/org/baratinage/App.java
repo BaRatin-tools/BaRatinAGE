@@ -61,6 +61,7 @@ public class App {
         EventQueue.invokeLater(new Runnable() {
             public void run() {
                 try {
+                    Lg.init();
                     Lg.setLocale("fr");
                     MAIN_FRAME = new MainFrame();
 

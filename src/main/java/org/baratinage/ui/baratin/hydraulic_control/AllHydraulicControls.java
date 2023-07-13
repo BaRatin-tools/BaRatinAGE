@@ -24,7 +24,6 @@ import org.baratinage.jbam.Distribution.DISTRIB;
 import org.baratinage.ui.bam.IPriors;
 import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.ui.lg.Lg;
-import org.baratinage.ui.lg.LgElement;
 
 public class AllHydraulicControls extends RowColPanel implements IPriors, ChangeListener {
 
@@ -102,18 +101,14 @@ public class AllHydraulicControls extends RowColPanel implements IPriors, Change
 
         this.appendChild(splitPaneContainer);
 
-        Lg.register(new LgElement<AllHydraulicControls>(this) {
-            @Override
-            public void setTranslatedText() {
+        Lg.register(this, () -> {
 
-                int n = controlSelectorModel.getSize();
-                for (int k = 0; k < n; k++) {
-                    OneHydraulicControl ohc = controlSelectorModel.getElementAt(k);
-                    String text = Lg.getText("ui", "control_number");
-                    text = Lg.format(text, k + 1);
-                    ohc.nameLabel.setText(text);
-                    controlSelectorModel.setElementAt(ohc, k);
-                }
+            int n = controlSelectorModel.getSize();
+            for (int k = 0; k < n; k++) {
+                OneHydraulicControl ohc = controlSelectorModel.getElementAt(k);
+                String text = Lg.text("control_number", k + 1);
+                ohc.nameLabel.setText(text);
+                controlSelectorModel.setElementAt(ohc, k);
             }
         });
 
@@ -145,7 +140,7 @@ public class AllHydraulicControls extends RowColPanel implements IPriors, Change
             }
         }
 
-        Lg.updateTexts();
+        // Lg.updateTexts();
     }
 
     @Override
@@ -188,7 +183,7 @@ public class AllHydraulicControls extends RowColPanel implements IPriors, Change
             controlSelectorModel.addElement(hc);
             hydraulicControlList.add(hc);
         }
-        Lg.updateTexts();
+        // Lg.updateTexts();
     }
 
     public List<OneHydraulicControl> getHydraulicControls() {

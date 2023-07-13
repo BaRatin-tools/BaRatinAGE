@@ -23,20 +23,20 @@ public class ProgressBar extends JProgressBar {
         this.setValue(progress);
 
         double percent = total > 0 ? (double) progress / (double) total * 100 : 0;
-        String stepTxt = Lg.format(Lg.getText("ui", "step_n_out_of_m"), step, totalStep);
+        String stepTxt = Lg.text("step_n_out_of_m", step, totalStep);
         String s = "";
         if (id.equals("MCMC")) {
-            String mainTxt = Lg.getText("ui", "mcmc_running");
+            String mainTxt = Lg.text("mcmc_running");
             s = String.format("%s - %.0f %% - %s", stepTxt, percent, mainTxt);
         } else if (id.startsWith("Prediction")) {
-            String mainTxt = Lg.getText("ui", "pred_running");
+            String mainTxt = Lg.text("pred_running");
             s = String.format("%s - %.0f %% - %s", stepTxt, percent, mainTxt);
         } else if (id.equals("starting")) {
-            s = Lg.getText("ui", "conf_writing");
+            s = Lg.text("conf_writing");
         } else if (id.equals("canceled")) {
-            s = Lg.getText("ui", "canceled");
+            s = Lg.text("canceled");
         } else {
-            s = Lg.getText("ui", "done");
+            s = Lg.text("done");
         }
         this.setString(s);
         this.repaint();

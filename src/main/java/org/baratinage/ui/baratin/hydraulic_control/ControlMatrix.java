@@ -14,7 +14,6 @@ import javax.swing.event.ChangeListener;
 import org.baratinage.ui.container.GridPanel;
 import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.ui.lg.Lg;
-import org.baratinage.ui.lg.LgElement;
 
 public class ControlMatrix extends RowColPanel implements ChangeListener {
 
@@ -53,7 +52,7 @@ public class ControlMatrix extends RowColPanel implements ChangeListener {
         appendChild(controlGridScrollPane, 1);
 
         reversedOrderCheckBox = new JCheckBox(" > Inverser l'ordre des segments");
-        LgElement.registerButton(reversedOrderCheckBox, "ui", "invert_control_matrix");
+        Lg.register(reversedOrderCheckBox, "invert_control_matrix");
         reversedOrderCheckBox.setSelected(true);
         reversedOrderCheckBox.addItemListener((e) -> {
             updateControlMatrixView();
@@ -200,17 +199,14 @@ public class ControlMatrix extends RowColPanel implements ChangeListener {
         controlCheckBoxPanel.updateUI();
         addControlButton.setText(" > Ajouter un contrôle  (" + "Contrôle #" + (nCtrl + 1) + ")");
         removeControlButton.setText(" > Supprimer le dernier contrôle (" + "Contrôle #" + nCtrl + ")");
-        Lg.register(new LgElement<ControlMatrix>(this) {
-            @Override
-            public void setTranslatedText() {
-                String ctrlTemplate = Lg.getText("ui", "control_number");
-                String addCtrlText = Lg.getText("ui", "add_control");
-                addCtrlText = Lg.format(addCtrlText, Lg.format(ctrlTemplate, nCtrl + 1));
-                addControlButton.setText(addCtrlText);
-                String delCtrlText = Lg.getText("ui", "delete_last_control");
-                delCtrlText = Lg.format(delCtrlText, Lg.format(ctrlTemplate, nCtrl));
-                removeControlButton.setText(delCtrlText);
-            }
+
+        Lg.register(this, () -> {
+            String nextCtrlText = Lg.text("control_number", nCtrl + 1);
+            String currCtrlText = Lg.text("control_number", nCtrl);
+            String addCtrlText = Lg.text("add_control", nextCtrlText);
+            String delCtrlText = Lg.text("delete_last_control", currCtrlText);
+            addControlButton.setText(addCtrlText);
+            removeControlButton.setText(delCtrlText);
         });
         removeControlButton.setEnabled(nCtrl > 1);
     }

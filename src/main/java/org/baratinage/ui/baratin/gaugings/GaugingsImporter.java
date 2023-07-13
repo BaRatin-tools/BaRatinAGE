@@ -43,7 +43,7 @@ public class GaugingsImporter extends RowColPanel {
         RowColPanel actionPanel = new RowColPanel();
         actionPanel.setPadding(5);
         actionPanel.setGap(5);
-        JButton validateButton = new JButton(Lg.getText("ui", "import"));
+        JButton validateButton = new JButton(Lg.text("import"));
         validateButton.addActionListener((e) -> {
             ImportedDataset rawDataset = dataFileImporter.getDataset();
             int hIndex = hColumn.getIndexOf(hColumn.getSelectedItem());
@@ -59,7 +59,7 @@ public class GaugingsImporter extends RowColPanel {
             dialog.setVisible(false);
 
         });
-        JButton cancelButton = new JButton(Lg.getText("ui", "cancel"));
+        JButton cancelButton = new JButton(Lg.text("cancel"));
         cancelButton.addActionListener((e) -> {
             dialog.setVisible(false);
         });
@@ -111,7 +111,7 @@ public class GaugingsImporter extends RowColPanel {
         dialog = new JDialog(App.MAIN_FRAME, true);
         dialog.setContentPane(this);
 
-        dialog.setTitle(Lg.getText("ui", "import_gauging_set"));
+        dialog.setTitle(Lg.text("import_gauging_set"));
         dialog.setMinimumSize(new Dimension(600, 400));
         dialog.setPreferredSize(new Dimension(900, 600));
 
@@ -179,19 +179,19 @@ public class GaugingsImporter extends RowColPanel {
         panel.setPadding(5);
         panel.setGap(5);
 
-        JLabel hLabel = new JLabel(Lg.getText("ui", "stage_level_column"));
+        JLabel hLabel = new JLabel(Lg.text("stage_level_column"));
         JComboBox<DataColumnInfo> hComboBox = new JComboBox<>(hColumn);
 
         panel.insertChild(hLabel, 0, 0);
         panel.insertChild(hComboBox, 1, 0);
 
-        JLabel qLabel = new JLabel(Lg.getText("ui", "discharge_column"));
+        JLabel qLabel = new JLabel(Lg.text("discharge_column"));
         JComboBox<DataColumnInfo> qComboBox = new JComboBox<>(qColumn);
 
         panel.insertChild(qLabel, 0, 1);
         panel.insertChild(qComboBox, 1, 1);
 
-        JLabel uqLabel = new JLabel(Lg.getText("ui", "discharge_uncertainty_column"));
+        JLabel uqLabel = new JLabel(Lg.text("discharge_uncertainty_column"));
         JComboBox<DataColumnInfo> uqComboBox = new JComboBox<>(uqColumn);
 
         panel.insertChild(uqLabel, 0, 2);

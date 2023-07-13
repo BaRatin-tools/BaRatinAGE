@@ -14,7 +14,7 @@ import org.baratinage.ui.bam.IPredictionData;
 import org.baratinage.ui.component.NumberField;
 import org.baratinage.ui.container.GridPanel;
 import org.baratinage.ui.container.RowColPanel;
-import org.baratinage.ui.lg.LgElement;
+import org.baratinage.ui.lg.Lg;
 
 // FIXME: should have a fromJSON / toJSON methods
 public class RatingCurveStageGrid extends RowColPanel implements IPredictionData {
@@ -38,7 +38,7 @@ public class RatingCurveStageGrid extends RowColPanel implements IPredictionData
         setGap(5);
         setPadding(5);
         JLabel stageGridLabel = new JLabel();
-        LgElement.registerLabel(stageGridLabel, "ui", "stage_grid");
+        Lg.register(stageGridLabel, "stage_grid");
         this.appendChild(stageGridLabel, 0);
         this.appendChild(gridPanel, 1);
 
@@ -70,16 +70,16 @@ public class RatingCurveStageGrid extends RowColPanel implements IPredictionData
         valStepField.addValidator(n -> n > 0);
 
         JLabel minLabel = new JLabel();
-        LgElement.registerLabel(minLabel, "ui", "min");
+        Lg.register(minLabel, "min");
 
         JLabel maxLabel = new JLabel();
-        LgElement.registerLabel(maxLabel, "ui", "max");
+        Lg.register(maxLabel, "max");
 
         JLabel nLabel = new JLabel();
-        LgElement.registerLabel(nLabel, "ui", "n");
+        Lg.register(nLabel, "n");
 
         JLabel stepLabel = new JLabel();
-        LgElement.registerLabel(stepLabel, "ui", "step");
+        Lg.register(stepLabel, "step");
 
         gridPanel.setGap(5);
         gridPanel.setColWeight(1, 1);

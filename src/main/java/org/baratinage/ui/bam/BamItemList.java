@@ -87,7 +87,7 @@ public class BamItemList extends ArrayList<BamItem> {
     }
 
     public String getDefaultName(BamItemType type) {
-        String shortName = Lg.getText("ui", type.id + "_short");
+        String shortName = Lg.text(type.id + "_short");
         BamItemList filteredList = filterByType(type);
         String[] filteredNames = getBamItemNames(filteredList);
         return Misc.getNextName(shortName, filteredNames);

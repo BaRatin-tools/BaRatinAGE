@@ -13,7 +13,6 @@ import org.baratinage.App;
 import org.baratinage.ui.commons.WarningAndActions;
 import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.ui.lg.Lg;
-import org.baratinage.ui.lg.LgElement;
 import org.json.JSONObject;
 
 public class BamItemParent implements ChangeListener {
@@ -72,28 +71,21 @@ public class BamItemParent implements ChangeListener {
         outOfSyncWarning = new WarningAndActions();
 
         outOfSyncSelectOriginalButton = new JButton();
-        Lg.register(new LgElement<JButton>(outOfSyncSelectOriginalButton) {
-            @Override
-            public void setTranslatedText() {
-                String text = Lg.getText("ui", "oos_revert_select", true);
-                String name = getBackupItemName();
-                text = Lg.format(text, name);
-                object.setText(text);
-            }
+        Lg.register(outOfSyncSelectOriginalButton, () -> {
+            String text = Lg.html("oos_revert_select", getBackupItemName());
+            outOfSyncSelectOriginalButton.setText(text);
         });
         outOfSyncSelectOriginalButton.addActionListener((e) -> {
             revertToBackup();
         });
 
         outOfSyncCreateNewFromOriginalButton = new JButton();
-        Lg.register(new LgElement<JButton>(outOfSyncCreateNewFromOriginalButton) {
-            @Override
-            public void setTranslatedText() {
-                String text = Lg.getText("ui", "oos_create_from_backup", true);
-                text = Lg.format(text, Lg.getText("ui", type.id));
-                object.setText(text);
-            }
+        Lg.register(outOfSyncCreateNewFromOriginalButton, () -> {
+            String typeText = Lg.text(type.id);
+            String text = Lg.html("oos_create_from_backup", typeText);
+            outOfSyncCreateNewFromOriginalButton.setText(text);
         });
+
         outOfSyncCreateNewFromOriginalButton.addActionListener((e) -> {
             if (createBackupBamItemAction == null) {
                 return;
@@ -159,13 +151,10 @@ public class BamItemParent implements ChangeListener {
 
         outOfSyncSelectOriginalButton.setEnabled(backupItemStillExists);
 
-        Lg.register(new LgElement<JLabel>(outOfSyncWarning.message) {
-            @Override
-            public void setTranslatedText() {
-                String text = Lg.getText("ui", "oos_select_and_content", true);
-                text = Lg.format(text, Lg.getText("ui", type.id));
-                object.setText(text);
-            }
+        Lg.register(outOfSyncWarning.message, () -> {
+            String typeText = Lg.text(type.id);
+            String text = Lg.html("oos_select_and_content", typeText);
+            outOfSyncWarning.message.setText(text);
         });
 
         outOfSyncWarning.clearButtons();
@@ -182,8 +171,6 @@ public class BamItemParent implements ChangeListener {
         boolean selectionHasChanged = !backupItemId.equals(currentItem.ID);
         boolean selectionIsOutOfSync = !currentItem.isMatchingWith(backupItemJson, jsonKeys, excludeJsonKeys);
 
-        // JButton createBamItemFromBackupButton =
-
         if (!selectionIsOutOfSync) {
             return null;
         }
@@ -194,14 +181,10 @@ public class BamItemParent implements ChangeListener {
             outOfSyncWarning.addButton(outOfSyncSelectOriginalButton);
         } else {
             System.out.println("> Item selection has not changed");
-            Lg.register(new LgElement<JLabel>(outOfSyncWarning.message) {
-                @Override
-                public void setTranslatedText() {
-                    String text = Lg.getText("ui", "oos_content", true);
-                    String name = getBackupItemName();
-                    text = Lg.format(text, Lg.getText("ui", type.id), name);
-                    object.setText(text);
-                }
+            Lg.register(outOfSyncWarning.message, () -> {
+                String typeText = Lg.text(type.id);
+                String text = Lg.html("oos_content", typeText);
+                outOfSyncWarning.message.setText(text);
             });
         }
         outOfSyncWarning.addButton(outOfSyncCreateNewFromOriginalButton);

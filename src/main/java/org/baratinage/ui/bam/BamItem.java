@@ -16,7 +16,6 @@ import org.baratinage.ui.component.TextField;
 import org.baratinage.ui.container.GridPanel;
 import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.ui.lg.Lg;
-import org.baratinage.ui.lg.LgElement;
 import org.json.JSONObject;
 
 abstract public class BamItem extends GridPanel {
@@ -49,8 +48,12 @@ abstract public class BamItem extends GridPanel {
         bamItemNameField.setText("Unnamed");
         // bamItemNameField.setFont(bamItemNameField.getFont().deriveFont(Font.BOLD));
 
-        LgElement.registerTextFieldPlaceholder(bamItemNameField, "ui", "name");
-        LgElement.registerTextFieldPlaceholder(bamItemDescriptionField, "ui", "description");
+        Lg.register(bamItemNameField, () -> {
+            bamItemNameField.setPlaceholder(Lg.text("name"));
+        });
+        Lg.register(bamItemDescriptionField, () -> {
+            bamItemNameField.setPlaceholder(Lg.text("description"));
+        });
 
         headerPanel.insertChild(bamItemTypeLabel, 0, 0);
         headerPanel.insertChild(bamItemNameField, 1, 0, ANCHOR.C, FILL.H);
@@ -189,8 +192,7 @@ abstract public class BamItem extends GridPanel {
 
     public void setCopyName() {
         String oldName = bamItemNameField.getText();
-        String newName = Lg.getText("ui", "copy_of");
-        newName = Lg.format(newName, oldName);
+        String newName = Lg.text("copy_of", oldName);
         bamItemNameField.setText(newName);
     }
 }

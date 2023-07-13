@@ -11,7 +11,7 @@ import javax.swing.event.ChangeListener;
 import org.baratinage.ui.component.NumberField;
 import org.baratinage.ui.container.GridPanel;
 import org.baratinage.ui.container.RowColPanel;
-import org.baratinage.ui.lg.LgElement;
+import org.baratinage.ui.lg.Lg;
 
 public class OneHydraulicControl extends RowColPanel implements ChangeListener {
 
@@ -46,7 +46,7 @@ public class OneHydraulicControl extends RowColPanel implements ChangeListener {
         parametersPanel.insertChild(new JLabel("+/- (Incertitude élargie)"), 2, 0);
 
         JLabel activationStageLabel = new JLabel("k - Hauteur d'activation");
-        LgElement.registerLabel(activationStageLabel, "ui", "activate_stage_k", true);
+        Lg.register(activationStageLabel, "activate_stage_k", true);
         activationStage = new NumberField();
         activationStage.addChangeListener(this);
         activationStageUncertainty = new NumberField();
@@ -56,7 +56,7 @@ public class OneHydraulicControl extends RowColPanel implements ChangeListener {
         parametersPanel.insertChild(activationStageUncertainty, 2, 1);
 
         JLabel coefficientLabel = new JLabel("a - Coefficient");
-        LgElement.registerLabel(coefficientLabel, "ui", "coefficient_a", true);
+        Lg.register(coefficientLabel, "coefficient_a", true);
         coefficient = new NumberField();
         coefficient.addChangeListener(this);
         coefficientUncertainty = new NumberField();
@@ -66,7 +66,7 @@ public class OneHydraulicControl extends RowColPanel implements ChangeListener {
         parametersPanel.insertChild(coefficientUncertainty, 2, 2);
 
         JLabel exponentLabel = new JLabel("c - Exposant");
-        LgElement.registerLabel(exponentLabel, "ui", "exponent_c", true);
+        Lg.register(exponentLabel, "exponent_c", true);
         exponent = new NumberField();
         exponent.addChangeListener(this);
         exponentUncertainty = new NumberField();

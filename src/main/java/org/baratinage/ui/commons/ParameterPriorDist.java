@@ -19,6 +19,7 @@ import org.baratinage.ui.component.NumberField;
 import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.ui.lg.Lg;
 
+// FIXME: refactor to be more Lg compatible and more memory efficient
 public class ParameterPriorDist implements ChangeListener {
 
     public String shortName;
@@ -39,7 +40,9 @@ public class ParameterPriorDist implements ChangeListener {
 
         nameLabel = new JLabel();
         initialGuessField = new NumberField();
-        initialGuessField.setPlaceholder(Lg.getText("ui", "initial_guess"));
+        Lg.register(initialGuessField, () -> {
+            initialGuessField.setPlaceholder(Lg.text("initial_guess"));
+        });
         initialGuessField.addChangeListener(this);
 
         parametersInputsPanel = new RowColPanel();
@@ -55,7 +58,7 @@ public class ParameterPriorDist implements ChangeListener {
                     boolean isSelected,
                     boolean cellHasFocus) {
                 DISTRIB d = (DISTRIB) value;
-                String text = Lg.getText("ui", "dist_" + d.name);
+                String text = Lg.text("dist_" + d.name);
                 super.getListCellRendererComponent(list, text, index, isSelected, cellHasFocus);
                 return this;
             }
@@ -70,7 +73,7 @@ public class ParameterPriorDist implements ChangeListener {
                 parameterPriorFields.clear();
                 for (String parameterName : currentDistribution.parameterNames) {
                     NumberField numberField = new NumberField();
-                    numberField.setPlaceholder(Lg.getText("ui", parameterName));
+                    numberField.setPlaceholder(Lg.text(parameterName));
                     numberField.addChangeListener(this);
                     parameterPriorFields.add(numberField);
                     parametersInputsPanel.appendChild(numberField);

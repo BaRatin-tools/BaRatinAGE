@@ -39,8 +39,7 @@ import org.baratinage.ui.baratin.gaugings.GaugingsDataset;
 import org.baratinage.ui.baratin.gaugings.GaugingsPlot;
 
 import org.baratinage.ui.container.RowColPanel;
-
-import org.baratinage.ui.lg.LgElement;
+import org.baratinage.ui.lg.Lg;
 
 import org.baratinage.ui.plot.Plot;
 import org.baratinage.ui.plot.PlotItem;
@@ -80,7 +79,7 @@ public class PosteriorRatingCurve extends RowColPanel implements ICalibratedMode
         appendChild(new JSeparator(JSeparator.HORIZONTAL), 0);
 
         runBamButton = new JButton();
-        LgElement.registerButton(runBamButton, "ui", "compute_posterior_rc");
+        Lg.register(runBamButton, "compute_posterior_rc");
         runBamButton.setFont(runBamButton.getFont().deriveFont(Font.BOLD));
         runBamButton.addActionListener((e) -> {
             computePosteriorRatingCurve();

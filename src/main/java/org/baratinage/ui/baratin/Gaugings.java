@@ -20,7 +20,6 @@ import org.baratinage.ui.baratin.gaugings.GaugingsPlot;
 import org.baratinage.ui.baratin.gaugings.GaugingsTable;
 import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.ui.lg.Lg;
-import org.baratinage.ui.lg.LgElement;
 import org.baratinage.ui.plot.PlotContainer;
 import org.baratinage.utils.Misc;
 import org.baratinage.ui.bam.BamItemType;
@@ -47,10 +46,10 @@ public class Gaugings extends BamItem implements ICalibrationData {
         content.setRightComponent(plotPanel);
 
         importedDataSetSourceLabel = new JLabel();
-        LgElement.registerLabel(importedDataSetSourceLabel, "ui", "empty_gauging_set");
+        Lg.register(importedDataSetSourceLabel, "empty_gauging_set");
 
         JButton importDataButton = new JButton();
-        LgElement.registerButton(importDataButton, "ui", "import_gauging_set");
+        Lg.register(importDataButton, "import_gauging_set");
         importDataButton.addActionListener((e) -> {
             GaugingsImporter gaugingsImporter = new GaugingsImporter();
             gaugingsImporter.showDialog();
@@ -76,17 +75,9 @@ public class Gaugings extends BamItem implements ICalibrationData {
 
     public void updateTable() {
         gaugingsTable.set(gaugingDataset);
-        // String desc = String.format("Jeu de jaugeages importé depuis le fichier
-        // '%s'",
-        // gaugingDataset.getDatasetName());
-        // importedDataSetSourceLabel.setText(desc);
-        Lg.register(new LgElement<JLabel>(importedDataSetSourceLabel) {
-            @Override
-            public void setTranslatedText() {
-                String text = Lg.getText("ui", "gauging_set_imported_from", true);
-                text = Lg.format(text, gaugingDataset.getDatasetName());
-                object.setText(text);
-            }
+        Lg.register(importedDataSetSourceLabel, () -> {
+            importedDataSetSourceLabel.setText(
+                    Lg.text("gauging_set_imported_from", gaugingDataset.getDatasetName()));
         });
     }
 

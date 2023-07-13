@@ -21,7 +21,6 @@ import org.baratinage.ui.bam.RunBam;
 import org.baratinage.ui.commons.WarningAndActions;
 import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.ui.lg.Lg;
-import org.baratinage.ui.lg.LgElement;
 import org.json.JSONObject;
 
 public class RatingCurve extends BamItem implements ICalibratedModel, IMcmc, BamItemList.BamItemListChangeListener {
@@ -55,7 +54,7 @@ public class RatingCurve extends BamItem implements ICalibratedModel, IMcmc, Bam
                 this,
                 BamItemType.HYDRAULIC_CONFIG);
 
-        LgElement.registerLabel(hydrauConfParent.comboboxLabel, "ui", "hydraulic_config");
+        Lg.register(hydrauConfParent.comboboxLabel, "hydraulic_config");
         hydrauConfParent.combobox.setEmptyItemText("Selectionner une configuration hydraulique");
         hydrauConfParent.addChangeListener((e) -> {
             BamItem bamItem = hydrauConfParent.getCurrentBamItem();
@@ -82,7 +81,7 @@ public class RatingCurve extends BamItem implements ICalibratedModel, IMcmc, Bam
                 this,
                 BamItemType.GAUGINGS);
 
-        LgElement.registerLabel(gaugingsParent.comboboxLabel, "ui", "gaugings");
+        Lg.register(gaugingsParent.comboboxLabel, "gaugings");
         gaugingsParent.combobox.setEmptyItemText("Selectionner un jeu de jaugeages");
         gaugingsParent.addChangeListener((e) -> {
             BamItem bamItem = gaugingsParent.getCurrentBamItem();
@@ -104,8 +103,7 @@ public class RatingCurve extends BamItem implements ICalibratedModel, IMcmc, Bam
                 this,
                 BamItemType.STRUCTURAL_ERROR);
 
-        LgElement.registerLabel(structErrorParent.comboboxLabel, "ui",
-                "structural_error_model");
+        Lg.register(structErrorParent.comboboxLabel, "structural_error_model");
         structErrorParent.combobox.setEmptyItemText("Selectionner un modèle d'erreur structurelle");
         structErrorParent.addChangeListener((e) -> {
             BamItem bamItem = structErrorParent.getCurrentBamItem();
@@ -200,27 +198,28 @@ public class RatingCurve extends BamItem implements ICalibratedModel, IMcmc, Bam
 
         if (jsonStringBackup != null && !isMatchingWith(jsonStringBackup, new String[] { "stageGridConfig" }, false)) {
             warning = new WarningAndActions();
-            LgElement.registerLabel(warning.message, "ui", "oos_stage_grid");
+
+            Lg.register(warning.message, "oos_stage_grid");
             warnings.add(warning);
         }
 
         posteriorRatingCurve.outdatedPanel.clear();
         outdatedInfoPanel.clear();
         if (warnings.size() > 0) {
-            LgElement.registerButton(posteriorRatingCurve.runBamButton, "ui", "recompute_posterior_rc", true);
+            Lg.register(posteriorRatingCurve.runBamButton, "recompute_posterior_rc", true);
             posteriorRatingCurve.runBamButton.setForeground(App.INVALID_COLOR);
             for (WarningAndActions w : warnings) {
                 outdatedInfoPanel.appendChild(w);
             }
             posteriorRatingCurve.outdatedPanel.appendChild(outdatedInfoPanel);
         } else {
-            LgElement.registerButton(posteriorRatingCurve.runBamButton, "ui", "compute_posterior_rc", true);
+            Lg.register(posteriorRatingCurve.runBamButton, "compute_posterior_rc", true);
             posteriorRatingCurve.runBamButton.setForeground(new JButton().getForeground());
         }
 
         // since text within warnings changes, it is necessary to
         // call Lg.updateTexts() so changes are accounted for.
-        Lg.updateTexts();
+        // Lg.updateTexts();
         posteriorRatingCurve.updateUI();
 
     }

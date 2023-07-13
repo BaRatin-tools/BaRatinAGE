@@ -13,7 +13,6 @@ import org.baratinage.jbam.Distribution.DISTRIB;
 import org.baratinage.ui.bam.IPriors;
 import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.ui.lg.Lg;
-import org.baratinage.ui.lg.LgElement;
 
 public class HydraulicControlPanels extends RowColPanel implements IPriors, ChangeListener {
 
@@ -26,17 +25,14 @@ public class HydraulicControlPanels extends RowColPanel implements IPriors, Chan
         controls = new ArrayList<>();
         tabs = new JTabbedPane();
 
-        Lg.register(new LgElement<JTabbedPane>(tabs) {
-            @Override
-            public void setTranslatedText() {
-                int n = tabs.getTabCount();
-                for (int k = 0; k < n; k++) {
-                    String text = Lg.getText("ui", "control_number");
-                    OneHydraulicControl ohc = (OneHydraulicControl) object.getComponent(k);
-                    text = Lg.format(text, ohc.controlNumber);
-                    object.setTitleAt(k, text);
-                }
-            }
+        Lg.register(tabs, () -> {
+            updateTabs();
+            // int n = tabs.getTabCount();
+            // for (int k = 0; k < n; k++) {
+            // OneHydraulicControl ohc = (OneHydraulicControl) tabs.getComponent(k);
+            // String text = Lg.text("control_number", ohc.controlNumber);
+            // tabs.setTitleAt(k, text);
+            // }
         });
 
         appendChild(tabs, 1);
@@ -44,29 +40,32 @@ public class HydraulicControlPanels extends RowColPanel implements IPriors, Chan
 
     private void updateTabs() {
         int nTabs = tabs.getTabCount();
-        if (nTabs > nVisibleHydraulicControls && nVisibleHydraulicControls > 0) {
-            for (int k = nVisibleHydraulicControls - 1; k < nTabs; k++) {
+        if (nTabs > nVisibleHydraulicControls) {
+            for (int k = nVisibleHydraulicControls; k < nTabs; k++) {
                 tabs.remove(k);
             }
-        } else if (nTabs < nVisibleHydraulicControls && nVisibleHydraulicControls > 0) {
+        } else if (nTabs < nVisibleHydraulicControls) {
             for (int k = nTabs; k < nVisibleHydraulicControls; k++) {
-                tabs.addTab("k_" + k, controls.get(k));
+                OneHydraulicControl ohc = controls.get(k);
+                String text = Lg.text("control_number", ohc.controlNumber);
+                tabs.addTab(text, ohc);
             }
         }
-        Lg.updateTexts();
+        // for (int k = 0; k < nTabs; k++) {
+        // OneHydraulicControl ohc = (OneHydraulicControl) tabs.getComponent(k);
+        // String text = Lg.text("control_number", ohc.controlNumber);
+        // tabs.setTitleAt(k, text);
+        // }
+        // Lg.updateTexts();
     }
 
     private void addHydraulicControl() {
-        int n = controls.size();
+        int n = controls.size() + 1;
         OneHydraulicControl ohc = new OneHydraulicControl(n);
         ohc.addChangeListener(this);
-        Lg.register(new LgElement<OneHydraulicControl>(ohc) {
-            @Override
-            public void setTranslatedText() {
-                String text = Lg.getText("ui", "control_number");
-                text = Lg.format(text, object.controlNumber);
-                object.nameLabel.setText(text);
-            }
+        Lg.register(ohc, () -> {
+            String text = Lg.text("control_number", ohc.controlNumber);
+            ohc.nameLabel.setText(text);
         });
         controls.add(ohc);
         nVisibleHydraulicControls = controls.size();

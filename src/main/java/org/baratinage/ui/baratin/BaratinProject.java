@@ -13,7 +13,7 @@ import org.baratinage.ui.bam.BamItemType;
 import org.baratinage.ui.bam.BamProject;
 import org.baratinage.ui.commons.ExplorerItem;
 import org.baratinage.ui.component.SvgIcon;
-import org.baratinage.ui.lg.LgElement;
+import org.baratinage.ui.lg.Lg;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -82,7 +82,7 @@ public class BaratinProject extends BamProject {
         JMenu baratinMenu = App.MAIN_FRAME.baratinMenu;
 
         JMenuItem menuBtnNewHydraulicConfig = new JMenuItem();
-        LgElement.registerButton(menuBtnNewHydraulicConfig, "ui", "create_hydraulic_config");
+        Lg.register(menuBtnNewHydraulicConfig, "create_hydraulic_config");
         menuBtnNewHydraulicConfig.setIcon(addHydraulicConfigIcon);
         menuBtnNewHydraulicConfig.addActionListener(e -> {
             addHydraulicConfig();
@@ -96,7 +96,7 @@ public class BaratinProject extends BamProject {
         toolBar.add(btnNewHydraulicConfig);
 
         JMenuItem menuBtnNewGaugings = new JMenuItem();
-        LgElement.registerButton(menuBtnNewGaugings, "ui", "create_gaugings");
+        Lg.register(menuBtnNewGaugings, "create_gaugings");
         menuBtnNewGaugings.setIcon(addGaugingsIcon);
         menuBtnNewGaugings.addActionListener(e -> {
             addGaugings();
@@ -110,7 +110,7 @@ public class BaratinProject extends BamProject {
         toolBar.add(btnNewGaugings);
 
         JMenuItem menuBtnNewStructErrorModel = new JMenuItem();
-        LgElement.registerButton(menuBtnNewStructErrorModel, "ui", "create_structural_error_model");
+        Lg.register(menuBtnNewStructErrorModel, "create_structural_error_model");
         menuBtnNewStructErrorModel.setIcon(addStructuralErrorIcon);
         menuBtnNewStructErrorModel.addActionListener(e -> {
             addStructuralErrorModel();
@@ -124,7 +124,7 @@ public class BaratinProject extends BamProject {
         toolBar.add(btnNewStructErrorModel);
 
         JMenuItem menuBtnNewRatingCurve = new JMenuItem();
-        LgElement.registerButton(menuBtnNewRatingCurve, "ui", "create_rating_curve");
+        Lg.register(menuBtnNewRatingCurve, "create_rating_curve");
         menuBtnNewRatingCurve.setIcon(addRatingCurveIcon);
         menuBtnNewRatingCurve.addActionListener(e -> {
             addRatingCurve();
@@ -191,7 +191,7 @@ public class BaratinProject extends BamProject {
                 hydraulicConfigIcon,
                 hydraulicConfig);
         addItem(hc, explorerItem);
-        LgElement.registerLabel(hc.bamItemTypeLabel, "ui", "hydraulic_config");
+        Lg.register(hc.bamItemTypeLabel, "hydraulic_config");
         hc.bamItemTypeLabel.setIcon(hydraulicConfigIcon);
         hc.cloneButton.addActionListener((e) -> {
             HydraulicConfiguration newHc = (HydraulicConfiguration) hc.clone();
@@ -219,7 +219,7 @@ public class BaratinProject extends BamProject {
                 gaugingsIcon,
                 gaugings);
         addItem(g, explorerItem);
-        LgElement.registerLabel(g.bamItemTypeLabel, "ui", "gaugings");
+        Lg.register(g.bamItemTypeLabel, "gaugings");
         g.bamItemTypeLabel.setIcon(gaugingsIcon);
         g.cloneButton.addActionListener((e) -> {
             Gaugings newG = (Gaugings) g.clone();
@@ -246,7 +246,7 @@ public class BaratinProject extends BamProject {
                 structuralErrorIcon,
                 structuralError);
         addItem(se, explorerItem);
-        LgElement.registerLabel(se.bamItemTypeLabel, "ui", "structural_error_model");
+        Lg.register(se.bamItemTypeLabel, "structural_error_model");
         se.bamItemTypeLabel.setIcon(structuralErrorIcon);
         se.cloneButton.addActionListener((e) -> {
             StructuralError newSe = (StructuralError) se.clone();
@@ -274,7 +274,7 @@ public class BaratinProject extends BamProject {
                 ratingCurveIcon,
                 ratingCurve);
         addItem(rc, explorerItem);
-        LgElement.registerLabel(rc.bamItemTypeLabel, "ui", "rating_curve");
+        Lg.register(rc.bamItemTypeLabel, "rating_curve");
         rc.bamItemTypeLabel.setIcon(ratingCurveIcon);
         rc.cloneButton.addActionListener((e) -> {
             RatingCurve newRc = (RatingCurve) rc.clone();
