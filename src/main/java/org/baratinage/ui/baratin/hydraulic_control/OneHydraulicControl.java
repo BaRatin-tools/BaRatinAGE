@@ -11,6 +11,7 @@ import javax.swing.event.ChangeListener;
 import org.baratinage.ui.component.NumberField;
 import org.baratinage.ui.container.GridPanel;
 import org.baratinage.ui.container.RowColPanel;
+import org.baratinage.ui.lg.LgElement;
 
 public class OneHydraulicControl extends RowColPanel implements ChangeListener {
 
@@ -18,16 +19,19 @@ public class OneHydraulicControl extends RowColPanel implements ChangeListener {
 
     public final JLabel nameLabel = new JLabel("");
 
-    private NumberField activationStage;
-    private NumberField activationStageUncertainty;
-    private NumberField coefficient;
-    private NumberField coefficientUncertainty;
-    private NumberField exponent;
-    private NumberField exponentUncertainty;
+    public final NumberField activationStage;
+    public final NumberField activationStageUncertainty;
+    public final NumberField coefficient;
+    public final NumberField coefficientUncertainty;
+    public final NumberField exponent;
+    public final NumberField exponentUncertainty;
 
-    public OneHydraulicControl() {
+    public final int controlNumber;
+
+    public OneHydraulicControl(int controlNumber) {
         super(AXIS.COL);
 
+        this.controlNumber = controlNumber;
         this.appendChild(nameLabel, 0, 5);
         this.appendChild(new JSeparator(), 0);
 
@@ -42,6 +46,7 @@ public class OneHydraulicControl extends RowColPanel implements ChangeListener {
         parametersPanel.insertChild(new JLabel("+/- (Incertitude élargie)"), 2, 0);
 
         JLabel activationStageLabel = new JLabel("k - Hauteur d'activation");
+        LgElement.registerLabel(activationStageLabel, "ui", "activate_stage_k", true);
         activationStage = new NumberField();
         activationStage.addChangeListener(this);
         activationStageUncertainty = new NumberField();
@@ -51,6 +56,7 @@ public class OneHydraulicControl extends RowColPanel implements ChangeListener {
         parametersPanel.insertChild(activationStageUncertainty, 2, 1);
 
         JLabel coefficientLabel = new JLabel("a - Coefficient");
+        LgElement.registerLabel(coefficientLabel, "ui", "coefficient_a", true);
         coefficient = new NumberField();
         coefficient.addChangeListener(this);
         coefficientUncertainty = new NumberField();
@@ -60,6 +66,7 @@ public class OneHydraulicControl extends RowColPanel implements ChangeListener {
         parametersPanel.insertChild(coefficientUncertainty, 2, 2);
 
         JLabel exponentLabel = new JLabel("c - Exposant");
+        LgElement.registerLabel(exponentLabel, "ui", "exponent_c", true);
         exponent = new NumberField();
         exponent.addChangeListener(this);
         exponentUncertainty = new NumberField();
@@ -72,57 +79,12 @@ public class OneHydraulicControl extends RowColPanel implements ChangeListener {
 
     }
 
-    public double getActivationStage() {
-        return activationStage.getValue();
-    }
-
-    public double getActivationStageUncertainty() {
-        return activationStageUncertainty.getValue();
-    }
-
-    public double getCoefficient() {
-        return coefficient.getValue();
-    }
-
-    public double getCoefficientUncertainty() {
-        return coefficientUncertainty.getValue();
-    }
-
-    public double getExponent() {
-        return exponent.getValue();
-    }
-
-    public double getExponentUncertainty() {
-        return exponentUncertainty.getValue();
-    }
-
-    public void setActivationStage(double value) {
-        activationStage.setValue(value);
+    public void updateTextFields() {
         activationStage.updateTextField();
-    }
-
-    public void setActivationStageUncertainty(double value) {
-        activationStageUncertainty.setValue(value);
         activationStageUncertainty.updateTextField();
-    }
-
-    public void setCoefficient(double value) {
-        coefficient.setValue(value);
         coefficient.updateTextField();
-    }
-
-    public void setCoefficientUncertainty(double value) {
-        coefficientUncertainty.setValue(value);
         coefficientUncertainty.updateTextField();
-    }
-
-    public void setExponent(double value) {
-        exponent.setValue(value);
         exponent.updateTextField();
-    }
-
-    public void setExponentUncertainty(double value) {
-        exponentUncertainty.setValue(value);
         exponentUncertainty.updateTextField();
     }
 

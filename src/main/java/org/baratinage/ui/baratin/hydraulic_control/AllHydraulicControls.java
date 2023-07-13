@@ -134,7 +134,7 @@ public class AllHydraulicControls extends RowColPanel implements IPriors, Change
         } else if (m < n) {
             for (int k = m; k < n; k++) {
 
-                OneHydraulicControl newHydraulicControl = new OneHydraulicControl();
+                OneHydraulicControl newHydraulicControl = new OneHydraulicControl(k + 1);
 
                 newHydraulicControl.nameLabel.setText(" *** " + (k + 1));
                 newHydraulicControl.addChangeListener(this);
@@ -156,25 +156,25 @@ public class AllHydraulicControls extends RowColPanel implements IPriors, Change
             OneHydraulicControl hc = hydraulicControlList.get(k);
             Distribution activationStageDistribution = new Distribution(
                     DISTRIB.GAUSSIAN,
-                    hc.getActivationStage(),
-                    hc.getActivationStageUncertainty() / 2);
+                    hc.activationStage.getValue(),
+                    hc.activationStageUncertainty.getValue() / 2);
             Distribution coefficientDistribution = new Distribution(
                     DISTRIB.GAUSSIAN,
-                    hc.getCoefficient(),
-                    hc.getCoefficientUncertainty() / 2);
+                    hc.coefficient.getValue(),
+                    hc.coefficientUncertainty.getValue() / 2);
             Distribution exponentDistribution = new Distribution(
                     DISTRIB.GAUSSIAN,
-                    hc.getExponent(),
-                    hc.getExponentUncertainty() / 2);
+                    hc.exponent.getValue(),
+                    hc.exponentUncertainty.getValue() / 2);
 
             parameters[k * 3 + 0] = new Parameter("k_" + k,
-                    hc.getActivationStage(),
+                    hc.activationStage.getValue(),
                     activationStageDistribution);
             parameters[k * 3 + 1] = new Parameter("a_" + k,
-                    hc.getCoefficient(),
+                    hc.coefficient.getValue(),
                     coefficientDistribution);
             parameters[k * 3 + 2] = new Parameter("c_" + k,
-                    hc.getExponent(),
+                    hc.exponent.getValue(),
                     exponentDistribution);
         }
         return parameters;

@@ -16,6 +16,7 @@ import org.baratinage.ui.bam.IModelDefinition;
 import org.baratinage.ui.bam.IPriors;
 import org.baratinage.ui.bam.RunBam;
 import org.baratinage.ui.baratin.hydraulic_control.ControlMatrix;
+import org.baratinage.ui.baratin.hydraulic_control.HydraulicControlPanels;
 import org.baratinage.ui.baratin.hydraulic_control.AllHydraulicControls;
 import org.baratinage.ui.baratin.hydraulic_control.OneHydraulicControl;
 import org.baratinage.ui.commons.WarningAndActions;
@@ -29,7 +30,8 @@ class HydraulicConfiguration extends BamItem
         implements IModelDefinition, IPriors {
 
     private ControlMatrix controlMatrix;
-    private AllHydraulicControls hydraulicControls;
+    // private AllHydraulicControls hydraulicControls;
+    private HydraulicControlPanels hydraulicControls;
     private RatingCurveStageGrid priorRatingCurveStageGrid;
     private PriorRatingCurve priorRatingCurve;
 
@@ -47,7 +49,7 @@ class HydraulicConfiguration extends BamItem
             checkPriorRatingCurveSync();
         });
 
-        hydraulicControls = new AllHydraulicControls();
+        hydraulicControls = new HydraulicControlPanels();
         hydraulicControls.addChangeListener((e) -> {
             fireChangeListeners();
             checkPriorRatingCurveSync();
@@ -115,7 +117,8 @@ class HydraulicConfiguration extends BamItem
     }
 
     private void updateHydraulicControls(boolean[][] controlMatrix) {
-        hydraulicControls.updateHydraulicControlListFromNumberOfControls(controlMatrix.length);
+        // hydraulicControls.updateHydraulicControlListFromNumberOfControls(controlMatrix.length);
+        hydraulicControls.setHydraulicControls(controlMatrix.length);
     }
 
     @Override
@@ -197,14 +200,14 @@ class HydraulicConfiguration extends BamItem
         List<OneHydraulicControl> hydraulicControlList = hydraulicControls.getHydraulicControls();
 
         JSONArray jsonHydraulicControls = new JSONArray();
-        for (OneHydraulicControl hc : hydraulicControlList) {
+        for (OneHydraulicControl ohc : hydraulicControlList) {
             JSONObject jsonHydraulicControl = new JSONObject();
-            jsonHydraulicControl.put("activationStage", hc.getActivationStage());
-            jsonHydraulicControl.put("activationStageUncertainty", hc.getActivationStageUncertainty());
-            jsonHydraulicControl.put("coefficient", hc.getCoefficient());
-            jsonHydraulicControl.put("coefficientUncertainty", hc.getCoefficientUncertainty());
-            jsonHydraulicControl.put("exponent", hc.getExponent());
-            jsonHydraulicControl.put("exponentUncertainty", hc.getExponentUncertainty());
+            jsonHydraulicControl.put("activationStage", ohc.activationStage.getValue());
+            jsonHydraulicControl.put("activationStageUncertainty", ohc.activationStageUncertainty.getValue());
+            jsonHydraulicControl.put("coefficient", ohc.coefficient.getValue());
+            jsonHydraulicControl.put("coefficientUncertainty", ohc.coefficientUncertainty.getValue());
+            jsonHydraulicControl.put("exponent", ohc.exponent.getValue());
+            jsonHydraulicControl.put("exponentUncertainty", ohc.exponentUncertainty.getValue());
 
             jsonHydraulicControls.put(jsonHydraulicControl);
         }
@@ -272,23 +275,17 @@ class HydraulicConfiguration extends BamItem
             for (int k = 0; k < jsonHydraulicControls.length(); k++) {
                 JSONObject jsonHydraulicControl = (JSONObject) jsonHydraulicControls.get(k);
 
-                OneHydraulicControl hydraulicControl = new OneHydraulicControl();
-                // hydraulicControl.nameLabel.setText((String)
-                // jsonHydraulicControl.get("name"));
-                hydraulicControl
-                        .setActivationStage(((Number) jsonHydraulicControl.get("activationStage")).doubleValue());
-                hydraulicControl
-                        .setActivationStageUncertainty(
-                                ((Number) jsonHydraulicControl.get("activationStageUncertainty")).doubleValue());
-                hydraulicControl.setCoefficient(((Number) jsonHydraulicControl.get("coefficient")).doubleValue());
-                hydraulicControl.setCoefficientUncertainty(
-                        ((Number) jsonHydraulicControl.get("coefficientUncertainty")).doubleValue());
-                hydraulicControl.setExponent(((Number) jsonHydraulicControl.get("exponent")).doubleValue());
-                hydraulicControl
-                        .setExponentUncertainty(
-                                ((Number) jsonHydraulicControl.get("exponentUncertainty")).doubleValue());
+                OneHydraulicControl ohc = new OneHydraulicControl(k + 1);
 
-                hydraulicControlList.add(hydraulicControl);
+                ohc.activationStage.setValue(jsonHydraulicControl.getDouble("activationStage"));
+                ohc.activationStageUncertainty.setValue(jsonHydraulicControl.getDouble("activationStageUncertainty"));
+                ohc.coefficient.setValue(jsonHydraulicControl.getDouble("coefficient"));
+                ohc.coefficientUncertainty.setValue(jsonHydraulicControl.getDouble("coefficientUncertainty"));
+                ohc.exponent.setValue(jsonHydraulicControl.getDouble("exponent"));
+                ohc.exponentUncertainty.setValue(jsonHydraulicControl.getDouble("exponentUncertainty"));
+                ohc.updateTextFields();
+
+                hydraulicControlList.add(ohc);
             }
 
             hydraulicControls.setHydraulicControls(hydraulicControlList);
