@@ -17,7 +17,6 @@ import org.baratinage.ui.bam.IPriors;
 import org.baratinage.ui.bam.RunBam;
 import org.baratinage.ui.baratin.hydraulic_control.ControlMatrix;
 import org.baratinage.ui.baratin.hydraulic_control.HydraulicControlPanels;
-import org.baratinage.ui.baratin.hydraulic_control.AllHydraulicControls;
 import org.baratinage.ui.baratin.hydraulic_control.OneHydraulicControl;
 import org.baratinage.ui.commons.WarningAndActions;
 import org.baratinage.ui.container.RowColPanel;
@@ -30,7 +29,6 @@ class HydraulicConfiguration extends BamItem
         implements IModelDefinition, IPriors {
 
     private ControlMatrix controlMatrix;
-    // private AllHydraulicControls hydraulicControls;
     private HydraulicControlPanels hydraulicControls;
     private RatingCurveStageGrid priorRatingCurveStageGrid;
     private PriorRatingCurve priorRatingCurve;
@@ -117,7 +115,6 @@ class HydraulicConfiguration extends BamItem
     }
 
     private void updateHydraulicControls(boolean[][] controlMatrix) {
-        // hydraulicControls.updateHydraulicControlListFromNumberOfControls(controlMatrix.length);
         hydraulicControls.setHydraulicControls(controlMatrix.length);
     }
 
