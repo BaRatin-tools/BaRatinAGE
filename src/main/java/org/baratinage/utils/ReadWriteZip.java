@@ -16,6 +16,10 @@ import java.util.zip.ZipOutputStream;
 public class ReadWriteZip {
 
     static public boolean unzip(String zipFilePath, String targetDirPath) {
+        File targetDir = new File(targetDirPath);
+        if (!targetDir.exists()) {
+            targetDir.mkdir();
+        }
         try {
             ZipInputStream zipInputStream = new ZipInputStream(new FileInputStream(zipFilePath));
             ZipEntry zipEntry = zipInputStream.getNextEntry();
