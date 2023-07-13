@@ -157,7 +157,7 @@ public class MainFrame extends JFrame {
     }
 
     public void updateLanguageSwticherMenu() {
-        String currentLocalKey = Lg.getLocale().getCountry();
+        String currentLocalKey = Lg.getLocaleKey();
         for (String key : lgMenuItems.keySet()) {
             lgMenuItems.get(key).setSelected(key.equals(currentLocalKey));
         }
