@@ -78,11 +78,11 @@ public class Lg {
     }
 
     static public String html(String itemKey) {
-        return "<html>" + text(itemKey) + "</html>";
+        return "<html><nobr>" + text(itemKey) + "</nobr></html>";
     }
 
     static public String html(String itemKey, Object... args) {
-        return "<html>" + text(itemKey, args) + "</html>";
+        return "<html><nobr>" + text(itemKey, args) + "</nobr></html>";
     }
 
     static public void register(Component component, LgTranslator translator) {
