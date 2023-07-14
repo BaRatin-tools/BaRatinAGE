@@ -41,11 +41,7 @@ public class PredictionConfig {
         int nObs = 0; // FIXME: is zero data allowed?
         int[] nSpag = new int[n];
         for (int k = 0; k < n; k++) {
-            String inputFilePath = BamFilesHelpers.relativizePath(
-                    Path.of(workspace, inputs[k].fileName)
-                            .toAbsolutePath().toString())
-                    .toString();
-            inputFilePaths[k] = inputFilePath;
+            inputFilePaths[k] = inputs[k].toDataFile(workspace);
             int tmpNobs = inputs[k].nObs;
             if (nObs == 0) {
                 nObs = tmpNobs;
@@ -59,7 +55,7 @@ public class PredictionConfig {
                 }
             }
             nSpag[k] = inputs[k].nSpag;
-            inputs[k].toDataFile(workspace);
+
         }
 
         n = outputs.length;
@@ -148,8 +144,11 @@ public class PredictionConfig {
 
         for (int k = 0; k < nInput; k++) {
             // FIXME: for simplicity sake, assuming that data file is in workspace folder!
-            String dataFileName = Path.of(inputFilePaths[k]).getFileName().toString();
-            String dataFilePath = Path.of(workspace, dataFileName).toString();
+            String dataFilePath = BamFilesHelpers.findDataFilePath(inputFilePaths[k], workspace);
+            if (dataFilePath == null) {
+                System.err.println("Cannot find prediction data file '" + inputFilePaths[k] + "'!");
+                return null;
+            }
             inputs[k] = PredictionInput.readPredictionInput(dataFilePath);
         }
 
