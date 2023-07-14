@@ -162,7 +162,7 @@ public abstract class BamProject extends RowColPanel {
         return null;
     }
 
-    public void saveProject() {
+    public void saveProjectAs() {
         final JFileChooser fileChooser = new JFileChooser();
         fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
         fileChooser.setFileFilter(new FileFilter() {
@@ -190,6 +190,15 @@ public abstract class BamProject extends RowColPanel {
             String fullFilePath = fileChooser.getSelectedFile().getAbsolutePath();
             fullFilePath = fullFilePath.endsWith(".bam") ? fullFilePath : fullFilePath + ".bam";
             saveProject(fullFilePath);
+        }
+    }
+
+    public void saveProject() {
+        String projectPath = getProjectPath();
+        if (projectPath == null) {
+            saveProjectAs();
+        } else {
+            saveProject(projectPath);
         }
     }
 
@@ -301,5 +310,9 @@ public abstract class BamProject extends RowColPanel {
         }
         return null;
     }
+
+    public abstract void setProjectPath(String projectPath);
+
+    public abstract String getProjectPath();
 
 }

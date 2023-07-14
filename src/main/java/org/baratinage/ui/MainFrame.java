@@ -18,7 +18,7 @@ import org.baratinage.ui.lg.Lg;
 
 import java.awt.Dimension;
 import java.awt.Point;
-
+import java.awt.event.ActionEvent;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.KeyEvent;
@@ -53,6 +53,7 @@ public class MainFrame extends JFrame {
         ImageIcon baratinageIcon = SvgIcon.buildNoScalingIcon(iconPath, 64);
 
         setIconImage(baratinageIcon.getImage());
+        setTitle(APP_CONFIG.APP_NAME);
 
         this.setSize(new Dimension(1200, 900));
 
@@ -81,12 +82,25 @@ public class MainFrame extends JFrame {
         });
         fileMenu.add(openProjectMenuItem);
 
+        JMenuItem saveProjectAsMenuItem = new JMenuItem();
+        Lg.register(saveProjectAsMenuItem, "save_project_as");
+        saveProjectAsMenuItem
+                .setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, ActionEvent.CTRL_MASK + ActionEvent.ALT_MASK));
+        saveProjectAsMenuItem.addActionListener((e) -> {
+            if (currentProject != null) {
+                currentProject.saveProjectAs();
+                updateFrameTitle();
+            }
+        });
+        fileMenu.add(saveProjectAsMenuItem);
+
         JMenuItem saveProjectMenuItem = new JMenuItem();
-        Lg.register(saveProjectMenuItem, "save_project_as");
+        Lg.register(saveProjectMenuItem, "save_project");
         saveProjectMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_DOWN_MASK));
         saveProjectMenuItem.addActionListener((e) -> {
             if (currentProject != null) {
                 currentProject.saveProject();
+                updateFrameTitle();
             }
         });
         fileMenu.add(saveProjectMenuItem);
@@ -183,6 +197,18 @@ public class MainFrame extends JFrame {
         currentProject = project;
         projectPanel.clear();
         projectPanel.appendChild(project);
+        updateFrameTitle();
+    }
+
+    public void updateFrameTitle() {
+        setTitle(APP_CONFIG.APP_NAME);
+        if (currentProject != null) {
+            String projectPath = currentProject.getProjectPath();
+            if (projectPath != null) {
+                String projectName = Path.of(projectPath).getFileName().toString();
+                setTitle(APP_CONFIG.APP_NAME + " - " + projectName + " - " + projectPath);
+            }
+        }
     }
 
     public void newProject() {
@@ -225,6 +251,7 @@ public class MainFrame extends JFrame {
         if (projectFilePath != null) {
             BamProject bamProject = BamProject.loadProject(projectFilePath);
             if (bamProject != null) {
+                bamProject.setProjectPath(projectFilePath);
                 setCurrentProject(bamProject);
             }
         }

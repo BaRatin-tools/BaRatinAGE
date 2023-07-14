@@ -7,6 +7,7 @@ import java.nio.file.Paths;
 import org.baratinage.utils.Misc;
 
 public class AppConfig {
+    public final String APP_NAME;
     public final String APP_ROOT_DIR;
     public final String APP_INSTANCE_ID;
     public final String APP_TEMP_DIR;
@@ -20,6 +21,8 @@ public class AppConfig {
     public String lastUsedDir;
 
     public AppConfig(MainFrame mainFrame) {
+
+        APP_NAME = "BaRatinAGE";
 
         String exePath = System.getProperty("jpackage.app-path");
         if (exePath == null) {

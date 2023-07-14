@@ -338,4 +338,16 @@ public class BaratinProject extends BamProject {
             bamItem.fromFullJSON(jsonObj);
         }
     }
+
+    private String projectPath = null;
+
+    @Override
+    public void setProjectPath(String projectPath) {
+        this.projectPath = projectPath;
+    }
+
+    @Override
+    public String getProjectPath() {
+        return projectPath;
+    }
 }
