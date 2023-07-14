@@ -1,5 +1,6 @@
 package org.baratinage.ui;
 
+import javax.swing.ImageIcon;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -11,10 +12,12 @@ import javax.swing.filechooser.FileFilter;
 
 import org.baratinage.ui.bam.BamProject;
 import org.baratinage.ui.baratin.BaratinProject;
+import org.baratinage.ui.component.SvgIcon;
 import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.ui.lg.Lg;
 
 import java.awt.Dimension;
+import java.awt.Image;
 import java.awt.Point;
 
 import java.awt.event.ComponentAdapter;
@@ -45,6 +48,10 @@ public class MainFrame extends JFrame {
 
         Lg.init();
         Lg.setLocale("fr");
+
+        ImageIcon baratinageIcon = SvgIcon
+                .buildNoScalingIcon("./resources/icons/baratinage_icon.svg", 64);
+        setIconImage(baratinageIcon.getImage());
 
         this.setSize(new Dimension(1200, 900));
 
