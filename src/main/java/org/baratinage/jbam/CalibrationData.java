@@ -76,10 +76,10 @@ public class CalibrationData {
         return uDataConfig;
     }
 
-    public void toDataFile(String workspace) {
+    public String toDataFile(String workspace) {
 
         // FIXME: writing data to workspace
-        String dataFilePath = Path.of(workspace, dataFileName).toString();
+        String dataFilePath = Path.of(workspace, dataFileName).toAbsolutePath().toString();
 
         List<double[]> dataColumns = new ArrayList<>();
         List<String> headers = new ArrayList<>();
@@ -124,19 +124,16 @@ public class CalibrationData {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        return dataFilePath;
     }
 
-    public void toConfigFile(String workspace) {
+    public void toConfigFile(String workspace, String dataFilePath) {
 
         UncertainDataConfig inputsDataConfig = this.getUncertainDataConfig(this.inputs, 0);
         UncertainDataConfig outputsDataConfig = this.getUncertainDataConfig(this.outputs, inputsDataConfig.nCol);
 
-        // FIXME: assuming data file is written to workspace
-        String dataFilePath = Path.of(workspace, dataFileName).toString();
-
         ConfigFile configFile = new ConfigFile();
-        configFile.addItem(BamFilesHelpers.relativizePath(dataFilePath).toString(),
-                "Absolute path to data file", true);
+        configFile.addItem(dataFilePath, "Absolute path to data file", true);
         configFile.addItem(1, "number of header lines");
         configFile.addItem(inputsDataConfig.nRow, "Nobs, number of rows in data file (excluding header lines)");
         configFile.addItem(inputsDataConfig.nCol + outputsDataConfig.nCol, "number of columns in the data file");
@@ -182,9 +179,13 @@ public class CalibrationData {
         ConfigFile configFile = ConfigFile.readConfigFile(workspace, calibrationConfigFileName);
         String rawPathToDataFile = configFile.getString(0);
 
-        // FIXME: for simplicity sake, assuming that data file is in workspace folder!
-        String dataFileName = Path.of(rawPathToDataFile).getFileName().toString();
-        String dataFilePath = Path.of(workspace, dataFileName).toString();
+        // Can data file be found? Absolutelty or relatively to workspace
+        String dataFilePath = BamFilesHelpers.findDataFilePath(rawPathToDataFile, workspace);
+        if (dataFilePath == null) {
+            System.err.println("Cannot find calibration data file '" + rawPathToDataFile + "'!");
+            return null;
+        }
+        String dataFileName = Path.of(dataFilePath).getFileName().toString();
 
         int nHeaderRows = configFile.getInt(1);
         int nRow = configFile.getInt(2);
@@ -208,25 +209,25 @@ public class CalibrationData {
             headers = Read.readHeaders(dataFilePath);
 
         } catch (IOException e) {
-            System.err.println("Failed to read data file '" + dataFileName + "'!");
+            System.err.println("Failed to read data file '" + dataFilePath + "'!");
             e.printStackTrace();
             return null;
         }
 
         if (rawData.size() != nColumns) {
-            System.err.println("Number of columns in data file '" + dataFileName
+            System.err.println("Number of columns in data file '" + dataFilePath
                     + "' inconsistant with number of columns in config file!");
             return null;
         }
 
         if (rawData.get(0).length != nRow) {
-            System.err.println("Number of rows in data file '" + dataFileName
+            System.err.println("Number of rows in data file '" + dataFilePath
                     + "' inconsistant with number of rows in config file!");
             return null;
         }
 
         if (headers.length != nColumns) {
-            System.err.println("Number of columns in data file '" + dataFileName
+            System.err.println("Number of columns in data file '" + dataFilePath
                     + "' doesn't match number of headers!");
             return null;
         }

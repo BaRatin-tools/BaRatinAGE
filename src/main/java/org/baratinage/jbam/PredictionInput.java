@@ -31,10 +31,11 @@ public class PredictionInput {
         this.dataColumns = dataColumns;
     }
 
-    public void toDataFile(String workspace) {
+    public String toDataFile(String workspace) {
+        String dataFilePath = Path.of(workspace, fileName).toAbsolutePath().toString();
         try {
             Write.writeMatrix(
-                    Path.of(workspace, fileName).toString(),
+                    dataFilePath,
                     this.dataColumns,
                     " ",
                     "-9999",
@@ -42,6 +43,7 @@ public class PredictionInput {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        return dataFilePath;
     }
 
     @Override

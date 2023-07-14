@@ -1,5 +1,6 @@
 package org.baratinage.jbam.utils;
 
+import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -52,20 +53,16 @@ public class BamFilesHelpers {
         return output;
     }
 
-    static public Path relativizePath(String absPathStr) {
-        Path basePath = Path.of(EXE_DIR).toAbsolutePath();
-        Path absPath = Paths.get(absPathStr);
-        if (!absPath.isAbsolute()) {
-            absPath = absPath.toAbsolutePath();
+    static public String findDataFilePath(String rawFilePath, String workspacePath) {
+        Path p = Path.of(rawFilePath);
+        if (p.toFile().exists()) { // assume it is absolute (or relative to baratinage instance)
+            return p.toAbsolutePath().toString();
         }
-        Path pathRelative = basePath.relativize(absPath);
-        return pathRelative;
+        String fileName = p.getFileName().toString();
+        p = Path.of(workspacePath, fileName);
+        if (p.toFile().exists()) { // assume it is relative to workspace
+            return p.toAbsolutePath().toString();
+        }
+        return null;
     }
-
-    static public Path absolutizePath(String relPathStr) {
-        Path basePath = Path.of(EXE_DIR).toAbsolutePath();
-        Path absPath = Path.of(basePath.toString(), relPathStr);
-        return absPath;
-    }
-
 }
