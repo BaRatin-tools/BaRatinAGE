@@ -32,7 +32,6 @@ public class CalibrationResult {
             headers = Read.readHeaders(cookedMcmcFilePath.toString());
             listCookedMcmcResults = Read.readMatrix(cookedMcmcFilePath.toString(), 1);
             listSummaryMcmcResults = Read.readMatrix(summaryMcmcFilePath.toString(), "\\s+", 1, 1);
-            Read.prettyPrintMatrix(listSummaryMcmcResults);
         } catch (IOException e) {
             System.err.println(e);
             return;
