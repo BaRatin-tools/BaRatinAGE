@@ -284,7 +284,7 @@ public class BaM {
 
     static public BaM readBaM(String mainConfigFilePath) {
         ConfigFile configFile = ConfigFile.readConfigFile(mainConfigFilePath);
-        String relativeWorkspcePath = configFile.getString(0);
+        String relativeWorkspacePath = configFile.getString(0);
         String runOptionFileName = configFile.getString(1);
         String modelFileName = configFile.getString(2);
         String xTraFileName = configFile.getString(3);
@@ -296,7 +296,7 @@ public class BaM {
         String dataResidualFileName = configFile.getString(9);
         String predictionFileName = configFile.getString(10);
 
-        String absoluteWorkspacePath = BamFilesHelpers.absolutizePath(relativeWorkspcePath).toString();
+        String absoluteWorkspacePath = BamFilesHelpers.absolutizePath(relativeWorkspacePath).toString();
         CalibrationConfig calibrationConfig = CalibrationConfig.readCalibrationConfig(
                 absoluteWorkspacePath,
                 modelFileName,
@@ -309,10 +309,6 @@ public class BaM {
                 dataResidualFileName);
 
         RunOptions runOptions = RunOptions.readRunOptions(absoluteWorkspacePath, runOptionFileName);
-
-        System.out.println(calibrationConfig);
-        System.out.println(runOptions);
-        System.out.println();
 
         ConfigFile predMasterConfig = ConfigFile.readConfigFile(absoluteWorkspacePath, predictionFileName);
         int nPred = predMasterConfig.getInt(0);
