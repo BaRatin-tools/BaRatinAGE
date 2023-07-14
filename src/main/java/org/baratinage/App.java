@@ -21,7 +21,10 @@ public class App {
         EventQueue.invokeLater(new Runnable() {
             public void run() {
                 try {
-                    new MainFrame();
+                    MainFrame mainFrame = new MainFrame();
+                    if (args.length > 0) {
+                        mainFrame.loadProject(args[0]);
+                    }
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
