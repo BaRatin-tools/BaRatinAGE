@@ -51,7 +51,7 @@ public class RunBam {
         File mainConfigFile = Path.of(workspacePath.toString(), BamFilesHelpers.CONFIG_BAM).toFile();
         mainConfigFile.renameTo(Path.of(BamFilesHelpers.EXE_DIR, BamFilesHelpers.CONFIG_BAM).toFile());
 
-        bam = BaM.readBaM(mainConfigFile.getAbsolutePath());
+        bam = BaM.readBaM(mainConfigFile.getAbsolutePath(), workspacePath.toString());
         bam.readResults(workspacePath.toString());
         System.out.println(bam);
     }
