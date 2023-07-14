@@ -1,5 +1,6 @@
 package org.baratinage.ui.baratin;
 
+import java.nio.file.Path;
 import java.util.UUID;
 
 import javax.swing.ImageIcon;
@@ -42,32 +43,24 @@ public class BaratinProject extends BamProject {
     private ExplorerItem structuralError;
     private ExplorerItem ratingCurve;
 
+    static private ImageIcon buildIcon(String iconName, int iconSize) {
+        return SvgIcon
+                .buildNoScalingIcon(Path.of(
+                        MainFrame.APP_CONFIG.ICONS_RESOURCES_DIR,
+                        "custom", iconName).toString(), iconSize);
+    }
+
     // FIXME: best iconSize varies depending on OS scaling
     static private final int iconSize = 30;
 
-    static private final ImageIcon hydraulicConfigIcon = SvgIcon
-            .buildNoScalingIcon("./resources/icons/custom/hydraulic_config.svg", iconSize);
-
-    static private final ImageIcon gaugingsIcon = SvgIcon
-            .buildNoScalingIcon("./resources/icons/custom/gaugings.svg", iconSize);
-
-    static private final ImageIcon structuralErrorIcon = SvgIcon
-            .buildNoScalingIcon("./resources/icons/custom/structural_error.svg", iconSize);
-
-    static private final ImageIcon ratingCurveIcon = SvgIcon
-            .buildNoScalingIcon("./resources/icons/custom/rating_curve.svg", iconSize);
-
-    static private final ImageIcon addHydraulicConfigIcon = SvgIcon
-            .buildNoScalingIcon("./resources/icons/custom/hydraulic_config_add.svg", iconSize);
-
-    static private final ImageIcon addGaugingsIcon = SvgIcon
-            .buildNoScalingIcon("./resources/icons/custom/gaugings_add.svg", iconSize);
-
-    static private final ImageIcon addStructuralErrorIcon = SvgIcon
-            .buildNoScalingIcon("./resources/icons/custom/structural_error_add.svg", iconSize);
-
-    static private final ImageIcon addRatingCurveIcon = SvgIcon
-            .buildNoScalingIcon("./resources/icons/custom/rating_curve_add.svg", iconSize);
+    static private final ImageIcon hydraulicConfigIcon = buildIcon("hydraulic_config.svg", iconSize);
+    static private final ImageIcon gaugingsIcon = buildIcon("gaugings.svg", iconSize);
+    static private final ImageIcon structuralErrorIcon = buildIcon("structural_error.svg", iconSize);
+    static private final ImageIcon ratingCurveIcon = buildIcon("rating_curve.svg", iconSize);
+    static private final ImageIcon addHydraulicConfigIcon = buildIcon("hydraulic_config_add.svg", iconSize);
+    static private final ImageIcon addGaugingsIcon = buildIcon("gaugings_add.svg", iconSize);
+    static private final ImageIcon addStructuralErrorIcon = buildIcon("structural_error_add.svg", iconSize);
+    static private final ImageIcon addRatingCurveIcon = buildIcon("rating_curve_add.svg", iconSize);
 
     public BaratinProject() {
         super();

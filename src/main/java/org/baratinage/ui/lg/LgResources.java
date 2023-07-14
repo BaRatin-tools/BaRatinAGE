@@ -15,8 +15,10 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.baratinage.ui.MainFrame;
+
 public class LgResources {
-    public static final String I18N_RESSOURCE_DIR = "resources/i18n";
+
     public static final String DEFAULT_LOCAL_KEY = "en";
     public static final String DEFAULT_FILE_KEY = "ui";
 
@@ -26,7 +28,7 @@ public class LgResources {
     private Set<String> filekeys;
 
     public LgResources() {
-        File resourceDir = Path.of(I18N_RESSOURCE_DIR).toFile();
+        File resourceDir = new File(MainFrame.APP_CONFIG.I18N_RESOURCES_DIR);
         File[] files = resourceDir.listFiles();
         filekeys = new HashSet<>();
         localKeys = new HashSet<>();
@@ -44,7 +46,7 @@ public class LgResources {
             Map<String, ResourceBundle> fileTranslations = new HashMap<>();
             for (String fileKey : filekeys) {
                 String resourceName = String.format("%s_%s.properties", fileKey, localKey);
-                Path resourcePath = Path.of(I18N_RESSOURCE_DIR, resourceName);
+                Path resourcePath = Path.of(MainFrame.APP_CONFIG.I18N_RESOURCES_DIR, resourceName);
                 try {
                     ResourceBundle resourceBundle = new PropertyResourceBundle(
                             Files.newInputStream(
@@ -63,7 +65,8 @@ public class LgResources {
         if (fileTranslations == null) {
             if (localKey.equals(DEFAULT_LOCAL_KEY)) {
                 System.err.println(
-                        String.format("Error: no translation found for key '%s' and locale '%s' in bundle '%s' found!",
+                        String.format(
+                                "Error: no translation found for key '%s' and default locale '%s' in bundle '%s'!",
                                 itemKey, localKey, fileKey));
                 return "<no-translation-found>";
             } else {

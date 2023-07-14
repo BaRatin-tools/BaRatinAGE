@@ -17,7 +17,6 @@ import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.ui.lg.Lg;
 
 import java.awt.Dimension;
-import java.awt.Image;
 import java.awt.Point;
 
 import java.awt.event.ComponentAdapter;
@@ -26,6 +25,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -49,8 +49,9 @@ public class MainFrame extends JFrame {
         Lg.init();
         Lg.setLocale("fr");
 
-        ImageIcon baratinageIcon = SvgIcon
-                .buildNoScalingIcon("./resources/icons/baratinage_icon.svg", 64);
+        String iconPath = Path.of(APP_CONFIG.ICONS_RESOURCES_DIR, "baratinage_icon.svg").toString();
+        ImageIcon baratinageIcon = SvgIcon.buildNoScalingIcon(iconPath, 64);
+
         setIconImage(baratinageIcon.getImage());
 
         this.setSize(new Dimension(1200, 900));

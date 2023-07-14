@@ -24,7 +24,7 @@ import org.jfree.chart.ChartUtils;
 import org.jfree.chart.JFreeChart;
 import org.jfree.data.Range;
 import org.jfree.svg.SVGGraphics2D;
-
+import org.baratinage.ui.MainFrame;
 import org.baratinage.ui.component.SvgIcon;
 import org.baratinage.ui.container.RowColPanel;
 
@@ -89,8 +89,10 @@ public class PlotContainer extends RowColPanel {
             chartPanel.restoreAutoBounds();
         });
 
-        ImageIcon saveIcon = SvgIcon.buildNoScalingIcon("./resources/icons/feather/save.svg", 24);
-        ImageIcon copyIcon = SvgIcon.buildNoScalingIcon("./resources/icons/feather/copy.svg", 24);
+        String saveIconPath = Path.of(MainFrame.APP_CONFIG.ICONS_RESOURCES_DIR, "feather", "save.svg").toString();
+        String copyIconPath = Path.of(MainFrame.APP_CONFIG.ICONS_RESOURCES_DIR, "feather", "copy.svg").toString();
+        ImageIcon saveIcon = SvgIcon.buildNoScalingIcon(saveIconPath, 24);
+        ImageIcon copyIcon = SvgIcon.buildNoScalingIcon(copyIconPath, 24);
 
         JButton btnSaveAsSvg = new JButton();
 
