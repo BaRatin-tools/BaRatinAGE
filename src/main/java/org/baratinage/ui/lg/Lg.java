@@ -17,34 +17,6 @@ public class Lg {
     static private Locale currentLocale;
 
     static public void init() {
-
-        // Locale l;
-        // l = Locale.forLanguageTag("fr");
-        // System.out.println(l);
-        // System.out.println(l.getCountry());
-        // System.out.println(l.getLanguage());
-        // System.out.println(l.getDisplayName(l));
-        // System.out.println(l.getDisplayLanguage(l));
-        // l = Locale.FRENCH;
-        // System.out.println(l);
-        // System.out.println(l.getCountry());
-        // System.out.println(l.getLanguage());
-        // System.out.println(l.getDisplayName(l));
-        // System.out.println(l.getDisplayLanguage(l));
-
-        // l = Locale.forLanguageTag("en");
-        // System.out.println(l);
-        // System.out.println(l.getCountry());
-        // System.out.println(l.getLanguage());
-        // System.out.println(l.getDisplayName(l));
-        // System.out.println(l.getDisplayLanguage(l));
-        // l = Locale.ENGLISH;
-        // System.out.println(l);
-        // System.out.println(l.getCountry());
-        // System.out.println(l.getLanguage());
-        // System.out.println(l.getDisplayName(l));
-        // System.out.println(l.getDisplayLanguage(l));
-
         resources = new LgResources();
         registered = new HashMap<>();
         setLocale(LgResources.DEFAULT_LOCAL_KEY);
