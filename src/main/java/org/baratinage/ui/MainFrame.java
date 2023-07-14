@@ -49,7 +49,7 @@ public class MainFrame extends JFrame {
         Lg.init();
         Lg.setLocale("fr");
 
-        String iconPath = Path.of(APP_CONFIG.ICONS_RESOURCES_DIR, "baratinage_icon.svg").toString();
+        String iconPath = Path.of(APP_CONFIG.ICONS_RESOURCES_DIR, "icon.svg").toString();
         ImageIcon baratinageIcon = SvgIcon.buildNoScalingIcon(iconPath, 64);
 
         setIconImage(baratinageIcon.getImage());
