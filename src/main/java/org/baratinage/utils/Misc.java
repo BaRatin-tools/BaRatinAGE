@@ -8,6 +8,7 @@ import java.time.format.FormatStyle;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
+import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -45,6 +46,10 @@ public class Misc {
         return text;
     }
 
+    public static String getTimeStampedId() {
+        return Misc.getTimeStamp() + "_" + UUID.randomUUID().toString().substring(0, 5);
+    }
+
     public static String getNextName(String defaultName, String[] allNames) {
         Set<Integer> usedInts = new HashSet<>();
         boolean containsDefault = false;
@@ -78,4 +83,28 @@ public class Misc {
         }
         return defaultName + " (?)";
     }
+
+    public static void createDir(String dirPath) {
+        File dirFile = new File(dirPath);
+        if (!dirFile.exists()) {
+            System.out.println("Creating directory '" + dirPath + "'...");
+            dirFile.mkdirs();
+        }
+    }
+
+    public static void deleteDir(String dirPath) {
+        File dirFile = new File(dirPath);
+        for (File f : dirFile.listFiles()) {
+            if (f.isDirectory()) {
+                deleteDir(f.toString());
+            } else {
+                boolean success = f.delete();
+                System.out.println("Deleting file '" + f + "'... " + (success ? "SUCCESS" : "FAILED"));
+
+            }
+        }
+        boolean success = dirFile.delete();
+        System.out.println("Deleting directory '" + dirPath + "'... " + (success ? "SUCCESS" : "FAILED"));
+    }
+
 }
