@@ -1,6 +1,10 @@
 package org.baratinage.ui.component;
 
 import java.awt.image.BufferedImage;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
+import java.io.File;
 
 import javax.swing.ImageIcon;
 
@@ -27,9 +31,11 @@ public class SvgIcon extends ImageIcon {
             BufferedImageTranscoder imgTranscoder = new BufferedImageTranscoder();
             imgTranscoder.addTranscodingHint(PNGTranscoder.KEY_WIDTH, width);
             imgTranscoder.addTranscodingHint(PNGTranscoder.KEY_HEIGHT, height);
-            imgTranscoder.transcode(new TranscoderInput(path), null);
+            InputStream inputStream = new FileInputStream(new File(path));
+            TranscoderInput transcoderInput = new TranscoderInput(inputStream);
+            imgTranscoder.transcode(transcoderInput, null);
             setImage(imgTranscoder.getBufferedImage());
-        } catch (TranscoderException e) {
+        } catch (TranscoderException | FileNotFoundException e) {
             e.printStackTrace();
         }
 
