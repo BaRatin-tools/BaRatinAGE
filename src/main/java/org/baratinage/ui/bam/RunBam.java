@@ -71,7 +71,7 @@ public class RunBam {
             throw new IllegalArgumentException("'priors' must non null!");
         }
 
-        id = Misc.getTimeStamp() + "_" + UUID.randomUUID().toString().substring(0, 5);
+        id = Misc.getTimeStampedId();
         workspacePath = Path.of(App.BAM_WORKSPACE, id);
         zipName = id + ".zip";
         zipPath = Path.of(App.TEMP_DIR, zipName);
