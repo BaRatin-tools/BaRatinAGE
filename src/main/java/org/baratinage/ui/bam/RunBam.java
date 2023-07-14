@@ -3,7 +3,6 @@ package org.baratinage.ui.bam;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.UUID;
 import org.baratinage.App;
 import org.baratinage.jbam.BaM;
 import org.baratinage.jbam.CalDataResidualConfig;

@@ -7,7 +7,6 @@ import javax.swing.UIManager;
 import java.awt.Color;
 import java.awt.EventQueue;
 import java.awt.Font;
-import java.io.File;
 import java.net.URL;
 import java.nio.file.Path;
 import java.util.Set;
