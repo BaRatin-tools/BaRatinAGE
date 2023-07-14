@@ -112,3 +112,42 @@ To do so, please refere to this [Getting Started with Java in VS Code](https://c
 Basically, you need to install the [Extension Pack for Java](https://marketplace.visualstudio.com/items?itemName=vscjava.vscode-java-pack).
 The [Extension Pack for Java](https://marketplace.visualstudio.com/items?itemName=vscjava.vscode-java-pack) can be found by searching the extensions in the extension panel of VS Code.
 If you're using [VS Codium](https://vscodium.com/), you may need to download the `vsix` file for the [Extension Pack for Java](https://marketplace.visualstudio.com/items?itemName=vscjava.vscode-java-pack) (on the right panel, click download) and install it manually.
+
+# Packaging BaRatinAGE
+
+Packaging BaRatinAGE refers to both creating the executable `jar` file and using `jpackage` to create a standalone, platform specific, executable.
+
+On windows, the following workflow can be used:
+
+1. Delete any previously created content in `target-packaged` folder
+2. Create executable `jar` file:
+
+```sh
+mvn clean package
+```
+
+3. Package, using `jpackage`:
+
+```sh
+jpackage --type app-image --app-version 3.0.0  --name "BaRatinAGE" --dest "target-packaged" --input "target" --main-jar "BaRatinAGE-3.0.0.jar" --win-console
+```
+
+4. Copy `exe` and `resources` folders into the created standalone packaged executable folder (here it is `target-packaged\BaRatinAGE\`)
+
+```sh
+xcopy ".\exe" ".\target-packaged\BaRatinAGE\exe" /S /I
+xcopy ".\resources" ".\target-packaged\BaRatinAGE\resources" /S /I
+```
+
+5. Finally, you can run the created executable `target-packaged\BaRatinAGE\BaRatinAGE.exe`.
+
+To summarise, delete any existing `target-packaged\BaRatinAGE` directory and then run:
+
+```sh
+mvn clean package
+
+jpackage --type app-image --app-version 3.0.0  --name "BaRatinAGE" --dest "target-packaged" --input "target" --main-jar "BaRatinAGE-3.0.0.jar" --win-console
+
+xcopy ".\exe" ".\target-packaged\BaRatinAGE\exe" /S /I
+xcopy ".\resources" ".\target-packaged\BaRatinAGE\resources" /S /I
+```

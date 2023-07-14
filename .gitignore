@@ -1,6 +1,7 @@
 # build and dist 
 /dist
 /target
+/target-packaged
 
 # BaM exe folder and workspace folder
 /exe/*
