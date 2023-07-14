@@ -152,6 +152,7 @@ public class Read {
             k++;
         }
 
+        reader.close();
         return colMatrix;
     }
 
