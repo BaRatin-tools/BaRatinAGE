@@ -1,7 +1,10 @@
-# build, dist and BaM exe folder
+# build and dist 
 /dist
 /target
-/exe
+
+# BaM exe folder and workspace folder
+/exe/*
+!/exe/README.txt
 
 # IDE specific stuff
 /.settings
