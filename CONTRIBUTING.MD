@@ -128,8 +128,16 @@ mvn clean package
 
 3. Package, using `jpackage`:
 
+with console outputs...
+
 ```sh
 jpackage --type app-image --app-version 3.0.0  --name "BaRatinAGE" --dest "target-packaged" --input "target" --main-jar "BaRatinAGE-3.0.0.jar" --win-console
+```
+
+... or without, and with a custom icon
+
+```sh
+jpackage --type app-image --app-version 3.0.0  --name "BaRatinAGE" --dest "target-packaged" --input "target" --main-jar "BaRatinAGE-3.0.0.jar" --icon "resources\icons\icon.ico"
 ```
 
 4. Copy `exe` and `resources` folders into the created standalone packaged executable folder (here it is `target-packaged\BaRatinAGE\`)
@@ -145,9 +153,9 @@ To summarise, delete any existing `target-packaged\BaRatinAGE` directory and the
 
 ```sh
 mvn clean package
-
-jpackage --type app-image --app-version 3.0.0  --name "BaRatinAGE" --dest "target-packaged" --input "target" --main-jar "BaRatinAGE-3.0.0.jar" --win-console
-
+jpackage --type app-image --app-version 3.0.0  --name "BaRatinAGE" --dest "target-packaged" --input "target" --main-jar "BaRatinAGE-3.0.0.jar" --icon "resources\icons\icon.ico"
 xcopy ".\exe" ".\target-packaged\BaRatinAGE\exe" /S /I
 xcopy ".\resources" ".\target-packaged\BaRatinAGE\resources" /S /I
+target-packaged\BaRatinAGE\BaRatinAGE.exe
+
 ```
