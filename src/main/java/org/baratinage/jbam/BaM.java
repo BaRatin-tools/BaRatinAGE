@@ -81,9 +81,7 @@ public class BaM {
         }
     }
 
-    public void toFiles(
-            String workspace,
-            String exeDir) {
+    private void toFiles(String workspace) { // exeDir no longer needed
 
         // FIXME: assuming that that these filenames are fixed which may not
         // in particular for the prediction master file
@@ -115,13 +113,13 @@ public class BaM {
         this.runOptions.toFiles(workspace);
 
         // Main BaM configuration file
+
         String[] structErrConfNames = this.calibrationConfig.getStructErrConfNames();
+
         String absoluteWorkspace = Path.of(workspace).toAbsolutePath().toString();
-        // absoluteWorkspace = String.format("%s/", absoluteWorkspace);
-        String relativeWorkspace = BamFilesHelpers.relativizePath(absoluteWorkspace).toString()
-                + BamFilesHelpers.OS_SEP;
+
         ConfigFile mainBaMconfig = new ConfigFile();
-        mainBaMconfig.addItem(relativeWorkspace, "workspace", true);
+        mainBaMconfig.addItem(absoluteWorkspace + BamFilesHelpers.OS_SEP, "workspace", true);
         mainBaMconfig.addItem(runOptions.fileName, "Config file: run options", true);
         mainBaMconfig.addItem(calibrationConfig.model.fileName, "Config file: model", true);
         // NOTE can be empty string
@@ -138,7 +136,7 @@ public class BaM {
         mainBaMconfig.addItem(calibrationConfig.calDataResidualConfig.fileName, "Config file: residual diagnostics",
                 true);
         mainBaMconfig.addItem(predictionMasterConfigFileName, " Config file: prediction experiments", true);
-        mainBaMconfig.writeToFile(exeDir, bamMasterConfigFileName);
+        mainBaMconfig.writeToFile(workspace, bamMasterConfigFileName);
     }
 
     public RunOptions getRunOptions() {
@@ -152,23 +150,25 @@ public class BaM {
     public String run(String workspace, ConsoleOutputFollower consoleOutputFollower)
             throws IOException {
 
-        // Delete work space content
-        File dir = new File(workspace);
-
-        File[] files = dir.listFiles();
-        if (files != null) {
-            for (File f : files) {
-                if (f.isDirectory()) {
-                    // no recursion
-                } else {
+        // Delete workspace content
+        File workspaceDirFile = new File(workspace);
+        if (workspaceDirFile.exists()) {
+            System.out.println("Deleting workspace content...");
+            for (File f : workspaceDirFile.listFiles()) {
+                if (!f.isDirectory()) {
                     f.delete();
                 }
             }
         }
 
-        this.toFiles(workspace, BamFilesHelpers.EXE_DIR);
+        this.toFiles(workspace);
 
-        String[] cmd = { EXE_COMMAND };
+        String mainConfigFilePath = Path.of(workspace, BamFilesHelpers.CONFIG_BAM).toAbsolutePath().toString();
+
+        String[] cmd = { EXE_COMMAND, "-cf", mainConfigFilePath };
+        String cmdString = String.join(" ", cmd);
+        System.out.println("BaM command: " + cmdString);
+
         File exeDirectory = new File(BamFilesHelpers.EXE_DIR);
         bamExecutionProcess = Runtime.getRuntime().exec(cmd, null, exeDirectory);
         InputStream inputStream = bamExecutionProcess.getInputStream();
@@ -282,9 +282,9 @@ public class BaM {
         return String.join("\n", str);
     }
 
-    static public BaM readBaM(String mainConfigFilePath) {
+    static public BaM readBaM(String mainConfigFilePath, String workspacePath) {
         ConfigFile configFile = ConfigFile.readConfigFile(mainConfigFilePath);
-        String relativeWorkspacePath = configFile.getString(0);
+        // String workspacePath = configFile.getString(0);
         String runOptionFileName = configFile.getString(1);
         String modelFileName = configFile.getString(2);
         String xTraFileName = configFile.getString(3);
@@ -296,9 +296,10 @@ public class BaM {
         String dataResidualFileName = configFile.getString(9);
         String predictionFileName = configFile.getString(10);
 
-        String absoluteWorkspacePath = BamFilesHelpers.absolutizePath(relativeWorkspacePath).toString();
+        // String absoluteWorkspacePath =
+        // BamFilesHelpers.absolutizePath(relativeWorkspacePath).toString();
         CalibrationConfig calibrationConfig = CalibrationConfig.readCalibrationConfig(
-                absoluteWorkspacePath,
+                workspacePath,
                 modelFileName,
                 xTraFileName,
                 dataFileName,
@@ -308,14 +309,14 @@ public class BaM {
                 mcmcSummaryFileName,
                 dataResidualFileName);
 
-        RunOptions runOptions = RunOptions.readRunOptions(absoluteWorkspacePath, runOptionFileName);
+        RunOptions runOptions = RunOptions.readRunOptions(workspacePath, runOptionFileName);
 
-        ConfigFile predMasterConfig = ConfigFile.readConfigFile(absoluteWorkspacePath, predictionFileName);
+        ConfigFile predMasterConfig = ConfigFile.readConfigFile(workspacePath, predictionFileName);
         int nPred = predMasterConfig.getInt(0);
         PredictionConfig[] predictionConfigs = new PredictionConfig[nPred];
         for (int k = 0; k < nPred; k++) {
             String predictionConfigFileName = predMasterConfig.getString(k + 1);
-            predictionConfigs[k] = PredictionConfig.readPredictionConfig(absoluteWorkspacePath,
+            predictionConfigs[k] = PredictionConfig.readPredictionConfig(workspacePath,
                     predictionConfigFileName);
         }
 
