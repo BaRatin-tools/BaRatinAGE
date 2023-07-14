@@ -14,6 +14,7 @@ import java.util.Set;
 
 import org.baratinage.ui.MainFrame;
 import org.baratinage.ui.lg.Lg;
+import org.baratinage.utils.Misc;
 
 public class App {
 
@@ -21,13 +22,13 @@ public class App {
     // conflit if multiple instances are run in parallel. They could be named using
     // a time stamp which would in turn be used to clean up the temp directory after
     // some time has passed.
+    public final static String TIME_STAMP = Misc.getTimeStampedId();
     public final static String TEMP_DIR = Path.of(System.getProperty("java.io.tmpdir"),
-            "baratinage").toString();
-
+            "baratinage", TIME_STAMP).toString();
     // public static String LAST_USED_DIR = System.getProperty("user.home");
     public static String LAST_USED_DIR = "test";
-
-    public final static String BAM_WORKSPACE = "exe/bam_workspace";
+    // FIXME: can't use time stamp because of relative path management in jbam
+    public final static String BAM_WORKSPACE = Path.of("exe", "bam_workspace").toString();
 
     public static MainFrame MAIN_FRAME;
 
@@ -40,10 +41,13 @@ public class App {
             System.out.println(arg);
         }
 
+        System.out.println("App.TIME_STAMP = " + App.TIME_STAMP);
         System.out.println("App.TEMP_DIR = " + App.TEMP_DIR);
-        File tD = new File(App.TEMP_DIR);
-        boolean created = tD.mkdirs();
-        System.out.println("Temp dir created? " + (created ? "Yes" : "No"));
+        System.out.println("App.BAM_WORKSPACE = " + App.BAM_WORKSPACE);
+        System.out.println("App.LAST_USED_DIR = " + App.LAST_USED_DIR);
+
+        Misc.createDir(App.TEMP_DIR);
+        Misc.createDir(App.BAM_WORKSPACE);
 
         try {
             String sysLookAndFeel = UIManager.getSystemLookAndFeelClassName();
@@ -95,6 +99,10 @@ public class App {
                 }
             }
         }
+    }
+
+    public static void cleanup() {
+        Misc.deleteDir(BAM_WORKSPACE);
     }
 
 }

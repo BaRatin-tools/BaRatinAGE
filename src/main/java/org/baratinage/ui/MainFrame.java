@@ -9,6 +9,7 @@ import javax.swing.JMenuItem;
 import javax.swing.KeyStroke;
 import javax.swing.filechooser.FileFilter;
 
+import org.baratinage.App;
 import org.baratinage.ui.bam.BamProject;
 import org.baratinage.ui.baratin.BaratinProject;
 import org.baratinage.ui.container.RowColPanel;
@@ -208,6 +209,7 @@ public class MainFrame extends JFrame {
     }
 
     private void close() {
+        App.cleanup();
         System.exit(0);
     }
 }
