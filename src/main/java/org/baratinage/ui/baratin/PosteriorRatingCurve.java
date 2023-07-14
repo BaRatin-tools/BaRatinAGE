@@ -12,8 +12,6 @@ import javax.swing.JTabbedPane;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import org.baratinage.App;
-
 import org.baratinage.jbam.CalDataResidualConfig;
 import org.baratinage.jbam.CalibrationConfig;
 import org.baratinage.jbam.CalibrationResult;
@@ -27,6 +25,7 @@ import org.baratinage.jbam.PredictionConfig;
 import org.baratinage.jbam.PredictionResult;
 import org.baratinage.jbam.StructuralErrorModel;
 import org.baratinage.jbam.utils.BamFilesHelpers;
+import org.baratinage.ui.MainFrame;
 import org.baratinage.ui.bam.ICalibratedModel;
 import org.baratinage.ui.bam.ICalibrationData;
 import org.baratinage.ui.bam.IMcmc;
@@ -281,7 +280,7 @@ public class PosteriorRatingCurve extends RowColPanel implements ICalibratedMode
                         modelDefinition.getInputNames().length,
                         modelDefinition.getOutputNames().length,
                         priors.getParameters(),
-                        modelDefinition.getXtra(App.BAM_WORKSPACE),
+                        modelDefinition.getXtra(MainFrame.APP_CONFIG.BAM_WORKSPACE_ROOT), // FIXME: incorrect!
                         BamFilesHelpers.CONFIG_XTRA),
                 modelOutputs,
                 calibrationData.getCalibrationData(),

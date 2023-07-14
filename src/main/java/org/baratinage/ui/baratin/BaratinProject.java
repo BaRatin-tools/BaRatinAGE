@@ -7,7 +7,7 @@ import javax.swing.JButton;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 
-import org.baratinage.App;
+import org.baratinage.ui.MainFrame;
 import org.baratinage.ui.bam.BamItem;
 import org.baratinage.ui.bam.BamItemType;
 import org.baratinage.ui.bam.BamProject;
@@ -72,14 +72,14 @@ public class BaratinProject extends BamProject {
     public BaratinProject() {
         super();
 
-        if (App.MAIN_FRAME.baratinMenu == null) {
-            App.MAIN_FRAME.baratinMenu = new JMenu();
-            App.MAIN_FRAME.baratinMenu.setText("BaRatin");
-            App.MAIN_FRAME.mainMenuBar.add(App.MAIN_FRAME.baratinMenu);
+        if (MainFrame.APP_CONFIG.APP_MAIN_FRAME.baratinMenu == null) {
+            MainFrame.APP_CONFIG.APP_MAIN_FRAME.baratinMenu = new JMenu();
+            MainFrame.APP_CONFIG.APP_MAIN_FRAME.baratinMenu.setText("BaRatin");
+            MainFrame.APP_CONFIG.APP_MAIN_FRAME.mainMenuBar.add(MainFrame.APP_CONFIG.APP_MAIN_FRAME.baratinMenu);
         } else {
-            App.MAIN_FRAME.baratinMenu.removeAll();
+            MainFrame.APP_CONFIG.APP_MAIN_FRAME.baratinMenu.removeAll();
         }
-        JMenu baratinMenu = App.MAIN_FRAME.baratinMenu;
+        JMenu baratinMenu = MainFrame.APP_CONFIG.APP_MAIN_FRAME.baratinMenu;
 
         JMenuItem menuBtnNewHydraulicConfig = new JMenuItem();
         Lg.register(menuBtnNewHydraulicConfig, "create_hydraulic_config");

@@ -87,19 +87,23 @@ public class Misc {
     public static void createDir(String dirPath) {
         File dirFile = new File(dirPath);
         if (!dirFile.exists()) {
-            System.out.println("Creating directory '" + dirPath + "'...");
-            dirFile.mkdirs();
+            boolean success = dirFile.mkdirs();
+            System.out.println("Creating directory '" + dirPath + "'... " + (success ? "SUCCESS" : "FAIL"));
         }
     }
 
     public static void deleteDir(String dirPath) {
         File dirFile = new File(dirPath);
+        if (!dirFile.exists()) {
+            System.err.println("Cannot delete directory '" + dirPath + "' because it doesn't exist! ");
+            return;
+        }
         for (File f : dirFile.listFiles()) {
             if (f.isDirectory()) {
                 deleteDir(f.toString());
             } else {
                 boolean success = f.delete();
-                System.out.println("Deleting file '" + f + "'... " + (success ? "SUCCESS" : "FAILED"));
+                System.out.println("Deleting file '" + f + "'... " + (success ? "SUCCESS" : "FAIL"));
 
             }
         }

@@ -19,7 +19,7 @@ import javax.swing.JSplitPane;
 import javax.swing.JToolBar;
 import javax.swing.filechooser.FileFilter;
 
-import org.baratinage.App;
+import org.baratinage.ui.MainFrame;
 import org.baratinage.ui.baratin.BaratinProject;
 import org.baratinage.ui.commons.Explorer;
 import org.baratinage.ui.commons.ExplorerItem;
@@ -207,7 +207,7 @@ public abstract class BamProject extends RowColPanel {
 
     public void saveProject(String saveFilePath) {
 
-        String mainConfigFilePath = Path.of(App.TEMP_DIR, "main_config.json").toString();
+        String mainConfigFilePath = Path.of(MainFrame.APP_CONFIG.APP_TEMP_DIR, "main_config.json").toString();
         File mainConfigFile = new File(mainConfigFilePath);
         try {
             WriteFile.writeLines(mainConfigFile, new String[] { toJSON().toString(4) });
@@ -235,7 +235,7 @@ public abstract class BamProject extends RowColPanel {
                 String[] dataFileNames = item.getTempDataFileNames();
 
                 for (String dfp : dataFileNames) {
-                    File f = new File(Path.of(App.TEMP_DIR, dfp).toString());
+                    File f = new File(Path.of(MainFrame.APP_CONFIG.APP_TEMP_DIR, dfp).toString());
                     System.out.println("Including file '" + f + "'...");
                     String name = f.getName();
                     if (usedNames.stream().anyMatch(s -> s.equals(name))) {
@@ -258,16 +258,23 @@ public abstract class BamProject extends RowColPanel {
     static public BamProject loadProject(String projectFilePath) {
 
         // Clear Temp Directory!
-        for (File file : new File(App.TEMP_DIR).listFiles()) {
+        for (File file : new File(MainFrame.APP_CONFIG.APP_TEMP_DIR).listFiles()) {
             if (!file.isDirectory())
                 file.delete();
         }
 
-        ReadWriteZip.unzip(projectFilePath, App.TEMP_DIR);
+        File projectFile = new File(projectFilePath);
+        if (!projectFile.exists()) {
+            System.err.println("Project file doesn't exist! (" + projectFilePath + ")");
+            return null;
+        }
+
+        ReadWriteZip.unzip(projectFilePath, MainFrame.APP_CONFIG.APP_TEMP_DIR);
 
         try {
             BufferedReader bufReader = ReadFile
-                    .createBufferedReader(Path.of(App.TEMP_DIR, "main_config.json").toString(), true);
+                    .createBufferedReader(Path.of(MainFrame.APP_CONFIG.APP_TEMP_DIR, "main_config.json").toString(),
+                            true);
             String jsonString = "";
             String jsonLine;
             while ((jsonLine = bufReader.readLine()) != null) {

@@ -9,7 +9,6 @@ import javax.swing.JMenuItem;
 import javax.swing.KeyStroke;
 import javax.swing.filechooser.FileFilter;
 
-import org.baratinage.App;
 import org.baratinage.ui.bam.BamProject;
 import org.baratinage.ui.baratin.BaratinProject;
 import org.baratinage.ui.container.RowColPanel;
@@ -31,6 +30,9 @@ import java.util.Map;
 
 public class MainFrame extends JFrame {
 
+    // public static MainFrame MAIN_FRAME;
+    public static AppConfig APP_CONFIG;
+
     private RowColPanel projectPanel;
     private BamProject currentProject;
 
@@ -38,6 +40,11 @@ public class MainFrame extends JFrame {
     public JMenu baratinMenu;
 
     public MainFrame() {
+
+        APP_CONFIG = new AppConfig(this);
+
+        Lg.init();
+        Lg.setLocale("fr");
 
         this.setSize(new Dimension(1200, 900));
 
@@ -202,14 +209,21 @@ public class MainFrame extends JFrame {
         fileChooser.setAcceptAllFileFilterUsed(false);
         if (fileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
             String fullFilePath = fileChooser.getSelectedFile().getAbsolutePath();
-            fullFilePath = fullFilePath.endsWith(".bam") ? fullFilePath : fullFilePath + ".bam";
-            BamProject bamProject = BamProject.loadProject(fullFilePath);
-            setCurrentProject(bamProject);
+            loadProject(fullFilePath);
+        }
+    }
+
+    public void loadProject(String projectFilePath) {
+        if (projectFilePath != null) {
+            BamProject bamProject = BamProject.loadProject(projectFilePath);
+            if (bamProject != null) {
+                setCurrentProject(bamProject);
+            }
         }
     }
 
     private void close() {
-        App.cleanup();
+        APP_CONFIG.cleanup();
         System.exit(0);
     }
 }

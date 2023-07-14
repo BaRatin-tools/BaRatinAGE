@@ -8,8 +8,8 @@ import javax.swing.JButton;
 import javax.swing.JSeparator;
 import javax.swing.JSplitPane;
 
-import org.baratinage.App;
 import org.baratinage.jbam.Parameter;
+import org.baratinage.ui.MainFrame;
 import org.baratinage.ui.bam.BamItem;
 import org.baratinage.ui.bam.BamItemType;
 import org.baratinage.ui.bam.IModelDefinition;
@@ -105,7 +105,7 @@ class HydraulicConfiguration extends BamItem
                 Lg.register(warning.message, "oos_prior_rating_curve", true);
                 outOufSyncPanel.appendChild(warning);
                 Lg.register(priorRatingCurve.runButton, "recompute_prior_rc", true);
-                priorRatingCurve.runButton.setForeground(App.INVALID_COLOR);
+                priorRatingCurve.runButton.setForeground(MainFrame.APP_CONFIG.INVALID_COLOR);
                 return;
             }
         }

@@ -8,10 +8,10 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JSplitPane;
 
-import org.baratinage.App;
 import org.baratinage.jbam.CalibrationData;
 import org.baratinage.jbam.UncertainData;
 import org.baratinage.jbam.utils.BamFilesHelpers;
+import org.baratinage.ui.MainFrame;
 import org.baratinage.ui.bam.BamItem;
 import org.baratinage.ui.bam.ICalibrationData;
 import org.baratinage.ui.baratin.gaugings.GaugingsDataset;
@@ -158,7 +158,7 @@ public class Gaugings extends BamItem implements ICalibrationData {
             gaugingDatasetJson.put("name", gaugingDataset.getDatasetName());
             gaugingDatasetJson.put("hashCode", gaugingDataset.hashCode());
             json.put("gaugingDataset", gaugingDatasetJson);
-            String dataFilePath = Path.of(App.TEMP_DIR, getDataFileName(
+            String dataFilePath = Path.of(MainFrame.APP_CONFIG.APP_TEMP_DIR, getDataFileName(
                     gaugingDataset.getDatasetName(),
                     gaugingDataset.hashCode())).toString();
             gaugingDataset.writeDataFile(dataFilePath);
@@ -178,7 +178,8 @@ public class Gaugings extends BamItem implements ICalibrationData {
             gaugingDataset = new GaugingsDataset();
             gaugingDataset.setDatasetName(name);
 
-            String dataFilePath = Path.of(App.TEMP_DIR, getDataFileName(name, hashCode)).toString();
+            String dataFilePath = Path.of(MainFrame.APP_CONFIG.APP_TEMP_DIR, getDataFileName(name, hashCode))
+                    .toString();
             if (Files.exists(Path.of(dataFilePath))) {
                 System.out.println("Reading file ... (" + dataFilePath + ")");
                 gaugingDataset.setDataFromFile(dataFilePath);

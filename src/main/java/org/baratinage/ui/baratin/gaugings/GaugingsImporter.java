@@ -12,12 +12,12 @@ import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JSeparator;
 
-import org.baratinage.App;
 import org.baratinage.ui.component.DataFileImporter;
 import org.baratinage.ui.component.ImportedDataset;
 import org.baratinage.ui.container.GridPanel;
 import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.ui.lg.Lg;
+import org.baratinage.ui.MainFrame;
 
 public class GaugingsImporter extends RowColPanel {
 
@@ -108,7 +108,7 @@ public class GaugingsImporter extends RowColPanel {
 
     public void showDialog() {
 
-        dialog = new JDialog(App.MAIN_FRAME, true);
+        dialog = new JDialog(MainFrame.APP_CONFIG.APP_MAIN_FRAME, true);
         dialog.setContentPane(this);
 
         dialog.setTitle(Lg.text("import_gauging_set"));
@@ -116,7 +116,7 @@ public class GaugingsImporter extends RowColPanel {
         dialog.setPreferredSize(new Dimension(900, 600));
 
         dialog.pack();
-        dialog.setLocationRelativeTo(App.MAIN_FRAME);
+        dialog.setLocationRelativeTo(MainFrame.APP_CONFIG.APP_MAIN_FRAME);
         dialog.setVisible(true);
         dialog.dispose();
     }

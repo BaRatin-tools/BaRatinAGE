@@ -10,7 +10,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.plaf.basic.BasicBorders;
 
-import org.baratinage.App;
+import org.baratinage.ui.MainFrame;
 import org.baratinage.ui.container.RowColPanel;
 
 public class NumberField extends RowColPanel {
@@ -65,7 +65,7 @@ public class NumberField extends RowColPanel {
         Color color = new Color(125, 255, 125, 0);
 
         if (!isValid) {
-            color = App.INVALID_COLOR;
+            color = MainFrame.APP_CONFIG.INVALID_COLOR;
         }
 
         setBorder(new BasicBorders.FieldBorder(color, color, color, color));

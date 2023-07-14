@@ -7,7 +7,7 @@ import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 
-import org.baratinage.App;
+import org.baratinage.ui.MainFrame;
 import org.baratinage.ui.container.RowColPanel;
 
 public class WarningAndActions extends RowColPanel {
@@ -19,8 +19,8 @@ public class WarningAndActions extends RowColPanel {
     public WarningAndActions() {
         super(AXIS.COL);
 
-        message.setForeground(App.INVALID_COLOR);
-        setBorder(BorderFactory.createLineBorder(App.INVALID_COLOR, 2));
+        message.setForeground(MainFrame.APP_CONFIG.INVALID_COLOR);
+        setBorder(BorderFactory.createLineBorder(MainFrame.APP_CONFIG.INVALID_COLOR, 2));
         appendChild(message);
         appendChild(actionButtonsPanel);
 

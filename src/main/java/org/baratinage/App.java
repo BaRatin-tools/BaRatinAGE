@@ -1,56 +1,19 @@
 package org.baratinage;
 
-import javax.swing.ImageIcon;
 import javax.swing.UIManager;
-// import javax.swing.UIManager.LookAndFeelInfo;
 
-import java.awt.Color;
 import java.awt.EventQueue;
 import java.awt.Font;
-import java.net.URL;
-import java.nio.file.Path;
 import java.util.Set;
 
 import org.baratinage.ui.MainFrame;
-import org.baratinage.ui.lg.Lg;
-import org.baratinage.utils.Misc;
 
 public class App {
 
-    public final static String TIME_STAMP = Misc.getTimeStampedId();
-    public final static String TEMP_DIR = Path.of(System.getProperty("java.io.tmpdir"),
-            "baratinage", TIME_STAMP).toString();
-    // public static String LAST_USED_DIR = System.getProperty("user.home");
-    public static String LAST_USED_DIR = "test";
-    public final static String BAM_WORKSPACE = Path.of("exe", "bam_workspace", TIME_STAMP).toString();
-
-    public static MainFrame MAIN_FRAME;
-
-    public static Color INVALID_COLOR = new Color(200, 50, 40);
-
     public static void main(String[] args) {
-
-        // TODO: implement opening .bam file from OS file explorer
-        for (String arg : args) {
-            System.out.println(arg);
-        }
-
-        System.out.println("TIME_STAMP = " + TIME_STAMP);
-        System.out.println("TEMP_DIR = " + TEMP_DIR);
-        System.out.println("BAM_WORKSPACE = " + BAM_WORKSPACE);
-        System.out.println("LAST_USED_DIR = " + LAST_USED_DIR);
-        Misc.createDir(TEMP_DIR);
-        Misc.createDir(BAM_WORKSPACE);
-
         try {
             String sysLookAndFeel = UIManager.getSystemLookAndFeelClassName();
             UIManager.setLookAndFeel(sysLookAndFeel);
-            // String crossPlatformLookAndFeel =
-            // UIManager.getCrossPlatformLookAndFeelClassName();
-            // UIManager.setLookAndFeel(crossPlatformLookAndFeel);
-            // for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
-            // System.out.println(info);
-            // }
             setDefaultSize(14);
         } catch (Exception e) {
             e.printStackTrace();
@@ -58,20 +21,7 @@ public class App {
         EventQueue.invokeLater(new Runnable() {
             public void run() {
                 try {
-                    Lg.init();
-                    Lg.setLocale("fr");
-                    MAIN_FRAME = new MainFrame();
-
-                    MAIN_FRAME.setTitle("BaRatinAGE V3");
-
-                    // FIXME: where should such resource files be stored?
-                    // here it cannot be accessed after packaging wherease
-                    // in the approach followed for i18n (and icons) enables modifying
-                    // the resource files after packaging...
-                    URL iconUrl = this.getClass().getResource("/icon/64x64.png");
-                    ImageIcon iconImg = new ImageIcon(iconUrl);
-                    MAIN_FRAME.setIconImage(iconImg.getImage());
-
+                    new MainFrame();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -92,11 +42,6 @@ public class App {
                 }
             }
         }
-    }
-
-    public static void cleanup() {
-        Misc.deleteDir(BAM_WORKSPACE);
-        Misc.deleteDir(TEMP_DIR);
     }
 
 }

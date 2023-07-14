@@ -6,11 +6,11 @@ import java.util.List;
 import javax.swing.JButton;
 import javax.swing.JSeparator;
 
-import org.baratinage.App;
 import org.baratinage.jbam.CalibrationConfig;
 import org.baratinage.jbam.CalibrationResult;
 import org.baratinage.jbam.McmcConfig;
 import org.baratinage.jbam.McmcCookingConfig;
+import org.baratinage.ui.MainFrame;
 import org.baratinage.ui.bam.BamItem;
 import org.baratinage.ui.bam.BamItemType;
 import org.baratinage.ui.bam.BamItemList;
@@ -207,7 +207,7 @@ public class RatingCurve extends BamItem implements ICalibratedModel, IMcmc, Bam
         outdatedInfoPanel.clear();
         if (warnings.size() > 0) {
             Lg.register(posteriorRatingCurve.runBamButton, "recompute_posterior_rc", true);
-            posteriorRatingCurve.runBamButton.setForeground(App.INVALID_COLOR);
+            posteriorRatingCurve.runBamButton.setForeground(MainFrame.APP_CONFIG.INVALID_COLOR);
             for (WarningAndActions w : warnings) {
                 outdatedInfoPanel.appendChild(w);
             }
