@@ -1,7 +1,5 @@
 package org.baratinage.jbam;
 
-import java.nio.file.Path;
-
 import org.baratinage.jbam.utils.BamFilesHelpers;
 import org.baratinage.jbam.utils.ConfigFile;
 
