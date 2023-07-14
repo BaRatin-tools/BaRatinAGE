@@ -274,7 +274,6 @@ public abstract class BamProject extends RowColPanel {
                 jsonString += jsonLine;
             }
             JSONObject json = new JSONObject(jsonString);
-            System.out.println(json);
 
             // FIXME: is this where version conversion should occur?
             int version = json.getInt("version");
