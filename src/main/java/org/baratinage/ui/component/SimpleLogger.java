@@ -17,7 +17,7 @@ import java.util.Date;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Logger extends JPanel {
+public class SimpleLogger extends JPanel {
 
     private List<LogItem> logs;
     private String currentLogs;
@@ -40,7 +40,7 @@ public class Logger extends JPanel {
         }
     }
 
-    public Logger() {
+    public SimpleLogger() {
 
         logs = new ArrayList<>();
 

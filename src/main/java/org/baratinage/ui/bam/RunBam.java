@@ -1,8 +1,19 @@
 package org.baratinage.ui.bam;
 
+import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.List;
+
+import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.SwingWorker;
 
 import org.baratinage.jbam.BaM;
 import org.baratinage.jbam.CalDataResidualConfig;
@@ -19,21 +30,19 @@ import org.baratinage.jbam.RunOptions;
 import org.baratinage.jbam.StructuralErrorModel;
 import org.baratinage.jbam.UncertainData;
 import org.baratinage.jbam.utils.BamFilesHelpers;
-
+import org.baratinage.jbam.utils.Monitoring;
 import org.baratinage.utils.Misc;
 import org.baratinage.utils.ReadWriteZip;
 import org.baratinage.ui.AppConfig;
 import org.baratinage.ui.commons.DefaultStructuralErrorModel;
+import org.baratinage.ui.component.ProgressBar;
+import org.baratinage.ui.component.SimpleLogger;
+import org.baratinage.ui.container.RowColPanel;
+import org.baratinage.ui.lg.Lg;
 
 public class RunBam {
 
-    // FIXME: should be stored at the much higher level (Project or App level)?
-    // FIXME: workspace should be handled here and be named according to date/time
-    // Ideas about workspace:
-    // - a parent folder (e.g.named "bam_workspace") contains all current bam run
-    // - an actual bam workspace should be unique to each bam run
-    // - when closing a project all associated workspaces should be deleted
-    // - when importing a project all associated workspaces should be re-created.
+    private JDialog monitoringDialog;
 
     public final String id;
     public final Path workspacePath;
@@ -55,6 +64,7 @@ public class RunBam {
         bam = BaM.readBaM(mainConfigFile.getAbsolutePath(), workspacePath.toString());
         bam.readResults(workspacePath.toString());
         System.out.println(bam);
+
     }
 
     public RunBam(
@@ -177,21 +187,121 @@ public class RunBam {
         bam = new BaM(calibrationConfig, predConfigs, runOptions);
     };
 
-    public void run() {
+    @FunctionalInterface
+    public interface IRunWhenFinished {
+        public void run();
+    }
 
-        try {
-            bam.run(workspacePath.toString(), txt -> {
-                System.out.println("log => " + txt);
-            });
-        } catch (IOException e) {
-            e.printStackTrace();
-            return;
-        }
+    public void run(IRunWhenFinished runWhenDone) {
 
-        readResultsFromWorkspace();
+        // setup dialog
+        monitoringDialog = new JDialog(AppConfig.AC.APP_MAIN_FRAME, true);
 
-        // FIXME: inefficient but safer (caller classer doesn't need to call it)
-        zipBamRun();
+        BamRunMonitoringPanel monitoringPanel = new BamRunMonitoringPanel();
+
+        monitoringDialog.setContentPane(monitoringPanel);
+        monitoringDialog.setTitle(Lg.text("bam_running"));
+
+        monitoringPanel.cancelButton.setText(Lg.text("cancel"));
+        monitoringPanel.closeButton.setText(Lg.text("close"));
+        monitoringPanel.closeButton.setEnabled(false);
+
+        SwingWorker<Void, String> runningWorker = new SwingWorker<>() {
+
+            @Override
+            protected Void doInBackground() throws Exception {
+                try {
+                    System.out.println("BAMRUNNING");
+                    bam.run(workspacePath.toString(), txt -> {
+                        // System.out.println("log => " + txt);
+                        publish(txt);
+                    });
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    cancel(true);
+                }
+                return null;
+            }
+
+            @Override
+            protected void process(List<String> logs) {
+                monitoringPanel.logger.addLogs(logs.toArray(new String[0]));
+            }
+
+            @Override
+            protected void done() {
+                if (!isCancelled()) {
+                    monitoringDialog.setTitle(Lg.text("bam_done"));
+
+                    System.out.println("READING RESULTS");
+                    readResultsFromWorkspace();
+                    System.out.println("ZIPPING RUN");
+                    // FIXME: inefficient but safer (caller classer doesn't need to call it)
+                    zipBamRun();
+
+                } else {
+                    monitoringDialog.setTitle(Lg.text("bam_canceled"));
+                }
+
+                monitoringPanel.closeButton.setEnabled(true);
+                monitoringPanel.cancelButton.setEnabled(false);
+                System.out.println("DONE");
+                runWhenDone.run();
+            }
+
+        };
+
+        runningWorker.execute();
+
+        SwingWorker<Void, Void> monitoringWorker = new SwingWorker<>() {
+
+            @Override
+            protected Void doInBackground() throws Exception {
+                new Monitoring(bam, workspacePath.toString(), (m) -> {
+                    monitoringPanel.progressBar.update(m.id, m.progress, m.total, m.currenStep, m.totalSteps);
+                });
+                return null;
+            }
+
+        };
+
+        monitoringWorker.execute();
+
+        ActionListener onCancelAction = new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent arg0) {
+
+                System.out.println("CANCELLING!");
+                runningWorker.cancel(true);
+                monitoringWorker.cancel(true);
+
+                Process bamProcess = bam.getBaMexecutionProcess();
+                if (bamProcess != null) {
+                    System.out.println("KILLING BAM PROCESS");
+                    bamProcess.destroy();
+                }
+            }
+
+        };
+
+        monitoringPanel.cancelButton.addActionListener(onCancelAction);
+
+        monitoringPanel.closeButton.addActionListener((e) -> {
+            monitoringDialog.dispose();
+        });
+
+        monitoringDialog.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                if (!runningWorker.isDone()) {
+                    onCancelAction.actionPerformed(null);
+                }
+            }
+        });
+        monitoringDialog.pack();
+        monitoringDialog.setLocationRelativeTo(AppConfig.AC.APP_MAIN_FRAME);
+        monitoringDialog.setVisible(true);
 
     }
 
@@ -204,8 +314,7 @@ public class RunBam {
     }
 
     public void zipBamRun() {
-        String mainConfigFilePath = Path.of(BamFilesHelpers.EXE_DIR, BamFilesHelpers.CONFIG_BAM).toString();
-        ReadWriteZip.flatZip(zipPath.toString(), workspacePath.toString(), mainConfigFilePath);
+        ReadWriteZip.flatZip(zipPath.toString(), workspacePath.toString());
     }
 
     public void unzipBamRun() {
@@ -213,4 +322,32 @@ public class RunBam {
         readResultsFromWorkspace();
     }
 
+    private class BamRunMonitoringPanel extends RowColPanel {
+
+        public final ProgressBar progressBar;
+        public final JButton cancelButton;
+        public final JButton closeButton;
+        public final SimpleLogger logger;
+
+        public BamRunMonitoringPanel() {
+            super(AXIS.COL);
+            setPadding(5);
+            setGap(5);
+
+            progressBar = new ProgressBar();
+            cancelButton = new JButton();
+            closeButton = new JButton();
+            logger = new SimpleLogger();
+            logger.setPreferredSize(new Dimension(900, 600));
+
+            RowColPanel pbPanel = new RowColPanel();
+            pbPanel.setGap(5);
+            pbPanel.appendChild(progressBar, 1);
+            pbPanel.appendChild(cancelButton, 0);
+
+            appendChild(pbPanel, 0);
+            appendChild(logger, 1);
+            appendChild(closeButton, 0);
+        }
+    }
 }

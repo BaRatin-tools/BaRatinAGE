@@ -13,30 +13,6 @@ public class Monitoring {
 
     private final static String MONITOR_FILE_SUFFIX = ".monitor";
 
-    public class MonitoringStep {
-        public String id;
-        public Path monitorFilePath;
-        public int progress;
-        public int total;
-        public int currenStep;
-        public int totalSteps;
-
-        MonitoringStep(
-                String id,
-                Path monitorFilePath,
-                int progress,
-                int total,
-                int currenStep,
-                int totalSteps) {
-            this.id = id;
-            this.monitorFilePath = monitorFilePath;
-            this.progress = progress;
-            this.total = total;
-            this.currenStep = currenStep;
-            this.totalSteps = totalSteps;
-        }
-    }
-
     private List<MonitoringStep> monitoringSteps;
     private MonitoringFollower monitoringFollower;
 
@@ -47,14 +23,12 @@ public class Monitoring {
 
     public Monitoring(BaM bam, String workspace, MonitoringFollower monitoringFollower) {
 
-        // this.bam = bam;
-        this.monitoringSteps = new ArrayList<>();
+        monitoringSteps = new ArrayList<>();
         this.monitoringFollower = monitoringFollower;
 
-        // int currentStep = 1;
         int mcmcSamples = bam.getCalibrationConfig().getMcmcConfig().numberOfMcmcSamples();
         if (bam.getRunOptions().doMcmc) {
-            this.monitoringSteps
+            monitoringSteps
                     .add(new MonitoringStep(
                             "MCMC",
                             Path.of(workspace,
@@ -69,7 +43,7 @@ public class Monitoring {
             int cookedMcmcSamples = bam.getCalibrationConfig().getMcmcCookingConfig()
                     .numberOfCookedMcmcSamples(mcmcSamples);
             for (PredictionConfig predConfig : bam.getPredictionConfigs()) {
-                this.monitoringSteps.add(
+                monitoringSteps.add(
                         new MonitoringStep(
                                 "Prediction_" + predConfig.predictionConfigFileName,
                                 Path.of(workspace,
@@ -83,7 +57,7 @@ public class Monitoring {
         }
 
         try {
-            this.startMonitoring();
+            startMonitoring();
         } catch (InterruptedException e) {
             System.err.println("MONITORING INTERRUPTED!");
         }
@@ -102,7 +76,6 @@ public class Monitoring {
             currentStep++;
             k = 0;
             while (k < N_MAX) {
-                // System.out.printf("-");
                 k++;
                 Thread.sleep(CHECK_INTERVAL);
                 if (Files.exists(ms.monitorFilePath)) {

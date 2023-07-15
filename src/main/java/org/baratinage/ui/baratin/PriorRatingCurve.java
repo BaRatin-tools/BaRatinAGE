@@ -85,19 +85,17 @@ public class PriorRatingCurve extends GridPanel {
                                         null, null,
                                         predictionConfigs);
 
-                        runBam.run();
-
-                        if (runBam.hasResults()) {
-
-                                predictionResults = runBam.bam.getPredictionResults();
-                                if (predictionResults == null) {
-                                        System.err.println("ERROR: no prediction results found!");
-                                        return;
+                        runBam.run(() -> {
+                                if (runBam.hasResults()) {
+                                        predictionResults = runBam.bam.getPredictionResults();
+                                        if (predictionResults == null) {
+                                                System.err.println("ERROR: no prediction results found!");
+                                                return;
+                                        }
+                                        fireChangeListeners();
+                                        buildRatingCurvePlot();
                                 }
-
-                                fireChangeListeners();
-                                buildRatingCurvePlot();
-                        }
+                        });
 
                 } catch (Exception error) {
                         System.err.println("ERROR: An error occured while running BaM!");

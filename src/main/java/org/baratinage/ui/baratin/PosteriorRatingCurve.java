@@ -115,12 +115,13 @@ public class PosteriorRatingCurve extends RowColPanel implements ICalibratedMode
 
         runBam = new RunBam(modelDefinition, priors, structuralError, calibrationData, predictionConfigs);
 
-        runBam.run();
+        runBam.run(() -> {
+            if (runBam.hasResults()) {
+                fireChangeListeners();
+                buildRatingCurvePlot();
+            }
+        });
 
-        if (runBam.hasResults()) {
-            fireChangeListeners();
-            buildRatingCurvePlot();
-        }
     }
 
     private void buildPredictionExperiments() {
