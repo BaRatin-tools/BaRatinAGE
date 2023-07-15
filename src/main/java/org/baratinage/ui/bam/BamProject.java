@@ -262,6 +262,8 @@ public abstract class BamProject extends RowColPanel {
             }
 
             zipOutStream.close();
+
+            setProjectPath(saveFilePath);
         } catch (IOException e1) {
             e1.printStackTrace();
         }
