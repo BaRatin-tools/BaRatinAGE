@@ -9,7 +9,8 @@ import javax.swing.JSeparator;
 import javax.swing.JSplitPane;
 
 import org.baratinage.jbam.Parameter;
-import org.baratinage.ui.MainFrame;
+
+import org.baratinage.ui.AppConfig;
 import org.baratinage.ui.bam.BamItem;
 import org.baratinage.ui.bam.BamItemType;
 import org.baratinage.ui.bam.IModelDefinition;
@@ -21,6 +22,7 @@ import org.baratinage.ui.baratin.hydraulic_control.OneHydraulicControl;
 import org.baratinage.ui.commons.WarningAndActions;
 import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.ui.lg.Lg;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -105,7 +107,7 @@ class HydraulicConfiguration extends BamItem
                 Lg.register(warning.message, "oos_prior_rating_curve", true);
                 outOufSyncPanel.appendChild(warning);
                 Lg.register(priorRatingCurve.runButton, "recompute_prior_rc", true);
-                priorRatingCurve.runButton.setForeground(MainFrame.APP_CONFIG.INVALID_COLOR);
+                priorRatingCurve.runButton.setForeground(AppConfig.AC.INVALID_COLOR);
                 return;
             }
         }

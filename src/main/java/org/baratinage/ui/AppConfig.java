@@ -7,6 +7,8 @@ import java.nio.file.Paths;
 import org.baratinage.utils.Misc;
 
 public class AppConfig {
+    public static AppConfig AC;
+
     public final String APP_NAME;
     public final String APP_ROOT_DIR;
     public final String APP_INSTANCE_ID;
@@ -21,6 +23,8 @@ public class AppConfig {
     public String lastUsedDir;
 
     public AppConfig(MainFrame mainFrame) {
+
+        AC = this;
 
         APP_NAME = "BaRatinAGE";
 

@@ -21,7 +21,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.filechooser.FileFilter;
 
-import org.baratinage.ui.MainFrame;
+import org.baratinage.ui.AppConfig;
 import org.baratinage.ui.container.GridPanel;
 import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.ui.lg.Lg;
@@ -116,7 +116,7 @@ public class DataFileImporter extends RowColPanel {
         Lg.register(browseFileSystemButon, "browse");
         browseFileSystemButon.addActionListener(e -> {
             final JFileChooser fileChooser = new JFileChooser();
-            fileChooser.setCurrentDirectory(new File(MainFrame.APP_CONFIG.lastUsedDir));
+            fileChooser.setCurrentDirectory(new File(AppConfig.AC.lastUsedDir));
             fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
             fileChooser.setFileFilter(new FileFilter() {
 

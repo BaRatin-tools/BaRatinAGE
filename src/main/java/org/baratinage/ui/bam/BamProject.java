@@ -19,7 +19,7 @@ import javax.swing.JSplitPane;
 import javax.swing.JToolBar;
 import javax.swing.filechooser.FileFilter;
 
-import org.baratinage.ui.MainFrame;
+import org.baratinage.ui.AppConfig;
 import org.baratinage.ui.baratin.BaratinProject;
 import org.baratinage.ui.commons.Explorer;
 import org.baratinage.ui.commons.ExplorerItem;
@@ -29,6 +29,7 @@ import org.baratinage.ui.lg.Lg;
 import org.baratinage.utils.ReadFile;
 import org.baratinage.utils.ReadWriteZip;
 import org.baratinage.utils.WriteFile;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -101,8 +102,8 @@ public abstract class BamProject extends RowColPanel {
 
     public void addItem(BamItem bamItem, ExplorerItem explorerItem) {
 
-        String cloneIconPath = Path.of(MainFrame.APP_CONFIG.ICONS_RESOURCES_DIR, "feather", "copy.svg").toString();
-        String deleteIconPath = Path.of(MainFrame.APP_CONFIG.ICONS_RESOURCES_DIR, "feather", "trash.svg").toString();
+        String cloneIconPath = Path.of(AppConfig.AC.ICONS_RESOURCES_DIR, "feather", "copy.svg").toString();
+        String deleteIconPath = Path.of(AppConfig.AC.ICONS_RESOURCES_DIR, "feather", "trash.svg").toString();
         bamItem.cloneButton.setIcon(SvgIcon.buildNoScalingIcon(cloneIconPath, 24));
         bamItem.deleteButton.setIcon(SvgIcon.buildNoScalingIcon(deleteIconPath, 24));
 
@@ -218,7 +219,7 @@ public abstract class BamProject extends RowColPanel {
 
     public void saveProject(String saveFilePath) {
 
-        String mainConfigFilePath = Path.of(MainFrame.APP_CONFIG.APP_TEMP_DIR, "main_config.json").toString();
+        String mainConfigFilePath = Path.of(AppConfig.AC.APP_TEMP_DIR, "main_config.json").toString();
         File mainConfigFile = new File(mainConfigFilePath);
         try {
             WriteFile.writeLines(mainConfigFile, new String[] { toJSON().toString(4) });
@@ -246,7 +247,7 @@ public abstract class BamProject extends RowColPanel {
                 String[] dataFileNames = item.getTempDataFileNames();
 
                 for (String dfp : dataFileNames) {
-                    File f = new File(Path.of(MainFrame.APP_CONFIG.APP_TEMP_DIR, dfp).toString());
+                    File f = new File(Path.of(AppConfig.AC.APP_TEMP_DIR, dfp).toString());
                     System.out.println("Including file '" + f + "'...");
                     String name = f.getName();
                     if (usedNames.stream().anyMatch(s -> s.equals(name))) {
@@ -269,7 +270,7 @@ public abstract class BamProject extends RowColPanel {
     static public BamProject loadProject(String projectFilePath) {
 
         // Clear Temp Directory!
-        for (File file : new File(MainFrame.APP_CONFIG.APP_TEMP_DIR).listFiles()) {
+        for (File file : new File(AppConfig.AC.APP_TEMP_DIR).listFiles()) {
             if (!file.isDirectory())
                 file.delete();
         }
@@ -280,11 +281,11 @@ public abstract class BamProject extends RowColPanel {
             return null;
         }
 
-        ReadWriteZip.unzip(projectFilePath, MainFrame.APP_CONFIG.APP_TEMP_DIR);
+        ReadWriteZip.unzip(projectFilePath, AppConfig.AC.APP_TEMP_DIR);
 
         try {
             BufferedReader bufReader = ReadFile
-                    .createBufferedReader(Path.of(MainFrame.APP_CONFIG.APP_TEMP_DIR, "main_config.json").toString(),
+                    .createBufferedReader(Path.of(AppConfig.AC.APP_TEMP_DIR, "main_config.json").toString(),
                             true);
             String jsonString = "";
             String jsonLine;

@@ -3,6 +3,7 @@ package org.baratinage.ui.bam;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
+
 import org.baratinage.jbam.BaM;
 import org.baratinage.jbam.CalDataResidualConfig;
 import org.baratinage.jbam.CalibrationConfig;
@@ -18,9 +19,10 @@ import org.baratinage.jbam.RunOptions;
 import org.baratinage.jbam.StructuralErrorModel;
 import org.baratinage.jbam.UncertainData;
 import org.baratinage.jbam.utils.BamFilesHelpers;
+
 import org.baratinage.utils.Misc;
 import org.baratinage.utils.ReadWriteZip;
-import org.baratinage.ui.MainFrame;
+import org.baratinage.ui.AppConfig;
 import org.baratinage.ui.commons.DefaultStructuralErrorModel;
 
 public class RunBam {
@@ -41,9 +43,9 @@ public class RunBam {
 
     public RunBam(String id) {
         this.id = id;
-        workspacePath = Path.of(MainFrame.APP_CONFIG.BAM_WORKSPACE_ROOT, id);
+        workspacePath = Path.of(AppConfig.AC.BAM_WORKSPACE_ROOT, id);
         zipName = id + ".zip";
-        zipPath = Path.of(MainFrame.APP_CONFIG.APP_TEMP_DIR, zipName);
+        zipPath = Path.of(AppConfig.AC.APP_TEMP_DIR, zipName);
 
         ReadWriteZip.unzip(zipPath.toString(), workspacePath.toString());
 
@@ -70,9 +72,9 @@ public class RunBam {
         }
 
         id = Misc.getTimeStampedId();
-        workspacePath = Path.of(MainFrame.APP_CONFIG.BAM_WORKSPACE_ROOT, id);
+        workspacePath = Path.of(AppConfig.AC.BAM_WORKSPACE_ROOT, id);
         zipName = id + ".zip";
-        zipPath = Path.of(MainFrame.APP_CONFIG.APP_TEMP_DIR, zipName);
+        zipPath = Path.of(AppConfig.AC.APP_TEMP_DIR, zipName);
 
         if (!workspacePath.toFile().exists()) {
             workspacePath.toFile().mkdir();

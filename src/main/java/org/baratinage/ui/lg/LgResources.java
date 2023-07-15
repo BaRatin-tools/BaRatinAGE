@@ -15,6 +15,7 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.baratinage.ui.AppConfig;
 import org.baratinage.ui.MainFrame;
 
 public class LgResources {
@@ -28,7 +29,7 @@ public class LgResources {
     private Set<String> filekeys;
 
     public LgResources() {
-        File resourceDir = new File(MainFrame.APP_CONFIG.I18N_RESOURCES_DIR);
+        File resourceDir = new File(AppConfig.AC.I18N_RESOURCES_DIR);
         File[] files = resourceDir.listFiles();
         filekeys = new HashSet<>();
         localKeys = new HashSet<>();
@@ -46,7 +47,7 @@ public class LgResources {
             Map<String, ResourceBundle> fileTranslations = new HashMap<>();
             for (String fileKey : filekeys) {
                 String resourceName = String.format("%s_%s.properties", fileKey, localKey);
-                Path resourcePath = Path.of(MainFrame.APP_CONFIG.I18N_RESOURCES_DIR, resourceName);
+                Path resourcePath = Path.of(AppConfig.AC.I18N_RESOURCES_DIR, resourceName);
                 try {
                     ResourceBundle resourceBundle = new PropertyResourceBundle(
                             Files.newInputStream(

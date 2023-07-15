@@ -2,6 +2,7 @@ package org.baratinage.ui.baratin;
 
 import java.awt.Color;
 import java.awt.Font;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -9,6 +10,7 @@ import java.util.List;
 import javax.swing.JButton;
 import javax.swing.JSeparator;
 import javax.swing.JTabbedPane;
+
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
@@ -25,7 +27,8 @@ import org.baratinage.jbam.PredictionConfig;
 import org.baratinage.jbam.PredictionResult;
 import org.baratinage.jbam.StructuralErrorModel;
 import org.baratinage.jbam.utils.BamFilesHelpers;
-import org.baratinage.ui.MainFrame;
+
+import org.baratinage.ui.AppConfig;
 import org.baratinage.ui.bam.ICalibratedModel;
 import org.baratinage.ui.bam.ICalibrationData;
 import org.baratinage.ui.bam.IMcmc;
@@ -280,7 +283,7 @@ public class PosteriorRatingCurve extends RowColPanel implements ICalibratedMode
                         modelDefinition.getInputNames().length,
                         modelDefinition.getOutputNames().length,
                         priors.getParameters(),
-                        modelDefinition.getXtra(MainFrame.APP_CONFIG.BAM_WORKSPACE_ROOT), // FIXME: incorrect!
+                        modelDefinition.getXtra(AppConfig.AC.BAM_WORKSPACE_ROOT), // FIXME: incorrect!
                         BamFilesHelpers.CONFIG_XTRA),
                 modelOutputs,
                 calibrationData.getCalibrationData(),

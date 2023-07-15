@@ -9,10 +9,11 @@ import javax.swing.JOptionPane;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import org.baratinage.ui.MainFrame;
+import org.baratinage.ui.AppConfig;
 import org.baratinage.ui.commons.WarningAndActions;
 import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.ui.lg.Lg;
+
 import org.json.JSONObject;
 
 public class BamItemParent implements ChangeListener {
@@ -197,7 +198,7 @@ public class BamItemParent implements ChangeListener {
         BamItem item = combobox.getBamItemWithId(backupItemId);
         if (item == null) {
             JOptionPane.showConfirmDialog(
-                    MainFrame.APP_CONFIG.APP_MAIN_FRAME,
+                    AppConfig.AC.APP_MAIN_FRAME,
                     "Opération impossible, le composant a sans doute été supprimé.",
                     "Erreur!",
                     JOptionPane.CLOSED_OPTION,

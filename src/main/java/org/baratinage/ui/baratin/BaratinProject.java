@@ -8,13 +8,14 @@ import javax.swing.JButton;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 
-import org.baratinage.ui.MainFrame;
+import org.baratinage.ui.AppConfig;
 import org.baratinage.ui.bam.BamItem;
 import org.baratinage.ui.bam.BamItemType;
 import org.baratinage.ui.bam.BamProject;
 import org.baratinage.ui.commons.ExplorerItem;
 import org.baratinage.ui.component.SvgIcon;
 import org.baratinage.ui.lg.Lg;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -46,7 +47,7 @@ public class BaratinProject extends BamProject {
     static private ImageIcon buildIcon(String iconName, int iconSize) {
         return SvgIcon
                 .buildNoScalingIcon(Path.of(
-                        MainFrame.APP_CONFIG.ICONS_RESOURCES_DIR,
+                        AppConfig.AC.ICONS_RESOURCES_DIR,
                         "custom", iconName).toString(), iconSize);
     }
 
@@ -65,14 +66,14 @@ public class BaratinProject extends BamProject {
     public BaratinProject() {
         super();
 
-        if (MainFrame.APP_CONFIG.APP_MAIN_FRAME.baratinMenu == null) {
-            MainFrame.APP_CONFIG.APP_MAIN_FRAME.baratinMenu = new JMenu();
-            MainFrame.APP_CONFIG.APP_MAIN_FRAME.baratinMenu.setText("BaRatin");
-            MainFrame.APP_CONFIG.APP_MAIN_FRAME.mainMenuBar.add(MainFrame.APP_CONFIG.APP_MAIN_FRAME.baratinMenu);
+        if (AppConfig.AC.APP_MAIN_FRAME.baratinMenu == null) {
+            AppConfig.AC.APP_MAIN_FRAME.baratinMenu = new JMenu();
+            AppConfig.AC.APP_MAIN_FRAME.baratinMenu.setText("BaRatin");
+            AppConfig.AC.APP_MAIN_FRAME.mainMenuBar.add(AppConfig.AC.APP_MAIN_FRAME.baratinMenu);
         } else {
-            MainFrame.APP_CONFIG.APP_MAIN_FRAME.baratinMenu.removeAll();
+            AppConfig.AC.APP_MAIN_FRAME.baratinMenu.removeAll();
         }
-        JMenu baratinMenu = MainFrame.APP_CONFIG.APP_MAIN_FRAME.baratinMenu;
+        JMenu baratinMenu = AppConfig.AC.APP_MAIN_FRAME.baratinMenu;
 
         JMenuItem menuBtnNewHydraulicConfig = new JMenuItem();
         Lg.register(menuBtnNewHydraulicConfig, "create_hydraulic_config");

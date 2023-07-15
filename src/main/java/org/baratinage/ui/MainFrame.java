@@ -34,9 +34,6 @@ import java.util.Map;
 
 public class MainFrame extends JFrame {
 
-    // public static MainFrame MAIN_FRAME;
-    public static AppConfig APP_CONFIG;
-
     private RowColPanel projectPanel;
     private BamProject currentProject;
 
@@ -45,16 +42,16 @@ public class MainFrame extends JFrame {
 
     public MainFrame() {
 
-        APP_CONFIG = new AppConfig(this);
+        new AppConfig(this);
 
         Lg.init();
         Lg.setLocale("fr");
 
-        String iconPath = Path.of(APP_CONFIG.ICONS_RESOURCES_DIR, "icon.svg").toString();
+        String iconPath = Path.of(AppConfig.AC.ICONS_RESOURCES_DIR, "icon.svg").toString();
         ImageIcon baratinageIcon = SvgIcon.buildNoScalingIcon(iconPath, 64);
 
         setIconImage(baratinageIcon.getImage());
-        setTitle(APP_CONFIG.APP_NAME);
+        setTitle(AppConfig.AC.APP_NAME);
 
         setMinimumSize(new Dimension(900, 600));
         setExtendedState(JFrame.MAXIMIZED_BOTH);
@@ -220,12 +217,12 @@ public class MainFrame extends JFrame {
     }
 
     public void updateFrameTitle() {
-        setTitle(APP_CONFIG.APP_NAME);
+        setTitle(AppConfig.AC.APP_NAME);
         if (currentProject != null) {
             String projectPath = currentProject.getProjectPath();
             if (projectPath != null) {
                 String projectName = Path.of(projectPath).getFileName().toString();
-                setTitle(APP_CONFIG.APP_NAME + " - " + projectName + " - " + projectPath);
+                setTitle(AppConfig.AC.APP_NAME + " - " + projectName + " - " + projectPath);
             }
         }
     }
@@ -277,7 +274,7 @@ public class MainFrame extends JFrame {
     }
 
     private void close() {
-        APP_CONFIG.cleanup();
+        AppConfig.AC.cleanup();
         System.exit(0);
     }
 }
