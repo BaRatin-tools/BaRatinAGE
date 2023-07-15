@@ -15,6 +15,7 @@ import org.baratinage.ui.baratin.BaratinProject;
 import org.baratinage.ui.component.SvgIcon;
 import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.ui.lg.Lg;
+import org.baratinage.utils.Misc;
 
 import java.awt.Dimension;
 import java.awt.Point;
@@ -55,10 +56,10 @@ public class MainFrame extends JFrame {
         setIconImage(baratinageIcon.getImage());
         setTitle(APP_CONFIG.APP_NAME);
 
-        this.setSize(new Dimension(1200, 900));
+        setMinimumSize(new Dimension(900, 600));
+        setExtendedState(JFrame.MAXIMIZED_BOTH);
 
-        // this.setSize(new Dimension(1936, 1048));
-        // this.setLocation(new Point(2512, -8));
+        Misc.showOnScreen(1, this);
 
         mainMenuBar = new JMenuBar();
 
@@ -121,12 +122,12 @@ public class MainFrame extends JFrame {
         JMenu lgSwitcherMenu = createLanguageSwitcherMenu();
         optionMenu.add(lgSwitcherMenu);
 
-        this.setJMenuBar(mainMenuBar);
+        setJMenuBar(mainMenuBar);
 
         projectPanel = new RowColPanel(RowColPanel.AXIS.COL);
-        this.add(projectPanel);
+        add(projectPanel);
 
-        this.addComponentListener(new ComponentAdapter() {
+        addComponentListener(new ComponentAdapter() {
             public void componentResized(ComponentEvent e) {
                 Dimension dim = MainFrame.this.getSize();
                 System.out.println(String.format("Resized: %d x %d", dim.width, dim.height));
@@ -138,14 +139,32 @@ public class MainFrame extends JFrame {
             }
         });
 
-        this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-        this.addWindowListener(new WindowAdapter() {
+        setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+
+        addWindowListener(new WindowAdapter() {
+            @Override
             public void windowClosing(WindowEvent e) {
                 MainFrame.this.close();
             }
         });
 
-        this.setVisible(true);
+        addWindowStateListener((e) -> {
+            if (MainFrame.this.getExtendedState() == JFrame.MAXIMIZED_BOTH) {
+                System.out.println("MAXIMIZED");
+            } else if (MainFrame.this.getExtendedState() == JFrame.NORMAL) {
+                System.out.println("NORMAL");
+            } else if (MainFrame.this.getExtendedState() == JFrame.ICONIFIED) {
+                System.out.println("ICONIFIED");
+            } else {
+                if (MainFrame.this.getExtendedState() == 7) {
+                    System.out.println("ICONIFIED?");
+                } else {
+                    System.out.println("UNKNOWN");
+                }
+            }
+        });
+
+        setVisible(true);
     }
 
     Map<String, JCheckBoxMenuItem> lgMenuItems = new HashMap<>();

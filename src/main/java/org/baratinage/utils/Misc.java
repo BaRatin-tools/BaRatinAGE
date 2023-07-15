@@ -1,5 +1,7 @@
 package org.baratinage.utils;
 
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
@@ -11,6 +13,8 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import javax.swing.JFrame;
 
 import org.baratinage.ui.lg.Lg;
 
@@ -109,6 +113,21 @@ public class Misc {
         }
         boolean success = dirFile.delete();
         System.out.println("Deleting directory '" + dirPath + "'... " + (success ? "SUCCESS" : "FAILED"));
+    }
+
+    public static void showOnScreen(int screen, JFrame frame) {
+        // source: https://stackoverflow.com/a/39801137
+        GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+        GraphicsDevice[] gd = ge.getScreenDevices();
+        int width = 0, height = 0;
+        if (screen > -1 && screen < gd.length) {
+            width = gd[screen].getDefaultConfiguration().getBounds().width;
+            height = gd[screen].getDefaultConfiguration().getBounds().height;
+            frame.setLocation(
+                    ((width / 2) - (frame.getSize().width / 2)) + gd[screen].getDefaultConfiguration().getBounds().x,
+                    ((height / 2) - (frame.getSize().height / 2)) + gd[screen].getDefaultConfiguration().getBounds().y);
+            frame.setVisible(true);
+        }
     }
 
 }
