@@ -16,7 +16,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.baratinage.ui.AppConfig;
-import org.baratinage.ui.MainFrame;
 
 public class LgResources {
 

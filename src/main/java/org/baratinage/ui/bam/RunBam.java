@@ -12,7 +12,6 @@ import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
-import javax.swing.JLabel;
 import javax.swing.SwingWorker;
 
 import org.baratinage.jbam.BaM;
