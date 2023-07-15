@@ -21,7 +21,7 @@ import org.baratinage.jbam.utils.BamFilesHelpers;
 import org.baratinage.utils.Misc;
 import org.baratinage.utils.ReadWriteZip;
 import org.baratinage.ui.MainFrame;
-import org.baratinage.ui.commons.DefaultStructuralErrorProvider;
+import org.baratinage.ui.commons.DefaultStructuralErrorModel;
 
 public class RunBam {
 
@@ -101,8 +101,8 @@ public class RunBam {
         // 2) strucutral error
         // FIXME currently supporting a single error model for all model outputs
         if (structuralError == null) {
-            structuralError = new DefaultStructuralErrorProvider(
-                    DefaultStructuralErrorProvider.TYPE.LINEAR);
+            structuralError = new DefaultStructuralErrorModel(
+                    DefaultStructuralErrorModel.TYPE.LINEAR);
         }
         StructuralErrorModel structErrorModel = structuralError.getStructuralErrorModel();
         ModelOutput[] modelOutputs = new ModelOutput[outputNames.length];

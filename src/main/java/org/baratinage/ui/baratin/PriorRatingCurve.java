@@ -39,9 +39,9 @@ public class PriorRatingCurve extends GridPanel {
 
         private RowColPanel plotPanel;
 
-        private IPredictionData predictionDataProvider;
-        private IPriors priorsProvider;
-        private IModelDefinition modelDefinitionProvider;
+        private IPredictionData predictionData;
+        private IPriors priors;
+        private IModelDefinition modelDefinition;
 
         private PriorPredictionExperiment[] predictionConfigs;
         private PredictionResult[] predictionResults;
@@ -80,8 +80,8 @@ public class PriorRatingCurve extends GridPanel {
 
                         buildPriorPredictionExperiments();
 
-                        runBam = new RunBam(modelDefinitionProvider,
-                                        priorsProvider,
+                        runBam = new RunBam(modelDefinition,
+                                        priors,
                                         null, null,
                                         predictionConfigs);
 
@@ -192,20 +192,20 @@ public class PriorRatingCurve extends GridPanel {
 
         }
 
-        public void setPredictionDataProvider(IPredictionData predictionDataProvider) {
-                this.predictionDataProvider = predictionDataProvider;
+        public void setPredictionData(IPredictionData predictionData) {
+                this.predictionData = predictionData;
         }
 
         private void buildPriorPredictionExperiments() {
                 int nReplicates = 500;
                 PriorPredictionExperiment ppeMaxpost = new PriorPredictionExperiment("maxpost",
                                 false, nReplicates,
-                                modelDefinitionProvider, predictionDataProvider);
+                                modelDefinition, predictionData);
 
                 PriorPredictionExperiment ppeParamUncertainty = new PriorPredictionExperiment(
                                 "parametricUncertainty",
                                 true, nReplicates,
-                                modelDefinitionProvider, predictionDataProvider);
+                                modelDefinition, predictionData);
 
                 predictionConfigs = new PriorPredictionExperiment[] {
                                 ppeMaxpost,
@@ -213,12 +213,12 @@ public class PriorRatingCurve extends GridPanel {
                 };
         }
 
-        public void setPriorsProvider(IPriors priorsProvider) {
-                this.priorsProvider = priorsProvider;
+        public void setPriors(IPriors priors) {
+                this.priors = priors;
         }
 
-        public void setModelDefintionProvider(IModelDefinition modelDefinitionProvider) {
-                this.modelDefinitionProvider = modelDefinitionProvider;
+        public void setModelDefintion(IModelDefinition modelDefinition) {
+                this.modelDefinition = modelDefinition;
         }
 
         public PredictionResult[] getPredictionResults() {

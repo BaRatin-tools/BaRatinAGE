@@ -7,7 +7,7 @@ import org.baratinage.jbam.Distribution.DISTRIB;
 import org.baratinage.jbam.utils.BamFilesHelpers;
 import org.baratinage.ui.bam.IStructuralError;
 
-public class DefaultStructuralErrorProvider implements IStructuralError {
+public class DefaultStructuralErrorModel implements IStructuralError {
 
     public enum TYPE {
         LINEAR, CONSTANT
@@ -15,7 +15,7 @@ public class DefaultStructuralErrorProvider implements IStructuralError {
 
     StructuralErrorModel structuralErrorModel;
 
-    public DefaultStructuralErrorProvider(TYPE type) {
+    public DefaultStructuralErrorModel(TYPE type) {
         if (type == TYPE.LINEAR) {
             String name = "linear_default";
             structuralErrorModel = new StructuralErrorModel(

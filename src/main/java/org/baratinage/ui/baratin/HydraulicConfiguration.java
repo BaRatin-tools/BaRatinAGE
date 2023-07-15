@@ -73,9 +73,9 @@ class HydraulicConfiguration extends BamItem
             jsonStringBackup = json.toString();
             checkPriorRatingCurveSync();
         });
-        priorRatingCurve.setPredictionDataProvider(priorRatingCurveStageGrid);
-        priorRatingCurve.setPriorsProvider(this);
-        priorRatingCurve.setModelDefintionProvider(this);
+        priorRatingCurve.setPredictionData(priorRatingCurveStageGrid);
+        priorRatingCurve.setPriors(this);
+        priorRatingCurve.setModelDefintion(this);
 
         outOufSyncPanel = new RowColPanel(RowColPanel.AXIS.COL);
         outOufSyncPanel.setPadding(5);
