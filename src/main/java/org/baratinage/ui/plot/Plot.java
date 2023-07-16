@@ -10,7 +10,6 @@ import org.jfree.chart.LegendItemSource;
 import org.jfree.chart.plot.DatasetRenderingOrder;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.axis.NumberAxis;
-import org.jfree.chart.event.PlotChangeEvent;
 import org.jfree.chart.title.LegendTitle;
 import org.jfree.chart.ui.RectangleEdge;
 import org.jfree.data.Range;
@@ -69,9 +68,6 @@ public class Plot implements LegendItemSource {
 
         LegendTitle legendTitle = new LegendTitle(this);
 
-        // legendTitle.setBackgroundPaint(Color.GRAY);
-        // legendTitle.setPadding(5, 5, 5, 5);
-        // legendTitle.setFrame(new BlockBorder(0.25, 0.25, 0.25, 0.25, Color.BLACK));
         legendTitle.setPosition(RectangleEdge.RIGHT);
 
         chart.addLegend(legendTitle);
