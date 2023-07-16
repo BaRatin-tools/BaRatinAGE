@@ -2,6 +2,7 @@ package org.baratinage.ui.baratin;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -17,11 +18,12 @@ import org.baratinage.ui.bam.BamItem;
 import org.baratinage.ui.bam.ICalibrationData;
 import org.baratinage.ui.baratin.gaugings.GaugingsDataset;
 import org.baratinage.ui.baratin.gaugings.GaugingsImporter;
-import org.baratinage.ui.baratin.gaugings.GaugingsPlot;
 import org.baratinage.ui.baratin.gaugings.GaugingsTable;
 import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.ui.lg.Lg;
+import org.baratinage.ui.plot.Plot;
 import org.baratinage.ui.plot.PlotContainer;
+import org.baratinage.ui.plot.PlotPoints;
 import org.baratinage.utils.Misc;
 import org.baratinage.ui.bam.BamItemType;
 
@@ -84,13 +86,26 @@ public class Gaugings extends BamItem implements ICalibrationData {
     }
 
     private void setPlot() {
-        GaugingsPlot gaugingsPlot = new GaugingsPlot(
-                "Hauteur d'eau",
-                "Débit",
-                true,
-                gaugingDataset);
+        // GaugingsPlot gaugingsPlot = new GaugingsPlot(
+        // true,
+        // gaugingDataset);
 
-        PlotContainer plotContainer = new PlotContainer(gaugingsPlot);
+        Plot plot = new Plot(true);
+
+        List<PlotPoints> points = gaugingDataset.getPlotPointsItems();
+
+        plot.addXYItem(points.get(0));
+        plot.addXYItem(points.get(1));
+
+        Lg.register(plot, () -> {
+            points.get(0).setLabel(Lg.text("active_gaugings"));
+            points.get(1).setLabel(Lg.text("inactive_gaugings"));
+            plot.axisX.setLabel(Lg.text("stage_level"));
+            plot.axisY.setLabel(Lg.text("discharge"));
+            plot.axisYlog.setLabel(Lg.text("discharge"));
+        });
+
+        PlotContainer plotContainer = new PlotContainer(plot);
 
         plotPanel.clear();
         plotPanel.appendChild(plotContainer);

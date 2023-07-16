@@ -221,7 +221,7 @@ public class RatingCurve extends BamItem implements ICalibratedModel, IMcmc, Bam
 
         // since text within warnings changes, it is necessary to
         // call Lg.updateRegisteredComponents() so changes are accounted for.
-        Lg.updateRegisteredComponents();
+        Lg.updateRegisteredObjects();
         posteriorRatingCurve.updateUI();
 
     }

@@ -1,41 +1,47 @@
 package org.baratinage.ui.plot;
 
 import java.awt.Paint;
-import java.awt.BasicStroke;
+import java.awt.Shape;
+import java.awt.Stroke;
 
+import org.jfree.chart.LegendItem;
 import org.jfree.chart.renderer.xy.DefaultXYItemRenderer;
 import org.jfree.data.xy.DefaultXYDataset;
 
 public class PlotLine extends PlotItem {
 
+    private String label;
+    private Paint paint;
+    private Stroke stroke;
+    private Shape shape;
+
     protected DefaultXYDataset dataset;
     protected DefaultXYItemRenderer renderer;
 
-    public PlotLine(String label, double[] x, double[] y, Paint paint, int lineWidth) {
-        this(label, x, y, paint, lineWidth, null, 0);
+    public PlotLine(String label, double[] x, double[] y, Paint paint) {
+        this(label, x, y, paint, buildStroke());
     }
 
-    public PlotLine(String label, double[] x, double[] y, Paint paint, int lineWidth, SHAPE shape, int shapeSize) {
+    public PlotLine(String label, double[] x, double[] y, Paint paint, int lineWidth) {
+        this(label, x, y, paint, buildStroke(lineWidth));
+    }
+
+    public PlotLine(String label, double[] x, double[] y, Paint paint, Stroke stroke) {
         if (x.length != y.length)
             throw new IllegalArgumentException("x and y must have the same length!");
 
+        this.label = label;
+        this.paint = paint;
+        this.stroke = stroke;
+        this.shape = buildEmptyShape();
+
         dataset = new DefaultXYDataset();
         dataset.addSeries(label, new double[][] { x, y });
+
         renderer = new DefaultXYItemRenderer();
-
-        if (shape == SHAPE.CIRCLE) {
-            renderer.setSeriesShape(0, buildCircleShape(10));
-        } else if (shape == SHAPE.SQUARE) {
-            renderer.setSeriesShape(0, buildSquareShape(10));
-        } else {
-            renderer.setSeriesShape(0, buildCircleShape(0));
-            renderer.setSeriesShapesVisible(0, false);
-        }
-
         renderer.setSeriesPaint(0, paint);
-        renderer.setSeriesStroke(0, new BasicStroke(lineWidth,
-                BasicStroke.CAP_ROUND, BasicStroke.JOIN_BEVEL,
-                1, new float[] { 1F }, 0));
+        renderer.setSeriesStroke(0, stroke);
+        renderer.setSeriesShape(0, shape);
 
     }
 
@@ -47,6 +53,32 @@ public class PlotLine extends PlotItem {
     @Override
     public DefaultXYItemRenderer getRenderer() {
         return renderer;
+    }
+
+    @Override
+    public LegendItem getLegendItem() {
+        Shape lineShape = buildLineShape(7);
+        return new LegendItem(
+                label,
+                null,
+                label,
+                null,
+                false,
+                shape,
+                false,
+                paint,
+                false,
+                paint,
+                stroke,
+                true,
+                lineShape,
+                stroke,
+                paint);
+    }
+
+    @Override
+    public void setLabel(String label) {
+        this.label = label;
     }
 
 }

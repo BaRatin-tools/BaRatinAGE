@@ -1,8 +1,10 @@
 package org.baratinage.ui.plot;
 
-import java.awt.BasicStroke;
 import java.awt.Paint;
+import java.awt.Shape;
+import java.awt.Stroke;
 
+import org.jfree.chart.LegendItem;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.AbstractXYItemRenderer;
 import org.jfree.chart.renderer.xy.DefaultXYItemRenderer;
@@ -16,8 +18,6 @@ public class PlotInfiniteLine extends PlotItem {
     private static final double MAX_VALUE = 9999999;
     private static final double MIN_VALUE = -MAX_VALUE;
 
-    private String label;
-
     private boolean isVerticalLine = false;
     private double b;
     private double a;
@@ -28,28 +28,39 @@ public class PlotInfiniteLine extends PlotItem {
 
     private XYPlot plot;
 
+    private String label;
+    private Paint paint;
+    private Stroke stroke;
+
     public PlotInfiniteLine(String label, double x, Paint paint, int lineWidth) {
-        this(label, 0, x, paint, lineWidth);
+        this(label, x, paint, buildStroke(lineWidth));
+    }
+
+    public PlotInfiniteLine(String label, double x, Paint paint, Stroke stroke) {
+        this(label, 0, x, paint, stroke);
         isVerticalLine = true;
         n = 2;
     }
 
     public PlotInfiniteLine(String label, double coeffDir, double offset, Paint paint, int lineWidth) {
+        this(label, coeffDir, offset, paint, buildStroke(lineWidth));
+    }
+
+    public PlotInfiniteLine(String label, double coeffDir, double offset, Paint paint, Stroke stroke) {
 
         this.label = label;
+        this.paint = paint;
+        this.stroke = stroke;
 
         a = coeffDir;
         b = offset;
 
         renderer = new DefaultXYItemRenderer();
 
-        renderer.setSeriesShape(0, buildCircleShape(0));
+        renderer.setSeriesShape(0, buildEmptyShape());
         renderer.setSeriesShapesVisible(0, false);
-
         renderer.setSeriesPaint(0, paint);
-        renderer.setSeriesStroke(0, new BasicStroke(lineWidth,
-                BasicStroke.CAP_ROUND, BasicStroke.JOIN_BEVEL,
-                1, new float[] { 1F }, 0));
+        renderer.setSeriesStroke(0, stroke);
     }
 
     @Override
@@ -107,6 +118,32 @@ public class PlotInfiniteLine extends PlotItem {
     @Override
     public AbstractXYItemRenderer getRenderer() {
         return renderer;
+    }
+
+    @Override
+    public LegendItem getLegendItem() {
+        Shape lineShape = buildLineShape(7);
+        return new LegendItem(
+                label,
+                null,
+                label,
+                null,
+                false,
+                buildEmptyShape(),
+                false,
+                paint,
+                false,
+                paint,
+                stroke,
+                true,
+                lineShape,
+                stroke,
+                paint);
+    }
+
+    @Override
+    public void setLabel(String label) {
+        this.label = label;
     }
 
 }

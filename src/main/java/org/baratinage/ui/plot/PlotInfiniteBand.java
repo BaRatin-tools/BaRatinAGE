@@ -1,10 +1,12 @@
 package org.baratinage.ui.plot;
 
-import java.awt.BasicStroke;
 import java.awt.Paint;
+import java.awt.Shape;
+import java.awt.Stroke;
 
+import org.jfree.chart.LegendItem;
 import org.jfree.chart.plot.XYPlot;
-import org.jfree.chart.renderer.xy.AbstractXYItemRenderer;
+import org.jfree.chart.renderer.xy.DeviationRenderer;
 import org.jfree.data.Range;
 import org.jfree.data.general.DatasetUtils;
 import org.jfree.data.xy.AbstractXYDataset;
@@ -16,8 +18,6 @@ public class PlotInfiniteBand extends PlotItem {
     private static final double MAX_VALUE = 9999999;
     private static final double MIN_VALUE = -MAX_VALUE;
 
-    private String label;
-
     private boolean isVerticalBand = false;
     private double bLow;
     private double bHigh;
@@ -25,9 +25,12 @@ public class PlotInfiniteBand extends PlotItem {
 
     private int n = 2000;
 
-    private BandRenderer renderer;
+    private DeviationRenderer renderer;
 
     private XYPlot plot;
+
+    private String label;
+    private Paint fillPaint;
 
     public PlotInfiniteBand(String label, double xLow, double yHigh, Paint fillPaint) {
         this(label, 0, xLow, yHigh, fillPaint);
@@ -38,20 +41,17 @@ public class PlotInfiniteBand extends PlotItem {
     public PlotInfiniteBand(String label, double coeffDir, double offsetLow, double offsetHigh, Paint fillPaint) {
 
         this.label = label;
+        this.fillPaint = fillPaint;
 
         a = coeffDir;
         bLow = offsetLow;
         bHigh = offsetHigh;
 
-        renderer = new BandRenderer(fillPaint, 10);
-
-        renderer.setSeriesStroke(0,
-                new BasicStroke(0,
-                        BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND,
-                        1, new float[] { 1F }, 0));
+        renderer = new DeviationRenderer();
+        renderer.setSeriesStroke(0, buildEmptyStroke());
         renderer.setSeriesFillPaint(0, fillPaint);
         renderer.setSeriesPaint(0, fillPaint);
-        renderer.setSeriesShape(0, buildCircleShape(0));
+        renderer.setSeriesShape(0, buildEmptyShape());
         renderer.setSeriesShapesVisible(0, false);
 
     }
@@ -122,8 +122,37 @@ public class PlotInfiniteBand extends PlotItem {
     }
 
     @Override
-    public AbstractXYItemRenderer getRenderer() {
+    public DeviationRenderer getRenderer() {
         return renderer;
+    }
+
+    @Override
+    public LegendItem getLegendItem() {
+        Shape squareShape = buildSquareShape();
+        Stroke emptyStroke = buildEmptyStroke();
+        Shape emptyShape = buildEmptyShape();
+        return new LegendItem(
+                label,
+                null,
+                label,
+                null,
+                true,
+                squareShape,
+                true,
+                fillPaint,
+                false,
+                fillPaint,
+                emptyStroke,
+                false,
+                emptyShape,
+                emptyStroke,
+                fillPaint);
+
+    }
+
+    @Override
+    public void setLabel(String label) {
+        this.label = label;
     }
 
 }

@@ -1,6 +1,5 @@
 package org.baratinage.ui.lg;
 
-import java.awt.Component;
 import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.List;
@@ -12,7 +11,7 @@ import javax.swing.JLabel;
 
 public class Lg {
 
-    static private Map<Component, LgTranslator> registered;
+    static private Map<Object, LgTranslator> registered;
     static private LgResources resources;
     static private Locale currentLocale;
 
@@ -24,7 +23,7 @@ public class Lg {
 
     static public void setLocale(String localeKey) {
         currentLocale = Locale.forLanguageTag(localeKey);
-        updateRegisteredComponents();
+        updateRegisteredObjects();
     }
 
     static public Locale getLocale() {
@@ -57,13 +56,13 @@ public class Lg {
         return "<html><nobr>" + text(itemKey, args) + "</nobr></html>";
     }
 
-    static public void register(Component component, LgTranslator translator) {
-        if (registered.containsKey(component)) {
+    static public void register(Object object, LgTranslator translator) {
+        if (registered.containsKey(object)) {
             System.out.println("Overwritting translator.");
         }
-        registered.put(component, translator);
+        registered.put(object, translator);
         translator.setTranslatedText();
-        System.out.println("There are " + registered.size() + " registered components with translators.");
+        System.out.println("There are " + registered.size() + " registered objects with translator.");
     }
 
     static public void register(JLabel label, String itemKey) {
@@ -86,9 +85,16 @@ public class Lg {
         });
     }
 
-    static public void updateRegisteredComponents() {
+    static public void updateRegisteredObjects() {
         for (LgTranslator translators : registered.values()) {
             translators.setTranslatedText();
+        }
+    }
+
+    static public void updateRegisteredObject(Object obj) {
+        LgTranslator translator = registered.get(obj);
+        if (translator != null) {
+            translator.setTranslatedText();
         }
     }
 }

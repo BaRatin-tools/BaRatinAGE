@@ -23,12 +23,11 @@ import org.baratinage.ui.bam.RunBam;
 
 import org.baratinage.ui.container.GridPanel;
 import org.baratinage.ui.container.RowColPanel;
-
+import org.baratinage.ui.lg.Lg;
 import org.baratinage.ui.plot.Plot;
 import org.baratinage.ui.plot.PlotContainer;
 import org.baratinage.ui.plot.PlotInfiniteLine;
 import org.baratinage.ui.plot.PlotInfiniteBand;
-import org.baratinage.ui.plot.PlotItem;
 import org.baratinage.ui.plot.PlotLine;
 import org.baratinage.ui.plot.PlotBand;
 
@@ -110,8 +109,6 @@ public class PriorRatingCurve extends GridPanel {
 
                 Parameter[] params = runBam.bam.calibrationConfig.model.parameters;
 
-                System.out.println(params);
-
                 List<double[]> transitionStages = new ArrayList<>();
                 for (Parameter p : params) {
                         if (p.getName().startsWith("k_")) {
@@ -154,34 +151,44 @@ public class PriorRatingCurve extends GridPanel {
                 double[] dischargeLow = dischargeParametricEnv.get(1);
                 double[] dischargeHigh = dischargeParametricEnv.get(2);
 
-                Plot plot = new Plot("Hauteur d'eau [m]", "Débit [m3/s]", true);
+                Plot plot = new Plot(true);
 
-                PlotItem mp = new PlotLine(
+                PlotLine mp = new PlotLine(
                                 "Prior rating curve",
                                 stage,
                                 dischargeMaxpost,
                                 Color.BLACK,
                                 5);
-
-                PlotItem parEnv = new PlotBand(
+                PlotBand parEnv = new PlotBand(
                                 "Prior parametric uncertainty",
                                 stage,
                                 dischargeLow,
                                 dischargeHigh,
                                 new Color(200, 200, 255, 100));
 
-                for (int k = 0; k < transitionStages.size(); k++) {
+                int n = transitionStages.size();
+                PlotInfiniteBand[] bands = new PlotInfiniteBand[n];
+                for (int k = 0; k < n; k++) {
                         double[] transitionStage = transitionStages.get(k);
                         PlotInfiniteLine line = new PlotInfiniteLine("k_" + k, transitionStage[0],
                                         Color.GREEN, 2);
-                        PlotInfiniteBand band = new PlotInfiniteBand("Hauteur de transition",
+                        bands[k] = new PlotInfiniteBand("Hauteur de transition",
                                         transitionStage[1], transitionStage[2], new Color(100, 255, 100, 100));
                         plot.addXYItem(line, false);
-                        plot.addXYItem(band, k == 0);
+                        plot.addXYItem(bands[k], k == 0);
                 }
 
                 plot.addXYItem(mp);
                 plot.addXYItem(parEnv);
+
+                Lg.register(plot, () -> {
+                        mp.setLabel(Lg.text("prior_rating_curve"));
+                        parEnv.setLabel(Lg.text("prior_parametric_uncertainty"));
+                        bands[0].setLabel(Lg.text("prior_transition_stage"));
+                        plot.axisX.setLabel(Lg.text("stage_level"));
+                        plot.axisY.setLabel(Lg.text("discharge"));
+                        plot.axisYlog.setLabel(Lg.text("discharge"));
+                });
 
                 PlotContainer plotContainer = new PlotContainer(plot);
 

@@ -38,14 +38,12 @@ import org.baratinage.ui.bam.IStructuralError;
 import org.baratinage.ui.bam.PredictionExperiment;
 import org.baratinage.ui.bam.RunBam;
 import org.baratinage.ui.baratin.gaugings.GaugingsDataset;
-import org.baratinage.ui.baratin.gaugings.GaugingsPlot;
-
 import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.ui.lg.Lg;
 
 import org.baratinage.ui.plot.Plot;
-import org.baratinage.ui.plot.PlotItem;
 import org.baratinage.ui.plot.PlotLine;
+import org.baratinage.ui.plot.PlotPoints;
 import org.baratinage.ui.plot.PlotBand;
 import org.baratinage.ui.plot.PlotContainer;
 import org.baratinage.ui.plot.PlotInfiniteBand;
@@ -189,47 +187,63 @@ public class PosteriorRatingCurve extends RowColPanel implements ICalibratedMode
         List<double[]> dischargeTotalEnv = totalUncertainty.getOutputResults().get(outputName).env();
         List<double[]> dischargeParametricEnv = parametricUncertainty.getOutputResults().get(outputName).env();
 
-        Plot plot = new Plot("Stage [m]", "Discharge [m3/s]", true);
+        Plot plot = new Plot(true);
 
-        PlotItem mp = new PlotLine(
+        PlotLine mp = new PlotLine(
                 "Posterior rating curve",
                 stage,
                 dischargeMaxpost,
                 Color.BLACK,
                 5);
 
-        PlotItem totEnv = new PlotBand(
+        PlotBand totEnv = new PlotBand(
                 "Structural and parametric uncertainty",
                 stage,
                 dischargeTotalEnv.get(1),
                 dischargeTotalEnv.get(2),
                 new Color(200, 200, 200, 100));
 
-        PlotItem parEnv = new PlotBand(
+        PlotBand parEnv = new PlotBand(
                 "Parametric uncertainty",
                 stage,
                 dischargeParametricEnv.get(1),
                 dischargeParametricEnv.get(2),
                 new Color(255, 150, 255, 100));
 
-        for (int k = 0; k < transitionStages.size(); k++) {
+        int n = transitionStages.size();
+        PlotInfiniteBand[] bands = new PlotInfiniteBand[n];
+        for (int k = 0; k < n; k++) {
             double[] transitionStage = transitionStages.get(k);
             PlotInfiniteLine line = new PlotInfiniteLine("k_" + k, transitionStage[0],
                     Color.GREEN, 2);
-            PlotInfiniteBand band = new PlotInfiniteBand("Hauteur de transition",
+            bands[k] = new PlotInfiniteBand("Hauteur de transition",
                     transitionStage[1], transitionStage[2], new Color(100, 255, 100, 100));
             plot.addXYItem(line, false);
-            plot.addXYItem(band, k == 0);
+            plot.addXYItem(bands[k], k == 0);
         }
 
         plot.addXYItem(mp);
         plot.addXYItem(parEnv);
         plot.addXYItem(totEnv);
 
-        GaugingsPlot gaugingsPlot = new GaugingsPlot("", "",
-                false, gaugings);
+        List<PlotPoints> gaugingsPoints = gaugings.getPlotPointsItems();
 
-        plot.addXYItem(gaugingsPlot.getGaugingsPoints());
+        plot.addXYItem(gaugingsPoints.get(0));
+
+        Lg.register(plot, () -> {
+            mp.setLabel(Lg.text("posterior_rating_curve"));
+            parEnv.setLabel(Lg.text("posterior_parametric_uncertainty"));
+            totEnv.setLabel(Lg.text("posterior_parametric_structural_uncertainty"));
+            bands[0].setLabel(Lg.text("posterior_transition_stage"));
+            gaugingsPoints.get(0).setLabel(Lg.text("active_gaugings"));
+            plot.axisX.setLabel(Lg.text("stage_level"));
+            plot.axisY.setLabel(Lg.text("discharge"));
+            plot.axisYlog.setLabel(Lg.text("discharge"));
+        });
+
+        // GaugingsPlot gaugingsPlot = new GaugingsPlot(false, gaugings);
+
+        // plot.addXYItem(gaugingsPlot.getGaugingsPoints());
 
         PlotContainer plotContainer = new PlotContainer(plot);
 
