@@ -52,7 +52,7 @@ abstract public class BamItem extends GridPanel {
             bamItemNameField.setPlaceholder(Lg.text("name"));
         });
         Lg.register(bamItemDescriptionField, () -> {
-            bamItemNameField.setPlaceholder(Lg.text("description"));
+            bamItemDescriptionField.setPlaceholder(Lg.text("description"));
         });
 
         headerPanel.insertChild(bamItemTypeLabel, 0, 0);
