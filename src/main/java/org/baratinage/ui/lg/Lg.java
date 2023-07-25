@@ -43,9 +43,13 @@ public class Lg {
     }
 
     static public String text(String itemKey, Object... args) {
-        MessageFormat msgFormat = new MessageFormat(text(itemKey));
+        String rawText = text(itemKey);
+        // escaping single quotes, see: https://stackoverflow.com/q/17544794
+        rawText = rawText.replaceAll("(?<!')'(?!')", "''");
+        MessageFormat msgFormat = new MessageFormat(rawText);
         msgFormat.setLocale(currentLocale);
-        return msgFormat.format(args);
+        String formattedText = msgFormat.format(args);
+        return formattedText;
     }
 
     static public String html(String itemKey) {
