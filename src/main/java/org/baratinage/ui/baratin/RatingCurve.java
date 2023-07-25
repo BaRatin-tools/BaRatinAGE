@@ -200,7 +200,6 @@ public class RatingCurve extends BamItem implements ICalibratedModel, IMcmc, Bam
 
         if (jsonStringBackup != null && !isMatchingWith(jsonStringBackup, new String[] { "stageGridConfig" }, false)) {
             warning = new WarningAndActions();
-
             Lg.register(warning.message, "oos_stage_grid");
             warnings.add(warning);
         }
