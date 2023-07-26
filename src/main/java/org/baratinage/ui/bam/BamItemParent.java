@@ -26,7 +26,8 @@ public class BamItemParent implements ChangeListener {
 
     public final BamItem child;
 
-    public final WarningAndActions outOfSyncWarning;
+    public final WarningAndActions outOfSyncWarningContentOnly;
+    public final WarningAndActions outOfSyncWarningSelectionAndContent;
     public final JButton outOfSyncSelectOriginalButton;
     public final JButton outOfSyncCreateNewFromOriginalButton;
 
@@ -69,7 +70,20 @@ public class BamItemParent implements ChangeListener {
         comboboxPanel.appendChild(comboboxLabel);
         comboboxPanel.appendChild(combobox);
 
-        outOfSyncWarning = new WarningAndActions();
+        outOfSyncWarningContentOnly = new WarningAndActions();
+        outOfSyncWarningSelectionAndContent = new WarningAndActions();
+
+        Lg.register(outOfSyncWarningSelectionAndContent.message, () -> {
+            String typeText = Lg.text(type.id);
+            String text = Lg.html("oos_select_and_content", typeText);
+            outOfSyncWarningSelectionAndContent.message.setText(text);
+        });
+
+        Lg.register(outOfSyncWarningContentOnly.message, () -> {
+            String typeText = Lg.text(type.id);
+            String text = Lg.html("oos_content", typeText, getBackupItemName());
+            outOfSyncWarningContentOnly.message.setText(text);
+        });
 
         outOfSyncSelectOriginalButton = new JButton();
         Lg.register(outOfSyncSelectOriginalButton, () -> {
@@ -152,19 +166,14 @@ public class BamItemParent implements ChangeListener {
 
         outOfSyncSelectOriginalButton.setEnabled(backupItemStillExists);
 
-        Lg.register(outOfSyncWarning.message, () -> {
-            String typeText = Lg.text(type.id);
-            String text = Lg.html("oos_select_and_content", typeText);
-            outOfSyncWarning.message.setText(text);
-        });
-
-        outOfSyncWarning.clearButtons();
+        outOfSyncWarningContentOnly.clearButtons();
+        outOfSyncWarningSelectionAndContent.clearButtons();
 
         if (currentItem == null) {
-            System.out.println("> Invalid configuration");
-            System.out.println("> Item selection has changed");
-            outOfSyncWarning.addButton(outOfSyncSelectOriginalButton);
-            return outOfSyncWarning;
+            // System.out.println("> Invalid configuration");
+            // System.out.println("> Item selection has changed");
+            outOfSyncWarningSelectionAndContent.addButton(outOfSyncSelectOriginalButton);
+            return outOfSyncWarningSelectionAndContent;
         }
 
         JSONObject backupItemJson = new JSONObject(backupItemString);
@@ -175,23 +184,19 @@ public class BamItemParent implements ChangeListener {
         if (!selectionIsOutOfSync) {
             return null;
         }
-        System.out.println("> Current item is out of sync with backup");
+        // System.out.println("> Current item is out of sync with backup");
 
         if (selectionHasChanged) {
-            System.out.println("> Item selection has changed");
-            outOfSyncWarning.addButton(outOfSyncSelectOriginalButton);
+            // System.out.println("> Item selection has changed");
+            outOfSyncWarningSelectionAndContent.addButton(outOfSyncSelectOriginalButton);
+            outOfSyncWarningSelectionAndContent.addButton(outOfSyncCreateNewFromOriginalButton);
+            return outOfSyncWarningSelectionAndContent;
         } else {
-            System.out.println("> Item selection has not changed");
-            Lg.register(outOfSyncWarning.message, () -> {
-                String typeText = Lg.text(type.id);
-                String text = Lg.html("oos_content", typeText, getBackupItemName());
-                outOfSyncWarning.message.setText(text);
-            });
+            outOfSyncWarningContentOnly.addButton(outOfSyncCreateNewFromOriginalButton);
+            return outOfSyncWarningContentOnly;
+            // System.out.println("> Item selection has not changed");
+
         }
-        outOfSyncWarning.addButton(outOfSyncCreateNewFromOriginalButton);
-
-        return outOfSyncWarning;
-
     }
 
     private void revertToBackup() {
