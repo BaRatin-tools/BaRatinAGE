@@ -266,10 +266,8 @@ public class MainFrame extends JFrame {
     public void loadProject(String projectFilePath) {
         if (projectFilePath != null) {
             BamProject bamProject = BamProject.loadProject(projectFilePath);
-            if (bamProject != null) {
-                bamProject.setProjectPath(projectFilePath);
-                setCurrentProject(bamProject);
-            }
+            bamProject.setProjectPath(projectFilePath);
+            setCurrentProject(bamProject);
         }
     }
 
