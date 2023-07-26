@@ -7,18 +7,21 @@ import java.util.Locale;
 import java.util.Map;
 
 import javax.swing.AbstractButton;
+import javax.swing.JButton;
 import javax.swing.JLabel;
 
 public class Lg {
 
-    static private Map<Object, LgTranslator> registered;
+    static private Map<String, Map<Object, LgTranslator>> registered;
     static private LgResources resources;
     static private Locale currentLocale;
+    static private String defaultOwnerKey;
 
     static public void init() {
         resources = new LgResources();
         registered = new HashMap<>();
         setLocale(LgResources.DEFAULT_LOCAL_KEY);
+        setDefaultOwnerKey("default_owner_key");
     }
 
     static public void setLocale(String localeKey) {
@@ -60,13 +63,28 @@ public class Lg {
         return "<html><nobr>" + text(itemKey, args) + "</nobr></html>";
     }
 
+    static public void setDefaultOwnerKey(String ownerKey) {
+        defaultOwnerKey = ownerKey;
+    }
+
+    static public String getDefaultOwnerKey() {
+        return defaultOwnerKey;
+    }
+
     static public void register(Object object, LgTranslator translator) {
-        if (registered.containsKey(object)) {
-            System.out.println("Overwritting translator.");
+        register(defaultOwnerKey, object, translator);
+    }
+
+    static public void register(String ownerKey, Object object, LgTranslator translator) {
+        if (registered.containsKey(object)) { // for debugging purposes
+            String c = object.getClass().toString();
+            System.out.println("Overwritting translator (" + c + ")");
         }
-        registered.put(object, translator);
+        if (!registered.containsKey(ownerKey)) {
+            registered.put(ownerKey, new HashMap<>());
+        }
+        registered.get(ownerKey).put(object, translator);
         translator.setTranslatedText();
-        System.out.println("There are " + registered.size() + " registered objects with translator.");
     }
 
     static public void register(JLabel label, String itemKey) {
@@ -90,15 +108,56 @@ public class Lg {
     }
 
     static public void updateRegisteredObjects() {
-        for (LgTranslator translators : registered.values()) {
-            translators.setTranslatedText();
+        for (Map<Object, LgTranslator> reg : registered.values()) {
+            for (LgTranslator translators : reg.values()) {
+                translators.setTranslatedText();
+            }
         }
+
     }
 
     static public void updateRegisteredObject(Object obj) {
-        LgTranslator translator = registered.get(obj);
-        if (translator != null) {
-            translator.setTranslatedText();
+        for (Map<Object, LgTranslator> reg : registered.values()) {
+            LgTranslator translator = reg.get(obj);
+            if (translator != null) {
+                translator.setTranslatedText();
+            }
         }
+    }
+
+    static public void unregister(String ownerKey) {
+        Map<Object, LgTranslator> reg = registered.get(ownerKey);
+        if (reg != null) {
+            reg.clear();
+            registered.remove(ownerKey);
+        }
+    }
+
+    static public void printInfo() {
+        System.out.println("=== Lg info ================================");
+        int n = 0;
+        int m = 0;
+        for (Object owner : registered.keySet()) {
+            m++;
+            System.out.println("------------------------------------------");
+            System.out.println("For owner '" + owner + "'");
+            Map<Object, LgTranslator> reg = registered.get(owner);
+            for (Object obj : reg.keySet()) {
+                n++;
+                if (obj.getClass().equals(JLabel.class)) {
+                    String t = ((JLabel) obj).getText();
+                    System.out.println("> JLabel with text '" + t + "'");
+                } else if (obj.getClass().equals(JButton.class)) {
+                    String t = ((JButton) obj).getText();
+                    System.out.println("> JButton with text '" + t + "'");
+                } else {
+                    String c = obj.getClass().toString();
+                    System.out.println("> Object (" + c + ")");
+                }
+            }
+        }
+        System.out.println("============================================");
+        System.out.println("There are " + m + " owners and " + n + " registed objects.");
+        System.out.println("============================================");
     }
 }

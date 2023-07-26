@@ -46,6 +46,7 @@ public class MainFrame extends JFrame {
 
         Lg.init();
         Lg.setLocale("fr");
+        Lg.setDefaultOwnerKey("main_frame");
 
         String iconPath = Path.of(AppConfig.AC.ICONS_RESOURCES_DIR, "icon.svg").toString();
         ImageIcon baratinageIcon = SvgIcon.buildNoScalingIcon(iconPath, 64);
@@ -214,6 +215,7 @@ public class MainFrame extends JFrame {
         projectPanel.clear();
         projectPanel.appendChild(project);
         updateFrameTitle();
+        Lg.printInfo();
     }
 
     public void updateFrameTitle() {
@@ -227,7 +229,16 @@ public class MainFrame extends JFrame {
         }
     }
 
+    private void resetLg() {
+        String previousProjectOwnerKey = Lg.getDefaultOwnerKey();
+        Lg.setDefaultOwnerKey(Misc.getTimeStampedId());
+        if (!previousProjectOwnerKey.equals("main_frame")) {
+            Lg.unregister(previousProjectOwnerKey);
+        }
+    }
+
     public void newProject() {
+        resetLg();
         BaratinProject newProject = new BaratinProject();
         newProject.addDefaultItems();
         setCurrentProject(newProject);
@@ -265,6 +276,7 @@ public class MainFrame extends JFrame {
 
     public void loadProject(String projectFilePath) {
         if (projectFilePath != null) {
+            resetLg();
             BamProject bamProject = BamProject.loadProject(projectFilePath);
             bamProject.setProjectPath(projectFilePath);
             setCurrentProject(bamProject);
