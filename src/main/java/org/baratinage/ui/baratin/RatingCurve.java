@@ -183,6 +183,8 @@ public class RatingCurve extends BamItem implements ICalibratedModel, IMcmc, Bam
     }
 
     private void checkSync() {
+        // FIXME: called too often? Optimization may be possible.
+
         List<WarningAndActions> warnings = new ArrayList<>();
         WarningAndActions warning;
         warning = hydrauConfParent.getOutOfSyncWarning();
