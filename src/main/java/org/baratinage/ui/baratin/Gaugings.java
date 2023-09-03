@@ -86,6 +86,7 @@ public class Gaugings extends BamItem implements ICalibrationData {
     }
 
     private void setPlot() {
+        // FIXME: shouldn't this be handled in a proper GaugingPlot class?
         // GaugingsPlot gaugingsPlot = new GaugingsPlot(
         // true,
         // gaugingDataset);
