@@ -81,7 +81,8 @@ public class Gaugings extends BamItem implements ICalibrationData {
         gaugingsTable.set(gaugingDataset);
         Lg.register(importedDataSetSourceLabel, () -> {
             importedDataSetSourceLabel.setText(
-                    Lg.text("gauging_set_imported_from", gaugingDataset.getDatasetName()));
+                    Lg.html("gauging_set_imported_from",
+                            gaugingDataset.getDatasetName()));
         });
     }
 
