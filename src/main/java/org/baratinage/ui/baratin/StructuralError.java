@@ -1,6 +1,7 @@
 package org.baratinage.ui.baratin;
 
 import javax.swing.JLabel;
+import javax.swing.JRadioButton;
 
 import org.baratinage.jbam.Distribution;
 import org.baratinage.jbam.Parameter;
@@ -11,7 +12,6 @@ import org.baratinage.ui.commons.AbstractStructuralErrorModel;
 import org.baratinage.ui.commons.ConstantStructuralErrorModel;
 import org.baratinage.ui.commons.LinearStructuralErrorModel;
 import org.baratinage.ui.component.RadioButtons;
-import org.baratinage.ui.component.RadioButtons.RadioButton;
 import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.ui.lg.Lg;
 import org.baratinage.ui.bam.BamItem;
@@ -42,13 +42,10 @@ public class StructuralError extends BamItem implements IStructuralError {
 
         String constantLabel = String.format("<html>%s - &Nu;(0, &gamma;<sub>1</sub><sup>&nbsp;</sup>)</html>",
                 "Constant");
-        RadioButton[] options = new RadioButton[] {
-                new RadioButton(linearLabel, "linear"),
-                new RadioButton(constantLabel, "constant"),
-        };
-        modelTypeRadioButtons.setOptions(options);
-        modelTypeRadioButtons.addOnChangeAction((newModelType) -> {
-            updateModelType(newModelType);
+        modelTypeRadioButtons.addOption("linear", new JRadioButton(linearLabel));
+        modelTypeRadioButtons.addOption("constant", new JRadioButton(constantLabel));
+        modelTypeRadioButtons.addOnChangeAction(() -> {
+            updateModelType(modelTypeRadioButtons.getSelectedValue());
         });
 
         RowColPanel headerPanel = new RowColPanel();
