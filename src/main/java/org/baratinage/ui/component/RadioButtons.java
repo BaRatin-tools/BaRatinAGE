@@ -15,27 +15,8 @@ import org.baratinage.utils.Action;
 
 public class RadioButtons extends RowColPanel implements ActionListener {
 
-    // private List<RadioButton> radioButtons;
     private Map<String, JRadioButton> options = new HashMap<>();
     private ButtonGroup buttonGroup = new ButtonGroup();
-
-    // public RadioButtons() {
-    // radioButtons = new ArrayList<>();
-
-    // }
-
-    // public void setOptions(RadioButton[] radioButtons) {
-    // // this.radioButtons = radioButtons;
-    // ButtonGroup grp = new ButtonGroup();
-    // clear();
-    // for (RadioButton btn : radioButtons) {
-    // btn.addActionListener((e) -> {
-    // fireOnChangeAction();
-    // });
-    // grp.add(btn);
-    // appendChild(btn);
-    // }
-    // }
 
     public void addOption(String value, JRadioButton button) {
         buttonGroup.add(button);
