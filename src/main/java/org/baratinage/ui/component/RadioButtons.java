@@ -9,9 +9,10 @@ import java.util.Map;
 
 import javax.swing.ButtonGroup;
 import javax.swing.JRadioButton;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import org.baratinage.ui.container.RowColPanel;
-import org.baratinage.utils.Action;
 
 public class RadioButtons extends RowColPanel implements ActionListener {
 
@@ -49,29 +50,25 @@ public class RadioButtons extends RowColPanel implements ActionListener {
         return null;
     }
 
-    private List<Action> onChangeActions = new ArrayList<>();
-
-    public void addOnChangeAction(Action action) {
-        onChangeActions.add(action);
-    }
-
-    public void removeOnChangeAction(Action action) {
-        onChangeActions.remove(action);
-    }
-
-    public void fireOnChangeAction() {
-        String currentValue = getSelectedValue();
-        if (currentValue == null) {
-            return;
-        }
-        for (Action action : onChangeActions) {
-            action.run();
-        }
-    }
-
     @Override
     public void actionPerformed(ActionEvent arg0) {
-        fireOnChangeAction();
+        fireChangeListeners();
+    }
+
+    private final List<ChangeListener> changeListeners = new ArrayList<>();
+
+    public void addChangeListener(ChangeListener l) {
+        changeListeners.add(l);
+    }
+
+    public void removeChangeListener(ChangeListener l) {
+        changeListeners.remove(l);
+    }
+
+    public void fireChangeListeners() {
+        for (ChangeListener l : changeListeners) {
+            l.stateChanged(new ChangeEvent(this));
+        }
     }
 
 }
