@@ -44,7 +44,7 @@ public class StructuralError extends BamItem implements IStructuralError {
                 "Constant");
         modelTypeRadioButtons.addOption("linear", new JRadioButton(linearLabel));
         modelTypeRadioButtons.addOption("constant", new JRadioButton(constantLabel));
-        modelTypeRadioButtons.addOnChangeAction(() -> {
+        modelTypeRadioButtons.addChangeListener((chEvt) -> {
             updateModelType(modelTypeRadioButtons.getSelectedValue());
         });
 
