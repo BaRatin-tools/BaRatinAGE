@@ -11,6 +11,7 @@ import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
 import java.util.UUID;
+import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -130,4 +131,16 @@ public class Misc {
         }
     }
 
+    public static int getIndexGuess(String[] strings, int defaultIndex, String... patterns) {
+        Predicate<String> allPredicates = (String str) -> true;
+        for (String pattern : patterns) {
+            allPredicates = allPredicates.and(Pattern.compile(pattern).asMatchPredicate());
+        }
+        for (int k = 0; k < strings.length; k++) {
+            if (allPredicates.test(strings[k])) {
+                return k;
+            }
+        }
+        return defaultIndex;
+    }
 }
