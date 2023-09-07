@@ -2,59 +2,127 @@ package org.baratinage.ui.baratin.gaugings;
 
 import java.awt.Component;
 import java.awt.Dimension;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
-import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JSeparator;
+import javax.swing.event.ChangeListener;
 
 import org.baratinage.ui.AppConfig;
-import org.baratinage.ui.component.DataFileImporter;
-import org.baratinage.ui.component.ImportedDataset;
+import org.baratinage.utils.Misc;
+
+import org.baratinage.ui.component.DataFileReader;
+import org.baratinage.ui.component.DataParser;
+import org.baratinage.ui.component.SimpleComboBox;
+
 import org.baratinage.ui.container.GridPanel;
 import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.ui.lg.Lg;
 
 public class GaugingsImporter extends RowColPanel {
 
-    private DefaultComboBoxModel<DataColumnInfo> hColumn;
-    private DefaultComboBoxModel<DataColumnInfo> qColumn;
-    private DefaultComboBoxModel<DataColumnInfo> uqColumn;
+    private class ColMapping {
+        public final SimpleComboBox combobox = new SimpleComboBox();
+        public int selectedIndex = -1;
+    }
 
-    JDialog dialog;
+    private class ColsMapping {
+        public final ColMapping hCol = new ColMapping();
+        public final ColMapping qCol = new ColMapping();
+        public final ColMapping uqCol = new ColMapping();
+        public String[] headers;
 
+        public void resetHeaders(String[] headers) {
+            this.headers = headers;
+            hCol.combobox.setItems(headers);
+            qCol.combobox.setItems(headers);
+            uqCol.combobox.setItems(headers);
+
+            hCol.combobox.setSelectedItem(hCol.selectedIndex);
+            qCol.combobox.setSelectedItem(qCol.selectedIndex);
+            uqCol.combobox.setSelectedItem(uqCol.selectedIndex);
+        }
+
+        public void guessIndices() {
+            int hColIndexGuess = Misc.getIndexGuess(headers, -1,
+                    "(.*\\bh\\b.*)|(.*stage.*)");
+            hCol.combobox.setSelectedItem(hColIndexGuess);
+            int qColIndexGuess = Misc.getIndexGuess(headers, -1,
+                    "(.*\\bQ\\b.*)|(.*discharge.*)|(.*streamflow.*)");
+            qCol.combobox.setSelectedItem(qColIndexGuess);
+            int uqColIndexGuess = Misc.getIndexGuess(headers, -1,
+                    "(.*\\buQ\\b.*)|(.*discharge.*uncertainty.*)|(.*streamflow.*uncertainty.*)");
+            uqCol.combobox.setSelectedItem(uqColIndexGuess);
+        }
+
+        public void setChangeListener(ChangeListener l) {
+            hCol.combobox.addChangeListener(l);
+            qCol.combobox.addChangeListener(l);
+            uqCol.combobox.addChangeListener(l);
+        }
+
+        public boolean areValid() {
+            return hCol.combobox.getSelectedIndex() != -1 &&
+                    qCol.combobox.getSelectedIndex() != -1 &&
+                    uqCol.combobox.getSelectedIndex() != -1;
+        }
+    }
+
+    private List<String[]> rawData;
+    private String[] headers;
+    private String missingValueString;
+
+    private JDialog dialog;
+    private RowColPanel dataPreviewPanel;
     private GaugingsDataset dataset;
 
     public GaugingsImporter() {
         super(AXIS.COL);
 
-        hColumn = new DefaultComboBoxModel<>();
-        qColumn = new DefaultComboBoxModel<>();
-        uqColumn = new DefaultComboBoxModel<>();
+        ColsMapping columnsMapping = new ColsMapping();
 
         dataset = null;
 
-        DataFileImporter dataFileImporter = new DataFileImporter();
+        dataPreviewPanel = new RowColPanel();
+
+        DataFileReader dataFileReader = new DataFileReader();
+        DataParser dataParser = new DataParser();
+
+        dataPreviewPanel.appendChild(dataParser);
+
+        dataFileReader.addChangeListener((chEvt) -> {
+
+            rawData = dataFileReader.getData(dataFileReader.nPreload);
+            headers = dataFileReader.getHeaders();
+            missingValueString = dataFileReader.missingValueString;
+
+            dataParser.setRawData(rawData, headers, missingValueString);
+
+            columnsMapping.resetHeaders(headers);
+
+            columnsMapping.guessIndices();
+
+        });
 
         RowColPanel actionPanel = new RowColPanel();
         actionPanel.setPadding(5);
         actionPanel.setGap(5);
         JButton validateButton = new JButton(Lg.text("import"));
         validateButton.addActionListener((e) -> {
-            ImportedDataset rawDataset = dataFileImporter.getDataset();
-            int hIndex = hColumn.getIndexOf(hColumn.getSelectedItem());
-            int qIndex = qColumn.getIndexOf(qColumn.getSelectedItem());
-            int uqIndex = uqColumn.getIndexOf(uqColumn.getSelectedItem());
+            String filePath = dataFileReader.getFilePath();
+            String fileName = Path.of(filePath).getFileName().toString();
+
             List<double[]> data = new ArrayList<>();
-            data.add(rawDataset.getColumn(hIndex));
-            data.add(rawDataset.getColumn(qIndex));
-            data.add(rawDataset.getColumn(uqIndex));
+            data.add(dataParser.getDoubleCol(columnsMapping.hCol.combobox.getSelectedIndex()));
+            data.add(dataParser.getDoubleCol(columnsMapping.qCol.combobox.getSelectedIndex()));
+            data.add(dataParser.getDoubleCol(columnsMapping.uqCol.combobox.getSelectedIndex()));
+
             dataset = new GaugingsDataset(
-                    rawDataset.getDatasetName(),
+                    fileName,
                     data);
             dialog.setVisible(false);
 
@@ -69,38 +137,44 @@ public class GaugingsImporter extends RowColPanel {
         }, 1);
         actionPanel.appendChild(validateButton, 0);
 
-        dataFileImporter.addChangeListener((e) -> {
-            hColumn.removeAllElements();
-            qColumn.removeAllElements();
-            uqColumn.removeAllElements();
-            String[] headers = dataFileImporter.getHeaders();
-            validateButton.setEnabled(false);
-            if (headers != null && headers.length >= 3) {
-                for (int k = 0; k < headers.length; k++) {
-                    hColumn.addElement(
-                            new DataColumnInfo(headers[k], k));
-                    qColumn.addElement(
-                            new DataColumnInfo(headers[k], k));
-                    uqColumn.addElement(
-                            new DataColumnInfo(headers[k], k));
-                }
+        GridPanel columnMappingPanel = new GridPanel();
+        columnMappingPanel.setPadding(5);
+        columnMappingPanel.setGap(5);
+        columnMappingPanel.setColWeight(1, 1);
 
-                int hIndex = getHColGuess(headers, 0);
-                int qIndex = getQColGuess(headers, 1);
-                int uQIndex = getUQColGuess(headers, 2);
+        ChangeListener cbChangeListener = (chEvt) -> {
+            dataParser.ignoreAll();
 
-                hColumn.setSelectedItem(hColumn.getElementAt(hIndex));
-                qColumn.setSelectedItem(qColumn.getElementAt(qIndex));
-                uqColumn.setSelectedItem(uqColumn.getElementAt(uQIndex));
+            dataParser.setAsDoubleCol(columnsMapping.hCol.combobox.getSelectedIndex());
+            dataParser.setAsDoubleCol(columnsMapping.qCol.combobox.getSelectedIndex());
+            dataParser.setAsDoubleCol(columnsMapping.uqCol.combobox.getSelectedIndex());
 
-                validateButton.setEnabled(true);
-            }
+            // columnsMapping.recordCurrentIndices();
 
-        });
+            dataParser.setRawData(rawData, headers, missingValueString);
 
-        appendChild(dataFileImporter, 1);
+            validateButton.setEnabled(columnsMapping.areValid());
+
+        };
+
+        columnsMapping.setChangeListener(cbChangeListener);
+
+        JLabel hColMapLabel = new JLabel(Lg.text("stage_level_column"));
+        columnMappingPanel.insertChild(hColMapLabel, 0, 0);
+        columnMappingPanel.insertChild(columnsMapping.hCol.combobox, 1, 0);
+
+        JLabel qColMapLabel = new JLabel(Lg.text("discharge_column"));
+        columnMappingPanel.insertChild(qColMapLabel, 0, 1);
+        columnMappingPanel.insertChild(columnsMapping.qCol.combobox, 1, 1);
+
+        JLabel uqColMapLabel = new JLabel(Lg.text("discharge_uncertainty_column"));
+        columnMappingPanel.insertChild(uqColMapLabel, 0, 2);
+        columnMappingPanel.insertChild(columnsMapping.uqCol.combobox, 1, 2);
+
+        appendChild(dataFileReader, 0);
+        appendChild(dataPreviewPanel, 1);
         appendChild(new JSeparator(), 0);
-        appendChild(getColumnMappingPanel(), 0);
+        appendChild(columnMappingPanel, 0);
         appendChild(new JSeparator(), 0);
         appendChild(actionPanel, 0);
 
@@ -125,78 +199,4 @@ public class GaugingsImporter extends RowColPanel {
         return dataset;
     }
 
-    private int getColumnGuess(String[][] keywords, String[] headers, int defaultIndex) {
-
-        for (int k = 0; k < headers.length; k++) {
-            String h = headers[k].toLowerCase();
-            for (String[] keywordGroup : keywords) {
-                boolean valid = true;
-                for (String keyword : keywordGroup) {
-                    if (!h.contains(keyword)) {
-                        valid = false;
-                        break;
-                    }
-                }
-                if (valid) {
-                    return k;
-                }
-            }
-        }
-        return defaultIndex;
-    }
-
-    private int getHColGuess(String[] headers, int defaultIndex) {
-        String[][] keywords = new String[][] {
-                new String[] { "h" }
-        };
-        return getColumnGuess(keywords, headers, defaultIndex);
-    }
-
-    private int getQColGuess(String[] headers, int defaultIndex) {
-        String[][] keywords = new String[][] {
-                new String[] { "q" },
-        };
-        return getColumnGuess(keywords, headers, defaultIndex);
-    }
-
-    private int getUQColGuess(String[] headers, int defaultIndex) {
-        String[][] keywords = new String[][] {
-                new String[] { "u", "q" },
-        };
-        return getColumnGuess(keywords, headers, defaultIndex);
-    }
-
-    private record DataColumnInfo(String name, int index) {
-        @Override
-        public String toString() {
-            return name;
-        }
-    }
-
-    private GridPanel getColumnMappingPanel() {
-        GridPanel panel = new GridPanel();
-        panel.setColWeight(1, 1);
-        panel.setPadding(5);
-        panel.setGap(5);
-
-        JLabel hLabel = new JLabel(Lg.text("stage_level_column"));
-        JComboBox<DataColumnInfo> hComboBox = new JComboBox<>(hColumn);
-
-        panel.insertChild(hLabel, 0, 0);
-        panel.insertChild(hComboBox, 1, 0);
-
-        JLabel qLabel = new JLabel(Lg.text("discharge_column"));
-        JComboBox<DataColumnInfo> qComboBox = new JComboBox<>(qColumn);
-
-        panel.insertChild(qLabel, 0, 1);
-        panel.insertChild(qComboBox, 1, 1);
-
-        JLabel uqLabel = new JLabel(Lg.text("discharge_uncertainty_column"));
-        JComboBox<DataColumnInfo> uqComboBox = new JComboBox<>(uqColumn);
-
-        panel.insertChild(uqLabel, 0, 2);
-        panel.insertChild(uqComboBox, 1, 2);
-
-        return panel;
-    }
 }
