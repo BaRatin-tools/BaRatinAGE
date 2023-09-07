@@ -23,6 +23,7 @@ public class RadioButtons extends RowColPanel implements ActionListener {
         buttonGroup.add(button);
         options.put(value, button);
         button.addActionListener(this);
+        appendChild(button);
     }
 
     public void removeOption(String value) {
@@ -30,6 +31,7 @@ public class RadioButtons extends RowColPanel implements ActionListener {
         buttonGroup.remove(btn);
         options.remove(value);
         btn.removeActionListener(this);
+        remove(btn);
     }
 
     public void setSelectedValue(String value) {
