@@ -12,7 +12,7 @@ import javax.swing.JSeparator;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import org.baratinage.ui.component.TextField;
+import org.baratinage.ui.component.SimpleTextField;
 import org.baratinage.ui.container.GridPanel;
 import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.ui.lg.Lg;
@@ -25,8 +25,8 @@ abstract public class BamItem extends GridPanel {
     public final BamProject PROJECT;
 
     public final JLabel bamItemTypeLabel = new JLabel();
-    public final TextField bamItemNameField = new TextField();
-    public final TextField bamItemDescriptionField = new TextField();
+    public final SimpleTextField bamItemNameField = new SimpleTextField();
+    public final SimpleTextField bamItemDescriptionField = new SimpleTextField();
     public final JButton cloneButton = new JButton();
     public final JButton deleteButton = new JButton();
 

@@ -16,16 +16,16 @@ import org.baratinage.ui.container.RowColPanel;
 public class NumberField extends RowColPanel {
 
     public static final double NaN = -9999.9999;
-    private TextField textField;
+    private SimpleTextField textField;
     private boolean integerOnly;
     private boolean isValueValid;
     private double value = NaN;
 
     public NumberField(boolean integerOnly) {
 
-        textField = new TextField();
-        textField.addChangeListener(txt -> {
-            setValue(txt);
+        textField = new SimpleTextField();
+        textField.addChangeListener(chEvt -> {
+            setValue(textField.getText());
         });
 
         this.integerOnly = integerOnly;

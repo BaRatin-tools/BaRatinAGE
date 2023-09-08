@@ -132,10 +132,10 @@ public class DataFileReader extends RowColPanel {
         importSettingsPanel.insertChild(nSkipRowField, 1, 2);
 
         JLabel missingValueCodeLabel = new JLabel(Lg.text("missing_value_code"));
-        TextField missingValueCodeField = new TextField();
+        SimpleTextField missingValueCodeField = new SimpleTextField();
         missingValueCodeField.setText(missingValueString);
-        missingValueCodeField.addChangeListener((txt) -> {
-            missingValueString = txt;
+        missingValueCodeField.addChangeListener((chEvt) -> {
+            missingValueString = missingValueCodeField.getText();
             fireChangeListeners();
         });
 

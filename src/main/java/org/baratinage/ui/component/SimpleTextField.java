@@ -5,18 +5,20 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.util.ArrayList;
-import java.util.EventListener;
 import java.util.List;
+import java.util.function.Predicate;
 
 import javax.swing.JTextField;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
-public class TextField extends JTextField {
+public class SimpleTextField extends JTextField {
 
     private String placeholder;
 
-    public TextField() {
+    public SimpleTextField() {
         super();
 
         Dimension dim = this.getPreferredSize();
@@ -73,48 +75,38 @@ public class TextField extends JTextField {
         doNotFireChange = false;
     }
 
-    @FunctionalInterface
-    public interface TextChangeListener extends EventListener {
-        public void hasChanged(String newText);
-    }
+    private final List<ChangeListener> textChangeListeners = new ArrayList<>();
 
-    private final List<TextChangeListener> textChangeListeners = new ArrayList<>();
-
-    public void addChangeListener(TextChangeListener listener) {
+    public void addChangeListener(ChangeListener listener) {
         this.textChangeListeners.add(listener);
     }
 
-    public void removeChangeListener(TextChangeListener listener) {
+    public void removeChangeListener(ChangeListener listener) {
         this.textChangeListeners.remove(listener);
     }
 
     public void fireChangeListeners() {
         if (doNotFireChange)
             return;
-        for (TextChangeListener cl : this.textChangeListeners) {
-            cl.hasChanged(getText());
+        for (ChangeListener cl : this.textChangeListeners) {
+            cl.stateChanged(new ChangeEvent(this));
         }
     }
 
-    @FunctionalInterface
-    public interface TextValidators {
-        public boolean isTextValid(String text);
-    }
+    private final List<Predicate<String>> textValidators = new ArrayList<>();
 
-    private final List<TextValidators> textValidators = new ArrayList<>();
-
-    public void addTextValidator(TextValidators validator) {
+    public void addTextValidator(Predicate<String> validator) {
         this.textValidators.add(validator);
     }
 
-    public void removeTextValidator(TextValidators validator) {
+    public void removeTextValidator(Predicate<String> validator) {
         this.textValidators.remove(validator);
     }
 
     public boolean isTextValid() {
         String text = getText();
-        for (TextValidators tv : this.textValidators) {
-            if (!tv.isTextValid(text))
+        for (Predicate<String> tv : this.textValidators) {
+            if (!tv.test(text))
                 return false;
         }
         return true;
