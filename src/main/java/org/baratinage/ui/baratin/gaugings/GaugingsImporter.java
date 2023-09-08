@@ -25,50 +25,41 @@ import org.baratinage.ui.lg.Lg;
 
 public class GaugingsImporter extends RowColPanel {
 
-    private class ColMapping {
-        public final SimpleComboBox combobox = new SimpleComboBox();
-        public int selectedIndex = -1;
-    }
-
     private class ColsMapping {
-        public final ColMapping hCol = new ColMapping();
-        public final ColMapping qCol = new ColMapping();
-        public final ColMapping uqCol = new ColMapping();
+        public final SimpleComboBox hCol = new SimpleComboBox();
+        public final SimpleComboBox qCol = new SimpleComboBox();
+        public final SimpleComboBox uqCol = new SimpleComboBox();
         public String[] headers;
 
         public void resetHeaders(String[] headers) {
             this.headers = headers;
-            hCol.combobox.setItems(headers);
-            qCol.combobox.setItems(headers);
-            uqCol.combobox.setItems(headers);
-
-            hCol.combobox.setSelectedItem(hCol.selectedIndex);
-            qCol.combobox.setSelectedItem(qCol.selectedIndex);
-            uqCol.combobox.setSelectedItem(uqCol.selectedIndex);
+            hCol.setItems(headers);
+            qCol.setItems(headers);
+            uqCol.setItems(headers);
         }
 
         public void guessIndices() {
             int hColIndexGuess = Misc.getIndexGuess(headers, -1,
                     "(.*\\bh\\b.*)|(.*stage.*)");
-            hCol.combobox.setSelectedItem(hColIndexGuess);
+            hCol.setSelectedItem(hColIndexGuess);
             int qColIndexGuess = Misc.getIndexGuess(headers, -1,
                     "(.*\\bQ\\b.*)|(.*discharge.*)|(.*streamflow.*)");
-            qCol.combobox.setSelectedItem(qColIndexGuess);
+            qCol.setSelectedItem(qColIndexGuess);
             int uqColIndexGuess = Misc.getIndexGuess(headers, -1,
                     "(.*\\buQ\\b.*)|(.*discharge.*uncertainty.*)|(.*streamflow.*uncertainty.*)");
-            uqCol.combobox.setSelectedItem(uqColIndexGuess);
+            uqCol.setSelectedItem(uqColIndexGuess);
         }
 
         public void setChangeListener(ChangeListener l) {
-            hCol.combobox.addChangeListener(l);
-            qCol.combobox.addChangeListener(l);
-            uqCol.combobox.addChangeListener(l);
+            hCol.addChangeListener(l);
+            qCol.addChangeListener(l);
+            uqCol.addChangeListener(l);
         }
 
         public boolean areValid() {
-            return hCol.combobox.getSelectedIndex() != -1 &&
-                    qCol.combobox.getSelectedIndex() != -1 &&
-                    uqCol.combobox.getSelectedIndex() != -1;
+            return hCol.getSelectedIndex() != -1 &&
+                    qCol.getSelectedIndex() != -1 &&
+                    uqCol.getSelectedIndex() != -1;
         }
     }
 
@@ -117,9 +108,9 @@ public class GaugingsImporter extends RowColPanel {
             String fileName = Path.of(filePath).getFileName().toString();
 
             List<double[]> data = new ArrayList<>();
-            data.add(dataParser.getDoubleCol(columnsMapping.hCol.combobox.getSelectedIndex()));
-            data.add(dataParser.getDoubleCol(columnsMapping.qCol.combobox.getSelectedIndex()));
-            data.add(dataParser.getDoubleCol(columnsMapping.uqCol.combobox.getSelectedIndex()));
+            data.add(dataParser.getDoubleCol(columnsMapping.hCol.getSelectedIndex()));
+            data.add(dataParser.getDoubleCol(columnsMapping.qCol.getSelectedIndex()));
+            data.add(dataParser.getDoubleCol(columnsMapping.uqCol.getSelectedIndex()));
 
             dataset = new GaugingsDataset(
                     fileName,
@@ -145,9 +136,9 @@ public class GaugingsImporter extends RowColPanel {
         ChangeListener cbChangeListener = (chEvt) -> {
             dataParser.ignoreAll();
 
-            dataParser.setAsDoubleCol(columnsMapping.hCol.combobox.getSelectedIndex());
-            dataParser.setAsDoubleCol(columnsMapping.qCol.combobox.getSelectedIndex());
-            dataParser.setAsDoubleCol(columnsMapping.uqCol.combobox.getSelectedIndex());
+            dataParser.setAsDoubleCol(columnsMapping.hCol.getSelectedIndex());
+            dataParser.setAsDoubleCol(columnsMapping.qCol.getSelectedIndex());
+            dataParser.setAsDoubleCol(columnsMapping.uqCol.getSelectedIndex());
 
             // columnsMapping.recordCurrentIndices();
 
@@ -161,15 +152,15 @@ public class GaugingsImporter extends RowColPanel {
 
         JLabel hColMapLabel = new JLabel(Lg.text("stage_level_column"));
         columnMappingPanel.insertChild(hColMapLabel, 0, 0);
-        columnMappingPanel.insertChild(columnsMapping.hCol.combobox, 1, 0);
+        columnMappingPanel.insertChild(columnsMapping.hCol, 1, 0);
 
         JLabel qColMapLabel = new JLabel(Lg.text("discharge_column"));
         columnMappingPanel.insertChild(qColMapLabel, 0, 1);
-        columnMappingPanel.insertChild(columnsMapping.qCol.combobox, 1, 1);
+        columnMappingPanel.insertChild(columnsMapping.qCol, 1, 1);
 
         JLabel uqColMapLabel = new JLabel(Lg.text("discharge_uncertainty_column"));
         columnMappingPanel.insertChild(uqColMapLabel, 0, 2);
-        columnMappingPanel.insertChild(columnsMapping.uqCol.combobox, 1, 2);
+        columnMappingPanel.insertChild(columnsMapping.uqCol, 1, 2);
 
         appendChild(dataFileReader, 0);
         appendChild(dataPreviewPanel, 1);
