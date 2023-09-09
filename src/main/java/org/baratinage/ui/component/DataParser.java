@@ -64,12 +64,35 @@ public class DataParser extends RowColPanel {
 
     private static final CustomCellRenderer IGNORE_COL_RENDERER = new CustomCellRenderer();
 
+    private static Predicate<String> buildDateTimeValidator(String format) {
+        return (String v) -> {
+            try {
+                LocalDateTime.parse(v, DateTimeFormatter.ofPattern(format));
+                return true;
+            } catch (Exception e) {
+                return false;
+            }
+        };
+    }
+
+    private static Function<String, LocalDateTime> buildDateTimeConverter(String format) {
+        return (String v) -> {
+            try {
+                LocalDateTime dataTime = LocalDateTime.parse(v, DateTimeFormatter.ofPattern(format));
+                return dataTime;
+            } catch (Exception e) {
+                return null;
+            }
+        };
+    }
+
     public DataParser() {
 
         setPadding(5);
         dataTableModel = new DataTableModel();
 
         dataTable = new JTable(dataTableModel);
+        dataTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 
         dataTable.getTableHeader().setReorderingAllowed(false);
         dataTable.setCellSelectionEnabled(true);
@@ -105,14 +128,7 @@ public class DataParser extends RowColPanel {
             } else if (cs.type == COL_TYPE.DOUBLE) {
                 tableCol.setCellRenderer(doubleColRenderer);
             } else if (cs.type == COL_TYPE.DATETIME) {
-                Predicate<String> dataTimeValidator = (String v) -> {
-                    try {
-                        LocalDateTime.parse(v, DateTimeFormatter.ofPattern(cs.dateTimeFormat));
-                        return true;
-                    } catch (Exception e) {
-                        return false;
-                    }
-                };
+                Predicate<String> dataTimeValidator = buildDateTimeValidator(cs.dateTimeFormat);
                 tableCol.setCellRenderer(new CustomCellRenderer(missingValueCode, dataTimeValidator));
             }
             if (headers != null && headers.length > k) {
@@ -137,6 +153,30 @@ public class DataParser extends RowColPanel {
         colSettings.put(colIndex, new ColSettings(COL_TYPE.DATETIME, format));
     }
 
+    public boolean testColValidity(int colIndex) {
+        if (colIndex < 0 || colIndex > rawData.size()) {
+            return false;
+        }
+        ColSettings cs = colSettings.get(colIndex);
+        if (cs == null) {
+            return true;
+        } else if (cs.type == COL_TYPE.DOUBLE) {
+            for (String v : rawData.get(colIndex)) {
+                if (!DOUBLE_VALIDATOR.test(v)) {
+                    return false;
+                }
+            }
+        } else if (cs.type == COL_TYPE.DATETIME) {
+            for (String v : rawData.get(colIndex)) {
+                Predicate<String> dateTimeValidator = buildDateTimeValidator(cs.dateTimeFormat);
+                if (!dateTimeValidator.test(v)) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
     public double[] getDoubleCol(int colIndex) {
         Function<String, Double> converter = (String v) -> {
             if (v.equals(missingValueCode)) {
@@ -148,6 +188,24 @@ public class DataParser extends RowColPanel {
         String[] rawCol = rawData.get(colIndex);
         int n = rawCol.length;
         double[] col = new double[n];
+        for (int k = 0; k < n; k++) {
+            col[k] = converter.apply(rawCol[k]);
+        }
+        return col;
+    }
+
+    public LocalDateTime[] getDateTimeCol(int colIndex, String format) {
+        Function<String, LocalDateTime> dateTimeConverter = buildDateTimeConverter(format);
+        Function<String, LocalDateTime> converter = (String v) -> {
+            if (v.equals(missingValueCode)) {
+                return null;
+            } else {
+                return dateTimeConverter.apply(v);
+            }
+        };
+        String[] rawCol = rawData.get(colIndex);
+        int n = rawCol.length;
+        LocalDateTime[] col = new LocalDateTime[n];
         for (int k = 0; k < n; k++) {
             col[k] = converter.apply(rawCol[k]);
         }
