@@ -1,5 +1,7 @@
 package org.baratinage.ui.baratin;
 
+import javax.swing.JLabel;
+
 import org.baratinage.jbam.PredictionConfig;
 import org.baratinage.jbam.PredictionResult;
 import org.baratinage.ui.bam.BamItem;
@@ -11,6 +13,9 @@ public class Hydrograph extends BamItem implements IPredictionExperiment {
 
     public Hydrograph(String uuid, BaratinProject project) {
         super(BamItemType.HYDROGRAPH, uuid, project);
+
+        JLabel label = new JLabel("Hydrograph");
+        setContent(label);
     }
 
     @Override

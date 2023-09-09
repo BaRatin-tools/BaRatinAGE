@@ -43,6 +43,7 @@ public class BaratinProject extends BamProject {
     private ExplorerItem gaugings;
     private ExplorerItem structuralError;
     private ExplorerItem ratingCurve;
+    private ExplorerItem limnigraph;
 
     static private ImageIcon buildIcon(String iconName, int iconSize) {
         return SvgIcon
@@ -58,10 +59,12 @@ public class BaratinProject extends BamProject {
     static private final ImageIcon gaugingsIcon = buildIcon("gaugings.svg", iconSize);
     static private final ImageIcon structuralErrorIcon = buildIcon("structural_error.svg", iconSize);
     static private final ImageIcon ratingCurveIcon = buildIcon("rating_curve.svg", iconSize);
+    static private final ImageIcon limnigraphIcon = buildIcon("limnigraph.svg", iconSize);
     static private final ImageIcon addHydraulicConfigIcon = buildIcon("hydraulic_config_add.svg", iconSize);
     static private final ImageIcon addGaugingsIcon = buildIcon("gaugings_add.svg", iconSize);
     static private final ImageIcon addStructuralErrorIcon = buildIcon("structural_error_add.svg", iconSize);
     static private final ImageIcon addRatingCurveIcon = buildIcon("rating_curve_add.svg", iconSize);
+    static private final ImageIcon addLimnigraphIcon = buildIcon("limnigraph_add.svg", iconSize);
 
     public BaratinProject() {
         super();
@@ -131,6 +134,20 @@ public class BaratinProject extends BamProject {
         });
         toolBar.add(btnNewRatingCurve);
 
+        JMenuItem menuBtnNewLimnigraph = new JMenuItem();
+        Lg.register(menuBtnNewLimnigraph, "create_limnigraph");
+        menuBtnNewLimnigraph.setIcon(addLimnigraphIcon);
+        menuBtnNewLimnigraph.addActionListener(e -> {
+            addLimnigraph();
+        });
+        baratinMenu.add(menuBtnNewLimnigraph);
+
+        JButton btnNewLimnigraph = new JButton(addLimnigraphIcon);
+        btnNewLimnigraph.addActionListener(e -> {
+            addLimnigraph();
+        });
+        toolBar.add(btnNewLimnigraph);
+
         setupExplorer();
 
     }
@@ -165,6 +182,11 @@ public class BaratinProject extends BamProject {
                 "Courbes de tarage",
                 ratingCurveIcon);
         this.explorer.appendItem(ratingCurve);
+
+        limnigraph = new ExplorerItem("lts",
+                "Limnigramme",
+                limnigraphIcon);
+        this.explorer.appendItem(limnigraph);
 
     }
 
@@ -288,6 +310,33 @@ public class BaratinProject extends BamProject {
         return addRatingCurve(UUID.randomUUID().toString());
     }
 
+    public Limnigraph addLimnigraph(Limnigraph l) {
+        ExplorerItem explorerItem = new ExplorerItem(
+                l.ID,
+                l.bamItemNameField.getText(),
+                limnigraphIcon,
+                limnigraph);
+        addItem(l, explorerItem);
+        Lg.register(l.bamItemTypeLabel, "limnigraph");
+        l.bamItemTypeLabel.setIcon(limnigraphIcon);
+        l.cloneButton.addActionListener((e) -> {
+            Limnigraph newL = (Limnigraph) l.clone();
+            newL.setCopyName();
+            addLimnigraph(newL);
+        });
+        return l;
+    }
+
+    public Limnigraph addLimnigraph(String uuid) {
+        Limnigraph l = new Limnigraph(uuid, this);
+        l.bamItemNameField.setText(BAM_ITEMS.getDefaultName(BamItemType.LIMNIGRAPH));
+        return addLimnigraph(l);
+    }
+
+    public Limnigraph addLimnigraph() {
+        return addLimnigraph(UUID.randomUUID().toString());
+    }
+
     @Override
     public JSONObject toJSON() {
         JSONObject json = super.toJSON();
@@ -315,6 +364,8 @@ public class BaratinProject extends BamProject {
                 bamItem = addGaugings(uuid);
             } else if (itemType == BamItemType.STRUCTURAL_ERROR) {
                 bamItem = addStructuralErrorModel(uuid);
+            } else if (itemType == BamItemType.LIMNIGRAPH) {
+                bamItem = addLimnigraph(uuid);
             } else if (itemType == BamItemType.RATING_CURVE) {
                 continue;
             } else {
@@ -324,7 +375,7 @@ public class BaratinProject extends BamProject {
             bamItem.fromFullJSON(jsonObj);
         }
 
-        // Dealing with children (rating curve);
+        // Dealing with children (rating curve, hydrographs);
         for (Object item : items) {
             JSONObject jsonObj = (JSONObject) item;
             BamItemType itemType = BamItemType.valueOf(jsonObj.getString("type"));
