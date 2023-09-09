@@ -246,6 +246,9 @@ public class DataFileReader extends RowColPanel {
     }
 
     public void fireChangeListeners() {
+        if (fileLines == null) {
+            return;
+        }
         for (ChangeListener l : changeListeners) {
             l.stateChanged(new ChangeEvent(this));
         }
