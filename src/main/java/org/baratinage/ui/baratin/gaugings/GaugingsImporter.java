@@ -107,6 +107,10 @@ public class GaugingsImporter extends RowColPanel {
             String filePath = dataFileReader.getFilePath();
             String fileName = Path.of(filePath).getFileName().toString();
 
+            // necessary to read all the data!
+            rawData = dataFileReader.getData();
+            dataParser.setRawData(rawData, headers, missingValueString);
+
             List<double[]> data = new ArrayList<>();
             data.add(dataParser.getDoubleCol(columnsMapping.hCol.getSelectedIndex()));
             data.add(dataParser.getDoubleCol(columnsMapping.qCol.getSelectedIndex()));
