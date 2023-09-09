@@ -25,6 +25,11 @@ public class SimpleComboBox extends RowColPanel {
         appendChild(comboBox);
     }
 
+    @Override
+    public void setEnabled(boolean enabled) {
+        comboBox.setEnabled(enabled);
+    }
+
     public void setItems(String[] items) {
         model.removeAllElements();
         model.addElement("-"); // empty element
