@@ -49,6 +49,10 @@ public class ImportedDataset implements IDataset {
         return dataCopy;
     }
 
+    public String[] getHeaders() {
+        return headers;
+    }
+
     @Override
     public int hashCode() {
         Integer hashSum = 0;
