@@ -98,10 +98,15 @@ public class LimnigraphImporter extends RowColPanel {
                     dateTimeColIndex,
                     timeColFormatField.getText());
             List<double[]> stageData = new ArrayList<>();
-            for (int k = 0; k < rawData.size(); k++) {
-                if (k != dateTimeColIndex) {
-                    stageData.add(dataParser.getDoubleCol(k));
+            if (stageAllColumnsCheckBox.isSelected()) {
+                for (int k = 0; k < rawData.size(); k++) {
+                    if (k != dateTimeColIndex) {
+                        stageData.add(dataParser.getDoubleCol(k));
+                    }
                 }
+            } else {
+                int stageColIndex = stageColComboBox.getSelectedIndex();
+                stageData.add(dataParser.getDoubleCol(stageColIndex));
             }
             dataset = new LimnigraphDataset(fileName, dateTimeVector, stageData);
             dialog.setVisible(false);
