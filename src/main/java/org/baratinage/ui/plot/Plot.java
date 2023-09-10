@@ -9,6 +9,7 @@ import org.jfree.chart.LegendItemCollection;
 import org.jfree.chart.LegendItemSource;
 import org.jfree.chart.plot.DatasetRenderingOrder;
 import org.jfree.chart.plot.XYPlot;
+import org.jfree.chart.axis.DateAxis;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.title.LegendTitle;
 import org.jfree.chart.ui.RectangleEdge;
@@ -23,6 +24,7 @@ public class Plot implements LegendItemSource {
     public final NumberAxis axisX;
     public final NumberAxis axisY;
     public final LogAxis axisYlog;
+    public final DateAxis axisXdate;
 
     private record PlotItemConfig(PlotItem item, boolean visibleInLegend, boolean useBounds) {
     };
@@ -31,7 +33,15 @@ public class Plot implements LegendItemSource {
 
     // private List<Integer> ignoreInRangeAndDomainIndices = new ArrayList<>();
 
+    public Plot() {
+        this(true, false);
+    }
+
     public Plot(boolean includeLegend) {
+        this(includeLegend, false);
+    }
+
+    public Plot(boolean includeLegend, boolean timeseries) {
 
         axisX = new NumberAxis();
         axisX.setAutoRangeIncludesZero(false);
@@ -42,6 +52,7 @@ public class Plot implements LegendItemSource {
         axisYlog.setAutoRange(true);
         axisYlog.setAutoRangeIncludesZero(false);
         axisYlog.setAllowNegativesFlag(true);
+        axisXdate = new DateAxis();
 
         plot = new XYPlot() {
             @Override
@@ -57,7 +68,7 @@ public class Plot implements LegendItemSource {
         };
 
         plot.setDatasetRenderingOrder(DatasetRenderingOrder.FORWARD);
-        plot.setDomainAxis(axisX);
+        plot.setDomainAxis(timeseries ? axisXdate : axisX);
         plot.setRangeAxis(axisY);
         plot.setDomainPannable(true);
         plot.setRangePannable(true);
@@ -66,11 +77,11 @@ public class Plot implements LegendItemSource {
         chart.setBackgroundPaint(Color.WHITE);
         chart.removeLegend();
 
-        LegendTitle legendTitle = new LegendTitle(this);
-
-        legendTitle.setPosition(RectangleEdge.RIGHT);
-
-        chart.addLegend(legendTitle);
+        if (includeLegend) {
+            LegendTitle legendTitle = new LegendTitle(this);
+            legendTitle.setPosition(RectangleEdge.RIGHT);
+            chart.addLegend(legendTitle);
+        }
 
     }
 

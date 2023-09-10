@@ -9,16 +9,16 @@ import java.awt.geom.Line2D;
 
 import org.jfree.chart.LegendItem;
 import org.jfree.chart.plot.XYPlot;
-import org.jfree.chart.renderer.xy.AbstractXYItemRenderer;
+import org.jfree.chart.renderer.xy.XYItemRenderer;
 import org.jfree.data.Range;
 import org.jfree.data.general.DatasetUtils;
-import org.jfree.data.xy.AbstractXYDataset;
+import org.jfree.data.xy.XYDataset;
 
 public abstract class PlotItem {
 
-    public abstract AbstractXYDataset getDataset();
+    public abstract XYDataset getDataset();
 
-    public abstract AbstractXYItemRenderer getRenderer();
+    public abstract XYItemRenderer getRenderer();
 
     public abstract LegendItem getLegendItem();
 
