@@ -7,7 +7,6 @@ import java.util.List;
 
 import org.baratinage.ui.component.ImportedDataset;
 import org.baratinage.ui.plot.PlotItem;
-import org.baratinage.ui.plot.PlotLine;
 import org.baratinage.ui.plot.PlotTimeSeriesLine;
 import org.jfree.data.time.Second;
 
