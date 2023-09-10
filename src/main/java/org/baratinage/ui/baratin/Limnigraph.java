@@ -1,8 +1,5 @@
 package org.baratinage.ui.baratin;
 
-import java.awt.Dimension;
-import java.util.List;
-
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -20,7 +17,6 @@ import org.baratinage.ui.lg.Lg;
 import org.baratinage.ui.plot.Plot;
 import org.baratinage.ui.plot.PlotContainer;
 import org.baratinage.ui.plot.PlotItem;
-import org.baratinage.ui.plot.PlotPoints;
 import org.json.JSONObject;
 
 public class Limnigraph extends BamItem implements IPredictionData {
