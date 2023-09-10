@@ -1,6 +1,7 @@
 package org.baratinage.ui.baratin;
 
 import java.awt.Dimension;
+import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -16,6 +17,10 @@ import org.baratinage.ui.baratin.limnigraph.LimnigraphImporter;
 import org.baratinage.ui.baratin.limnigraph.LimnigraphTable;
 import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.ui.lg.Lg;
+import org.baratinage.ui.plot.Plot;
+import org.baratinage.ui.plot.PlotContainer;
+import org.baratinage.ui.plot.PlotItem;
+import org.baratinage.ui.plot.PlotPoints;
 import org.json.JSONObject;
 
 public class Limnigraph extends BamItem implements IPredictionData {
@@ -23,6 +28,8 @@ public class Limnigraph extends BamItem implements IPredictionData {
     private LimnigraphTable limniTable;
     private LimnigraphDataset limniDataset;
     private JLabel importedDataSetSourceLabel;
+
+    private RowColPanel plotPanel;
 
     public Limnigraph(String uuid, BaratinProject project) {
         super(BamItemType.LIMNIGRAPH, uuid, project);
@@ -43,17 +50,17 @@ public class Limnigraph extends BamItem implements IPredictionData {
             LimnigraphImporter limniImporter = new LimnigraphImporter();
             limniImporter.showDialog();
             LimnigraphDataset newLimniDataset = limniImporter.getDataset();
-            if (newLimniDataset != null && newLimniDataset.getNumberOfColumns() >= 2) {
+            if (newLimniDataset != null && newLimniDataset.getNumberOfColumns() >= 1) {
                 limniDataset = newLimniDataset;
                 updateTable();
             }
         });
 
         limniTable = new LimnigraphTable();
-        // limniTable.getTableModel().addTableModelListener((e) -> {
-        // setPlot();
-        // fireChangeListeners();
-        // });
+        limniTable.getTableModel().addTableModelListener((e) -> {
+            setPlot();
+            fireChangeListeners();
+        });
 
         importLimnigraphPanel.appendChild(importDataButton, 0);
         importLimnigraphPanel.appendChild(importedDataSetSourceLabel, 0);
@@ -61,9 +68,8 @@ public class Limnigraph extends BamItem implements IPredictionData {
 
         content.setLeftComponent(importLimnigraphPanel);
 
-        JLabel label2 = new JLabel("Limnigraph viewer");
-        label2.setPreferredSize(new Dimension(500, 0));
-        content.setRightComponent(label2);
+        plotPanel = new RowColPanel();
+        content.setRightComponent(plotPanel);
 
         setContent(content);
     }
@@ -75,6 +81,28 @@ public class Limnigraph extends BamItem implements IPredictionData {
                     Lg.html("limnigraph_imported_from",
                             limniDataset.getDatasetName()));
         });
+    }
+
+    private void setPlot() {
+        // FIXME: shouldn't this be handled in a proper TimeSeriesPlot class?
+
+        Plot plot = new Plot(false, true);
+
+        PlotItem[] items = limniDataset.getPlotLines();
+        for (PlotItem item : items) {
+            plot.addXYItem(item);
+        }
+
+        Lg.register(plot, () -> {
+            plot.axisXdate.setLabel(Lg.text("time"));
+            plot.axisY.setLabel(Lg.text("stage_level"));
+            plot.axisYlog.setLabel(Lg.text("stage_level"));
+        });
+
+        PlotContainer plotContainer = new PlotContainer(plot);
+
+        plotPanel.clear();
+        plotPanel.appendChild(plotContainer);
     }
 
     @Override

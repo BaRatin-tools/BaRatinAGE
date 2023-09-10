@@ -1,11 +1,17 @@
 package org.baratinage.ui.baratin.limnigraph;
 
+import java.awt.BasicStroke;
+import java.awt.Color;
 import java.time.LocalDateTime;
 import java.util.List;
 
 import org.baratinage.ui.component.ImportedDataset;
+import org.baratinage.ui.plot.PlotItem;
+import org.baratinage.ui.plot.PlotLine;
+import org.baratinage.ui.plot.PlotTimeSeriesLine;
+import org.jfree.data.time.Second;
 
-// FIXME: do I need specific/generic data structure suchg as:
+// FIXME: do I need specific/generic data structure such as:
 // - TimeSeriesMatrix
 // - TimeSeriesVector
 // - TimeSeriesTimestep
@@ -29,6 +35,23 @@ public class LimnigraphDataset extends ImportedDataset {
         setDatasetName(name);
 
         this.dateTime = dateTime;
+    }
+
+    public PlotItem[] getPlotLines() {
+        int n = getNumberOfColumns();
+        if (n <= 0) {
+            return null;
+        }
+        Second[] timeVector = PlotTimeSeriesLine.localDateTimeToSecond(dateTime);
+        PlotTimeSeriesLine[] tsLines = new PlotTimeSeriesLine[n];
+        for (int k = 0; k < n; k++) {
+            tsLines[k] = new PlotTimeSeriesLine(
+                    name,
+                    timeVector,
+                    getStageVector(k),
+                    Color.BLACK, new BasicStroke(1));
+        }
+        return tsLines;
     }
 
     public LocalDateTime[] getDateTimeVector() {
