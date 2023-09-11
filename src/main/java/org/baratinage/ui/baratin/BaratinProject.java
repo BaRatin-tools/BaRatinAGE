@@ -1,7 +1,6 @@
 package org.baratinage.ui.baratin;
 
 import java.awt.event.ActionListener;
-import java.nio.file.Path;
 import java.util.UUID;
 
 import javax.swing.ImageIcon;
@@ -14,7 +13,6 @@ import org.baratinage.ui.bam.BamItem;
 import org.baratinage.ui.bam.BamItemType;
 import org.baratinage.ui.bam.BamProject;
 import org.baratinage.ui.commons.ExplorerItem;
-import org.baratinage.ui.component.SvgIcon;
 import org.baratinage.ui.lg.Lg;
 
 import org.json.JSONArray;
@@ -47,29 +45,6 @@ public class BaratinProject extends BamProject {
     private ExplorerItem limnigraph;
     private ExplorerItem hydrograph;
 
-    static private ImageIcon buildIcon(String iconName, int iconSize) {
-        return SvgIcon
-                .buildNoScalingIcon(Path.of(
-                        AppConfig.AC.ICONS_RESOURCES_DIR,
-                        "custom", iconName).toString(), iconSize);
-    }
-
-    // FIXME: best iconSize varies depending on OS scaling
-    static private final int iconSize = 30;
-
-    static private final ImageIcon hydraulicConfigIcon = buildIcon("hydraulic_config.svg", iconSize);
-    static private final ImageIcon gaugingsIcon = buildIcon("gaugings.svg", iconSize);
-    static private final ImageIcon structuralErrorIcon = buildIcon("structural_error.svg", iconSize);
-    static private final ImageIcon ratingCurveIcon = buildIcon("rating_curve.svg", iconSize);
-    static private final ImageIcon limnigraphIcon = buildIcon("limnigraph.svg", iconSize);
-    static private final ImageIcon hydrographIcon = buildIcon("hydrograph.svg", iconSize);
-    static private final ImageIcon addHydraulicConfigIcon = buildIcon("hydraulic_config_add.svg", iconSize);
-    static private final ImageIcon addGaugingsIcon = buildIcon("gaugings_add.svg", iconSize);
-    static private final ImageIcon addStructuralErrorIcon = buildIcon("structural_error_add.svg", iconSize);
-    static private final ImageIcon addRatingCurveIcon = buildIcon("rating_curve_add.svg", iconSize);
-    static private final ImageIcon addLimnigraphIcon = buildIcon("limnigraph_add.svg", iconSize);
-    static private final ImageIcon addHydrographIcon = buildIcon("hydrograph_add.svg", iconSize);
-
     private JMenu baratinMenu;
 
     public BaratinProject() {
@@ -84,22 +59,22 @@ public class BaratinProject extends BamProject {
         }
         baratinMenu = AppConfig.AC.APP_MAIN_FRAME.baratinMenu;
 
-        addAddButtons("create_hydraulic_config", addHydraulicConfigIcon, (e) -> {
+        addAddButtons("create_hydraulic_config", BamItemType.HYDRAULIC_CONFIG.getAddIcon(), (e) -> {
             addHydraulicConfig();
         });
-        addAddButtons("create_gaugings", addGaugingsIcon, (e) -> {
+        addAddButtons("create_gaugings", BamItemType.GAUGINGS.getAddIcon(), (e) -> {
             addGaugings();
         });
-        addAddButtons("create_structural_error_model", addStructuralErrorIcon, (e) -> {
+        addAddButtons("create_structural_error_model", BamItemType.STRUCTURAL_ERROR.getAddIcon(), (e) -> {
             addStructuralErrorModel();
         });
-        addAddButtons("create_rating_curve", addRatingCurveIcon, (e) -> {
+        addAddButtons("create_rating_curve", BamItemType.RATING_CURVE.getAddIcon(), (e) -> {
             addRatingCurve();
         });
-        addAddButtons("create_limnigraph", addLimnigraphIcon, (e) -> {
+        addAddButtons("create_limnigraph", BamItemType.LIMNIGRAPH.getAddIcon(), (e) -> {
             addLimnigraph();
         });
-        addAddButtons("create_hydrograph", addHydrographIcon, (e) -> {
+        addAddButtons("create_hydrograph", BamItemType.HYDROGRAPH.getAddIcon(), (e) -> {
             addHydrograph();
         });
 
@@ -128,35 +103,35 @@ public class BaratinProject extends BamProject {
         hydraulicConfig = new ExplorerItem(
                 "hc",
                 "Configurations hydrauliques",
-                hydraulicConfigIcon);
+                BamItemType.HYDRAULIC_CONFIG.getIcon());
         this.explorer.appendItem(hydraulicConfig);
 
         gaugings = new ExplorerItem(
                 "g",
                 "Jeux de jaugeages",
-                gaugingsIcon);
+                BamItemType.GAUGINGS.getIcon());
         this.explorer.appendItem(gaugings);
 
         structuralError = new ExplorerItem(
                 "se",
                 "Modèles d'erreur structurelle",
-                structuralErrorIcon);
+                BamItemType.STRUCTURAL_ERROR.getIcon());
         this.explorer.appendItem(structuralError);
 
         ratingCurve = new ExplorerItem(
                 "rc",
                 "Courbes de tarage",
-                ratingCurveIcon);
+                BamItemType.RATING_CURVE.getIcon());
         this.explorer.appendItem(ratingCurve);
 
         limnigraph = new ExplorerItem("lts",
                 "Limnigramme",
-                limnigraphIcon);
+                BamItemType.LIMNIGRAPH.getIcon());
         this.explorer.appendItem(limnigraph);
 
         hydrograph = new ExplorerItem("hts",
                 "Hydrogramme",
-                hydrographIcon);
+                BamItemType.HYDROGRAPH.getIcon());
         this.explorer.appendItem(hydrograph);
 
     }
@@ -178,11 +153,11 @@ public class BaratinProject extends BamProject {
         ExplorerItem explorerItem = new ExplorerItem(
                 hc.ID,
                 hc.bamItemNameField.getText(),
-                hydraulicConfigIcon,
+                BamItemType.HYDRAULIC_CONFIG.getIcon(),
                 hydraulicConfig);
         addItem(hc, explorerItem);
         Lg.register(hc.bamItemTypeLabel, "hydraulic_config");
-        hc.bamItemTypeLabel.setIcon(hydraulicConfigIcon);
+        hc.bamItemTypeLabel.setIcon(BamItemType.HYDRAULIC_CONFIG.getIcon());
         hc.cloneButton.addActionListener((e) -> {
             HydraulicConfiguration newHc = (HydraulicConfiguration) hc.clone();
             newHc.setCopyName();
@@ -209,11 +184,11 @@ public class BaratinProject extends BamProject {
         ExplorerItem explorerItem = new ExplorerItem(
                 g.ID,
                 g.bamItemNameField.getText(),
-                gaugingsIcon,
+                BamItemType.GAUGINGS.getIcon(),
                 gaugings);
         addItem(g, explorerItem);
         Lg.register(g.bamItemTypeLabel, "gaugings");
-        g.bamItemTypeLabel.setIcon(gaugingsIcon);
+        g.bamItemTypeLabel.setIcon(BamItemType.GAUGINGS.getIcon());
         g.cloneButton.addActionListener((e) -> {
             Gaugings newG = (Gaugings) g.clone();
             newG.setCopyName();
@@ -239,11 +214,11 @@ public class BaratinProject extends BamProject {
         ExplorerItem explorerItem = new ExplorerItem(
                 se.ID,
                 se.bamItemNameField.getText(),
-                structuralErrorIcon,
+                BamItemType.STRUCTURAL_ERROR.getIcon(),
                 structuralError);
         addItem(se, explorerItem);
         Lg.register(se.bamItemTypeLabel, "structural_error_model");
-        se.bamItemTypeLabel.setIcon(structuralErrorIcon);
+        se.bamItemTypeLabel.setIcon(BamItemType.STRUCTURAL_ERROR.getIcon());
         se.cloneButton.addActionListener((e) -> {
             StructuralError newSe = (StructuralError) se.clone();
             newSe.setCopyName();
@@ -270,11 +245,11 @@ public class BaratinProject extends BamProject {
         ExplorerItem explorerItem = new ExplorerItem(
                 rc.ID,
                 rc.bamItemNameField.getText(),
-                ratingCurveIcon,
+                BamItemType.RATING_CURVE.getIcon(),
                 ratingCurve);
         addItem(rc, explorerItem);
         Lg.register(rc.bamItemTypeLabel, "rating_curve");
-        rc.bamItemTypeLabel.setIcon(ratingCurveIcon);
+        rc.bamItemTypeLabel.setIcon(BamItemType.RATING_CURVE.getIcon());
         rc.cloneButton.addActionListener((e) -> {
             RatingCurve newRc = (RatingCurve) rc.clone();
             newRc.setCopyName();
@@ -300,11 +275,11 @@ public class BaratinProject extends BamProject {
         ExplorerItem explorerItem = new ExplorerItem(
                 l.ID,
                 l.bamItemNameField.getText(),
-                limnigraphIcon,
+                BamItemType.LIMNIGRAPH.getIcon(),
                 limnigraph);
         addItem(l, explorerItem);
         Lg.register(l.bamItemTypeLabel, "limnigraph");
-        l.bamItemTypeLabel.setIcon(limnigraphIcon);
+        l.bamItemTypeLabel.setIcon(BamItemType.LIMNIGRAPH.getIcon());
         l.cloneButton.addActionListener((e) -> {
             Limnigraph newL = (Limnigraph) l.clone();
             newL.setCopyName();
@@ -330,11 +305,11 @@ public class BaratinProject extends BamProject {
         ExplorerItem explorerItem = new ExplorerItem(
                 h.ID,
                 h.bamItemNameField.getText(),
-                hydrographIcon,
+                BamItemType.HYDROGRAPH.getIcon(),
                 hydrograph);
         addItem(h, explorerItem);
         Lg.register(h.bamItemTypeLabel, "hydrograph");
-        h.bamItemTypeLabel.setIcon(hydrographIcon);
+        h.bamItemTypeLabel.setIcon(BamItemType.HYDROGRAPH.getIcon());
         h.cloneButton.addActionListener((e) -> {
             Hydrograph newH = (Hydrograph) h.clone();
             newH.setCopyName();
