@@ -108,7 +108,7 @@ public class LimnigraphImporter extends RowColPanel {
                 int stageColIndex = stageColComboBox.getSelectedIndex();
                 stageData.add(dataParser.getDoubleCol(stageColIndex));
             }
-            dataset = new LimnigraphDataset(fileName, dateTimeVector, stageData);
+            dataset = LimnigraphDataset.buildLimnigraphDataset(fileName, dateTimeVector, stageData);
             dialog.setVisible(false);
 
         });
