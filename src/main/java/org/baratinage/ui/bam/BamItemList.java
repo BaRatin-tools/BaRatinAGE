@@ -1,7 +1,6 @@
 package org.baratinage.ui.bam;
 
 import java.util.ArrayList;
-import java.util.EventListener;
 import java.util.List;
 
 import org.baratinage.ui.lg.Lg;
@@ -9,16 +8,8 @@ import org.baratinage.utils.Misc;
 
 public class BamItemList extends ArrayList<BamItem> {
 
-    private ArrayList<BamItemListChangeListener> bamItemListChangeListeners;
-
-    @FunctionalInterface
-    public interface BamItemListChangeListener extends EventListener {
-        public void onBamItemListChange(BamItemList bamItemList);
-    }
-
     public BamItemList() {
         super();
-        bamItemListChangeListeners = new ArrayList<>();
     }
 
     public BamItemList(List<BamItem> bamItems) {
@@ -32,28 +23,20 @@ public class BamItemList extends ArrayList<BamItem> {
     @Override
     public boolean add(BamItem item) {
         boolean res = super.add(item);
-        fireChangeListeners();
+        notifyAllBamItems();
         return res;
     }
 
     @Override
     public boolean remove(Object item) {
         boolean res = super.remove(item);
-        fireChangeListeners();
+        notifyAllBamItems();
         return res;
     }
 
-    public void addChangeListener(BamItemListChangeListener updateListener) {
-        bamItemListChangeListeners.add(updateListener);
-    }
-
-    public void removeChangeListener(BamItemListChangeListener updateListener) {
-        bamItemListChangeListeners.remove(updateListener);
-    }
-
-    public void fireChangeListeners() {
-        for (BamItemListChangeListener listener : bamItemListChangeListeners) {
-            listener.onBamItemListChange(this);
+    private void notifyAllBamItems() {
+        for (BamItem bamItem : this) {
+            bamItem.onBamItemListChange();
         }
     }
 

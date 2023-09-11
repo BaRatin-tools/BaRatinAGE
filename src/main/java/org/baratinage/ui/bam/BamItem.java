@@ -195,4 +195,7 @@ abstract public class BamItem extends GridPanel {
         String newName = Lg.text("copy_of", oldName);
         bamItemNameField.setText(newName);
     }
+
+    public void onBamItemListChange() {
+    };
 }

@@ -114,23 +114,7 @@ public class BaratinProject extends BamProject {
         addBamItem(BamItemType.HYDRAULIC_CONFIG);
     }
 
-    @Override
-    public void deleteItem(BamItem bamItem, ExplorerItem explorerItem) {
-        // if (bamItem instanceof RatingCurve) {
-        // // necessary to make sure it gets garbage collected
-        // RatingCurve rc = (RatingCurve) bamItem;
-        // BAM_ITEMS.removeChangeListener(rc);
-        // }
-        // BAM_ITEMS.removeChangeListener(bamItem);
-        super.deleteItem(bamItem, explorerItem);
-    }
-
     public BamItem addBamItem(BamItem item) {
-
-        if (item.TYPE.matchOneOf(BamItemType.RATING_CURVE)) {
-            RatingCurve rc = (RatingCurve) item;
-            BAM_ITEMS.addChangeListener(rc);
-        }
 
         ExplorerItem explorerItem = new ExplorerItem(
                 item.ID,

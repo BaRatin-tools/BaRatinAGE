@@ -99,7 +99,7 @@ public abstract class BamProject extends RowColPanel {
         }
     }
 
-    public void addItem(BamItem bamItem, ExplorerItem explorerItem) {
+    protected void addItem(BamItem bamItem, ExplorerItem explorerItem) {
 
         String cloneIconPath = Path.of(AppConfig.AC.ICONS_RESOURCES_DIR, "feather", "copy.svg").toString();
         String deleteIconPath = Path.of(AppConfig.AC.ICONS_RESOURCES_DIR, "feather", "trash.svg").toString();
@@ -138,7 +138,7 @@ public abstract class BamProject extends RowColPanel {
 
     }
 
-    public void deleteItem(BamItem bamItem, ExplorerItem explorerItem) {
+    protected void deleteItem(BamItem bamItem, ExplorerItem explorerItem) {
         BAM_ITEMS.remove(bamItem);
         EXPLORER_ITEMS.remove(explorerItem);
         this.explorer.removeItem(explorerItem);

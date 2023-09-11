@@ -25,7 +25,7 @@ import org.baratinage.ui.lg.Lg;
 
 import org.json.JSONObject;
 
-public class RatingCurve extends BamItem implements ICalibratedModel, IMcmc, BamItemList.BamItemListChangeListener {
+public class RatingCurve extends BamItem implements ICalibratedModel, IMcmc {
 
     private BamItemParent hydrauConfParent;
     private BamItemParent gaugingsParent;
@@ -150,7 +150,7 @@ public class RatingCurve extends BamItem implements ICalibratedModel, IMcmc, Bam
         outdatedInfoPanel.setGap(2);
         outdatedInfoPanel.setColWeight(0, 1);
 
-        onBamItemListChange(PROJECT.BAM_ITEMS);
+        onBamItemListChange();
 
     }
 
@@ -301,7 +301,8 @@ public class RatingCurve extends BamItem implements ICalibratedModel, IMcmc, Bam
     }
 
     @Override
-    public void onBamItemListChange(BamItemList bamItemList) {
+    public void onBamItemListChange() {
+        BamItemList bamItemList = PROJECT.BAM_ITEMS;
         hydrauConfParent.updateCombobox(bamItemList);
         gaugingsParent.updateCombobox(bamItemList);
         structErrorParent.updateCombobox(bamItemList);
