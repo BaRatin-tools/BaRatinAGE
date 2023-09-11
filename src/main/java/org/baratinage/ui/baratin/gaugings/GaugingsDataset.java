@@ -9,11 +9,8 @@ import org.baratinage.ui.plot.PlotPoints;
 
 public class GaugingsDataset extends ImportedDataset {
 
-    public GaugingsDataset() {
-        super();
-    }
+    public static GaugingsDataset buildGaugingDataset(String name, List<double[]> data) {
 
-    public GaugingsDataset(String name, List<double[]> data) {
         // WARNINGS:
         // - data must have three columns! Stage, discharge and discharge uncertainty!
         // - uncertainty is specified in percent and represents extended (+/-)
@@ -25,23 +22,38 @@ public class GaugingsDataset extends ImportedDataset {
             gaugingsActiveState[k] = 1;
         }
         data.add(gaugingsActiveState);
-        setData(data, new String[] { "h", "Q", "uQ_percent", "active" });
-        setDatasetName(name);
+
+        String[] headers = new String[] { "h", "Q", "uQ_percent", "active" };
+
+        return new GaugingsDataset(name, data, headers);
+    }
+
+    public static GaugingsDataset buildGaugingDataset(String name, String dataFilePath) {
+        return new GaugingsDataset(name, dataFilePath);
+    }
+
+    private GaugingsDataset(String name, List<double[]> data, String[] headers) {
+        super(name, data, headers);
+    }
+
+    private GaugingsDataset(String name, String dataFilePath) {
+        super(name, dataFilePath);
     }
 
     public double[] getStageValues() {
-        return data.get(0);
+        return getColumn(0);
     }
 
     public double[] getDischargeValues() {
-        return data.get(1);
+        return getColumn(1);
     }
 
     public double[] getDischargePercentUncertainty() {
-        return data.get(2);
+        return getColumn(2);
     }
 
     public double[] getDischargeStdUncertainty() {
+        int nRow = getNumberOfRows();
         double[] u = new double[nRow];
         double[] q = getDischargeValues();
         double[] uqp = getDischargePercentUncertainty();
@@ -76,10 +88,11 @@ public class GaugingsDataset extends ImportedDataset {
     }
 
     public double[] getActiveStateAsDouble() {
-        return data.get(3);
+        return getColumn(3);
     }
 
     public boolean[] getActiveStateAsBoolean() {
+        int nRow = getNumberOfRows();
         double[] activeStateAsDouble = getActiveStateAsDouble();
         boolean[] activeStateAsBoolean = new boolean[activeStateAsDouble.length];
         for (int k = 0; k < nRow; k++) {
@@ -98,10 +111,10 @@ public class GaugingsDataset extends ImportedDataset {
     }
 
     public void setGauging(int gaugingIndex, Gauging newGauging) {
-        data.get(0)[gaugingIndex] = newGauging.stage;
-        data.get(1)[gaugingIndex] = newGauging.discharge;
-        data.get(2)[gaugingIndex] = newGauging.dischargeUncertainty;
-        data.get(3)[gaugingIndex] = newGauging.activeState ? 1 : 0;
+        getColumn(0)[gaugingIndex] = newGauging.stage;
+        getColumn(1)[gaugingIndex] = newGauging.discharge;
+        getColumn(2)[gaugingIndex] = newGauging.dischargeUncertainty;
+        getColumn(3)[gaugingIndex] = newGauging.activeState ? 1 : 0;
     }
 
     private static List<List<double[]>> splitMatrix(List<double[]> data,

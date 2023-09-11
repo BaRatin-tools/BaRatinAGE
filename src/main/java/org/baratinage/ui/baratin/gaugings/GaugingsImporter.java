@@ -116,9 +116,8 @@ public class GaugingsImporter extends RowColPanel {
             data.add(dataParser.getDoubleCol(columnsMapping.qCol.getSelectedIndex()));
             data.add(dataParser.getDoubleCol(columnsMapping.uqCol.getSelectedIndex()));
 
-            dataset = new GaugingsDataset(
-                    fileName,
-                    data);
+            dataset = GaugingsDataset.buildGaugingDataset(fileName, data);
+
             dialog.setVisible(false);
 
         });
@@ -143,8 +142,6 @@ public class GaugingsImporter extends RowColPanel {
             dataParser.setAsDoubleCol(columnsMapping.hCol.getSelectedIndex());
             dataParser.setAsDoubleCol(columnsMapping.qCol.getSelectedIndex());
             dataParser.setAsDoubleCol(columnsMapping.uqCol.getSelectedIndex());
-
-            // columnsMapping.recordCurrentIndices();
 
             dataParser.setRawData(rawData, headers, missingValueString);
 

@@ -147,7 +147,6 @@ public class Gaugings extends BamItem implements ICalibrationData {
         }
         int hashCode = gaugingDataset.hashCode();
         String sanitizedName = Misc.sanitizeName(bamItemNameField.getText()) + "_" + hashCode;
-        // FIXME: writting data at the root of BAM_WORKSPACE... good idea? NO!!
         String dataFileName = String.format(BamFilesHelpers.DATA_CALIBRATION, sanitizedName);
         return new CalibrationData(
                 sanitizedName,
@@ -160,11 +159,11 @@ public class Gaugings extends BamItem implements ICalibrationData {
     @Override
     public String[] getTempDataFileNames() {
         return gaugingDataset == null ? new String[] {}
-                : new String[] { getDataFileName(gaugingDataset.getDatasetName(), gaugingDataset.hashCode()) };
+                : new String[] { buildDataFileName(gaugingDataset.getDatasetName(), gaugingDataset.hashCode()) };
     }
 
-    public String getDataFileName(String name, int hashCode) {
-        return gaugingDataset == null ? null : name + "_" + hashCode + ".txt";
+    private static String buildDataFileName(String name, int hashCode) {
+        return name + "_" + hashCode + ".txt";
     }
 
     @Override
@@ -177,7 +176,7 @@ public class Gaugings extends BamItem implements ICalibrationData {
             gaugingDatasetJson.put("name", gaugingDataset.getDatasetName());
             gaugingDatasetJson.put("hashCode", gaugingDataset.hashCode());
             json.put("gaugingDataset", gaugingDatasetJson);
-            String dataFilePath = Path.of(AppConfig.AC.APP_TEMP_DIR, getDataFileName(
+            String dataFilePath = Path.of(AppConfig.AC.APP_TEMP_DIR, buildDataFileName(
                     gaugingDataset.getDatasetName(),
                     gaugingDataset.hashCode())).toString();
             gaugingDataset.writeDataFile(dataFilePath);
@@ -193,15 +192,12 @@ public class Gaugings extends BamItem implements ICalibrationData {
             JSONObject gaugingDatasetJson = json.getJSONObject("gaugingDataset");
             String name = gaugingDatasetJson.getString("name");
             int hashCode = gaugingDatasetJson.getInt("hashCode");
-            // String dataFileName = gaugingDatasetJson.getString("dataFileName");
-            gaugingDataset = new GaugingsDataset();
-            gaugingDataset.setDatasetName(name);
 
-            String dataFilePath = Path.of(AppConfig.AC.APP_TEMP_DIR, getDataFileName(name, hashCode))
+            String dataFilePath = Path.of(AppConfig.AC.APP_TEMP_DIR, buildDataFileName(name, hashCode))
                     .toString();
             if (Files.exists(Path.of(dataFilePath))) {
                 System.out.println("Reading file ... (" + dataFilePath + ")");
-                gaugingDataset.setDataFromFile(dataFilePath);
+                gaugingDataset = GaugingsDataset.buildGaugingDataset(name, dataFilePath);
             } else {
                 System.err.println("No file found (" + dataFilePath + ")");
             }
