@@ -1,11 +1,15 @@
 package org.baratinage.ui.baratin;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JSplitPane;
 
 import org.baratinage.jbam.PredictionInput;
+import org.baratinage.ui.AppConfig;
 import org.baratinage.ui.bam.BamItem;
 import org.baratinage.ui.bam.BamItemType;
 import org.baratinage.ui.bam.IPredictionData;
@@ -17,6 +21,7 @@ import org.baratinage.ui.lg.Lg;
 import org.baratinage.ui.plot.Plot;
 import org.baratinage.ui.plot.PlotContainer;
 import org.baratinage.ui.plot.PlotItem;
+import org.baratinage.utils.Misc;
 import org.json.JSONObject;
 
 public class Limnigraph extends BamItem implements IPredictionData {
@@ -103,18 +108,64 @@ public class Limnigraph extends BamItem implements IPredictionData {
 
     @Override
     public PredictionInput[] getPredictionInputs() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getPredictionInputs'");
+        if (limniDataset == null) {
+            return null;
+        }
+        return new PredictionInput[] {
+                new PredictionInput(
+                        "limni_" + Misc.getTimeStampedId(),
+                        limniDataset.getDatasetName(),
+                        limniDataset.getStageMatrix()) };
+
+    }
+
+    @Override
+    public String[] getTempDataFileNames() {
+        return limniDataset == null ? new String[] {}
+                : new String[] { buildDataFileName(limniDataset.getDatasetName(), limniDataset.hashCode()) };
+    }
+
+    private static String buildDataFileName(String name, int hashCode) {
+        return name + "_" + hashCode + ".txt";
     }
 
     @Override
     public JSONObject toJSON() {
-        return new JSONObject();
+
+        JSONObject json = new JSONObject();
+
+        if (limniDataset != null) {
+            JSONObject limniDatasetJson = new JSONObject();
+            limniDatasetJson.put("name", limniDataset.getDatasetName());
+            limniDatasetJson.put("hashCode", limniDataset.hashCode());
+            json.put("limniDataset", limniDatasetJson);
+            String dataFilePath = Path.of(AppConfig.AC.APP_TEMP_DIR, buildDataFileName(
+                    limniDataset.getDatasetName(),
+                    limniDataset.hashCode())).toString();
+            limniDataset.writeDataFile(dataFilePath);
+        }
+
+        return json;
     }
 
     @Override
-    public void fromJSON(JSONObject jsonString) {
-        // do nothing
+    public void fromJSON(JSONObject json) {
+
+        if (json.has("limniDataset")) {
+            JSONObject limniDatasetJson = json.getJSONObject("limniDataset");
+            String name = limniDatasetJson.getString("name");
+            int hashCode = limniDatasetJson.getInt("hashCode");
+
+            String dataFilePath = Path.of(AppConfig.AC.APP_TEMP_DIR, buildDataFileName(name, hashCode))
+                    .toString();
+            if (Files.exists(Path.of(dataFilePath))) {
+                System.out.println("Reading file ... (" + dataFilePath + ")");
+                limniDataset = LimnigraphDataset.buildLimnigraphDataset(name, dataFilePath);
+            } else {
+                System.err.println("No file found (" + dataFilePath + ")");
+            }
+            updateTable();
+        }
     }
 
     @Override

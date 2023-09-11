@@ -4,6 +4,7 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -26,7 +27,7 @@ public class LimnigraphTable extends RowColPanel {
         table = new JTable(dataModel);
         table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 
-        setHeaders(new String[] { "" });
+        setHeaders(new String[] { "data/time", "h" });
 
         table.setDefaultRenderer(LocalDateTime.class, new DateTimeCellRenderer("yyyy-MM-dd HH:mm:ss"));
 
@@ -66,15 +67,11 @@ public class LimnigraphTable extends RowColPanel {
     public void setHeaders(String[] headers) {
         TableColumnModel tableColModel = getTableColumnModel();
 
-        // if (dataModel.limniDataset == null) {
-        // return;
-        // }
-
+        for (int k = 0; k < headers.length; k++) {
+            tableColModel.getColumn(k).setHeaderValue(headers[k]);
+        }
         tableColModel.getColumn(0).setHeaderValue(Lg.text("date_time"));
 
-        for (int k = 0; k < headers.length; k++) {
-            tableColModel.getColumn(k + 1).setHeaderValue(headers[k]);
-        }
         table.getTableHeader().updateUI();
     }
 
@@ -102,7 +99,7 @@ public class LimnigraphTable extends RowColPanel {
 
         @Override
         public int getColumnCount() {
-            return limniDataset == null ? 2 : limniDataset.getNumberOfColumns() + 1;
+            return limniDataset == null ? 2 : limniDataset.getNumberOfColumns();
         }
 
         @Override
@@ -116,7 +113,14 @@ public class LimnigraphTable extends RowColPanel {
 
             if (columnIndex == 0)
                 return limniDataset.getDateTime(rowIndex);
-            return limniDataset.getStageValue(rowIndex, columnIndex - 1);
+            List<double[]> data = limniDataset.getStageMatrix();
+            if (data.size() >= columnIndex) {
+                double[] column = data.get(columnIndex - 1);
+                if (column.length > rowIndex) {
+                    return column[rowIndex];
+                }
+            }
+            return null;
         }
 
         @Override
