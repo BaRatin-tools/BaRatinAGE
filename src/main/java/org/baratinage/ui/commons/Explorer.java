@@ -98,6 +98,27 @@ public class Explorer extends RowColPanel {
         this.explorerTreeModel.nodeStructureChanged(root);
     }
 
+    private ExplorerItem searchItem(String id, ExplorerItem parentItem) {
+        int n = parentItem.getChildCount();
+        for (int k = 0; k < n; k++) {
+            ExplorerItem child = (ExplorerItem) parentItem.getChildAt(k);
+            if (child.id.equals(id)) {
+                return child;
+            } else {
+                ExplorerItem grandChild = searchItem(id, child);
+                if (grandChild != null) {
+                    return grandChild;
+                }
+
+            }
+        }
+        return null;
+    }
+
+    public ExplorerItem getItem(String id) {
+        return searchItem(id, rootNode);
+    }
+
     private class CustomRenderer extends DefaultTreeCellRenderer {
 
         @Override
