@@ -1,5 +1,6 @@
 package org.baratinage.ui.baratin;
 
+import java.awt.event.ActionListener;
 import java.nio.file.Path;
 import java.util.UUID;
 
@@ -44,6 +45,7 @@ public class BaratinProject extends BamProject {
     private ExplorerItem structuralError;
     private ExplorerItem ratingCurve;
     private ExplorerItem limnigraph;
+    private ExplorerItem hydrograph;
 
     static private ImageIcon buildIcon(String iconName, int iconSize) {
         return SvgIcon
@@ -60,11 +62,15 @@ public class BaratinProject extends BamProject {
     static private final ImageIcon structuralErrorIcon = buildIcon("structural_error.svg", iconSize);
     static private final ImageIcon ratingCurveIcon = buildIcon("rating_curve.svg", iconSize);
     static private final ImageIcon limnigraphIcon = buildIcon("limnigraph.svg", iconSize);
+    static private final ImageIcon hydrographIcon = buildIcon("hydrograph.svg", iconSize);
     static private final ImageIcon addHydraulicConfigIcon = buildIcon("hydraulic_config_add.svg", iconSize);
     static private final ImageIcon addGaugingsIcon = buildIcon("gaugings_add.svg", iconSize);
     static private final ImageIcon addStructuralErrorIcon = buildIcon("structural_error_add.svg", iconSize);
     static private final ImageIcon addRatingCurveIcon = buildIcon("rating_curve_add.svg", iconSize);
     static private final ImageIcon addLimnigraphIcon = buildIcon("limnigraph_add.svg", iconSize);
+    static private final ImageIcon addHydrographIcon = buildIcon("hydrograph_add.svg", iconSize);
+
+    private JMenu baratinMenu;
 
     public BaratinProject() {
         super();
@@ -76,80 +82,40 @@ public class BaratinProject extends BamProject {
         } else {
             AppConfig.AC.APP_MAIN_FRAME.baratinMenu.removeAll();
         }
-        JMenu baratinMenu = AppConfig.AC.APP_MAIN_FRAME.baratinMenu;
+        baratinMenu = AppConfig.AC.APP_MAIN_FRAME.baratinMenu;
 
-        JMenuItem menuBtnNewHydraulicConfig = new JMenuItem();
-        Lg.register(menuBtnNewHydraulicConfig, "create_hydraulic_config");
-        menuBtnNewHydraulicConfig.setIcon(addHydraulicConfigIcon);
-        menuBtnNewHydraulicConfig.addActionListener(e -> {
+        addAddButtons("create_hydraulic_config", addHydraulicConfigIcon, (e) -> {
             addHydraulicConfig();
         });
-        baratinMenu.add(menuBtnNewHydraulicConfig);
-
-        JButton btnNewHydraulicConfig = new JButton(addHydraulicConfigIcon);
-        btnNewHydraulicConfig.addActionListener(e -> {
-            addHydraulicConfig();
-        });
-        toolBar.add(btnNewHydraulicConfig);
-
-        JMenuItem menuBtnNewGaugings = new JMenuItem();
-        Lg.register(menuBtnNewGaugings, "create_gaugings");
-        menuBtnNewGaugings.setIcon(addGaugingsIcon);
-        menuBtnNewGaugings.addActionListener(e -> {
+        addAddButtons("create_gaugings", addGaugingsIcon, (e) -> {
             addGaugings();
         });
-        baratinMenu.add(menuBtnNewGaugings);
-
-        JButton btnNewGaugings = new JButton(addGaugingsIcon);
-        btnNewGaugings.addActionListener(e -> {
-            addGaugings();
-        });
-        toolBar.add(btnNewGaugings);
-
-        JMenuItem menuBtnNewStructErrorModel = new JMenuItem();
-        Lg.register(menuBtnNewStructErrorModel, "create_structural_error_model");
-        menuBtnNewStructErrorModel.setIcon(addStructuralErrorIcon);
-        menuBtnNewStructErrorModel.addActionListener(e -> {
+        addAddButtons("create_structural_error_model", addStructuralErrorIcon, (e) -> {
             addStructuralErrorModel();
         });
-        baratinMenu.add(menuBtnNewStructErrorModel);
-
-        JButton btnNewStructErrorModel = new JButton(addStructuralErrorIcon);
-        btnNewStructErrorModel.addActionListener(e -> {
-            addStructuralErrorModel();
-        });
-        toolBar.add(btnNewStructErrorModel);
-
-        JMenuItem menuBtnNewRatingCurve = new JMenuItem();
-        Lg.register(menuBtnNewRatingCurve, "create_rating_curve");
-        menuBtnNewRatingCurve.setIcon(addRatingCurveIcon);
-        menuBtnNewRatingCurve.addActionListener(e -> {
+        addAddButtons("create_rating_curve", addRatingCurveIcon, (e) -> {
             addRatingCurve();
         });
-        baratinMenu.add(menuBtnNewRatingCurve);
-
-        JButton btnNewRatingCurve = new JButton(addRatingCurveIcon);
-        btnNewRatingCurve.addActionListener(e -> {
-            addRatingCurve();
-        });
-        toolBar.add(btnNewRatingCurve);
-
-        JMenuItem menuBtnNewLimnigraph = new JMenuItem();
-        Lg.register(menuBtnNewLimnigraph, "create_limnigraph");
-        menuBtnNewLimnigraph.setIcon(addLimnigraphIcon);
-        menuBtnNewLimnigraph.addActionListener(e -> {
+        addAddButtons("create_limnigraph", addLimnigraphIcon, (e) -> {
             addLimnigraph();
         });
-        baratinMenu.add(menuBtnNewLimnigraph);
-
-        JButton btnNewLimnigraph = new JButton(addLimnigraphIcon);
-        btnNewLimnigraph.addActionListener(e -> {
-            addLimnigraph();
+        addAddButtons("create_hydrograph", addHydrographIcon, (e) -> {
+            addHydrograph();
         });
-        toolBar.add(btnNewLimnigraph);
 
         setupExplorer();
 
+    }
+
+    private void addAddButtons(String lgCreateItemKey, ImageIcon addIcon, ActionListener onAdd) {
+        JMenuItem menuButton = new JMenuItem();
+        Lg.register(menuButton, lgCreateItemKey);
+        menuButton.setIcon(addIcon);
+        menuButton.addActionListener(onAdd);
+        baratinMenu.add(menuButton);
+        JButton toolbarButton = new JButton(addIcon);
+        toolbarButton.addActionListener(onAdd);
+        toolBar.add(toolbarButton);
     }
 
     public void addDefaultItems() {
@@ -188,6 +154,11 @@ public class BaratinProject extends BamProject {
                 limnigraphIcon);
         this.explorer.appendItem(limnigraph);
 
+        hydrograph = new ExplorerItem("hts",
+                "Hydrogramme",
+                hydrographIcon);
+        this.explorer.appendItem(hydrograph);
+
     }
 
     @Override
@@ -199,7 +170,10 @@ public class BaratinProject extends BamProject {
         super.deleteItem(bamItem, explorerItem);
     }
 
-    public HydraulicConfiguration addHydraulicConfig(HydraulicConfiguration hc) {
+    // --------------------------------------------------------------
+    // Hydraulic Configuration --------------------------------------
+
+    private HydraulicConfiguration addHydraulicConfig(HydraulicConfiguration hc) {
 
         ExplorerItem explorerItem = new ExplorerItem(
                 hc.ID,
@@ -218,7 +192,7 @@ public class BaratinProject extends BamProject {
         return hc;
     }
 
-    public HydraulicConfiguration addHydraulicConfig(String uuid) {
+    private HydraulicConfiguration addHydraulicConfig(String uuid) {
         HydraulicConfiguration hc = new HydraulicConfiguration(uuid, this);
         hc.bamItemNameField.setText(BAM_ITEMS.getDefaultName(BamItemType.HYDRAULIC_CONFIG));
         return addHydraulicConfig(hc);
@@ -227,6 +201,9 @@ public class BaratinProject extends BamProject {
     public HydraulicConfiguration addHydraulicConfig() {
         return addHydraulicConfig(UUID.randomUUID().toString());
     }
+
+    // --------------------------------------------------------------
+    // Gaugings -----------------------------------------------------
 
     public Gaugings addGaugings(Gaugings g) {
         ExplorerItem explorerItem = new ExplorerItem(
@@ -255,6 +232,9 @@ public class BaratinProject extends BamProject {
         return addGaugings(UUID.randomUUID().toString());
     }
 
+    // --------------------------------------------------------------
+    // Structural Error ---------------------------------------------
+
     public StructuralError addStructuralErrorModel(StructuralError se) {
         ExplorerItem explorerItem = new ExplorerItem(
                 se.ID,
@@ -281,6 +261,9 @@ public class BaratinProject extends BamProject {
     public StructuralError addStructuralErrorModel() {
         return addStructuralErrorModel(UUID.randomUUID().toString());
     }
+
+    // --------------------------------------------------------------
+    // Rating Curve -------------------------------------------------
 
     public RatingCurve addRatingCurve(RatingCurve rc) {
         BAM_ITEMS.addChangeListener(rc); // needed because the component has parents
@@ -310,6 +293,9 @@ public class BaratinProject extends BamProject {
         return addRatingCurve(UUID.randomUUID().toString());
     }
 
+    // --------------------------------------------------------------
+    // Limnigraph ---------------------------------------------------
+
     public Limnigraph addLimnigraph(Limnigraph l) {
         ExplorerItem explorerItem = new ExplorerItem(
                 l.ID,
@@ -335,6 +321,36 @@ public class BaratinProject extends BamProject {
 
     public Limnigraph addLimnigraph() {
         return addLimnigraph(UUID.randomUUID().toString());
+    }
+
+    // --------------------------------------------------------------
+    // Hydrograph ---------------------------------------------------
+
+    public Hydrograph addHydrograph(Hydrograph h) {
+        ExplorerItem explorerItem = new ExplorerItem(
+                h.ID,
+                h.bamItemNameField.getText(),
+                hydrographIcon,
+                hydrograph);
+        addItem(h, explorerItem);
+        Lg.register(h.bamItemTypeLabel, "hydrograph");
+        h.bamItemTypeLabel.setIcon(hydrographIcon);
+        h.cloneButton.addActionListener((e) -> {
+            Hydrograph newH = (Hydrograph) h.clone();
+            newH.setCopyName();
+            addHydrograph(newH);
+        });
+        return h;
+    }
+
+    public Hydrograph addHydrograph(String uuid) {
+        Hydrograph h = new Hydrograph(uuid, this);
+        h.bamItemNameField.setText(BAM_ITEMS.getDefaultName(BamItemType.HYDROGRAPH));
+        return addHydrograph(h);
+    }
+
+    public Hydrograph addHydrograph() {
+        return addHydrograph(UUID.randomUUID().toString());
     }
 
     @Override
