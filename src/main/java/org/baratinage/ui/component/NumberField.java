@@ -5,6 +5,7 @@ import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
 
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -141,16 +142,11 @@ public class NumberField extends RowColPanel {
         setValueValidity(textField.isTextValid());
     }
 
-    @FunctionalInterface
-    public interface NumberValidator {
-        boolean isNumberValid(double nbr);
-    }
-
-    public void addValidator(NumberValidator validator) {
+    public void addValidator(Predicate<Double> validator) {
         textField.addTextValidator((txt) -> {
             try {
                 double nbr = Double.parseDouble(txt);
-                return validator.isNumberValid(nbr);
+                return validator.test(nbr);
             } catch (Exception e) {
                 return false;
             }

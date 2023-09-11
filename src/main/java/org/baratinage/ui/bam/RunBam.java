@@ -30,6 +30,7 @@ import org.baratinage.jbam.StructuralErrorModel;
 import org.baratinage.jbam.UncertainData;
 import org.baratinage.jbam.utils.BamFilesHelpers;
 import org.baratinage.jbam.utils.Monitoring;
+import org.baratinage.utils.Action;
 import org.baratinage.utils.Misc;
 import org.baratinage.utils.ReadWriteZip;
 import org.baratinage.ui.AppConfig;
@@ -186,12 +187,7 @@ public class RunBam {
         bam = new BaM(calibrationConfig, predConfigs, runOptions);
     };
 
-    @FunctionalInterface
-    public interface IRunWhenFinished {
-        public void run();
-    }
-
-    public void run(IRunWhenFinished runWhenDone) {
+    public void run(Action runWhenDone) {
 
         // setup dialog
         monitoringDialog = new JDialog(AppConfig.AC.APP_MAIN_FRAME, true);

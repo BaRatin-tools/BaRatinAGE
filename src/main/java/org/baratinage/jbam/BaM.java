@@ -8,6 +8,7 @@ import java.io.InputStreamReader;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 import org.baratinage.jbam.utils.BamFilesHelpers;
 import org.baratinage.jbam.utils.ConfigFile;
@@ -17,11 +18,6 @@ public class BaM {
     public static final String EXE_COMMAND = BamFilesHelpers.OS.startsWith("windows")
             ? Path.of(BamFilesHelpers.EXE_DIR, String.format("%s.exe", BamFilesHelpers.EXE_NAME)).toString()
             : String.format("./%s", BamFilesHelpers.EXE_NAME);
-
-    @FunctionalInterface
-    public interface ConsoleOutputFollower {
-        public void onConsoleLog(String logMessage);
-    }
 
     private Process bamExecutionProcess;
 
@@ -81,7 +77,7 @@ public class BaM {
         }
     }
 
-    private void toFiles(String workspace) { // exeDir no longer needed
+    private void toFiles(String workspace) {
 
         // FIXME: assuming that that these filenames are fixed which may not
         // in particular for the prediction master file
@@ -147,7 +143,7 @@ public class BaM {
         return this.bamExecutionProcess;
     }
 
-    public String run(String workspace, ConsoleOutputFollower consoleOutputFollower)
+    public String run(String workspace, Consumer<String> consoleOutputFollower)
             throws IOException {
 
         // Delete workspace content
@@ -180,7 +176,7 @@ public class BaM {
         try {
             while ((currentLine = bufferReader.readLine()) != null) {
                 consoleLines.add(currentLine);
-                consoleOutputFollower.onConsoleLog(currentLine);
+                consoleOutputFollower.accept(currentLine);
             }
         } catch (IOException e) {
             e.printStackTrace();
