@@ -60,7 +60,6 @@ public abstract class BamProject extends RowColPanel {
 
         explorer = new Explorer();
         Lg.register(explorer.headerLabel, "explorer");
-        // LgElement.registerLabel(explorer.headerLabel, "ui", "explorer");
 
         setupExplorer();
 
@@ -116,7 +115,7 @@ public abstract class BamProject extends RowColPanel {
         bamItem.bamItemNameField.addChangeListener((e) -> {
             String newName = bamItem.bamItemNameField.getText();
             if (newName.equals("")) {
-                newName = "<html><div style='color: red; font-style: italic'>Sansnom</div></html>";
+                newName = "<html><div style='color: red; font-style: italic'>!!!</div></html>";
             }
             explorerItem.label = newName;
             explorer.updateItemView(explorerItem);

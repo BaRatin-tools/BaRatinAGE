@@ -240,7 +240,7 @@ public class MainFrame extends JFrame {
     public void newProject() {
         resetLg();
         BaratinProject newProject = new BaratinProject();
-        newProject.addDefaultItems();
+        newProject.addDefaultBamItems();
         setCurrentProject(newProject);
     }
 

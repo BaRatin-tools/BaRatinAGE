@@ -1,5 +1,7 @@
 package org.baratinage.ui.bam;
 
+import java.util.UUID;
+
 import javax.swing.ImageIcon;
 
 import org.baratinage.ui.component.SvgIcon;
@@ -15,12 +17,37 @@ public enum BamItemType {
     IMPORTED_DATASET("imported_dataset");
 
     public String id;
+
+    private BamItemBuilderFunction builder;
     private ImageIcon icon;
     private ImageIcon addIcon;
     private static final float ICON_SIZE = 30;
 
+    @FunctionalInterface
+    public interface BamItemBuilderFunction {
+        public BamItem build(String id);
+    }
+
     private BamItemType(String id) {
         this.id = id;
+    }
+
+    public void setBuilderFunction(BamItemBuilderFunction builder) {
+        this.builder = builder;
+    }
+
+    public BamItem buildBamItem(String uuid) {
+        if (builder == null) {
+            return null;
+        }
+        return builder.build(uuid);
+    }
+
+    public BamItem buildBamItem() {
+        if (builder == null) {
+            return null;
+        }
+        return builder.build(UUID.randomUUID().toString());
     }
 
     public ImageIcon getIcon() {
@@ -35,5 +62,14 @@ public enum BamItemType {
             addIcon = SvgIcon.buildCustomAppImageIcon(id + "_add.svg", ICON_SIZE);
         }
         return addIcon;
+    }
+
+    public boolean matchOneOf(BamItemType... itemTypesToMatch) {
+        for (BamItemType type : itemTypesToMatch) {
+            if (this == type) {
+                return true;
+            }
+        }
+        return false;
     }
 }
