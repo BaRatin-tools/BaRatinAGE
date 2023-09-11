@@ -93,7 +93,7 @@ public abstract class BamProject extends RowColPanel {
     }
 
     public void setCurrentBamItem(BamItem bamItem) {
-        ExplorerItem item = findExplorerBamItem(bamItem.ID);
+        ExplorerItem item = explorer.getItem(bamItem.ID);
         if (item != null) {
             explorer.selectItem(item);
         }
@@ -115,17 +115,18 @@ public abstract class BamProject extends RowColPanel {
         bamItem.bamItemNameField.addChangeListener((e) -> {
             String newName = bamItem.bamItemNameField.getText();
             if (newName.equals("")) {
-                newName = "<html><div style='color: red; font-style: italic'>!!!</div></html>";
+                newName = "<html><div style='color: red; font-style: italic'>" + Lg.text("untitled") + "</div></html>";
             }
             explorerItem.label = newName;
             explorer.updateItemView(explorerItem);
         });
 
         bamItem.deleteButton.addActionListener((e) -> {
+            String t = bamItem.bamItemNameField.getText();
+            System.out.println(t);
             int response = JOptionPane.showConfirmDialog(this,
-                    "<html>Êtes-vous sûr de vouloir supprimer <b>" + bamItem.bamItemNameField.getText()
-                            + "</b>? <br/> Cette opération ne peut pas être annulée!</html>",
-                    "Attention!",
+                    Lg.html("delete_component_question", bamItem.bamItemNameField.getText()),
+                    Lg.text("warning"),
                     JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
             if (response == JOptionPane.YES_OPTION) {
                 deleteItem(bamItem, explorerItem);
@@ -147,15 +148,6 @@ public abstract class BamProject extends RowColPanel {
     public BamItem findBamItem(String id) {
         for (BamItem item : BAM_ITEMS) {
             if (item.ID.equals(id)) {
-                return item;
-            }
-        }
-        return null;
-    }
-
-    private ExplorerItem findExplorerBamItem(String id) {
-        for (ExplorerItem item : EXPLORER_ITEMS) {
-            if (item.id.equals(id)) {
                 return item;
             }
         }

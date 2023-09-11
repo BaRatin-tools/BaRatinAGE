@@ -125,9 +125,6 @@ public class BaratinProject extends BamProject {
         super.deleteItem(bamItem, explorerItem);
     }
 
-    // --------------------------------------------------------------
-    // Generic ------------------------------------------------------
-
     public BamItem addBamItem(BamItem item) {
 
         if (item.TYPE.matchOneOf(BamItemType.RATING_CURVE)) {
