@@ -26,7 +26,7 @@ import org.baratinage.ui.lg.Lg;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-class HydraulicConfiguration extends BamItem
+public class HydraulicConfiguration extends BamItem
 
         implements IModelDefinition, IPriors {
 
