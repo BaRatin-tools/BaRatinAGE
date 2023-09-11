@@ -9,39 +9,48 @@ import org.baratinage.utils.WriteFile;
 
 public class ImportedDataset implements IDataset {
 
-    protected String name;
-    protected List<double[]> data;
-    protected String[] headers;
-    protected int nCol;
-    protected int nRow;
+    private String name;
+    private List<double[]> data;
+    private String[] headers;
 
-    protected String tempDataFileName;
+    public ImportedDataset(String name, String dataFilePath) {
+        this.name = name;
+        data = new ArrayList<>();
+        headers = new String[] {};
+        try {
+            String headerLine = ReadFile.getLines(dataFilePath, 1, false)[0];
+            headers = ReadFile.parseString(headerLine, ";", false);
+        } catch (IOException e1) {
+            System.out.println("Failed to read data file ...(" + dataFilePath + ")");
+            e1.printStackTrace();
+        }
 
-    public ImportedDataset() {
+        try {
+            data = ReadFile.readMatrix(
+                    dataFilePath,
+                    ";",
+                    1,
+                    Integer.MAX_VALUE,
+                    "NA",
+                    false,
+                    false);
+        } catch (IOException e2) {
+            System.out.println("Failed to read data file ...(" + dataFilePath + ")");
+            e2.printStackTrace();
+        }
     }
 
     public ImportedDataset(
             String name,
             List<double[]> data,
             String[] headers) {
-        setDatasetName(name);
-        setData(data, headers);
-    }
-
-    public void setDatasetName(String name) {
         this.name = name;
-    }
-
-    public void setData(List<double[]> data, String[] headers) {
-        this.nCol = headers.length;
-        this.nRow = data.get(0).length;
-
         this.data = data;
         this.headers = headers;
     }
 
     public List<double[]> getData() {
-        // Note: only copy the main data container!
+        // Note/warning: only copy the main data container!
         List<double[]> dataCopy = new ArrayList<>();
         for (int k = 0; k < data.size(); k++) {
             dataCopy.add(data.get(k));
@@ -82,33 +91,6 @@ public class ImportedDataset implements IDataset {
         }
     }
 
-    public void setDataFromFile(String dataFilePath) {
-        String headerLine;
-        try {
-            headerLine = ReadFile.getLines(dataFilePath, 1, false)[0];
-            headers = ReadFile.parseString(headerLine, ";", false);
-            nCol = headers.length;
-        } catch (IOException e1) {
-            System.out.println("Failed to read data file ...(" + getDatasetName() + ")");
-            e1.printStackTrace();
-        }
-
-        try {
-            data = ReadFile.readMatrix(
-                    dataFilePath,
-                    ";",
-                    1,
-                    Integer.MAX_VALUE,
-                    "NA",
-                    false,
-                    false);
-            nRow = data.get(0).length;
-        } catch (IOException e2) {
-            System.out.println("Failed to read data file ...(" + getDatasetName() + ")");
-            e2.printStackTrace();
-        }
-    }
-
     @Override
     public String[] getColumnNames() {
         return this.headers;
@@ -116,6 +98,7 @@ public class ImportedDataset implements IDataset {
 
     @Override
     public double[] getColumn(String name) {
+        int nCol = getNumberOfColumns();
         for (int k = 0; k < nCol; k++) {
             if (headers[k].equals(name)) {
                 return data.get(k);
@@ -126,13 +109,17 @@ public class ImportedDataset implements IDataset {
 
     @Override
     public double[] getColumn(int index) {
-        if (index >= nCol)
-            return null;
-        return data.get(index);
+        int nCol = getNumberOfColumns();
+        return data == null || index >= nCol ? null : data.get(index);
     }
 
     @Override
     public double[] getRow(int index) {
+        int nRow = getNumberOfRows();
+        int nCol = getNumberOfColumns();
+        if (data == null || index >= nRow) {
+            return null;
+        }
         double[] row = new double[nCol];
         for (int k = 0; k < nCol; k++) {
             row[k] = data.get(k)[index];
@@ -142,12 +129,12 @@ public class ImportedDataset implements IDataset {
 
     @Override
     public int getNumberOfColumns() {
-        return nCol;
+        return data.size();
     }
 
     @Override
     public int getNumberOfRows() {
-        return nRow;
+        return data.size() == 0 ? 0 : data.get(0).length;
     }
 
     @Override
