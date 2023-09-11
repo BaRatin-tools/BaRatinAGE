@@ -2,7 +2,6 @@ package org.baratinage.ui.plot;
 
 import java.awt.Color;
 import java.awt.Dimension;
-
 import java.awt.geom.Rectangle2D;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -14,6 +13,7 @@ import java.nio.file.Path;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
+import javax.swing.JFrame;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
@@ -95,8 +95,20 @@ public class PlotContainer extends RowColPanel {
 
         String saveIconPath = Path.of(AppConfig.AC.ICONS_RESOURCES_DIR, "feather", "save.svg").toString();
         String copyIconPath = Path.of(AppConfig.AC.ICONS_RESOURCES_DIR, "feather", "copy.svg").toString();
+        String windowPlotIconPath = Path.of(AppConfig.AC.ICONS_RESOURCES_DIR, "feather", "external-link.svg")
+                .toString();
         ImageIcon saveIcon = SvgIcon.buildNoScalingIcon(saveIconPath, 24);
         ImageIcon copyIcon = SvgIcon.buildNoScalingIcon(copyIconPath, 24);
+        ImageIcon windowPlotIcon = SvgIcon.buildNoScalingIcon(windowPlotIconPath, 24);
+
+        JButton btnWindowPlot = new JButton();
+        Lg.register(btnWindowPlot, () -> {
+            btnWindowPlot.setToolTipText(Lg.text("window_plot"));
+        });
+        btnWindowPlot.setIcon(windowPlotIcon);
+        btnWindowPlot.addActionListener((e) -> {
+            windowPlot();
+        });
 
         JButton btnSaveAsSvg = new JButton();
         Lg.register(btnSaveAsSvg, () -> {
@@ -129,11 +141,19 @@ public class PlotContainer extends RowColPanel {
             copyToClipboard();
         });
 
+        actionPanel.appendChild(btnWindowPlot);
         actionPanel.appendChild(btnSaveAsSvg);
         actionPanel.appendChild(btnSaveAsPng);
         actionPanel.appendChild(btnCopyToClipboard);
 
         JPopupMenu popupMenu = new JPopupMenu();
+
+        JMenuItem menuWindowPlot = new JMenuItem();
+        Lg.register(menuWindowPlot, "window_plot");
+        menuWindowPlot.addActionListener((e) -> {
+            windowPlot();
+        });
+        popupMenu.add(menuWindowPlot);
 
         JMenuItem menuSaveSvg = new JMenuItem();
         Lg.register(menuSaveSvg, "to_svg");
@@ -141,6 +161,7 @@ public class PlotContainer extends RowColPanel {
             saveAsSvg();
         });
         popupMenu.add(menuSaveSvg);
+
         JMenuItem menuSavePng = new JMenuItem();
         Lg.register(menuSavePng, "to_png");
         menuSavePng.addActionListener((e) -> {
@@ -270,6 +291,18 @@ public class PlotContainer extends RowColPanel {
         if (chart == null)
             return;
         chartPanel.doCopy();
+    }
+
+    public void windowPlot() {
+        JFrame f = new JFrame();
+        PlotContainer p = new PlotContainer(plot);
+
+        f.setPreferredSize(new Dimension(1000, 500));
+        f.setIconImage(AppConfig.AC.APP_MAIN_FRAME.getIconImage());
+        f.add(p);
+        f.pack();
+        f.setVisible(true);
+
     }
 
 }
