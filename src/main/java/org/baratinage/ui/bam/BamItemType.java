@@ -7,6 +7,19 @@ import javax.swing.ImageIcon;
 import org.baratinage.ui.component.SvgIcon;
 
 public enum BamItemType {
+    /**
+     * **Important note:**
+     * 
+     * ids are used as translation keys:
+     * - id = name of the item type
+     * - "create_" + id = create item of this item type
+     * 
+     * and to find icon svg images (see below):
+     * - id + ".svg" = main item type icon
+     * - id + "_add.svg" = create item of that type icon
+     * 
+     */
+
     EMPTY_ITEM("empty_item"),
     HYDRAULIC_CONFIG("hydraulic_config"),
     GAUGINGS("gaugings"),
@@ -21,6 +34,7 @@ public enum BamItemType {
     private BamItemBuilderFunction builder;
     private ImageIcon icon;
     private ImageIcon addIcon;
+
     private static final float ICON_SIZE = 30;
 
     @FunctionalInterface

@@ -1,5 +1,6 @@
 package org.baratinage.ui.bam;
 
+import java.awt.event.ActionListener;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -12,7 +13,10 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import javax.swing.BorderFactory;
+import javax.swing.JButton;
 import javax.swing.JFileChooser;
+import javax.swing.JMenu;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JSeparator;
 import javax.swing.JSplitPane;
@@ -20,6 +24,7 @@ import javax.swing.JToolBar;
 import javax.swing.filechooser.FileFilter;
 
 import org.baratinage.ui.AppConfig;
+import org.baratinage.ui.bam.BamItemType.BamItemBuilderFunction;
 import org.baratinage.ui.baratin.BaratinProject;
 import org.baratinage.ui.commons.Explorer;
 import org.baratinage.ui.commons.ExplorerItem;
@@ -38,10 +43,14 @@ public abstract class BamProject extends RowColPanel {
     public final BamItemList BAM_ITEMS;
     public final List<ExplorerItem> EXPLORER_ITEMS;
 
+    private String projectPath = null;
+
     protected JSplitPane content;
     protected JToolBar toolBar;
     protected Explorer explorer;
     protected RowColPanel currentPanel;
+
+    protected JMenu projectMenu;
 
     public BamProject() {
         super(AXIS.COL);
@@ -77,7 +86,7 @@ public abstract class BamProject extends RowColPanel {
         this.explorer.addTreeSelectionListener(e -> {
             ExplorerItem explorerItem = explorer.getLastSelectedPathComponent();
             if (explorerItem != null) {
-                BamItem bamItem = findBamItem(explorerItem.id);
+                BamItem bamItem = getBamItem(explorerItem.id);
                 if (bamItem != null) {
                     this.currentPanel.clear();
                     this.currentPanel.appendChild(bamItem, 1);
@@ -99,7 +108,59 @@ public abstract class BamProject extends RowColPanel {
         }
     }
 
-    protected void addItem(BamItem bamItem, ExplorerItem explorerItem) {
+    protected void initBamItemType(
+            BamItemType itemType,
+            BamItemBuilderFunction builder) {
+
+        itemType.setBuilderFunction(builder);
+
+        ActionListener onAdd = (e) -> {
+            addBamItem(itemType);
+        };
+
+        String lgKey = itemType.id;
+        String lgCreateKey = "create_" + itemType.id;
+
+        JMenuItem menuButton = new JMenuItem();
+        menuButton.setIcon(itemType.getAddIcon());
+        menuButton.addActionListener(onAdd);
+        projectMenu.add(menuButton);
+
+        JButton toolbarButton = new JButton(itemType.getAddIcon());
+        toolbarButton.addActionListener(onAdd);
+        toolBar.add(toolbarButton);
+
+        ExplorerItem explorerItem = new ExplorerItem(
+                itemType.id,
+                Lg.text(lgKey),
+                itemType.getIcon());
+        this.explorer.appendItem(explorerItem);
+
+        Lg.register(itemType, () -> {
+            String createText = Lg.text(lgCreateKey);
+            menuButton.setText(createText);
+            toolbarButton.setToolTipText(createText);
+            explorerItem.label = Lg.text(lgKey);
+            explorer.updateItemView(explorerItem);
+        });
+    }
+
+    protected BamItem addBamItem(BamItem bamItem) {
+
+        ExplorerItem explorerItem = new ExplorerItem(
+                bamItem.ID,
+                bamItem.bamItemNameField.getText(),
+                bamItem.TYPE.getIcon(),
+                explorer.getItem(bamItem.TYPE.id));
+
+        Lg.register(bamItem.bamItemTypeLabel, bamItem.TYPE.id);
+
+        bamItem.bamItemTypeLabel.setIcon(bamItem.TYPE.getIcon());
+        bamItem.cloneButton.addActionListener((e) -> {
+            BamItem clonedItem = bamItem.clone();
+            clonedItem.setCopyName();
+            addBamItem(clonedItem);
+        });
 
         String cloneIconPath = Path.of(AppConfig.AC.ICONS_RESOURCES_DIR, "feather", "copy.svg").toString();
         String deleteIconPath = Path.of(AppConfig.AC.ICONS_RESOURCES_DIR, "feather", "trash.svg").toString();
@@ -129,23 +190,37 @@ public abstract class BamProject extends RowColPanel {
                     Lg.text("warning"),
                     JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
             if (response == JOptionPane.YES_OPTION) {
-                deleteItem(bamItem, explorerItem);
+                deleteBamItem(bamItem, explorerItem);
             }
         });
 
         this.explorer.appendItem(explorerItem);
         this.explorer.selectItem(explorerItem);
 
+        return bamItem;
+
     }
 
-    protected void deleteItem(BamItem bamItem, ExplorerItem explorerItem) {
+    public BamItem addBamItem(BamItemType type, String uuid) {
+        BamItem bamItem = type.buildBamItem(uuid);
+        bamItem.bamItemNameField.setText(BAM_ITEMS.getDefaultName(type));
+        return addBamItem(bamItem);
+    }
+
+    public BamItem addBamItem(BamItemType type) {
+        BamItem bamItem = type.buildBamItem();
+        bamItem.bamItemNameField.setText(BAM_ITEMS.getDefaultName(type));
+        return addBamItem(bamItem);
+    }
+
+    protected void deleteBamItem(BamItem bamItem, ExplorerItem explorerItem) {
         BAM_ITEMS.remove(bamItem);
         EXPLORER_ITEMS.remove(explorerItem);
         this.explorer.removeItem(explorerItem);
         this.explorer.selectItem(explorerItem.parentItem);
     }
 
-    public BamItem findBamItem(String id) {
+    public BamItem getBamItem(String id) {
         for (BamItem item : BAM_ITEMS) {
             if (item.ID.equals(id)) {
                 return item;
@@ -305,8 +380,12 @@ public abstract class BamProject extends RowColPanel {
         return null;
     }
 
-    public abstract void setProjectPath(String projectPath);
+    public void setProjectPath(String projectPath) {
+        this.projectPath = projectPath;
+    }
 
-    public abstract String getProjectPath();
+    public String getProjectPath() {
+        return projectPath;
+    }
 
 }
