@@ -11,6 +11,7 @@ import javax.swing.event.ChangeListener;
 
 import org.baratinage.ui.AppConfig;
 import org.baratinage.ui.commons.WarningAndActions;
+import org.baratinage.ui.component.SimpleComboBox;
 import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.ui.lg.Lg;
 
@@ -18,13 +19,11 @@ import org.json.JSONObject;
 
 public class BamItemParent implements ChangeListener {
 
-    public final BamItemType type;
+    public final BamItemType TYPE;
+    public final BamItem CHILD;
 
     public final RowColPanel comboboxPanel;
-    public final BamItemCombobox combobox;
     public final JLabel comboboxLabel;
-
-    public final BamItem child;
 
     public final WarningAndActions outOfSyncWarningContentOnly;
     public final WarningAndActions outOfSyncWarningSelectionAndContent;
@@ -33,34 +32,29 @@ public class BamItemParent implements ChangeListener {
 
     private String backupItemString = null;
     private String backupItemId = null;
+    private BamItemList allItems = new BamItemList();
     private BamItem currentItem = null;
 
-    private String[] jsonKeys = new String[] {};
-    private boolean excludeJsonKeys = true;
+    private final String[] JSON_KEYS_TO_IGNORE;
+
+    private final SimpleComboBox cb;
 
     public BamItemParent(
             BamItem child,
-            BamItemType type) {
+            BamItemType type,
+            String... jsonKeysToIgnore) {
 
-        this.type = type;
-        this.child = child;
-        this.combobox = new BamItemCombobox();
+        TYPE = type;
+        CHILD = child;
+        JSON_KEYS_TO_IGNORE = jsonKeysToIgnore;
 
-        combobox.addActionListener(e -> {
-            BamItem selected = combobox.getSelectedItem();
-            if (currentItem != null) {
-                currentItem.removeChangeListener(this);
-            }
-
-            if (selected == null) {
-                currentItem = null;
-                fireChangeListeners();
-                return;
-            }
-
-            currentItem = selected;
-            currentItem.addChangeListener(this);
-            fireChangeListeners();
+        cb = new SimpleComboBox();
+        cb.addValidator((k) -> {
+            return k >= 0;
+        });
+        cb.addChangeListener((chEvt) -> {
+            int selectedIndex = cb.getSelectedIndex();
+            setCurrentBamItem(selectedIndex);
         });
 
         comboboxLabel = new JLabel();
@@ -68,52 +62,42 @@ public class BamItemParent implements ChangeListener {
         comboboxPanel = new RowColPanel(RowColPanel.AXIS.COL, RowColPanel.ALIGN.START);
         comboboxPanel.setPadding(5);
         comboboxPanel.appendChild(comboboxLabel);
-        comboboxPanel.appendChild(combobox);
+        comboboxPanel.appendChild(cb);
 
         outOfSyncWarningContentOnly = new WarningAndActions();
         outOfSyncWarningSelectionAndContent = new WarningAndActions();
-
-        Lg.register(outOfSyncWarningSelectionAndContent.message, () -> {
-            String typeText = Lg.text(type.id);
-            String text = Lg.html("oos_select_and_content", typeText);
-            outOfSyncWarningSelectionAndContent.message.setText(text);
-        });
-
-        Lg.register(outOfSyncWarningContentOnly.message, () -> {
-            String typeText = Lg.text(type.id);
-            String text = Lg.html("oos_content", typeText, getBackupItemName());
-            outOfSyncWarningContentOnly.message.setText(text);
-        });
-
         outOfSyncSelectOriginalButton = new JButton();
-        Lg.register(outOfSyncSelectOriginalButton, () -> {
-            String text = Lg.html("oos_revert_select", getBackupItemName());
-            outOfSyncSelectOriginalButton.setText(text);
-        });
         outOfSyncSelectOriginalButton.addActionListener((e) -> {
             revertToBackup();
         });
-
         outOfSyncCreateNewFromOriginalButton = new JButton();
-        Lg.register(outOfSyncCreateNewFromOriginalButton, () -> {
-            String typeText = Lg.text(type.id);
-            String text = Lg.html("oos_create_from_backup", typeText);
-            outOfSyncCreateNewFromOriginalButton.setText(text);
+        outOfSyncCreateNewFromOriginalButton.addActionListener((e) -> {
+
+            BamItem bamItem = CHILD.PROJECT.addBamItem(TYPE);
+            bamItem.fromJSON(new JSONObject(backupItemString));
+            CHILD.PROJECT.setCurrentBamItem(CHILD);
+
+            setCurrentBamItem(bamItem.ID);
         });
 
-        outOfSyncCreateNewFromOriginalButton.addActionListener((e) -> {
-            if (createBackupBamItemAction == null) {
-                return;
-            }
-            BamItem item = createBackupBamItemAction.createBackupBamItem(new JSONObject(backupItemString));
-            combobox.setSelectedBamItem(item.ID);
+        Lg.register(this, () -> {
+            String typeText = Lg.text(TYPE.id);
+            comboboxLabel.setText(typeText);
+            outOfSyncWarningSelectionAndContent.message.setText(
+                    Lg.html("oos_select_and_content", typeText));
+            outOfSyncWarningContentOnly.message.setText(
+                    Lg.html("oos_content", typeText, getBackupItemName()));
+            outOfSyncSelectOriginalButton.setText(
+                    Lg.html("oos_revert_select", getBackupItemName()));
+            outOfSyncCreateNewFromOriginalButton.setText(
+                    Lg.html("oos_create_from_backup", typeText));
         });
     }
 
     private String getBackupItemName() {
         String name = "?";
         if (backupItemId != null) {
-            BamItem item = combobox.getBamItemWithId(backupItemId);
+            BamItem item = allItems.getBamItemWithId(backupItemId);
             if (item != null) {
                 name = item.bamItemNameField.getText();
             }
@@ -132,24 +116,43 @@ public class BamItemParent implements ChangeListener {
     }
 
     public void updateCombobox(BamItemList bamItemList) {
-        BamItemList filteredBamItemList = bamItemList.filterByType(type);
-        combobox.syncWithBamItemList(filteredBamItemList);
+        BamItemList filteredBamItemList = bamItemList.filterByType(TYPE);
+        allItems = filteredBamItemList;
+        syncWithBamItemList();
     }
 
-    public void setSyncJsonKeys(String[] keys, boolean exclude) {
-        jsonKeys = keys;
-        excludeJsonKeys = exclude;
+    private void syncWithBamItemList() {
+        String[] itemsName = BamItemList.getBamItemNames(allItems);
+        cb.setItems(itemsName, true);
+        if (currentItem == null) {
+            cb.setSelectedItem(-1, true);
+        } else {
+            int index = allItems.indexOf(currentItem);
+            cb.setSelectedItem(index, true);
+        }
     }
 
-    @FunctionalInterface
-    public interface ICreateBackupBamItem {
-        public BamItem createBackupBamItem(JSONObject json);
+    private void setCurrentBamItem(String bamItemId) {
+        BamItem selectedItem = allItems.getBamItemWithId(bamItemId);
+        setCurrentBamItem(selectedItem);
     }
 
-    private ICreateBackupBamItem createBackupBamItemAction = null;
+    private void setCurrentBamItem(int bamItemIndex) {
+        BamItem selectedItem = allItems.get(bamItemIndex);
+        setCurrentBamItem(selectedItem);
+    }
 
-    public void setCreateBackupBamItemAction(ICreateBackupBamItem l) {
-        createBackupBamItemAction = l;
+    private void setCurrentBamItem(BamItem bamItem) {
+        if (currentItem != null) {
+            currentItem.removeChangeListener(this);
+        }
+        currentItem = bamItem;
+        if (currentItem != null) {
+            currentItem.addChangeListener(this);
+        }
+        int index = allItems.indexOf(currentItem);
+        cb.setSelectedItem(index, true);
+        fireChangeListeners();
     }
 
     public WarningAndActions getOutOfSyncWarning() {
@@ -162,7 +165,7 @@ public class BamItemParent implements ChangeListener {
             return null;
         }
 
-        boolean backupItemStillExists = combobox.getBamItemWithId(backupItemId) != null;
+        boolean backupItemStillExists = allItems.getBamItemWithId(backupItemId) != null;
 
         outOfSyncSelectOriginalButton.setEnabled(backupItemStillExists);
 
@@ -170,8 +173,6 @@ public class BamItemParent implements ChangeListener {
         outOfSyncWarningSelectionAndContent.clearButtons();
 
         if (currentItem == null) {
-            // System.out.println("> Invalid configuration");
-            // System.out.println("> Item selection has changed");
             outOfSyncWarningSelectionAndContent.addButton(outOfSyncSelectOriginalButton);
             return outOfSyncWarningSelectionAndContent;
         }
@@ -179,38 +180,35 @@ public class BamItemParent implements ChangeListener {
         JSONObject backupItemJson = new JSONObject(backupItemString);
 
         boolean selectionHasChanged = !backupItemId.equals(currentItem.ID);
-        boolean selectionIsOutOfSync = !currentItem.isMatchingWith(backupItemJson, jsonKeys, excludeJsonKeys);
+        boolean selectionIsOutOfSync = !currentItem.isMatchingWith(backupItemJson, JSON_KEYS_TO_IGNORE, true);
 
         if (!selectionIsOutOfSync) {
             return null;
         }
-        // System.out.println("> Current item is out of sync with backup");
 
         if (selectionHasChanged) {
-            // System.out.println("> Item selection has changed");
             outOfSyncWarningSelectionAndContent.addButton(outOfSyncSelectOriginalButton);
             outOfSyncWarningSelectionAndContent.addButton(outOfSyncCreateNewFromOriginalButton);
             return outOfSyncWarningSelectionAndContent;
         } else {
             outOfSyncWarningContentOnly.addButton(outOfSyncCreateNewFromOriginalButton);
             return outOfSyncWarningContentOnly;
-            // System.out.println("> Item selection has not changed");
 
         }
     }
 
     private void revertToBackup() {
-        BamItem item = combobox.getBamItemWithId(backupItemId);
+        BamItem item = allItems.getBamItemWithId(backupItemId);
         if (item == null) {
             JOptionPane.showConfirmDialog(
                     AppConfig.AC.APP_MAIN_FRAME,
-                    "Opération impossible, le composant a sans doute été supprimé.",
-                    "Erreur!",
+                    Lg.text("impossible_component_deleted"),
+                    Lg.text("error"),
                     JOptionPane.CLOSED_OPTION,
                     JOptionPane.ERROR_MESSAGE);
             return;
         }
-        combobox.setSelectedBamItem(backupItemId);
+        setCurrentBamItem(item);
     }
 
     public JSONObject toJSON() {
@@ -228,7 +226,7 @@ public class BamItemParent implements ChangeListener {
     public void fromJSON(JSONObject json) {
         if (json.has("bamItemId")) {
             String bamItemId = json.getString("bamItemId");
-            combobox.setSelectedBamItem(bamItemId);
+            setCurrentBamItem(bamItemId);
         }
         if (json.has("backupItemString")) {
             backupItemString = json.getString("backupItemString");
