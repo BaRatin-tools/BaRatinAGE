@@ -34,6 +34,14 @@ public class BamItemList extends ArrayList<BamItem> {
         return res;
     }
 
+    @Override
+    public BamItem get(int index) {
+        if (index < 0 || index > size()) {
+            return null;
+        }
+        return super.get(index);
+    }
+
     private void notifyAllBamItems() {
         for (BamItem bamItem : this) {
             bamItem.onBamItemListChange();
@@ -60,7 +68,7 @@ public class BamItemList extends ArrayList<BamItem> {
         return null;
     }
 
-    private static String[] getBamItemNames(BamItemList bamItemList) {
+    public static String[] getBamItemNames(BamItemList bamItemList) {
         int n = bamItemList.size();
         String[] names = new String[n];
         for (int k = 0; k < n; k++) {
