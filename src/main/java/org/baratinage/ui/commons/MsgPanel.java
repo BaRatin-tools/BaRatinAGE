@@ -1,5 +1,6 @@
 package org.baratinage.ui.commons;
 
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,17 +11,25 @@ import javax.swing.JLabel;
 import org.baratinage.ui.AppConfig;
 import org.baratinage.ui.container.RowColPanel;
 
-public class WarningAndActions extends RowColPanel {
+public class MsgPanel extends RowColPanel {
 
     public final JLabel message = new JLabel();
     private final List<JButton> buttons = new ArrayList<>();
     private final RowColPanel actionButtonsPanel = new RowColPanel(AXIS.ROW);
 
-    public WarningAndActions() {
+    private TYPE msgType = TYPE.INFO;
+
+    public static enum TYPE {
+        INFO, WARNING, ERROR;
+    };
+
+    public MsgPanel() {
+        this(TYPE.INFO);
+    }
+
+    public MsgPanel(TYPE type) {
         super(AXIS.COL);
 
-        message.setForeground(AppConfig.AC.INVALID_COLOR);
-        setBorder(BorderFactory.createLineBorder(AppConfig.AC.INVALID_COLOR, 2));
         appendChild(message);
         appendChild(actionButtonsPanel);
 
@@ -28,6 +37,20 @@ public class WarningAndActions extends RowColPanel {
         setGap(5);
 
         actionButtonsPanel.setGap(5);
+
+        setMessageType(type);
+    }
+
+    public void setMessageType(TYPE type) {
+        msgType = type;
+        Color clr = new Color(0, 63, 179);
+        if (msgType == TYPE.WARNING) {
+            clr = new Color(230, 149, 0);
+        } else if (msgType == TYPE.ERROR) {
+            clr = AppConfig.AC.INVALID_COLOR;
+        }
+        message.setForeground(clr);
+        setBorder(BorderFactory.createLineBorder(clr, 2));
     }
 
     public void addButton(JButton button) {
