@@ -19,7 +19,7 @@ import org.baratinage.ui.bam.RunBam;
 import org.baratinage.ui.baratin.hydraulic_control.ControlMatrix;
 import org.baratinage.ui.baratin.hydraulic_control.HydraulicControlPanels;
 import org.baratinage.ui.baratin.hydraulic_control.OneHydraulicControl;
-import org.baratinage.ui.commons.WarningAndActions;
+import org.baratinage.ui.commons.MsgPanel;
 import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.ui.lg.Lg;
 
@@ -103,9 +103,9 @@ public class HydraulicConfiguration extends BamItem
         if (jsonStringBackup != null) {
             String[] keysToIgnore = new String[] { "ui", "name", "description", "jsonStringBackup" };
             if (!isMatchingWith(jsonStringBackup, keysToIgnore, true)) {
-                WarningAndActions warning = new WarningAndActions();
-                Lg.register(warning.message, "oos_prior_rating_curve", true);
-                outOufSyncPanel.appendChild(warning);
+                MsgPanel errMsg = new MsgPanel(MsgPanel.TYPE.ERROR);
+                Lg.register(errMsg.message, "oos_prior_rating_curve", true);
+                outOufSyncPanel.appendChild(errMsg);
                 Lg.register(priorRatingCurve.runButton, "recompute_prior_rc", true);
                 priorRatingCurve.runButton.setForeground(AppConfig.AC.INVALID_COLOR);
                 return;
