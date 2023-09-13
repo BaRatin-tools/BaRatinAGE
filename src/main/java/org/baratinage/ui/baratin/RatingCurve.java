@@ -19,7 +19,7 @@ import org.baratinage.ui.bam.BamItemParent;
 import org.baratinage.ui.bam.ICalibratedModel;
 import org.baratinage.ui.bam.IMcmc;
 import org.baratinage.ui.bam.RunBam;
-import org.baratinage.ui.commons.WarningAndActions;
+import org.baratinage.ui.commons.MsgPanel;
 import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.ui.lg.Lg;
 
@@ -33,7 +33,7 @@ public class RatingCurve extends BamItem implements ICalibratedModel, IMcmc {
 
     private PosteriorRatingCurve posteriorRatingCurve;
 
-    private RowColPanel outdatedInfoPanel;
+    private RowColPanel outdatedPanel;
 
     private String jsonStringBackup;
 
@@ -56,11 +56,6 @@ public class RatingCurve extends BamItem implements ICalibratedModel, IMcmc {
                 this,
                 BamItemType.HYDRAULIC_CONFIG,
                 "ui", "bamRunId", "jsonStringBackup", "stageGridConfig");
-
-        // Lg.register(hydrauConfParent.comboboxLabel, "hydraulic_config");
-
-        // hydrauConfParent.combobox.setEmptyItemText("Selectionner une configuration
-        // hydraulique");
         hydrauConfParent.addChangeListener((e) -> {
             BamItem bamItem = hydrauConfParent.getCurrentBamItem();
             if (bamItem != null) {
@@ -70,25 +65,12 @@ public class RatingCurve extends BamItem implements ICalibratedModel, IMcmc {
             }
             checkSync();
         });
-        // hydrauConfParent.setSyncJsonKeys(
-        // new String[] { "ui", "bamRunId", "jsonStringBackup", "stageGridConfig" },
-        // true);
-        // hydrauConfParent.setCreateBackupBamItemAction((json) -> {
-        // BamItem bamItem = project.addBamItem(BamItemType.HYDRAULIC_CONFIG);
-        // bamItem.fromJSON(json);
-        // project.setCurrentBamItem(this);
-        // return bamItem;
-        // });
-
         // **********************************************************
         // Gaugings
         // **********************************************************
         gaugingsParent = new BamItemParent(
                 this,
                 BamItemType.GAUGINGS);
-
-        // Lg.register(gaugingsParent.comboboxLabel, "gaugings");
-        // gaugingsParent.combobox.setEmptyItemText("Selectionner un jeu de jaugeages");
         gaugingsParent.addChangeListener((e) -> {
             BamItem bamItem = gaugingsParent.getCurrentBamItem();
             if (bamItem != null) {
@@ -96,22 +78,12 @@ public class RatingCurve extends BamItem implements ICalibratedModel, IMcmc {
             }
             checkSync();
         });
-        // gaugingsParent.setCreateBackupBamItemAction((json) -> {
-        // BamItem bamItem = project.addBamItem(BamItemType.GAUGINGS);
-        // bamItem.fromJSON(json);
-        // project.setCurrentBamItem(this);
-        // return bamItem;
-        // });
         // **********************************************************
         // Structural error
         // **********************************************************
         structErrorParent = new BamItemParent(
                 this,
                 BamItemType.STRUCTURAL_ERROR);
-
-        // Lg.register(structErrorParent.comboboxLabel, "structural_error_model");
-        // structErrorParent.combobox.setEmptyItemText("Selectionner un modèle d'erreur
-        // structurelle");
         structErrorParent.addChangeListener((e) -> {
             BamItem bamItem = structErrorParent.getCurrentBamItem();
             if (bamItem != null) {
@@ -119,12 +91,6 @@ public class RatingCurve extends BamItem implements ICalibratedModel, IMcmc {
             }
             checkSync();
         });
-        // structErrorParent.setCreateBackupBamItemAction((json) -> {
-        // BamItem bamItem = project.addBamItem(BamItemType.STRUCTURAL_ERROR);
-        // bamItem.fromJSON(json);
-        // project.setCurrentBamItem(this);
-        // return bamItem;
-        // });
         // **********************************************************
 
         mainConfigPanel.appendChild(hydrauConfParent.comboboxPanel, 0);
@@ -151,9 +117,9 @@ public class RatingCurve extends BamItem implements ICalibratedModel, IMcmc {
 
         setContent(content);
 
-        outdatedInfoPanel = new RowColPanel(RowColPanel.AXIS.COL);
-        outdatedInfoPanel.setGap(2);
-        outdatedInfoPanel.setColWeight(0, 1);
+        outdatedPanel = new RowColPanel(RowColPanel.AXIS.COL);
+        outdatedPanel.setGap(2);
+        outdatedPanel.setColWeight(0, 1);
 
         onBamItemListChange();
 
@@ -190,36 +156,39 @@ public class RatingCurve extends BamItem implements ICalibratedModel, IMcmc {
     private void checkSync() {
         // FIXME: called too often? Optimization may be possible.
 
-        List<WarningAndActions> warnings = new ArrayList<>();
-        WarningAndActions warning;
-        warning = hydrauConfParent.getOutOfSyncWarning();
-        if (warning != null) {
-            warnings.add(warning);
-        }
-        warning = gaugingsParent.getOutOfSyncWarning();
-        if (warning != null) {
-            warnings.add(warning);
-        }
-        warning = structErrorParent.getOutOfSyncWarning();
-        if (warning != null) {
-            warnings.add(warning);
+        List<MsgPanel> warnings = new ArrayList<>();
+        warnings.addAll(hydrauConfParent.getMessages());
+        warnings.addAll(gaugingsParent.getMessages());
+        warnings.addAll(structErrorParent.getMessages());
+
+        boolean needBamRerun = hydrauConfParent.isBamRerunRequired() ||
+                gaugingsParent.isBamRerunRequired() ||
+                structErrorParent.isBamRerunRequired();
+
+        boolean isStageGridOutOfSync = jsonStringBackup != null &&
+                !isMatchingWith(jsonStringBackup, new String[] { "stageGridConfig" }, false);
+
+        if (isStageGridOutOfSync) {
+            MsgPanel errorMsg = new MsgPanel(MsgPanel.TYPE.ERROR);
+            // FIXME: errorMsg should be a final instance variable to limit memory leak
+            Lg.register(errorMsg.message, "oos_stage_grid");
+            warnings.add(errorMsg);
         }
 
-        if (jsonStringBackup != null && !isMatchingWith(jsonStringBackup, new String[] { "stageGridConfig" }, false)) {
-            warning = new WarningAndActions();
-            Lg.register(warning.message, "oos_stage_grid");
-            warnings.add(warning);
-        }
-
+        // update message panel
         posteriorRatingCurve.outdatedPanel.clear();
-        outdatedInfoPanel.clear();
+        outdatedPanel.clear();
         if (warnings.size() > 0) {
+            for (MsgPanel w : warnings) {
+                outdatedPanel.appendChild(w);
+            }
+            posteriorRatingCurve.outdatedPanel.appendChild(outdatedPanel);
+        }
+
+        // update run bam button
+        if (isStageGridOutOfSync || needBamRerun) {
             Lg.register(posteriorRatingCurve.runBamButton, "recompute_posterior_rc", true);
             posteriorRatingCurve.runBamButton.setForeground(AppConfig.AC.INVALID_COLOR);
-            for (WarningAndActions w : warnings) {
-                outdatedInfoPanel.appendChild(w);
-            }
-            posteriorRatingCurve.outdatedPanel.appendChild(outdatedInfoPanel);
         } else {
             Lg.register(posteriorRatingCurve.runBamButton, "compute_posterior_rc", true);
             posteriorRatingCurve.runBamButton.setForeground(new JButton().getForeground());

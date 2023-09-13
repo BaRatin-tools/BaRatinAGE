@@ -10,7 +10,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import org.baratinage.ui.AppConfig;
-import org.baratinage.ui.commons.WarningAndActions;
+import org.baratinage.ui.commons.MsgPanel;
 import org.baratinage.ui.component.SimpleComboBox;
 import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.ui.lg.Lg;
@@ -25,10 +25,9 @@ public class BamItemParent implements ChangeListener {
     public final RowColPanel comboboxPanel;
     public final JLabel comboboxLabel;
 
-    public final WarningAndActions outOfSyncWarningContentOnly;
-    public final WarningAndActions outOfSyncWarningSelectionAndContent;
-    public final JButton outOfSyncSelectOriginalButton;
-    public final JButton outOfSyncCreateNewFromOriginalButton;
+    public final MsgPanel syncIssueMsg = new MsgPanel(MsgPanel.TYPE.ERROR);
+    public final JButton revertToSelectCompBtn = new JButton();
+    public final JButton createInSyncCompBtn = new JButton();
 
     private String backupItemString = null;
     private String backupItemId = null;
@@ -38,6 +37,8 @@ public class BamItemParent implements ChangeListener {
     private final String[] JSON_KEYS_TO_IGNORE;
 
     private final SimpleComboBox cb;
+
+    private final ChangeListener onBamItemNameChange;
 
     public BamItemParent(
             BamItem child,
@@ -64,38 +65,54 @@ public class BamItemParent implements ChangeListener {
         comboboxPanel.appendChild(comboboxLabel);
         comboboxPanel.appendChild(cb);
 
-        outOfSyncWarningContentOnly = new WarningAndActions();
-        outOfSyncWarningSelectionAndContent = new WarningAndActions();
-        outOfSyncSelectOriginalButton = new JButton();
-        outOfSyncSelectOriginalButton.addActionListener((e) -> {
-            revertToBackup();
+        revertToSelectCompBtn.addActionListener((e) -> {
+            if (backupItemId == null) {
+                return;
+            }
+            BamItem item = allItems.getBamItemWithId(backupItemId);
+            if (item == null) {
+                JOptionPane.showConfirmDialog(
+                        AppConfig.AC.APP_MAIN_FRAME,
+                        Lg.text("impossible_component_deleted"),
+                        Lg.text("error"),
+                        JOptionPane.CLOSED_OPTION,
+                        JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            setCurrentBamItem(item);
         });
-        outOfSyncCreateNewFromOriginalButton = new JButton();
-        outOfSyncCreateNewFromOriginalButton.addActionListener((e) -> {
-
+        createInSyncCompBtn.addActionListener((e) -> {
+            if (backupItemString == null) {
+                return;
+            }
             BamItem bamItem = CHILD.PROJECT.addBamItem(TYPE);
             bamItem.fromJSON(new JSONObject(backupItemString));
             CHILD.PROJECT.setCurrentBamItem(CHILD);
-
-            setCurrentBamItem(bamItem.ID);
+            setCurrentBamItem(bamItem);
         });
 
         Lg.register(this, () -> {
             String typeText = Lg.text(TYPE.id);
+            String backupItemName = getBackupItemName();
+            String currentItemName = currentItem == null ? Lg.text("msg_empty_selection")
+                    : currentItem.bamItemNameField.getText();
             comboboxLabel.setText(typeText);
-            outOfSyncWarningSelectionAndContent.message.setText(
-                    Lg.html("oos_select_and_content", typeText));
-            outOfSyncWarningContentOnly.message.setText(
-                    Lg.html("oos_content", typeText, getBackupItemName()));
-            outOfSyncSelectOriginalButton.setText(
-                    Lg.html("oos_revert_select", getBackupItemName()));
-            outOfSyncCreateNewFromOriginalButton.setText(
-                    Lg.html("oos_create_from_backup", typeText));
+            syncIssueMsg.message.setText(
+                    Lg.html("msg_component_content_out_of_sync", typeText, currentItemName));
+            revertToSelectCompBtn.setText(
+                    Lg.html("btn_revert_component_selection", backupItemName));
+            createInSyncCompBtn.setText(
+                    Lg.html("btn_create_component_from_backup", typeText));
         });
+
+        onBamItemNameChange = (chEvt) -> {
+            updateCombobox(CHILD.PROJECT.BAM_ITEMS);
+            Lg.updateRegisteredObject(this);
+        };
     }
 
     private String getBackupItemName() {
-        String name = "?";
+        String name = " - ";
         if (backupItemId != null) {
             BamItem item = allItems.getBamItemWithId(backupItemId);
             if (item != null) {
@@ -118,6 +135,10 @@ public class BamItemParent implements ChangeListener {
     public void updateCombobox(BamItemList bamItemList) {
         BamItemList filteredBamItemList = bamItemList.filterByType(TYPE);
         allItems = filteredBamItemList;
+        for (BamItem bamItem : allItems) {
+            bamItem.bamItemNameField.removeChangeListener(onBamItemNameChange);
+            bamItem.bamItemNameField.addChangeListener(onBamItemNameChange);
+        }
         syncWithBamItemList();
     }
 
@@ -155,60 +176,54 @@ public class BamItemParent implements ChangeListener {
         fireChangeListeners();
     }
 
-    public WarningAndActions getOutOfSyncWarning() {
-
+    private boolean hasSelectionChanged() {
         if (backupItemString == null) {
-            if (currentItem == null) {
-                System.out.println("> Invalid configuration");
-            }
-            System.out.println("> No backup");
-            return null;
+            // no backup, irrelevant
+            return false;
         }
-
-        boolean backupItemStillExists = allItems.getBamItemWithId(backupItemId) != null;
-
-        outOfSyncSelectOriginalButton.setEnabled(backupItemStillExists);
-
-        outOfSyncWarningContentOnly.clearButtons();
-        outOfSyncWarningSelectionAndContent.clearButtons();
-
         if (currentItem == null) {
-            outOfSyncWarningSelectionAndContent.addButton(outOfSyncSelectOriginalButton);
-            return outOfSyncWarningSelectionAndContent;
+            // selection must have changed
+            return true;
         }
-
-        JSONObject backupItemJson = new JSONObject(backupItemString);
-
-        boolean selectionHasChanged = !backupItemId.equals(currentItem.ID);
-        boolean selectionIsOutOfSync = !currentItem.isMatchingWith(backupItemJson, JSON_KEYS_TO_IGNORE, true);
-
-        if (!selectionIsOutOfSync) {
-            return null;
-        }
-
-        if (selectionHasChanged) {
-            outOfSyncWarningSelectionAndContent.addButton(outOfSyncSelectOriginalButton);
-            outOfSyncWarningSelectionAndContent.addButton(outOfSyncCreateNewFromOriginalButton);
-            return outOfSyncWarningSelectionAndContent;
-        } else {
-            outOfSyncWarningContentOnly.addButton(outOfSyncCreateNewFromOriginalButton);
-            return outOfSyncWarningContentOnly;
-
-        }
+        return !backupItemId.equals(currentItem.ID);
     }
 
-    private void revertToBackup() {
-        BamItem item = allItems.getBamItemWithId(backupItemId);
-        if (item == null) {
-            JOptionPane.showConfirmDialog(
-                    AppConfig.AC.APP_MAIN_FRAME,
-                    Lg.text("impossible_component_deleted"),
-                    Lg.text("error"),
-                    JOptionPane.CLOSED_OPTION,
-                    JOptionPane.ERROR_MESSAGE);
-            return;
+    private boolean isCurrentInSyncWithBackup() {
+        if (backupItemString == null) {
+            // no backup, irrelevant
+            return false;
         }
-        setCurrentBamItem(item);
+        if (currentItem == null) {
+            // content is different
+            return false;
+        }
+        JSONObject backupItemJson = new JSONObject(backupItemString);
+        return currentItem.isMatchingWith(backupItemJson, JSON_KEYS_TO_IGNORE, true);
+    }
+
+    public boolean isBamRerunRequired() {
+        if (backupItemString == null || backupItemId == null) {
+            return false;
+        }
+        return !isCurrentInSyncWithBackup();
+    }
+
+    public List<MsgPanel> getMessages() {
+        List<MsgPanel> messages = new ArrayList<>();
+        if (backupItemString != null && backupItemId != null) {
+            boolean inSync = isCurrentInSyncWithBackup();
+
+            if (!inSync) {
+                syncIssueMsg.clearButtons();
+                if (hasSelectionChanged() && allItems.getBamItemWithId(backupItemId) != null) {
+                    syncIssueMsg.addButton(revertToSelectCompBtn);
+                }
+                syncIssueMsg.addButton(createInSyncCompBtn);
+                messages.add(syncIssueMsg);
+            }
+
+        }
+        return messages;
     }
 
     public JSONObject toJSON() {
