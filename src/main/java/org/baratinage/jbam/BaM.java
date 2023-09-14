@@ -31,14 +31,20 @@ public class BaM {
             CalibrationConfig calibrationConfig,
             PredictionConfig[] predictionConfigs,
             RunOptions runOptions) {
+        this(calibrationConfig, predictionConfigs, runOptions, null, null);
+    }
 
+    public BaM(CalibrationConfig calibrationConfig,
+            PredictionConfig[] predictionConfigs,
+            RunOptions runOptions,
+            CalibrationResult calibrationResult,
+            PredictionResult[] predictionResults) {
         this.calibrationConfig = calibrationConfig;
         // FIXME: should check that there's no conflicting names in the variables!
         this.predictionConfigs = predictionConfigs;
         this.runOptions = runOptions;
-        // this.calibrationResult = calibrationResult;
-        // this.predictionResults = predictionResults;
-
+        this.calibrationResult = calibrationResult;
+        this.predictionResults = predictionResults;
     }
 
     public CalibrationConfig getCalibrationConfig() {
@@ -57,6 +63,7 @@ public class BaM {
         return this.predictionResults;
     }
 
+    @Deprecated
     public void readResults(String workspace) {
         if (this.runOptions.doMcmc) {
             this.calibrationResult = new CalibrationResult(workspace, calibrationConfig);
@@ -316,6 +323,27 @@ public class BaM {
                     predictionConfigFileName);
         }
 
-        return new BaM(calibrationConfig, predictionConfigs, runOptions);
+        CalibrationResult calibrationResult = null;
+        if (runOptions.doMcmc) {
+            calibrationResult = new CalibrationResult(workspacePath, calibrationConfig);
+            if (!calibrationResult.getIsValid()) {
+                calibrationResult = null;
+            }
+        }
+
+        PredictionResult[] predictionResults = null;
+        if (runOptions.doPrediction) {
+            int n = predictionConfigs.length;
+            predictionResults = new PredictionResult[n];
+            for (int k = 0; k < n; k++) {
+                predictionResults[k] = new PredictionResult(workspacePath, predictionConfigs[k]);
+                if (!predictionResults[k].getIsValid()) {
+                    predictionResults = null;
+                    break;
+                }
+            }
+        }
+
+        return new BaM(calibrationConfig, predictionConfigs, runOptions, calibrationResult, predictionResults);
     }
 }
