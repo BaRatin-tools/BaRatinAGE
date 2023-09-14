@@ -40,6 +40,7 @@ import org.baratinage.ui.component.SimpleLogger;
 import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.ui.lg.Lg;
 
+@Deprecated
 public class RunBam {
 
     private JDialog monitoringDialog;
@@ -62,7 +63,6 @@ public class RunBam {
         mainConfigFile.renameTo(Path.of(BamFilesHelpers.EXE_DIR, BamFilesHelpers.CONFIG_BAM).toFile());
 
         bam = BaM.readBaM(mainConfigFile.getAbsolutePath(), workspacePath.toString());
-        bam.readResults(workspacePath.toString());
         System.out.println(bam);
 
     }
