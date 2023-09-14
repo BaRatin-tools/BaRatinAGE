@@ -156,12 +156,6 @@ public class Gaugings extends BamItem implements ICalibrationData {
                 getOutputs());
     }
 
-    @Override
-    public String[] getTempDataFileNames() {
-        return gaugingDataset == null ? new String[] {}
-                : new String[] { buildDataFileName(gaugingDataset.getDatasetName(), gaugingDataset.hashCode()) };
-    }
-
     private static String buildDataFileName(String name, int hashCode) {
         return name + "_" + hashCode + ".txt";
     }
@@ -180,6 +174,7 @@ public class Gaugings extends BamItem implements ICalibrationData {
                     gaugingDataset.getDatasetName(),
                     gaugingDataset.hashCode())).toString();
             gaugingDataset.writeDataFile(dataFilePath);
+            registerFile(dataFilePath);
         }
 
         return json;

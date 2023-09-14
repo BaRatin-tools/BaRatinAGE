@@ -1,5 +1,6 @@
 package org.baratinage.ui.baratin;
 
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -166,12 +167,6 @@ public class HydraulicConfiguration extends BamItem
     }
 
     @Override
-    public String[] getTempDataFileNames() {
-        RunBam runBam = priorRatingCurve.getRunBam();
-        return runBam == null ? new String[] {} : new String[] { runBam.zipName };
-    }
-
-    @Override
     public JSONObject toJSON() {
         JSONObject json = new JSONObject();
 
@@ -229,6 +224,12 @@ public class HydraulicConfiguration extends BamItem
         RunBam runBam = priorRatingCurve.getRunBam();
         if (runBam != null) {
             json.put("bamRunId", runBam.id);
+
+            // FIXME: TEMP CODE
+            String zipName = runBam.id + ".zip";
+            String zipPath = Path.of(AppConfig.AC.APP_TEMP_DIR, zipName).toString();
+            registerFile(zipPath);
+
         }
 
         return json;

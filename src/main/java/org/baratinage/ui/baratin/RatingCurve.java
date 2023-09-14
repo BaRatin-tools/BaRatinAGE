@@ -1,5 +1,6 @@
 package org.baratinage.ui.baratin;
 
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -202,12 +203,6 @@ public class RatingCurve extends BamItem implements ICalibratedModel, IMcmc {
     }
 
     @Override
-    public String[] getTempDataFileNames() {
-        RunBam runBam = posteriorRatingCurve.getRunBam();
-        return runBam == null ? new String[] {} : new String[] { runBam.zipName };
-    }
-
-    @Override
     public JSONObject toJSON() {
 
         JSONObject json = new JSONObject();
@@ -227,6 +222,12 @@ public class RatingCurve extends BamItem implements ICalibratedModel, IMcmc {
         RunBam runBam = posteriorRatingCurve.getRunBam();
         if (runBam != null) {
             json.put("bamRunId", runBam.id);
+
+            // FIXME: TEMP CODE
+            String zipName = runBam.id + ".zip";
+            String zipPath = Path.of(AppConfig.AC.APP_TEMP_DIR, zipName).toString();
+            registerFile(zipPath);
+
         }
 
         json.put("jsonStringBackup", jsonStringBackup);

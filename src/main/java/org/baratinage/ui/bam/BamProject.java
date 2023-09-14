@@ -308,23 +308,13 @@ public abstract class BamProject extends RowColPanel {
 
             Files.copy(mainConfigFile.toPath(), zipOutStream);
 
-            List<String> usedNames = new ArrayList<>();
-            for (BamItem item : BAM_ITEMS) {
-                String[] dataFileNames = item.getTempDataFileNames();
-
-                for (String dfp : dataFileNames) {
-                    File f = new File(Path.of(AppConfig.AC.APP_TEMP_DIR, dfp).toString());
-                    System.out.println("Including file '" + f + "'...");
-                    String name = f.getName();
-                    if (usedNames.stream().anyMatch(s -> s.equals(name))) {
-                        System.out.println("Duplicated zip entry '" + name + "' ignored!");
-                        continue;
-                    }
-                    usedNames.add(name);
-                    ZipEntry ze = new ZipEntry(name);
-                    zipOutStream.putNextEntry(ze);
-                    Files.copy(f.toPath(), zipOutStream);
-                }
+            cleanupRegisteredFile();
+            for (File file : registeredFiles) {
+                System.out.println("Including file '" + file.toString() + "'...");
+                String name = file.getName();
+                ZipEntry ze = new ZipEntry(name);
+                zipOutStream.putNextEntry(ze);
+                Files.copy(file.toPath(), zipOutStream);
             }
 
             zipOutStream.close();
@@ -386,6 +376,54 @@ public abstract class BamProject extends RowColPanel {
 
     public String getProjectPath() {
         return projectPath;
+    }
+
+    private List<File> registeredFiles = new ArrayList<>();
+
+    public void registerFile(String filePath) {
+        File f = new File(filePath);
+        if (registeredFileContains(f)) {
+            System.err.println("Cannot register file '" + filePath + "' because it is already registered.");
+            return;
+        }
+        if (!f.exists()) {
+            System.err.println("Cannot register file '" + filePath + "' because it doesn't exist.");
+            return;
+        }
+        registeredFiles.add(f);
+    }
+
+    public boolean registeredFileContains(File file) {
+        for (File f : registeredFiles) {
+            if (f.compareTo(file) == 0) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void cleanupRegisteredFile() {
+        List<File> toRemove = new ArrayList<>();
+        List<String> usedNames = new ArrayList<>();
+        for (File file : registeredFiles) {
+            if (!file.exists()) {
+                System.out.println("File '" + file.toString() + "' doesn't exist.");
+                toRemove.add(file);
+            }
+            String name = file.getName();
+            if (usedNames.stream().anyMatch(s -> s.equals(name))) {
+                // necessary when creating flat zip file! No duplicated name allowed.
+                System.out
+                        .println("File '" + file.toString() + "' has a name already used by another registered file.");
+                toRemove.add(file);
+                continue;
+            }
+            usedNames.add(name);
+        }
+        for (File file : toRemove) {
+            System.out.println("Unregistering file '" + file.toString() + "'...");
+            registeredFiles.remove(file);
+        }
     }
 
 }

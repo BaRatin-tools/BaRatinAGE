@@ -77,10 +77,6 @@ abstract public class BamItem extends GridPanel {
         this.contentPanel.appendChild(component);
     }
 
-    public String[] getTempDataFileNames() {
-        return new String[] {};
-    }
-
     public abstract JSONObject toJSON();
 
     public abstract void fromJSON(JSONObject json);
@@ -198,4 +194,9 @@ abstract public class BamItem extends GridPanel {
 
     public void onBamItemListChange() {
     };
+
+    protected void registerFile(String dataFilePath) {
+        PROJECT.registerFile(dataFilePath);
+    }
+
 }

@@ -119,12 +119,6 @@ public class Limnigraph extends BamItem implements IPredictionData {
 
     }
 
-    @Override
-    public String[] getTempDataFileNames() {
-        return limniDataset == null ? new String[] {}
-                : new String[] { buildDataFileName(limniDataset.getDatasetName(), limniDataset.hashCode()) };
-    }
-
     private static String buildDataFileName(String name, int hashCode) {
         return name + "_" + hashCode + ".txt";
     }
@@ -143,6 +137,7 @@ public class Limnigraph extends BamItem implements IPredictionData {
                     limniDataset.getDatasetName(),
                     limniDataset.hashCode())).toString();
             limniDataset.writeDataFile(dataFilePath);
+            registerFile(dataFilePath);
         }
 
         return json;
