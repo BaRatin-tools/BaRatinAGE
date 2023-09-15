@@ -23,9 +23,12 @@ public class SimpleTextField extends JTextField {
 
         Dimension dim = this.getPreferredSize();
         dim.width = 200;
-        this.setPreferredSize(dim);
+        setPreferredSize(dim);
+        Dimension minDim = getMinimumSize();
+        minDim.width = 100;
+        setMinimumSize(minDim);
 
-        this.getDocument().addDocumentListener(new DocumentListener() {
+        getDocument().addDocumentListener(new DocumentListener() {
 
             @Override
             public void insertUpdate(DocumentEvent e) {
@@ -78,17 +81,17 @@ public class SimpleTextField extends JTextField {
     private final List<ChangeListener> textChangeListeners = new ArrayList<>();
 
     public void addChangeListener(ChangeListener listener) {
-        this.textChangeListeners.add(listener);
+        textChangeListeners.add(listener);
     }
 
     public void removeChangeListener(ChangeListener listener) {
-        this.textChangeListeners.remove(listener);
+        textChangeListeners.remove(listener);
     }
 
     public void fireChangeListeners() {
         if (doNotFireChange)
             return;
-        for (ChangeListener cl : this.textChangeListeners) {
+        for (ChangeListener cl : textChangeListeners) {
             cl.stateChanged(new ChangeEvent(this));
         }
     }
@@ -96,16 +99,16 @@ public class SimpleTextField extends JTextField {
     private final List<Predicate<String>> textValidators = new ArrayList<>();
 
     public void addTextValidator(Predicate<String> validator) {
-        this.textValidators.add(validator);
+        textValidators.add(validator);
     }
 
     public void removeTextValidator(Predicate<String> validator) {
-        this.textValidators.remove(validator);
+        textValidators.remove(validator);
     }
 
     public boolean isTextValid() {
         String text = getText();
-        for (Predicate<String> tv : this.textValidators) {
+        for (Predicate<String> tv : textValidators) {
             if (!tv.test(text))
                 return false;
         }
