@@ -106,7 +106,7 @@ public class BamItemParent implements ChangeListener {
         });
 
         onBamItemNameChange = (chEvt) -> {
-            updateCombobox(CHILD.PROJECT.BAM_ITEMS);
+            syncWithBamItemList();
             Lg.updateRegisteredObject(this);
         };
     }
