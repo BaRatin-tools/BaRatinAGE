@@ -366,9 +366,9 @@ public class HydraulicConfiguration
 
         double[] stage = predConfigs[0].inputs[0].dataColumns.get(0);
         String outputName = predConfigs[0].outputs[0].name;
-        //
-        List<double[]> discharge = predResults[1].getOutputResults().get(outputName).env();
-        discharge.add(0, predResults[0].getOutputResults().get(outputName).spag().get(0));
+
+        double[] dischargeMaxpost = predResults[0].getOutputResults().get(outputName).spag().get(0);
+        List<double[]> dischargeParamU = predResults[1].getOutputResults().get(outputName).env().subList(1, 3);
 
         List<double[]> transitionStages = new ArrayList<>();
         for (Parameter p : params) {
@@ -387,6 +387,6 @@ public class HydraulicConfiguration
         }
 
         plotPanel.updatePlot(
-                stage, discharge, transitionStages);
+                stage, dischargeMaxpost, dischargeParamU, transitionStages);
     }
 }
