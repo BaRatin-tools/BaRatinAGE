@@ -60,6 +60,7 @@ public class PlotBand extends PlotItem {
         dataset.addSeries(series);
 
         renderer = new DeviationRenderer();
+        renderer.setAlpha(0.9f);
 
         renderer.setSeriesStroke(0, lineStroke);
         renderer.setSeriesFillPaint(0, fillPaint);
