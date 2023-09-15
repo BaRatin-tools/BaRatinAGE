@@ -84,7 +84,7 @@ public class BaM {
         }
     }
 
-    private void toFiles(String workspace) {
+    protected void toFiles(String workspace) {
 
         // FIXME: assuming that that these filenames are fixed which may not
         // in particular for the prediction master file
@@ -100,17 +100,14 @@ public class BaM {
         this.calibrationConfig.toFiles(workspace);
 
         // Prediction configuraiton files
-        if (this.predictionConfigs.length > 0) { // FIXME: check if it is necessary
-            ConfigFile predMasterConfig = new ConfigFile();
-            predMasterConfig.addItem(this.predictionConfigs.length, "Number of prediction experiments");
-            for (PredictionConfig p : this.predictionConfigs) {
-
-                predMasterConfig.addItem(p.predictionConfigFileName,
-                        "Config file for experiments - an many lines as the number above", true);
-                p.toFiles(workspace);
-            }
-            predMasterConfig.writeToFile(workspace, predictionMasterConfigFileName);
+        ConfigFile predMasterConfig = new ConfigFile();
+        predMasterConfig.addItem(this.predictionConfigs.length, "Number of prediction experiments");
+        for (PredictionConfig p : this.predictionConfigs) {
+            predMasterConfig.addItem(p.predictionConfigFileName,
+                    "Config file for experiments - an many lines as the number above", true);
+            p.toFiles(workspace);
         }
+        predMasterConfig.writeToFile(workspace, predictionMasterConfigFileName);
 
         // Run options configuraiton file
         this.runOptions.toFiles(workspace);
