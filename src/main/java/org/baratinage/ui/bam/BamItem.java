@@ -155,7 +155,7 @@ abstract public class BamItem extends GridPanel {
         return areMatching(toJSON(), json, keys, exclude);
     }
 
-    private static void printJsonStrings(String jsonA, String jsonB) {
+    public static void printJsonStrings(String jsonA, String jsonB) {
         System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
         System.out.println(jsonA);
         System.out.println("------------------------------------------------");

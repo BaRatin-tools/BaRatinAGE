@@ -24,8 +24,6 @@ public class App {
                     MainFrame mainFrame = new MainFrame();
                     if (args.length > 0) {
                         mainFrame.loadProject(args[0]);
-                    } else {
-                        mainFrame.loadProject("C:\\Users\\Ivan\\Documents\\test_31.bam");
                     }
                 } catch (Exception e) {
                     e.printStackTrace();

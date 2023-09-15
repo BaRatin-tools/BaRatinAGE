@@ -183,7 +183,6 @@ public abstract class BamProject extends RowColPanel {
         });
 
         bamItem.deleteButton.addActionListener((e) -> {
-            String t = bamItem.bamItemNameField.getText();
             int response = JOptionPane.showConfirmDialog(this,
                     Lg.html("delete_component_question", bamItem.bamItemNameField.getText()),
                     Lg.text("warning"),
