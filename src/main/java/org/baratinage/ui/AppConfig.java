@@ -18,7 +18,20 @@ public class AppConfig {
     public final String ICONS_RESOURCES_DIR;
     public final MainFrame APP_MAIN_FRAME;
 
-    public final Color INVALID_COLOR = new Color(200, 50, 40);
+    public Color INVALID_COLOR = new Color(200, 50, 40);
+    public Color WARNING_COLOR = new Color(230, 149, 0);
+    public Color INFO_COLOR = new Color(0, 63, 179);
+
+    public Color PLOT_LINE_COLOR = new Color(50, 50, 100);
+    public Color PLOT_ENVELOP_COLOR = new Color(200, 200, 255);
+
+    public Color RATING_CURVE_COLOR = PLOT_LINE_COLOR;
+    public Color RATING_CURVE_TOTAL_UNCERTAINTY_COLOR = new Color(182, 0, 4);
+    public Color RATING_CURVE_PARAM_UNCERTAINTY_COLOR = new Color(253, 195, 188);
+    public Color GAUGING_COLOR = new Color(0, 128, 255);
+    public Color DISCARDED_GAUGING_COLOR = new Color(255, 80, 83);
+    public Color STAGE_TRANSITION_VALUE_COLOR = new Color(4, 182, 0);
+    public Color STAGE_TRANSITION_UNCERTAINTY_COLOR = new Color(164, 255, 162);
 
     public String lastUsedDir;
 
