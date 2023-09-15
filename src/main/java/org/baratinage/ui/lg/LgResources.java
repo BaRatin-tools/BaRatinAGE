@@ -53,7 +53,8 @@ public class LgResources {
                                     resourcePath));
                     fileTranslations.put(fileKey, resourceBundle);
                 } catch (IOException e) {
-                    System.err.println("Failed to read expected resource bundle '" + resourceName + "'!");
+                    System.err.println(
+                            "LgRessources Error: Failed to read expected resource bundle '" + resourceName + "'!");
                 }
             }
             translations.put(localKey, fileTranslations);

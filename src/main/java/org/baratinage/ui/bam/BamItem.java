@@ -108,7 +108,7 @@ abstract public class BamItem extends GridPanel {
         String[] namesB = JSONObject.getNames(jsonB);
 
         if (namesA == null || namesB == null) {
-            System.err.println("At least one of the JSON object to compare is empty!");
+            System.err.println("BamItem Error: At least one of the JSON object to compare is empty!");
             return namesA == null && namesB == null;
         }
 

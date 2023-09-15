@@ -275,7 +275,7 @@ public class PlotContainer extends RowColPanel {
             fileWriter.write(svg);
             fileWriter.close();
         } catch (IOException e) {
-            System.err.println(e);
+            System.err.println("PlotContainer Error: \n" + e);
         }
     }
 
@@ -283,7 +283,7 @@ public class PlotContainer extends RowColPanel {
         try {
             Files.write(Path.of(filePath), getImageBytes());
         } catch (IOException e) {
-            System.err.println(e);
+            System.err.println("PlotContainer Error: \n" + e);
         }
     }
 
