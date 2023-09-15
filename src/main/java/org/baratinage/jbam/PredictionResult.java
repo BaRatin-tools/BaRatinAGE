@@ -34,22 +34,6 @@ public class PredictionResult {
     private PredictionConfig predictionConfig; // FIXME: should this be here?
     private boolean isValid;
 
-    public String getName() {
-        return this.predictionConfig.name;
-    }
-
-    public PredictionConfig getPredictionConfig() {
-        return this.predictionConfig;
-    }
-
-    public HashMap<String, PredictionOutputResult> getOutputResults() {
-        return this.outputResults;
-    }
-
-    public boolean getIsValid() {
-        return this.isValid;
-    }
-
     public PredictionResult(String workspace, PredictionConfig predictionConfig) {
         this.isValid = false;
         this.predictionConfig = predictionConfig;
@@ -79,6 +63,22 @@ public class PredictionResult {
             this.outputResults.put(outputName, new PredictionOutputResult(env, spag));
         }
         this.isValid = true;
+    }
+
+    public String getName() {
+        return this.predictionConfig.name;
+    }
+
+    public PredictionConfig getPredictionConfig() {
+        return this.predictionConfig;
+    }
+
+    public HashMap<String, PredictionOutputResult> getOutputResults() {
+        return this.outputResults;
+    }
+
+    public boolean getIsValid() {
+        return this.isValid;
     }
 
     @Override
