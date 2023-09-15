@@ -35,7 +35,9 @@ public class RunPanel extends RowColPanel {
     private IPriors bamPriors;
     private IStructuralError bamStructError;
     private ICalibrationData bamCalibData;
-    private IPredictionExperiment[] bamPredictions = new IPredictionExperiment[] {};
+    // private IPredictionExperiment[] bamPredictions = new IPredictionExperiment[]
+    // {};
+    private IPredictionMaster bamPredictions;
     private RunConfigAndRes bamRunConfigAndRes;
 
     private final boolean calibRun;
@@ -49,6 +51,7 @@ public class RunPanel extends RowColPanel {
         this.priorRun = priorRun;
         this.postRun = postRun;
 
+        setPadding(5);
         appendChild(runButton);
 
         runButton.addActionListener((e) -> {
@@ -85,7 +88,7 @@ public class RunPanel extends RowColPanel {
         hasChanged();
     }
 
-    public void setPredictionExperiments(IPredictionExperiment... predictionExperiments) {
+    public void setPredictionExperiments(IPredictionMaster predictionExperiments) {
         bamPredictions = predictionExperiments;
         hasChanged();
     }
@@ -219,9 +222,10 @@ public class RunPanel extends RowColPanel {
         // --------------------------------------------------------------------
         // 4) predictions
 
-        PredictionConfig[] predConfigs = new PredictionConfig[bamPredictions.length];
-        for (int k = 0; k < bamPredictions.length; k++) {
-            predConfigs[k] = bamPredictions[k].getPredictionConfig();
+        IPredictionExperiment[] predExperiments = bamPredictions.getPredictionExperiments();
+        PredictionConfig[] predConfigs = new PredictionConfig[predExperiments.length];
+        for (int k = 0; k < predExperiments.length; k++) {
+            predConfigs[k] = predExperiments[k].getPredictionConfig();
         }
 
         // --------------------------------------------------------------------
