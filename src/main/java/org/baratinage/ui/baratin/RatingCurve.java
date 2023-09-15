@@ -1,17 +1,26 @@
 package org.baratinage.ui.baratin;
 
-import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JSeparator;
 
+import org.baratinage.jbam.CalDataResidualConfig;
 import org.baratinage.jbam.CalibrationConfig;
+import org.baratinage.jbam.CalibrationData;
 import org.baratinage.jbam.CalibrationResult;
+import org.baratinage.jbam.EstimatedParameter;
 import org.baratinage.jbam.McmcConfig;
 import org.baratinage.jbam.McmcCookingConfig;
-
+import org.baratinage.jbam.McmcSummaryConfig;
+import org.baratinage.jbam.Model;
+import org.baratinage.jbam.ModelOutput;
+import org.baratinage.jbam.PredictionConfig;
+import org.baratinage.jbam.PredictionResult;
+import org.baratinage.jbam.StructuralErrorModel;
+import org.baratinage.jbam.utils.BamFilesHelpers;
 import org.baratinage.ui.AppConfig;
 import org.baratinage.ui.bam.BamItem;
 import org.baratinage.ui.bam.BamItemType;
@@ -19,20 +28,27 @@ import org.baratinage.ui.bam.BamItemList;
 import org.baratinage.ui.bam.BamItemParent;
 import org.baratinage.ui.bam.ICalibratedModel;
 import org.baratinage.ui.bam.IMcmc;
-import org.baratinage.ui.bam.RunBam;
+import org.baratinage.ui.bam.IPredictionExperiment;
+import org.baratinage.ui.bam.IPredictionMaster;
+import org.baratinage.ui.bam.PredictionExperiment;
+import org.baratinage.ui.bam.RunConfigAndRes;
+import org.baratinage.ui.bam.RunPanel;
 import org.baratinage.ui.commons.MsgPanel;
 import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.ui.lg.Lg;
-
+import org.baratinage.utils.Calc;
 import org.json.JSONObject;
 
-public class RatingCurve extends BamItem implements ICalibratedModel, IMcmc {
+public class RatingCurve extends BamItem implements IPredictionMaster, ICalibratedModel, IMcmc {
 
     private BamItemParent hydrauConfParent;
     private BamItemParent gaugingsParent;
     private BamItemParent structErrorParent;
 
-    private PosteriorRatingCurve posteriorRatingCurve;
+    private RatingCurveStageGrid ratingCurveStageGrid;
+    private RunPanel runPanel;
+    private PosteriorRatingCurvePlot ratingCurvePlot;
+    private RunConfigAndRes bamRunConfigAndRes;
 
     private RowColPanel outdatedPanel;
 
@@ -40,15 +56,6 @@ public class RatingCurve extends BamItem implements ICalibratedModel, IMcmc {
 
     public RatingCurve(String uuid, BaratinProject project) {
         super(BamItemType.RATING_CURVE, uuid, project);
-
-        RowColPanel content = new RowColPanel(RowColPanel.AXIS.COL);
-
-        RowColPanel mainConfigPanel = new RowColPanel(RowColPanel.AXIS.ROW, RowColPanel.ALIGN.START);
-        RowColPanel mainContentPanel = new RowColPanel();
-
-        content.appendChild(mainConfigPanel, 0);
-        content.appendChild(new JSeparator(), 0);
-        content.appendChild(mainContentPanel, 1);
 
         // **********************************************************
         // Hydraulic configuration
@@ -58,14 +65,12 @@ public class RatingCurve extends BamItem implements ICalibratedModel, IMcmc {
                 BamItemType.HYDRAULIC_CONFIG,
                 "ui", "bamRunId", "jsonStringBackup", "stageGridConfig");
         hydrauConfParent.addChangeListener((e) -> {
-            BamItem bamItem = hydrauConfParent.getCurrentBamItem();
-            if (bamItem != null) {
-                HydraulicConfiguration hydrauConf = (HydraulicConfiguration) bamItem;
-                posteriorRatingCurve.setModelDefintion(hydrauConf);
-                posteriorRatingCurve.setPriors(hydrauConf);
-            }
+            HydraulicConfiguration bamItem = (HydraulicConfiguration) hydrauConfParent.getCurrentBamItem();
+            runPanel.setModelDefintion(bamItem);
+            runPanel.setPriors(bamItem);
             checkSync();
         });
+
         // **********************************************************
         // Gaugings
         // **********************************************************
@@ -73,12 +78,11 @@ public class RatingCurve extends BamItem implements ICalibratedModel, IMcmc {
                 this,
                 BamItemType.GAUGINGS);
         gaugingsParent.addChangeListener((e) -> {
-            BamItem bamItem = gaugingsParent.getCurrentBamItem();
-            if (bamItem != null) {
-                posteriorRatingCurve.setCalibrationData((Gaugings) bamItem);
-            }
+            Gaugings bamItem = (Gaugings) gaugingsParent.getCurrentBamItem();
+            runPanel.setCalibrationData(bamItem);
             checkSync();
         });
+
         // **********************************************************
         // Structural error
         // **********************************************************
@@ -86,41 +90,57 @@ public class RatingCurve extends BamItem implements ICalibratedModel, IMcmc {
                 this,
                 BamItemType.STRUCTURAL_ERROR);
         structErrorParent.addChangeListener((e) -> {
-            BamItem bamItem = structErrorParent.getCurrentBamItem();
-            if (bamItem != null) {
-                posteriorRatingCurve.setStructuralErrorModel((StructuralError) bamItem);
-            }
+            StructuralError bamItem = (StructuralError) structErrorParent.getCurrentBamItem();
+            runPanel.setStructuralErrorModel(bamItem);
             checkSync();
         });
+
         // **********************************************************
 
+        RowColPanel content = new RowColPanel(RowColPanel.AXIS.COL);
+
+        RowColPanel mainConfigPanel = new RowColPanel(RowColPanel.AXIS.ROW);
+        RowColPanel mainContentPanel = new RowColPanel(RowColPanel.AXIS.COL);
+
+        // **********************************************************
+
+        ratingCurveStageGrid = new RatingCurveStageGrid();
+        ratingCurveStageGrid.addChangeListener((e) -> {
+            fireChangeListeners();
+        });
+
         mainConfigPanel.appendChild(hydrauConfParent.comboboxPanel, 0);
-        mainConfigPanel.appendChild(new JSeparator(JSeparator.VERTICAL));
+        mainConfigPanel.appendChild(new JSeparator(JSeparator.VERTICAL), 0);
         mainConfigPanel.appendChild(gaugingsParent.comboboxPanel, 0);
-        mainConfigPanel.appendChild(new JSeparator(JSeparator.VERTICAL));
+        mainConfigPanel.appendChild(new JSeparator(JSeparator.VERTICAL), 0);
         mainConfigPanel.appendChild(structErrorParent.comboboxPanel, 0);
+        mainConfigPanel.appendChild(new JSeparator(JSeparator.VERTICAL), 0);
+        mainConfigPanel.appendChild(ratingCurveStageGrid, 1);
 
-        posteriorRatingCurve = new PosteriorRatingCurve();
-        posteriorRatingCurve.addChangeListener((e) -> {
-            JSONObject json = toJSON();
-            json.remove("jsonStringBackup");
-            jsonStringBackup = json.toString();
-            hydrauConfParent.updateBackup();
-            gaugingsParent.updateBackup();
-            structErrorParent.updateBackup();
-            checkSync();
-        });
-        posteriorRatingCurve.ratingCurveGrid.addChangeListener((e) -> {
-            checkSync();
+        runPanel = new RunPanel(true, false, true);
+        runPanel.setPredictionExperiments(this);
+        runPanel.addRunSuccessListerner((RunConfigAndRes res) -> {
+            System.out.println("SUCCESS!!!!");
+            bamRunConfigAndRes = res;
+            buildPlot();
         });
 
-        mainContentPanel.appendChild(posteriorRatingCurve);
-
-        setContent(content);
+        ratingCurvePlot = new PosteriorRatingCurvePlot();
 
         outdatedPanel = new RowColPanel(RowColPanel.AXIS.COL);
+        outdatedPanel.setPadding(2);
         outdatedPanel.setGap(2);
         outdatedPanel.setColWeight(0, 1);
+
+        mainContentPanel.appendChild(outdatedPanel, 0);
+        mainContentPanel.appendChild(runPanel, 0);
+        mainContentPanel.appendChild(ratingCurvePlot, 1);
+
+        content.appendChild(mainConfigPanel, 0);
+        content.appendChild(new JSeparator(), 0);
+        content.appendChild(mainContentPanel, 1);
+
+        setContent(content);
 
         onBamItemListChange();
 
@@ -138,20 +158,48 @@ public class RatingCurve extends BamItem implements ICalibratedModel, IMcmc {
 
     @Override
     public CalibrationConfig getCalibrationConfig() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getCalibrationConfig'");
+        HydraulicConfiguration hc = (HydraulicConfiguration) hydrauConfParent.getCurrentBamItem();
+        Gaugings g = (Gaugings) gaugingsParent.getCurrentBamItem();
+        StructuralError se = (StructuralError) structErrorParent.getCurrentBamItem();
+        if (hc == null || g == null || se == null) {
+            return null;
+        }
+
+        Model model = new Model(
+                BamFilesHelpers.CONFIG_MODEL,
+                hc.getModelId(),
+                hc.getInputNames().length,
+                hc.getOutputNames().length,
+                hc.getParameters(),
+                hc.getXtra(AppConfig.AC.BAM_WORKSPACE_ROOT),
+                BamFilesHelpers.CONFIG_XTRA);
+
+        String[] outputNames = hc.getOutputNames();
+        ModelOutput[] modelOutputs = new ModelOutput[outputNames.length];
+        StructuralErrorModel structErrModel = se.getStructuralErrorModel();
+        for (int k = 0; k < outputNames.length; k++) {
+            modelOutputs[k] = new ModelOutput(outputNames[k], structErrModel);
+
+        }
+
+        return new CalibrationConfig(
+                model,
+                modelOutputs,
+                g.getCalibrationData(),
+                getMcmcConfig(),
+                getMcmcCookingConfig(),
+                new McmcSummaryConfig(),
+                new CalDataResidualConfig());
     }
 
     @Override
     public boolean isCalibrated() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'isCalibrated'");
+        return bamRunConfigAndRes != null;
     }
 
     @Override
     public CalibrationResult getCalibrationResults() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getCalibrationResults'");
+        return bamRunConfigAndRes == null ? null : bamRunConfigAndRes.getCalibrationResults();
     }
 
     private void checkSync() {
@@ -176,29 +224,27 @@ public class RatingCurve extends BamItem implements ICalibratedModel, IMcmc {
             warnings.add(errorMsg);
         }
 
+        // --------------------------------------------------------------------
         // update message panel
-        posteriorRatingCurve.outdatedPanel.clear();
         outdatedPanel.clear();
-        if (warnings.size() > 0) {
-            for (MsgPanel w : warnings) {
-                outdatedPanel.appendChild(w);
-            }
-            posteriorRatingCurve.outdatedPanel.appendChild(outdatedPanel);
-        }
 
+        for (MsgPanel w : warnings) {
+            outdatedPanel.appendChild(w);
+        }
+        // --------------------------------------------------------------------
         // update run bam button
         if (isStageGridOutOfSync || needBamRerun) {
-            Lg.register(posteriorRatingCurve.runBamButton, "recompute_posterior_rc", true);
-            posteriorRatingCurve.runBamButton.setForeground(AppConfig.AC.INVALID_COLOR);
+            Lg.register(runPanel.runButton, "recompute_posterior_rc",
+                    true);
+            runPanel.runButton.setForeground(AppConfig.AC.INVALID_COLOR);
         } else {
-            Lg.register(posteriorRatingCurve.runBamButton, "compute_posterior_rc", true);
-            posteriorRatingCurve.runBamButton.setForeground(new JButton().getForeground());
+            Lg.register(runPanel.runButton, "compute_posterior_rc", true);
+            runPanel.runButton.setForeground(new JButton().getForeground());
         }
 
         // since text within warnings changes, it is necessary to
         // call Lg.updateRegisteredComponents() so changes are accounted for.
         Lg.updateRegisteredObjects();
-        posteriorRatingCurve.updateUI();
 
     }
 
@@ -211,23 +257,22 @@ public class RatingCurve extends BamItem implements ICalibratedModel, IMcmc {
         json.put("gaugings", gaugingsParent.toJSON());
         json.put("structError", structErrorParent.toJSON());
 
-        RatingCurveStageGrid ratingCurveGrid = posteriorRatingCurve.getRatingCurveStageGrid();
-        JSONObject jsonStageGridConfig = new JSONObject();
-        jsonStageGridConfig.put("min", ratingCurveGrid.getMinValue());
-        jsonStageGridConfig.put("max", ratingCurveGrid.getMaxValue());
-        jsonStageGridConfig.put("step", ratingCurveGrid.getStepValue());
+        // **********************************************************
+        // Stage grid configuration
+        JSONObject stageGridConfigJson = new JSONObject();
+        stageGridConfigJson.put("min", ratingCurveStageGrid.getMinValue());
+        stageGridConfigJson.put("max", ratingCurveStageGrid.getMaxValue());
+        stageGridConfigJson.put("step", ratingCurveStageGrid.getStepValue());
 
-        json.put("stageGridConfig", jsonStageGridConfig);
+        json.put("stageGridConfig", stageGridConfigJson);
 
-        RunBam runBam = posteriorRatingCurve.getRunBam();
-        if (runBam != null) {
-            json.put("bamRunId", runBam.id);
+        // **********************************************************
+        // BaM run
 
-            // FIXME: TEMP CODE
-            String zipName = runBam.id + ".zip";
-            String zipPath = Path.of(AppConfig.AC.APP_TEMP_DIR, zipName).toString();
+        if (bamRunConfigAndRes != null) {
+            json.put("bamRunId", bamRunConfigAndRes.id);
+            String zipPath = bamRunConfigAndRes.zipRun();
             registerFile(zipPath);
-
         }
 
         json.put("jsonStringBackup", jsonStringBackup);
@@ -250,22 +295,20 @@ public class RatingCurve extends BamItem implements ICalibratedModel, IMcmc {
         }
 
         if (json.has("stageGridConfig")) {
-            RatingCurveStageGrid ratingCurveGrid = posteriorRatingCurve.getRatingCurveStageGrid();
             JSONObject stageGridJson = json.getJSONObject("stageGridConfig");
-            if (stageGridJson.has("min")) {
-                ratingCurveGrid.setMinValue(stageGridJson.getDouble("min"));
-            }
-            if (stageGridJson.has("max")) {
-                ratingCurveGrid.setMaxValue(stageGridJson.getDouble("max"));
-            }
-            if (stageGridJson.has("step")) {
-                ratingCurveGrid.setStepValue(stageGridJson.getDouble("step"));
-            }
+            ratingCurveStageGrid.setMinValue(stageGridJson.getDouble("min"));
+            ratingCurveStageGrid.setMaxValue(stageGridJson.getDouble("max"));
+            ratingCurveStageGrid.setStepValue(stageGridJson.getDouble("step"));
         }
 
+        // **********************************************************
+        // prior rating curve BaM results
         if (json.has("bamRunId")) {
             String bamRunId = json.getString("bamRunId");
-            posteriorRatingCurve.setRunBam(bamRunId);
+            bamRunConfigAndRes = RunConfigAndRes.buildFromTempZipArchive(bamRunId);
+            buildPlot();
+        } else {
+            System.out.println("MISSING 'bamRunZipFileName'");
         }
 
         if (json.has("jsonStringBackup")) {
@@ -289,6 +332,94 @@ public class RatingCurve extends BamItem implements ICalibratedModel, IMcmc {
         RatingCurve cloned = new RatingCurve(uuid, (BaratinProject) PROJECT);
         cloned.fromFullJSON(toFullJSON());
         return cloned;
+    }
+
+    @Override
+    public IPredictionExperiment[] getPredictionExperiments() {
+        PredictionExperiment[] predictionConfigs = new PredictionExperiment[3];
+        predictionConfigs[0] = new PredictionExperiment(
+                "maxpost",
+                false,
+                false,
+                this,
+                ratingCurveStageGrid);
+
+        predictionConfigs[1] = new PredictionExperiment(
+                "parametric_uncertainty",
+                true,
+                false,
+                this,
+                ratingCurveStageGrid);
+
+        predictionConfigs[2] = new PredictionExperiment(
+                "total_uncertainty",
+                true,
+                true,
+                this,
+                ratingCurveStageGrid);
+        return predictionConfigs;
+    }
+
+    private void buildPlot() {
+        if (bamRunConfigAndRes == null) {
+            return;
+        }
+
+        PredictionConfig[] predConfigs = bamRunConfigAndRes.getPredictionConfigs();
+        PredictionResult[] predResults = bamRunConfigAndRes.getPredictionResults();
+        CalibrationResult calibrationResults = bamRunConfigAndRes.getCalibrationResults();
+
+        int maxpostIndex = calibrationResults.getMaxPostIndex();
+
+        HashMap<String, EstimatedParameter> pars = calibrationResults.getEsimatedParameters();
+        List<double[]> transitionStages = new ArrayList<>();
+        for (String parName : pars.keySet()) {
+            if (parName.startsWith("k_")) {
+                EstimatedParameter p = pars.get(parName);
+                double[] vals = p.getMcmc();
+                double mp = vals[maxpostIndex];
+                double[] p95 = Calc.percentiles(vals, new double[] { 0.025, 0.975 });
+                transitionStages.add(new double[] {
+                        mp, p95[0], p95[1]
+                });
+            }
+        }
+
+        String outputName = predConfigs[0].outputs[0].name;
+
+        double[] dischargeMaxpost = predResults[0].getOutputResults().get(outputName).spag().get(0);
+
+        List<double[]> paramU = predResults[1].getOutputResults().get(outputName).env().subList(1, 3);
+        List<double[]> totalU = predResults[2].getOutputResults().get(outputName).env().subList(1, 3);
+
+        CalibrationData calData = bamRunConfigAndRes.getCalibrationConfig().getCalibrationData();
+
+        double[] stage = calData.inputs[0].getValues();
+        double[] discharge = calData.outputs[0].getValues();
+        double[] dischargeStd = calData.outputs[0].getNonSysStd();
+        int n = stage.length;
+        double[] dischargeMin = new double[n];
+        double[] dischargeMax = new double[n];
+
+        for (int k = 0; k < n; k++) {
+            double dischargeU = dischargeStd[k] * 2;
+            dischargeMin[k] = discharge[k] - dischargeU;
+            dischargeMax[k] = discharge[k] + dischargeU;
+        }
+
+        List<double[]> gaugings = new ArrayList<>(); // 4 items: h, q, qmin, qmax
+        gaugings.add(stage);
+        gaugings.add(discharge);
+        gaugings.add(dischargeMin);
+        gaugings.add(dischargeMax);
+
+        ratingCurvePlot.updatePlot(
+                predConfigs[0].inputs[0].dataColumns.get(0),
+                dischargeMaxpost,
+                paramU,
+                totalU,
+                transitionStages,
+                gaugings);
     }
 
 }
