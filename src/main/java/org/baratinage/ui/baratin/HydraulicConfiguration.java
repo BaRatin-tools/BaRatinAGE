@@ -1,6 +1,5 @@
 package org.baratinage.ui.baratin;
 
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,14 +8,21 @@ import javax.swing.JButton;
 import javax.swing.JSeparator;
 import javax.swing.JSplitPane;
 
+import org.baratinage.jbam.Distribution;
+import org.baratinage.jbam.Distribution.DISTRIB;
 import org.baratinage.jbam.Parameter;
-
+import org.baratinage.jbam.PredictionConfig;
+import org.baratinage.jbam.PredictionResult;
 import org.baratinage.ui.AppConfig;
 import org.baratinage.ui.bam.BamItem;
 import org.baratinage.ui.bam.BamItemType;
 import org.baratinage.ui.bam.IModelDefinition;
+import org.baratinage.ui.bam.IPredictionExperiment;
+import org.baratinage.ui.bam.IPredictionMaster;
 import org.baratinage.ui.bam.IPriors;
-import org.baratinage.ui.bam.RunBam;
+import org.baratinage.ui.bam.PriorPredictionExperiment;
+import org.baratinage.ui.bam.RunConfigAndRes;
+import org.baratinage.ui.bam.RunPanel;
 import org.baratinage.ui.baratin.hydraulic_control.ControlMatrix;
 import org.baratinage.ui.baratin.hydraulic_control.HydraulicControlPanels;
 import org.baratinage.ui.baratin.hydraulic_control.OneHydraulicControl;
@@ -27,16 +33,19 @@ import org.baratinage.ui.lg.Lg;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-public class HydraulicConfiguration extends BamItem
-
-        implements IModelDefinition, IPriors {
+public class HydraulicConfiguration
+        extends BamItem
+        implements IModelDefinition, IPriors, IPredictionMaster {
 
     private ControlMatrix controlMatrix;
     private HydraulicControlPanels hydraulicControls;
     private RatingCurveStageGrid priorRatingCurveStageGrid;
-    private PriorRatingCurve priorRatingCurve;
 
     private RowColPanel outOufSyncPanel;
+
+    private RunPanel runPanel;
+    private PriorRatingCurvePlot plotPanel;
+    private RunConfigAndRes bamRunConfigAndRes;
 
     private String jsonStringBackup;
 
@@ -68,17 +77,18 @@ public class HydraulicConfiguration extends BamItem
             checkPriorRatingCurveSync();
         });
 
-        RowColPanel priorRatingCurvePanel = new RowColPanel(RowColPanel.AXIS.COL);
-        priorRatingCurve = new PriorRatingCurve();
-        priorRatingCurve.addChangeListener((e) -> {
-            JSONObject json = toJSON();
-            json.remove("jsonStringBackup");
-            jsonStringBackup = json.toString();
-            checkPriorRatingCurveSync();
+        plotPanel = new PriorRatingCurvePlot();
+
+        runPanel = new RunPanel(false, true, false);
+        runPanel.setModelDefintion(this);
+        runPanel.setPriors(this);
+        runPanel.setPredictionExperiments(this);
+        runPanel.addRunSuccessListerner((RunConfigAndRes res) -> {
+            bamRunConfigAndRes = res;
+            buildPlot();
         });
-        priorRatingCurve.setPredictionData(priorRatingCurveStageGrid);
-        priorRatingCurve.setPriors(this);
-        priorRatingCurve.setModelDefintion(this);
+
+        RowColPanel priorRatingCurvePanel = new RowColPanel(RowColPanel.AXIS.COL);
 
         outOufSyncPanel = new RowColPanel(RowColPanel.AXIS.COL);
         outOufSyncPanel.setPadding(5);
@@ -86,7 +96,8 @@ public class HydraulicConfiguration extends BamItem
         priorRatingCurvePanel.appendChild(priorRatingCurveStageGrid, 0);
         priorRatingCurvePanel.appendChild(new JSeparator(), 0);
         priorRatingCurvePanel.appendChild(outOufSyncPanel, 0);
-        priorRatingCurvePanel.appendChild(priorRatingCurve, 1);
+        priorRatingCurvePanel.appendChild(runPanel, 0);
+        priorRatingCurvePanel.appendChild(plotPanel, 1);
 
         JSplitPane mainSplitPaneContainer = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
         mainSplitPaneContainer.setBorder(BorderFactory.createEmptyBorder());
@@ -107,13 +118,13 @@ public class HydraulicConfiguration extends BamItem
                 MsgPanel errMsg = new MsgPanel(MsgPanel.TYPE.ERROR);
                 Lg.register(errMsg.message, "oos_prior_rating_curve", true);
                 outOufSyncPanel.appendChild(errMsg);
-                Lg.register(priorRatingCurve.runButton, "recompute_prior_rc", true);
-                priorRatingCurve.runButton.setForeground(AppConfig.AC.INVALID_COLOR);
+                Lg.register(runPanel.runButton, "recompute_prior_rc", true);
+                runPanel.runButton.setForeground(AppConfig.AC.INVALID_COLOR);
                 return;
             }
         }
-        Lg.register(priorRatingCurve.runButton, "compute_prior_rc", true);
-        priorRatingCurve.runButton.setForeground(new JButton().getForeground());
+        Lg.register(runPanel.runButton, "compute_prior_rc", true);
+        runPanel.runButton.setForeground(new JButton().getForeground());
         outOufSyncPanel.updateUI();
     }
 
@@ -220,16 +231,11 @@ public class HydraulicConfiguration extends BamItem
         json.put("jsonStringBackup", jsonStringBackup);
 
         // **********************************************************
-        // prior rating curve BaM results
-        RunBam runBam = priorRatingCurve.getRunBam();
-        if (runBam != null) {
-            json.put("bamRunId", runBam.id);
 
-            // FIXME: TEMP CODE
-            String zipName = runBam.id + ".zip";
-            String zipPath = Path.of(AppConfig.AC.APP_TEMP_DIR, zipName).toString();
+        if (bamRunConfigAndRes != null) {
+            json.put("bamRunId", bamRunConfigAndRes.id);
+            String zipPath = bamRunConfigAndRes.zipRun();
             registerFile(zipPath);
-
         }
 
         return json;
@@ -317,7 +323,8 @@ public class HydraulicConfiguration extends BamItem
         // prior rating curve BaM results
         if (json.has("bamRunId")) {
             String bamRunId = json.getString("bamRunId");
-            priorRatingCurve.setRunBam(bamRunId);
+            bamRunConfigAndRes = RunConfigAndRes.buildFromTempZipArchive(bamRunId);
+            buildPlot();
         } else {
             System.out.println("MISSING 'bamRunZipFileName'");
         }
@@ -332,4 +339,54 @@ public class HydraulicConfiguration extends BamItem
         return cloned;
     }
 
+    @Override
+    public IPredictionExperiment[] getPredictionExperiments() {
+        int nReplicates = 500;
+        PriorPredictionExperiment ppeMaxpost = new PriorPredictionExperiment("maxpost",
+                false, nReplicates,
+                this, priorRatingCurveStageGrid);
+
+        PriorPredictionExperiment ppeParamUncertainty = new PriorPredictionExperiment(
+                "parametricUncertainty",
+                true, nReplicates,
+                this, priorRatingCurveStageGrid);
+
+        IPredictionExperiment[] predictionExperiments = new PriorPredictionExperiment[] {
+                ppeMaxpost,
+                ppeParamUncertainty
+        };
+        return predictionExperiments;
+    }
+
+    private void buildPlot() {
+
+        PredictionConfig[] predConfigs = bamRunConfigAndRes.getPredictionConfigs();
+        PredictionResult[] predResults = bamRunConfigAndRes.getPredictionResults();
+        Parameter[] params = bamRunConfigAndRes.calibrationConfig.model.parameters;
+
+        double[] stage = predConfigs[0].inputs[0].dataColumns.get(0);
+        String outputName = predConfigs[0].outputs[0].name;
+        //
+        List<double[]> discharge = predResults[1].getOutputResults().get(outputName).env();
+        discharge.add(0, predResults[0].getOutputResults().get(outputName).spag().get(0));
+
+        List<double[]> transitionStages = new ArrayList<>();
+        for (Parameter p : params) {
+            if (p.getName().startsWith("k_")) {
+                Distribution d = p.getDistribution();
+                if (d.getDistrib() == DISTRIB.GAUSSIAN) {
+                    double[] distParams = d.getParameterValues();
+                    double mean = distParams[0];
+                    double std = distParams[1];
+                    transitionStages.add(new double[] {
+                            mean, mean - 2 * std, mean + 2 * std
+                    });
+                }
+
+            }
+        }
+
+        plotPanel.updatePlot(
+                stage, discharge, transitionStages);
+    }
 }
