@@ -32,15 +32,16 @@ public class RatingCurveStageGrid extends RowColPanel implements IPredictionData
     private boolean isValueValid;
 
     public RatingCurveStageGrid() {
-        super(AXIS.COL);
+        super(AXIS.COL, ALIGN.STRETCH);
 
         GridPanel gridPanel = new GridPanel();
         setGap(5);
         setPadding(5);
+
         JLabel stageGridLabel = new JLabel();
         Lg.register(stageGridLabel, "stage_grid");
-        this.appendChild(stageGridLabel, 0);
-        this.appendChild(gridPanel, 1);
+        appendChild(stageGridLabel, 0);
+        appendChild(gridPanel, 1);
 
         minStageField = new NumberField();
         minStageField.addChangeListener((e) -> {
