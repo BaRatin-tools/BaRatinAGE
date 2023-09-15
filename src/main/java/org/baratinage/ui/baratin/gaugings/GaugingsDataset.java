@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.baratinage.ui.AppConfig;
 import org.baratinage.ui.component.ImportedDataset;
 import org.baratinage.ui.plot.PlotPoints;
 
@@ -191,7 +192,7 @@ public class GaugingsDataset extends ImportedDataset {
                 splitData.get(0).get(1),
                 splitData.get(0).get(2),
                 splitData.get(0).get(3),
-                Color.BLUE);
+                AppConfig.AC.GAUGING_COLOR);
 
         PlotPoints inactiveGaugingsPoints = new PlotPoints(
                 "inactive gaugings",
@@ -201,7 +202,7 @@ public class GaugingsDataset extends ImportedDataset {
                 splitData.get(1).get(1),
                 splitData.get(1).get(2),
                 splitData.get(1).get(3),
-                Color.RED);
+                AppConfig.AC.DISCARDED_GAUGING_COLOR);
 
         List<PlotPoints> results = new ArrayList<>();
         results.add(activeGaugingsPoints);

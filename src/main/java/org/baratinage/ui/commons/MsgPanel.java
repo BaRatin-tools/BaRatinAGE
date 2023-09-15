@@ -43,9 +43,9 @@ public class MsgPanel extends RowColPanel {
 
     public void setMessageType(TYPE type) {
         msgType = type;
-        Color clr = new Color(0, 63, 179);
+        Color clr = AppConfig.AC.INFO_COLOR;
         if (msgType == TYPE.WARNING) {
-            clr = new Color(230, 149, 0);
+            clr = AppConfig.AC.WARNING_COLOR;
         } else if (msgType == TYPE.ERROR) {
             clr = AppConfig.AC.INVALID_COLOR;
         }
