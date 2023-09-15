@@ -41,15 +41,15 @@ public class RunPanel extends RowColPanel {
     private RunConfigAndRes bamRunConfigAndRes;
 
     private final boolean calibRun;
-    private final boolean priorRun;
-    private final boolean postRun;
+    private final boolean priorPredRun;
+    private final boolean postPredRun;
 
     public final JButton runButton = new JButton();
 
-    public RunPanel(boolean calibRun, boolean priorRun, boolean postRun) {
+    public RunPanel(boolean calibRun, boolean priorPredRun, boolean postPredRun) {
         this.calibRun = calibRun;
-        this.priorRun = priorRun;
-        this.postRun = postRun;
+        this.priorPredRun = priorPredRun;
+        this.postPredRun = postPredRun;
 
         setPadding(5);
         appendChild(runButton);
@@ -104,11 +104,11 @@ public class RunPanel extends RowColPanel {
             calibOk = canRunCalibration();
         }
         boolean priorOk = true;
-        if (priorRun) {
+        if (priorPredRun) {
             priorOk = canRunPriorPrediction();
         }
         boolean postOk = true;
-        if (postRun) {
+        if (postPredRun) {
             postOk = canRunPostPrediction();
         }
         return calibOk && priorOk && postOk;
@@ -124,14 +124,15 @@ public class RunPanel extends RowColPanel {
     }
 
     public boolean canRunPriorPrediction() {
-        if (bamModelDef == null || bamPriors == null) { // should add checks on bamRunConfigAndRes;
+        if (bamModelDef == null || bamPriors == null && bamPredictions != null) { // should add checks on
+                                                                                  // bamRunConfigAndRes;
             return false;
         }
         return true;
     }
 
     public boolean canRunPostPrediction() {
-        return canRunCalibration(); // should add checks on bamRunConfigAndRes;
+        return canRunCalibration() && bamPredictions != null; // should add checks on bamRunConfigAndRes;
     }
 
     private void run() {
