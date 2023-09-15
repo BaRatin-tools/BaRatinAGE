@@ -250,7 +250,7 @@ public class HydraulicConfiguration
             JSONObject uiJson = json.getJSONObject("ui");
             controlMatrix.setIsReversed(uiJson.getBoolean("reversedControlMatrix"));
         } else {
-            System.out.println("MISSING 'ui'");
+            System.out.println("HydraulicConfiguration: missing 'ui'");
         }
 
         // **********************************************************
@@ -268,7 +268,7 @@ public class HydraulicConfiguration
             }
             controlMatrix.setControlMatrix(matrix);
         } else {
-            System.out.println("MISSING 'controlMatrix'");
+            System.out.println("HydraulicConfiguration: missing 'controlMatrix'");
         }
 
         // **********************************************************
@@ -297,7 +297,7 @@ public class HydraulicConfiguration
             hydraulicControls.setHydraulicControls(hydraulicControlList);
 
         } else {
-            System.out.println("MISSING 'hydraulicControls'");
+            System.out.println("HydraulicConfiguration: missing 'hydraulicControls'");
         }
         // **********************************************************
         // Stage grid configuration
@@ -310,13 +310,13 @@ public class HydraulicConfiguration
             priorRatingCurveStageGrid.setStepValue(stageGridJson.getDouble("step"));
 
         } else {
-            System.out.println("MISSING 'stageGridConfig'");
+            System.out.println("HydraulicConfiguration: missing 'stageGridConfig'");
         }
 
         if (json.has("jsonStringBackup")) {
             jsonStringBackup = json.getString("jsonStringBackup");
         } else {
-            System.out.println("MISSING 'jsonStringBackup'");
+            System.out.println("HydraulicConfiguration: missing 'jsonStringBackup'");
         }
 
         // **********************************************************
@@ -326,7 +326,7 @@ public class HydraulicConfiguration
             bamRunConfigAndRes = RunConfigAndRes.buildFromTempZipArchive(bamRunId);
             buildPlot();
         } else {
-            System.out.println("MISSING 'bamRunZipFileName'");
+            System.out.println("HydraulicConfiguration: missing 'bamRunZipFileName'");
         }
 
         checkPriorRatingCurveSync();

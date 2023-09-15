@@ -128,12 +128,12 @@ public class MainFrame extends JFrame {
         addComponentListener(new ComponentAdapter() {
             public void componentResized(ComponentEvent e) {
                 Dimension dim = MainFrame.this.getSize();
-                System.out.println(String.format("Resized: %d x %d", dim.width, dim.height));
+                System.out.println(String.format("MainFrame: Resized: %d x %d", dim.width, dim.height));
             }
 
             public void componentMoved(ComponentEvent e) {
                 Point loc = MainFrame.this.getLocation();
-                System.out.println(String.format("Relocated: %d, %d", loc.x, loc.y));
+                System.out.println(String.format("MainFrame: Relocated: %d, %d", loc.x, loc.y));
             }
         });
 
@@ -148,16 +148,16 @@ public class MainFrame extends JFrame {
 
         addWindowStateListener((e) -> {
             if (MainFrame.this.getExtendedState() == JFrame.MAXIMIZED_BOTH) {
-                System.out.println("MAXIMIZED");
+                System.out.println("MainFrame: maximized window");
             } else if (MainFrame.this.getExtendedState() == JFrame.NORMAL) {
-                System.out.println("NORMAL");
+                System.out.println("MainFrame: normal window");
             } else if (MainFrame.this.getExtendedState() == JFrame.ICONIFIED) {
-                System.out.println("ICONIFIED");
+                System.out.println("MainFrame: iconified window");
             } else {
                 if (MainFrame.this.getExtendedState() == 7) {
-                    System.out.println("ICONIFIED?");
+                    System.out.println("MainFrame: iconified window?");
                 } else {
-                    System.out.println("UNKNOWN");
+                    System.out.println("MainFrame: iconified/unknown window?");
                 }
             }
         });
@@ -184,7 +184,7 @@ public class MainFrame extends JFrame {
                 item.setText(currentLocaleText + " - " + targetLocaleText);
             });
             item.addActionListener((e) -> {
-                System.out.println("Swtiching language to " + lgKey);
+                System.out.println("MainFrame: swtiching language to '" + lgKey + "'");
                 Lg.setLocale(lgKey);
                 updateLanguageSwitcherMenu();
                 // FIXME: how to recursively update the whole Frame?
@@ -215,7 +215,7 @@ public class MainFrame extends JFrame {
         projectPanel.clear();
         projectPanel.appendChild(project);
         updateFrameTitle();
-        Lg.printInfo();
+        // Lg.printInfo();
     }
 
     public void updateFrameTitle() {

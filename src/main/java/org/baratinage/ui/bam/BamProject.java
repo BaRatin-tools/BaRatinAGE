@@ -92,7 +92,7 @@ public abstract class BamProject extends RowColPanel {
                     this.currentPanel.appendChild(bamItem, 1);
 
                 } else {
-                    System.out.println("selected BamItem is null");
+                    System.out.println("BamProject: selected BamItem is null");
                     this.currentPanel.clear();
                 }
                 this.updateUI();
@@ -184,7 +184,6 @@ public abstract class BamProject extends RowColPanel {
 
         bamItem.deleteButton.addActionListener((e) -> {
             String t = bamItem.bamItemNameField.getText();
-            System.out.println(t);
             int response = JOptionPane.showConfirmDialog(this,
                     Lg.html("delete_component_question", bamItem.bamItemNameField.getText()),
                     Lg.text("warning"),
@@ -290,7 +289,7 @@ public abstract class BamProject extends RowColPanel {
         try {
             WriteFile.writeLines(mainConfigFile, new String[] { toJSON().toString(4) });
         } catch (IOException saveError) {
-            System.err.println("Failed to save file");
+            System.err.println("BamProject Error: Failed to save file");
             saveError.printStackTrace();
         }
 
@@ -301,7 +300,7 @@ public abstract class BamProject extends RowColPanel {
 
             ZipOutputStream zipOutStream = new ZipOutputStream(zipFileOutStream);
 
-            System.out.println("File '" + mainConfigFile + "'.");
+            System.out.println("BamProject: Including file '" + mainConfigFile + "'...");
             ZipEntry zipEntry = new ZipEntry(mainConfigFile.getName());
 
             zipOutStream.putNextEntry(zipEntry);
@@ -310,7 +309,7 @@ public abstract class BamProject extends RowColPanel {
 
             cleanupRegisteredFile();
             for (File file : registeredFiles) {
-                System.out.println("Including file '" + file.toString() + "'...");
+                System.out.println("BamProject: Including file '" + file.toString() + "'...");
                 String name = file.getName();
                 ZipEntry ze = new ZipEntry(name);
                 zipOutStream.putNextEntry(ze);
@@ -335,7 +334,7 @@ public abstract class BamProject extends RowColPanel {
 
         File projectFile = new File(projectFilePath);
         if (!projectFile.exists()) {
-            System.err.println("Project file doesn't exist! (" + projectFilePath + ")");
+            System.err.println("BamProject Error: Project file doesn't exist! (" + projectFilePath + ")");
             return null;
         }
 
@@ -354,9 +353,9 @@ public abstract class BamProject extends RowColPanel {
 
             // FIXME: is this where version conversion should occur?
             int version = json.getInt("version");
-            System.out.println("FILE VERSION = " + version);
+            System.out.println("BamProject: file version = " + version);
             String model = json.getString("model");
-            System.out.println("MODEL = " + model);
+            System.out.println("BamProject: model id = " + model);
             if (model.equals("baratin")) {
                 BamProject project = new BaratinProject();
                 project.fromJSON(json);
@@ -383,11 +382,12 @@ public abstract class BamProject extends RowColPanel {
     public void registerFile(String filePath) {
         File f = new File(filePath);
         if (registeredFileContains(f)) {
-            System.err.println("Cannot register file '" + filePath + "' because it is already registered.");
+            System.out.println(
+                    "BamProject: Cannot register file '" + filePath + "' because it is already registered.");
             return;
         }
         if (!f.exists()) {
-            System.err.println("Cannot register file '" + filePath + "' because it doesn't exist.");
+            System.out.println("BamProject: Cannot register file '" + filePath + "' because it doesn't exist.");
             return;
         }
         registeredFiles.add(f);
@@ -407,21 +407,22 @@ public abstract class BamProject extends RowColPanel {
         List<String> usedNames = new ArrayList<>();
         for (File file : registeredFiles) {
             if (!file.exists()) {
-                System.out.println("File '" + file.toString() + "' doesn't exist.");
+                System.out.println("BamProject: File '" + file.toString() + "' doesn't exist.");
                 toRemove.add(file);
             }
             String name = file.getName();
             if (usedNames.stream().anyMatch(s -> s.equals(name))) {
                 // necessary when creating flat zip file! No duplicated name allowed.
                 System.out
-                        .println("File '" + file.toString() + "' has a name already used by another registered file.");
+                        .println("BamProject: File '" + file.toString()
+                                + "' has a name already used by another registered file.");
                 toRemove.add(file);
                 continue;
             }
             usedNames.add(name);
         }
         for (File file : toRemove) {
-            System.out.println("Unregistering file '" + file.toString() + "'...");
+            System.out.println("BamProject: Unregistering file '" + file.toString() + "'...");
             registeredFiles.remove(file);
         }
     }

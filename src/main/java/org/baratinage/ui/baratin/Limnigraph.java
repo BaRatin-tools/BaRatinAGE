@@ -154,10 +154,10 @@ public class Limnigraph extends BamItem implements IPredictionData {
             String dataFilePath = Path.of(AppConfig.AC.APP_TEMP_DIR, buildDataFileName(name, hashCode))
                     .toString();
             if (Files.exists(Path.of(dataFilePath))) {
-                System.out.println("Reading file ... (" + dataFilePath + ")");
+                System.out.println("Limnigraph: Reading file ... (" + dataFilePath + ")");
                 limniDataset = LimnigraphDataset.buildLimnigraphDataset(name, dataFilePath);
             } else {
-                System.err.println("No file found (" + dataFilePath + ")");
+                System.err.println("Limnigraph Error: No file found (" + dataFilePath + ")");
             }
             updateTable();
         }

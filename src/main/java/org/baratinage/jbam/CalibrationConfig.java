@@ -106,7 +106,7 @@ public class CalibrationConfig {
 
         if (structuralErrorModelFileNames.length != nOutput) {
             System.err.println(
-                    "Number of model output in Model doesn't match the number of stuctural error config file names!");
+                    "CalibrationConfig Error: Number of model output in Model doesn't match the number of stuctural error config file names!");
             return null;
         }
 

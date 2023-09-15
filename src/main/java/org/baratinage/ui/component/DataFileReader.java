@@ -170,7 +170,7 @@ public class DataFileReader extends RowColPanel {
                     Integer.MAX_VALUE,
                     true);
         } catch (IOException e) {
-            System.err.println("ERROR while trying to read file!");
+            System.err.println("DataFileReader Error: Error while trying to read file!");
             return;
         }
         this.filePath = filePath;

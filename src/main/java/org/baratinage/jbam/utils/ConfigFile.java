@@ -92,7 +92,8 @@ public class ConfigFile {
         try {
             Write.writeLines(filePath, lines);
         } catch (IOException e) {
-            System.err.println(String.format("Failed to write configuration \n '%s'...", filePath.toString()));
+            System.err.println(
+                    String.format("ConfigFile Error: Failed to write configuration \n '%s'...", filePath.toString()));
             e.printStackTrace();
         }
     }
@@ -158,7 +159,7 @@ public class ConfigFile {
                                 splittedLine[0].trim(),
                                 splittedLine[1].trim()));
             } else {
-                System.out.println("Ignoring line '" + line + "' ...");
+                System.out.println("ConfigFile: Ignoring line '" + line + "' ...");
             }
 
         }
@@ -236,7 +237,8 @@ public class ConfigFile {
         } else if (value.equals(".false.")) {
             return false;
         } else {
-            System.err.println("Value is not one of '.true.' or '.false.' as expected! Returning false.");
+            System.err.println(
+                    "ConfigFile Error: Value is not one of '.true.' or '.false.' as expected! Returning false.");
             return false;
         }
     }
@@ -286,7 +288,7 @@ public class ConfigFile {
         try {
             intValue = Integer.parseInt(value);
         } catch (Exception e) {
-            System.err.println("Value cannot be parsed to integer! Returning -9999.");
+            System.err.println("ConfigFile Error: Value cannot be parsed to integer! Returning -9999.");
         }
         return intValue;
     }
@@ -332,7 +334,7 @@ public class ConfigFile {
         try {
             doubleValue = Double.parseDouble(value);
         } catch (Exception e) {
-            System.err.println("Value cannot be parsed to double! Returning -9999.");
+            System.err.println("ConfigFile Error: Value cannot be parsed to double! Returning -9999.");
         }
         return doubleValue;
     }

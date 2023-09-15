@@ -66,12 +66,12 @@ public class LgResources {
             if (localKey.equals(DEFAULT_LOCAL_KEY)) {
                 System.err.println(
                         String.format(
-                                "Error: no translation found for key '%s' and default locale '%s' in bundle '%s'!",
+                                "LgRessourcs Error: no translation found for key '%s' and default locale '%s' in bundle '%s'!",
                                 itemKey, localKey, fileKey));
                 return "<no-translation-found>";
             } else {
                 System.out.println(
-                        String.format("No locale '%s' found! Looking in default locale '%s' instead.",
+                        String.format("LgRessourcs: No locale '%s' found! Looking in default locale '%s' instead.",
                                 localKey, DEFAULT_LOCAL_KEY));
                 return getTranslation(DEFAULT_LOCAL_KEY, fileKey, itemKey);
             }
@@ -79,55 +79,19 @@ public class LgResources {
         ResourceBundle resourceBundle = fileTranslations.get(fileKey);
         if (resourceBundle == null) {
             System.err.println(
-                    String.format("Error: No bundle for locale '%s' named '%s' found!",
+                    String.format("LgRessourcs Error: No bundle for locale '%s' named '%s' found!",
                             localKey, fileKey));
             return "<no-translation-found>";
         }
         if (!resourceBundle.containsKey(itemKey)) {
             System.err.println(
                     String.format(
-                            "Error: no item with key '%s' found for locale '%s' and bundle '%s'!",
+                            "LgRessourcs Error: no item with key '%s' found for locale '%s' and bundle '%s'!",
                             itemKey, localKey, fileKey));
             return "<no-translation-found>";
         }
         return resourceBundle.getString(itemKey);
     }
-
-    // public String getTranslationOld(String localKey, String fileKey, String
-    // itemKey) {
-    // Map<String, ResourceBundle> fileTranslations = translations.get(localKey);
-    // if (fileTranslations == null) {
-    // if (localKey.equals(DEFAULT_LOCAL_KEY)) {
-    // System.err.println(
-    // String.format("Error: no translation found for key '%s' and locale '%s' in
-    // bundle '%s' found!",
-    // itemKey, localKey, fileKey));
-    // return "<no-translation-found>";
-    // } else {
-    // System.out.println(
-    // String.format("No local '%s' found! Looking in default local '%s' instead.",
-    // localKey, DEFAULT_LOCAL_KEY));
-    // return getTranslation(DEFAULT_LOCAL_KEY, fileKey, itemKey);
-    // }
-    // }
-    // ResourceBundle resourceBundle = fileTranslations.get(fileKey);
-    // if (resourceBundle == null) {
-    // System.out.println(
-    // String.format("No bundle for local '%s' named '%s' found! Looking in default
-    // bundle '%s' instead.",
-    // localKey, fileKey, DEFAULT_FILE_KEY));
-    // return getTranslation(localKey, DEFAULT_FILE_KEY, itemKey);
-    // }
-    // if (!resourceBundle.containsKey(itemKey)) {
-    // System.out.println(
-    // String.format(
-    // "No item with key '%s' found for local '%s' and bundle '%s'! Using default
-    // bundle '%s' instead.",
-    // itemKey, localKey, fileKey, DEFAULT_FILE_KEY));
-    // return getTranslation(localKey, DEFAULT_FILE_KEY, itemKey);
-    // }
-    // return resourceBundle.getString(itemKey);
-    // }
 
     public String getTranslation(String localKey, String itemKey) {
         return getTranslation(localKey, DEFAULT_FILE_KEY, itemKey);

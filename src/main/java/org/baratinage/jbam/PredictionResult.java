@@ -49,14 +49,14 @@ public class PredictionResult {
                 env = Read.readMatrix(Path.of(workspace, envFileName).toString(), 1);
 
             } catch (IOException e) {
-                System.err.println(e);
+                System.err.println("PredictionResult Error: \n" + e);
                 // return;
             }
 
             try {
                 spag = Read.readMatrix(Path.of(workspace, spagFileName).toString(), 0);
             } catch (IOException e) {
-                System.err.println(e);
+                System.err.println("PredictionResult Error: \n" + e);
                 // return;
             }
 

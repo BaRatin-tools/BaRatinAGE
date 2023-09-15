@@ -15,6 +15,8 @@ import org.mozilla.universalchardet.ReaderFactory;
 
 public class Read {
 
+    public static final String BAM_MISSING_VALUE_CODE = "-0.666666E+03";
+
     // FIXME: missing value code should be final constant defined here
 
     static BufferedReader createBufferedReader(String filePath, boolean detectEncoding) throws IOException {
@@ -68,7 +70,7 @@ public class Read {
                 nRowMax,
                 nColSkip,
                 nColMax,
-                "-9999",
+                BAM_MISSING_VALUE_CODE,
                 false,
                 true);
     }
@@ -85,7 +87,7 @@ public class Read {
                 nRowMax,
                 0,
                 nColMax,
-                "-9999",
+                BAM_MISSING_VALUE_CODE,
                 false,
                 true);
     }
@@ -218,7 +220,7 @@ public class Read {
                 } catch (NumberFormatException e) {
                     // NOTE: this try/catch is necessary because BaM sometimes gives
                     // very low/high values that can't be parsed (e.g. -0.179769+309)
-                    System.err.println(e);
+                    System.err.println("Read Error: n" + e);
                     result[k - nColSkip] = Double.NaN;
                 }
             }

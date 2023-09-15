@@ -278,7 +278,7 @@ public class DataParser extends RowColPanel {
             }
             for (String[] col : rawData) {
                 if (col.length != nRow) {
-                    System.err.println("Inconsistent number of rows... Aborting.");
+                    System.err.println("DataParser Error: Inconsistent number of rows... Aborting.");
                     return false;
                 }
             }

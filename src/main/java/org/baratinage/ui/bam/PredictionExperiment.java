@@ -33,7 +33,7 @@ public class PredictionExperiment implements IPredictionExperiment {
     @Override
     public PredictionConfig getPredictionConfig() {
         if (calibratedModel == null || predictionData == null) {
-            System.err.println("Invalid prediction config! Returning null.");
+            System.err.println("PredictionExperiment Error: Invalid prediction config! Returning null.");
             return null;
         }
 

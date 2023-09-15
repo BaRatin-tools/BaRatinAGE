@@ -120,7 +120,6 @@ public class RatingCurve extends BamItem implements IPredictionMaster, ICalibrat
         runPanel = new RunPanel(true, false, true);
         runPanel.setPredictionExperiments(this);
         runPanel.addRunSuccessListerner((RunConfigAndRes res) -> {
-            System.out.println("SUCCESS!!!!");
             bamRunConfigAndRes = res;
             buildPlot();
         });
@@ -284,14 +283,20 @@ public class RatingCurve extends BamItem implements IPredictionMaster, ICalibrat
 
         if (json.has("hydrauConfig")) {
             hydrauConfParent.fromJSON(json.getJSONObject("hydrauConfig"));
+        } else {
+            System.out.println("RatingCurve: missing 'hydrauConfig'");
         }
 
         if (json.has("gaugings")) {
             gaugingsParent.fromJSON(json.getJSONObject("gaugings"));
+        } else {
+            System.out.println("RatingCurve: missing 'gaugings'");
         }
 
         if (json.has("structError")) {
             structErrorParent.fromJSON(json.getJSONObject("structError"));
+        } else {
+            System.out.println("RatingCurve: missing 'structError'");
         }
 
         if (json.has("stageGridConfig")) {
@@ -299,6 +304,8 @@ public class RatingCurve extends BamItem implements IPredictionMaster, ICalibrat
             ratingCurveStageGrid.setMinValue(stageGridJson.getDouble("min"));
             ratingCurveStageGrid.setMaxValue(stageGridJson.getDouble("max"));
             ratingCurveStageGrid.setStepValue(stageGridJson.getDouble("step"));
+        } else {
+            System.out.println("RatingCurve: missing 'stageGridConfig'");
         }
 
         // **********************************************************
@@ -308,11 +315,13 @@ public class RatingCurve extends BamItem implements IPredictionMaster, ICalibrat
             bamRunConfigAndRes = RunConfigAndRes.buildFromTempZipArchive(bamRunId);
             buildPlot();
         } else {
-            System.out.println("MISSING 'bamRunZipFileName'");
+            System.out.println("RatingCurve: missing 'bamRunId'");
         }
 
         if (json.has("jsonStringBackup")) {
             jsonStringBackup = json.getString("jsonStringBackup");
+        } else {
+            System.out.println("RatingCurve: missing 'jsonStringBackup'");
         }
 
         checkSync();

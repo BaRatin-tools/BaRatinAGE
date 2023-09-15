@@ -36,37 +36,12 @@ public class ReadWriteZip {
             }
             zipInputStream.close();
         } catch (IOException e) {
-            System.err.println("Error while reading bam (zip) file... Aborting.");
+            System.err.println("ReadWriteZip Error: Error while reading bam (zip) file... Aborting.");
             e.printStackTrace();
             return false;
         }
         return true;
     }
-
-    // static public boolean zip(String zipFilePath, String sourceDirPath) {
-    // File zipFile = new File(zipFilePath.toString());
-    // try {
-    // FileOutputStream zipFileOutStream = new FileOutputStream(zipFile);
-    // ZipOutputStream zipOutStream = new ZipOutputStream(zipFileOutStream);
-    // File[] files = new File(sourceDirPath).listFiles();
-    // if (files != null) {
-    // for (File f : files) {
-    // System.out.println("File '" + f + "'.");
-    // ZipEntry ze = new ZipEntry(f.getName());
-
-    // zipOutStream.putNextEntry(ze);
-
-    // Files.copy(f.toPath(), zipOutStream);
-    // }
-    // }
-    // zipOutStream.close();
-    // } catch (IOException e) {
-    // System.err.println("Error while zipping directory!");
-    // e.printStackTrace();
-    // return false;
-    // }
-    // return true;
-    // }
 
     static public boolean flatZip(String zipFilePath, String... sourceDirs) {
         File zipFile = new File(zipFilePath.toString());
@@ -75,7 +50,7 @@ public class ReadWriteZip {
         try {
             zipFileOutStream = new FileOutputStream(zipFile);
         } catch (FileNotFoundException e) {
-            System.err.println("Cannot create output zipfile '" + zipFilePath + "'!");
+            System.err.println("ReadWriteZip Error: Cannot create output zipfile '" + zipFilePath + "'!");
             e.printStackTrace();
             return false;
         }
@@ -88,7 +63,7 @@ public class ReadWriteZip {
         try {
             zipOutStream.close();
         } catch (IOException e) {
-            System.err.println("Cannot close output zipfile '" + zipFilePath + "'!");
+            System.err.println("ReadWriteZip Error: Cannot close output zipfile '" + zipFilePath + "'!");
             e.printStackTrace();
             return false;
         }
@@ -108,13 +83,13 @@ public class ReadWriteZip {
             }
 
         } else if (fileOrDir.isFile()) {
-            System.out.println("Zipping file '" + fileOrDir + "'...");
+            System.out.println("ReadWriteZip: Zipping file '" + fileOrDir + "'...");
             ZipEntry ze = new ZipEntry(fileOrDir.getName());
             try {
                 zipOutStream.putNextEntry(ze);
                 Files.copy(fileOrDir.toPath(), zipOutStream);
             } catch (IOException e) {
-                System.err.println("Failed to add file '" + fileOrDir + "'!");
+                System.err.println("ReadWriteZip Error: Failed to add file '" + fileOrDir + "'!");
                 success = false;
             }
         }

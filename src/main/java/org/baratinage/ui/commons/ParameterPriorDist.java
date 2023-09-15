@@ -66,7 +66,6 @@ public class ParameterPriorDist implements ChangeListener {
 
         distComboBox.addActionListener((e) -> {
             Object o = distComboBoxModel.getSelectedItem();
-            System.out.println(o);
             if (o != null) {
                 DISTRIB currentDistribution = (DISTRIB) o;
                 parametersInputsPanel.clear();
@@ -92,7 +91,7 @@ public class ParameterPriorDist implements ChangeListener {
         initialGuessField.setValue(initialGuess);
         initialGuessField.updateTextField();
         if (distParPriors.length != parameterPriorFields.size()) {
-            System.out.println("Inconsistencies in distribution parameter! Aborting.");
+            System.out.println("ParameterPriorDist: Inconsistencies in distribution parameter! Aborting.");
             return;
         }
         for (int k = 0; k < distParPriors.length; k++) {

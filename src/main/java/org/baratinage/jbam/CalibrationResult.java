@@ -33,7 +33,7 @@ public class CalibrationResult {
             listCookedMcmcResults = Read.readMatrix(cookedMcmcFilePath.toString(), 1);
             listSummaryMcmcResults = Read.readMatrix(summaryMcmcFilePath.toString(), "\\s+", 1, 1);
         } catch (IOException e) {
-            System.err.println(e);
+            System.err.println("CalibrationResult Error: \n" + e);
             return;
         }
 
@@ -43,7 +43,7 @@ public class CalibrationResult {
         if (listCookedMcmcResults != null && listSummaryMcmcResults != null) {
             this.estimatedParameter = new HashMap<>();
             if (listSummaryMcmcResults.size() != listCookedMcmcResults.size() - 1) {
-                System.err.println("Inconsistent sizes!");
+                System.err.println("CalibrationResult Error: Inconsistent sizes!");
                 return;
             }
 
@@ -57,7 +57,7 @@ public class CalibrationResult {
             }
             EstimatedParameter logPostPar = this.estimatedParameter.get("LogPost");
             if (logPostPar == null) {
-                System.err.println("No 'LogPost' column found in MCMC cooked file!");
+                System.err.println("CalibrationResult Error: No 'LogPost' column found in MCMC cooked file!");
                 return;
             }
             double[] logPost = logPostPar.getMcmc();
@@ -83,7 +83,7 @@ public class CalibrationResult {
                     calibrationConfig.getCalibrationData());
 
         } catch (IOException e) {
-            System.err.println(e);
+            System.err.println("CalibrationResult Error:  \n" + e);
             return;
         }
 

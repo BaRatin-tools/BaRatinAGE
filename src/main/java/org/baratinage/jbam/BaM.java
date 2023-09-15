@@ -153,7 +153,7 @@ public class BaM {
         // Delete workspace content
         File workspaceDirFile = new File(workspace);
         if (workspaceDirFile.exists()) {
-            System.out.println("Deleting workspace content...");
+            System.out.println("BaM: Deleting workspace content...");
             for (File f : workspaceDirFile.listFiles()) {
                 if (!f.isDirectory()) {
                     f.delete();
@@ -167,7 +167,7 @@ public class BaM {
 
         String[] cmd = { EXE_COMMAND, "-cf", mainConfigFilePath };
         String cmdString = String.join(" ", cmd);
-        System.out.println("BaM command: " + cmdString);
+        System.out.println("BaM: BaM run command is '" + cmdString + "'.");
 
         File exeDirectory = new File(BamFilesHelpers.EXE_DIR);
         bamExecutionProcess = Runtime.getRuntime().exec(cmd, null, exeDirectory);
@@ -190,7 +190,7 @@ public class BaM {
         try {
             exitcode = bamExecutionProcess.waitFor() * -1;
         } catch (InterruptedException e) {
-            System.err.println("BAM RUN INTERRUPTED!");
+            System.err.println("BaM Error: BaM run was interrupted!");
         }
 
         if (exitcode != 0) {
@@ -210,31 +210,31 @@ public class BaM {
             }
             switch (exitcode) {
                 case -1:
-                    System.err.println("A FATAL ERROR has occured");
+                    System.err.println("BaM Error: A FATAL ERROR has occured");
                     break;
                 case -2:
-                    System.err.println("A FATAL ERROR has occured while opening the following file.");
+                    System.err.println("BaM Error: A FATAL ERROR has occured while opening the following file.");
                     break;
                 case -3:
-                    System.err.println("A FATAL ERROR has occured while reading a config file.");
+                    System.err.println("BaM Error: A FATAL ERROR has occured while reading a config file.");
                     break;
                 case -4:
-                    System.err.println("A FATAL ERROR has occured while generating the prior model.");
+                    System.err.println("BaM Error: A FATAL ERROR has occured while generating the prior model.");
                     break;
                 case -5:
-                    System.err.println("A FATAL ERROR has occured while fitting the model..");
+                    System.err.println("BaM Error: A FATAL ERROR has occured while fitting the model..");
                     break;
                 case -6:
-                    System.err.println("A FATAL ERROR has occured while post-processing MCMC samples.");
+                    System.err.println("BaM Error: A FATAL ERROR has occured while post-processing MCMC samples.");
                     break;
                 case -7:
-                    System.err.println("A FATAL ERROR has occured while propagating uncertainty.");
+                    System.err.println("BaM Error: A FATAL ERROR has occured while propagating uncertainty.");
                     break;
                 case -8:
-                    System.err.println("A FATAL ERROR has occured while writting to a file.");
+                    System.err.println("BaM Error: A FATAL ERROR has occured while writting to a file.");
                     break;
                 default:
-                    System.err.printf("An unknown FATAL ERROR has occured. Exit Code=%d\n", exitcode);
+                    System.err.printf("BaM Error: An unknown FATAL ERROR has occured. Exit Code=%d\n", exitcode);
                     break;
             }
 

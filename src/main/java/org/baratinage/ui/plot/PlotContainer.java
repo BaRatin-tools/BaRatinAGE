@@ -202,7 +202,7 @@ public class PlotContainer extends RowColPanel {
         try {
             ChartUtils.writeScaledChartAsPNG(bout, chart, dim.width, dim.height, scale, scale);
         } catch (IOException e) {
-            System.err.println(e);
+            System.err.println("PlotContainer Error: \n" + e);
         }
         return bout.toByteArray();
     }

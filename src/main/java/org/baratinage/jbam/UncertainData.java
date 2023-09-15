@@ -10,12 +10,12 @@ public class UncertainData {
     public UncertainData(String name, double[] values, double[] nonSysStd, double[] sysStd, int[] sysIndices) {
         int n = values.length;
         if (nonSysStd.length != n && nonSysStd.length != 0) {
-            System.err.println("nonSysStd is not the correct length, set to empty");
+            System.err.println("UncertainData Error: nonSysStd is not the correct length, set to empty");
             nonSysStd = new double[] {};
         }
         if ((sysStd.length != n && sysStd.length != 0) ||
                 (sysIndices.length != n && sysIndices.length != 0)) {
-            System.err.println("sysStd is not the correct length, set to empty");
+            System.err.println("UncertainData Error: sysStd is not the correct length, set to empty");
             sysStd = new double[] {};
             sysIndices = new int[] {};
         }

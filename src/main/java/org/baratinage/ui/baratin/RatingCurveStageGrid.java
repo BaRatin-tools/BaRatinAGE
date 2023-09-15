@@ -107,7 +107,7 @@ public class RatingCurveStageGrid extends RowColPanel implements IPredictionData
 
     public double[] getStageGrid() {
         if (!isValueValid()) {
-            System.err.println("Invalid stage grid");
+            System.err.println("RatingCurveStageGrid Error: Invalid stage grid");
             return new double[0];
         }
         int n = (int) ((stageGridConfig.max - stageGridConfig.min) / stageGridConfig.step);

@@ -21,7 +21,7 @@ public class ImportedDataset implements IDataset {
             String headerLine = ReadFile.getLines(dataFilePath, 1, false)[0];
             headers = ReadFile.parseString(headerLine, ";", false);
         } catch (IOException e1) {
-            System.out.println("Failed to read data file ...(" + dataFilePath + ")");
+            System.out.println("ImportedDataset: Failed to read data file ...(" + dataFilePath + ")");
             e1.printStackTrace();
         }
 
@@ -35,7 +35,7 @@ public class ImportedDataset implements IDataset {
                     false,
                     false);
         } catch (IOException e2) {
-            System.out.println("Failed to read data file ...(" + dataFilePath + ")");
+            System.out.println("ImportedDataset: Failed to read data file ...(" + dataFilePath + ")");
             e2.printStackTrace();
         }
     }
@@ -86,7 +86,7 @@ public class ImportedDataset implements IDataset {
                     "NA",
                     headers);
         } catch (IOException e) {
-            System.err.println("Failed to write data to file... (" + getDatasetName() + ")");
+            System.err.println("ImportedDataset Error: Failed to write data to file... (" + getDatasetName() + ")");
             e.printStackTrace();
         }
     }

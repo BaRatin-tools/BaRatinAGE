@@ -72,7 +72,7 @@ public class Misc {
                         int i = Integer.parseInt(nbr);
                         usedInts.add(i);
                     } catch (NumberFormatException e) {
-                        System.out.println("Cannot parse into double");
+                        System.out.println("Misc: Cannot parse into double");
                         continue;
                     }
                 }
@@ -93,14 +93,14 @@ public class Misc {
         File dirFile = new File(dirPath);
         if (!dirFile.exists()) {
             boolean success = dirFile.mkdirs();
-            System.out.println("Creating directory '" + dirPath + "'... " + (success ? "SUCCESS" : "FAIL"));
+            System.out.println("Misc: Creating directory '" + dirPath + "'... " + (success ? "SUCCESS" : "FAIL"));
         }
     }
 
     public static void deleteDir(String dirPath) {
         File dirFile = new File(dirPath);
         if (!dirFile.exists()) {
-            System.err.println("Cannot delete directory '" + dirPath + "' because it doesn't exist! ");
+            System.err.println("Misc: Cannot delete directory '" + dirPath + "' because it doesn't exist! ");
             return;
         }
         for (File f : dirFile.listFiles()) {
@@ -108,12 +108,12 @@ public class Misc {
                 deleteDir(f.toString());
             } else {
                 boolean success = f.delete();
-                System.out.println("Deleting file '" + f + "'... " + (success ? "SUCCESS" : "FAIL"));
+                System.out.println("Misc: Deleting file '" + f + "'... " + (success ? "SUCCESS" : "FAIL"));
 
             }
         }
         boolean success = dirFile.delete();
-        System.out.println("Deleting directory '" + dirPath + "'... " + (success ? "SUCCESS" : "FAILED"));
+        System.out.println("Misc: Deleting directory '" + dirPath + "'... " + (success ? "SUCCESS" : "FAILED"));
     }
 
     public static void showOnScreen(int screen, JFrame frame) {

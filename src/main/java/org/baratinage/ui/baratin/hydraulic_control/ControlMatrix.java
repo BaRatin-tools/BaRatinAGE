@@ -30,7 +30,6 @@ public class ControlMatrix extends RowColPanel implements ChangeListener {
 
         addControlButton = new JButton(" > Ajouter un contrôle");
         addControlButton.addActionListener((e) -> {
-            System.out.println("Add control");
             addControl();
         });
 
@@ -38,7 +37,6 @@ public class ControlMatrix extends RowColPanel implements ChangeListener {
 
         removeControlButton = new JButton(" > Supprimer le dernier contrôle");
         removeControlButton.addActionListener((e) -> {
-            System.out.println("Remove control");
             removeControl();
         });
         buttonsPanel.appendChild(removeControlButton);
@@ -99,12 +97,12 @@ public class ControlMatrix extends RowColPanel implements ChangeListener {
     public void setControlMatrix(boolean[][] controlMatrix) {
         int nSeg = controlMatrix.length;
         if (nSeg <= 0) {
-            System.err.println("Empty controlMatrix not supported");
+            System.err.println("ControlMatrix Error: Empty controlMatrix not supported");
             return;
         }
         int nCtrl = controlMatrix[0].length;
         if (nSeg != nCtrl) {
-            System.err.println("Non-square controlMatrix not supported");
+            System.err.println("ControlMatrix Error: Non-square controlMatrix not supported");
             return;
         }
         int nCtrlOld = controls.size();

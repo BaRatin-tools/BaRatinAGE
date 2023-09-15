@@ -59,7 +59,7 @@ public class Monitoring {
         try {
             startMonitoring();
         } catch (InterruptedException e) {
-            System.err.println("MONITORING INTERRUPTED!");
+            System.err.println("Monitoring Error: BaM monitoring interrupted!");
         }
 
     }

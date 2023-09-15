@@ -182,7 +182,7 @@ public class CalibrationData {
         // Can data file be found? Absolutelty or relatively to workspace
         String dataFilePath = BamFilesHelpers.findDataFilePath(rawPathToDataFile, workspace);
         if (dataFilePath == null) {
-            System.err.println("Cannot find calibration data file '" + rawPathToDataFile + "'!");
+            System.err.println("CalibrationData Error: Cannot find calibration data file '" + rawPathToDataFile + "'!");
             return null;
         }
         String dataFileName = Path.of(dataFilePath).getFileName().toString();
@@ -209,25 +209,25 @@ public class CalibrationData {
             headers = Read.readHeaders(dataFilePath);
 
         } catch (IOException e) {
-            System.err.println("Failed to read data file '" + dataFilePath + "'!");
+            System.err.println("CalibrationData Error: Failed to read data file '" + dataFilePath + "'!");
             e.printStackTrace();
             return null;
         }
 
         if (rawData.size() != nColumns) {
-            System.err.println("Number of columns in data file '" + dataFilePath
+            System.err.println("CalibrationData Error: Number of columns in data file '" + dataFilePath
                     + "' inconsistant with number of columns in config file!");
             return null;
         }
 
         if (rawData.get(0).length != nRow) {
-            System.err.println("Number of rows in data file '" + dataFilePath
+            System.err.println("CalibrationData Error: Number of rows in data file '" + dataFilePath
                     + "' inconsistant with number of rows in config file!");
             return null;
         }
 
         if (headers.length != nColumns) {
-            System.err.println("Number of columns in data file '" + dataFilePath
+            System.err.println("CalibrationData Error: Number of columns in data file '" + dataFilePath
                     + "' doesn't match number of headers!");
             return null;
         }

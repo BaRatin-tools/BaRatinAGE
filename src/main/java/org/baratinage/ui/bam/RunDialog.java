@@ -95,13 +95,13 @@ public class RunDialog extends JDialog {
             return;
         }
 
-        System.out.println("CANCELLING!");
+        System.out.println("RunDialog: Cancelling BaM run...");
         runningWorker.cancel(true);
         monitoringWorker.cancel(true);
 
         Process bamProcess = bam.getBaMexecutionProcess();
         if (bamProcess != null) {
-            System.out.println("KILLING BAM PROCESS");
+            System.out.println("RunDialog: Killing BaM process...");
             bamProcess.destroy();
         }
     }
@@ -113,7 +113,7 @@ public class RunDialog extends JDialog {
             @Override
             protected Void doInBackground() throws Exception {
                 try {
-                    System.out.println("BAMRUNNING");
+                    System.out.println("RunDialog: BaM starting...");
                     bam.run(workspacePath.toString(), txt -> {
                         publish(txt);
                     });
@@ -142,7 +142,7 @@ public class RunDialog extends JDialog {
                     setTitle(Lg.text("bam_canceled"));
                 }
 
-                System.out.println("DONE");
+                System.out.println("RunDialog: BaM run done!");
 
             }
 

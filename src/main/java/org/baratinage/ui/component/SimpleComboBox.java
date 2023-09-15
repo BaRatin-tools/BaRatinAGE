@@ -122,7 +122,6 @@ public class SimpleComboBox extends RowColPanel {
 
     public void addChangeListener(ChangeListener l) {
         changeListeners.add(l);
-        System.out.println();
     }
 
     public void removeChangeListener(ChangeListener l) {

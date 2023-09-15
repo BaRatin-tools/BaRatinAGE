@@ -267,7 +267,6 @@ public class BamItemParent implements ChangeListener {
 
     @Override
     public void stateChanged(ChangeEvent e) {
-        System.out.println("Current item has changed!");
         fireChangeListeners();
     }
 

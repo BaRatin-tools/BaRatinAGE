@@ -78,7 +78,7 @@ public class Lg {
     static public void register(String ownerKey, Object object, LgTranslator translator) {
         if (registered.containsKey(object)) { // for debugging purposes
             String c = object.getClass().toString();
-            System.out.println("Overwritting translator (" + c + ")");
+            System.out.println("Lg: Overwritting translator (" + c + ")");
         }
         if (!registered.containsKey(ownerKey)) {
             registered.put(ownerKey, new HashMap<>());

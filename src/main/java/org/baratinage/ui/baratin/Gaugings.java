@@ -191,10 +191,10 @@ public class Gaugings extends BamItem implements ICalibrationData {
             String dataFilePath = Path.of(AppConfig.AC.APP_TEMP_DIR, buildDataFileName(name, hashCode))
                     .toString();
             if (Files.exists(Path.of(dataFilePath))) {
-                System.out.println("Reading file ... (" + dataFilePath + ")");
+                System.out.println("Gaugings: Reading file ... (" + dataFilePath + ")");
                 gaugingDataset = GaugingsDataset.buildGaugingDataset(name, dataFilePath);
             } else {
-                System.err.println("No file found (" + dataFilePath + ")");
+                System.err.println("Gaugings Error: No file found (" + dataFilePath + ")");
             }
             updateTable();
         }

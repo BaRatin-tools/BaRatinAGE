@@ -123,14 +123,14 @@ public class GaugingsDataset extends ImportedDataset {
         List<List<double[]>> res = new ArrayList<>();
         int nCol = data.size();
         if (nCol == 0) {
-            System.err.println("Empty matrix!");
+            System.err.println("GaugingsDataset Error: Empty matrix!");
             res.add(data);
             res.add(new ArrayList<>());
             return res;
         }
         int nRow = data.get(0).length;
         if (filter.length != nRow) {
-            System.err.println("Inconsistent filter array length!");
+            System.err.println("GaugingsDataset Error: Inconsistent filter array length!");
             res.add(data);
             res.add(new ArrayList<>());
             return res;
