@@ -2,117 +2,182 @@ package org.baratinage.jbam;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import org.baratinage.jbam.utils.BamFilesHelpers;
 import org.baratinage.jbam.utils.Read;
+import org.baratinage.jbam.utils.Write;
 
 public class CalibrationResult {
 
     // FIXME: using a HashMap may not be required since the parameters order
     // FIXME: are set during configuration
     // FIXME: (+ a list is more consistent with configuration approach)
-    private HashMap<String, EstimatedParameter> estimatedParameter;
-    private CalibrationDataResiduals calibrationDataResiduals;
-    private int maxPostIndex;
-    private boolean isValid;
 
-    // FIXME: should there be an instance variable for 'calibrationConfig' ?
+    public final CalibrationConfig calibrationConfig;
+    public final List<double[]> mcmcValues;
+    public final String[] mcmcHeaders;
+    public final HashMap<String, EstimatedParameter> estimatedParameters;
+    public final CalibrationDataResiduals calibrationDataResiduals;
+    public final int maxpostIndex;
 
-    public CalibrationResult(String workspace, CalibrationConfig calibrationConfig) {
-        this.isValid = false;
+    public CalibrationResult(String workspace, CalibrationConfig calibConfig, RunOptions runOptions) {
+
+        calibrationConfig = calibConfig;
 
         Path cookedMcmcFilePath = Path.of(workspace, calibrationConfig.mcmcCookingConfig.outputFileName);
         Path summaryMcmcFilePath = Path.of(workspace, calibrationConfig.mcmcSummaryConfig.outputFileName);
+        Path calDatResidulatFilePath = Path.of(workspace, calibrationConfig.calDataResidualConfig.outputFileName);
 
-        List<double[]> listCookedMcmcResults = null;
-        List<double[]> listSummaryMcmcResults = null;
-        String[] headers = new String[0];
+        mcmcValues = readMcmcValues(cookedMcmcFilePath);
+        mcmcHeaders = readMcmcHeaders(cookedMcmcFilePath);
+        List<double[]> mcmcSummaryValues = readMcmcSummaryValues(summaryMcmcFilePath);
+
+        estimatedParameters = buildEstimatedParameters(mcmcHeaders, mcmcValues, mcmcSummaryValues);
+
+        calibrationDataResiduals = readCalibrationDataResiduals(calDatResidulatFilePath,
+                calibrationConfig.calibrationData);
+
+        maxpostIndex = retrieveMaxPostIndex(estimatedParameters.get("LogPost"));
+
+    }
+
+    private String[] readMcmcHeaders(Path filePath) {
+        String[] headers = new String[] {};
         try {
-            headers = Read.readHeaders(cookedMcmcFilePath.toString());
-            listCookedMcmcResults = Read.readMatrix(cookedMcmcFilePath.toString(), 1);
-            listSummaryMcmcResults = Read.readMatrix(summaryMcmcFilePath.toString(), "\\s+", 1, 1);
+            headers = Read.readHeaders(filePath.toString());
+
         } catch (IOException e) {
-            System.err.println("CalibrationResult Error: \n" + e);
-            return;
+            System.err.println("CalibrationResult Error: Failed to read MCMC headers from file '" +
+                    filePath.getFileName() + "'");
+            return headers;
         }
 
-        // FIXME: identify all parameters by name!!
+        return headers;
+    }
 
-        this.estimatedParameter = null; // FIXME: not sure how this case should be handled...
-        if (listCookedMcmcResults != null && listSummaryMcmcResults != null) {
-            this.estimatedParameter = new HashMap<>();
-            if (listSummaryMcmcResults.size() != listCookedMcmcResults.size() - 1) {
-                System.err.println("CalibrationResult Error: Inconsistent sizes!");
-                return;
-            }
+    private List<double[]> readMcmcValues(Path filePath) {
+        List<double[]> mcmc = new ArrayList<>();
+        try {
+            mcmc = Read.readMatrix(filePath.toString(), 1);
 
-            // FIXME: should I filter out LogPost and derived values?
-            for (int k = 0; k < headers.length; k++) {
-                this.estimatedParameter.put(headers[k], new EstimatedParameter(
-                        headers[k],
-                        listCookedMcmcResults.get(k),
-                        k < listSummaryMcmcResults.size() ? listSummaryMcmcResults.get(k) : null));
+        } catch (IOException e) {
+            System.err.println("CalibrationResult Error: Failed to read MCMC values from file '" +
+                    filePath.getFileName() + "'");
+            return mcmc;
+        }
+        return mcmc;
 
-            }
-            EstimatedParameter logPostPar = this.estimatedParameter.get("LogPost");
-            if (logPostPar == null) {
-                System.err.println("CalibrationResult Error: No 'LogPost' column found in MCMC cooked file!");
-                return;
-            }
-            double[] logPost = logPostPar.getMcmc();
-            double maxLogPost = Double.NEGATIVE_INFINITY;
-            maxPostIndex = -1;
-            for (int k = 0; k < logPost.length; k++) {
-                if (logPost[k] > maxLogPost) {
-                    maxLogPost = logPost[k];
-                    maxPostIndex = k;
-                }
-            }
+    }
+
+    private List<double[]> readMcmcSummaryValues(Path filePath) {
+        List<double[]> mcmc = null;
+        try {
+            mcmc = Read.readMatrix(filePath.toString(), "\\s+", 1, 1);
+
+        } catch (IOException e) {
+            System.err.println("CalibrationResult Error: Failed to read MCMC summary values from file '" +
+                    filePath.getFileName() + "'");
+            return mcmc;
+        }
+        return mcmc;
+
+    }
+
+    private HashMap<String, EstimatedParameter> buildEstimatedParameters(
+            String[] headers, List<double[]> mcmc, List<double[]> mcmcSummary) {
+
+        if (mcmcSummary != null && mcmcSummary.size() != mcmc.size() - 1) {
+            System.err.println(
+                    "CalibrationResult Error: Inconsistent sizes between MCMC matrix and MCMC summary matrix!");
+        }
+
+        HashMap<String, EstimatedParameter> estimatedParameters = new HashMap<>();
+
+        for (int k = 0; k < headers.length; k++) {
+            double[] summary = mcmcSummary == null || k >= mcmcSummary.size() ? null : mcmcSummary.get(k);
+            estimatedParameters.put(headers[k], new EstimatedParameter(
+                    headers[k],
+                    mcmc.get(k),
+                    summary));
 
         }
 
-        this.calibrationDataResiduals = null;
-        Path calDataResidualFilePath = Path.of(workspace, calibrationConfig.calDataResidualConfig.outputFileName);
+        return estimatedParameters;
+
+    }
+
+    private int retrieveMaxPostIndex(EstimatedParameter logPostPar) {
+
+        if (logPostPar == null) {
+            System.err.println("CalibrationResult Error: No 'LogPost' column found in MCMC cooked file!");
+            return -1;
+        }
+        double[] logPost = logPostPar.mcmc;
+        double maxLogPost = Double.NEGATIVE_INFINITY;
+        int index = -1;
+        for (int k = 0; k < logPost.length; k++) {
+            if (logPost[k] > maxLogPost) {
+                maxLogPost = logPost[k];
+                index = k;
+            }
+        }
+        return index;
+    }
+
+    private CalibrationDataResiduals readCalibrationDataResiduals(Path filePath, CalibrationData calibrationData) {
+
+        CalibrationDataResiduals calDataResiduals = null;
+
         try {
 
-            List<double[]> residualMatrix = Read.readMatrix(calDataResidualFilePath.toString(), 1);
+            List<double[]> residualMatrix = Read.readMatrix(filePath.toString(), 1);
 
-            this.calibrationDataResiduals = new CalibrationDataResiduals(
+            calDataResiduals = new CalibrationDataResiduals(
                     residualMatrix,
-                    calibrationConfig.getCalibrationData());
+                    calibrationData);
 
         } catch (IOException e) {
-            System.err.println("CalibrationResult Error:  \n" + e);
-            return;
+            System.err.println("CalibrationResult Error: Failed to read Calibration Data Residuals from file '" +
+                    filePath.getFileName() + "'");
+            return calDataResiduals;
         }
 
-        this.isValid = true;
+        return calDataResiduals;
     }
 
-    public HashMap<String, EstimatedParameter> getEsimatedParameters() {
-        return this.estimatedParameter;
-    }
+    public void toFiles(String workspace) {
+        // calibrationConfig.toFiles(workspace);
+        if (mcmcValues != null) {
+            Path filePath = Path.of(workspace, calibrationConfig.mcmcCookingConfig.outputFileName);
+            try {
+                Write.writeMatrix(
+                        filePath.toString(),
+                        mcmcValues,
+                        " ",
+                        BamFilesHelpers.BAM_MISSING_VALUE_CODE,
+                        mcmcHeaders);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
 
-    public int getMaxPostIndex() {
-        return this.maxPostIndex;
-    }
-
-    public boolean getIsValid() {
-        return isValid;
     }
 
     @Override
     public String toString() {
         String str = "Calibration results: \n";
-        if (this.estimatedParameter != null) {
+        if (estimatedParameters != null) {
             str += "- Estimated Parameters: \n";
-            for (EstimatedParameter p : this.estimatedParameter.values()) {
+            for (EstimatedParameter p : estimatedParameters.values()) {
                 str += "   > " + p.toString() + "\n";
             }
         }
-        if (this.calibrationDataResiduals != null) {
-            str += this.calibrationDataResiduals.toString();
+        str += " - MaxpostIndex: " + maxpostIndex + "\n";
+        if (calibrationDataResiduals != null) {
+            str += calibrationDataResiduals.toString();
         }
         return str;
     }
