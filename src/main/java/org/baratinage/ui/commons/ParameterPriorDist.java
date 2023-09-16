@@ -22,12 +22,12 @@ import org.baratinage.ui.lg.Lg;
 // FIXME: refactor to be more Lg compatible and more memory efficient
 public class ParameterPriorDist implements ChangeListener {
 
-    public String shortName;
-    public JLabel nameLabel;
-    public JComboBox<DISTRIB> distComboBox;
-    public NumberField initialGuessField;
-    public RowColPanel parametersInputsPanel;
-    public List<NumberField> parameterPriorFields;
+    public final String shortName;
+    public final JLabel nameLabel;
+    public final JComboBox<DISTRIB> distComboBox;
+    public final NumberField initialGuessField;
+    public final RowColPanel parametersInputsPanel;
+    public final List<NumberField> parameterPriorFields;
 
     public ParameterPriorDist(String shortName) {
 
