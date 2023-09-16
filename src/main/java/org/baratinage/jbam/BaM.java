@@ -193,21 +193,22 @@ public class BaM {
             System.err.println("BaM Error: BaM run was interrupted!");
         }
 
-        if (exitcode != 0) {
-            // FIXME: all cases except default have message that should be captured!
-            List<String> errMsg = new ArrayList<>();
-            boolean inErrMsg = false;
-            for (String l : consoleLines) {
-                if (l.contains("FATAL ERROR")) {
-                    inErrMsg = true;
-                }
-                if (inErrMsg) {
-                    errMsg.add(l);
-                }
-                if (l.contains("Execution will stop")) {
-                    inErrMsg = false;
-                }
+        // FIXME: all cases except default have message that should be captured!
+        List<String> errMsg = new ArrayList<>();
+        boolean inErrMsg = false;
+        for (String l : consoleLines) {
+            System.out.println(l);
+            if (l.contains("FATAL ERROR")) {
+                inErrMsg = true;
             }
+            if (inErrMsg) {
+                errMsg.add(l);
+            }
+            if (l.contains("Execution will stop")) {
+                inErrMsg = false;
+            }
+        }
+        if (exitcode != 0) {
             switch (exitcode) {
                 case -1:
                     System.err.println("BaM Error: A FATAL ERROR has occured");
@@ -237,11 +238,9 @@ public class BaM {
                     System.err.printf("BaM Error: An unknown FATAL ERROR has occured. Exit Code=%d\n", exitcode);
                     break;
             }
-
-            return String.join("\n", errMsg);
         }
         bamExecutionProcess = null;
-        return "";
+        return String.join("\n", errMsg);
     }
 
     @Override

@@ -112,15 +112,19 @@ public class RunDialog extends JDialog {
 
             @Override
             protected Void doInBackground() throws Exception {
+                String finalMessage = "";
                 try {
                     System.out.println("RunDialog: BaM starting...");
-                    bam.run(workspacePath.toString(), txt -> {
+                    finalMessage = bam.run(workspacePath.toString(), txt -> {
                         publish(txt);
                     });
+
                 } catch (IOException e) {
                     e.printStackTrace();
                     cancel(true);
                 }
+                System.out.println(finalMessage.equals("") ? "BaM ran successfully!"
+                        : "BaM finished with errors!\n" + finalMessage);
                 return null;
             }
 
