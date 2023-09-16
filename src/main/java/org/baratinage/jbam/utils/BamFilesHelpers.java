@@ -38,6 +38,8 @@ public class BamFilesHelpers {
     public static final String RESULTS_STATE_SPAG = "state_%s_%s.spag";
     public static final String RESULTS_STATE_ENV = "state_%s_%s.env";
 
+    public static final String BAM_MISSING_VALUE_CODE = "-0.666666E+03";
+
     // FIXME: unused, delete?
     public static List<String> parseString(String template, String stringToParse) {
         String regex = template.replaceAll("%s", "(\\\\w*)");

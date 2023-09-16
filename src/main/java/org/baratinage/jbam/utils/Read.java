@@ -15,8 +15,6 @@ import org.mozilla.universalchardet.ReaderFactory;
 
 public class Read {
 
-    public static final String BAM_MISSING_VALUE_CODE = "-0.666666E+03";
-
     // FIXME: missing value code should be final constant defined here
 
     static BufferedReader createBufferedReader(String filePath, boolean detectEncoding) throws IOException {
@@ -70,7 +68,7 @@ public class Read {
                 nRowMax,
                 nColSkip,
                 nColMax,
-                BAM_MISSING_VALUE_CODE,
+                BamFilesHelpers.BAM_MISSING_VALUE_CODE,
                 false,
                 true);
     }
@@ -87,7 +85,7 @@ public class Read {
                 nRowMax,
                 0,
                 nColMax,
-                BAM_MISSING_VALUE_CODE,
+                BamFilesHelpers.BAM_MISSING_VALUE_CODE,
                 false,
                 true);
     }
