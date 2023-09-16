@@ -24,7 +24,6 @@ import org.baratinage.jbam.utils.BamFilesHelpers;
 import org.baratinage.ui.AppConfig;
 import org.baratinage.ui.bam.BamItem;
 import org.baratinage.ui.bam.BamItemType;
-import org.baratinage.ui.bam.BamItemList;
 import org.baratinage.ui.bam.BamItemParent;
 import org.baratinage.ui.bam.ICalibratedModel;
 import org.baratinage.ui.bam.IMcmc;
