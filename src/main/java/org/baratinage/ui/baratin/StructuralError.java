@@ -101,10 +101,10 @@ public class StructuralError extends BamItem implements IStructuralError {
         JSONArray structErrModelParsJson = new JSONArray();
         for (Parameter p : sem.parameters) {
             JSONObject pJson = new JSONObject();
-            pJson.put("distrib", p.getDistribution().distribution.name);
-            pJson.put("initialGuess", p.getInitialGuess());
+            pJson.put("distrib", p.distribution.distribution.name);
+            pJson.put("initialGuess", p.initalGuess);
             JSONArray pPriorsJson = new JSONArray();
-            for (double prior : p.getDistribution().parameterValues) {
+            for (double prior : p.distribution.parameterValues) {
                 pPriorsJson.put(prior);
             }
             pJson.put("priors", pPriorsJson);

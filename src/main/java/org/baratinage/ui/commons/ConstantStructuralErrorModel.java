@@ -50,8 +50,8 @@ public class ConstantStructuralErrorModel extends AbstractStructuralErrorModel {
     public void setFromParameters(Parameter[] parameters) {
         if (parameters.length == 1) {
             Parameter p = parameters[0];
-            Distribution d = p.getDistribution();
-            g1parameter.set(d.distribution, p.getInitialGuess(), d.parameterValues);
+            Distribution d = p.distribution;
+            g1parameter.set(d.distribution, p.initalGuess, d.parameterValues);
         }
     }
 

@@ -142,7 +142,7 @@ public class HydraulicConfiguration
         Parameter[] parameters = getParameters();
         String[] parameterNames = new String[parameters.length];
         for (int k = 0; k < parameters.length; k++) {
-            parameterNames[k] = parameters[k].getName();
+            parameterNames[k] = parameters[k].name;
         }
         return parameterNames;
     }
@@ -372,8 +372,8 @@ public class HydraulicConfiguration
 
         List<double[]> transitionStages = new ArrayList<>();
         for (Parameter p : params) {
-            if (p.getName().startsWith("k_")) {
-                Distribution d = p.getDistribution();
+            if (p.name.startsWith("k_")) {
+                Distribution d = p.distribution;
                 if (d.distribution == DISTRIBUTION.GAUSSIAN) {
                     double[] distParams = d.parameterValues;
                     double mean = distParams[0];

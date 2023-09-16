@@ -85,32 +85,32 @@ public class CalibrationData {
         List<String> headers = new ArrayList<>();
 
         for (UncertainData i : this.inputs) {
-            dataColumns.add(i.getValues());
-            headers.add("X_" + i.getName());
+            dataColumns.add(i.values);
+            headers.add("X_" + i.name);
             if (i.hasNonSysError()) {
-                dataColumns.add(i.getNonSysStd());
-                headers.add("Xu_" + i.getName());
+                dataColumns.add(i.nonSysStd);
+                headers.add("Xu_" + i.name);
             }
             if (i.hasSysError()) {
-                dataColumns.add(i.getSysStd());
-                headers.add("Xb_" + i.getName());
+                dataColumns.add(i.sysStd);
+                headers.add("Xb_" + i.name);
                 dataColumns.add(i.getSysIndicesAsDouble());
-                headers.add("Xbi_" + i.getName());
+                headers.add("Xbi_" + i.name);
             }
         }
 
         for (UncertainData o : this.outputs) {
-            dataColumns.add(o.getValues());
-            headers.add("X_" + o.getName());
+            dataColumns.add(o.values);
+            headers.add("X_" + o.name);
             if (o.hasNonSysError()) {
-                dataColumns.add(o.getNonSysStd());
-                headers.add("Xu_" + o.getName());
+                dataColumns.add(o.nonSysStd);
+                headers.add("Xu_" + o.name);
             }
             if (o.hasSysError()) {
-                dataColumns.add(o.getSysStd());
-                headers.add("Xb_" + o.getName());
+                dataColumns.add(o.sysStd);
+                headers.add("Xb_" + o.name);
                 dataColumns.add(o.getSysIndicesAsDouble());
-                headers.add("Xbi_" + o.getName());
+                headers.add("Xbi_" + o.name);
             }
         }
 

@@ -26,7 +26,7 @@ public class Monitoring {
         monitoringSteps = new ArrayList<>();
         this.monitoringFollower = monitoringFollower;
 
-        int mcmcSamples = bam.getCalibrationConfig().getMcmcConfig().numberOfMcmcSamples();
+        int mcmcSamples = bam.getCalibrationConfig().mcmcConfig.numberOfMcmcSamples();
         if (bam.getRunOptions().doMcmc) {
             monitoringSteps
                     .add(new MonitoringStep(
@@ -40,8 +40,7 @@ public class Monitoring {
         }
 
         if (bam.getRunOptions().doPrediction) {
-            int cookedMcmcSamples = bam.getCalibrationConfig().getMcmcCookingConfig()
-                    .numberOfCookedMcmcSamples(mcmcSamples);
+            int cookedMcmcSamples = bam.getCalibrationConfig().mcmcCookingConfig.numberOfCookedMcmcSamples(mcmcSamples);
             for (PredictionConfig predConfig : bam.getPredictionConfigs()) {
                 monitoringSteps.add(
                         new MonitoringStep(

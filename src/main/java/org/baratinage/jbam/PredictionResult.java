@@ -30,12 +30,10 @@ public class PredictionResult {
     // FIXME: using a HashMap may not be required since the outputs order
     // FIXME: are set during configuration
     // FIXME: (+ a list is more consistent with configuration approach)
-    private HashMap<String, PredictionOutputResult> outputResults;
-    private PredictionConfig predictionConfig; // FIXME: should this be here?
-    private boolean isValid;
+    public final HashMap<String, PredictionOutputResult> outputResults;
+    public final PredictionConfig predictionConfig;
 
     public PredictionResult(String workspace, PredictionConfig predictionConfig) {
-        this.isValid = false;
         this.predictionConfig = predictionConfig;
         this.outputResults = new HashMap<>();
         PredictionOutput[] outputConfigs = predictionConfig.outputs;
@@ -47,22 +45,18 @@ public class PredictionResult {
             List<double[]> spag = null;
             try {
                 env = Read.readMatrix(Path.of(workspace, envFileName).toString(), 1);
-
             } catch (IOException e) {
-                System.err.println("PredictionResult Error: \n" + e);
-                // return;
+                System.err.println("PredictionResult Error: Failed to read envelop file '" + envFileName + "'");
             }
 
             try {
                 spag = Read.readMatrix(Path.of(workspace, spagFileName).toString(), 0);
             } catch (IOException e) {
-                System.err.println("PredictionResult Error: \n" + e);
-                // return;
+                System.err.println("PredictionResult Error: Failed to read spaghetti file '" + spagFileName + "'");
             }
 
             this.outputResults.put(outputName, new PredictionOutputResult(env, spag));
         }
-        this.isValid = true;
     }
 
     public String getName() {
@@ -75,10 +69,6 @@ public class PredictionResult {
 
     public HashMap<String, PredictionOutputResult> getOutputResults() {
         return this.outputResults;
-    }
-
-    public boolean getIsValid() {
-        return this.isValid;
     }
 
     @Override

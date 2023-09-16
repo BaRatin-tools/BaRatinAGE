@@ -1,11 +1,11 @@
 package org.baratinage.jbam;
 
 public class UncertainData {
-    private String name;
-    private double[] values;
-    private double[] nonSysStd;
-    private double[] sysStd;
-    private int[] sysIndices;
+    public final String name;
+    public final double[] values;
+    public final double[] nonSysStd;
+    public final double[] sysStd;
+    public final int[] sysIndices;
 
     public UncertainData(String name, double[] values, double[] nonSysStd, double[] sysStd, int[] sysIndices) {
         int n = values.length;
@@ -36,28 +36,8 @@ public class UncertainData {
         this(name, values, new double[] {}, new double[] {}, new int[] {});
     }
 
-    public String getName() {
-        return this.name;
-    }
-
     public int getNumberOfValues() {
         return this.values.length;
-    }
-
-    public double[] getValues() {
-        return this.values;
-    }
-
-    public double[] getNonSysStd() {
-        return this.nonSysStd;
-    }
-
-    public double[] getSysStd() {
-        return this.sysStd;
-    }
-
-    public int[] getSysIndices() {
-        return this.sysIndices;
     }
 
     public double[] getSysIndicesAsDouble() {

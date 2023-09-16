@@ -24,9 +24,9 @@ public class StructuralErrorModel {
         configFile.addItem(parameters.length, "Number of parameters gamma for f");
 
         for (Parameter p : parameters) {
-            configFile.addItem(p.getName(), "Parameter name -----", true);
-            configFile.addItem(p.getInitialGuess(), "Initial guess");
-            Distribution d = p.getDistribution();
+            configFile.addItem(p.name, "Parameter name -----", true);
+            configFile.addItem(p.initalGuess, "Initial guess");
+            Distribution d = p.distribution;
             configFile.addItem(d.distribution.name, "Prior distribution", true);
             configFile.addItem(d.parameterValues, "Prior parameters");
         }

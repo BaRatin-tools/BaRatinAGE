@@ -71,11 +71,11 @@ public class LinearStructuralErrorModel extends AbstractStructuralErrorModel {
     public void setFromParameters(Parameter[] parameters) {
         if (parameters.length == 2) {
             Parameter p1 = parameters[0];
-            Distribution d1 = p1.getDistribution();
-            g1parameter.set(d1.distribution, p1.getInitialGuess(), d1.parameterValues);
+            Distribution d1 = p1.distribution;
+            g1parameter.set(d1.distribution, p1.initalGuess, d1.parameterValues);
             Parameter p2 = parameters[1];
-            Distribution d2 = p2.getDistribution();
-            g2parameter.set(d2.distribution, p2.getInitialGuess(), d2.parameterValues);
+            Distribution d2 = p2.distribution;
+            g2parameter.set(d2.distribution, p2.initalGuess, d2.parameterValues);
         }
     }
 

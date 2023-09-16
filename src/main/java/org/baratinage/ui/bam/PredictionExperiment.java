@@ -38,15 +38,15 @@ public class PredictionExperiment implements IPredictionExperiment {
         }
 
         CalibrationConfig cc = calibratedModel.getCalibrationConfig();
-        ModelOutput[] mo = cc.getModelOutputs();
+        ModelOutput[] mo = cc.modelOutputs;
 
         // FIXME: should be able to set structural error computation boolean per outputs
         PredictionOutput[] predOutputs = new PredictionOutput[mo.length];
         for (int k = 0; k < mo.length; k++) {
             predOutputs[k] = new PredictionOutput(
-                    mo[k].getName(),
-                    String.format(BamFilesHelpers.RESULTS_OUTPUT_SPAG, name, mo[k].getName()),
-                    String.format(BamFilesHelpers.RESULTS_OUTPUT_ENV, name, mo[k].getName()),
+                    mo[k].name,
+                    String.format(BamFilesHelpers.RESULTS_OUTPUT_SPAG, name, mo[k].name),
+                    String.format(BamFilesHelpers.RESULTS_OUTPUT_ENV, name, mo[k].name),
                     propagateStructuralUncertainty,
                     true,
                     true);

@@ -1,20 +1,12 @@
 package org.baratinage.jbam;
 
 public class ModelOutput {
-    private String name;
-    private StructuralErrorModel structuralErrorModel;
+    public final String name;
+    public final StructuralErrorModel structuralErrorModel;
 
     public ModelOutput(String name, StructuralErrorModel structuralErrorModel) {
         this.name = name;
         this.structuralErrorModel = structuralErrorModel;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getStructErrConfName() {
-        return this.structuralErrorModel.fileName;
     }
 
     public void toFiles(String workspace) {

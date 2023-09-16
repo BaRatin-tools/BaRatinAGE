@@ -29,29 +29,9 @@ public class CalibrationConfig {
         int n = this.modelOutputs.length;
         String[] structErrConfNames = new String[n];
         for (int k = 0; k < n; k++) {
-            structErrConfNames[k] = this.modelOutputs[k].getStructErrConfName();
+            structErrConfNames[k] = this.modelOutputs[k].structuralErrorModel.fileName;
         }
         return structErrConfNames;
-    }
-
-    public Model getModel() {
-        return this.model;
-    }
-
-    public ModelOutput[] getModelOutputs() {
-        return this.modelOutputs;
-    }
-
-    public CalibrationData getCalibrationData() {
-        return this.calibrationData;
-    }
-
-    public McmcConfig getMcmcConfig() {
-        return this.mcmcConfig;
-    }
-
-    public McmcCookingConfig getMcmcCookingConfig() {
-        return this.mcmcCookingConfig;
     }
 
     public void toFiles(String workspace) {

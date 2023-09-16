@@ -31,8 +31,8 @@ public class CalibrationDataResiduals {
         }
     }
 
-    private List<InputDataResiduals> inputResiduals;
-    private List<OutputDataResiduals> outputResiduals;
+    public final List<InputDataResiduals> inputResiduals;
+    public final List<OutputDataResiduals> outputResiduals;
 
     public CalibrationDataResiduals(List<double[]> calDataResidualMatrix, CalibrationData calibrationData) {
 
@@ -50,7 +50,7 @@ public class CalibrationDataResiduals {
         for (UncertainData i : inputs) {
             inputResiduals.add(
                     new InputDataResiduals(
-                            i.getName(),
+                            i.name,
                             calDataResidualMatrix.get(k),
                             calDataResidualMatrix.get(k + nInputs)));
             k++;
@@ -62,7 +62,7 @@ public class CalibrationDataResiduals {
         for (UncertainData o : outputs) {
             outputResiduals.add(
                     new OutputDataResiduals(
-                            o.getName(),
+                            o.name,
                             calDataResidualMatrix.get(nInputs * 2 + k),
                             calDataResidualMatrix.get(nInputs * 2 + k + nOuputs * 1),
                             calDataResidualMatrix.get(nInputs * 2 + k + nOuputs * 2),
