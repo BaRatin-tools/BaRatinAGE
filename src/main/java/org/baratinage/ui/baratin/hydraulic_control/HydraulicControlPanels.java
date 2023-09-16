@@ -9,7 +9,7 @@ import javax.swing.event.ChangeListener;
 
 import org.baratinage.jbam.Distribution;
 import org.baratinage.jbam.Parameter;
-import org.baratinage.jbam.Distribution.DISTRIB;
+import org.baratinage.jbam.Distribution.DISTRIBUTION;
 import org.baratinage.ui.bam.IPriors;
 import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.ui.lg.Lg;
@@ -117,15 +117,15 @@ public class HydraulicControlPanels extends RowColPanel implements IPriors, Chan
         for (int k = 0; k < nVisibleHydraulicControls; k++) {
             OneHydraulicControl ohc = controls.get(k);
             Distribution activationStageDistribution = new Distribution(
-                    DISTRIB.GAUSSIAN,
+                    DISTRIBUTION.GAUSSIAN,
                     ohc.activationStage.getValue(),
                     ohc.activationStageUncertainty.getValue() / 2);
             Distribution coefficientDistribution = new Distribution(
-                    DISTRIB.GAUSSIAN,
+                    DISTRIBUTION.GAUSSIAN,
                     ohc.coefficient.getValue(),
                     ohc.coefficientUncertainty.getValue() / 2);
             Distribution exponentDistribution = new Distribution(
-                    DISTRIB.GAUSSIAN,
+                    DISTRIBUTION.GAUSSIAN,
                     ohc.exponent.getValue(),
                     ohc.exponentUncertainty.getValue() / 2);
 

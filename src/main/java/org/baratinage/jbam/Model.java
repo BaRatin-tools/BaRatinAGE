@@ -6,7 +6,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.baratinage.jbam.Distribution.DISTRIB;
+import org.baratinage.jbam.Distribution.DISTRIBUTION;
 import org.baratinage.jbam.utils.ConfigFile;
 import org.baratinage.jbam.utils.Write;
 
@@ -47,8 +47,8 @@ public class Model {
             configFile.addItem(p.getName(), "Parameter name -----", true);
             configFile.addItem(p.getInitialGuess(), "Initial guess");
             Distribution d = p.getDistribution();
-            configFile.addItem(d.getName(), "Prior distribution", true);
-            configFile.addItem(d.getParameterValues(), "Prior parameters");
+            configFile.addItem(d.distribution.name, "Prior distribution", true);
+            configFile.addItem(d.parameterValues, "Prior parameters");
         }
 
         configFile.writeToFile(workspace, fileName);
@@ -92,7 +92,7 @@ public class Model {
             String distribName = configFile.getString(3 + k * 4 + 3);
             double[] distribParams = configFile.getDoubleArray(3 + k * 4 + 4);
             Distribution distribution = new Distribution(
-                    DISTRIB.getDistribFromName(distribName),
+                    DISTRIBUTION.getDistribFromName(distribName),
                     distribParams);
             parameters[k] = new Parameter(
                     configFile.getString(3 + k * 4 + 1),

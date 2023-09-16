@@ -101,10 +101,10 @@ public class StructuralError extends BamItem implements IStructuralError {
         JSONArray structErrModelParsJson = new JSONArray();
         for (Parameter p : sem.parameters) {
             JSONObject pJson = new JSONObject();
-            pJson.put("distrib", p.getDistribution().getDistrib().name());
+            pJson.put("distrib", p.getDistribution().distribution.name);
             pJson.put("initialGuess", p.getInitialGuess());
             JSONArray pPriorsJson = new JSONArray();
-            for (double prior : p.getDistribution().getParameterValues()) {
+            for (double prior : p.getDistribution().parameterValues) {
                 pPriorsJson.put(prior);
             }
             pJson.put("priors", pPriorsJson);
@@ -137,7 +137,7 @@ public class StructuralError extends BamItem implements IStructuralError {
                 }
 
                 Distribution distribution = new Distribution(
-                        Distribution.DISTRIB.valueOf(distribName),
+                        Distribution.DISTRIBUTION.valueOf(distribName),
                         priors);
                 modelParameters[i] = new Parameter("gamma_" + i, initialGuess, distribution);
             }

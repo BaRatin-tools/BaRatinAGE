@@ -9,7 +9,7 @@ import javax.swing.JSeparator;
 import javax.swing.JSplitPane;
 
 import org.baratinage.jbam.Distribution;
-import org.baratinage.jbam.Distribution.DISTRIB;
+import org.baratinage.jbam.Distribution.DISTRIBUTION;
 import org.baratinage.jbam.Parameter;
 import org.baratinage.jbam.PredictionConfig;
 import org.baratinage.jbam.PredictionResult;
@@ -362,7 +362,7 @@ public class HydraulicConfiguration
 
         PredictionConfig[] predConfigs = bamRunConfigAndRes.getPredictionConfigs();
         PredictionResult[] predResults = bamRunConfigAndRes.getPredictionResults();
-        Parameter[] params = bamRunConfigAndRes.calibrationConfig.model.parameters;
+        Parameter[] params = bamRunConfigAndRes.getCalibrationConfig().model.parameters;
 
         double[] stage = predConfigs[0].inputs[0].dataColumns.get(0);
         String outputName = predConfigs[0].outputs[0].name;
@@ -374,8 +374,8 @@ public class HydraulicConfiguration
         for (Parameter p : params) {
             if (p.getName().startsWith("k_")) {
                 Distribution d = p.getDistribution();
-                if (d.getDistrib() == DISTRIB.GAUSSIAN) {
-                    double[] distParams = d.getParameterValues();
+                if (d.distribution == DISTRIBUTION.GAUSSIAN) {
+                    double[] distParams = d.parameterValues;
                     double mean = distParams[0];
                     double std = distParams[1];
                     transitionStages.add(new double[] {

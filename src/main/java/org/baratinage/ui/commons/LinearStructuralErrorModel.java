@@ -3,7 +3,7 @@ package org.baratinage.ui.commons;
 import org.baratinage.jbam.Distribution;
 import org.baratinage.jbam.Parameter;
 import org.baratinage.jbam.StructuralErrorModel;
-import org.baratinage.jbam.Distribution.DISTRIB;
+import org.baratinage.jbam.Distribution.DISTRIBUTION;
 import org.baratinage.jbam.utils.BamFilesHelpers;
 
 public class LinearStructuralErrorModel extends AbstractStructuralErrorModel {
@@ -47,8 +47,8 @@ public class LinearStructuralErrorModel extends AbstractStructuralErrorModel {
 
     @Override
     public void applyDefaultConfig() {
-        g1parameter.set(DISTRIB.UNIFORM, 1, new double[] { 0, 10000 });
-        g2parameter.set(DISTRIB.UNIFORM, 0.1, new double[] { 0, 10000 });
+        g1parameter.set(DISTRIBUTION.UNIFORM, 1, new double[] { 0, 10000 });
+        g2parameter.set(DISTRIBUTION.UNIFORM, 0.1, new double[] { 0, 10000 });
         repaint();
     }
 
@@ -72,10 +72,10 @@ public class LinearStructuralErrorModel extends AbstractStructuralErrorModel {
         if (parameters.length == 2) {
             Parameter p1 = parameters[0];
             Distribution d1 = p1.getDistribution();
-            g1parameter.set(d1.getDistrib(), p1.getInitialGuess(), d1.getParameterValues());
+            g1parameter.set(d1.distribution, p1.getInitialGuess(), d1.parameterValues);
             Parameter p2 = parameters[1];
             Distribution d2 = p2.getDistribution();
-            g2parameter.set(d2.getDistrib(), p2.getInitialGuess(), d2.getParameterValues());
+            g2parameter.set(d2.distribution, p2.getInitialGuess(), d2.parameterValues);
         }
     }
 

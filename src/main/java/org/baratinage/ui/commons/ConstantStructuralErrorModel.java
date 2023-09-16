@@ -3,7 +3,7 @@ package org.baratinage.ui.commons;
 import org.baratinage.jbam.Distribution;
 import org.baratinage.jbam.Parameter;
 import org.baratinage.jbam.StructuralErrorModel;
-import org.baratinage.jbam.Distribution.DISTRIB;
+import org.baratinage.jbam.Distribution.DISTRIBUTION;
 import org.baratinage.jbam.utils.BamFilesHelpers;
 
 public class ConstantStructuralErrorModel extends AbstractStructuralErrorModel {
@@ -29,7 +29,7 @@ public class ConstantStructuralErrorModel extends AbstractStructuralErrorModel {
 
     @Override
     public void applyDefaultConfig() {
-        g1parameter.set(DISTRIB.UNIFORM, 1, new double[] { 0, 1000 });
+        g1parameter.set(DISTRIBUTION.UNIFORM, 1, new double[] { 0, 1000 });
     }
 
     @Override
@@ -51,7 +51,7 @@ public class ConstantStructuralErrorModel extends AbstractStructuralErrorModel {
         if (parameters.length == 1) {
             Parameter p = parameters[0];
             Distribution d = p.getDistribution();
-            g1parameter.set(d.getDistrib(), p.getInitialGuess(), d.getParameterValues());
+            g1parameter.set(d.distribution, p.getInitialGuess(), d.parameterValues);
         }
     }
 

@@ -14,7 +14,7 @@ import javax.swing.event.ChangeListener;
 
 import org.baratinage.jbam.Distribution;
 import org.baratinage.jbam.Parameter;
-import org.baratinage.jbam.Distribution.DISTRIB;
+import org.baratinage.jbam.Distribution.DISTRIBUTION;
 import org.baratinage.ui.component.NumberField;
 import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.ui.lg.Lg;
@@ -24,7 +24,7 @@ public class ParameterPriorDist implements ChangeListener {
 
     public final String shortName;
     public final JLabel nameLabel;
-    public final JComboBox<DISTRIB> distComboBox;
+    public final JComboBox<DISTRIBUTION> distComboBox;
     public final NumberField initialGuessField;
     public final RowColPanel parametersInputsPanel;
     public final List<NumberField> parameterPriorFields;
@@ -33,8 +33,8 @@ public class ParameterPriorDist implements ChangeListener {
 
         this.shortName = shortName;
 
-        DefaultComboBoxModel<DISTRIB> distComboBoxModel = new DefaultComboBoxModel<>();
-        for (DISTRIB d : DISTRIB.values()) {
+        DefaultComboBoxModel<DISTRIBUTION> distComboBoxModel = new DefaultComboBoxModel<>();
+        for (DISTRIBUTION d : DISTRIBUTION.values()) {
             distComboBoxModel.addElement(d);
         }
 
@@ -57,7 +57,7 @@ public class ParameterPriorDist implements ChangeListener {
                     int index,
                     boolean isSelected,
                     boolean cellHasFocus) {
-                DISTRIB d = (DISTRIB) value;
+                DISTRIBUTION d = (DISTRIBUTION) value;
                 String text = Lg.text("dist_" + d.name);
                 super.getListCellRendererComponent(list, text, index, isSelected, cellHasFocus);
                 return this;
@@ -67,7 +67,7 @@ public class ParameterPriorDist implements ChangeListener {
         distComboBox.addActionListener((e) -> {
             Object o = distComboBoxModel.getSelectedItem();
             if (o != null) {
-                DISTRIB currentDistribution = (DISTRIB) o;
+                DISTRIBUTION currentDistribution = (DISTRIBUTION) o;
                 parametersInputsPanel.clear();
                 parameterPriorFields.clear();
                 for (String parameterName : currentDistribution.parameterNames) {
@@ -83,10 +83,10 @@ public class ParameterPriorDist implements ChangeListener {
             fireChangeListeners();
         });
 
-        distComboBox.setSelectedItem(DISTRIB.GAUSSIAN);
+        distComboBox.setSelectedItem(DISTRIBUTION.GAUSSIAN);
     }
 
-    public void set(DISTRIB dist, double initialGuess, double[] distParPriors) {
+    public void set(DISTRIBUTION dist, double initialGuess, double[] distParPriors) {
         distComboBox.setSelectedItem(dist);
         initialGuessField.setValue(initialGuess);
         initialGuessField.updateTextField();
@@ -110,7 +110,7 @@ public class ParameterPriorDist implements ChangeListener {
         // if (initialGuess == NumberField.NaN) {
         // return null;
         // }
-        DISTRIB d = (DISTRIB) distComboBox.getSelectedItem();
+        DISTRIBUTION d = (DISTRIBUTION) distComboBox.getSelectedItem();
         int n = d.parameterNames.length;
         double[] parameterValues = new double[n];
         for (int k = 0; k < n; k++) {
