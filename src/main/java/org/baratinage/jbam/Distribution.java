@@ -12,22 +12,22 @@ public class Distribution {
         GEV("GEV", new String[] { "location", "scale", "shape" }),
         FIXED("Fixed", new String[] {});
 
-        public final String name;
+        public final String bamName;
         public final String[] parameterNames;
 
-        private DISTRIBUTION(String name, String[] parameterNames) {
-            this.name = name;
+        private DISTRIBUTION(String bamName, String[] parameterNames) {
+            this.bamName = bamName;
             this.parameterNames = parameterNames;
         }
 
         @Override
         public String toString() {
-            return name;
+            return name();
         }
 
-        static public DISTRIBUTION getDistribFromName(String name) {
+        static public DISTRIBUTION getDistribFromBamName(String name) {
             for (DISTRIBUTION d : DISTRIBUTION.values()) {
-                if (d.name.equals(name)) {
+                if (d.bamName.equals(name)) {
                     return d;
                 }
             }
@@ -45,25 +45,9 @@ public class Distribution {
         this.parameterValues = parameterValues;
     }
 
-    // public DISTRIB getDistrib() {
-    // return this.distrib;
-    // }
-
-    // public String getName() {
-    // return this.distrib.name;
-    // }
-
-    // public String[] getParameterNames() {
-    // return this.distrib.parameterNames;
-    // }
-
-    // public double[] getParameterValues() {
-    // return this.parameterValues;
-    // }
-
     @Override
     public String toString() {
-        String str = String.format("'%s' (", distribution.name);
+        String str = String.format("'%s' (", distribution.name());
         int n = distribution.parameterNames.length;
         for (int k = 0; k < n; k++) {
             str = str + String.format("%s: %f",

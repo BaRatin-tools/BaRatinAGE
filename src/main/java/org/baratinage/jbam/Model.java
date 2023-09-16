@@ -47,7 +47,7 @@ public class Model {
             configFile.addItem(p.name, "Parameter name -----", true);
             configFile.addItem(p.initalGuess, "Initial guess");
             Distribution d = p.distribution;
-            configFile.addItem(d.distribution.name, "Prior distribution", true);
+            configFile.addItem(d.distribution.bamName, "Prior distribution", true);
             configFile.addItem(d.parameterValues, "Prior parameters");
         }
 
@@ -92,7 +92,7 @@ public class Model {
             String distribName = configFile.getString(3 + k * 4 + 3);
             double[] distribParams = configFile.getDoubleArray(3 + k * 4 + 4);
             Distribution distribution = new Distribution(
-                    DISTRIBUTION.getDistribFromName(distribName),
+                    DISTRIBUTION.getDistribFromBamName(distribName),
                     distribParams);
             parameters[k] = new Parameter(
                     configFile.getString(3 + k * 4 + 1),

@@ -58,7 +58,7 @@ public class ParameterPriorDist implements ChangeListener {
                     boolean isSelected,
                     boolean cellHasFocus) {
                 DISTRIBUTION d = (DISTRIBUTION) value;
-                String text = Lg.text("dist_" + d.name);
+                String text = Lg.text("dist_" + d.bamName);
                 super.getListCellRendererComponent(list, text, index, isSelected, cellHasFocus);
                 return this;
             }
