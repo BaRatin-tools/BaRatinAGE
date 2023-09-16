@@ -17,17 +17,16 @@ import org.baratinage.ui.lg.Lg;
 
 import org.json.JSONObject;
 
-public class BamItemParent implements ChangeListener {
+public class BamItemParent extends RowColPanel {
 
-    public final BamItemType TYPE;
-    public final BamItem CHILD;
+    private final BamItemType TYPE;
+    private final BamItem CHILD;
 
-    public final RowColPanel comboboxPanel;
-    public final JLabel comboboxLabel;
+    private final JLabel comboboxLabel;
 
-    public final MsgPanel syncIssueMsg = new MsgPanel(MsgPanel.TYPE.ERROR);
-    public final JButton revertToSelectCompBtn = new JButton();
-    public final JButton createInSyncCompBtn = new JButton();
+    private final MsgPanel syncIssueMsg = new MsgPanel(MsgPanel.TYPE.ERROR);
+    private final JButton revertToSelectCompBtn = new JButton();
+    private final JButton createInSyncCompBtn = new JButton();
 
     private String backupItemString = null;
     private String backupItemId = null;
@@ -39,15 +38,22 @@ public class BamItemParent implements ChangeListener {
     private final SimpleComboBox cb;
 
     private final ChangeListener onBamItemNameChange;
+    private final ChangeListener onBamItemContentChange;
 
     public BamItemParent(
             BamItem child,
             BamItemType type,
             String... jsonKeysToIgnore) {
 
+        super(AXIS.COL, ALIGN.START);
+
         TYPE = type;
         CHILD = child;
         JSON_KEYS_TO_IGNORE = jsonKeysToIgnore;
+
+        CHILD.PROJECT.BAM_ITEMS.addChangeListener((chEvt) -> {
+            updateCombobox();
+        });
 
         cb = new SimpleComboBox();
         cb.addValidator((k) -> {
@@ -60,10 +66,9 @@ public class BamItemParent implements ChangeListener {
 
         comboboxLabel = new JLabel();
 
-        comboboxPanel = new RowColPanel(RowColPanel.AXIS.COL, RowColPanel.ALIGN.START);
-        comboboxPanel.setPadding(5);
-        comboboxPanel.appendChild(comboboxLabel);
-        comboboxPanel.appendChild(cb);
+        setPadding(5);
+        appendChild(comboboxLabel);
+        appendChild(cb);
 
         revertToSelectCompBtn.addActionListener((e) -> {
             if (backupItemId == null) {
@@ -109,6 +114,10 @@ public class BamItemParent implements ChangeListener {
             syncWithBamItemList();
             Lg.updateRegisteredObject(this);
         };
+
+        onBamItemContentChange = (chEvt) -> {
+            fireChangeListeners();
+        };
     }
 
     private String getBackupItemName() {
@@ -132,13 +141,16 @@ public class BamItemParent implements ChangeListener {
         backupItemString = currentItem.toJSON().toString();
     }
 
-    public void updateCombobox(BamItemList bamItemList) {
+    public void updateCombobox() {
+
+        BamItemList bamItemList = CHILD.PROJECT.BAM_ITEMS;
         BamItemList filteredBamItemList = bamItemList.filterByType(TYPE);
         allItems = filteredBamItemList;
         for (BamItem bamItem : allItems) {
             bamItem.bamItemNameField.removeChangeListener(onBamItemNameChange);
             bamItem.bamItemNameField.addChangeListener(onBamItemNameChange);
         }
+
         syncWithBamItemList();
     }
 
@@ -165,11 +177,11 @@ public class BamItemParent implements ChangeListener {
 
     private void setCurrentBamItem(BamItem bamItem) {
         if (currentItem != null) {
-            currentItem.removeChangeListener(this);
+            currentItem.removeChangeListener(onBamItemContentChange);
         }
         currentItem = bamItem;
         if (currentItem != null) {
-            currentItem.addChangeListener(this);
+            currentItem.addChangeListener(onBamItemContentChange);
         }
         int index = allItems.indexOf(currentItem);
         cb.setSelectedItem(index, true);
@@ -263,11 +275,6 @@ public class BamItemParent implements ChangeListener {
         for (ChangeListener l : changeListeners) {
             l.stateChanged(new ChangeEvent(this));
         }
-    }
-
-    @Override
-    public void stateChanged(ChangeEvent e) {
-        fireChangeListeners();
     }
 
 }

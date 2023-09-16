@@ -109,11 +109,11 @@ public class RatingCurve extends BamItem implements IPredictionMaster, ICalibrat
             fireChangeListeners();
         });
 
-        mainConfigPanel.appendChild(hydrauConfParent.comboboxPanel, 0);
+        mainConfigPanel.appendChild(hydrauConfParent, 0);
         mainConfigPanel.appendChild(new JSeparator(JSeparator.VERTICAL), 0);
-        mainConfigPanel.appendChild(gaugingsParent.comboboxPanel, 0);
+        mainConfigPanel.appendChild(gaugingsParent, 0);
         mainConfigPanel.appendChild(new JSeparator(JSeparator.VERTICAL), 0);
-        mainConfigPanel.appendChild(structErrorParent.comboboxPanel, 0);
+        mainConfigPanel.appendChild(structErrorParent, 0);
         mainConfigPanel.appendChild(new JSeparator(JSeparator.VERTICAL), 0);
         mainConfigPanel.appendChild(ratingCurveStageGrid, 1);
 
@@ -141,7 +141,7 @@ public class RatingCurve extends BamItem implements IPredictionMaster, ICalibrat
 
         setContent(content);
 
-        onBamItemListChange();
+        // onBamItemListChange();
 
     }
 
@@ -324,15 +324,6 @@ public class RatingCurve extends BamItem implements IPredictionMaster, ICalibrat
             System.out.println("RatingCurve: missing 'jsonStringBackup'");
         }
 
-        checkSync();
-    }
-
-    @Override
-    public void onBamItemListChange() {
-        BamItemList bamItemList = PROJECT.BAM_ITEMS;
-        hydrauConfParent.updateCombobox(bamItemList);
-        gaugingsParent.updateCombobox(bamItemList);
-        structErrorParent.updateCombobox(bamItemList);
         checkSync();
     }
 

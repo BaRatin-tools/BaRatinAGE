@@ -3,6 +3,9 @@ package org.baratinage.ui.bam;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+
 import org.baratinage.ui.lg.Lg;
 import org.baratinage.utils.Misc;
 
@@ -23,14 +26,16 @@ public class BamItemList extends ArrayList<BamItem> {
     @Override
     public boolean add(BamItem item) {
         boolean res = super.add(item);
-        notifyAllBamItems();
+        // notifyAllBamItems();
+        fireChangeListeners();
         return res;
     }
 
     @Override
     public boolean remove(Object item) {
         boolean res = super.remove(item);
-        notifyAllBamItems();
+        // notifyAllBamItems();
+        fireChangeListeners();
         return res;
     }
 
@@ -40,12 +45,6 @@ public class BamItemList extends ArrayList<BamItem> {
             return null;
         }
         return super.get(index);
-    }
-
-    private void notifyAllBamItems() {
-        for (BamItem bamItem : this) {
-            bamItem.onBamItemListChange();
-        }
     }
 
     public BamItemList filterByType(BamItemType type) {
@@ -83,6 +82,22 @@ public class BamItemList extends ArrayList<BamItem> {
         String[] filteredNames = getBamItemNames(filteredList);
         return Misc.getNextName(shortName, filteredNames);
 
+    }
+
+    private final List<ChangeListener> changeListeners = new ArrayList<>();
+
+    public void addChangeListener(ChangeListener l) {
+        changeListeners.add(l);
+    }
+
+    public void removeChangeListener(ChangeListener l) {
+        changeListeners.remove(l);
+    }
+
+    public void fireChangeListeners() {
+        for (ChangeListener l : changeListeners) {
+            l.stateChanged(new ChangeEvent(this));
+        }
     }
 
 }

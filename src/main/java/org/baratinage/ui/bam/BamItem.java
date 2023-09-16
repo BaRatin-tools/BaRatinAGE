@@ -46,7 +46,6 @@ abstract public class BamItem extends GridPanel {
         bamItemTypeLabel.setText("BamItem");
         bamItemTypeLabel.setFont(bamItemTypeLabel.getFont().deriveFont(Font.BOLD));
         bamItemNameField.setText("Unnamed");
-        // bamItemNameField.setFont(bamItemNameField.getFont().deriveFont(Font.BOLD));
 
         Lg.register(bamItemNameField, () -> {
             bamItemNameField.setPlaceholder(Lg.text("name"));
@@ -191,9 +190,6 @@ abstract public class BamItem extends GridPanel {
         String newName = Lg.text("copy_of", oldName);
         bamItemNameField.setText(newName);
     }
-
-    public void onBamItemListChange() {
-    };
 
     protected void registerFile(String dataFilePath) {
         PROJECT.registerFile(dataFilePath);
