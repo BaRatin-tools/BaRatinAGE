@@ -141,7 +141,7 @@ abstract public class BamItem extends GridPanel {
         String jsonStringA = jsonA.toString();
         String jsonStringB = jsonB.toString();
 
-        printJsonStrings(jsonStringA, jsonStringB);
+        // printJsonStrings(jsonStringA, jsonStringB);
 
         return jsonStringA.equals(jsonStringB);
     }
