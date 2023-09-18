@@ -3,6 +3,7 @@ package org.baratinage.ui.bam;
 import org.baratinage.jbam.CalibrationConfig;
 import org.baratinage.jbam.ModelOutput;
 import org.baratinage.jbam.PredictionConfig;
+import org.baratinage.jbam.PredictionInput;
 import org.baratinage.jbam.PredictionOutput;
 import org.baratinage.jbam.PredictionResult;
 import org.baratinage.jbam.utils.BamFilesHelpers;
@@ -11,34 +12,28 @@ import org.baratinage.jbam.utils.BamFilesHelpers;
 // FIXME: unclear how isPredicted and getPredictionResult should be implemented...
 public class PredictionExperiment implements IPredictionExperiment {
 
-    private ICalibratedModel calibratedModel;
-    private IPredictionData predictionData;
-
     private String name;
     private boolean propageteParametricUncertainty;
     private boolean propagateStructuralUncertainty;
 
+    private CalibrationConfig calibrationConfig;
+    private PredictionInput[] predictionInputs;
+
     public PredictionExperiment(String name,
             boolean propageteParametricUncertainty,
             boolean propagateStructuralUncertainty,
-            ICalibratedModel calibratedModel,
-            IPredictionData predictionData) {
+            CalibrationConfig calibrationConfig,
+            PredictionInput... predictionInputs) {
         this.name = name;
         this.propageteParametricUncertainty = propageteParametricUncertainty;
         this.propagateStructuralUncertainty = propagateStructuralUncertainty;
-        this.calibratedModel = calibratedModel;
-        this.predictionData = predictionData;
+        this.calibrationConfig = calibrationConfig;
+        this.predictionInputs = predictionInputs;
     }
 
     @Override
     public PredictionConfig getPredictionConfig() {
-        if (calibratedModel == null || predictionData == null) {
-            System.err.println("PredictionExperiment Error: Invalid prediction config! Returning null.");
-            return null;
-        }
-
-        CalibrationConfig cc = calibratedModel.getCalibrationConfig();
-        ModelOutput[] mo = cc.modelOutputs;
+        ModelOutput[] mo = calibrationConfig.modelOutputs;
 
         // FIXME: should be able to set structural error computation boolean per outputs
         PredictionOutput[] predOutputs = new PredictionOutput[mo.length];
@@ -55,7 +50,7 @@ public class PredictionExperiment implements IPredictionExperiment {
         PredictionConfig predConfig = new PredictionConfig(
                 name,
                 String.format(BamFilesHelpers.CONFIG_PREDICTION, name),
-                predictionData.getPredictionInputs(),
+                predictionInputs,
                 predOutputs,
                 new PredictionOutput[] {},
                 propageteParametricUncertainty,
