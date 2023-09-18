@@ -48,8 +48,8 @@ public class PriorRatingCurvePlot extends RowColPanel {
                         plot.addXYItem(bands[k], k == 0);
                 }
 
-                plot.addXYItem(mp);
                 plot.addXYItem(parEnv);
+                plot.addXYItem(mp);
 
                 Lg.register(plot, () -> {
                         mp.setLabel(Lg.text("prior_rating_curve"));

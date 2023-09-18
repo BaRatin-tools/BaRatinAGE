@@ -70,7 +70,7 @@ public class LimnigraphDataset extends ImportedDataset {
                     getDatasetName(),
                     timeVector,
                     stageMatrix.get(k),
-                    Color.BLACK, new BasicStroke(1));
+                    Color.BLACK, new BasicStroke(2));
         }
         return tsLines;
     }
