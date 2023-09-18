@@ -103,6 +103,7 @@ public class Model {
         String xTraString;
         try {
             xTraString = Files.readString(Path.of(workspace, xTraFileName));
+            xTraString = xTraString.trim();
         } catch (IOException e) {
             System.err.println("Model Error: An error occured while reading xTra file'" + xTraFileName + "'!");
             e.printStackTrace();
