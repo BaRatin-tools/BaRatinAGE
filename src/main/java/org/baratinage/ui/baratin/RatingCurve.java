@@ -123,6 +123,9 @@ public class RatingCurve extends BamItem implements IPredictionMaster, ICalibrat
             jsonStringBackup = toJSON().toString();
             bamRunConfigAndRes = res;
             buildPlot();
+            hydrauConfParent.updateBackup();
+            gaugingsParent.updateBackup();
+            structErrorParent.updateBackup();
         });
 
         ratingCurvePlot = new PosteriorRatingCurvePlot();
