@@ -18,6 +18,7 @@ import org.baratinage.jbam.McmcSummaryConfig;
 import org.baratinage.jbam.Model;
 import org.baratinage.jbam.ModelOutput;
 import org.baratinage.jbam.PredictionConfig;
+import org.baratinage.jbam.PredictionInput;
 import org.baratinage.jbam.PredictionResult;
 import org.baratinage.jbam.StructuralErrorModel;
 import org.baratinage.jbam.utils.BamFilesHelpers;
@@ -119,6 +120,7 @@ public class RatingCurve extends BamItem implements IPredictionMaster, ICalibrat
         runPanel = new RunPanel(true, false, true);
         runPanel.setPredictionExperiments(this);
         runPanel.addRunSuccessListerner((RunConfigAndRes res) -> {
+            jsonStringBackup = toJSON().toString();
             bamRunConfigAndRes = res;
             buildPlot();
         });
@@ -139,9 +141,6 @@ public class RatingCurve extends BamItem implements IPredictionMaster, ICalibrat
         content.appendChild(mainContentPanel, 1);
 
         setContent(content);
-
-        // onBamItemListChange();
-
     }
 
     @Override
@@ -336,26 +335,28 @@ public class RatingCurve extends BamItem implements IPredictionMaster, ICalibrat
     @Override
     public IPredictionExperiment[] getPredictionExperiments() {
         PredictionExperiment[] predictionConfigs = new PredictionExperiment[3];
+        CalibrationConfig calibrationConfig = getCalibrationConfig();
+        PredictionInput[] predInputs = ratingCurveStageGrid.getPredictionInputs();
         predictionConfigs[0] = new PredictionExperiment(
                 "maxpost",
                 false,
                 false,
-                this,
-                ratingCurveStageGrid);
+                calibrationConfig,
+                predInputs);
 
         predictionConfigs[1] = new PredictionExperiment(
                 "parametric_uncertainty",
                 true,
                 false,
-                this,
-                ratingCurveStageGrid);
+                calibrationConfig,
+                predInputs);
 
         predictionConfigs[2] = new PredictionExperiment(
                 "total_uncertainty",
                 true,
                 true,
-                this,
-                ratingCurveStageGrid);
+                calibrationConfig,
+                predInputs);
         return predictionConfigs;
     }
 
@@ -368,14 +369,14 @@ public class RatingCurve extends BamItem implements IPredictionMaster, ICalibrat
         PredictionResult[] predResults = bamRunConfigAndRes.getPredictionResults();
         CalibrationResult calibrationResults = bamRunConfigAndRes.getCalibrationResults();
 
-        int maxpostIndex = calibrationResults.getMaxPostIndex();
+        int maxpostIndex = calibrationResults.maxpostIndex;
 
-        HashMap<String, EstimatedParameter> pars = calibrationResults.getEsimatedParameters();
+        HashMap<String, EstimatedParameter> pars = calibrationResults.estimatedParameters;
         List<double[]> transitionStages = new ArrayList<>();
         for (String parName : pars.keySet()) {
             if (parName.startsWith("k_")) {
                 EstimatedParameter p = pars.get(parName);
-                double[] vals = p.getMcmc();
+                double[] vals = p.mcmc;
                 double mp = vals[maxpostIndex];
                 double[] p95 = Calc.percentiles(vals, new double[] { 0.025, 0.975 });
                 transitionStages.add(new double[] {
@@ -386,16 +387,16 @@ public class RatingCurve extends BamItem implements IPredictionMaster, ICalibrat
 
         String outputName = predConfigs[0].outputs[0].name;
 
-        double[] dischargeMaxpost = predResults[0].getOutputResults().get(outputName).spag().get(0);
+        double[] dischargeMaxpost = predResults[0].outputResults.get(outputName).spag().get(0);
 
-        List<double[]> paramU = predResults[1].getOutputResults().get(outputName).env().subList(1, 3);
-        List<double[]> totalU = predResults[2].getOutputResults().get(outputName).env().subList(1, 3);
+        List<double[]> paramU = predResults[1].outputResults.get(outputName).env().subList(1, 3);
+        List<double[]> totalU = predResults[2].outputResults.get(outputName).env().subList(1, 3);
 
-        CalibrationData calData = bamRunConfigAndRes.getCalibrationConfig().getCalibrationData();
+        CalibrationData calData = bamRunConfigAndRes.getCalibrationConfig().calibrationData;
 
-        double[] stage = calData.inputs[0].getValues();
-        double[] discharge = calData.outputs[0].getValues();
-        double[] dischargeStd = calData.outputs[0].getNonSysStd();
+        double[] stage = calData.inputs[0].values;
+        double[] discharge = calData.outputs[0].values;
+        double[] dischargeStd = calData.outputs[0].nonSysStd;
         int n = stage.length;
         double[] dischargeMin = new double[n];
         double[] dischargeMax = new double[n];
