@@ -1,13 +1,16 @@
 package org.baratinage.ui.baratin;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.JButton;
 import javax.swing.JSeparator;
 
 import org.baratinage.jbam.CalibrationConfig;
 import org.baratinage.jbam.PredictionInput;
 import org.baratinage.jbam.PredictionResult;
+import org.baratinage.ui.AppConfig;
 import org.baratinage.ui.bam.BamItem;
 import org.baratinage.ui.bam.BamItemParent;
 import org.baratinage.ui.bam.BamItemType;
@@ -16,9 +19,11 @@ import org.baratinage.ui.bam.IPredictionMaster;
 import org.baratinage.ui.bam.PredictionExperiment;
 import org.baratinage.ui.bam.RunConfigAndRes;
 import org.baratinage.ui.bam.RunPanel;
+import org.baratinage.ui.commons.MsgPanel;
 import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.ui.container.RowColPanel.ALIGN;
 import org.baratinage.ui.container.RowColPanel.AXIS;
+import org.baratinage.ui.lg.Lg;
 import org.baratinage.utils.DateTime;
 import org.json.JSONObject;
 
@@ -26,6 +31,7 @@ public class Hydrograph extends BamItem implements IPredictionMaster {
 
     private final RunPanel runPanel;
     private final HydrographPlot plotPanel;
+    private final RowColPanel outdatedPanel;
 
     private final BamItemParent ratingCurveParent;
     private final BamItemParent limnigraphParent;
@@ -47,18 +53,22 @@ public class Hydrograph extends BamItem implements IPredictionMaster {
             RatingCurve rc = (RatingCurve) ratingCurveParent.getCurrentBamItem();
             currentRatingCurve = rc;
             runPanel.setCalibratedModel(rc);
+            checkSync();
         });
 
         limnigraphParent = new BamItemParent(this, BamItemType.LIMNIGRAPH);
         limnigraphParent.addChangeListener((chEvt) -> {
             Limnigraph l = (Limnigraph) limnigraphParent.getCurrentBamItem();
             currentLimnigraph = l;
+            checkSync();
         });
 
         runPanel.addRunSuccessListerner((RunConfigAndRes res) -> {
             jsonStringBackup = toJSON().toString();
             currentConfigAndRes = res;
             buildPlot();
+            ratingCurveParent.updateBackup();
+            limnigraphParent.updateBackup();
         });
 
         RowColPanel parentItemPanel = new RowColPanel(AXIS.ROW, ALIGN.START);
@@ -71,11 +81,51 @@ public class Hydrograph extends BamItem implements IPredictionMaster {
         RowColPanel content = new RowColPanel(RowColPanel.AXIS.COL);
 
         plotPanel = new HydrographPlot();
+
+        outdatedPanel = new RowColPanel();
+        outdatedPanel.setPadding(2);
+        outdatedPanel.setGap(2);
+        outdatedPanel.setColWeight(0, 1);
+
         content.appendChild(parentItemPanel, 0);
         content.appendChild(new JSeparator(JSeparator.HORIZONTAL), 0);
+        content.appendChild(outdatedPanel, 0);
         content.appendChild(runPanel, 0);
         content.appendChild(plotPanel, 1);
         setContent(content);
+    }
+
+    private void checkSync() {
+        // FIXME: called too often? Optimization may be possible.
+
+        List<MsgPanel> warnings = new ArrayList<>();
+        warnings.addAll(ratingCurveParent.getMessages());
+        warnings.addAll(limnigraphParent.getMessages());
+
+        boolean needBamRerun = ratingCurveParent.isBamRerunRequired() ||
+                limnigraphParent.isBamRerunRequired();
+
+        // --------------------------------------------------------------------
+        // update message panel
+        outdatedPanel.clear();
+
+        for (MsgPanel w : warnings) {
+            outdatedPanel.appendChild(w);
+        }
+        // --------------------------------------------------------------------
+        // update run bam button
+        if (needBamRerun) {
+            Lg.register(runPanel.runButton, "recompute_qt");
+            runPanel.runButton.setForeground(AppConfig.AC.INVALID_COLOR);
+        } else {
+            Lg.register(runPanel.runButton, "compute_qt");
+            runPanel.runButton.setForeground(new JButton().getForeground());
+        }
+
+        // since text within warnings changes, it is necessary to
+        // call Lg.updateRegisteredComponents() so changes are accounted for.
+        Lg.updateRegisteredObjects();
+
     }
 
     @Override
@@ -100,7 +150,8 @@ public class Hydrograph extends BamItem implements IPredictionMaster {
     @Override
     public void fromJSON(JSONObject json) {
         if (json.has("ratingCurve")) {
-            ratingCurveParent.fromJSON(json.getJSONObject("ratingCurve"));
+            JSONObject o = json.getJSONObject("ratingCurve");
+            ratingCurveParent.fromJSON(o);
         } else {
             System.out.println("Hydrograph: missing 'ratingCurve'");
         }
@@ -121,6 +172,7 @@ public class Hydrograph extends BamItem implements IPredictionMaster {
         } else {
             System.out.println("Hydrograph: missing 'jsonStringBackup'");
         }
+        checkSync();
     }
 
     @Override
