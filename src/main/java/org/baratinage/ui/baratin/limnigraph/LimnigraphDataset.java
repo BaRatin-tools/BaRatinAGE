@@ -3,12 +3,12 @@ package org.baratinage.ui.baratin.limnigraph;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 import java.util.List;
 
 import org.baratinage.ui.component.ImportedDataset;
 import org.baratinage.ui.plot.PlotItem;
 import org.baratinage.ui.plot.PlotTimeSeriesLine;
+import org.baratinage.utils.DateTime;
 import org.jfree.data.time.Second;
 
 // FIXME: do I need specific/generic data structure such as:
@@ -27,7 +27,7 @@ public class LimnigraphDataset extends ImportedDataset {
 
         String[] headers = new String[nCol];
         List<double[]> data = stage;
-        data.add(0, dateTimeToDoubleVector(dateTime));
+        data.add(0, DateTime.dateTimeToDoubleVector(dateTime));
         headers[0] = "Date/Time";
         for (int k = 0; k < stage.size(); k++) {
             if (stage.get(k).length != nRow) {
@@ -46,14 +46,14 @@ public class LimnigraphDataset extends ImportedDataset {
     private LimnigraphDataset(String name, List<double[]> data, String[] headers) {
         super(name, data, headers);
         if (data.size() > 0) {
-            dateTime = doubleToDateTimeVector(data.get(0));
+            dateTime = DateTime.doubleToDateTimeVector(data.get(0));
         }
     }
 
     private LimnigraphDataset(String name, String dataFilePath) {
         super(name, dataFilePath);
         if (getNumberOfColumns() > 0) {
-            dateTime = doubleToDateTimeVector(getColumn(0));
+            dateTime = DateTime.doubleToDateTimeVector(getColumn(0));
         }
     }
 
@@ -73,24 +73,6 @@ public class LimnigraphDataset extends ImportedDataset {
                     Color.BLACK, new BasicStroke(1));
         }
         return tsLines;
-    }
-
-    private static double[] dateTimeToDoubleVector(LocalDateTime[] dateTime) {
-        int n = dateTime.length;
-        double[] dateTimeDouble = new double[n];
-        for (int k = 0; k < n; k++) {
-            dateTimeDouble[k] = dateTime[k].toEpochSecond(ZoneOffset.UTC);
-        }
-        return dateTimeDouble;
-    }
-
-    private static LocalDateTime[] doubleToDateTimeVector(double[] dataTimeDouble) {
-        int n = dataTimeDouble.length;
-        LocalDateTime[] dateTime = new LocalDateTime[n];
-        for (int k = 0; k < n; k++) {
-            dateTime[k] = LocalDateTime.ofEpochSecond((long) dataTimeDouble[k], 0, ZoneOffset.UTC);
-        }
-        return dateTime;
     }
 
     public double[] getDateTimeAsDouble() {
