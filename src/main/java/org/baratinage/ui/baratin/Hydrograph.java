@@ -17,6 +17,8 @@ import org.baratinage.ui.bam.PredictionExperiment;
 import org.baratinage.ui.bam.RunConfigAndRes;
 import org.baratinage.ui.bam.RunPanel;
 import org.baratinage.ui.container.RowColPanel;
+import org.baratinage.ui.container.RowColPanel.ALIGN;
+import org.baratinage.ui.container.RowColPanel.AXIS;
 import org.baratinage.utils.DateTime;
 import org.json.JSONObject;
 
@@ -59,7 +61,7 @@ public class Hydrograph extends BamItem implements IPredictionMaster {
             buildPlot();
         });
 
-        RowColPanel parentItemPanel = new RowColPanel();
+        RowColPanel parentItemPanel = new RowColPanel(AXIS.ROW, ALIGN.START);
 
         parentItemPanel.appendChild(ratingCurveParent);
         parentItemPanel.appendChild(new JSeparator(JSeparator.VERTICAL));
