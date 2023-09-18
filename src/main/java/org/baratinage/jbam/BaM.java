@@ -15,26 +15,93 @@ import org.baratinage.jbam.utils.ConfigFile;
 
 public class BaM {
 
+    static public BaM buildFromWorkspace(String mainConfigFilePath, String workspacePath) {
+        ConfigFile configFile = ConfigFile.readConfigFile(mainConfigFilePath);
+        // String workspacePath = configFile.getString(0);
+        String runOptionFileName = configFile.getString(1);
+        String modelFileName = configFile.getString(2);
+        String xTraFileName = configFile.getString(3);
+        String dataFileName = configFile.getString(4);
+        String[] structuralErrorFileNames = configFile.getStringArray(5);
+        String mcmcFileName = configFile.getString(6);
+        String mcmcCookingFileName = configFile.getString(7);
+        String mcmcSummaryFileName = configFile.getString(8);
+        String dataResidualFileName = configFile.getString(9);
+        String predictionFileName = configFile.getString(10);
+
+        // String absoluteWorkspacePath =
+        // BamFilesHelpers.absolutizePath(relativeWorkspacePath).toString();
+        CalibrationConfig calibrationConfig = CalibrationConfig.readCalibrationConfig(
+                workspacePath,
+                modelFileName,
+                xTraFileName,
+                dataFileName,
+                structuralErrorFileNames,
+                mcmcFileName,
+                mcmcCookingFileName,
+                mcmcSummaryFileName,
+                dataResidualFileName);
+
+        RunOptions runOptions = RunOptions.readRunOptions(workspacePath, runOptionFileName);
+
+        ConfigFile predMasterConfig = ConfigFile.readConfigFile(workspacePath, predictionFileName);
+        int nPred = predMasterConfig.getInt(0);
+        PredictionConfig[] predictionConfigs = new PredictionConfig[nPred];
+        for (int k = 0; k < nPred; k++) {
+            String predictionConfigFileName = predMasterConfig.getString(k + 1);
+            predictionConfigs[k] = PredictionConfig.readPredictionConfig(workspacePath,
+                    predictionConfigFileName);
+        }
+
+        CalibrationResult calibrationResult = null;
+        if (runOptions.doMcmc) {
+            calibrationResult = new CalibrationResult(workspacePath, calibrationConfig, runOptions);
+        }
+
+        PredictionResult[] predictionResults = null;
+        if (runOptions.doPrediction) {
+            int n = predictionConfigs.length;
+            predictionResults = new PredictionResult[n];
+            for (int k = 0; k < n; k++) {
+                predictionResults[k] = new PredictionResult(workspacePath, predictionConfigs[k]);
+            }
+        }
+        return new BaM(calibrationConfig, predictionConfigs, runOptions, calibrationResult, predictionResults);
+    }
+
+    static public BaM buildBamForCalibration(CalibrationConfig calibConfig, PredictionConfig... predConfigs) {
+        RunOptions runOptions = new RunOptions(
+                BamFilesHelpers.CONFIG_RUN_OPTIONS,
+                true,
+                true,
+                true,
+                predConfigs.length > 0);
+        return new BaM(calibConfig, predConfigs, runOptions, null, null);
+    }
+
+    static public BaM buildBamForPredictions(CalibrationResult calibrationResult, PredictionConfig... predConfigs) {
+        RunOptions runOptions = new RunOptions(
+                BamFilesHelpers.CONFIG_RUN_OPTIONS,
+                false,
+                false,
+                false,
+                predConfigs.length > 0);
+        return new BaM(calibrationResult.calibrationConfig, predConfigs, runOptions, calibrationResult, null);
+    }
+
     public static final String EXE_COMMAND = BamFilesHelpers.OS.startsWith("windows")
             ? Path.of(BamFilesHelpers.EXE_DIR, String.format("%s.exe", BamFilesHelpers.EXE_NAME)).toString()
             : String.format("./%s", BamFilesHelpers.EXE_NAME);
 
     private Process bamExecutionProcess;
 
-    public final CalibrationConfig calibrationConfig;
-    public final PredictionConfig[] predictionConfigs;
-    public final RunOptions runOptions;
+    private CalibrationConfig calibrationConfig;
+    private PredictionConfig[] predictionConfigs;
+    private RunOptions runOptions;
     private CalibrationResult calibrationResult;
     private PredictionResult[] predictionResults;
 
-    public BaM(
-            CalibrationConfig calibrationConfig,
-            PredictionConfig[] predictionConfigs,
-            RunOptions runOptions) {
-        this(calibrationConfig, predictionConfigs, runOptions, null, null);
-    }
-
-    public BaM(CalibrationConfig calibrationConfig,
+    protected BaM(CalibrationConfig calibrationConfig,
             PredictionConfig[] predictionConfigs,
             RunOptions runOptions,
             CalibrationResult calibrationResult,
@@ -63,27 +130,6 @@ public class BaM {
         return this.predictionResults;
     }
 
-    @Deprecated
-    public void readResults(String workspace) {
-        if (this.runOptions.doMcmc) {
-            this.calibrationResult = new CalibrationResult(workspace, calibrationConfig);
-            if (!this.calibrationResult.getIsValid()) {
-                this.calibrationResult = null;
-            }
-        }
-        if (this.runOptions.doPrediction) {
-            int n = this.predictionConfigs.length;
-            this.predictionResults = new PredictionResult[n];
-            for (int k = 0; k < n; k++) {
-                this.predictionResults[k] = new PredictionResult(workspace, this.predictionConfigs[k]);
-                if (!this.predictionResults[k].getIsValid()) {
-                    this.predictionResults = null;
-                    break;
-                }
-            }
-        }
-    }
-
     protected void toFiles(String workspace) {
 
         // FIXME: assuming that that these filenames are fixed which may not
@@ -96,25 +142,35 @@ public class BaM {
         // FIXME: (e.g. no need for huge prediction input files if doPrediction is
         // false)
 
-        // Calibration configuraiton files
-        this.calibrationConfig.toFiles(workspace);
+        calibrationConfig.toFiles(workspace);
 
-        // Prediction configuraiton files
-        ConfigFile predMasterConfig = new ConfigFile();
-        predMasterConfig.addItem(this.predictionConfigs.length, "Number of prediction experiments");
-        for (PredictionConfig p : this.predictionConfigs) {
-            predMasterConfig.addItem(p.predictionConfigFileName,
-                    "Config file for experiments - an many lines as the number above", true);
-            p.toFiles(workspace);
+        if (calibrationResult != null) {
+            calibrationResult.toFiles(workspace);
+        } else {
+            if (!runOptions.doMcmc && runOptions.doPrediction) {
+                System.err.println("BaM: cannot do prediction only if calibrationResult is null!");
+            }
         }
-        predMasterConfig.writeToFile(workspace, predictionMasterConfigFileName);
 
+        if (runOptions.doPrediction) { // FIXME: if there's no prediction master file, is it ok for BaM?
+            // Prediction configuraiton files
+            ConfigFile predMasterConfig = new ConfigFile();
+
+            predMasterConfig.addItem(predictionConfigs.length, "Number of prediction experiments");
+            for (PredictionConfig p : predictionConfigs) {
+                predMasterConfig.addItem(p.predictionConfigFileName,
+                        "Config file for experiments - an many lines as the number above", true);
+                p.toFiles(workspace);
+            }
+            predMasterConfig.writeToFile(workspace, predictionMasterConfigFileName);
+
+        }
         // Run options configuraiton file
-        this.runOptions.toFiles(workspace);
+        runOptions.toFiles(workspace);
 
         // Main BaM configuration file
 
-        String[] structErrConfNames = this.calibrationConfig.getStructErrConfNames();
+        String[] structErrConfNames = calibrationConfig.getStructErrConfNames();
 
         String absoluteWorkspace = Path.of(workspace).toAbsolutePath().toString();
 
@@ -197,7 +253,6 @@ public class BaM {
         List<String> errMsg = new ArrayList<>();
         boolean inErrMsg = false;
         for (String l : consoleLines) {
-            System.out.println(l);
             if (l.contains("FATAL ERROR")) {
                 inErrMsg = true;
             }
@@ -281,65 +336,4 @@ public class BaM {
         return String.join("\n", str);
     }
 
-    static public BaM readBaM(String mainConfigFilePath, String workspacePath) {
-        ConfigFile configFile = ConfigFile.readConfigFile(mainConfigFilePath);
-        // String workspacePath = configFile.getString(0);
-        String runOptionFileName = configFile.getString(1);
-        String modelFileName = configFile.getString(2);
-        String xTraFileName = configFile.getString(3);
-        String dataFileName = configFile.getString(4);
-        String[] structuralErrorFileNames = configFile.getStringArray(5);
-        String mcmcFileName = configFile.getString(6);
-        String mcmcCookingFileName = configFile.getString(7);
-        String mcmcSummaryFileName = configFile.getString(8);
-        String dataResidualFileName = configFile.getString(9);
-        String predictionFileName = configFile.getString(10);
-
-        // String absoluteWorkspacePath =
-        // BamFilesHelpers.absolutizePath(relativeWorkspacePath).toString();
-        CalibrationConfig calibrationConfig = CalibrationConfig.readCalibrationConfig(
-                workspacePath,
-                modelFileName,
-                xTraFileName,
-                dataFileName,
-                structuralErrorFileNames,
-                mcmcFileName,
-                mcmcCookingFileName,
-                mcmcSummaryFileName,
-                dataResidualFileName);
-
-        RunOptions runOptions = RunOptions.readRunOptions(workspacePath, runOptionFileName);
-
-        ConfigFile predMasterConfig = ConfigFile.readConfigFile(workspacePath, predictionFileName);
-        int nPred = predMasterConfig.getInt(0);
-        PredictionConfig[] predictionConfigs = new PredictionConfig[nPred];
-        for (int k = 0; k < nPred; k++) {
-            String predictionConfigFileName = predMasterConfig.getString(k + 1);
-            predictionConfigs[k] = PredictionConfig.readPredictionConfig(workspacePath,
-                    predictionConfigFileName);
-        }
-
-        CalibrationResult calibrationResult = null;
-        if (runOptions.doMcmc) {
-            calibrationResult = new CalibrationResult(workspacePath, calibrationConfig);
-            if (!calibrationResult.getIsValid()) {
-                calibrationResult = null;
-            }
-        }
-
-        PredictionResult[] predictionResults = null;
-        if (runOptions.doPrediction) {
-            int n = predictionConfigs.length;
-            predictionResults = new PredictionResult[n];
-            for (int k = 0; k < n; k++) {
-                predictionResults[k] = new PredictionResult(workspacePath, predictionConfigs[k]);
-                if (!predictionResults[k].getIsValid()) {
-                    predictionResults = null;
-                    break;
-                }
-            }
-        }
-
-        return new BaM(calibrationConfig, predictionConfigs, runOptions, calibrationResult, predictionResults);
-    }
 }

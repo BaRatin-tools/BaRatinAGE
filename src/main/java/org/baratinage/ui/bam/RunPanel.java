@@ -19,7 +19,6 @@ import org.baratinage.jbam.Model;
 import org.baratinage.jbam.ModelOutput;
 import org.baratinage.jbam.Parameter;
 import org.baratinage.jbam.PredictionConfig;
-import org.baratinage.jbam.RunOptions;
 import org.baratinage.jbam.StructuralErrorModel;
 import org.baratinage.jbam.UncertainData;
 import org.baratinage.jbam.utils.BamFilesHelpers;
@@ -35,10 +34,10 @@ public class RunPanel extends RowColPanel {
     private IPriors bamPriors;
     private IStructuralError bamStructError;
     private ICalibrationData bamCalibData;
-    // private IPredictionExperiment[] bamPredictions = new IPredictionExperiment[]
-    // {};
     private IPredictionMaster bamPredictions;
-    private RunConfigAndRes bamRunConfigAndRes;
+    private ICalibratedModel bamCalibratedModel;
+
+    // private RunConfigAndRes bamRunConfigAndRes;
 
     private final boolean calibRun;
     private final boolean priorPredRun;
@@ -93,8 +92,9 @@ public class RunPanel extends RowColPanel {
         hasChanged();
     }
 
-    public void setRunConfigAndRes(RunConfigAndRes runConfigAndRes) {
-        bamRunConfigAndRes = runConfigAndRes;
+    public void setCalibratedModel(ICalibratedModel calibratedModel) {
+        bamCalibratedModel = calibratedModel;
+        // setModelDefintion(bamCalibratedModel);
         hasChanged();
     }
 
@@ -115,32 +115,23 @@ public class RunPanel extends RowColPanel {
     }
 
     public boolean canRunCalibration() {
-        if (bamModelDef == null || bamPriors == null || bamStructError == null || bamCalibData == null) {
-            return false;
-        }
-        // FIXME: further checks here: model def complete, consistency with priors,
-        // number of calib data, ...
-        return true;
+        return bamModelDef != null &&
+                bamPriors != null &&
+                bamStructError != null &&
+                bamCalibData != null;
     }
 
     public boolean canRunPriorPrediction() {
-        if (bamModelDef == null || bamPriors == null && bamPredictions != null) { // should add checks on
-                                                                                  // bamRunConfigAndRes;
-            return false;
-        }
-        return true;
+        return ((bamModelDef != null && bamPriors != null) || bamCalibratedModel != null) &&
+                bamPredictions != null;
     }
 
     public boolean canRunPostPrediction() {
-        return canRunCalibration() && bamPredictions != null; // should add checks on bamRunConfigAndRes;
+        return (canRunCalibration() || bamCalibratedModel != null)
+                && bamPredictions != null;
     }
 
-    private void run() {
-
-        // --------------------------------------------------------------------
-        // 0) preparing workspace
-
-        String id = Misc.getTimeStampedId();
+    private CalibrationConfig buildCalibrationConfig(String id) {
 
         // --------------------------------------------------------------------
         // 1) model
@@ -180,6 +171,10 @@ public class RunPanel extends RowColPanel {
         CalibrationData calibData;
 
         if (bamCalibData == null) {
+            if (calibRun) {
+                System.out.println(
+                        "RunPanel: if calibRun is true, calibration data should be specified! Using fake data instead...");
+            }
             double[] fakeDataArray = new double[] { 0 };
             UncertainData[] inputs = new UncertainData[inputNames.length];
             for (int k = 0; k < inputNames.length; k++) {
@@ -211,7 +206,7 @@ public class RunPanel extends RowColPanel {
         // FIXME: a IMcmc should be an argument that provides the MCMC configuration
         McmcConfig mcmcConfig = new McmcConfig();
 
-        CalibrationConfig calibrationConfig = new CalibrationConfig(
+        return new CalibrationConfig(
                 model,
                 modelOutputs,
                 calibData,
@@ -219,9 +214,12 @@ public class RunPanel extends RowColPanel {
                 mcmcCookingConfig,
                 mcmcSummaryConfig,
                 calDataResidualConfig);
+    }
 
-        // --------------------------------------------------------------------
-        // 4) predictions
+    private void run() {
+
+        String runId = Misc.getTimeStampedId();
+        BaM bam;
 
         IPredictionExperiment[] predExperiments = bamPredictions.getPredictionExperiments();
         PredictionConfig[] predConfigs = new PredictionConfig[predExperiments.length];
@@ -229,32 +227,27 @@ public class RunPanel extends RowColPanel {
             predConfigs[k] = predExperiments[k].getPredictionConfig();
         }
 
-        // --------------------------------------------------------------------
-        // 5) run options
+        if (calibRun || priorPredRun) {
+            CalibrationConfig calibConfig = bamCalibratedModel == null
+                    ? buildCalibrationConfig(runId)
+                    : bamCalibratedModel.getCalibrationConfig();
+            bam = BaM.buildBamForCalibration(calibConfig, predConfigs);
+        } else {
+            if (bamCalibratedModel == null) {
+                System.err.println(
+                        "RunPanel: cannot run BaM for prediction only if no calibration results are provided!");
+                return;
+            }
+            bam = BaM.buildBamForPredictions(bamCalibratedModel.getCalibrationResults(), predConfigs);
+        }
 
-        RunOptions runOptions = new RunOptions(
-                BamFilesHelpers.CONFIG_RUN_OPTIONS,
-                true,
-                true,
-                true,
-                true); // FIXME: what if there's no prediction?
-
-        // --------------------------------------------------------------------
-        // 6) BaM
-
-        BaM bam = new BaM(calibrationConfig, predConfigs, runOptions);
-
-        RunDialog runDialog = new RunDialog(id, bam);
+        RunDialog runDialog = new RunDialog(runId, bam);
         runDialog.executeBam((RunConfigAndRes runConfigAndRes) -> {
             for (Consumer<RunConfigAndRes> l : runSuccessListeners) {
                 l.accept(runConfigAndRes);
             }
         });
 
-    }
-
-    public RunConfigAndRes getConfigAndRes() {
-        return bamRunConfigAndRes;
     }
 
     private List<Consumer<RunConfigAndRes>> runSuccessListeners = new ArrayList<>();
