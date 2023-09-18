@@ -33,7 +33,8 @@ public class BamItemParent extends RowColPanel {
     private BamItemList allItems = new BamItemList();
     private BamItem currentItem = null;
 
-    private final String[] JSON_KEYS_TO_IGNORE;
+    private boolean excludeKeys = true;
+    private String[] comparisonJsonKeys = new String[] {};
 
     private final SimpleComboBox cb;
 
@@ -42,14 +43,12 @@ public class BamItemParent extends RowColPanel {
 
     public BamItemParent(
             BamItem child,
-            BamItemType type,
-            String... jsonKeysToIgnore) {
+            BamItemType type) {
 
         super(AXIS.COL, ALIGN.START);
 
         TYPE = type;
         CHILD = child;
-        JSON_KEYS_TO_IGNORE = jsonKeysToIgnore;
 
         CHILD.PROJECT.BAM_ITEMS.addChangeListener((chEvt) -> {
             updateCombobox();
@@ -120,6 +119,11 @@ public class BamItemParent extends RowColPanel {
         };
 
         updateCombobox();
+    }
+
+    public void setComparisonJsonKeys(boolean exclude, String... keys) {
+        comparisonJsonKeys = keys;
+        excludeKeys = exclude;
     }
 
     private String getBackupItemName() {
@@ -212,7 +216,7 @@ public class BamItemParent extends RowColPanel {
             return false;
         }
         JSONObject backupItemJson = new JSONObject(backupItemString);
-        return currentItem.isMatchingWith(backupItemJson, JSON_KEYS_TO_IGNORE, true);
+        return currentItem.isMatchingWith(backupItemJson, comparisonJsonKeys, excludeKeys);
     }
 
     public boolean isBamRerunRequired() {

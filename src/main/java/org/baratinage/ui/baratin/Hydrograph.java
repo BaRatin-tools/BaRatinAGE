@@ -48,7 +48,8 @@ public class Hydrograph extends BamItem implements IPredictionMaster {
         runPanel = new RunPanel(false, false, true);
         runPanel.setPredictionExperiments(this);
 
-        ratingCurveParent = new BamItemParent(this, BamItemType.RATING_CURVE, "jsonStringBackup");
+        ratingCurveParent = new BamItemParent(this, BamItemType.RATING_CURVE);
+        ratingCurveParent.setComparisonJsonKeys(false, "bamRunId");
         ratingCurveParent.addChangeListener((chEvt) -> {
             RatingCurve rc = (RatingCurve) ratingCurveParent.getCurrentBamItem();
             currentRatingCurve = rc;
@@ -82,7 +83,7 @@ public class Hydrograph extends BamItem implements IPredictionMaster {
 
         plotPanel = new HydrographPlot();
 
-        outdatedPanel = new RowColPanel();
+        outdatedPanel = new RowColPanel(AXIS.COL);
         outdatedPanel.setPadding(2);
         outdatedPanel.setGap(2);
         outdatedPanel.setColWeight(0, 1);

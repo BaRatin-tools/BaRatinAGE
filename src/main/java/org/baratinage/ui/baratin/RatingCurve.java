@@ -62,7 +62,9 @@ public class RatingCurve extends BamItem implements IPredictionMaster, ICalibrat
         // **********************************************************
         hydrauConfParent = new BamItemParent(
                 this,
-                BamItemType.HYDRAULIC_CONFIG,
+                BamItemType.HYDRAULIC_CONFIG);
+        hydrauConfParent.setComparisonJsonKeys(
+                true,
                 "ui", "bamRunId", "jsonStringBackup", "stageGridConfig");
         hydrauConfParent.addChangeListener((e) -> {
             HydraulicConfiguration bamItem = (HydraulicConfiguration) hydrauConfParent.getCurrentBamItem();
@@ -245,6 +247,8 @@ public class RatingCurve extends BamItem implements IPredictionMaster, ICalibrat
         // since text within warnings changes, it is necessary to
         // call Lg.updateRegisteredComponents() so changes are accounted for.
         Lg.updateRegisteredObjects();
+
+        fireChangeListeners();
 
     }
 
