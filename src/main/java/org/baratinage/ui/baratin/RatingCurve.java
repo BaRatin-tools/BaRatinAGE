@@ -108,7 +108,7 @@ public class RatingCurve extends BamItem implements IPredictionMaster, ICalibrat
 
         ratingCurveStageGrid = new RatingCurveStageGrid();
         ratingCurveStageGrid.addChangeListener((e) -> {
-            fireChangeListeners();
+            checkSync();
         });
 
         mainConfigPanel.appendChild(hydrauConfParent, 0);
@@ -220,10 +220,23 @@ public class RatingCurve extends BamItem implements IPredictionMaster, ICalibrat
                 !isMatchingWith(jsonStringBackup, new String[] { "stageGridConfig" }, false);
 
         if (isStageGridOutOfSync) {
-            MsgPanel errorMsg = new MsgPanel(MsgPanel.TYPE.ERROR);
+
             // FIXME: errorMsg should be a final instance variable to limit memory leak
+            MsgPanel errorMsg = new MsgPanel(MsgPanel.TYPE.ERROR);
+            JButton cancelChangeButton = new JButton();
+            cancelChangeButton.addActionListener((e) -> {
+                JSONObject json = new JSONObject(jsonStringBackup);
+                JSONObject stageGridJson = json.getJSONObject("stageGridConfig");
+                ratingCurveStageGrid.setMinValue(stageGridJson.getDouble("min"));
+                ratingCurveStageGrid.setMaxValue(stageGridJson.getDouble("max"));
+                ratingCurveStageGrid.setStepValue(stageGridJson.getDouble("step"));
+                checkSync();
+            });
+            errorMsg.addButton(cancelChangeButton);
+            Lg.register(cancelChangeButton, "cancel_changes");
             Lg.register(errorMsg.message, "oos_stage_grid");
             warnings.add(errorMsg);
+
         }
 
         // --------------------------------------------------------------------
