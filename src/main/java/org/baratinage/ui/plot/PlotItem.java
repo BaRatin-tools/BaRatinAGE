@@ -106,4 +106,13 @@ public abstract class PlotItem {
         }
         return s;
     }
+
+    protected static double[] secondToDouble(Second[] seconds) {
+        int n = seconds.length;
+        double[] d = new double[n];
+        for (int k = 0; k < n; k++) {
+            d[k] = seconds[k].getMiddleMillisecond();
+        }
+        return d;
+    }
 }
