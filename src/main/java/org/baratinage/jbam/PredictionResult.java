@@ -25,15 +25,21 @@ public class PredictionResult {
                 nSpag = spag.size();
             return "Output results (envelops + samples/replications) with " + nEnv + " rows and " + nSpag + " samples.";
         }
+
+        public List<double[]> get95UncertaintyInterval() {
+            return env.subList(1, 3);
+        }
     }
 
     // FIXME: using a HashMap may not be required since the outputs order
     // FIXME: are set during configuration
     // FIXME: (+ a list is more consistent with configuration approach)
+    public final String name;
     public final HashMap<String, PredictionOutputResult> outputResults;
     public final PredictionConfig predictionConfig;
 
     public PredictionResult(String workspace, PredictionConfig predictionConfig) {
+        this.name = predictionConfig.name;
         this.predictionConfig = predictionConfig;
         this.outputResults = new HashMap<>();
         PredictionOutput[] outputConfigs = predictionConfig.outputs;
@@ -59,26 +65,14 @@ public class PredictionResult {
         }
     }
 
-    public String getName() {
-        return this.predictionConfig.name;
-    }
-
-    public PredictionConfig getPredictionConfig() {
-        return this.predictionConfig;
-    }
-
-    public HashMap<String, PredictionOutputResult> getOutputResults() {
-        return this.outputResults;
-    }
-
     @Override
     public String toString() {
         String str = String.format("PredictionResults '%s' :\n",
-                this.getName());
+                name);
         str += " Outputs: \n";
         for (String key : this.outputResults.keySet()) {
             str += " > " + key + ":\n";
-            str += this.outputResults.get(key).toString() + "\n";
+            str += outputResults.get(key).toString() + "\n";
         }
         return str;
     }
