@@ -2,6 +2,8 @@ package org.baratinage.ui.baratin;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -111,11 +113,14 @@ public class Limnigraph extends BamItem implements IPredictionData {
         if (limniDataset == null) {
             return null;
         }
+        List<double[]> stageMatrix = limniDataset.getStageMatrix();
+        List<double[]> dateTimeMatrix = new ArrayList<>();
+        dateTimeMatrix.add(limniDataset.getDateTimeAsDouble());
         return new PredictionInput[] {
                 new PredictionInput(
                         "limni_" + Misc.getTimeStampedId(),
-                        limniDataset.getDatasetName(),
-                        limniDataset.getStageMatrix()) };
+                        stageMatrix,
+                        dateTimeMatrix) };
 
     }
 
