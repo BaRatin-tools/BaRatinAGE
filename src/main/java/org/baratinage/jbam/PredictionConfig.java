@@ -148,7 +148,8 @@ public class PredictionConfig {
                         "PredictionConfig Error: Cannot find prediction data file '" + inputFilePaths[k] + "'!");
                 return null;
             }
-            inputs[k] = PredictionInput.readPredictionInput(dataFilePath);
+            String name = BamFilesHelpers.getNameFromFileName(BamFilesHelpers.DATA_PREDICTION, dataFilePath);
+            inputs[k] = PredictionInput.readPredictionInput(workspace, name);
         }
 
         boolean[] propagateStructuralErrors = configFile.getBooleanArray(4);

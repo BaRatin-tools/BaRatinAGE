@@ -15,6 +15,7 @@ public class BamFilesHelpers {
 
     public static final String DATA_CALIBRATION = "Data_%s.txt";
     public static final String DATA_PREDICTION = "Data_%s.txt";
+    public static final String DATA_PREDICTION_EXTRA = "Data_%s_extra.txt";
 
     public static final String CONFIG_BAM = "Config_BaM.txt";
     public static final String CONFIG_CALIBRATION = "Config_Data.txt";
@@ -40,7 +41,6 @@ public class BamFilesHelpers {
 
     public static final String BAM_MISSING_VALUE_CODE = "-0.666666E+03";
 
-    // FIXME: unused, delete?
     public static List<String> parseString(String template, String stringToParse) {
         String regex = template.replaceAll("%s", "(\\\\w*)");
         Matcher m = Pattern.compile(regex).matcher(stringToParse);
@@ -65,4 +65,10 @@ public class BamFilesHelpers {
         }
         return null;
     }
+
+    static public String getNameFromFileName(String template, String fileName) {
+        List<String> parsed = parseString(template, fileName);
+        return parsed.get(0);
+    }
+
 }
