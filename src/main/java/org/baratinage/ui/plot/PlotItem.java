@@ -6,12 +6,14 @@ import java.awt.Shape;
 import java.awt.Stroke;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
+import java.time.LocalDateTime;
 
 import org.jfree.chart.LegendItem;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYItemRenderer;
 import org.jfree.data.Range;
 import org.jfree.data.general.DatasetUtils;
+import org.jfree.data.time.Second;
 import org.jfree.data.xy.XYDataset;
 
 public abstract class PlotItem {
@@ -88,5 +90,20 @@ public abstract class PlotItem {
         return new BasicStroke(lineWidth,
                 BasicStroke.CAP_ROUND, BasicStroke.JOIN_BEVEL,
                 1, new float[] { 1F }, 0);
+    }
+
+    public static Second[] localDateTimeToSecond(LocalDateTime[] time) {
+        int n = time.length;
+        Second[] s = new Second[n];
+        for (int k = 0; k < n; k++) {
+            s[k] = new Second(
+                    time[k].getSecond(),
+                    time[k].getMinute(),
+                    time[k].getHour(),
+                    time[k].getDayOfMonth(),
+                    time[k].getMonthValue(),
+                    time[k].getYear());
+        }
+        return s;
     }
 }

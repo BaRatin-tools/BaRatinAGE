@@ -23,21 +23,6 @@ public class PlotTimeSeriesLine extends PlotItem {
     TimeSeriesCollection tsCollection;
     DefaultXYItemRenderer renderer;
 
-    public static Second[] localDateTimeToSecond(LocalDateTime[] time) {
-        int n = time.length;
-        Second[] s = new Second[n];
-        for (int k = 0; k < n; k++) {
-            s[k] = new Second(
-                    time[k].getSecond(),
-                    time[k].getMinute(),
-                    time[k].getHour(),
-                    time[k].getDayOfMonth(),
-                    time[k].getMonthValue(),
-                    time[k].getYear());
-        }
-        return s;
-    }
-
     public PlotTimeSeriesLine(String label, Second[] time, double[] values, Paint paint, Stroke stroke) {
         this.label = label;
         this.paint = paint;
