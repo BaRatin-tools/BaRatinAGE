@@ -118,6 +118,8 @@ public class BamItemParent extends RowColPanel {
         onBamItemContentChange = (chEvt) -> {
             fireChangeListeners();
         };
+
+        updateCombobox();
     }
 
     private String getBackupItemName() {
