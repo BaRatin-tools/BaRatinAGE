@@ -4,8 +4,6 @@ import java.awt.Paint;
 import java.awt.Shape;
 import java.awt.Stroke;
 
-import java.time.LocalDateTime;
-
 import org.jfree.chart.LegendItem;
 import org.jfree.chart.renderer.xy.DefaultXYItemRenderer;
 import org.jfree.chart.renderer.xy.XYItemRenderer;
