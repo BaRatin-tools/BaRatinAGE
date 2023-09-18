@@ -84,6 +84,7 @@ public class HydraulicConfiguration
         runPanel.setPriors(this);
         runPanel.setPredictionExperiments(this);
         runPanel.addRunSuccessListerner((RunConfigAndRes res) -> {
+            jsonStringBackup = toJSON().toString();
             bamRunConfigAndRes = res;
             buildPlot();
         });
@@ -367,8 +368,8 @@ public class HydraulicConfiguration
         double[] stage = predConfigs[0].inputs[0].dataColumns.get(0);
         String outputName = predConfigs[0].outputs[0].name;
 
-        double[] dischargeMaxpost = predResults[0].getOutputResults().get(outputName).spag().get(0);
-        List<double[]> dischargeParamU = predResults[1].getOutputResults().get(outputName).env().subList(1, 3);
+        double[] dischargeMaxpost = predResults[0].outputResults.get(outputName).spag().get(0);
+        List<double[]> dischargeParamU = predResults[1].outputResults.get(outputName).env().subList(1, 3);
 
         List<double[]> transitionStages = new ArrayList<>();
         for (Parameter p : params) {
