@@ -1,6 +1,7 @@
 package org.baratinage.ui.plot;
 
 import java.awt.Color;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,6 +26,8 @@ public class Plot implements LegendItemSource {
     public final NumberAxis axisY;
     public final LogAxis axisYlog;
     public final DateAxis axisXdate;
+
+    private String dateTimeFormat = "yyyy-MM-dd HH:mm:ss";
 
     private record PlotItemConfig(PlotItem item, boolean visibleInLegend, boolean useBounds) {
     };
@@ -53,6 +56,7 @@ public class Plot implements LegendItemSource {
         axisYlog.setAutoRangeIncludesZero(false);
         axisYlog.setAllowNegativesFlag(true);
         axisXdate = new DateAxis();
+        axisXdate.setDateFormatOverride(new SimpleDateFormat(dateTimeFormat));
 
         plot = new XYPlot() {
             @Override
