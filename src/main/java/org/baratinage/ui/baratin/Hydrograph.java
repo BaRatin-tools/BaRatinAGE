@@ -21,7 +21,6 @@ import org.baratinage.ui.bam.RunConfigAndRes;
 import org.baratinage.ui.bam.RunPanel;
 import org.baratinage.ui.commons.MsgPanel;
 import org.baratinage.ui.container.RowColPanel;
-import org.baratinage.ui.container.RowColPanel.ALIGN;
 import org.baratinage.ui.container.RowColPanel.AXIS;
 import org.baratinage.ui.lg.Lg;
 import org.baratinage.utils.DateTime;
