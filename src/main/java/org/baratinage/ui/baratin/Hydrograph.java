@@ -72,12 +72,12 @@ public class Hydrograph extends BamItem implements IPredictionMaster {
             limnigraphParent.updateBackup();
         });
 
-        RowColPanel parentItemPanel = new RowColPanel(AXIS.ROW, ALIGN.START);
+        RowColPanel parentItemPanel = new RowColPanel();
 
-        parentItemPanel.appendChild(ratingCurveParent);
-        parentItemPanel.appendChild(new JSeparator(JSeparator.VERTICAL));
-        parentItemPanel.appendChild(limnigraphParent);
-        parentItemPanel.appendChild(new JSeparator(JSeparator.VERTICAL));
+        parentItemPanel.appendChild(ratingCurveParent, 1);
+        parentItemPanel.appendChild(new JSeparator(JSeparator.VERTICAL), 0);
+        parentItemPanel.appendChild(limnigraphParent, 1);
+        parentItemPanel.appendChild(new JSeparator(JSeparator.VERTICAL), 0);
 
         RowColPanel content = new RowColPanel(RowColPanel.AXIS.COL);
 

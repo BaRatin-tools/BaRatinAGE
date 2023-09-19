@@ -45,7 +45,7 @@ public class BamItemParent extends RowColPanel {
             BamItem child,
             BamItemType type) {
 
-        super(AXIS.COL, ALIGN.START);
+        super(AXIS.COL);
 
         TYPE = type;
         CHILD = child;
@@ -66,8 +66,8 @@ public class BamItemParent extends RowColPanel {
         comboboxLabel = new JLabel();
 
         setPadding(5);
-        appendChild(comboboxLabel);
-        appendChild(cb);
+        appendChild(comboboxLabel, 0);
+        appendChild(cb, 1);
 
         revertToSelectCompBtn.addActionListener((e) -> {
             if (backupItemId == null) {

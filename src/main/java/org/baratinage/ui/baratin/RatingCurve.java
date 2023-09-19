@@ -101,7 +101,7 @@ public class RatingCurve extends BamItem implements IPredictionMaster, ICalibrat
 
         RowColPanel content = new RowColPanel(RowColPanel.AXIS.COL);
 
-        RowColPanel mainConfigPanel = new RowColPanel(RowColPanel.AXIS.ROW);
+        RowColPanel mainConfigPanel = new RowColPanel();
         RowColPanel mainContentPanel = new RowColPanel(RowColPanel.AXIS.COL);
 
         // **********************************************************
@@ -111,11 +111,11 @@ public class RatingCurve extends BamItem implements IPredictionMaster, ICalibrat
             checkSync();
         });
 
-        mainConfigPanel.appendChild(hydrauConfParent, 0);
+        mainConfigPanel.appendChild(hydrauConfParent, 1);
         mainConfigPanel.appendChild(new JSeparator(JSeparator.VERTICAL), 0);
-        mainConfigPanel.appendChild(gaugingsParent, 0);
+        mainConfigPanel.appendChild(gaugingsParent, 1);
         mainConfigPanel.appendChild(new JSeparator(JSeparator.VERTICAL), 0);
-        mainConfigPanel.appendChild(structErrorParent, 0);
+        mainConfigPanel.appendChild(structErrorParent, 1);
         mainConfigPanel.appendChild(new JSeparator(JSeparator.VERTICAL), 0);
         mainConfigPanel.appendChild(ratingCurveStageGrid, 1);
 
