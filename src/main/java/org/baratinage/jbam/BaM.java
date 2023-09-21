@@ -16,6 +16,9 @@ import org.baratinage.jbam.utils.ConfigFile;
 public class BaM {
 
     static public BaM buildFromWorkspace(String mainConfigFilePath, String workspacePath) {
+        System.out.println("BaM: building BaM object from workspace... \n" +
+                " > config file: " + mainConfigFilePath + "\n" +
+                " > workspace:   " + workspacePath);
         ConfigFile configFile = ConfigFile.readConfigFile(mainConfigFilePath);
         // String workspacePath = configFile.getString(0);
         String runOptionFileName = configFile.getString(1);
@@ -29,8 +32,7 @@ public class BaM {
         String dataResidualFileName = configFile.getString(9);
         String predictionFileName = configFile.getString(10);
 
-        // String absoluteWorkspacePath =
-        // BamFilesHelpers.absolutizePath(relativeWorkspacePath).toString();
+        System.out.println("BaM: reading calibration config...");
         CalibrationConfig calibrationConfig = CalibrationConfig.readCalibrationConfig(
                 workspacePath,
                 modelFileName,
@@ -42,6 +44,7 @@ public class BaM {
                 mcmcSummaryFileName,
                 dataResidualFileName);
 
+        System.out.println("BaM: reading run options...");
         RunOptions runOptions = RunOptions.readRunOptions(workspacePath, runOptionFileName);
 
         ConfigFile predMasterConfig = ConfigFile.readConfigFile(workspacePath, predictionFileName);
@@ -49,12 +52,14 @@ public class BaM {
         PredictionConfig[] predictionConfigs = new PredictionConfig[nPred];
         for (int k = 0; k < nPred; k++) {
             String predictionConfigFileName = predMasterConfig.getString(k + 1);
+            System.out.println("BaM: reading config of prediction '" + predictionConfigFileName + "'...'");
             predictionConfigs[k] = PredictionConfig.readPredictionConfig(workspacePath,
                     predictionConfigFileName);
         }
 
         CalibrationResult calibrationResult = null;
         if (runOptions.doMcmc) {
+            System.out.println("BaM: reading calibratin results...");
             calibrationResult = new CalibrationResult(workspacePath, calibrationConfig, runOptions);
         }
 
@@ -63,6 +68,7 @@ public class BaM {
             int n = predictionConfigs.length;
             predictionResults = new PredictionResult[n];
             for (int k = 0; k < n; k++) {
+                System.out.println("BaM: reading results of prediction '" + predictionConfigs[k].name + "'...'");
                 predictionResults[k] = new PredictionResult(workspacePath, predictionConfigs[k]);
             }
         }

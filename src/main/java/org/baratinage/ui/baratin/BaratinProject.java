@@ -100,14 +100,17 @@ public class BaratinProject extends BamProject {
 
                 BamItem bamItem;
                 if (itemType.matchOneOf(step)) {
+                    System.out.println(
+                            "BaRatinProject: importing item of type '" + itemType + "' with id '" + uuid + "'...");
                     bamItem = addBamItem(itemType, uuid);
                 } else {
                     continue;
                 }
+                System.out.println(">>> reading json...");
                 bamItem.fromFullJSON(jsonObj);
             }
         }
-
+        System.out.println("BaratinProject: all bam items imported with success.");
     }
 
 }
