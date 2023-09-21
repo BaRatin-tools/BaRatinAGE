@@ -61,6 +61,14 @@ public class MainFrame extends JFrame {
 
         mainMenuBar = new JMenuBar();
 
+        JMenu debugMenu = new JMenu("DEBUG / DEV");
+        mainMenuBar.add(debugMenu);
+        JMenuItem gcBtn = new JMenuItem("GC");
+        debugMenu.add(gcBtn);
+        gcBtn.addActionListener((e) -> {
+            System.gc();
+        });
+
         JMenu fileMenu = new JMenu();
         Lg.register(fileMenu, "files");
         mainMenuBar.add(fileMenu);
@@ -229,11 +237,11 @@ public class MainFrame extends JFrame {
         }
     }
 
-    private void resetLg() {
+    public void resetLg() {
         String previousProjectOwnerKey = Lg.getDefaultOwnerKey();
         Lg.setDefaultOwnerKey(Misc.getTimeStampedId());
         if (!previousProjectOwnerKey.equals("main_frame")) {
-            Lg.unregister(previousProjectOwnerKey);
+            Lg.unregisterOwner(previousProjectOwnerKey);
         }
     }
 

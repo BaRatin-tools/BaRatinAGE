@@ -125,11 +125,17 @@ public class Lg {
         }
     }
 
-    static public void unregister(String ownerKey) {
+    static public void unregisterOwner(String ownerKey) {
         Map<Object, LgTranslator> reg = registered.get(ownerKey);
         if (reg != null) {
             reg.clear();
             registered.remove(ownerKey);
+        }
+    }
+
+    static public void unregister(Object obj) {
+        for (Map<Object, LgTranslator> reg : registered.values()) {
+            reg.remove(obj);
         }
     }
 
