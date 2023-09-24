@@ -1,7 +1,6 @@
 package org.baratinage.ui.plot;
 
 import java.awt.Paint;
-import java.awt.Shape;
 import java.awt.Stroke;
 
 import org.jfree.chart.LegendItem;
@@ -53,24 +52,7 @@ public class PlotTimeSeriesLine extends PlotItem {
 
     @Override
     public LegendItem getLegendItem() {
-        Shape lineShape = buildLineShape(7);
-        Shape emptyShape = buildEmptyShape();
-        return new LegendItem(
-                label,
-                null,
-                label,
-                null,
-                false,
-                emptyShape,
-                false,
-                paint,
-                false,
-                paint,
-                stroke,
-                true,
-                lineShape,
-                stroke,
-                paint);
+        return buildLegendItem(label, paint, stroke, null, null);
     }
 
     @Override

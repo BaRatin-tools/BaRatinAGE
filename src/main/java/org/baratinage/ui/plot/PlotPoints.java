@@ -82,23 +82,7 @@ public class PlotPoints extends PlotItem {
 
     @Override
     public LegendItem getLegendItem() {
-        Stroke emptyStroke = buildEmptyStroke();
-        return new LegendItem(
-                label,
-                null,
-                label,
-                null,
-                true,
-                shape,
-                true,
-                paint,
-                false,
-                paint,
-                emptyStroke,
-                false,
-                buildEmptyShape(),
-                emptyStroke,
-                paint);
+        return buildLegendItem(label, null, null, shape, paint);
     }
 
     @Override

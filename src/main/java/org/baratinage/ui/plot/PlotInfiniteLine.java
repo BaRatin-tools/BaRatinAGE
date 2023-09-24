@@ -1,7 +1,6 @@
 package org.baratinage.ui.plot;
 
 import java.awt.Paint;
-import java.awt.Shape;
 import java.awt.Stroke;
 
 import org.jfree.chart.LegendItem;
@@ -122,23 +121,7 @@ public class PlotInfiniteLine extends PlotItem {
 
     @Override
     public LegendItem getLegendItem() {
-        Shape lineShape = buildLineShape(7);
-        return new LegendItem(
-                label,
-                null,
-                label,
-                null,
-                false,
-                buildEmptyShape(),
-                false,
-                paint,
-                false,
-                paint,
-                stroke,
-                true,
-                lineShape,
-                stroke,
-                paint);
+        return buildLegendItem(label, paint, stroke, null, null);
     }
 
     @Override

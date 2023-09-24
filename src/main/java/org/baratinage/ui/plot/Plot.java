@@ -27,7 +27,19 @@ public class Plot implements LegendItemSource {
     public final LogAxis axisYlog;
     public final DateAxis axisXdate;
 
+    private double bufferPercentageTop = 0;
+    private double bufferPercentageBottom = 0;
+    private double bufferPercentageLeft = 0;
+    private double bufferPercentageRight = 0;
+
     private String dateTimeFormat = "yyyy-MM-dd HH:mm:ss";
+
+    public void setBufferPercentage(double top, double bottom, double left, double right) {
+        bufferPercentageTop = top;
+        bufferPercentageBottom = bottom;
+        bufferPercentageLeft = left;
+        bufferPercentageRight = right;
+    }
 
     // FIXME: useBounds never set to false
     private record PlotItemConfig(PlotItem item, boolean visibleInLegend, boolean useBounds) {
@@ -110,10 +122,23 @@ public class Plot implements LegendItemSource {
         items.add(new PlotItemConfig(item, isVisibleInLegend, true));
     }
 
-    public static Range bufferRange(Range range, double p) {
-        double d = range.getLength();
-        double buffer = d * p;
-        return new Range(range.getLowerBound() - buffer, range.getUpperBound() + buffer);
+    // public static Range bufferRange(Range range, double p) {
+    // if (range == null) {
+    // return null;
+    // }
+    // double d = range.getLength();
+    // double buffer = d * p;
+    // return new Range(range.getLowerBound() - buffer, range.getUpperBound() +
+    // buffer);
+    // }
+    private static Range applyBufferToRange(Range r, double lowerBufferPercentage, double upperBufferPercentage) {
+        if (r == null) {
+            return r;
+        }
+        double d = r.getLength();
+        double lower = d * lowerBufferPercentage;
+        double upper = d * upperBufferPercentage;
+        return new Range(r.getLowerBound() - lower, r.getUpperBound() + upper);
     }
 
     public Range getDomainBounds() {
@@ -127,7 +152,7 @@ public class Plot implements LegendItemSource {
                 }
             }
         }
-        return bufferRange(range, 0.01);
+        return applyBufferToRange(range, bufferPercentageLeft, bufferPercentageRight);
     }
 
     public Range getRangeBounds() {
@@ -141,7 +166,7 @@ public class Plot implements LegendItemSource {
                 }
             }
         }
-        return bufferRange(range, 0.01);
+        return applyBufferToRange(range, bufferPercentageBottom, bufferPercentageTop);
     }
 
     @Override

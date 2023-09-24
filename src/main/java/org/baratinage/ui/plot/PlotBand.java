@@ -82,22 +82,7 @@ public class PlotBand extends PlotItem {
     @Override
     public LegendItem getLegendItem() {
         Shape squareShape = buildSquareShape();
-        return new LegendItem(
-                label,
-                null,
-                label,
-                null,
-                true,
-                squareShape,
-                true,
-                fillPaint,
-                false,
-                fillPaint,
-                lineStroke,
-                false,
-                shape,
-                lineStroke,
-                linePaint);
+        return buildLegendItem(label, linePaint, lineStroke, squareShape, fillPaint);
     }
 
     @Override

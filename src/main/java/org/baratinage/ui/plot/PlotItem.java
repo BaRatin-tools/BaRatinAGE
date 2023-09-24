@@ -1,6 +1,8 @@
 package org.baratinage.ui.plot;
 
 import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.Paint;
 import java.awt.Rectangle;
 import java.awt.Shape;
 import java.awt.Stroke;
@@ -114,5 +116,44 @@ public abstract class PlotItem {
             d[k] = seconds[k].getMiddleMillisecond();
         }
         return d;
+    }
+
+    public static LegendItem buildLegendItem(String label, Paint linePaint, Stroke lineStroke, Shape shape,
+            Paint shapePaint) {
+        boolean showLine = true;
+        boolean showShape = true;
+        if (shapePaint == null) {
+            shapePaint = linePaint;
+            showShape = false;
+        }
+        if (shape == null) {
+            shape = buildEmptyShape();
+            showShape = false;
+        }
+        if (linePaint == null) {
+            linePaint = Color.BLACK;
+            showLine = false;
+        }
+        if (lineStroke == null) {
+            lineStroke = new BasicStroke();
+            showLine = false;
+        }
+        Shape lineShape = showLine ? buildLineShape(7) : buildEmptyShape();
+        return new LegendItem(
+                label,
+                null,
+                label,
+                null,
+                showShape,
+                shape,
+                showShape,
+                shapePaint,
+                false,
+                shapePaint,
+                lineStroke,
+                showLine,
+                lineShape,
+                lineStroke,
+                linePaint);
     }
 }

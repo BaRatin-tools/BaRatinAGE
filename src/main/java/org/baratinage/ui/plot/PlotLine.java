@@ -1,22 +1,23 @@
 package org.baratinage.ui.plot;
 
 import java.awt.Paint;
-import java.awt.Shape;
 import java.awt.Stroke;
 
 import org.jfree.chart.LegendItem;
 import org.jfree.chart.renderer.xy.DefaultXYItemRenderer;
+import org.jfree.chart.renderer.xy.XYItemRenderer;
+import org.jfree.chart.renderer.xy.XYSplineRenderer;
 import org.jfree.data.xy.DefaultXYDataset;
+import org.jfree.data.xy.XYDataset;
 
 public class PlotLine extends PlotItem {
 
     private String label;
     private Paint paint;
     private Stroke stroke;
-    private Shape shape;
 
     protected DefaultXYDataset dataset;
-    protected DefaultXYItemRenderer renderer;
+    protected XYItemRenderer renderer;
 
     public PlotLine(String label, double[] x, double[] y, Paint paint) {
         this(label, x, y, paint, buildStroke());
@@ -33,47 +34,38 @@ public class PlotLine extends PlotItem {
         this.label = label;
         this.paint = paint;
         this.stroke = stroke;
-        this.shape = buildEmptyShape();
-
         dataset = new DefaultXYDataset();
         dataset.addSeries(label, new double[][] { x, y });
 
         renderer = new DefaultXYItemRenderer();
         renderer.setSeriesPaint(0, paint);
         renderer.setSeriesStroke(0, stroke);
-        renderer.setSeriesShape(0, shape);
+        renderer.setSeriesShape(0, buildEmptyShape());
+
+    }
+
+    public void setSplineRenderer(int precision) {
+        XYSplineRenderer splineRenderer = new XYSplineRenderer(precision);
+        splineRenderer.setSeriesPaint(0, paint);
+        splineRenderer.setSeriesStroke(0, stroke);
+        splineRenderer.setSeriesShape(0, buildEmptyShape());
+        renderer = splineRenderer;
 
     }
 
     @Override
-    public DefaultXYDataset getDataset() {
+    public XYDataset getDataset() {
         return dataset;
     }
 
     @Override
-    public DefaultXYItemRenderer getRenderer() {
+    public XYItemRenderer getRenderer() {
         return renderer;
     }
 
     @Override
     public LegendItem getLegendItem() {
-        Shape lineShape = buildLineShape(7);
-        return new LegendItem(
-                label,
-                null,
-                label,
-                null,
-                false,
-                shape,
-                false,
-                paint,
-                false,
-                paint,
-                stroke,
-                true,
-                lineShape,
-                stroke,
-                paint);
+        return buildLegendItem(label, paint, stroke, null, null);
     }
 
     @Override

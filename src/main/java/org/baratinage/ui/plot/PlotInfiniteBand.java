@@ -2,7 +2,6 @@ package org.baratinage.ui.plot;
 
 import java.awt.Paint;
 import java.awt.Shape;
-import java.awt.Stroke;
 
 import org.jfree.chart.LegendItem;
 import org.jfree.chart.plot.XYPlot;
@@ -129,25 +128,7 @@ public class PlotInfiniteBand extends PlotItem {
     @Override
     public LegendItem getLegendItem() {
         Shape squareShape = buildSquareShape();
-        Stroke emptyStroke = buildEmptyStroke();
-        Shape emptyShape = buildEmptyShape();
-        return new LegendItem(
-                label,
-                null,
-                label,
-                null,
-                true,
-                squareShape,
-                true,
-                fillPaint,
-                false,
-                fillPaint,
-                emptyStroke,
-                false,
-                emptyShape,
-                emptyStroke,
-                fillPaint);
-
+        return buildLegendItem(label, null, null, squareShape, fillPaint);
     }
 
     @Override
