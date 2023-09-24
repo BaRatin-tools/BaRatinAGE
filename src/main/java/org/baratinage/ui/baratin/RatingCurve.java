@@ -47,7 +47,7 @@ public class RatingCurve extends BamItem implements IPredictionMaster, ICalibrat
 
     private RatingCurveStageGrid ratingCurveStageGrid;
     private RunPanel runPanel;
-    private PosteriorRatingCurvePlot ratingCurvePlot;
+    private RatingCurveResults resultsPanel;
     private RunConfigAndRes bamRunConfigAndRes;
 
     private RowColPanel outdatedPanel;
@@ -130,7 +130,7 @@ public class RatingCurve extends BamItem implements IPredictionMaster, ICalibrat
             structErrorParent.updateBackup();
         });
 
-        ratingCurvePlot = new PosteriorRatingCurvePlot();
+        resultsPanel = new RatingCurveResults();
 
         outdatedPanel = new RowColPanel(RowColPanel.AXIS.COL);
         outdatedPanel.setPadding(2);
@@ -139,7 +139,7 @@ public class RatingCurve extends BamItem implements IPredictionMaster, ICalibrat
 
         mainContentPanel.appendChild(outdatedPanel, 0);
         mainContentPanel.appendChild(runPanel, 0);
-        mainContentPanel.appendChild(ratingCurvePlot, 1);
+        mainContentPanel.appendChild(resultsPanel, 1);
 
         content.appendChild(mainConfigPanel, 0);
         content.appendChild(new JSeparator(), 0);
@@ -393,6 +393,7 @@ public class RatingCurve extends BamItem implements IPredictionMaster, ICalibrat
 
         HashMap<String, EstimatedParameter> pars = calibrationResults.estimatedParameters;
         List<double[]> transitionStages = new ArrayList<>();
+        List<EstimatedParameter> parameters = new ArrayList<>();
         for (String parName : pars.keySet()) {
             if (parName.startsWith("k_")) {
                 EstimatedParameter p = pars.get(parName);
@@ -403,6 +404,7 @@ public class RatingCurve extends BamItem implements IPredictionMaster, ICalibrat
                         mp, p95[0], p95[1]
                 });
             }
+            parameters.add(pars.get(parName));
         }
 
         String outputName = predConfigs[0].outputs[0].name;
@@ -433,13 +435,14 @@ public class RatingCurve extends BamItem implements IPredictionMaster, ICalibrat
         gaugings.add(dischargeMin);
         gaugings.add(dischargeMax);
 
-        ratingCurvePlot.updatePlot(
+        resultsPanel.updatePlot(
                 predConfigs[0].inputs[0].dataColumns.get(0),
                 dischargeMaxpost,
                 paramU,
                 totalU,
                 transitionStages,
-                gaugings);
+                gaugings,
+                parameters);
     }
 
 }
