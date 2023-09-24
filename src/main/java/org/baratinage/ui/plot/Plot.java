@@ -29,12 +29,11 @@ public class Plot implements LegendItemSource {
 
     private String dateTimeFormat = "yyyy-MM-dd HH:mm:ss";
 
+    // FIXME: useBounds never set to false
     private record PlotItemConfig(PlotItem item, boolean visibleInLegend, boolean useBounds) {
     };
 
     public final List<PlotItemConfig> items = new ArrayList<>();
-
-    // private List<Integer> ignoreInRangeAndDomainIndices = new ArrayList<>();
 
     public Plot() {
         this(true, false);
