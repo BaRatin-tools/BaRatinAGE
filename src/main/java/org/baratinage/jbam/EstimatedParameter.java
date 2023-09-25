@@ -1,20 +1,33 @@
 package org.baratinage.jbam;
 
+import java.util.List;
+
 public class EstimatedParameter {
 
     public final String name;
     public final double[] mcmc;
     public final double[] summary;
+    public final int maxpostIndex;
+    public final Parameter parameterConfig;
 
     final private static String[] SUMMARY_STATISTICS_NAMES = new String[] {
             "n", "min", "max", "range", "mean", "mediann", "q10", "q25",
             "q75", "q90", "std", "var", "cv", "skewness", "kurtosis", "maxpost"
     };
 
-    public EstimatedParameter(String name, double[] mcmc, double[] summary) {
+    public EstimatedParameter(String name, double[] mcmc, double[] summary, int maxpostIndex, Parameter parameter) {
         this.name = name;
         this.mcmc = mcmc;
         this.summary = summary;
+        this.maxpostIndex = maxpostIndex;
+        this.parameterConfig = parameter;
+    }
+
+    public List<double[]> getPriorDensity() {
+        if (parameterConfig != null) {
+            return parameterConfig.distribution.getDensity();
+        }
+        return null;
     }
 
     @Override

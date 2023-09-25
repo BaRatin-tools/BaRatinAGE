@@ -1,27 +1,26 @@
 package org.baratinage.ui.commons;
 
-import java.awt.Color;
+import java.awt.BasicStroke;
 import java.awt.Font;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.baratinage.jbam.EstimatedParameter;
 import org.baratinage.ui.AppConfig;
 import org.baratinage.ui.container.GridPanel;
 import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.ui.plot.Legend;
 import org.baratinage.ui.plot.FixedTextAnnotation;
 import org.baratinage.ui.plot.Plot;
+import org.baratinage.ui.plot.PlotBand;
 import org.baratinage.ui.plot.PlotContainer;
-import org.baratinage.ui.plot.PlotItem;
+import org.baratinage.ui.plot.PlotInfiniteLine;
 import org.baratinage.ui.plot.PlotLine;
 import org.baratinage.ui.lg.Lg;
 
 public class DensityPlotGrid extends RowColPanel {
 
-    private record NamedVector(String name, double[] values) {
-    };
-
-    private final List<NamedVector> namedVectors = new ArrayList<>();
+    private final List<EstimatedParameter> estimatedParameters = new ArrayList<>();
 
     private final List<PlotContainer> plotContainers = new ArrayList<>();
 
@@ -29,18 +28,18 @@ public class DensityPlotGrid extends RowColPanel {
 
     }
 
-    public void addPlot(String name, double[] values) {
-        namedVectors.add(new NamedVector(name, values));
+    public void addPlot(EstimatedParameter estimatedParameter) {
+        estimatedParameters.add(estimatedParameter);
     }
 
     public void clearPlots() {
-        namedVectors.clear();
+        estimatedParameters.clear();
     }
 
     public void updatePlot() {
         GridPanel gridPanel = new GridPanel();
         int nColMax = 4;
-        int nPlots = namedVectors.size();
+        int nPlots = estimatedParameters.size();
         int nCol = nColMax;
         // since Java 18: int Math.ceilDiv(int, int) could be used
         int nRow = (int) Math.ceil(((double) nPlots) / ((double) nCol));
@@ -61,27 +60,57 @@ public class DensityPlotGrid extends RowColPanel {
 
         int r = 0;
         int c = 0;
-        for (int k = 0; k < namedVectors.size(); k++) {
+        for (int k = 0; k < estimatedParameters.size(); k++) {
 
-            NamedVector v = namedVectors.get(k);
+            EstimatedParameter estimParam = estimatedParameters.get(k);
 
             Plot plot = new Plot(false, false);
 
-            FixedTextAnnotation title = new FixedTextAnnotation(v.name, 5, 5);
+            FixedTextAnnotation title = new FixedTextAnnotation(estimParam.name, 5, 5);
             title.setFont(title.getFont().deriveFont(Font.BOLD, 16f));
             plot.plot.addAnnotation(title);
 
-            plot.setBufferPercentage(0.1, 0, 0, 0);
+            plot.setBufferPercentage(0.1, 0, 0.05, 0.05);
 
-            DensityPlotItem plotItem = new DensityPlotItem(v.values);
+            List<double[]> priorDensityData = estimParam.getPriorDensity();
+
+            if (priorDensityData != null) {
+                int nData = priorDensityData.get(0).length;
+                PlotBand priorDensity = new PlotBand(
+                        "",
+                        priorDensityData.get(0),
+                        priorDensityData.get(1),
+                        DensityData.buildZeroArray(nData),
+                        AppConfig.AC.PRIOR_ENVELOP_COLOR);
+                plot.addXYItem(priorDensity);
+
+            }
+
+            DensityData plotItem = new DensityData(estimParam.mcmc);
             plotItem.update(50, 5);
-            PlotLine line = plotItem.getPlotLine();
-            plot.addXYItem(line);
-            plot.addXYItem(plotItem.getPlotBand());
+            List<double[]> lineData = plotItem.getLineData();
 
-            PlotContainer plotContainer = new PlotContainer(plot, false);
+            double maxpost = estimParam.mcmc[estimParam.maxpostIndex];
+            PlotInfiniteLine maxpostLine = new PlotInfiniteLine(
+                    "",
+                    maxpost,
+                    AppConfig.AC.POSTERIOR_LINE_COLOR,
+                    new BasicStroke(2f));
 
-            gridPanel.insertChild(plotContainer, c, r);
+            PlotBand postDensity = new PlotBand(
+                    "",
+                    lineData.get(0),
+                    lineData.get(1),
+                    lineData.get(2),
+                    AppConfig.AC.POSTERIOR_ENVELOP_COLOR);
+
+            plot.addXYItem(postDensity);
+            plot.addXYItem(maxpostLine);
+
+            PlotContainer pc = new PlotContainer(plot, false);
+            plotContainers.add(pc);
+
+            gridPanel.insertChild(pc, c, r);
 
             c++;
             if (c >= nColMax) {
@@ -91,20 +120,25 @@ public class DensityPlotGrid extends RowColPanel {
         }
 
         Legend legend = new Legend();
-        legend.addLegendItem(
-                PlotItem.buildLegendItem(
-                        "Posterior density",
-                        null, null,
-                        PlotItem.buildSquareShape(10),
-                        AppConfig.AC.DENSITY_ENVELOP_COLOR));
-        legend.addLegendItem(
-                PlotItem.buildLegendItem(
-                        "Prior density",
-                        null, null,
-                        PlotItem.buildSquareShape(10),
-                        Color.RED));
 
         PlotContainer pc = new PlotContainer(legend.getLegendPlot(), false);
+        plotContainers.add(pc);
+        Lg.register(this, () -> {
+            legend.clearLegend();
+
+            legend.addLegendItem(PlotBand.buildLegendItem(
+                    Lg.text("prior_density"),
+                    AppConfig.AC.PRIOR_ENVELOP_COLOR));
+            legend.addLegendItem(PlotBand.buildLegendItem(
+                    Lg.text("posterior_density"),
+                    AppConfig.AC.POSTERIOR_ENVELOP_COLOR));
+            legend.addLegendItem(PlotLine.buildLegendItem(
+                    Lg.text("maxpost"),
+                    AppConfig.AC.POSTERIOR_LINE_COLOR,
+                    new BasicStroke(3f)));
+
+            legend.getLegendPlot().update();
+        });
 
         gridPanel.insertChild(pc, c, r);
     }

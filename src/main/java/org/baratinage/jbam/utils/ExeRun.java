@@ -7,6 +7,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.function.Consumer;
 
 public class ExeRun implements Runnable {
@@ -17,14 +18,13 @@ public class ExeRun implements Runnable {
     private int exitValue = -999;
     private Process process;
 
-    public ExeRun() {
+    // private final String id;
 
-    }
+    // public static final TEMP_DIR
 
-    public ExeRun(String exeDir, String... command) {
-        setExeDir(exeDir);
-        setCommand(command);
-    }
+    // public ExeRun() {
+    // id = UUID.randomUUID().toString();
+    // }
 
     public void setExeDir(String exeDir) {
         exeDirFile = new File(exeDir);

@@ -42,7 +42,7 @@ public class RatingCurveResults extends JTabbedPane {
         List<EstimatedParameter> modifiedParameters = reorganizeAndRenameParameters(parameters);
 
         for (EstimatedParameter p : modifiedParameters) {
-            paramDensityPlots.addPlot(p.name, p.mcmc);
+            paramDensityPlots.addPlot(p);
         }
 
         paramDensityPlots.updatePlot();
@@ -65,13 +65,15 @@ public class RatingCurveResults extends JTabbedPane {
             } else if (rawName.startsWith("Y") && rawName.contains("gamma")) {
                 int n = getParameterIndex(rawName, "gamma");
                 String niceName = String.format("<html>&gamma;<sub>%d</sub></html>", n);
-                strucErrorParameters[n - 1] = new EstimatedParameter(niceName, p.mcmc, p.summary);
+                strucErrorParameters[n - 1] = new EstimatedParameter(niceName, p.mcmc, p.summary, p.maxpostIndex,
+                        p.parameterConfig);
                 nStrucErrPar++;
             } else if (rawName.startsWith("b")) {
                 int n = getParameterIndex(rawName, "b");
                 String niceName = String.format("<html>b<sub>%s</sub></html>", n);
                 int m = (n - 1) * 4 + 2;
-                controlParameters[m] = new EstimatedParameter(niceName, p.mcmc, p.summary);
+                controlParameters[m] = new EstimatedParameter(niceName, p.mcmc, p.summary, p.maxpostIndex,
+                        p.parameterConfig);
                 nControlPar++;
             } else {
                 String[] s = rawName.split("_");
@@ -84,7 +86,8 @@ public class RatingCurveResults extends JTabbedPane {
                 } else if (rawName.startsWith("c")) {
                     m = m + 3;
                 }
-                controlParameters[m] = new EstimatedParameter(niceName, p.mcmc, p.summary);
+                controlParameters[m] = new EstimatedParameter(niceName, p.mcmc, p.summary, p.maxpostIndex,
+                        p.parameterConfig);
                 nControlPar++;
             }
         }

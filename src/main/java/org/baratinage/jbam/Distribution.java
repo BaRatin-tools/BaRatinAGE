@@ -1,19 +1,19 @@
 package org.baratinage.jbam;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
-import java.util.function.Consumer;
+import java.util.UUID;
+// import java.util.function.Consumer;
 
-import javax.swing.SwingWorker;
+// import javax.swing.SwingWorker;
 
 import org.baratinage.jbam.utils.BamFilesHelpers;
 import org.baratinage.jbam.utils.ExeRun;
 import org.baratinage.jbam.utils.Read;
 
 public class Distribution {
-    public final DISTRIBUTION distribution;
-    public final double[] parameterValues;
 
     public static enum DISTRIBUTION {
         GAUSSIAN("Gaussian", new String[] { "mean", "std" }),
@@ -46,6 +46,12 @@ public class Distribution {
         }
     };
 
+    public final DISTRIBUTION distribution;
+    public final double[] parameterValues;
+    private List<double[]> density;
+
+    private final String id;
+
     public Distribution(DISTRIBUTION distribution, double... parameterValues) {
         int n = distribution.parameterNames.length;
         if (n != parameterValues.length) {
@@ -54,6 +60,7 @@ public class Distribution {
         }
         this.distribution = distribution;
         this.parameterValues = parameterValues;
+        id = UUID.randomUUID().toString();
     }
 
     public static final String EXE_DIR = BamFilesHelpers.EXE_DIR;
@@ -66,12 +73,13 @@ public class Distribution {
     private static List<double[]> getExeRunResult(String filePath) {
         try {
             List<double[]> result = Read.readMatrix(filePath, "\\s+", 0, 0);
+            // File f = new File(filePath);
+            // f.delete();
             return result;
         } catch (IOException e) {
             e.printStackTrace();
             return null;
         }
-
     }
 
     private static String doubleArrToStringArg(double... values) {
@@ -83,67 +91,76 @@ public class Distribution {
         return String.join(",", valuesString);
     }
 
-    public void getDensity(Consumer<List<double[]>> densityResultConsumer) {
+    public List<double[]> getDensity() {
 
-        SwingWorker<List<double[]>, String> runningWorker = new SwingWorker<>() {
+        if (density != null) {
+            return density;
+        }
 
-            @Override
-            protected List<double[]> doInBackground() throws Exception {
+        // SwingWorker<List<double[]>, String> runningWorker = new SwingWorker<>() {
 
-                System.out.println("STARTING!");
+        // @Override
+        // protected List<double[]> doInBackground() throws Exception {
 
-                String parametersArg = doubleArrToStringArg(parameterValues);
+        System.out.println("STARTING!");
 
-                ExeRun rangeRun = new ExeRun();
-                rangeRun.setExeDir(EXE_DIR);
-                rangeRun.setCommand(EXE_COMMAND,
-                        "--name", distribution.bamName,
-                        "--parameters", parametersArg,
-                        "--action", "q",
-                        "--xgrid", "0.00001,0.99999,2",
-                        "--result", "range.txt");
-                rangeRun.addConsolOutputConsumer((out) -> {
-                    System.out.println("Distribution: range run > " + out);
-                });
+        String parametersArg = doubleArrToStringArg(parameterValues);
 
-                rangeRun.run();
+        String rangeResFileName = id + "_range.txt";
 
-                List<double[]> rangeRes = getExeRunResult(Path.of(EXE_DIR, "range.txt").toString());
-                if (rangeRes == null) {
-                    System.err.println("Distribution Error: error while reading quantiles result files! Aborting");
-                    return null;
-                }
-                String gridArg = doubleArrToStringArg(rangeRes.get(1)[0], rangeRes.get(1)[1]);
-                gridArg += ",500";
+        ExeRun rangeRun = new ExeRun();
+        rangeRun.setExeDir(EXE_DIR);
+        rangeRun.setCommand(EXE_COMMAND,
+                "--name", distribution.bamName,
+                "--parameters", parametersArg,
+                "--action", "q",
+                "--xgrid", "0.00001,0.99999,2",
+                "--result", rangeResFileName);
+        rangeRun.addConsolOutputConsumer((out) -> {
+            System.out.println("Distribution: range run > " + out);
+        });
 
-                ExeRun densityRun = new ExeRun();
-                densityRun.setExeDir(EXE_DIR);
-                densityRun.setCommand(EXE_COMMAND,
-                        "--name", distribution.bamName,
-                        "--parameters", parametersArg,
-                        "--action", "d",
-                        "--xgrid", gridArg,
-                        "--result", "density.txt");
-                densityRun.addConsolOutputConsumer((out) -> {
-                    System.out.println("Distribution: density run > " + out);
-                });
+        rangeRun.run();
 
-                densityRun.run();
+        List<double[]> rangeRes = getExeRunResult(Path.of(EXE_DIR, rangeResFileName).toString());
+        if (rangeRes == null) {
+            System.err.println("Distribution Error: error while reading quantiles result files! Aborting");
+            return null;
+        }
+        String gridArg = doubleArrToStringArg(rangeRes.get(1)[0], rangeRes.get(1)[1]);
+        gridArg += ",500";
 
-                List<double[]> densityRes = getExeRunResult(Path.of(EXE_DIR, "density.txt").toString());
-                if (densityRes == null) {
-                    System.err.println("Distribution Error: error while reading density result files! Aborting");
-                    return null;
-                }
+        String densityResFileName = id + "_density.txt";
 
-                densityResultConsumer.accept(densityRes);
-                return densityRes;
+        ExeRun densityRun = new ExeRun();
+        densityRun.setExeDir(EXE_DIR);
+        densityRun.setCommand(EXE_COMMAND,
+                "--name", distribution.bamName,
+                "--parameters", parametersArg,
+                "--action", "d",
+                "--xgrid", gridArg,
+                "--result", densityResFileName);
+        densityRun.addConsolOutputConsumer((out) -> {
+            System.out.println("Distribution: density run > " + out);
+        });
 
-            }
+        densityRun.run();
 
-        };
-        runningWorker.execute();
+        List<double[]> densityRes = getExeRunResult(Path.of(EXE_DIR, densityResFileName).toString());
+        if (densityRes == null) {
+            System.err.println("Distribution Error: error while reading density result files! Aborting");
+            return null;
+        }
 
+        // densityResultConsumer.accept(densityRes);
+        return densityRes;
+
+        // }
+
+        // };
+        // runningWorker.execute();
+
+        // return densityRes;
     }
 
     @Override

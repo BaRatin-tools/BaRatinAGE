@@ -25,8 +25,11 @@ public class AppConfig {
     public Color PLOT_LINE_COLOR = new Color(50, 50, 100);
     public Color PLOT_ENVELOP_COLOR = new Color(200, 200, 255);
 
-    public Color DENSITY_LINE_COLOR = PLOT_LINE_COLOR;
-    public Color DENSITY_ENVELOP_COLOR = PLOT_LINE_COLOR;
+    public Color PRIOR_LINE_COLOR = new Color(50, 50, 255);
+    public Color PRIOR_ENVELOP_COLOR = new Color(200, 200, 255);
+
+    public Color POSTERIOR_LINE_COLOR = new Color(253, 55, 50);
+    public Color POSTERIOR_ENVELOP_COLOR = new Color(253, 195, 188);
 
     public Color RATING_CURVE_COLOR = PLOT_LINE_COLOR;
     public Color RATING_CURVE_TOTAL_UNCERTAINTY_COLOR = new Color(182, 0, 4);

@@ -33,14 +33,35 @@ public class CalibrationResult {
 
         mcmcValues = readMcmcValues(cookedMcmcFilePath);
         mcmcHeaders = readMcmcHeaders(cookedMcmcFilePath);
+
+        int logPostColIndex = -1;
+        for (int k = 0; k < mcmcHeaders.length; k++) {
+            if (mcmcHeaders[k].equals("LogPost")) {
+                logPostColIndex = k;
+                break;
+            }
+        }
+        if (logPostColIndex == -1) {
+            System.err.println("CalibrationResult Error: Cannot find 'LogPost' column in MCMC results!");
+            maxpostIndex = -1;
+            estimatedParameters = null;
+            calibrationDataResiduals = null;
+            return;
+        }
+
+        maxpostIndex = retrieveMaxPostIndex(mcmcValues.get(logPostColIndex));
+
         List<double[]> mcmcSummaryValues = readMcmcSummaryValues(summaryMcmcFilePath);
 
-        estimatedParameters = buildEstimatedParameters(mcmcHeaders, mcmcValues, mcmcSummaryValues);
+        estimatedParameters = buildEstimatedParameters(
+                mcmcHeaders,
+                mcmcValues,
+                mcmcSummaryValues,
+                maxpostIndex,
+                calibConfig.model.parameters);
 
         calibrationDataResiduals = readCalibrationDataResiduals(calDatResidulatFilePath,
                 calibrationConfig.calibrationData);
-
-        maxpostIndex = retrieveMaxPostIndex(estimatedParameters.get("LogPost"));
 
     }
 
@@ -87,7 +108,8 @@ public class CalibrationResult {
     }
 
     private HashMap<String, EstimatedParameter> buildEstimatedParameters(
-            String[] headers, List<double[]> mcmc, List<double[]> mcmcSummary) {
+            String[] headers, List<double[]> mcmc, List<double[]> mcmcSummary, int maxpostIndex,
+            Parameter[] parameters) {
 
         if (mcmcSummary != null && mcmcSummary.size() != mcmc.size() - 1) {
             System.err.println(
@@ -98,10 +120,19 @@ public class CalibrationResult {
 
         for (int k = 0; k < headers.length; k++) {
             double[] summary = mcmcSummary == null || k >= mcmcSummary.size() ? null : mcmcSummary.get(k);
+            Parameter parameterConfig = null;
+            for (Parameter p : parameters) {
+                if (p.name.equals(headers[k])) {
+                    parameterConfig = p;
+                    break;
+                }
+            }
             estimatedParameters.put(headers[k], new EstimatedParameter(
                     headers[k],
                     mcmc.get(k),
-                    summary));
+                    summary,
+                    maxpostIndex,
+                    parameterConfig));
 
         }
 
@@ -109,13 +140,7 @@ public class CalibrationResult {
 
     }
 
-    private int retrieveMaxPostIndex(EstimatedParameter logPostPar) {
-
-        if (logPostPar == null) {
-            System.err.println("CalibrationResult Error: No 'LogPost' column found in MCMC cooked file!");
-            return -1;
-        }
-        double[] logPost = logPostPar.mcmc;
+    private int retrieveMaxPostIndex(double[] logPost) {
         double maxLogPost = Double.NEGATIVE_INFINITY;
         int index = -1;
         for (int k = 0; k < logPost.length; k++) {
