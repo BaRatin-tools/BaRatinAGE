@@ -65,9 +65,9 @@ public class Monitoring {
 
     private void startMonitoring() throws InterruptedException {
 
-        int CHECK_INTERVAL = 10;
-        int MAX_DURATION = 24 * 60 * 60 * 1000; // 24h!
-        int N_MAX = MAX_DURATION / CHECK_INTERVAL;
+        final int CHECK_INTERVAL = 10;
+        final int MAX_DURATION = 24 * 60 * 60 * 1000; // 24h!
+        final int N_MAX = MAX_DURATION / CHECK_INTERVAL;
         int k = 0;
 
         int currentStep = 0;
