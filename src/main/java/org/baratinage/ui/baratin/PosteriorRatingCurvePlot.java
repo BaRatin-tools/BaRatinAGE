@@ -52,7 +52,8 @@ public class PosteriorRatingCurvePlot extends RowColPanel {
             PlotInfiniteLine line = new PlotInfiniteLine("k_" + k, transitionStage[0],
                     AppConfig.AC.STAGE_TRANSITION_VALUE_COLOR, 2);
             bands[k] = new PlotInfiniteBand("Hauteur de transition",
-                    transitionStage[1], transitionStage[2], AppConfig.AC.STAGE_TRANSITION_UNCERTAINTY_COLOR);
+                    transitionStage[1], transitionStage[2],
+                    AppConfig.AC.STAGE_TRANSITION_UNCERTAINTY_COLOR);
             plot.addXYItem(line, false);
             plot.addXYItem(bands[k], k == 0);
         }
@@ -81,11 +82,10 @@ public class PosteriorRatingCurvePlot extends RowColPanel {
             plot.axisX.setLabel(Lg.text("stage_level"));
             plot.axisY.setLabel(Lg.text("discharge"));
             plot.axisYlog.setLabel(Lg.text("discharge"));
+            plot.update(); // needed to make sure change are reflected in plot
+            // actually useless here since axis label changes also notify the chart
+            // that it must update...
         });
-
-        // GaugingsPlot gaugingsPlot = new GaugingsPlot(false, gaugings);
-
-        // plot.addXYItem(gaugingsPlot.getGaugingsPoints());
 
         PlotContainer plotContainer = new PlotContainer(plot);
 
