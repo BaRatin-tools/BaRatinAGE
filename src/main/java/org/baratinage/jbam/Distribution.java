@@ -5,9 +5,6 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.UUID;
-// import java.util.function.Consumer;
-
-// import javax.swing.SwingWorker;
 
 import org.baratinage.jbam.utils.BamFilesHelpers;
 import org.baratinage.jbam.utils.ExeRun;
@@ -73,8 +70,8 @@ public class Distribution {
     private static List<double[]> getExeRunResult(String filePath) {
         try {
             List<double[]> result = Read.readMatrix(filePath, "\\s+", 0, 0);
-            // File f = new File(filePath);
-            // f.delete();
+            File f = new File(filePath);
+            f.delete();
             return result;
         } catch (IOException e) {
             e.printStackTrace();
@@ -97,13 +94,6 @@ public class Distribution {
             return density;
         }
 
-        // SwingWorker<List<double[]>, String> runningWorker = new SwingWorker<>() {
-
-        // @Override
-        // protected List<double[]> doInBackground() throws Exception {
-
-        System.out.println("STARTING!");
-
         String parametersArg = doubleArrToStringArg(parameterValues);
 
         String rangeResFileName = id + "_range.txt";
@@ -116,9 +106,6 @@ public class Distribution {
                 "--action", "q",
                 "--xgrid", "0.00001,0.99999,2",
                 "--result", rangeResFileName);
-        rangeRun.addConsolOutputConsumer((out) -> {
-            System.out.println("Distribution: range run > " + out);
-        });
 
         rangeRun.run();
 
@@ -140,9 +127,6 @@ public class Distribution {
                 "--action", "d",
                 "--xgrid", gridArg,
                 "--result", densityResFileName);
-        densityRun.addConsolOutputConsumer((out) -> {
-            System.out.println("Distribution: density run > " + out);
-        });
 
         densityRun.run();
 
@@ -152,15 +136,8 @@ public class Distribution {
             return null;
         }
 
-        // densityResultConsumer.accept(densityRes);
         return densityRes;
 
-        // }
-
-        // };
-        // runningWorker.execute();
-
-        // return densityRes;
     }
 
     @Override
