@@ -1,5 +1,8 @@
 package org.baratinage.ui.plot;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.jfree.chart.LegendItem;
 import org.jfree.chart.LegendItemCollection;
 import org.jfree.chart.LegendItemSource;
@@ -11,15 +14,25 @@ import org.jfree.chart.ui.RectangleAnchor;
 
 public class Legend implements LegendItemSource {
 
-    private LegendItemCollection legendItems = new LegendItemCollection();
+    // private LegendItemCollection legendItems = new LegendItemCollection();
+    private final List<LegendItem> legendItems = new ArrayList<>();
+    private Plot plot;
 
     public void addLegendItem(LegendItem legendItem) {
         legendItems.add(legendItem);
     }
 
+    public void clearLegend() {
+        legendItems.clear();
+    }
+
     @Override
     public LegendItemCollection getLegendItems() {
-        return legendItems;
+        LegendItemCollection legends = new LegendItemCollection();
+        for (LegendItem leg : legendItems) {
+            legends.add(leg);
+        }
+        return legends;
     }
 
     public LegendTitle getLegendTitle() {
@@ -33,12 +46,15 @@ public class Legend implements LegendItemSource {
     }
 
     public Plot getLegendPlot() {
-        Plot p = new Plot(false, false);
-        p.axisX.setVisible(false);
-        p.axisY.setVisible(false);
-        p.plot.setOutlinePaint(null);
-        p.plot.addAnnotation(getAnnotation(0.5, 0.5, RectangleAnchor.CENTER));
-        return p;
+        if (plot != null) {
+            return plot;
+        }
+        plot = new Plot(false, false);
+        plot.axisX.setVisible(false);
+        plot.axisY.setVisible(false);
+        plot.plot.setOutlinePaint(null);
+        plot.plot.addAnnotation(getAnnotation(0.5, 0.5, RectangleAnchor.CENTER));
+        return plot;
     }
 
 }
