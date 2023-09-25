@@ -218,7 +218,7 @@ public class Read {
                 } catch (NumberFormatException e) {
                     // NOTE: this try/catch is necessary because BaM sometimes gives
                     // very low/high values that can't be parsed (e.g. -0.179769+309)
-                    System.err.println("Read Error: n" + e);
+                    System.err.println("Read Error: \n" + e);
                     result[k - nColSkip] = Double.NaN;
                 }
             }
