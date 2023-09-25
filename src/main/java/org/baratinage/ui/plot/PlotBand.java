@@ -81,8 +81,18 @@ public class PlotBand extends PlotItem {
 
     @Override
     public LegendItem getLegendItem() {
+
+        return buildLegendItem(label, fillPaint, linePaint, lineStroke);
+    }
+
+    public static LegendItem buildLegendItem(String label, Paint fillPaint,
+            Paint linePaint, Stroke lineStroke) {
         Shape squareShape = buildSquareShape();
-        return buildLegendItem(label, linePaint, lineStroke, squareShape, fillPaint);
+        return PlotItem.buildLegendItem(label, linePaint, lineStroke, squareShape, linePaint);
+    }
+
+    public static LegendItem buildLegendItem(String label, Paint fillPaint) {
+        return buildLegendItem(label, fillPaint, fillPaint, buildEmptyStroke());
     }
 
     @Override

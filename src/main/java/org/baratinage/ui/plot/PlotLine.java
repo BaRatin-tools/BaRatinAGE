@@ -65,7 +65,11 @@ public class PlotLine extends PlotItem {
 
     @Override
     public LegendItem getLegendItem() {
-        return buildLegendItem(label, paint, stroke, null, null);
+        return PlotLine.buildLegendItem(label, paint, stroke);
+    }
+
+    public static LegendItem buildLegendItem(String label, Paint paint, Stroke stroke) {
+        return PlotItem.buildLegendItem(label, paint, stroke, null, null);
     }
 
     @Override
