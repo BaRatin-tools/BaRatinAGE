@@ -12,7 +12,6 @@ import java.util.function.Consumer;
 
 import org.baratinage.jbam.utils.BamFilesHelpers;
 import org.baratinage.jbam.utils.ConfigFile;
-import org.baratinage.jbam.utils.ExeRun;
 
 public class BaM {
 
@@ -210,92 +209,7 @@ public class BaM {
         return this.bamExecutionProcess;
     }
 
-    // public String run(String workspace, Consumer<String> consoleOutputFollower) {
-    // // Delete workspace content
-    // File workspaceDirFile = new File(workspace);
-    // if (workspaceDirFile.exists()) {
-    // System.out.println("BaM: Deleting workspace content...");
-    // for (File f : workspaceDirFile.listFiles()) {
-    // if (!f.isDirectory()) {
-    // f.delete();
-    // }
-    // }
-    // }
-
-    // this.toFiles(workspace);
-
-    // String mainConfigFilePath = Path.of(workspace,
-    // BamFilesHelpers.CONFIG_BAM).toAbsolutePath().toString();
-
-    // ExeRun bamExeRun = new ExeRun();
-    // bamExeRun.setExeDir(BamFilesHelpers.EXE_DIR);
-    // bamExeRun.setCommand(EXE_COMMAND, "-cf", mainConfigFilePath);
-    // bamExeRun.addConsolOutputConsumer(consoleOutputFollower);
-    // List<String> consoleLines = new ArrayList<String>();
-    // bamExeRun.addConsolOutputConsumer((output) -> {
-    // consoleLines.add(output);
-    // });
-    // bamExecutionProcess
-    // int exitcode = bamExeRun.getExitValue();
-
-    // // FIXME: all cases except default have message that should be captured!
-    // List<String> errMsg = new ArrayList<>();
-    // boolean inErrMsg = false;
-    // for (String l : consoleLines) {
-    // if (l.contains("FATAL ERROR")) {
-    // inErrMsg = true;
-    // }
-    // if (inErrMsg) {
-    // errMsg.add(l);
-    // }
-    // if (l.contains("Execution will stop")) {
-    // inErrMsg = false;
-    // }
-    // }
-    // if (exitcode != 0) {
-    // switch (exitcode) {
-    // case -1:
-    // System.err.println("BaM Error: A FATAL ERROR has occured");
-    // break;
-    // case -2:
-    // System.err.println("BaM Error: A FATAL ERROR has occured while opening the
-    // following file.");
-    // break;
-    // case -3:
-    // System.err.println("BaM Error: A FATAL ERROR has occured while reading a
-    // config file.");
-    // break;
-    // case -4:
-    // System.err.println("BaM Error: A FATAL ERROR has occured while generating the
-    // prior model.");
-    // break;
-    // case -5:
-    // System.err.println("BaM Error: A FATAL ERROR has occured while fitting the
-    // model..");
-    // break;
-    // case -6:
-    // System.err.println("BaM Error: A FATAL ERROR has occured while
-    // post-processing MCMC samples.");
-    // break;
-    // case -7:
-    // System.err.println("BaM Error: A FATAL ERROR has occured while propagating
-    // uncertainty.");
-    // break;
-    // case -8:
-    // System.err.println("BaM Error: A FATAL ERROR has occured while writting to a
-    // file.");
-    // break;
-    // default:
-    // System.err.printf("BaM Error: An unknown FATAL ERROR has occured. Exit
-    // Code=%d\n", exitcode);
-    // break;
-    // }
-    // }
-    // bamExecutionProcess = null;
-    // return String.join("\n", errMsg);
-
-    // }
-
+    // FIXME: refactor to use ExeRun class?
     public String run(String workspace, Consumer<String> consoleOutputFollower)
             throws IOException {
 
