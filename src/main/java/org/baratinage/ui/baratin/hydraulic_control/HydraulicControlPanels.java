@@ -27,12 +27,6 @@ public class HydraulicControlPanels extends RowColPanel implements IPriors, Chan
 
         Lg.register(tabs, () -> {
             updateTabs();
-            // int n = tabs.getTabCount();
-            // for (int k = 0; k < n; k++) {
-            // OneHydraulicControl ohc = (OneHydraulicControl) tabs.getComponent(k);
-            // String text = Lg.text("control_number", ohc.controlNumber);
-            // tabs.setTitleAt(k, text);
-            // }
         });
 
         appendChild(tabs, 1);
@@ -51,12 +45,6 @@ public class HydraulicControlPanels extends RowColPanel implements IPriors, Chan
                 tabs.addTab(text, ohc);
             }
         }
-        // for (int k = 0; k < nTabs; k++) {
-        // OneHydraulicControl ohc = (OneHydraulicControl) tabs.getComponent(k);
-        // String text = Lg.text("control_number", ohc.controlNumber);
-        // tabs.setTitleAt(k, text);
-        // }
-        // Lg.updateTexts();
     }
 
     private void addHydraulicControl() {
