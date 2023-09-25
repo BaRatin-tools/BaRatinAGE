@@ -8,6 +8,7 @@ import java.io.InputStreamReader;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 import org.baratinage.jbam.utils.BamFilesHelpers;
@@ -249,14 +250,18 @@ public class BaM {
             e.printStackTrace();
         }
 
-        // bamExecutionProcess.exitValue()
-
-        int exitcode = bamExecutionProcess.exitValue();
-        // try {
-        // exitcode = bamExecutionProcess.waitFor() * -1;
-        // } catch (InterruptedException e) {
-        // System.err.println("BaM Error: BaM run was interrupted!");
-        // }
+        boolean finished = false;
+        try {
+            finished = bamExecutionProcess.waitFor(250, TimeUnit.MILLISECONDS);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        int exitcode = 0;
+        if (!finished) {
+            System.err.println("BaM Error: BaM process has not finished and this is unexepected ");
+        } else {
+            exitcode = bamExecutionProcess.exitValue();
+        }
 
         // FIXME: all cases except default have message that should be captured!
         List<String> errMsg = new ArrayList<>();
