@@ -9,18 +9,18 @@ import org.baratinage.ui.lg.Lg;
 public class ProgressBar extends JProgressBar {
 
     public ProgressBar() {
-        this.setStringPainted(true);
-        this.setString("");
+        setStringPainted(true);
+        setString("");
         int height = 25;
-        this.setPreferredSize(new Dimension(0, height));
-        this.setMinimumSize(new Dimension(0, height));
-        this.setMaximumSize(new Dimension(Integer.MAX_VALUE, height));
+        setPreferredSize(new Dimension(0, height));
+        setMinimumSize(new Dimension(0, height));
+        setMaximumSize(new Dimension(Integer.MAX_VALUE, height));
     }
 
     public void update(String id, int progress, int total, int step, int totalStep) {
 
-        this.setMaximum(total);
-        this.setValue(progress);
+        setMaximum(total);
+        setValue(progress);
 
         double percent = total > 0 ? (double) progress / (double) total * 100 : 0;
         String stepTxt = Lg.text("step_n_out_of_m", step, totalStep);
@@ -38,8 +38,8 @@ public class ProgressBar extends JProgressBar {
         } else {
             s = Lg.text("done");
         }
-        this.setString(s);
-        this.repaint();
+        setString(s);
+        repaint();
 
     }
 
