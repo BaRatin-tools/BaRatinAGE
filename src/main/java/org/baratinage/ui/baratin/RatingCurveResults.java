@@ -7,6 +7,7 @@ import javax.swing.JTabbedPane;
 
 import org.baratinage.jbam.EstimatedParameter;
 import org.baratinage.ui.commons.DensityPlotGrid;
+import org.baratinage.ui.lg.Lg;
 
 public class RatingCurveResults extends JTabbedPane {
 
@@ -19,8 +20,13 @@ public class RatingCurveResults extends JTabbedPane {
 
         paramDensityPlots = new DensityPlotGrid();
 
-        addTab("Graphique - Courbe de tarage", ratingCurvePlot);
-        addTab("Graphique - Densité des paramètres", paramDensityPlots);
+        addTab("rating_curve_plot", ratingCurvePlot);
+        addTab("parameter_density_plots", paramDensityPlots);
+
+        Lg.register(this, () -> {
+            setTitleAt(0, Lg.text("rating_curve_plot"));
+            setTitleAt(1, Lg.text("parameter_density_plots"));
+        });
     }
 
     public void updatePlot(
