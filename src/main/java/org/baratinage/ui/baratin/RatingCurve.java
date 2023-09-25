@@ -128,6 +128,7 @@ public class RatingCurve extends BamItem implements IPredictionMaster, ICalibrat
             hydrauConfParent.updateBackup();
             gaugingsParent.updateBackup();
             structErrorParent.updateBackup();
+            checkSync();
         });
 
         resultsPanel = new RatingCurveResults();
