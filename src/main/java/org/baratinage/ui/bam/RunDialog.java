@@ -40,8 +40,6 @@ public class RunDialog extends JDialog {
         this.bam = bam;
 
         workspacePath = Path.of(AppConfig.AC.BAM_WORKSPACE_ROOT, id);
-        // String zipName = id + ".zip";
-        // Path zipPath = Path.of(AppConfig.AC.APP_TEMP_DIR, zipName);
 
         if (!workspacePath.toFile().exists()) {
             workspacePath.toFile().mkdir();
@@ -140,8 +138,11 @@ public class RunDialog extends JDialog {
                 cancelButton.setEnabled(false);
 
                 if (!isCancelled()) {
-                    setTitle(Lg.text("bam_done"));
+                    setTitle(Lg.text("bam_result_processing"));
+                    progressBar.setString(Lg.text("bam_result_processing")); // FIXME: not updating for some reason...
                     onSuccess.accept(RunConfigAndRes.buildFromWorkspace(id, workspacePath));
+                    setTitle(Lg.text("bam_done"));
+                    progressBar.setString(Lg.text("bam_done"));
                 } else {
                     setTitle(Lg.text("bam_canceled"));
                 }
