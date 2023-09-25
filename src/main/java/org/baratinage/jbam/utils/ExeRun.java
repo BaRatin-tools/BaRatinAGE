@@ -7,7 +7,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 public class ExeRun implements Runnable {
@@ -17,14 +17,6 @@ public class ExeRun implements Runnable {
     private final List<Consumer<String>> consolOutputConsumers = new ArrayList<>();
     private int exitValue = -999;
     private Process process;
-
-    // private final String id;
-
-    // public static final TEMP_DIR
-
-    // public ExeRun() {
-    // id = UUID.randomUUID().toString();
-    // }
 
     public void setExeDir(String exeDir) {
         exeDirFile = new File(exeDir);
@@ -96,7 +88,6 @@ public class ExeRun implements Runnable {
         if (exeDirFile == null || cmd == null) {
             System.err.println(
                     "ExeRun Error: exeDir and command must be specified in constructor or with setter methods!");
-            // process = null;
             return;
         }
         String cmdStr = String.join(" ", cmd);
@@ -119,11 +110,25 @@ public class ExeRun implements Runnable {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            exitValue = process.exitValue();
-            // process = null;
+
+            boolean hasFinished = true;
+            try {
+                hasFinished = process.waitFor(250, TimeUnit.MILLISECONDS);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+                return;
+            }
+
+            if (hasFinished) {
+                try {
+                    exitValue = process.exitValue();
+                } catch (IllegalThreadStateException e) {
+                    e.printStackTrace();
+                    return;
+                }
+            }
         } catch (IOException e) {
             e.printStackTrace();
-            // process = null;
             return;
         }
     }
