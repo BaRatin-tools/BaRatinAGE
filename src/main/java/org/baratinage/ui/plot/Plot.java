@@ -122,15 +122,6 @@ public class Plot implements LegendItemSource {
         items.add(new PlotItemConfig(item, isVisibleInLegend, true));
     }
 
-    // public static Range bufferRange(Range range, double p) {
-    // if (range == null) {
-    // return null;
-    // }
-    // double d = range.getLength();
-    // double buffer = d * p;
-    // return new Range(range.getLowerBound() - buffer, range.getUpperBound() +
-    // buffer);
-    // }
     private static Range applyBufferToRange(Range r, double lowerBufferPercentage, double upperBufferPercentage) {
         if (r == null) {
             return r;
@@ -178,5 +169,9 @@ public class Plot implements LegendItemSource {
             }
         }
         return lic;
+    }
+
+    public void update() {
+        chart.fireChartChanged();
     }
 }
