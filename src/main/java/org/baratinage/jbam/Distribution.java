@@ -1,5 +1,16 @@
 package org.baratinage.jbam;
 
+import java.io.IOException;
+import java.nio.file.Path;
+import java.util.List;
+import java.util.function.Consumer;
+
+import javax.swing.SwingWorker;
+
+import org.baratinage.jbam.utils.BamFilesHelpers;
+import org.baratinage.jbam.utils.ExeRun;
+import org.baratinage.jbam.utils.Read;
+
 public class Distribution {
     public final DISTRIBUTION distribution;
     public final double[] parameterValues;
@@ -43,6 +54,96 @@ public class Distribution {
         }
         this.distribution = distribution;
         this.parameterValues = parameterValues;
+    }
+
+    public static final String EXE_DIR = BamFilesHelpers.EXE_DIR;
+    public static final String EXE_NAME = "Distribution";
+
+    public static final String EXE_COMMAND = BamFilesHelpers.OS.startsWith("windows")
+            ? Path.of(BamFilesHelpers.EXE_DIR, String.format("%s.exe", EXE_NAME)).toString()
+            : String.format("./%s", EXE_NAME);
+
+    private static List<double[]> getExeRunResult(String filePath) {
+        try {
+            List<double[]> result = Read.readMatrix(filePath, "\\s+", 0, 0);
+            return result;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+
+    }
+
+    private static String doubleArrToStringArg(double... values) {
+        int n = values.length;
+        String[] valuesString = new String[n];
+        for (int k = 0; k < n; k++) {
+            valuesString[k] = Double.toString(values[k]);
+        }
+        return String.join(",", valuesString);
+    }
+
+    public void getDensity(Consumer<List<double[]>> densityResultConsumer) {
+
+        SwingWorker<List<double[]>, String> runningWorker = new SwingWorker<>() {
+
+            @Override
+            protected List<double[]> doInBackground() throws Exception {
+
+                System.out.println("STARTING!");
+
+                String parametersArg = doubleArrToStringArg(parameterValues);
+
+                ExeRun rangeRun = new ExeRun();
+                rangeRun.setExeDir(EXE_DIR);
+                rangeRun.setCommand(EXE_COMMAND,
+                        "--name", distribution.bamName,
+                        "--parameters", parametersArg,
+                        "--action", "q",
+                        "--xgrid", "0.00001,0.99999,2",
+                        "--result", "range.txt");
+                rangeRun.addConsolOutputConsumer((out) -> {
+                    System.out.println("Distribution: range run > " + out);
+                });
+
+                rangeRun.run();
+
+                List<double[]> rangeRes = getExeRunResult(Path.of(EXE_DIR, "range.txt").toString());
+                if (rangeRes == null) {
+                    System.err.println("Distribution Error: error while reading quantiles result files! Aborting");
+                    return null;
+                }
+                String gridArg = doubleArrToStringArg(rangeRes.get(1)[0], rangeRes.get(1)[1]);
+                gridArg += ",500";
+
+                ExeRun densityRun = new ExeRun();
+                densityRun.setExeDir(EXE_DIR);
+                densityRun.setCommand(EXE_COMMAND,
+                        "--name", distribution.bamName,
+                        "--parameters", parametersArg,
+                        "--action", "d",
+                        "--xgrid", gridArg,
+                        "--result", "density.txt");
+                densityRun.addConsolOutputConsumer((out) -> {
+                    System.out.println("Distribution: density run > " + out);
+                });
+
+                densityRun.run();
+
+                List<double[]> densityRes = getExeRunResult(Path.of(EXE_DIR, "density.txt").toString());
+                if (densityRes == null) {
+                    System.err.println("Distribution Error: error while reading density result files! Aborting");
+                    return null;
+                }
+
+                densityResultConsumer.accept(densityRes);
+                return densityRes;
+
+            }
+
+        };
+        runningWorker.execute();
+
     }
 
     @Override
