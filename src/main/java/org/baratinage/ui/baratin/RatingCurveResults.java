@@ -20,12 +20,12 @@ public class RatingCurveResults extends JTabbedPane {
 
         paramDensityPlots = new DensityPlotGrid();
 
-        addTab("rating_curve_plot", ratingCurvePlot);
-        addTab("parameter_density_plots", paramDensityPlots);
+        addTab("rating_curve", ratingCurvePlot);
+        addTab("parameter_densities", paramDensityPlots);
 
         Lg.register(this, () -> {
-            setTitleAt(0, Lg.text("rating_curve_plot"));
-            setTitleAt(1, Lg.text("parameter_density_plots"));
+            setTitleAt(0, Lg.text("posterior_rating_curve"));
+            setTitleAt(1, Lg.text("parameter_densities"));
         });
     }
 
