@@ -39,6 +39,8 @@ public class AppConfig {
     public Color STAGE_TRANSITION_VALUE_COLOR = new Color(4, 182, 0);
     public Color STAGE_TRANSITION_UNCERTAINTY_COLOR = new Color(164, 255, 162);
 
+    public float ICON_SIZE = 32;
+
     public String lastUsedDir;
 
     public AppConfig(MainFrame mainFrame) {

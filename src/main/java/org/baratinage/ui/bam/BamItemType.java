@@ -4,6 +4,7 @@ import java.util.UUID;
 
 import javax.swing.ImageIcon;
 
+import org.baratinage.ui.AppConfig;
 import org.baratinage.ui.component.SvgIcon;
 
 public enum BamItemType {
@@ -35,8 +36,6 @@ public enum BamItemType {
     private ImageIcon icon;
     private ImageIcon addIcon;
 
-    private static final float ICON_SIZE = 30;
-
     @FunctionalInterface
     public interface BamItemBuilderFunction {
         public BamItem build(String id);
@@ -66,14 +65,14 @@ public enum BamItemType {
 
     public ImageIcon getIcon() {
         if (icon == null) {
-            icon = SvgIcon.buildCustomAppImageIcon(id + ".svg", ICON_SIZE);
+            icon = SvgIcon.buildCustomAppImageIcon(id + ".svg", AppConfig.AC.ICON_SIZE);
         }
         return icon;
     }
 
     public ImageIcon getAddIcon() {
         if (addIcon == null) {
-            addIcon = SvgIcon.buildCustomAppImageIcon(id + "_add.svg", ICON_SIZE);
+            addIcon = SvgIcon.buildCustomAppImageIcon(id + "_add.svg", AppConfig.AC.ICON_SIZE);
         }
         return addIcon;
     }
