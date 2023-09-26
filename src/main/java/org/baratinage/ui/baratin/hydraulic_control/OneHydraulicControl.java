@@ -8,7 +8,7 @@ import javax.swing.JSeparator;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import org.baratinage.ui.component.NumberField;
+import org.baratinage.ui.component.SimpleNumberField;
 import org.baratinage.ui.container.GridPanel;
 import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.ui.lg.Lg;
@@ -19,12 +19,12 @@ public class OneHydraulicControl extends RowColPanel implements ChangeListener {
 
     public final JLabel nameLabel = new JLabel("");
 
-    public final NumberField activationStage;
-    public final NumberField activationStageUncertainty;
-    public final NumberField coefficient;
-    public final NumberField coefficientUncertainty;
-    public final NumberField exponent;
-    public final NumberField exponentUncertainty;
+    public final SimpleNumberField activationStage;
+    public final SimpleNumberField activationStageUncertainty;
+    public final SimpleNumberField coefficient;
+    public final SimpleNumberField coefficientUncertainty;
+    public final SimpleNumberField exponent;
+    public final SimpleNumberField exponentUncertainty;
 
     public final int controlNumber;
 
@@ -47,9 +47,9 @@ public class OneHydraulicControl extends RowColPanel implements ChangeListener {
 
         JLabel activationStageLabel = new JLabel("k - Hauteur d'activation");
         Lg.register(activationStageLabel, "activate_stage_k", true);
-        activationStage = new NumberField();
+        activationStage = new SimpleNumberField();
         activationStage.addChangeListener(this);
-        activationStageUncertainty = new NumberField();
+        activationStageUncertainty = new SimpleNumberField();
         activationStageUncertainty.addChangeListener(this);
         parametersPanel.insertChild(activationStageLabel, 0, 1);
         parametersPanel.insertChild(activationStage, 1, 1);
@@ -57,9 +57,9 @@ public class OneHydraulicControl extends RowColPanel implements ChangeListener {
 
         JLabel coefficientLabel = new JLabel("a - Coefficient");
         Lg.register(coefficientLabel, "coefficient_a", true);
-        coefficient = new NumberField();
+        coefficient = new SimpleNumberField();
         coefficient.addChangeListener(this);
-        coefficientUncertainty = new NumberField();
+        coefficientUncertainty = new SimpleNumberField();
         coefficientUncertainty.addChangeListener(this);
         parametersPanel.insertChild(coefficientLabel, 0, 2);
         parametersPanel.insertChild(coefficient, 1, 2);
@@ -67,9 +67,9 @@ public class OneHydraulicControl extends RowColPanel implements ChangeListener {
 
         JLabel exponentLabel = new JLabel("c - Exposant");
         Lg.register(exponentLabel, "exponent_c", true);
-        exponent = new NumberField();
+        exponent = new SimpleNumberField();
         exponent.addChangeListener(this);
-        exponentUncertainty = new NumberField();
+        exponentUncertainty = new SimpleNumberField();
         exponentUncertainty.addChangeListener(this);
         parametersPanel.insertChild(exponentLabel, 0, 3);
         parametersPanel.insertChild(exponent, 1, 3);
@@ -77,15 +77,6 @@ public class OneHydraulicControl extends RowColPanel implements ChangeListener {
 
         this.appendChild(parametersPanel);
 
-    }
-
-    public void updateTextFields() {
-        activationStage.updateTextField();
-        activationStageUncertainty.updateTextField();
-        coefficient.updateTextField();
-        coefficientUncertainty.updateTextField();
-        exponent.updateTextField();
-        exponentUncertainty.updateTextField();
     }
 
     @Override

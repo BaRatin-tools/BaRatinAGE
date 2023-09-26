@@ -15,7 +15,7 @@ import javax.swing.event.ChangeListener;
 import org.baratinage.jbam.Distribution;
 import org.baratinage.jbam.Parameter;
 import org.baratinage.jbam.Distribution.DISTRIBUTION;
-import org.baratinage.ui.component.NumberField;
+import org.baratinage.ui.component.SimpleNumberField;
 import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.ui.lg.Lg;
 
@@ -25,9 +25,9 @@ public class ParameterPriorDist implements ChangeListener {
     public final String shortName;
     public final JLabel nameLabel;
     public final JComboBox<DISTRIBUTION> distComboBox;
-    public final NumberField initialGuessField;
+    public final SimpleNumberField initialGuessField;
     public final RowColPanel parametersInputsPanel;
-    public final List<NumberField> parameterPriorFields;
+    public final List<SimpleNumberField> parameterPriorFields;
 
     public ParameterPriorDist(String shortName) {
 
@@ -39,7 +39,7 @@ public class ParameterPriorDist implements ChangeListener {
         }
 
         nameLabel = new JLabel();
-        initialGuessField = new NumberField();
+        initialGuessField = new SimpleNumberField();
         Lg.register(initialGuessField, () -> {
             initialGuessField.setPlaceholder(Lg.text("initial_guess"));
         });
@@ -71,7 +71,7 @@ public class ParameterPriorDist implements ChangeListener {
                 parametersInputsPanel.clear();
                 parameterPriorFields.clear();
                 for (String parameterName : currentDistribution.parameterNames) {
-                    NumberField numberField = new NumberField();
+                    SimpleNumberField numberField = new SimpleNumberField();
                     numberField.setPlaceholder(Lg.text(parameterName));
                     numberField.addChangeListener(this);
                     parameterPriorFields.add(numberField);
@@ -89,32 +89,23 @@ public class ParameterPriorDist implements ChangeListener {
     public void set(DISTRIBUTION dist, double initialGuess, double[] distParPriors) {
         distComboBox.setSelectedItem(dist);
         initialGuessField.setValue(initialGuess);
-        initialGuessField.updateTextField();
         if (distParPriors.length != parameterPriorFields.size()) {
             System.out.println("ParameterPriorDist: Inconsistencies in distribution parameter! Aborting.");
             return;
         }
         for (int k = 0; k < distParPriors.length; k++) {
-            NumberField p = parameterPriorFields.get(k);
+            SimpleNumberField p = parameterPriorFields.get(k);
             p.setValue(distParPriors[k]);
-            p.updateTextField();
         }
     }
 
     public Parameter getParameter() {
-        // if (distComboBox.getSelectedItem() == null) {
-        // return null;
-        // }
-        double initialGuess = initialGuessField.getValue();
-
-        // if (initialGuess == NumberField.NaN) {
-        // return null;
-        // }
+        double initialGuess = initialGuessField.getDoubleValue();
         DISTRIBUTION d = (DISTRIBUTION) distComboBox.getSelectedItem();
         int n = d.parameterNames.length;
         double[] parameterValues = new double[n];
         for (int k = 0; k < n; k++) {
-            parameterValues[k] = parameterPriorFields.get(k).getValue();
+            parameterValues[k] = parameterPriorFields.get(k).getDoubleValue();
         }
         Distribution distribution = new Distribution(d, parameterValues);
 

@@ -81,16 +81,15 @@ public class HydraulicControlPanels extends RowColPanel implements IPriors, Chan
         int n = controls.size();
         setHydraulicControls(n);
         for (int k = 0; k < n; k++) {
-            this.controls.get(k).activationStage.setValue(controls.get(k).activationStage.getValue());
+            this.controls.get(k).activationStage.setValue(controls.get(k).activationStage.getDoubleValue());
             this.controls.get(k).activationStageUncertainty
-                    .setValue(controls.get(k).activationStageUncertainty.getValue());
-            this.controls.get(k).coefficient.setValue(controls.get(k).coefficient.getValue());
+                    .setValue(controls.get(k).activationStageUncertainty.getDoubleValue());
+            this.controls.get(k).coefficient.setValue(controls.get(k).coefficient.getDoubleValue());
             this.controls.get(k).coefficientUncertainty
-                    .setValue(controls.get(k).coefficientUncertainty.getValue());
-            this.controls.get(k).exponent.setValue(controls.get(k).exponent.getValue());
+                    .setValue(controls.get(k).coefficientUncertainty.getDoubleValue());
+            this.controls.get(k).exponent.setValue(controls.get(k).exponent.getDoubleValue());
             this.controls.get(k).exponentUncertainty
-                    .setValue(controls.get(k).exponentUncertainty.getValue());
-            this.controls.get(k).updateTextFields();
+                    .setValue(controls.get(k).exponentUncertainty.getDoubleValue());
         }
         fireChangeListeners();
     }
@@ -106,25 +105,25 @@ public class HydraulicControlPanels extends RowColPanel implements IPriors, Chan
             OneHydraulicControl ohc = controls.get(k);
             Distribution activationStageDistribution = new Distribution(
                     DISTRIBUTION.GAUSSIAN,
-                    ohc.activationStage.getValue(),
-                    ohc.activationStageUncertainty.getValue() / 2);
+                    ohc.activationStage.getDoubleValue(),
+                    ohc.activationStageUncertainty.getDoubleValue() / 2);
             Distribution coefficientDistribution = new Distribution(
                     DISTRIBUTION.GAUSSIAN,
-                    ohc.coefficient.getValue(),
-                    ohc.coefficientUncertainty.getValue() / 2);
+                    ohc.coefficient.getDoubleValue(),
+                    ohc.coefficientUncertainty.getDoubleValue() / 2);
             Distribution exponentDistribution = new Distribution(
                     DISTRIBUTION.GAUSSIAN,
-                    ohc.exponent.getValue(),
-                    ohc.exponentUncertainty.getValue() / 2);
+                    ohc.exponent.getDoubleValue(),
+                    ohc.exponentUncertainty.getDoubleValue() / 2);
 
             parameters[k * 3 + 0] = new Parameter("k_" + k,
-                    ohc.activationStage.getValue(),
+                    ohc.activationStage.getDoubleValue(),
                     activationStageDistribution);
             parameters[k * 3 + 1] = new Parameter("a_" + k,
-                    ohc.coefficient.getValue(),
+                    ohc.coefficient.getDoubleValue(),
                     coefficientDistribution);
             parameters[k * 3 + 2] = new Parameter("c_" + k,
-                    ohc.exponent.getValue(),
+                    ohc.exponent.getDoubleValue(),
                     exponentDistribution);
         }
         return parameters;

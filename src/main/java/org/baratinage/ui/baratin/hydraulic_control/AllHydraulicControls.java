@@ -151,25 +151,25 @@ public class AllHydraulicControls extends RowColPanel implements IPriors, Change
             OneHydraulicControl hc = hydraulicControlList.get(k);
             Distribution activationStageDistribution = new Distribution(
                     DISTRIBUTION.GAUSSIAN,
-                    hc.activationStage.getValue(),
-                    hc.activationStageUncertainty.getValue() / 2);
+                    hc.activationStage.getDoubleValue(),
+                    hc.activationStageUncertainty.getDoubleValue() / 2);
             Distribution coefficientDistribution = new Distribution(
                     DISTRIBUTION.GAUSSIAN,
-                    hc.coefficient.getValue(),
-                    hc.coefficientUncertainty.getValue() / 2);
+                    hc.coefficient.getDoubleValue(),
+                    hc.coefficientUncertainty.getDoubleValue() / 2);
             Distribution exponentDistribution = new Distribution(
                     DISTRIBUTION.GAUSSIAN,
-                    hc.exponent.getValue(),
-                    hc.exponentUncertainty.getValue() / 2);
+                    hc.exponent.getDoubleValue(),
+                    hc.exponentUncertainty.getDoubleValue() / 2);
 
             parameters[k * 3 + 0] = new Parameter("k_" + k,
-                    hc.activationStage.getValue(),
+                    hc.activationStage.getDoubleValue(),
                     activationStageDistribution);
             parameters[k * 3 + 1] = new Parameter("a_" + k,
-                    hc.coefficient.getValue(),
+                    hc.coefficient.getDoubleValue(),
                     coefficientDistribution);
             parameters[k * 3 + 2] = new Parameter("c_" + k,
-                    hc.exponent.getValue(),
+                    hc.exponent.getDoubleValue(),
                     exponentDistribution);
         }
         return parameters;

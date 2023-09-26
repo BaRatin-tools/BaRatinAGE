@@ -209,12 +209,12 @@ public class HydraulicConfiguration
         JSONArray jsonHydraulicControls = new JSONArray();
         for (OneHydraulicControl ohc : hydraulicControlList) {
             JSONObject jsonHydraulicControl = new JSONObject();
-            jsonHydraulicControl.put("activationStage", ohc.activationStage.getValue());
-            jsonHydraulicControl.put("activationStageUncertainty", ohc.activationStageUncertainty.getValue());
-            jsonHydraulicControl.put("coefficient", ohc.coefficient.getValue());
-            jsonHydraulicControl.put("coefficientUncertainty", ohc.coefficientUncertainty.getValue());
-            jsonHydraulicControl.put("exponent", ohc.exponent.getValue());
-            jsonHydraulicControl.put("exponentUncertainty", ohc.exponentUncertainty.getValue());
+            jsonHydraulicControl.put("activationStage", ohc.activationStage.getDoubleValue());
+            jsonHydraulicControl.put("activationStageUncertainty", ohc.activationStageUncertainty.getDoubleValue());
+            jsonHydraulicControl.put("coefficient", ohc.coefficient.getDoubleValue());
+            jsonHydraulicControl.put("coefficientUncertainty", ohc.coefficientUncertainty.getDoubleValue());
+            jsonHydraulicControl.put("exponent", ohc.exponent.getDoubleValue());
+            jsonHydraulicControl.put("exponentUncertainty", ohc.exponentUncertainty.getDoubleValue());
 
             jsonHydraulicControls.put(jsonHydraulicControl);
         }
@@ -291,7 +291,6 @@ public class HydraulicConfiguration
                 ohc.coefficientUncertainty.setValue(jsonHydraulicControl.getDouble("coefficientUncertainty"));
                 ohc.exponent.setValue(jsonHydraulicControl.getDouble("exponent"));
                 ohc.exponentUncertainty.setValue(jsonHydraulicControl.getDouble("exponentUncertainty"));
-                ohc.updateTextFields();
 
                 hydraulicControlList.add(ohc);
             }
