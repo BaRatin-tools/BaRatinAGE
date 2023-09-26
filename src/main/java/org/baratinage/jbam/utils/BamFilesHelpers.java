@@ -54,7 +54,7 @@ public class BamFilesHelpers {
     }
 
     static public String findDataFilePath(String rawFilePath, String workspacePath) {
-        String dataFilePath = findDataFilePath(rawFilePath, workspacePath);
+        String dataFilePath = findDataFilePath(Path.of(rawFilePath), workspacePath);
         if (dataFilePath != null) {
             return dataFilePath;
         }
