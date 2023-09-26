@@ -3,10 +3,14 @@ package org.baratinage.ui.baratin;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.ImageIcon;
+import javax.swing.JLabel;
 import javax.swing.JTabbedPane;
 
 import org.baratinage.jbam.EstimatedParameter;
+import org.baratinage.ui.AppConfig;
 import org.baratinage.ui.commons.DensityPlotGrid;
+import org.baratinage.ui.component.SvgIcon;
 import org.baratinage.ui.lg.Lg;
 
 public class RatingCurveResults extends JTabbedPane {
@@ -20,12 +24,25 @@ public class RatingCurveResults extends JTabbedPane {
 
         paramDensityPlots = new DensityPlotGrid();
 
-        addTab("rating_curve", ratingCurvePlot);
-        addTab("parameter_densities", paramDensityPlots);
+        addTab("rating_curve",
+                ratingCurvePlot);
+        addTab("parameter_densities",
+                paramDensityPlots);
+
+        ImageIcon rcIcon = SvgIcon.buildCustomAppImageIcon("rating_curve.svg", AppConfig.AC.ICON_SIZE);
+        ImageIcon dpIcon = SvgIcon.buildCustomAppImageIcon("densities.svg", AppConfig.AC.ICON_SIZE);
+
+        JLabel ratingCurveTitle = new JLabel();
+        ratingCurveTitle.setIcon(rcIcon);
+        setTabComponentAt(0, ratingCurveTitle);
+
+        JLabel paraDensitiesTitle = new JLabel();
+        paraDensitiesTitle.setIcon(dpIcon);
+        setTabComponentAt(1, paraDensitiesTitle);
 
         Lg.register(this, () -> {
-            setTitleAt(0, Lg.text("posterior_rating_curve"));
-            setTitleAt(1, Lg.text("parameter_densities"));
+            ratingCurveTitle.setText(Lg.text("posterior_rating_curve"));
+            paraDensitiesTitle.setText(Lg.text("parameter_densities"));
         });
     }
 
