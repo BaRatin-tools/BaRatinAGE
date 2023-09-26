@@ -81,7 +81,6 @@ public class Calc {
                 p = 1;
             if (p < 0)
                 p = 0;
-            // int index = (int) Math.floor(p * n);
             int index = Math.round((float) (p * n));
             if (index >= n) {
                 System.out.println("ERROR!");
@@ -98,12 +97,11 @@ public class Calc {
     }
 
     public static double[] smooth(double[] toSmooth, int windowSize) {
-        System.out.println(windowSize);
         if (windowSize < 2) {
             return toSmooth;
         }
         if (isEven(windowSize)) {
-            System.out.println("Even window size unsupported! Increasing window size by one!");
+            // FIXME: good idea to enforce only odd window size?
             windowSize++;
         }
         int n = toSmooth.length;
