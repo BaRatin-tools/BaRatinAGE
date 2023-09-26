@@ -64,6 +64,8 @@ public class RatingCurveResults extends JTabbedPane {
 
         List<EstimatedParameter> modifiedParameters = reorganizeAndRenameParameters(parameters);
 
+        paramDensityPlots.clearPlots();
+
         for (EstimatedParameter p : modifiedParameters) {
             paramDensityPlots.addPlot(p);
         }
