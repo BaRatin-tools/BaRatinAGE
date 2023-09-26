@@ -10,7 +10,7 @@ import javax.swing.event.ChangeListener;
 import org.baratinage.jbam.PredictionInput;
 import org.baratinage.ui.bam.IPredictionData;
 
-import org.baratinage.ui.component.NumberField;
+import org.baratinage.ui.component.SimpleNumberField;
 import org.baratinage.ui.container.GridPanel;
 import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.ui.lg.Lg;
@@ -18,10 +18,10 @@ import org.baratinage.ui.lg.Lg;
 // FIXME: should have a fromJSON / toJSON methods
 public class RatingCurveStageGrid extends RowColPanel implements IPredictionData {
 
-    private NumberField minStageField;
-    private NumberField maxStageField;
-    private NumberField nbrStepField;
-    private NumberField valStepField;
+    private SimpleNumberField minStageField;
+    private SimpleNumberField maxStageField;
+    private SimpleNumberField nbrStepField;
+    private SimpleNumberField valStepField;
 
     private StageGridConfig stageGridConfig;
 
@@ -38,48 +38,57 @@ public class RatingCurveStageGrid extends RowColPanel implements IPredictionData
         setPadding(5);
 
         JLabel stageGridLabel = new JLabel();
-        Lg.register(stageGridLabel, "stage_grid");
         appendChild(stageGridLabel, 0);
         appendChild(gridPanel, 1);
 
-        minStageField = new NumberField();
+        minStageField = new SimpleNumberField();
         minStageField.addChangeListener((e) -> {
             updateStepVal();
             updateStageGridConfig();
         });
 
-        maxStageField = new NumberField();
+        maxStageField = new SimpleNumberField();
         maxStageField.addChangeListener((e) -> {
             updateStepVal();
             updateStageGridConfig();
         });
 
-        nbrStepField = new NumberField(true);
+        nbrStepField = new SimpleNumberField(true);
         nbrStepField.addChangeListener((e) -> {
             updateStepVal();
             updateStageGridConfig();
 
         });
-        nbrStepField.addValidator(n -> n > 0);
 
-        valStepField = new NumberField();
+        valStepField = new SimpleNumberField();
         valStepField.addChangeListener((e) -> {
             updateStepNbr();
             updateStageGridConfig();
         });
-        valStepField.addValidator(n -> n > 0);
+        nbrStepField.addValidator((v) -> {
+            Integer i = v.intValue();
+            return i != null && i > 0;
+        });
+        valStepField.addValidator((v) -> {
+            Double d = v.doubleValue();
+            return d != null && d > 0;
+        });
 
         JLabel minLabel = new JLabel();
-        Lg.register(minLabel, "min");
 
         JLabel maxLabel = new JLabel();
-        Lg.register(maxLabel, "max");
 
         JLabel nLabel = new JLabel();
-        Lg.register(nLabel, "n");
 
         JLabel stepLabel = new JLabel();
-        Lg.register(stepLabel, "step");
+
+        Lg.register(this, () -> {
+            stageGridLabel.setText(Lg.text("stage_grid"));
+            maxLabel.setText(Lg.text("max"));
+            minLabel.setText(Lg.text("min"));
+            nLabel.setText(Lg.text("n"));
+            stepLabel.setText(Lg.text("step"));
+        });
 
         gridPanel.setGap(5);
         gridPanel.setColWeight(1, 1);
@@ -100,7 +109,6 @@ public class RatingCurveStageGrid extends RowColPanel implements IPredictionData
         stageGridConfig = new StageGridConfig(null, null, null);
 
         nbrStepField.setValue(100);
-        nbrStepField.updateTextField();
         updateStageGridConfig();
     }
 
@@ -127,7 +135,6 @@ public class RatingCurveStageGrid extends RowColPanel implements IPredictionData
 
     public void setMinValue(double value) {
         minStageField.setValue(value);
-        minStageField.updateTextField();
         updateStageGridConfig();
     }
 
@@ -137,7 +144,6 @@ public class RatingCurveStageGrid extends RowColPanel implements IPredictionData
 
     public void setMaxValue(double value) {
         maxStageField.setValue(value);
-        maxStageField.updateTextField();
         updateStageGridConfig();
     }
 
@@ -147,7 +153,6 @@ public class RatingCurveStageGrid extends RowColPanel implements IPredictionData
 
     public void setStepValue(double value) {
         valStepField.setValue(value);
-        valStepField.updateTextField();
         updateStepNbr();
         updateStageGridConfig();
     }
@@ -165,47 +170,43 @@ public class RatingCurveStageGrid extends RowColPanel implements IPredictionData
 
     private void updateStepVal() {
         if (!nbrStepField.isValueValid() || !minStageField.isValueValid() || !maxStageField.isValueValid()) {
-            valStepField.setValue(NumberField.NaN, false);
-            valStepField.updateTextField();
+            valStepField.unsetValue();
             return;
         }
-        double n = nbrStepField.getValue();
+        double n = (double) nbrStepField.getIntegerValue();
         if (n <= 0) {
-            valStepField.setValue(NumberField.NaN, false);
-            valStepField.updateTextField();
+            valStepField.unsetValue();
             return;
         }
-        double min = minStageField.getValue();
-        double max = maxStageField.getValue();
+        double min = minStageField.getDoubleValue();
+        double max = maxStageField.getDoubleValue();
         double step = (max - min) / n;
-        valStepField.setValue(step, false);
-        valStepField.updateTextField();
+        valStepField.setValue(step);
     }
 
     private void updateStepNbr() {
-        if (!valStepField.isValueValid() || !minStageField.isValueValid() || !maxStageField.isValueValid()) {
-            nbrStepField.setValue(NumberField.NaN, false);
-            nbrStepField.updateTextField();
+        if (!valStepField.isValueValid() || !minStageField.isValueValid() ||
+                !maxStageField.isValueValid()) {
+            nbrStepField.unsetValue();
             return;
         }
-        double step = valStepField.getValue();
+        double step = valStepField.getDoubleValue();
         if (step <= 0) {
-            nbrStepField.setValue(NumberField.NaN, false);
-            nbrStepField.updateTextField();
+            nbrStepField.unsetValue();
             return;
         }
-        double min = minStageField.getValue();
-        double max = maxStageField.getValue();
+        double min = minStageField.getDoubleValue();
+        double max = maxStageField.getDoubleValue();
         double n = (max - min) / step;
-        nbrStepField.setValue(n, false);
-        nbrStepField.updateTextField();
+        int nInt = (int) Math.round(n);
+        nbrStepField.setValue(nInt);
     }
 
     private void updateStageGridConfig() {
 
-        double min = minStageField.getValue();
-        double max = maxStageField.getValue();
-        double step = valStepField.getValue();
+        Double min = minStageField.getDoubleValue();
+        Double max = maxStageField.getDoubleValue();
+        Double step = valStepField.getDoubleValue();
 
         // check validity and update config
         if (!nbrStepField.isValueValid() || !valStepField.isValueValid() || !minStageField.isValueValid()
