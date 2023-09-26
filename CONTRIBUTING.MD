@@ -6,6 +6,7 @@ To have the development environment ready for BaRatinAGE V3, you'll need the fol
 - [Maven](https://maven.apache.org/)
 - the BaRatinAGE source code
 - a compiled version of BaM for you system
+- a compiled version of [distribution BMSL cli](https://github.com/benRenard/BMSL/tree/main/cli/distribution)
 - optionnally: git, to clone the BaRatinAGE repository and get the source code
 
 ## Getting Java
