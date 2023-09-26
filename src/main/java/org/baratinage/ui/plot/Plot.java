@@ -27,10 +27,10 @@ public class Plot implements LegendItemSource {
     public final LogAxis axisYlog;
     public final DateAxis axisXdate;
 
-    private double bufferPercentageTop = 0;
-    private double bufferPercentageBottom = 0;
-    private double bufferPercentageLeft = 0;
-    private double bufferPercentageRight = 0;
+    private double bufferPercentageTop = 0.01;
+    private double bufferPercentageBottom = 0.01;
+    private double bufferPercentageLeft = 0.01;
+    private double bufferPercentageRight = 0.01;
 
     private String dateTimeFormat = "yyyy-MM-dd HH:mm:ss";
 
