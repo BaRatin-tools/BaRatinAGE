@@ -96,7 +96,7 @@ public class RatingCurveResults extends JTabbedPane {
             } else if (rawName.startsWith("b")) {
                 int n = getParameterIndex(rawName, "b");
                 String niceName = String.format("<html>b<sub>%s</sub></html>", n);
-                int m = (n - 1) * 4 + 2;
+                int m = (n - 1) * 4 + 3;
                 controlParameters[m] = new EstimatedParameter(niceName, p.mcmc, p.summary, p.maxpostIndex,
                         p.parameterConfig);
                 nControlPar++;
@@ -109,7 +109,7 @@ public class RatingCurveResults extends JTabbedPane {
                 if (rawName.startsWith("a")) {
                     m = m + 1;
                 } else if (rawName.startsWith("c")) {
-                    m = m + 3;
+                    m = m + 2;
                 }
                 controlParameters[m] = new EstimatedParameter(niceName, p.mcmc, p.summary, p.maxpostIndex,
                         p.parameterConfig);
