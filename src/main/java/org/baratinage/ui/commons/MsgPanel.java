@@ -47,7 +47,7 @@ public class MsgPanel extends RowColPanel {
         if (msgType == TYPE.WARNING) {
             clr = AppConfig.AC.WARNING_COLOR;
         } else if (msgType == TYPE.ERROR) {
-            clr = AppConfig.AC.INVALID_COLOR;
+            clr = AppConfig.AC.INVALID_COLOR_FG;
         }
         message.setForeground(clr);
         setBorder(BorderFactory.createLineBorder(clr, 2));

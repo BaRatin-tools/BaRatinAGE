@@ -252,7 +252,7 @@ public class RatingCurve extends BamItem implements IPredictionMaster, ICalibrat
         if (isStageGridOutOfSync || needBamRerun) {
             Lg.register(runPanel.runButton, "recompute_posterior_rc",
                     true);
-            runPanel.runButton.setForeground(AppConfig.AC.INVALID_COLOR);
+            runPanel.runButton.setForeground(AppConfig.AC.INVALID_COLOR_FG);
         } else {
             Lg.register(runPanel.runButton, "compute_posterior_rc", true);
             runPanel.runButton.setForeground(new JButton().getForeground());

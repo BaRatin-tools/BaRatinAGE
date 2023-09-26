@@ -116,7 +116,7 @@ public class Hydrograph extends BamItem implements IPredictionMaster {
         // update run bam button
         if (needBamRerun) {
             Lg.register(runPanel.runButton, "recompute_qt");
-            runPanel.runButton.setForeground(AppConfig.AC.INVALID_COLOR);
+            runPanel.runButton.setForeground(AppConfig.AC.INVALID_COLOR_FG);
         } else {
             Lg.register(runPanel.runButton, "compute_qt");
             runPanel.runButton.setForeground(new JButton().getForeground());
