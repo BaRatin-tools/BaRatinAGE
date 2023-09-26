@@ -81,7 +81,8 @@ public class DensityPlotGrid extends RowColPanel {
                         priorDensityData.get(0),
                         priorDensityData.get(1),
                         DensityData.buildZeroArray(nData),
-                        AppConfig.AC.PRIOR_ENVELOP_COLOR);
+                        AppConfig.AC.PRIOR_ENVELOP_COLOR,
+                        0.9f);
                 plot.addXYItem(priorDensity);
 
             }
@@ -102,7 +103,8 @@ public class DensityPlotGrid extends RowColPanel {
                     lineData.get(0),
                     lineData.get(1),
                     lineData.get(2),
-                    AppConfig.AC.POSTERIOR_ENVELOP_COLOR);
+                    AppConfig.AC.POSTERIOR_ENVELOP_COLOR,
+                    0.7f);
 
             plot.addXYItem(postDensity);
             plot.addXYItem(maxpostLine);
