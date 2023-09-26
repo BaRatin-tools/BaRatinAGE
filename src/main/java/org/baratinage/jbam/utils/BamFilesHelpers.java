@@ -54,14 +54,30 @@ public class BamFilesHelpers {
     }
 
     static public String findDataFilePath(String rawFilePath, String workspacePath) {
-        Path p = Path.of(rawFilePath);
-        if (p.toFile().exists()) { // assume it is absolute (or relative to baratinage instance)
-            return p.toAbsolutePath().toString();
+        String dataFilePath = findDataFilePath(rawFilePath, workspacePath);
+        if (dataFilePath != null) {
+            return dataFilePath;
         }
-        String fileName = p.getFileName().toString();
-        p = Path.of(workspacePath, fileName);
-        if (p.toFile().exists()) { // assume it is relative to workspace
-            return p.toAbsolutePath().toString();
+        String[] osSplitChars = new String[] { "\\", "/" };
+        for (String osSplitChar : osSplitChars) {
+            String[] splitPath = rawFilePath.split(osSplitChar);
+            dataFilePath = findDataFilePath(Path.of("", splitPath), workspacePath);
+            if (dataFilePath != null) {
+                return dataFilePath;
+            }
+
+        }
+        return null;
+    }
+
+    static private String findDataFilePath(Path path, String workspacePath) {
+        if (path.toFile().exists()) { // assume it is absolute (or relative to baratinage instance)
+            return path.toAbsolutePath().toString();
+        }
+        String fileName = path.getFileName().toString();
+        path = Path.of(workspacePath, fileName);
+        if (path.toFile().exists()) { // assume it is relative to workspace
+            return path.toAbsolutePath().toString();
         }
         return null;
     }
