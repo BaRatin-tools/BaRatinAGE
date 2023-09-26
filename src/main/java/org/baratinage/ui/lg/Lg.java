@@ -24,6 +24,11 @@ public class Lg {
         setDefaultOwnerKey("default_owner_key");
     }
 
+    static public void reloadResources() {
+        resources = new LgResources();
+        updateRegisteredObjects();
+    }
+
     static public void setLocale(String localeKey) {
         currentLocale = Locale.forLanguageTag(localeKey);
         updateRegisteredObjects();

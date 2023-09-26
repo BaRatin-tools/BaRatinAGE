@@ -63,10 +63,15 @@ public class MainFrame extends JFrame {
 
         JMenu debugMenu = new JMenu("DEBUG / DEV");
         mainMenuBar.add(debugMenu);
-        JMenuItem gcBtn = new JMenuItem("GC");
+        JMenuItem gcBtn = new JMenuItem("Garbage collection");
         debugMenu.add(gcBtn);
         gcBtn.addActionListener((e) -> {
             System.gc();
+        });
+        JMenuItem lgResetBtn = new JMenuItem("Reload Lg ressources");
+        debugMenu.add(lgResetBtn);
+        lgResetBtn.addActionListener((e) -> {
+            Lg.reloadResources();
         });
 
         JMenu fileMenu = new JMenu();
