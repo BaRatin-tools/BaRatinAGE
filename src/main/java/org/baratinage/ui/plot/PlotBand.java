@@ -24,12 +24,18 @@ public class PlotBand extends PlotItem {
     public PlotBand(String label,
             double[] x, double[] ylow, double[] yhigh,
             Paint paint) {
-        this(label, x, ylow, ylow, yhigh, paint, paint, buildEmptyStroke());
+        this(label, x, ylow, ylow, yhigh, paint, 0.9f, paint, buildEmptyStroke());
+    }
+
+    public PlotBand(String label,
+            double[] x, double[] ylow, double[] yhigh,
+            Paint paint, float alpha) {
+        this(label, x, ylow, ylow, yhigh, paint, alpha, paint, buildEmptyStroke());
     }
 
     public PlotBand(String label,
             double[] x, double[] y, double[] ylow, double[] yhigh,
-            Paint fillPaint,
+            Paint fillPaint, float alpha,
             Paint linePaint, Stroke lineStroke) {
 
         int n = x.length;
@@ -60,7 +66,7 @@ public class PlotBand extends PlotItem {
         dataset.addSeries(series);
 
         renderer = new DeviationRenderer();
-        renderer.setAlpha(0.9f);
+        renderer.setAlpha(alpha);
 
         renderer.setSeriesStroke(0, lineStroke);
         renderer.setSeriesFillPaint(0, fillPaint);
