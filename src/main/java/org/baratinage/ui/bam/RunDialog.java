@@ -49,7 +49,7 @@ public class RunDialog extends JDialog {
         cancelButton = new JButton();
         closeButton = new JButton();
         logger = new SimpleLogger();
-        logger.setPreferredSize(new Dimension(900, 600));
+        logger.setPreferredSize(new Dimension(900, 300));
 
         cancelButton.setText(Lg.text("cancel"));
         cancelButton.addActionListener((e) -> {
