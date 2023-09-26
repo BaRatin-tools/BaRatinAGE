@@ -86,6 +86,9 @@ public class SimpleNumberField extends SimpleTextField {
         Lg.register(this, () -> {
             doubleFormatter = NumberFormat.getNumberInstance(Lg.getLocale());
             integerFormatter = NumberFormat.getIntegerInstance(Lg.getLocale());
+            doubleFormatter.setGroupingUsed(false);
+            integerFormatter.setGroupingUsed(false);
+            updateTextFieldFromValue();
         });
 
         addChangeListener((chEvt) -> {

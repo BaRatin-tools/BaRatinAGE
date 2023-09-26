@@ -260,7 +260,8 @@ public class RatingCurve extends BamItem implements IPredictionMaster, ICalibrat
 
         // since text within warnings changes, it is necessary to
         // call Lg.updateRegisteredComponents() so changes are accounted for.
-        Lg.updateRegisteredObjects();
+        // Lg.updateRegisteredObject(); // disabled because throws IllegalStateException
+        // with SimpleNumberField class
 
         fireChangeListeners();
 
