@@ -9,8 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
 
-import javax.swing.plaf.basic.BasicBorders;
-
 import org.baratinage.ui.AppConfig;
 import org.baratinage.ui.lg.Lg;
 
