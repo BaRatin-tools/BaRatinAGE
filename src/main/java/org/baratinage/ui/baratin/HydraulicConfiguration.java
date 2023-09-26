@@ -84,9 +84,10 @@ public class HydraulicConfiguration
         runPanel.setPriors(this);
         runPanel.setPredictionExperiments(this);
         runPanel.addRunSuccessListerner((RunConfigAndRes res) -> {
-            jsonStringBackup = toJSON().toString();
             bamRunConfigAndRes = res;
+            jsonStringBackup = toJSON().toString();
             buildPlot();
+            checkPriorRatingCurveSync();
         });
 
         RowColPanel priorRatingCurvePanel = new RowColPanel(RowColPanel.AXIS.COL);
@@ -120,7 +121,7 @@ public class HydraulicConfiguration
                 Lg.register(errMsg.message, "oos_prior_rating_curve", true);
                 outOufSyncPanel.appendChild(errMsg);
                 Lg.register(runPanel.runButton, "recompute_prior_rc", true);
-                runPanel.runButton.setForeground(AppConfig.AC.INVALID_COLOR);
+                runPanel.runButton.setForeground(AppConfig.AC.INVALID_COLOR_FG);
                 return;
             }
         }
