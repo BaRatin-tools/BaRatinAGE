@@ -57,13 +57,9 @@ public class RunConfigAndRes extends BaM {
         }
         String zipName = id + ".zip";
         Path zipPath = Path.of(AppConfig.AC.APP_TEMP_DIR, zipName);
-        if (zipPath.toFile().exists()) {
-            System.out.println("RunConfigAndRes: Zipping '"
-                    + zipPath.toString() +
-                    "' unnecessary, file already exist!");
+        if (!zipPath.toFile().exists()) {
             // each run being unique, if the zip file exist, there is no need
             // to recreate it; no modification could have occured
-        } else {
             ReadWriteZip.flatZip(zipPath.toString(), workspace.toString());
         }
         return zipPath.toString();

@@ -381,8 +381,6 @@ public abstract class BamProject extends RowColPanel {
     public void registerFile(String filePath) {
         File f = new File(filePath);
         if (registeredFileContains(f)) {
-            System.out.println(
-                    "BamProject: Cannot register file '" + filePath + "' because it is already registered.");
             return;
         }
         if (!f.exists()) {

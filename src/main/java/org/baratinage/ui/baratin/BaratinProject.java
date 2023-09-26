@@ -106,7 +106,6 @@ public class BaratinProject extends BamProject {
                 } else {
                     continue;
                 }
-                System.out.println(">>> reading json...");
                 bamItem.fromFullJSON(jsonObj);
             }
         }
