@@ -62,7 +62,6 @@ public class DensityData {
                 index++;
 
                 if (index >= nBins) {
-                    System.out.println("Err0");
                     break;
                 }
 
