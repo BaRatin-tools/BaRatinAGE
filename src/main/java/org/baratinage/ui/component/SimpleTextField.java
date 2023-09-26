@@ -72,7 +72,7 @@ public class SimpleTextField extends JTextField {
 
     private boolean doNotFireChange = false;
 
-    public void setTextWithoutFiringChangeListeners(String text) {
+    protected void setTextWithoutFiringChangeListeners(String text) {
         doNotFireChange = true;
         super.setText(text);
         doNotFireChange = false;
