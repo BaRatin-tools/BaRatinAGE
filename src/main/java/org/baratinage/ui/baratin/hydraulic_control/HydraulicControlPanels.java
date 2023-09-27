@@ -3,7 +3,6 @@ package org.baratinage.ui.baratin.hydraulic_control;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.JTabbedPane;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
@@ -11,6 +10,8 @@ import org.baratinage.jbam.Distribution;
 import org.baratinage.jbam.Parameter;
 import org.baratinage.jbam.Distribution.DISTRIBUTION;
 import org.baratinage.ui.bam.IPriors;
+import org.baratinage.ui.baratin.HydraulicConfiguration;
+import org.baratinage.ui.component.SimpleTabContainer;
 import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.ui.lg.Lg;
 
@@ -19,11 +20,11 @@ public class HydraulicControlPanels extends RowColPanel implements IPriors, Chan
     private final List<OneHydraulicControl> controls;
     private int nVisibleHydraulicControls = 0;
 
-    private final JTabbedPane tabs;
+    private final SimpleTabContainer tabs;
 
     public HydraulicControlPanels() {
         controls = new ArrayList<>();
-        tabs = new JTabbedPane();
+        tabs = new SimpleTabContainer(SimpleTabContainer.LOC.LEFT);
 
         Lg.register(tabs, () -> {
             updateTabs();
@@ -41,8 +42,10 @@ public class HydraulicControlPanels extends RowColPanel implements IPriors, Chan
         } else if (nTabs < nVisibleHydraulicControls) {
             for (int k = nTabs; k < nVisibleHydraulicControls; k++) {
                 OneHydraulicControl ohc = controls.get(k);
-                String text = Lg.text("control_number", ohc.controlNumber);
-                tabs.addTab(text, ohc);
+                tabs.addTab(
+                        Lg.html("control_number", ohc.controlNumber),
+                        HydraulicConfiguration.priorSpecificationIcon,
+                        ohc);
             }
         }
     }
@@ -52,7 +55,7 @@ public class HydraulicControlPanels extends RowColPanel implements IPriors, Chan
         OneHydraulicControl ohc = new OneHydraulicControl(n);
         ohc.addChangeListener(this);
         Lg.register(ohc, () -> {
-            String text = Lg.text("control_number", ohc.controlNumber);
+            String text = Lg.html("control_number", ohc.controlNumber);
             ohc.nameLabel.setText(text);
         });
         controls.add(ohc);
@@ -65,7 +68,7 @@ public class HydraulicControlPanels extends RowColPanel implements IPriors, Chan
             nVisibleHydraulicControls = nControls;
             updateTabs();
             fireChangeListeners();
-            // we actually keep the controls in memory, we simply stop displaying them
+            // Note: we actually keep the controls in memory, we simply stop displaying them
         } else if (nControls > controls.size()) {
             // add controls
             int n = nControls - controls.size();
