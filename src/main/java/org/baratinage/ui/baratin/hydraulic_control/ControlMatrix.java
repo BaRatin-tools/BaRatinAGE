@@ -201,8 +201,8 @@ public class ControlMatrix extends RowColPanel implements ChangeListener {
         Lg.register(this, () -> {
             String nextCtrlText = Lg.text("control_number", nCtrl + 1);
             String currCtrlText = Lg.text("control_number", nCtrl);
-            String addCtrlText = Lg.text("add_control", nextCtrlText);
-            String delCtrlText = Lg.text("delete_last_control", currCtrlText);
+            String addCtrlText = Lg.html("add_control", nextCtrlText);
+            String delCtrlText = Lg.html("delete_last_control", currCtrlText);
             addControlButton.setText(addCtrlText);
             removeControlButton.setText(delCtrlText);
         });
