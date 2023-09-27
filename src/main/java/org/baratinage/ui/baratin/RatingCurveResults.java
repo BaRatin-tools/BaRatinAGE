@@ -31,7 +31,7 @@ public class RatingCurveResults extends SimpleTabContainer {
 
         Lg.register(this, () -> {
             setTitleTextAt(0, Lg.html("posterior_rating_curve"));
-            setTitleTextAt(1, Lg.html("posterior_rating_curve"));
+            setTitleTextAt(1, Lg.html("parameter_densities"));
         });
     }
 
