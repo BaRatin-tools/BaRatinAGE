@@ -58,7 +58,7 @@ public class BamFilesHelpers {
         if (dataFilePath != null) {
             return dataFilePath;
         }
-        String[] osSplitChars = new String[] { "\\", "/" };
+        String[] osSplitChars = new String[] { "\\\\", "/" };
         for (String osSplitChar : osSplitChars) {
             String[] splitPath = rawFilePath.split(osSplitChar);
             dataFilePath = findDataFilePath(Path.of("", splitPath), workspacePath);
