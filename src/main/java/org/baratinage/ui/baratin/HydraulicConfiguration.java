@@ -50,12 +50,11 @@ public class HydraulicConfiguration
 
     private String jsonStringBackup;
 
-    // FIXME: add proper specific icons
-    private static ImageIcon controlMatrixIcon = SvgIcon.buildCustomAppImageIcon("control_matrix.svg",
+    public static final ImageIcon controlMatrixIcon = SvgIcon.buildCustomAppImageIcon("control_matrix.svg",
             AppConfig.AC.ICON_SIZE);
-    private static ImageIcon priorSpecificationIcon = SvgIcon.buildCustomAppImageIcon("prior_densities.svg",
+    public static final ImageIcon priorSpecificationIcon = SvgIcon.buildCustomAppImageIcon("prior_densities.svg",
             AppConfig.AC.ICON_SIZE);
-    private static ImageIcon priorRatingCurveIcon = SvgIcon.buildCustomAppImageIcon("prior_rating_curve.svg",
+    public static final ImageIcon priorRatingCurveIcon = SvgIcon.buildCustomAppImageIcon("prior_rating_curve.svg",
             AppConfig.AC.ICON_SIZE);
 
     public HydraulicConfiguration(String uuid, BaratinProject project) {
