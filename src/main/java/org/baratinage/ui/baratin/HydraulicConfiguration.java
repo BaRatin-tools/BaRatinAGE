@@ -3,10 +3,9 @@ package org.baratinage.ui.baratin;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JSeparator;
-import javax.swing.JSplitPane;
 
 import org.baratinage.jbam.Distribution;
 import org.baratinage.jbam.Distribution.DISTRIBUTION;
@@ -27,6 +26,8 @@ import org.baratinage.ui.baratin.hydraulic_control.ControlMatrix;
 import org.baratinage.ui.baratin.hydraulic_control.HydraulicControlPanels;
 import org.baratinage.ui.baratin.hydraulic_control.OneHydraulicControl;
 import org.baratinage.ui.commons.MsgPanel;
+import org.baratinage.ui.component.SimpleTabContainer;
+import org.baratinage.ui.component.SvgIcon;
 import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.ui.lg.Lg;
 
@@ -49,6 +50,14 @@ public class HydraulicConfiguration
 
     private String jsonStringBackup;
 
+    // FIXME: add proper specific icons
+    private static ImageIcon controlMatrixIcon = SvgIcon.buildCustomAppImageIcon("control_matrix.svg",
+            AppConfig.AC.ICON_SIZE);
+    private static ImageIcon priorSpecificationIcon = SvgIcon.buildCustomAppImageIcon("prior_densities.svg",
+            AppConfig.AC.ICON_SIZE);
+    private static ImageIcon priorRatingCurveIcon = SvgIcon.buildCustomAppImageIcon("prior_rating_curve.svg",
+            AppConfig.AC.ICON_SIZE);
+
     public HydraulicConfiguration(String uuid, BaratinProject project) {
         super(BamItemType.HYDRAULIC_CONFIG, uuid, project);
 
@@ -64,12 +73,6 @@ public class HydraulicConfiguration
             fireChangeListeners();
             checkPriorRatingCurveSync();
         });
-
-        JSplitPane splitPaneContainer = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
-        splitPaneContainer.setBorder(BorderFactory.createEmptyBorder());
-        splitPaneContainer.setLeftComponent(controlMatrix);
-        splitPaneContainer.setRightComponent(hydraulicControls);
-        splitPaneContainer.setResizeWeight(0.5);
 
         priorRatingCurveStageGrid = new RatingCurveStageGrid();
         priorRatingCurveStageGrid.addChangeListener((e) -> {
@@ -101,12 +104,18 @@ public class HydraulicConfiguration
         priorRatingCurvePanel.appendChild(runPanel, 0);
         priorRatingCurvePanel.appendChild(plotPanel, 1);
 
-        JSplitPane mainSplitPaneContainer = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
-        mainSplitPaneContainer.setBorder(BorderFactory.createEmptyBorder());
-        mainSplitPaneContainer.setLeftComponent(splitPaneContainer);
-        mainSplitPaneContainer.setRightComponent(priorRatingCurvePanel);
+        SimpleTabContainer mainContainer = new SimpleTabContainer();
+        mainContainer.addTab("control_matrix", controlMatrixIcon, controlMatrix);
+        mainContainer.addTab("prior_parameter_specification", priorSpecificationIcon, hydraulicControls);
+        mainContainer.addTab("prior_rating_curve", priorRatingCurveIcon, priorRatingCurvePanel);
 
-        setContent(mainSplitPaneContainer);
+        Lg.register(mainContainer, () -> {
+            mainContainer.setTitleTextAt(0, Lg.html("control_matrix"));
+            mainContainer.setTitleTextAt(1, Lg.html("prior_parameter_specification"));
+            mainContainer.setTitleTextAt(2, Lg.html("prior_rating_curve"));
+        });
+
+        setContent(mainContainer);
 
         boolean[][] mat = controlMatrix.getControlMatrix();
         updateHydraulicControls(mat);
