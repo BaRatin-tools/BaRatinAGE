@@ -52,9 +52,9 @@ public class PriorRatingCurvePlot extends RowColPanel {
         plot.addXYItem(mp);
 
         Lg.register(plot, () -> {
-            mp.setLabel(Lg.text("prior_rating_curve"));
-            parEnv.setLabel(Lg.text("prior_parametric_uncertainty"));
-            bands[0].setLabel(Lg.text("prior_transition_stage"));
+            mp.setLabel(Lg.text("lgd_prior_rating_curve"));
+            parEnv.setLabel(Lg.text("lgd_prior_parametric_uncertainty"));
+            bands[0].setLabel(Lg.text("lgd_prior_transition_stage"));
             plot.axisX.setLabel(Lg.text("stage_level"));
             plot.axisY.setLabel(Lg.text("discharge"));
             plot.axisYlog.setLabel(Lg.text("discharge"));

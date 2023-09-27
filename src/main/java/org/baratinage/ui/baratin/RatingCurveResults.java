@@ -41,8 +41,8 @@ public class RatingCurveResults extends JTabbedPane {
         setTabComponentAt(1, paraDensitiesTitle);
 
         Lg.register(this, () -> {
-            ratingCurveTitle.setText(Lg.text("posterior_rating_curve"));
-            paraDensitiesTitle.setText(Lg.text("parameter_densities"));
+            ratingCurveTitle.setText(Lg.html("posterior_rating_curve"));
+            paraDensitiesTitle.setText(Lg.html("parameter_densities"));
         });
     }
 

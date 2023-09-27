@@ -100,8 +100,8 @@ public class Gaugings extends BamItem implements ICalibrationData {
         plot.addXYItem(points.get(1));
 
         Lg.register(plot, () -> {
-            points.get(0).setLabel(Lg.text("active_gaugings"));
-            points.get(1).setLabel(Lg.text("inactive_gaugings"));
+            points.get(0).setLabel(Lg.text("lgd_active_gaugings"));
+            points.get(1).setLabel(Lg.text("lgd_inactive_gaugings"));
             plot.axisX.setLabel(Lg.text("stage_level"));
             plot.axisY.setLabel(Lg.text("discharge"));
             plot.axisYlog.setLabel(Lg.text("discharge"));

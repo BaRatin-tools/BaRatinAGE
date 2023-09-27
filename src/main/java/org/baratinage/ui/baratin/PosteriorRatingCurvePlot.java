@@ -74,11 +74,11 @@ public class PosteriorRatingCurvePlot extends RowColPanel {
         plot.addXYItem(gaugingsPoints);
 
         Lg.register(plot, () -> {
-            mp.setLabel(Lg.text("posterior_rating_curve"));
-            parEnv.setLabel(Lg.text("posterior_parametric_uncertainty"));
-            totEnv.setLabel(Lg.text("posterior_parametric_structural_uncertainty"));
-            bands[0].setLabel(Lg.text("posterior_transition_stage"));
-            gaugingsPoints.setLabel(Lg.text("active_gaugings"));
+            mp.setLabel(Lg.text("lgd_posterior_rating_curve"));
+            parEnv.setLabel(Lg.text("lgd_posterior_parametric_uncertainty"));
+            totEnv.setLabel(Lg.text("lgd_posterior_parametric_structural_uncertainty"));
+            bands[0].setLabel(Lg.text("lgd_posterior_transition_stage"));
+            gaugingsPoints.setLabel(Lg.text("lgd_active_gaugings"));
             plot.axisX.setLabel(Lg.text("stage_level"));
             plot.axisY.setLabel(Lg.text("discharge"));
             plot.axisYlog.setLabel(Lg.text("discharge"));
