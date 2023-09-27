@@ -4,19 +4,21 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.ImageIcon;
-import javax.swing.JLabel;
-import javax.swing.JTabbedPane;
 
 import org.baratinage.jbam.EstimatedParameter;
 import org.baratinage.ui.AppConfig;
 import org.baratinage.ui.commons.DensityPlotGrid;
+import org.baratinage.ui.component.SimpleTabContainer;
 import org.baratinage.ui.component.SvgIcon;
 import org.baratinage.ui.lg.Lg;
 
-public class RatingCurveResults extends JTabbedPane {
+public class RatingCurveResults extends SimpleTabContainer {
 
     private PosteriorRatingCurvePlot ratingCurvePlot;
     private DensityPlotGrid paramDensityPlots;
+
+    private static ImageIcon rcIcon = SvgIcon.buildCustomAppImageIcon("rating_curve.svg", AppConfig.AC.ICON_SIZE);
+    private static ImageIcon dpIcon = SvgIcon.buildCustomAppImageIcon("densities.svg", AppConfig.AC.ICON_SIZE);
 
     public RatingCurveResults() {
 
@@ -24,25 +26,12 @@ public class RatingCurveResults extends JTabbedPane {
 
         paramDensityPlots = new DensityPlotGrid();
 
-        addTab("rating_curve",
-                ratingCurvePlot);
-        addTab("parameter_densities",
-                paramDensityPlots);
-
-        ImageIcon rcIcon = SvgIcon.buildCustomAppImageIcon("rating_curve.svg", AppConfig.AC.ICON_SIZE);
-        ImageIcon dpIcon = SvgIcon.buildCustomAppImageIcon("densities.svg", AppConfig.AC.ICON_SIZE);
-
-        JLabel ratingCurveTitle = new JLabel();
-        ratingCurveTitle.setIcon(rcIcon);
-        setTabComponentAt(0, ratingCurveTitle);
-
-        JLabel paraDensitiesTitle = new JLabel();
-        paraDensitiesTitle.setIcon(dpIcon);
-        setTabComponentAt(1, paraDensitiesTitle);
+        addTab("rating_curve", rcIcon, ratingCurvePlot);
+        addTab("parameter_densities", dpIcon, paramDensityPlots);
 
         Lg.register(this, () -> {
-            ratingCurveTitle.setText(Lg.html("posterior_rating_curve"));
-            paraDensitiesTitle.setText(Lg.html("parameter_densities"));
+            setTitleTextAt(0, Lg.html("posterior_rating_curve"));
+            setTitleTextAt(1, Lg.html("posterior_rating_curve"));
         });
     }
 
