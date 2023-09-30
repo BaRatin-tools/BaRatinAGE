@@ -49,6 +49,10 @@ public class Distribution {
 
     private final String id;
 
+    public static Distribution buildDistributionFromBamName(String bamName, double... parameterValues) {
+        return new Distribution(DISTRIBUTION.getDistribFromBamName(bamName), parameterValues);
+    }
+
     public Distribution(DISTRIBUTION distribution, double... parameterValues) {
         int n = distribution.parameterNames.length;
         if (n != parameterValues.length) {
