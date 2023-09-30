@@ -24,6 +24,12 @@ public class SvgIcon extends ImageIcon {
                 "custom", name).toString(), size);
     }
 
+    static public ImageIcon buildFeatherAppImageIcon(String name, float size) {
+        return buildNoScalingIcon(Path.of(
+                AppConfig.AC.ICONS_RESOURCES_DIR,
+                "feather", name).toString(), size);
+    }
+
     static public NoScalingIcon buildNoScalingIcon(String path, float width, float height) {
         return new NoScalingIcon(new SvgIcon(path, width, height));
     }
