@@ -1,4 +1,4 @@
-package org.baratinage.ui.component;
+package org.baratinage.ui.container;
 
 import java.awt.Component;
 import java.util.ArrayList;
@@ -9,7 +9,7 @@ import javax.swing.JLabel;
 import javax.swing.JTabbedPane;
 import javax.swing.border.EmptyBorder;
 
-public class SimpleTabContainer extends JTabbedPane {
+public class TabContainer extends JTabbedPane {
 
     private record TabItem(JLabel title, Component component) {
     };
@@ -31,11 +31,11 @@ public class SimpleTabContainer extends JTabbedPane {
         }
     }
 
-    public SimpleTabContainer() {
+    public TabContainer() {
         super();
     }
 
-    public SimpleTabContainer(LOC placement) {
+    public TabContainer(LOC placement) {
         super(placement.placement);
     }
 

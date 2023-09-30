@@ -8,11 +8,11 @@ import javax.swing.ImageIcon;
 import org.baratinage.jbam.EstimatedParameter;
 import org.baratinage.ui.AppConfig;
 import org.baratinage.ui.commons.DensityPlotGrid;
-import org.baratinage.ui.component.SimpleTabContainer;
+import org.baratinage.ui.container.TabContainer;
 import org.baratinage.ui.component.SvgIcon;
 import org.baratinage.ui.lg.Lg;
 
-public class RatingCurveResults extends SimpleTabContainer {
+public class RatingCurveResults extends TabContainer {
 
     private PosteriorRatingCurvePlot ratingCurvePlot;
     private DensityPlotGrid paramDensityPlots;

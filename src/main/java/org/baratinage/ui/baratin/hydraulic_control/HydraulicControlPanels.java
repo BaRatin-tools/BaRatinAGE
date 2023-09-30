@@ -9,7 +9,7 @@ import javax.swing.event.ChangeListener;
 import org.baratinage.jbam.Parameter;
 import org.baratinage.ui.bam.IPriors;
 import org.baratinage.ui.baratin.HydraulicConfiguration;
-import org.baratinage.ui.component.SimpleTabContainer;
+import org.baratinage.ui.container.TabContainer;
 import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.ui.lg.Lg;
 import org.json.JSONArray;
@@ -20,11 +20,11 @@ public class HydraulicControlPanels extends RowColPanel implements IPriors, Chan
     private final List<OneHydraulicControl> controls;
     private int nVisibleHydraulicControls = 0;
 
-    private final SimpleTabContainer tabs;
+    private final TabContainer tabs;
 
     public HydraulicControlPanels() {
         controls = new ArrayList<>();
-        tabs = new SimpleTabContainer(SimpleTabContainer.LOC.TOP);
+        tabs = new TabContainer(TabContainer.LOC.TOP);
 
         Lg.register(tabs, () -> {
             updateTabs();
