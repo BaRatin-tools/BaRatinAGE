@@ -13,10 +13,10 @@ import javax.swing.event.ChangeListener;
 
 import org.baratinage.jbam.Parameter;
 import org.baratinage.ui.AppConfig;
-import org.baratinage.ui.baratin.hydraulic_control.control_panel.KACPriorControlChangel;
+import org.baratinage.ui.baratin.hydraulic_control.control_panel.KAC;
 import org.baratinage.ui.baratin.hydraulic_control.control_panel.PriorControlPanel;
-import org.baratinage.ui.baratin.hydraulic_control.control_panel.RectChannelPriorControlPanel;
-import org.baratinage.ui.baratin.hydraulic_control.control_panel.RectWeirPriorControlPanel;
+import org.baratinage.ui.baratin.hydraulic_control.control_panel.WeirRect;
+import org.baratinage.ui.baratin.hydraulic_control.control_panel.ChannelRect;
 import org.baratinage.ui.component.SimpleComboBox;
 import org.baratinage.ui.component.SvgIcon;
 import org.baratinage.ui.container.GridPanel;
@@ -73,12 +73,12 @@ public class OneHydraulicControl extends RowColPanel implements ChangeListener {
         allControlOptions.add(
                 new HydraulicControlOption(
                         "rectangular_weir", rectWeirIcon,
-                        new RectWeirPriorControlPanel()));
+                        new ChannelRect()));
         allControlOptions.add(
                 new HydraulicControlOption(
                         "rectangular_channel",
                         rectChannelIcon,
-                        new RectChannelPriorControlPanel()));
+                        new WeirRect()));
 
         this.controlNumber = controlNumber;
 
@@ -120,7 +120,7 @@ public class OneHydraulicControl extends RowColPanel implements ChangeListener {
         physicalParametersPanel.appendChild(hydraulicControlPanel);
         physicalParametersPanel.appendChild(physicalControlParametersLabelsPanel);
 
-        kacControlPanel = new KACPriorControlChangel();
+        kacControlPanel = new KAC();
 
         switchModeButton = new JButton("Switch to expert mode");
         switchModeButton.addActionListener((e) -> {

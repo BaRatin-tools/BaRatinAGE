@@ -3,9 +3,9 @@ package org.baratinage.ui.baratin.hydraulic_control.control_panel;
 import org.baratinage.ui.commons.ParameterPriorDistSimplified;
 import org.baratinage.ui.lg.Lg;
 
-public class RectChannelPriorControlPanel extends PriorControlPanel {
+public class WeirRect extends PriorControlPanel {
 
-    public RectChannelPriorControlPanel() {
+    public WeirRect() {
         super(
                 2,
                 "C<sub>r</sub>B<sub>w</sub>(2g)<sup>1/2</sup>(h-b)<sup>c</sup>&nbsp;(h>k)");

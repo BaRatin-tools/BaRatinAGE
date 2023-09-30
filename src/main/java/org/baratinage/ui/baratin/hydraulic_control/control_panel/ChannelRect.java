@@ -3,7 +3,7 @@ package org.baratinage.ui.baratin.hydraulic_control.control_panel;
 import org.baratinage.ui.commons.ParameterPriorDistSimplified;
 import org.baratinage.ui.lg.Lg;
 
-public class RectWeirPriorControlPanel extends PriorControlPanel {
+public class ChannelRect extends PriorControlPanel {
 
     private final ParameterPriorDistSimplified activationHeight;
     private final ParameterPriorDistSimplified stricklerCoef;
@@ -11,7 +11,7 @@ public class RectWeirPriorControlPanel extends PriorControlPanel {
     private final ParameterPriorDistSimplified slope;
     private final ParameterPriorDistSimplified exponent;
 
-    public RectWeirPriorControlPanel() {
+    public ChannelRect() {
         super(2, "K<sub>s</sub>B<sub>w</sub>S<sup>1/2</sup>(h-b)<sup>c</sup>&nbsp;(h>k)");
 
         activationHeight = new ParameterPriorDistSimplified();

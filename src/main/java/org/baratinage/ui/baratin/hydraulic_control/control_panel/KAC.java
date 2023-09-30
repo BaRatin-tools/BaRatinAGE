@@ -3,9 +3,9 @@ package org.baratinage.ui.baratin.hydraulic_control.control_panel;
 import org.baratinage.ui.commons.ParameterPriorDist;
 import org.baratinage.ui.lg.Lg;
 
-public class KACPriorControlChangel extends PriorControlPanel {
+public class KAC extends PriorControlPanel {
 
-    public KACPriorControlChangel() {
+    public KAC() {
         super(
                 3, "a(h-b)<sup>c</sup> (h>k)");
 
