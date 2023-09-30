@@ -11,7 +11,7 @@ public class StructuralErrorModel {
     public final String modelId;
     public final Parameter[] parameters;
 
-    public StructuralErrorModel(String name, String fileName, String modelId, Parameter[] parameters) {
+    public StructuralErrorModel(String name, String fileName, String modelId, Parameter... parameters) {
         this.name = name;
         this.fileName = fileName;
         this.modelId = modelId;
