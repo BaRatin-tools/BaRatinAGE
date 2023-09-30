@@ -2,7 +2,6 @@ package org.baratinage.ui.baratin.hydraulic_control.control_panel;
 
 import org.baratinage.ui.commons.ParameterPriorDistSimplified;
 import org.baratinage.ui.lg.Lg;
-import org.json.JSONObject;
 
 public class RectWeirPriorControlPanel extends PriorControlPanel {
 

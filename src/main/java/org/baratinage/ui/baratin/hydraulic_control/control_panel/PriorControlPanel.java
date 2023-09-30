@@ -15,9 +15,7 @@ import org.baratinage.ui.commons.ParameterPriorDist;
 import org.baratinage.ui.commons.ParameterPriorDistSimplified;
 import org.baratinage.ui.component.SvgIcon;
 import org.baratinage.ui.container.GridPanel;
-import org.baratinage.ui.lg.Lg;
 import org.json.JSONArray;
-import org.json.JSONObject;
 
 public abstract class PriorControlPanel extends GridPanel {
 

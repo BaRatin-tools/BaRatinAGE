@@ -24,14 +24,12 @@ import org.baratinage.ui.bam.RunConfigAndRes;
 import org.baratinage.ui.bam.RunPanel;
 import org.baratinage.ui.baratin.hydraulic_control.ControlMatrix;
 import org.baratinage.ui.baratin.hydraulic_control.HydraulicControlPanels;
-import org.baratinage.ui.baratin.hydraulic_control.OneHydraulicControl;
 import org.baratinage.ui.commons.MsgPanel;
 import org.baratinage.ui.component.SimpleTabContainer;
 import org.baratinage.ui.component.SvgIcon;
 import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.ui.lg.Lg;
 
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class HydraulicConfiguration
