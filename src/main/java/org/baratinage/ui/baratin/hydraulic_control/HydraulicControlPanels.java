@@ -24,7 +24,7 @@ public class HydraulicControlPanels extends RowColPanel implements IPriors, Chan
 
     public HydraulicControlPanels() {
         controls = new ArrayList<>();
-        tabs = new TabContainer(TabContainer.LOC.TOP);
+        tabs = new TabContainer(TabContainer.SIDE.TOP);
 
         Lg.register(tabs, () -> {
             updateTabs();

@@ -18,7 +18,7 @@ public class TabContainer extends JTabbedPane {
 
     private final EmptyBorder emptyBorder = new EmptyBorder(5, 5, 5, 5);
 
-    public static enum LOC {
+    public static enum SIDE {
         LEFT(JTabbedPane.LEFT),
         TOP(JTabbedPane.TOP),
         RIGHT(JTabbedPane.RIGHT),
@@ -26,7 +26,7 @@ public class TabContainer extends JTabbedPane {
 
         private final int placement;
 
-        private LOC(int loc) {
+        private SIDE(int loc) {
             placement = loc;
         }
     }
@@ -35,7 +35,7 @@ public class TabContainer extends JTabbedPane {
         super();
     }
 
-    public TabContainer(LOC placement) {
+    public TabContainer(SIDE placement) {
         super(placement.placement);
     }
 
