@@ -4,8 +4,11 @@ import javax.swing.JMenu;
 
 import org.baratinage.ui.AppConfig;
 import org.baratinage.ui.bam.BamItem;
+import org.baratinage.ui.bam.BamItemList;
 import org.baratinage.ui.bam.BamItemType;
 import org.baratinage.ui.bam.BamProject;
+import org.baratinage.ui.component.NameSymbolUnit;
+import org.baratinage.ui.lg.Lg;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -42,7 +45,8 @@ public class BaratinProject extends BamProject {
                     return new StructuralErrorModelBamItem(
                             uuid,
                             this,
-                            new String[] { "Q", "m<sup>3</sup>.s<sup>-1</sup>" });
+                            new NameSymbolUnit("Débit", "Q", "m<sup>3</sup>.s<sup>-1</sup>"));
+
                 });
 
         initBamItemType(
@@ -62,6 +66,13 @@ public class BaratinProject extends BamProject {
                 (String uuid) -> {
                     return new Hydrograph(uuid, this);
                 });
+
+        Lg.register(this, () -> {
+            BamItemList strucErrBamItems = BAM_ITEMS.filterByType(BamItemType.STRUCTURAL_ERROR);
+            for (BamItem item : strucErrBamItems) {
+                ((StructuralErrorModelBamItem) item).updateOutputNames(Lg.text("discharge"));
+            }
+        });
     }
 
     public void addDefaultBamItems() {

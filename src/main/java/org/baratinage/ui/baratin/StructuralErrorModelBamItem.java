@@ -4,6 +4,7 @@ import org.baratinage.jbam.Parameter;
 import org.baratinage.jbam.StructuralErrorModel;
 
 import java.awt.Font;
+import java.util.List;
 
 import javax.swing.JLabel;
 import javax.swing.JSeparator;
@@ -15,6 +16,7 @@ import org.baratinage.ui.bam.BamItemType;
 import org.baratinage.ui.bam.BamProject;
 import org.baratinage.ui.bam.IStructuralErrorModels;
 import org.baratinage.ui.commons.StructuralErrorModelPanel;
+import org.baratinage.ui.component.NameSymbolUnit;
 import org.baratinage.ui.container.RowColPanel;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -22,55 +24,54 @@ import org.json.JSONObject;
 public class StructuralErrorModelBamItem extends BamItem implements IStructuralErrorModels {
 
     private final int nOutputs;
-    private final String[][] outputSymbolAndUnits;
+    private NameSymbolUnit[] nameSymbolUnits;
     private final StructuralErrorModelPanel[] strucErrModelPanels;
 
     private static final Font MONOSPACE_FONT = new Font(Font.MONOSPACED, Font.PLAIN, 14);
-    private static final Font BOLD_SERIF_FONT = new Font(Font.SERIF, Font.BOLD, 14);
+    private static final Font LARGE_BOLD_FONT = new Font(Font.SANS_SERIF, Font.BOLD, 18);
 
-    public StructuralErrorModelBamItem(String uuid, BamProject project, String[]... outputSymbolAndUnits) {
+    private final JLabel parameterNameLabels[];
+
+    public StructuralErrorModelBamItem(String uuid, BamProject project, NameSymbolUnit... nameSymbolUnits) {
         super(BamItemType.STRUCTURAL_ERROR, uuid, project);
 
-        nOutputs = outputSymbolAndUnits.length;
+        nOutputs = nameSymbolUnits.length;
 
-        this.outputSymbolAndUnits = outputSymbolAndUnits;
+        this.nameSymbolUnits = nameSymbolUnits;
 
         strucErrModelPanels = new StructuralErrorModelPanel[nOutputs];
+        parameterNameLabels = new JLabel[nOutputs];
 
         RowColPanel panel = new RowColPanel(RowColPanel.AXIS.COL, RowColPanel.ALIGN.START);
         panel.setGap(5);
         panel.setPadding(5);
 
         for (int k = 0; k < nOutputs; k++) {
-            if (outputSymbolAndUnits[k].length != 2) {
-                throw new IllegalArgumentException(
-                        "Each element of 'outputSymbolAndUnits' must be of length 2 (symbol, unit)!");
-            }
 
-            String outputSymbol = outputSymbolAndUnits[k][0];
-            String outputUnit = outputSymbolAndUnits[k][1];
-
-            JLabel parameterNameLabel = new JLabel();
-            parameterNameLabel.setFont(BOLD_SERIF_FONT);
-            parameterNameLabel.setText(outputSymbol);
+            parameterNameLabels[k] = new JLabel();
+            parameterNameLabels[k].setFont(LARGE_BOLD_FONT);
+            parameterNameLabels[k]
+                    .setText(String.format("%s, %s",
+                            nameSymbolUnits[k].name(),
+                            nameSymbolUnits[k].symbol()));
 
             JLabel infoLabel = new JLabel();
             infoLabel.setFont(MONOSPACE_FONT);
             infoLabel.setText(
                     String.format(
                             "<html>N&sim;(&gamma;<sub>1</sub> + &gamma;<sub>2</sub>%s)</html>",
-                            outputSymbol));
+                            nameSymbolUnits[k].symbol()));
 
             // support only linear model, but with fixced gamma2 set to 0, it is equivalent
             // to the constant model
             StructuralErrorModelPanel strucErrModelPanel = new StructuralErrorModelPanel();
-            strucErrModelPanel.addParameter("&gamma;<sub>1</sub>", outputUnit,
+            strucErrModelPanel.addParameter("&gamma;<sub>1</sub>", nameSymbolUnits[k].unit(),
                     DISTRIBUTION.UNIFORM, 1, 0, 10000);
             strucErrModelPanel.addParameter("&gamma;<sub>2</sub>", "-",
                     DISTRIBUTION.UNIFORM, 0.1, 0, 10000);
             strucErrModelPanels[k] = strucErrModelPanel;
 
-            panel.appendChild(parameterNameLabel, 0);
+            panel.appendChild(parameterNameLabels[k], 0);
             panel.appendChild(infoLabel, 0);
             panel.appendChild(strucErrModelPanel, 0);
             if (k + 1 < nOutputs) {
@@ -81,21 +82,29 @@ public class StructuralErrorModelBamItem extends BamItem implements IStructuralE
             setContent(panel);
         }
 
-        // strucErrModelPanel = new StructuralErrorModelPanel();
+    }
 
-        // strucErrModelPanel.addParameter("&gamma;<sub>1</sub>", outputUnit,
-        // DISTRIBUTION.UNIFORM, 0, 0, 10000);
-        // strucErrModelPanel.addParameter("&gamma;<sub>2</sub>", "-",
-        // DISTRIBUTION.UNIFORM, 0.1, 0, 10000);
-
-        // setContent(strucErrModelPanel);
+    public void updateOutputNames(String... outputNames) {
+        if (outputNames.length != nOutputs) {
+            throw new IllegalArgumentException(nOutputs + " output names are expected!");
+        }
+        for (int k = 0; k < nOutputs; k++) {
+            nameSymbolUnits[k] = new NameSymbolUnit(
+                    outputNames[k],
+                    nameSymbolUnits[k].symbol(),
+                    nameSymbolUnits[k].unit());
+            parameterNameLabels[k]
+                    .setText(String.format("%s, %s",
+                            nameSymbolUnits[k].name(),
+                            nameSymbolUnits[k].symbol()));
+        }
     }
 
     @Override
     public StructuralErrorModel[] getStructuralErrorModels() {
         StructuralErrorModel[] structErrorModels = new StructuralErrorModel[nOutputs];
         for (int k = 0; k < nOutputs; k++) {
-            String name = "linear_model_" + k + "_" + outputSymbolAndUnits[k][0];
+            String name = "linear_model_" + k + "_" + nameSymbolUnits[k].symbol();
             String fileName = String.format(BamFilesHelpers.CONFIG_STRUCTURAL_ERRORS, name);
             Parameter[] parameters = strucErrModelPanels[k].getParameters();
             structErrorModels[k] = new StructuralErrorModel(name, fileName, "Linear", parameters);
@@ -124,7 +133,7 @@ public class StructuralErrorModelBamItem extends BamItem implements IStructuralE
 
     @Override
     public BamItem clone(String uuid) {
-        return new StructuralErrorModelBamItem(uuid, PROJECT, outputSymbolAndUnits);
+        return new StructuralErrorModelBamItem(uuid, PROJECT, nameSymbolUnits);
     }
 
 }
