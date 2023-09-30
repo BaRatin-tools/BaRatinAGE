@@ -6,7 +6,6 @@ import java.util.List;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JSeparator;
-import javax.swing.JSplitPane;
 
 import org.baratinage.jbam.Distribution;
 import org.baratinage.jbam.Distribution.DISTRIBUTION;
