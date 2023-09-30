@@ -50,20 +50,27 @@ public class SimpleTextField extends JTextField {
 
     // Placeholder implementation comes from: https://stackoverflow.com/a/16229082
     @Override
-    protected void paintComponent(final Graphics pG) {
-        super.paintComponent(pG);
+    protected void paintComponent(final Graphics g) {
+        super.paintComponent(g);
 
         if (placeholder == null || placeholder.length() == 0 || getText().length() > 0) {
             return;
         }
 
-        final Graphics2D g = (Graphics2D) pG;
-        g.setRenderingHint(
+        final Graphics2D g2D = (Graphics2D) g;
+        g2D.setRenderingHint(
                 RenderingHints.KEY_ANTIALIASING,
                 RenderingHints.VALUE_ANTIALIAS_ON);
-        g.setColor(getDisabledTextColor());
-        g.drawString(placeholder, getInsets().left, pG.getFontMetrics()
-                .getMaxAscent() + getInsets().top);
+        g2D.setColor(getDisabledTextColor());
+        float maxCharHeight = g2D.getFontMetrics().getMaxAscent();
+        float totalHeight = getHeight();
+        float x = getInsets().left;
+
+        float y = maxCharHeight / 2 + totalHeight / 2 - getInsets().top / 2; // fixed vertical centering of placeholder
+                                                                             // text
+        // float y = maxCharHeight + getInsets().top; // original value
+        // x, y is the baseline of first character
+        g2D.drawString(placeholder, x, y);
     }
 
     public void setPlaceholder(final String s) {
