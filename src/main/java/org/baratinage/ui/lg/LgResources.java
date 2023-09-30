@@ -67,12 +67,12 @@ public class LgResources {
             if (localKey.equals(DEFAULT_LOCAL_KEY)) {
                 System.err.println(
                         String.format(
-                                "LgRessourcs Error: no translation found for key '%s' and default locale '%s' in bundle '%s'!",
+                                "LgRessources Error: no translation found for key '%s' and default locale '%s' in bundle '%s'!",
                                 itemKey, localKey, fileKey));
                 return "<no-translation-found>";
             } else {
                 System.out.println(
-                        String.format("LgRessourcs: No locale '%s' found! Looking in default locale '%s' instead.",
+                        String.format("LgRessources: No locale '%s' found! Looking in default locale '%s' instead.",
                                 localKey, DEFAULT_LOCAL_KEY));
                 return getTranslation(DEFAULT_LOCAL_KEY, fileKey, itemKey);
             }
@@ -80,7 +80,7 @@ public class LgResources {
         ResourceBundle resourceBundle = fileTranslations.get(fileKey);
         if (resourceBundle == null) {
             System.err.println(
-                    String.format("LgRessourcs Error: No bundle for locale '%s' named '%s' found!",
+                    String.format("LgRessources Error: No bundle for locale '%s' named '%s' found!",
                             localKey, fileKey));
             return "<no-translation-found>";
         }
