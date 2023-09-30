@@ -29,6 +29,7 @@ import org.baratinage.ui.commons.MsgPanel;
 import org.baratinage.ui.component.SvgIcon;
 import org.baratinage.ui.component.Title;
 import org.baratinage.ui.container.RowColPanel;
+import org.baratinage.ui.container.SplitContainer;
 import org.baratinage.ui.lg.Lg;
 
 import org.json.JSONObject;
@@ -127,13 +128,10 @@ public class HydraulicConfiguration
         priorSepecificationPanel.appendChild(priorSpecificationTitle, 0);
         priorSepecificationPanel.appendChild(hydraulicControls, 1);
 
-        JSplitPane mainContainer = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
-        JSplitPane leftContainer = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
-
-        leftContainer.setTopComponent(controlMatrixContainer);
-        leftContainer.setBottomComponent(priorRCplotPanel);
-        mainContainer.setLeftComponent(leftContainer);
-        mainContainer.setRightComponent(priorSepecificationPanel);
+        SplitContainer mainContainer = SplitContainer.build2Left1RightSplitContainer(
+                controlMatrixContainer,
+                priorRCplotPanel,
+                priorSepecificationPanel);
 
         Lg.register(mainContainer, () -> {
             controlMatrixTitle.setText(Lg.html("control_matrix"));
