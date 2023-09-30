@@ -4,7 +4,6 @@ import org.baratinage.jbam.Parameter;
 import org.baratinage.jbam.StructuralErrorModel;
 
 import java.awt.Font;
-import java.util.List;
 
 import javax.swing.JLabel;
 import javax.swing.JSeparator;
