@@ -3,55 +3,49 @@ package org.baratinage.ui.commons;
 import org.baratinage.jbam.Distribution;
 import org.baratinage.jbam.Parameter;
 import org.baratinage.jbam.StructuralErrorModel;
-import org.baratinage.jbam.Distribution.DISTRIBUTION;
 import org.baratinage.jbam.utils.BamFilesHelpers;
 
 public class ConstantStructuralErrorModel extends AbstractStructuralErrorModel {
 
-    private ParameterPriorDist g1parameter;
+    private final ParameterPriorDist gamma1;
 
     public ConstantStructuralErrorModel() {
 
         super();
+        gamma1 = new ParameterPriorDist();
+        gamma1.setNameLabel("");
+        gamma1.setSymbolUnitLabels("&gamma;<sub>1</sub>", "m<sup>3<sup>.s<sup>-1</sup>");
 
-        g1parameter = new ParameterPriorDist("gamma1");
-        g1parameter.nameLabel.setText("<html>&gamma;<sub>1</sub></html>");
-        g1parameter.addChangeListener((e) -> {
-            fireChangeListener();
-        });
+        insertChild(gamma1.symbolUnitLabel, 0, 1);
+        insertChild(gamma1.initialGuessField, 1, 1);
+        insertChild(gamma1.distributionField.distributionCombobox, 2, 1);
+        insertChild(gamma1.distributionField.parameterFieldsPanel, 3, 1);
 
-        insertChild(g1parameter.nameLabel, 0, 1);
-        insertChild(g1parameter.initialGuessField, 1, 1);
-        insertChild(g1parameter.distComboBox, 2, 1);
-        insertChild(g1parameter.parametersInputsPanel, 3, 1);
+        // FIXME: add change listeners!
 
     }
 
     @Override
     public void applyDefaultConfig() {
-        g1parameter.set(DISTRIBUTION.UNIFORM, 1, new double[] { 0, 1000 });
+        Distribution d = new Distribution(Distribution.DISTRIBUTION.UNIFORM, 0, 1000);
+        Parameter p = new Parameter("", 1, d);
+        gamma1.configure(true, p);
     }
 
     @Override
     public StructuralErrorModel getStructuralErrorModel() {
-        Parameter[] modelParameters = new Parameter[] {
-                g1parameter.getParameter()
-        };
         String name = "constant_model";
-        StructuralErrorModel structuralErrorModel = new StructuralErrorModel(
+        return new StructuralErrorModel(
                 name,
                 String.format(BamFilesHelpers.CONFIG_STRUCTURAL_ERRORS, name),
                 "Constant",
-                modelParameters);
-        return structuralErrorModel;
+                gamma1.getParameter());
     }
 
     @Override
     public void setFromParameters(Parameter[] parameters) {
         if (parameters.length == 1) {
-            Parameter p = parameters[0];
-            Distribution d = p.distribution;
-            g1parameter.set(d.distribution, p.initalGuess, d.parameterValues);
+            gamma1.configure(true, parameters[0]);
         }
     }
 

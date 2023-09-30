@@ -3,16 +3,12 @@ package org.baratinage.ui.commons;
 import org.baratinage.jbam.Distribution;
 import org.baratinage.jbam.Parameter;
 import org.baratinage.jbam.StructuralErrorModel;
-import org.baratinage.jbam.Distribution.DISTRIBUTION;
 import org.baratinage.jbam.utils.BamFilesHelpers;
 
 public class LinearStructuralErrorModel extends AbstractStructuralErrorModel {
 
-    private ParameterPriorDist g1parameter;
-    private ParameterPriorDist g2parameter;
-
-    private String gamma1LabelString = "<html>&gamma;<sub>1</sub></html>";
-    private String gamma2LabelString = "<html>&gamma;<sub>2</sub></html>";
+    private final ParameterPriorDist gamma1;
+    private final ParameterPriorDist gamma2;
 
     public LinearStructuralErrorModel() {
         super();
@@ -21,61 +17,56 @@ public class LinearStructuralErrorModel extends AbstractStructuralErrorModel {
         setGap(5);
         setPadding(5);
 
-        g1parameter = new ParameterPriorDist("gamma1");
-        g1parameter.nameLabel.setText(gamma1LabelString);
-        g1parameter.addChangeListener((e) -> {
-            fireChangeListener();
-        });
+        gamma1 = new ParameterPriorDist();
+        gamma1.setNameLabel("");
+        gamma1.setSymbolUnitLabels("&gamma;<sub>1</sub>", "m<sup>3<sup>.s<sup>-1</sup>");
 
-        insertChild(g1parameter.nameLabel, 0, 1);
-        insertChild(g1parameter.initialGuessField, 1, 1);
-        insertChild(g1parameter.distComboBox, 2, 1);
-        insertChild(g1parameter.parametersInputsPanel, 3, 1);
+        insertChild(gamma1.symbolUnitLabel, 0, 1);
+        insertChild(gamma1.initialGuessField, 1, 1);
+        insertChild(gamma1.distributionField.distributionCombobox, 2, 1);
+        insertChild(gamma1.distributionField.parameterFieldsPanel, 3, 1);
 
-        g2parameter = new ParameterPriorDist("gamma2");
-        g2parameter.nameLabel.setText(gamma2LabelString);
-        g2parameter.addChangeListener((e) -> {
-            fireChangeListener();
-        });
+        gamma2 = new ParameterPriorDist();
+        gamma2.setNameLabel("");
+        gamma2.setSymbolUnitLabels("&gamma;<sub>1</sub>", "m<sup>3<sup>.s<sup>-1</sup>");
 
-        insertChild(g2parameter.nameLabel, 0, 2);
-        insertChild(g2parameter.initialGuessField, 1, 2);
-        insertChild(g2parameter.distComboBox, 2, 2);
-        insertChild(g2parameter.parametersInputsPanel, 3, 2);
+        insertChild(gamma2.symbolUnitLabel, 0, 2);
+        insertChild(gamma2.initialGuessField, 1, 2);
+        insertChild(gamma2.distributionField.distributionCombobox, 2, 2);
+        insertChild(gamma2.distributionField.parameterFieldsPanel, 3, 2);
 
     }
 
     @Override
     public void applyDefaultConfig() {
-        g1parameter.set(DISTRIBUTION.UNIFORM, 1, new double[] { 0, 10000 });
-        g2parameter.set(DISTRIBUTION.UNIFORM, 0.1, new double[] { 0, 10000 });
-        repaint();
+
+        Distribution d1 = new Distribution(Distribution.DISTRIBUTION.UNIFORM, 0, 1000);
+        Parameter p1 = new Parameter("gamma1", 1, d1);
+        gamma1.configure(true, p1);
+
+        Distribution d2 = new Distribution(Distribution.DISTRIBUTION.UNIFORM, 0, 1000);
+        Parameter p2 = new Parameter("gamma2", 0.1, d2);
+        gamma1.configure(true, p2);
+
     }
 
     @Override
     public StructuralErrorModel getStructuralErrorModel() {
-        Parameter[] modelParameters = new Parameter[] {
-                g1parameter.getParameter(),
-                g2parameter.getParameter()
-        };
         String name = "linear_model";
-        StructuralErrorModel structuralErrorModel = new StructuralErrorModel(
+        return new StructuralErrorModel(
                 name,
                 String.format(BamFilesHelpers.CONFIG_STRUCTURAL_ERRORS, name),
                 "Linear",
-                modelParameters);
-        return structuralErrorModel;
+                gamma1.getParameter(),
+                gamma2.getParameter());
     }
 
     @Override
     public void setFromParameters(Parameter[] parameters) {
         if (parameters.length == 2) {
-            Parameter p1 = parameters[0];
-            Distribution d1 = p1.distribution;
-            g1parameter.set(d1.distribution, p1.initalGuess, d1.parameterValues);
-            Parameter p2 = parameters[1];
-            Distribution d2 = p2.distribution;
-            g2parameter.set(d2.distribution, p2.initalGuess, d2.parameterValues);
+            gamma1.configure(true, parameters[0]);
+            gamma1.configure(true, parameters[2]);
+
         }
     }
 
