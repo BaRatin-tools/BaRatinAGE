@@ -1,28 +1,63 @@
 package org.baratinage.ui.component;
 
 import java.awt.Color;
+import java.awt.Component;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
 
 import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.border.EmptyBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.plaf.basic.BasicBorders;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.DefaultListCellRenderer;
+import javax.swing.Icon;
 
 import org.baratinage.ui.container.RowColPanel;
 
 public class SimpleComboBox extends RowColPanel {
 
-    private DefaultComboBoxModel<String> model;
-    private JComboBox<String> comboBox;
+    private static JLabel buildLabel(String text, Icon icon) {
+        JLabel label = new JLabel(text);
+        label.setBorder(new EmptyBorder(2, 5, 2, 5));
+        if (icon != null) {
+            label.setIcon(icon);
+        }
+        return label;
+    }
+
+    private DefaultComboBoxModel<JLabel> model;
+    private JComboBox<JLabel> comboBox;
     private boolean changeListenersDisabled = false;
+
+    private final JLabel defaultEmptyLabel = buildLabel("<html>&mdash;</html>", null);
+    private JLabel emptyLabel = defaultEmptyLabel;
 
     public SimpleComboBox() {
         model = new DefaultComboBoxModel<>();
         comboBox = new JComboBox<>();
         comboBox.setModel(model);
+        comboBox.setRenderer(new DefaultListCellRenderer() {
+            @Override
+            public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected,
+                    boolean cellHasFocus) {
+                JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected,
+                        cellHasFocus);
+                JLabel originalLabel = (JLabel) value;
+                if (originalLabel != null) {
+                    label.setText(originalLabel.getText());
+                    label.setIcon(originalLabel.getIcon());
+                    label.setBorder(originalLabel.getBorder());
+                } else {
+                    System.out.println("Null");
+                }
+                return label;
+            }
+        });
         comboBox.addActionListener((e) -> {
             if (!changeListenersDisabled) {
                 fireChangeListeners();
@@ -42,15 +77,58 @@ public class SimpleComboBox extends RowColPanel {
     }
 
     public void setItems(String[] items, boolean silent) {
+        int n = items.length;
+        JLabel[] labels = new JLabel[n];
+        for (int k = 0; k < n; k++) {
+            labels[k] = buildLabel(items[k], null);
+        }
+        setItems(labels, silent);
+    }
+
+    public void setItems(String[] items, Icon icon) {
+        int n = items.length;
+        Icon[] icons = new Icon[n];
+        for (int k = 0; k < n; k++) {
+            icons[k] = icon;
+        }
+        setItems(items, icons);
+    }
+
+    public void setItems(String[] items, Icon[] icons) {
+        int n = items.length;
+        int m = icons.length;
+        if (m != n) {
+            throw new IllegalArgumentException("items and icons must have the same length!");
+        }
+        JLabel[] labels = new JLabel[n];
+        for (int k = 0; k < n; k++) {
+            labels[k] = buildLabel(items[k], icons[k]);
+        }
+        setItems(labels, false);
+    }
+
+    public void setItems(JLabel[] labels, boolean silent) {
         if (silent) {
             changeListenersDisabled = true;
         }
         model.removeAllElements();
-        model.addElement("-"); // empty element
-        for (String item : items) {
-            model.addElement(item);
+        if (emptyLabel != null) {
+            model.addElement(emptyLabel); // empty element
+        }
+        for (JLabel label : labels) {
+            model.addElement(label);
         }
         changeListenersDisabled = false;
+    }
+
+    public void setEmptyItem(JLabel label) {
+        emptyLabel = label;
+        if (model.getSize() > 0) {
+            changeListenersDisabled = true;
+            model.removeElementAt(0);
+            model.insertElementAt(emptyLabel, 0);
+            changeListenersDisabled = false;
+        }
     }
 
     public void clearItems() {
@@ -70,8 +148,10 @@ public class SimpleComboBox extends RowColPanel {
             changeListenersDisabled = false;
             return;
         }
-        k += 1;
-        String label = model.getElementAt(k);
+        if (emptyLabel != null) {
+            k += 1;
+        }
+        JLabel label = model.getElementAt(k);
         if (label != null) {
             model.setSelectedItem(label);
         }
@@ -84,11 +164,12 @@ public class SimpleComboBox extends RowColPanel {
             return -1;
         }
         int k = model.getIndexOf(item);
-        return k - 1;
+        return emptyLabel != null ? k - 1 : k;
     }
 
     public int getItemCount() {
-        return model.getSize() - 1;
+        int size = model.getSize();
+        return emptyLabel != null ? size - 1 : size;
     }
 
     private final List<Predicate<Integer>> validators = new ArrayList<>();
