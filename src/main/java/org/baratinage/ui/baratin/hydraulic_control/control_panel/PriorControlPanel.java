@@ -19,6 +19,9 @@ import org.json.JSONArray;
 
 public abstract class PriorControlPanel extends GridPanel {
 
+        protected record MeanStdRecord(Double mean, Double std) {
+        };
+
         private static String vAlignFixString = "<sup>&nbsp;</sup><sub>&nbsp;</sub>";
 
         private static final Font MONOSPACE_FONT = new Font(Font.MONOSPACED, Font.PLAIN, 14);
@@ -67,14 +70,14 @@ public abstract class PriorControlPanel extends GridPanel {
                 equationLabel.setText(String.format("<html>%s %s</html>", equation, vAlignFixString));
                 equationLabel.setFont(MONOSPACE_FONT);
 
-                insertChild(equationLabel, 0, 1, 3, 1);
+                insertLabel(equationLabel, 0, 1, 3);
 
                 JSeparator iconNamSymbolUnitSep = new JSeparator(JSeparator.HORIZONTAL);
                 insertChild(iconNamSymbolUnitSep, 0, 2, 3, 1);
 
                 JLabel lockLabel = new JLabel();
                 lockLabel.setIcon(lockIcon);
-                insertChild(lockLabel, 3 + nColumns, 1);
+                insertLabel(lockLabel, 3 + nColumns, 1);
                 JSeparator lockSeparator = new JSeparator(JSeparator.HORIZONTAL);
                 insertChild(lockSeparator, 3 + nColumns, 2);
 
@@ -82,11 +85,21 @@ public abstract class PriorControlPanel extends GridPanel {
                 for (int k = 0; k < nColumns; k++) {
                         JLabel label = new JLabel("column #" + k + 1);
                         columnHeaders.add(label);
-                        insertChild(label, 3 + k, 1);
+                        insertLabel(label, 3 + k, 1);
                         JSeparator sep = new JSeparator(JSeparator.HORIZONTAL);
                         insertChild(sep, 3 + k, 2);
                 }
 
+        }
+
+        private void insertLabel(JLabel label, int x, int y, int spanX) {
+                insertChild(label, x, y,
+                                spanX, 1, ANCHOR.C, FILL.BOTH,
+                                0, 0, -5, 0);
+        }
+
+        private void insertLabel(JLabel label, int x, int y) {
+                insertLabel(label, x, y, 1);
         }
 
         protected void setHeaders(String... headers) {
