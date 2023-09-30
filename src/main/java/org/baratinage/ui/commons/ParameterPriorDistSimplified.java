@@ -8,35 +8,42 @@ import javax.swing.JLabel;
 
 import org.baratinage.jbam.Distribution;
 import org.baratinage.jbam.Parameter;
+import org.baratinage.jbam.Distribution.DISTRIBUTION;
 import org.baratinage.ui.component.SimpleNumberField;
 
-public class ParameterPriorDist extends AbstractParameterPriorDist {
+public class ParameterPriorDistSimplified extends AbstractParameterPriorDist {
+
     public final JLabel iconLabel;
     public final JLabel symbolUnitLabel;
     public final JLabel nameLabel;
-    public final SimpleNumberField initialGuessField;
-
-    public final DistributionField distributionField;
+    public final SimpleNumberField meanValueField;
+    public final SimpleNumberField uncertaintyValueField;
     public final JCheckBox lockCheckbox;
 
     private static String vAlignFixString = "<sup>&nbsp;</sup><sub>&nbsp;</sub>";
 
     private static final Font MONOSPACE_FONT = new Font(Font.MONOSPACED, Font.PLAIN, 14);
 
-    public ParameterPriorDist() {
+    public ParameterPriorDistSimplified() {
 
         iconLabel = new JLabel();
         symbolUnitLabel = new JLabel();
         nameLabel = new JLabel();
         symbolUnitLabel.setFont(MONOSPACE_FONT);
-        initialGuessField = new SimpleNumberField();
 
-        distributionField = new DistributionField();
+        meanValueField = new SimpleNumberField();
+        uncertaintyValueField = new SimpleNumberField();
 
         lockCheckbox = new JCheckBox();
         lockCheckbox.addChangeListener((chEvt) -> {
             updateLock();
         });
+    }
+
+    public ParameterPriorDistSimplified(Icon icon, String symbol, String unit) {
+        this();
+        setIcon(icon);
+        setSymbolUnitLabels(symbol, unit);
     }
 
     @Override
@@ -49,6 +56,7 @@ public class ParameterPriorDist extends AbstractParameterPriorDist {
         symbolUnitLabel.setText(String.format("<html>%s[%s]%s</html>", symbol, unit, vAlignFixString));
     }
 
+    @Override
     public void setNameLabel(String name) {
         nameLabel.setText(name);
     }
@@ -60,33 +68,36 @@ public class ParameterPriorDist extends AbstractParameterPriorDist {
 
     @Override
     public void setGlobalLock(boolean locked) {
-        lockCheckbox.setEnabled(!locked);
+        lockCheckbox.setEnabled(locked);
         updateLock();
     }
 
     private void updateLock() {
         if (lockCheckbox.isEnabled()) {
             boolean isLocked = lockCheckbox.isSelected();
-            initialGuessField.setEnabled(!isLocked);
-            distributionField.distributionCombobox.setEnabled(!isLocked);
-            for (SimpleNumberField field : distributionField.parameterFields) {
-                field.setEnabled(!isLocked);
-            }
+            meanValueField.setEnabled(!isLocked);
+            uncertaintyValueField.setEnabled(!isLocked);
         } else {
-            initialGuessField.setEnabled(false);
-            distributionField.distributionCombobox.setEnabled(false);
-            for (SimpleNumberField field : distributionField.parameterFields) {
-                field.setEnabled(false);
-            }
+            meanValueField.setEnabled(false);
+            uncertaintyValueField.setEnabled(false);
         }
+    }
+
+    public void setDefaultValues(double mean, double uncertainty) {
+        meanValueField.setValue(mean);
+        uncertaintyValueField.setValue(uncertainty);
     }
 
     @Override
     public void configure(boolean isLocked, Parameter parameter) {
         setLocalLock(isLocked);
+
         if (parameter != null) {
-            initialGuessField.setValue(parameter.initalGuess);
-            distributionField.setDistribution(parameter.distribution);
+            // assuming gaussian distribution!
+            double meanValue = parameter.distribution.parameterValues[0];
+            double uncertaintyValue = parameter.distribution.parameterValues[1] * 2;
+            meanValueField.setValue(meanValue);
+            uncertaintyValueField.setValue(uncertaintyValue);
         }
     }
 
@@ -97,10 +108,12 @@ public class ParameterPriorDist extends AbstractParameterPriorDist {
 
     @Override
     public Parameter getParameter() {
-        Distribution d = distributionField.getDistribution();
-        if (!initialGuessField.isValueValid() || d == null) {
+        if (!meanValueField.isValueValid() || !uncertaintyValueField.isValueValid()) {
             return null;
         }
-        return new Parameter("", initialGuessField.getDoubleValue(), d);
+        double mean = meanValueField.getDoubleValue();
+        double std = uncertaintyValueField.getDoubleValue() / 2;
+        Distribution d = new Distribution(DISTRIBUTION.GAUSSIAN, mean, std);
+        return new Parameter(vAlignFixString, mean, d);
     }
 }
