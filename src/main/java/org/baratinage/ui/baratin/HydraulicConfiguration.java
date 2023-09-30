@@ -1,12 +1,10 @@
 package org.baratinage.ui.baratin;
 
-import java.awt.Font;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JLabel;
 import javax.swing.JSeparator;
 import javax.swing.JSplitPane;
 
@@ -28,7 +26,6 @@ import org.baratinage.ui.bam.RunPanel;
 import org.baratinage.ui.baratin.hydraulic_control.ControlMatrix;
 import org.baratinage.ui.baratin.hydraulic_control.HydraulicControlPanels;
 import org.baratinage.ui.commons.MsgPanel;
-import org.baratinage.ui.component.SimpleTabContainer;
 import org.baratinage.ui.component.SvgIcon;
 import org.baratinage.ui.component.Title;
 import org.baratinage.ui.container.RowColPanel;
