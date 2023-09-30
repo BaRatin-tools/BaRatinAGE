@@ -38,7 +38,11 @@ public class BaratinProject extends BamProject {
         initBamItemType(
                 BamItemType.STRUCTURAL_ERROR,
                 (String uuid) -> {
-                    return new StructuralError(uuid, this);
+
+                    return new StructuralErrorModelBamItem(
+                            uuid,
+                            this,
+                            new String[] { "Q", "m<sup>3</sup>.s<sup>-1</sup>" });
                 });
 
         initBamItemType(

@@ -9,10 +9,10 @@ import javax.swing.event.ChangeListener;
 
 import org.baratinage.jbam.Parameter;
 import org.baratinage.jbam.StructuralErrorModel;
-import org.baratinage.ui.bam.IStructuralError;
+import org.baratinage.ui.bam.IStructuralErrorModels;
 import org.baratinage.ui.container.GridPanel;
 
-public abstract class AbstractStructuralErrorModel extends GridPanel implements IStructuralError {
+public abstract class AbstractStructuralErrorModel extends GridPanel implements IStructuralErrorModels {
     public AbstractStructuralErrorModel() {
         setColWeight(3, 1);
         setGap(5);

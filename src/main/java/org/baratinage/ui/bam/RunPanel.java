@@ -23,7 +23,7 @@ import org.baratinage.jbam.StructuralErrorModel;
 import org.baratinage.jbam.UncertainData;
 import org.baratinage.jbam.utils.BamFilesHelpers;
 import org.baratinage.ui.AppConfig;
-import org.baratinage.ui.commons.DefaultStructuralErrorModel;
+import org.baratinage.ui.commons.DefaultStructuralErrorModels;
 import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.ui.lg.Lg;
 import org.baratinage.utils.Misc;
@@ -32,7 +32,7 @@ public class RunPanel extends RowColPanel {
 
     private IModelDefinition bamModelDef;
     private IPriors bamPriors;
-    private IStructuralError bamStructError;
+    private IStructuralErrorModels bamStructError;
     private ICalibrationData bamCalibData;
     private IPredictionMaster bamPredictions;
     private ICalibratedModel bamCalibratedModel;
@@ -77,7 +77,7 @@ public class RunPanel extends RowColPanel {
         hasChanged();
     }
 
-    public void setStructuralErrorModel(IStructuralError structuralErrorModel) {
+    public void setStructuralErrorModel(IStructuralErrorModels structuralErrorModel) {
         bamStructError = structuralErrorModel;
         hasChanged();
     }
@@ -143,11 +143,14 @@ public class RunPanel extends RowColPanel {
         String[] inputNames = bamModelDef.getInputNames();
         String[] outputNames = bamModelDef.getOutputNames();
 
+        int nInputs = inputNames.length;
+        int nOutputs = outputNames.length;
+
         Model model = new Model(
                 BamFilesHelpers.CONFIG_MODEL,
                 bamModelDef.getModelId(),
-                inputNames.length,
-                outputNames.length,
+                nInputs,
+                nOutputs,
                 parameters,
                 xTra,
                 BamFilesHelpers.CONFIG_XTRA);
@@ -155,14 +158,14 @@ public class RunPanel extends RowColPanel {
         // --------------------------------------------------------------------
         // 2) strucutral error
         // FIXME currently supporting a single error model for all model outputs
+
         if (bamStructError == null) {
-            bamStructError = new DefaultStructuralErrorModel(
-                    DefaultStructuralErrorModel.TYPE.LINEAR);
+            bamStructError = new DefaultStructuralErrorModels(nOutputs);
         }
-        StructuralErrorModel structErrorModel = bamStructError.getStructuralErrorModel();
-        ModelOutput[] modelOutputs = new ModelOutput[outputNames.length];
-        for (int k = 0; k < outputNames.length; k++) {
-            modelOutputs[k] = new ModelOutput(outputNames[k], structErrorModel);
+        StructuralErrorModel[] structErrorModels = bamStructError.getStructuralErrorModels();
+        ModelOutput[] modelOutputs = new ModelOutput[nOutputs];
+        for (int k = 0; k < nOutputs; k++) {
+            modelOutputs[k] = new ModelOutput(outputNames[k], structErrorModels[k]);
         }
 
         // --------------------------------------------------------------------
@@ -176,12 +179,12 @@ public class RunPanel extends RowColPanel {
                         "RunPanel: if calibRun is true, calibration data should be specified! Using fake data instead...");
             }
             double[] fakeDataArray = new double[] { 0 };
-            UncertainData[] inputs = new UncertainData[inputNames.length];
-            for (int k = 0; k < inputNames.length; k++) {
+            UncertainData[] inputs = new UncertainData[nInputs];
+            for (int k = 0; k < nInputs; k++) {
                 inputs[k] = new UncertainData(inputNames[k], fakeDataArray);
             }
-            UncertainData[] outputs = new UncertainData[inputNames.length];
-            for (int k = 0; k < outputNames.length; k++) {
+            UncertainData[] outputs = new UncertainData[nOutputs];
+            for (int k = 0; k < nOutputs; k++) {
                 outputs[k] = new UncertainData(outputNames[k], fakeDataArray);
             }
 

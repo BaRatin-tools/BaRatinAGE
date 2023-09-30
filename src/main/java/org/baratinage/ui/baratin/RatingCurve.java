@@ -92,7 +92,7 @@ public class RatingCurve extends BamItem implements IPredictionMaster, ICalibrat
                 this,
                 BamItemType.STRUCTURAL_ERROR);
         structErrorParent.addChangeListener((e) -> {
-            StructuralError bamItem = (StructuralError) structErrorParent.getCurrentBamItem();
+            StructuralErrorModelBamItem bamItem = (StructuralErrorModelBamItem) structErrorParent.getCurrentBamItem();
             runPanel.setStructuralErrorModel(bamItem);
             checkSync();
         });
@@ -163,7 +163,7 @@ public class RatingCurve extends BamItem implements IPredictionMaster, ICalibrat
     public CalibrationConfig getCalibrationConfig() {
         HydraulicConfiguration hc = (HydraulicConfiguration) hydrauConfParent.getCurrentBamItem();
         Gaugings g = (Gaugings) gaugingsParent.getCurrentBamItem();
-        StructuralError se = (StructuralError) structErrorParent.getCurrentBamItem();
+        StructuralErrorModelBamItem se = (StructuralErrorModelBamItem) structErrorParent.getCurrentBamItem();
         if (hc == null || g == null || se == null) {
             return null;
         }
@@ -179,9 +179,9 @@ public class RatingCurve extends BamItem implements IPredictionMaster, ICalibrat
 
         String[] outputNames = hc.getOutputNames();
         ModelOutput[] modelOutputs = new ModelOutput[outputNames.length];
-        StructuralErrorModel structErrModel = se.getStructuralErrorModel();
+        StructuralErrorModel[] structErrModels = se.getStructuralErrorModels();
         for (int k = 0; k < outputNames.length; k++) {
-            modelOutputs[k] = new ModelOutput(outputNames[k], structErrModel);
+            modelOutputs[k] = new ModelOutput(outputNames[k], structErrModels[k]);
 
         }
 

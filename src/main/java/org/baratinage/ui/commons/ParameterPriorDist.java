@@ -83,11 +83,11 @@ public class ParameterPriorDist extends AbstractParameterPriorDist {
 
     @Override
     public void configure(boolean isLocked, Parameter parameter) {
-        setLocalLock(isLocked);
         if (parameter != null) {
             initialGuessField.setValue(parameter.initalGuess);
             distributionField.setDistribution(parameter.distribution);
         }
+        setLocalLock(isLocked);
     }
 
     @Override
