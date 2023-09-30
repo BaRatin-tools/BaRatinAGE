@@ -11,6 +11,10 @@ public class Parameter {
         this.distribution = distribution;
     }
 
+    public Parameter getRenamedClone(String name) {
+        return new Parameter(name, initalGuess, distribution);
+    }
+
     @Override
     public String toString() {
         return String.format(" > Parameter '%s': %f - %s",
