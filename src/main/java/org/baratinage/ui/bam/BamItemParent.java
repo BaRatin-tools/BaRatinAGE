@@ -96,17 +96,7 @@ public class BamItemParent extends RowColPanel {
         });
 
         Lg.register(this, () -> {
-            String typeText = Lg.text(TYPE.id);
-            String backupItemName = getBackupItemName();
-            String currentItemName = currentItem == null ? Lg.text("msg_empty_selection")
-                    : currentItem.bamItemNameField.getText();
-            comboboxLabel.setText(typeText);
-            syncIssueMsg.message.setText(
-                    Lg.html("msg_component_content_out_of_sync", typeText, currentItemName));
-            revertToSelectCompBtn.setText(
-                    Lg.html("btn_revert_component_selection", backupItemName));
-            createInSyncCompBtn.setText(
-                    Lg.html("btn_create_component_from_backup", typeText));
+            updateMessagesTexts();
         });
 
         onBamItemNameChange = (chEvt) -> {
@@ -121,13 +111,26 @@ public class BamItemParent extends RowColPanel {
         updateCombobox();
     }
 
-    public void setComparisonJsonKeys(boolean exclude, String... keys) {
-        comparisonJsonKeys = keys;
-        excludeKeys = exclude;
+    private void updateMessagesTexts() {
+        String typeText = Lg.text(TYPE.id);
+        String backupItemName = getBackupItemName();
+        String currentItemName = getCurrentItemName();
+        comboboxLabel.setText(typeText);
+        syncIssueMsg.message.setText(
+                Lg.html("msg_component_content_out_of_sync", typeText, currentItemName));
+        revertToSelectCompBtn.setText(
+                Lg.html("btn_revert_component_selection", backupItemName));
+        createInSyncCompBtn.setText(
+                Lg.html("btn_create_component_from_backup", typeText));
+    }
+
+    private String getCurrentItemName() {
+        return currentItem == null ? Lg.text("msg_empty_selection")
+                : currentItem.bamItemNameField.getText();
     }
 
     private String getBackupItemName() {
-        String name = " - ";
+        String name = " &mdash; ";
         if (backupItemId != null) {
             BamItem item = allItems.getBamItemWithId(backupItemId);
             if (item != null) {
@@ -136,6 +139,11 @@ public class BamItemParent extends RowColPanel {
         }
         return name;
 
+    }
+
+    public void setComparisonJsonKeys(boolean exclude, String... keys) {
+        comparisonJsonKeys = keys;
+        excludeKeys = exclude;
     }
 
     public BamItem getCurrentBamItem() {
@@ -227,6 +235,7 @@ public class BamItemParent extends RowColPanel {
     }
 
     public List<MsgPanel> getMessages() {
+        updateMessagesTexts();
         List<MsgPanel> messages = new ArrayList<>();
         if (backupItemString != null && backupItemId != null) {
             boolean inSync = isCurrentInSyncWithBackup();
