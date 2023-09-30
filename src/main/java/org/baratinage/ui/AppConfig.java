@@ -18,7 +18,7 @@ public class AppConfig {
     public final String ICONS_RESOURCES_DIR;
     public final MainFrame APP_MAIN_FRAME;
 
-    public Color INVALID_COLOR_BG = new Color(216, 111, 104);
+    public Color INVALID_COLOR_BG = new Color(232, 180, 165);
     public Color INVALID_COLOR_FG = new Color(200, 50, 40);
     public Color WARNING_COLOR = new Color(230, 149, 0);
     public Color INFO_COLOR = new Color(0, 63, 179);
