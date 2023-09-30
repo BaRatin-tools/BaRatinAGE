@@ -21,11 +21,12 @@ public class SimpleTextField extends JTextField {
     public SimpleTextField() {
         super();
 
-        Dimension dim = this.getPreferredSize();
-        dim.width = 200;
-        setPreferredSize(dim);
+        Dimension prefDim = this.getPreferredSize();
+        prefDim.width = 100;
         Dimension minDim = getMinimumSize();
-        minDim.width = 100;
+        minDim.width = 50;
+
+        setPreferredSize(prefDim);
         setMinimumSize(minDim);
 
         getDocument().addDocumentListener(new DocumentListener() {

@@ -1,11 +1,14 @@
 package org.baratinage.ui.baratin;
 
+import java.awt.Font;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.JSeparator;
+import javax.swing.JSplitPane;
 
 import org.baratinage.jbam.Distribution;
 import org.baratinage.jbam.Distribution.DISTRIBUTION;
@@ -27,6 +30,7 @@ import org.baratinage.ui.baratin.hydraulic_control.HydraulicControlPanels;
 import org.baratinage.ui.commons.MsgPanel;
 import org.baratinage.ui.component.SimpleTabContainer;
 import org.baratinage.ui.component.SvgIcon;
+import org.baratinage.ui.component.Title;
 import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.ui.lg.Lg;
 
@@ -101,16 +105,60 @@ public class HydraulicConfiguration
         priorRatingCurvePanel.appendChild(runPanel, 0);
         priorRatingCurvePanel.appendChild(plotPanel, 1);
 
-        SimpleTabContainer mainContainer = new SimpleTabContainer();
-        mainContainer.addTab("control_matrix", controlMatrixIcon, controlMatrix);
-        mainContainer.addTab("prior_parameter_specification", priorSpecificationIcon, hydraulicControls);
-        mainContainer.addTab("prior_rating_curve", priorRatingCurveIcon, priorRatingCurvePanel);
+        // **********************************************************************
+        // SPLIT PANE APPROACH
+
+        // Font LARGE_BOLD_FONT = new Font(Font.SANS_SERIF, Font.BOLD, 16);
+
+        RowColPanel controlMatrixContainer = new RowColPanel(RowColPanel.AXIS.COL);
+        Title controlMatrixTitle = new Title(controlMatrixIcon, "");
+
+        controlMatrixContainer.appendChild(controlMatrixTitle, 0);
+        controlMatrixContainer.appendChild(controlMatrix, 1);
+
+        RowColPanel priorRCplotPanel = new RowColPanel(RowColPanel.AXIS.COL);
+        Title priorRCplotTitle = new Title(priorRatingCurveIcon, "");
+
+        priorRCplotTitle.setIcon(priorRatingCurveIcon);
+        priorRCplotPanel.appendChild(priorRCplotTitle, 0);
+        priorRCplotPanel.appendChild(priorRatingCurvePanel, 1);
+
+        RowColPanel priorSepecificationPanel = new RowColPanel(RowColPanel.AXIS.COL);
+        Title priorSpecificationTitle = new Title(priorSpecificationIcon, "");
+
+        priorSpecificationTitle.setIcon(priorSpecificationIcon);
+        priorSepecificationPanel.appendChild(priorSpecificationTitle, 0);
+        priorSepecificationPanel.appendChild(hydraulicControls, 1);
+
+        JSplitPane mainContainer = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
+        JSplitPane leftContainer = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
+
+        leftContainer.setTopComponent(controlMatrixContainer);
+        leftContainer.setBottomComponent(priorRCplotPanel);
+        mainContainer.setLeftComponent(leftContainer);
+        mainContainer.setRightComponent(priorSepecificationPanel);
 
         Lg.register(mainContainer, () -> {
-            mainContainer.setTitleTextAt(0, Lg.html("control_matrix"));
-            mainContainer.setTitleTextAt(1, Lg.html("prior_parameter_specification"));
-            mainContainer.setTitleTextAt(2, Lg.html("prior_rating_curve"));
+            controlMatrixTitle.setText(Lg.html("control_matrix"));
+            priorSpecificationTitle.setText(Lg.html("prior_parameter_specification"));
+            priorRCplotTitle.setText(Lg.html("prior_rating_curve"));
         });
+
+        // **********************************************************************
+        // TAB SYSTEM APPROACH
+
+        // SimpleTabContainer mainContainer = new SimpleTabContainer();
+        // mainContainer.addTab("control_matrix", controlMatrixIcon, controlMatrix);
+        // mainContainer.addTab("prior_parameter_specification", priorSpecificationIcon,
+        // hydraulicControls);
+        // mainContainer.addTab("prior_rating_curve", priorRatingCurveIcon,
+        // priorRatingCurvePanel);
+
+        // Lg.register(mainContainer, () -> {
+        // mainContainer.setTitleTextAt(0, Lg.html("control_matrix"));
+        // mainContainer.setTitleTextAt(1, Lg.html("prior_parameter_specification"));
+        // mainContainer.setTitleTextAt(2, Lg.html("prior_rating_curve"));
+        // });
 
         setContent(mainContainer);
 
