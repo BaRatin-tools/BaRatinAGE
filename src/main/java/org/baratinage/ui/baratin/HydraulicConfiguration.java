@@ -212,22 +212,8 @@ public class HydraulicConfiguration
 
         // **********************************************************
         // Hydraulic controls
-        List<OneHydraulicControl> hydraulicControlList = hydraulicControls.getHydraulicControls();
 
-        JSONArray jsonHydraulicControls = new JSONArray();
-        for (OneHydraulicControl ohc : hydraulicControlList) {
-            JSONObject jsonHydraulicControl = new JSONObject();
-            jsonHydraulicControl.put("activationStage", ohc.activationStage.getDoubleValue());
-            jsonHydraulicControl.put("activationStageUncertainty", ohc.activationStageUncertainty.getDoubleValue());
-            jsonHydraulicControl.put("coefficient", ohc.coefficient.getDoubleValue());
-            jsonHydraulicControl.put("coefficientUncertainty", ohc.coefficientUncertainty.getDoubleValue());
-            jsonHydraulicControl.put("exponent", ohc.exponent.getDoubleValue());
-            jsonHydraulicControl.put("exponentUncertainty", ohc.exponentUncertainty.getDoubleValue());
-
-            jsonHydraulicControls.put(jsonHydraulicControl);
-        }
-
-        json.put("hydraulicControls", jsonHydraulicControls);
+        json.put("hydraulicControls", hydraulicControls.toJSON());
 
         // **********************************************************
         // Stage grid configuration
@@ -284,26 +270,31 @@ public class HydraulicConfiguration
         // **********************************************************
         // Hydraulic controls
         if (json.has("hydraulicControls")) {
-            JSONArray jsonHydraulicControls = (JSONArray) json.get("hydraulicControls");
+            // JSONArray jsonHydraulicControls = (JSONArray) json.get("hydraulicControls");
 
-            List<OneHydraulicControl> hydraulicControlList = new ArrayList<>();
+            // List<OneHydraulicControl> hydraulicControlList = new ArrayList<>();
 
-            for (int k = 0; k < jsonHydraulicControls.length(); k++) {
-                JSONObject jsonHydraulicControl = (JSONObject) jsonHydraulicControls.get(k);
+            // for (int k = 0; k < jsonHydraulicControls.length(); k++) {
+            // JSONObject jsonHydraulicControl = (JSONObject) jsonHydraulicControls.get(k);
 
-                OneHydraulicControl ohc = new OneHydraulicControl(k + 1);
+            // OneHydraulicControl ohc = new OneHydraulicControl(k + 1);
 
-                ohc.activationStage.setValue(jsonHydraulicControl.getDouble("activationStage"));
-                ohc.activationStageUncertainty.setValue(jsonHydraulicControl.getDouble("activationStageUncertainty"));
-                ohc.coefficient.setValue(jsonHydraulicControl.getDouble("coefficient"));
-                ohc.coefficientUncertainty.setValue(jsonHydraulicControl.getDouble("coefficientUncertainty"));
-                ohc.exponent.setValue(jsonHydraulicControl.getDouble("exponent"));
-                ohc.exponentUncertainty.setValue(jsonHydraulicControl.getDouble("exponentUncertainty"));
+            // //
+            // ohc.activationStage.setValue(jsonHydraulicControl.getDouble("activationStage"));
+            // //
+            // ohc.activationStageUncertainty.setValue(jsonHydraulicControl.getDouble("activationStageUncertainty"));
+            // // ohc.coefficient.setValue(jsonHydraulicControl.getDouble("coefficient"));
+            // //
+            // ohc.coefficientUncertainty.setValue(jsonHydraulicControl.getDouble("coefficientUncertainty"));
+            // // ohc.exponent.setValue(jsonHydraulicControl.getDouble("exponent"));
+            // //
+            // ohc.exponentUncertainty.setValue(jsonHydraulicControl.getDouble("exponentUncertainty"));
 
-                hydraulicControlList.add(ohc);
-            }
+            // hydraulicControlList.add(ohc);
+            // }
 
-            hydraulicControls.setHydraulicControls(hydraulicControlList);
+            // hydraulicControls.setHydraulicControls(hydraulicControlList);
+            hydraulicControls.fromJSON(json.getJSONObject("hydraulicControls"));
 
         } else {
             System.out.println("HydraulicConfiguration: missing 'hydraulicControls'");

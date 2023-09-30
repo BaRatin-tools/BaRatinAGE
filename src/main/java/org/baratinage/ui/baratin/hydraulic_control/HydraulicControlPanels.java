@@ -6,14 +6,14 @@ import java.util.List;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import org.baratinage.jbam.Distribution;
 import org.baratinage.jbam.Parameter;
-import org.baratinage.jbam.Distribution.DISTRIBUTION;
 import org.baratinage.ui.bam.IPriors;
 import org.baratinage.ui.baratin.HydraulicConfiguration;
 import org.baratinage.ui.component.SimpleTabContainer;
 import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.ui.lg.Lg;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 public class HydraulicControlPanels extends RowColPanel implements IPriors, ChangeListener {
 
@@ -54,10 +54,10 @@ public class HydraulicControlPanels extends RowColPanel implements IPriors, Chan
         int n = controls.size() + 1;
         OneHydraulicControl ohc = new OneHydraulicControl(n);
         ohc.addChangeListener(this);
-        Lg.register(ohc, () -> {
-            String text = Lg.html("control_number", ohc.controlNumber);
-            ohc.nameLabel.setText(text);
-        });
+        // Lg.register(ohc, () -> {
+        // String text = Lg.html("control_number", ohc.controlNumber);
+        // // ohc.nameLabel.setText(text);
+        // });
         controls.add(ohc);
         nVisibleHydraulicControls = controls.size();
     }
@@ -80,23 +80,6 @@ public class HydraulicControlPanels extends RowColPanel implements IPriors, Chan
         }
     }
 
-    public void setHydraulicControls(List<OneHydraulicControl> controls) {
-        int n = controls.size();
-        setHydraulicControls(n);
-        for (int k = 0; k < n; k++) {
-            this.controls.get(k).activationStage.setValue(controls.get(k).activationStage.getDoubleValue());
-            this.controls.get(k).activationStageUncertainty
-                    .setValue(controls.get(k).activationStageUncertainty.getDoubleValue());
-            this.controls.get(k).coefficient.setValue(controls.get(k).coefficient.getDoubleValue());
-            this.controls.get(k).coefficientUncertainty
-                    .setValue(controls.get(k).coefficientUncertainty.getDoubleValue());
-            this.controls.get(k).exponent.setValue(controls.get(k).exponent.getDoubleValue());
-            this.controls.get(k).exponentUncertainty
-                    .setValue(controls.get(k).exponentUncertainty.getDoubleValue());
-        }
-        fireChangeListeners();
-    }
-
     public List<OneHydraulicControl> getHydraulicControls() {
         return controls.subList(0, nVisibleHydraulicControls);
     }
@@ -104,30 +87,12 @@ public class HydraulicControlPanels extends RowColPanel implements IPriors, Chan
     @Override
     public Parameter[] getParameters() {
         Parameter[] parameters = new Parameter[nVisibleHydraulicControls * 3];
-        for (int k = 0; k < nVisibleHydraulicControls; k++) {
-            OneHydraulicControl ohc = controls.get(k);
-            Distribution activationStageDistribution = new Distribution(
-                    DISTRIBUTION.GAUSSIAN,
-                    ohc.activationStage.getDoubleValue(),
-                    ohc.activationStageUncertainty.getDoubleValue() / 2);
-            Distribution coefficientDistribution = new Distribution(
-                    DISTRIBUTION.GAUSSIAN,
-                    ohc.coefficient.getDoubleValue(),
-                    ohc.coefficientUncertainty.getDoubleValue() / 2);
-            Distribution exponentDistribution = new Distribution(
-                    DISTRIBUTION.GAUSSIAN,
-                    ohc.exponent.getDoubleValue(),
-                    ohc.exponentUncertainty.getDoubleValue() / 2);
 
-            parameters[k * 3 + 0] = new Parameter("k_" + k,
-                    ohc.activationStage.getDoubleValue(),
-                    activationStageDistribution);
-            parameters[k * 3 + 1] = new Parameter("a_" + k,
-                    ohc.coefficient.getDoubleValue(),
-                    coefficientDistribution);
-            parameters[k * 3 + 2] = new Parameter("c_" + k,
-                    ohc.exponent.getDoubleValue(),
-                    exponentDistribution);
+        for (int k = 0; k < nVisibleHydraulicControls; k++) {
+            Parameter[] pars = controls.get(k).getParameters();
+            parameters[k * 3 + 0] = pars[0].getRenamedClone("k_" + k);
+            parameters[k * 3 + 1] = pars[1].getRenamedClone("a_" + k);
+            parameters[k * 3 + 2] = pars[2].getRenamedClone("c_" + k);
         }
         return parameters;
     }
@@ -150,6 +115,28 @@ public class HydraulicControlPanels extends RowColPanel implements IPriors, Chan
     public void fireChangeListeners() {
         for (ChangeListener l : changeListeners) {
             l.stateChanged(new ChangeEvent(this));
+        }
+    }
+
+    public JSONObject toJSON() {
+        JSONObject json = new JSONObject();
+        JSONArray controlsJSON = new JSONArray();
+        int n = controls.size();
+        for (int k = 0; k < n; k++) {
+            controlsJSON.put(k, controls.get(k).toJSON());
+        }
+        json.put("controls", controlsJSON);
+        return json;
+
+    }
+
+    public void fromJSON(JSONObject json) {
+        JSONArray controlsJSON = json.getJSONArray("controls");
+        int n = controlsJSON.length();
+        setHydraulicControls(n);
+        for (int k = 0; k < n; k++) {
+            controls.get(k).fromJSON(controlsJSON.getJSONObject(k));
+
         }
     }
 
