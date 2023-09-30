@@ -115,6 +115,8 @@ public class SimpleNumberField extends SimpleTextField {
 
         defaultBg = getBackground();
         invalidBg = AppConfig.AC.INVALID_COLOR_BG;
+
+        updateValidityView();
     }
 
     public boolean isValueValid() {
@@ -153,6 +155,7 @@ public class SimpleNumberField extends SimpleTextField {
         }
         doubleValue = value;
         updateTextFieldFromValue();
+        updateValidityView();
     }
 
     public void setValue(Integer value) {
@@ -161,12 +164,14 @@ public class SimpleNumberField extends SimpleTextField {
         }
         intValue = value;
         updateTextFieldFromValue();
+        updateValidityView();
     }
 
     public void unsetValue() {
         intValue = null;
         doubleValue = null;
         updateTextFieldFromValue();
+        updateValidityView();
     }
 
     public Double getDoubleValue() {
@@ -179,11 +184,12 @@ public class SimpleNumberField extends SimpleTextField {
 
     public void addValidator(Predicate<Number> validator) {
         validators.add(validator);
+        updateValidityView();
     }
 
     public void removeValidator(Predicate<Number> validator) {
         validators.remove(validator);
+        updateValidityView();
     }
 
-    // private boolean i
 }
