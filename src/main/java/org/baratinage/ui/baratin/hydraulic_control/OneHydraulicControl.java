@@ -120,9 +120,9 @@ public class OneHydraulicControl extends RowColPanel implements ChangeListener {
         controlTypeComboBox = new SimpleComboBox();
         controlTypeComboBox.setEmptyItem(null);
         controlTypeComboBox.addChangeListener((chEvt) -> {
-            hydraulicControlPanel.clear();
             int index = controlTypeComboBox.getSelectedIndex();
             currentPriorControlPanelIndex = index;
+            updatePhysicalControl();
             // setPhysicalControlType();
         });
         setControlTypeCombobox();
@@ -136,10 +136,16 @@ public class OneHydraulicControl extends RowColPanel implements ChangeListener {
             boolean proceed = true;
             if (kacMode) {
                 proceed = false;
-                int response = JOptionPane.showConfirmDialog(this,
-                        Lg.text("kac_to_physical_parameters_warning") + "\n" + Lg.text("proceed_question"),
+
+                int response = JOptionPane.showOptionDialog(this,
+                        Lg.text("kac_to_physical_parameters_warning") + "\n" +
+                                Lg.text("proceed_question"),
                         Lg.text("warning"),
-                        JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+                        JOptionPane.YES_NO_OPTION,
+                        JOptionPane.WARNING_MESSAGE,
+                        null,
+                        new String[] { Lg.text("continue"), Lg.text("cancel") },
+                        Lg.text("cancel"));
                 if (response == JOptionPane.YES_OPTION) {
                     proceed = true;
                 }
@@ -197,6 +203,7 @@ public class OneHydraulicControl extends RowColPanel implements ChangeListener {
 
     private void updatePhysicalControl() {
         if (currentPriorControlPanelIndex >= 0) {
+            hydraulicControlPanel.clear();
             hydraulicControlPanel.appendChild(allControlOptions.get(currentPriorControlPanelIndex).panel);
         }
         updateKACfromPhysicalControl();
