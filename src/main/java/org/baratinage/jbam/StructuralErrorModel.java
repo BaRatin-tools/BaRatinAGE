@@ -2,7 +2,6 @@ package org.baratinage.jbam;
 
 import java.nio.file.Path;
 
-import org.baratinage.jbam.Distribution.DISTRIBUTION;
 import org.baratinage.jbam.utils.ConfigFile;
 
 public class StructuralErrorModel {
@@ -27,7 +26,7 @@ public class StructuralErrorModel {
             configFile.addItem(p.name, "Parameter name -----", true);
             configFile.addItem(p.initalGuess, "Initial guess");
             Distribution d = p.distribution;
-            configFile.addItem(d.distribution.bamName, "Prior distribution", true);
+            configFile.addItem(d.type.bamName, "Prior distribution", true);
             configFile.addItem(d.parameterValues, "Prior parameters");
         }
 
@@ -56,7 +55,7 @@ public class StructuralErrorModel {
             double initialGuess = configFile.getDouble(1 + k * 4 + 2);
             String distName = configFile.getString(1 + k * 4 + 3);
             double[] distParams = configFile.getDoubleArray(1 + k * 4 + 4);
-            Distribution d = new Distribution(DISTRIBUTION.getDistribFromBamName(distName), distParams);
+            Distribution d = new Distribution(DistributionType.getDistribFromBamName(distName), distParams);
             modelParameters[k] = new Parameter(parameterName, initialGuess, d);
         }
 

@@ -7,8 +7,8 @@ import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 
 import org.baratinage.jbam.Distribution;
+import org.baratinage.jbam.DistributionType;
 import org.baratinage.jbam.Parameter;
-import org.baratinage.jbam.Distribution.DISTRIBUTION;
 import org.baratinage.ui.component.SimpleNumberField;
 
 public class ParameterPriorDist extends AbstractParameterPriorDist {
@@ -100,7 +100,7 @@ public class ParameterPriorDist extends AbstractParameterPriorDist {
     }
 
     @Override
-    public DISTRIBUTION getDistributionType() {
+    public DistributionType getDistributionType() {
         return distributionField.getDistributionType();
     }
 
@@ -115,7 +115,7 @@ public class ParameterPriorDist extends AbstractParameterPriorDist {
     }
 
     @Override
-    public void setDistributionType(DISTRIBUTION distributionType) {
+    public void setDistributionType(DistributionType distributionType) {
         distributionField.setDistributionType(distributionType);
     }
 

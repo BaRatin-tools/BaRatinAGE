@@ -1,9 +1,9 @@
 package org.baratinage.ui.commons;
 
 import org.baratinage.jbam.Distribution;
+import org.baratinage.jbam.DistributionType;
 import org.baratinage.jbam.Parameter;
 import org.baratinage.jbam.StructuralErrorModel;
-import org.baratinage.jbam.Distribution.DISTRIBUTION;
 import org.baratinage.jbam.utils.BamFilesHelpers;
 import org.baratinage.ui.bam.IStructuralErrorModels;
 
@@ -13,7 +13,7 @@ public class DefaultStructuralErrorModels implements IStructuralErrorModels {
 
     public DefaultStructuralErrorModels(int nOutputs) {
         strucErrorModels = new StructuralErrorModel[nOutputs];
-        Distribution defaultDist = new Distribution(DISTRIBUTION.UNIFORM, 0, 10000);
+        Distribution defaultDist = new Distribution(DistributionType.UNIFORM, 0, 10000);
         Parameter gamma1 = new Parameter("gamma1", 1, defaultDist);
         Parameter gamma2 = new Parameter("gamma2", 0.1, defaultDist);
         for (int k = 0; k < nOutputs; k++) {

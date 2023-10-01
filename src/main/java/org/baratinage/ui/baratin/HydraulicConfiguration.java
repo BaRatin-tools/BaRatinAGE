@@ -8,7 +8,7 @@ import javax.swing.JButton;
 import javax.swing.JSeparator;
 
 import org.baratinage.jbam.Distribution;
-import org.baratinage.jbam.Distribution.DISTRIBUTION;
+import org.baratinage.jbam.DistributionType;
 import org.baratinage.jbam.Parameter;
 import org.baratinage.jbam.PredictionConfig;
 import org.baratinage.jbam.PredictionResult;
@@ -414,7 +414,7 @@ public class HydraulicConfiguration
         for (Parameter p : params) {
             if (p.name.startsWith("k_")) {
                 Distribution d = p.distribution;
-                if (d.distribution == DISTRIBUTION.GAUSSIAN) {
+                if (d.type == DistributionType.GAUSSIAN) {
                     double[] distParams = d.parameterValues;
                     double mean = distParams[0];
                     double std = distParams[1];

@@ -5,26 +5,26 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.baratinage.jbam.Distribution;
-import org.baratinage.jbam.Distribution.DISTRIBUTION;
+import org.baratinage.jbam.DistributionType;
 import org.baratinage.ui.component.SimpleComboBox;
 import org.baratinage.ui.component.SimpleNumberField;
 import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.ui.lg.Lg;
 
 public class DistributionField {
-    private final HashMap<DISTRIBUTION, List<SimpleNumberField>> allParameterFields;
+    private final HashMap<DistributionType, List<SimpleNumberField>> allParameterFields;
     public final RowColPanel parameterFieldsPanel;
     public final List<SimpleNumberField> parameterFields;
     public final SimpleComboBox distributionCombobox;
 
-    private final static DISTRIBUTION[] DISTRIBUTION_TYPES = DISTRIBUTION.values();
+    private final static DistributionType[] DISTRIBUTION_TYPES = DistributionType.values();
 
     private int currentDistributionIndex;
 
     public DistributionField() {
 
         allParameterFields = new HashMap<>();
-        for (DISTRIBUTION d : DISTRIBUTION_TYPES) {
+        for (DistributionType d : DISTRIBUTION_TYPES) {
             List<SimpleNumberField> parameterFields = new ArrayList<>();
             for (String pName : d.parameterNames) {
                 SimpleNumberField field = new SimpleNumberField();
@@ -43,7 +43,7 @@ public class DistributionField {
                 return;
             }
             currentDistributionIndex = index;
-            DISTRIBUTION d = DISTRIBUTION_TYPES[index];
+            DistributionType d = DISTRIBUTION_TYPES[index];
             List<SimpleNumberField> fields = allParameterFields.get(d);
             parameterFieldsPanel.clear();
             parameterFields.clear();
@@ -76,17 +76,17 @@ public class DistributionField {
     }
 
     private SimpleNumberField getParameterField(int index) {
-        DISTRIBUTION distribution = getDistributionType();
-        if (distribution == null) {
+        DistributionType distType = getDistributionType();
+        if (distType == null) {
             return null;
         }
-        if (index < 0 || index >= distribution.parameterNames.length) {
+        if (index < 0 || index >= distType.parameterNames.length) {
             return null;
         }
         return parameterFields.get(index);
     }
 
-    public DISTRIBUTION getDistributionType() {
+    public DistributionType getDistributionType() {
         return currentDistributionIndex < 0 ? null : DISTRIBUTION_TYPES[currentDistributionIndex];
     }
 
@@ -96,7 +96,7 @@ public class DistributionField {
     }
 
     public Double[] getParameters() {
-        DISTRIBUTION distributionType = getDistributionType();
+        DistributionType distributionType = getDistributionType();
         if (distributionType == null) {
             return null;
         }
@@ -108,7 +108,7 @@ public class DistributionField {
         return parValues;
     }
 
-    public void setDistributionType(DISTRIBUTION distributionType) {
+    public void setDistributionType(DistributionType distributionType) {
         if (distributionType != null) {
             int index = -1;
             for (int k = 0; k < DISTRIBUTION_TYPES.length; k++) {
@@ -124,7 +124,7 @@ public class DistributionField {
     }
 
     public void setParameter(int index, Double value) {
-        DISTRIBUTION distributionType = getDistributionType();
+        DistributionType distributionType = getDistributionType();
         if (distributionType == null) {
             return;
         }
@@ -136,7 +136,7 @@ public class DistributionField {
     }
 
     public void setParameters(Double... values) {
-        DISTRIBUTION distributionType = getDistributionType();
+        DistributionType distributionType = getDistributionType();
         if (distributionType == null) {
             return;
         }
@@ -150,7 +150,7 @@ public class DistributionField {
     }
 
     public Distribution getDistribution() {
-        DISTRIBUTION distributionType = getDistributionType();
+        DistributionType distributionType = getDistributionType();
         if (distributionType == null) {
             return null;
         }

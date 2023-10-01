@@ -2,8 +2,8 @@ package org.baratinage.ui.commons;
 
 import javax.swing.Icon;
 
+import org.baratinage.jbam.DistributionType;
 import org.baratinage.jbam.Parameter;
-import org.baratinage.jbam.Distribution.DISTRIBUTION;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -25,9 +25,9 @@ public abstract class AbstractParameterPriorDist {
 
     public abstract Parameter getParameter();
 
-    public abstract DISTRIBUTION getDistributionType();
+    public abstract DistributionType getDistributionType();
 
-    public abstract void setDistributionType(DISTRIBUTION distributionType);
+    public abstract void setDistributionType(DistributionType distributionType);
 
     public abstract Double[] getDistributionParameters();
 
@@ -42,7 +42,7 @@ public abstract class AbstractParameterPriorDist {
 
         // json.put("name", ???);
 
-        DISTRIBUTION distributionType = getDistributionType();
+        DistributionType distributionType = getDistributionType();
         if (distributionType != null) {
             json.put("distributionBamName", distributionType.bamName);
         }
@@ -67,7 +67,8 @@ public abstract class AbstractParameterPriorDist {
     public void fromJSON(JSONObject json) {
 
         if (json.has("distributionBamName")) {
-            DISTRIBUTION distributionType = DISTRIBUTION.getDistribFromBamName(json.getString("distributionBamName"));
+            DistributionType distributionType = DistributionType
+                    .getDistribFromBamName(json.getString("distributionBamName"));
             if (distributionType != null) {
                 setDistributionType(distributionType);
             }

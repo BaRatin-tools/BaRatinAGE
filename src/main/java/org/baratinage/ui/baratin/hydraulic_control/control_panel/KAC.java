@@ -1,7 +1,6 @@
 package org.baratinage.ui.baratin.hydraulic_control.control_panel;
 
-import org.baratinage.jbam.Distribution;
-import org.baratinage.jbam.Distribution.DISTRIBUTION;
+import org.baratinage.jbam.DistributionType;
 import org.baratinage.ui.commons.ParameterPriorDist;
 import org.baratinage.ui.lg.Lg;
 
@@ -40,7 +39,7 @@ public class KAC extends PriorControlPanel {
     }
 
     public void setAToGaussian(Double mean, Double std) {
-        a.distributionField.setDistributionType(DISTRIBUTION.GAUSSIAN);
+        a.distributionField.setDistributionType(DistributionType.GAUSSIAN);
         a.distributionField.setParameters(mean, std);
     }
 

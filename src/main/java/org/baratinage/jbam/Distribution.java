@@ -12,54 +12,23 @@ import org.baratinage.jbam.utils.Read;
 
 public class Distribution {
 
-    public static enum DISTRIBUTION {
-        GAUSSIAN("Gaussian", new String[] { "mean", "std" }),
-        LOG_NORMAL("LogNormal", new String[] { "log_mean", "log_std" }),
-        UNIFORM("Uniform", new String[] { "lower_bound", "upper_bound" }),
-        EXPONENTIAL("Exponential", new String[] { "location", "scale" }),
-        GEV("GEV", new String[] { "location", "scale", "shape" }),
-        FIXED("Fixed", new String[] {});
-
-        public final String bamName;
-        public final String[] parameterNames;
-
-        private DISTRIBUTION(String bamName, String[] parameterNames) {
-            this.bamName = bamName;
-            this.parameterNames = parameterNames;
-        }
-
-        @Override
-        public String toString() {
-            return name();
-        }
-
-        static public DISTRIBUTION getDistribFromBamName(String name) {
-            for (DISTRIBUTION d : DISTRIBUTION.values()) {
-                if (d.bamName.equals(name)) {
-                    return d;
-                }
-            }
-            return null;
-        }
-    };
-
-    public final DISTRIBUTION distribution;
+    public final DistributionType type;
     public final double[] parameterValues;
     private List<double[]> density;
 
     private final String id;
 
     public static Distribution buildDistributionFromBamName(String bamName, double... parameterValues) {
-        return new Distribution(DISTRIBUTION.getDistribFromBamName(bamName), parameterValues);
+        return new Distribution(DistributionType.getDistribFromBamName(bamName), parameterValues);
     }
 
-    public Distribution(DISTRIBUTION distribution, double... parameterValues) {
-        int n = distribution.parameterNames.length;
+    public Distribution(DistributionType type, double... parameterValues) {
+        int n = type.parameterNames.length;
         if (n != parameterValues.length) {
             throw new IllegalArgumentException(
                     "Length of parameterValues must match the length of expected parameters of DISTRIB!");
         }
-        this.distribution = distribution;
+        this.type = type;
         this.parameterValues = parameterValues;
         id = UUID.randomUUID().toString();
     }
@@ -105,7 +74,7 @@ public class Distribution {
         ExeRun rangeRun = new ExeRun();
         rangeRun.setExeDir(EXE_DIR);
         rangeRun.setCommand(EXE_COMMAND,
-                "--name", distribution.bamName,
+                "--name", type.bamName,
                 "--parameters", parametersArg,
                 "--action", "q",
                 "--xgrid", "0.00001,0.99999,2",
@@ -126,7 +95,7 @@ public class Distribution {
         ExeRun densityRun = new ExeRun();
         densityRun.setExeDir(EXE_DIR);
         densityRun.setCommand(EXE_COMMAND,
-                "--name", distribution.bamName,
+                "--name", type.bamName,
                 "--parameters", parametersArg,
                 "--action", "d",
                 "--xgrid", gridArg,
@@ -146,11 +115,11 @@ public class Distribution {
 
     @Override
     public String toString() {
-        String str = String.format("'%s' (", distribution.name());
-        int n = distribution.parameterNames.length;
+        String str = String.format("'%s' (", type.name());
+        int n = type.parameterNames.length;
         for (int k = 0; k < n; k++) {
             str = str + String.format("%s: %f",
-                    distribution.parameterNames[k], parameterValues[k]);
+                    type.parameterNames[k], parameterValues[k]);
             if (k != n - 1) {
                 str = str + ", ";
             }

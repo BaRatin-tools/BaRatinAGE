@@ -8,8 +8,8 @@ import javax.swing.JLabel;
 import javax.swing.JSeparator;
 
 import org.baratinage.jbam.Distribution;
+import org.baratinage.jbam.DistributionType;
 import org.baratinage.jbam.Parameter;
-import org.baratinage.jbam.Distribution.DISTRIBUTION;
 import org.baratinage.ui.AppConfig;
 import org.baratinage.ui.component.SvgIcon;
 import org.baratinage.ui.container.GridPanel;
@@ -65,10 +65,10 @@ public class StructuralErrorModelPanel extends GridPanel {
     }
 
     public void addParameter(String symbol, String unit, double initialGuess) {
-        addParameter(symbol, unit, DISTRIBUTION.UNIFORM, initialGuess, 0, 10000);
+        addParameter(symbol, unit, DistributionType.UNIFORM, initialGuess, 0, 10000);
     }
 
-    public void addParameter(String symbol, String unit, DISTRIBUTION distribution, double initialGuess,
+    public void addParameter(String symbol, String unit, DistributionType distribution, double initialGuess,
             double... parameterValues) {
 
         int index = parameters.size() + 1;
@@ -83,7 +83,7 @@ public class StructuralErrorModelPanel extends GridPanel {
         insertChild(gamma.distributionField.parameterFieldsPanel, 3, index);
         insertChild(gamma.lockCheckbox, 4, index);
 
-        gamma.setDistributionType(Distribution.DISTRIBUTION.UNIFORM);
+        gamma.setDistributionType(DistributionType.UNIFORM);
         int nPars = parameterValues.length;
         Double[] nonPrimitiveParamValues = new Double[nPars];
         for (int k = 0; k < nPars; k++) {

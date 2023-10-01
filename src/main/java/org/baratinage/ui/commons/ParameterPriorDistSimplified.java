@@ -7,8 +7,8 @@ import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 
 import org.baratinage.jbam.Distribution;
+import org.baratinage.jbam.DistributionType;
 import org.baratinage.jbam.Parameter;
-import org.baratinage.jbam.Distribution.DISTRIBUTION;
 import org.baratinage.ui.component.SimpleNumberField;
 
 public class ParameterPriorDistSimplified extends AbstractParameterPriorDist {
@@ -100,13 +100,13 @@ public class ParameterPriorDistSimplified extends AbstractParameterPriorDist {
         }
         double mean = meanValueField.getDoubleValue();
         double std = uncertaintyValueField.getDoubleValue() / 2;
-        Distribution d = new Distribution(DISTRIBUTION.GAUSSIAN, mean, std);
+        Distribution d = new Distribution(DistributionType.GAUSSIAN, mean, std);
         return new Parameter(vAlignFixString, mean, d);
     }
 
     @Override
-    public DISTRIBUTION getDistributionType() {
-        return DISTRIBUTION.GAUSSIAN;
+    public DistributionType getDistributionType() {
+        return DistributionType.GAUSSIAN;
     }
 
     @Override
@@ -125,7 +125,7 @@ public class ParameterPriorDistSimplified extends AbstractParameterPriorDist {
     }
 
     @Override
-    public void setDistributionType(DISTRIBUTION distributionType) {
+    public void setDistributionType(DistributionType distributionType) {
         // ignored since always gaussian...
     }
 

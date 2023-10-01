@@ -1,5 +1,6 @@
 package org.baratinage.ui.baratin;
 
+import org.baratinage.jbam.DistributionType;
 import org.baratinage.jbam.Parameter;
 import org.baratinage.jbam.StructuralErrorModel;
 
@@ -8,7 +9,6 @@ import java.awt.Font;
 import javax.swing.JLabel;
 import javax.swing.JSeparator;
 
-import org.baratinage.jbam.Distribution.DISTRIBUTION;
 import org.baratinage.jbam.utils.BamFilesHelpers;
 import org.baratinage.ui.bam.BamItem;
 import org.baratinage.ui.bam.BamItemType;
@@ -65,9 +65,9 @@ public class StructuralErrorModelBamItem extends BamItem implements IStructuralE
             // to the constant model
             StructuralErrorModelPanel strucErrModelPanel = new StructuralErrorModelPanel();
             strucErrModelPanel.addParameter("&gamma;<sub>1</sub>", nameSymbolUnits[k].unit(),
-                    DISTRIBUTION.UNIFORM, 1, 0, 10000);
+                    DistributionType.UNIFORM, 1, 0, 10000);
             strucErrModelPanel.addParameter("&gamma;<sub>2</sub>", "-",
-                    DISTRIBUTION.UNIFORM, 0.1, 0, 10000);
+                    DistributionType.UNIFORM, 0.1, 0, 10000);
             strucErrModelPanels[k] = strucErrModelPanel;
 
             panel.appendChild(parameterNameLabels[k], 0);

@@ -51,7 +51,7 @@ public class OneHydraulicControl extends RowColPanel implements ChangeListener {
     private final JButton switchModeButton;
     private final JButton resetButton;
     private final SimpleComboBox controlTypeComboBox;
-    private final PriorControlPanel kacControlPanel;
+    private final KAC kacControlPanel;
 
     private boolean kacMode = false;
     private String toKACmodeText = "to kac";
@@ -69,16 +69,27 @@ public class OneHydraulicControl extends RowColPanel implements ChangeListener {
         super(AXIS.COL, ALIGN.START);
         setGap(5);
 
+        kacControlPanel = new KAC();
+
         allControlOptions = new ArrayList<>();
         allControlOptions.add(
                 new HydraulicControlOption(
                         "rectangular_weir", rectWeirIcon,
-                        new ChannelRect()));
+                        new WeirRect()));
         allControlOptions.add(
                 new HydraulicControlOption(
                         "rectangular_channel",
                         rectChannelIcon,
-                        new WeirRect()));
+                        new ChannelRect()));
+        for (HydraulicControlOption hco : allControlOptions) {
+            hco.panel.addChangeListener((ChangeEvent chEvt) -> {
+                PriorControlPanel panel = (PriorControlPanel) chEvt.getSource();
+                Double[] a = panel.toA();
+                if (a[0] != null) {
+                    // kacControlPanel.setfrom
+                }
+            });
+        }
 
         this.controlNumber = controlNumber;
 
@@ -119,8 +130,6 @@ public class OneHydraulicControl extends RowColPanel implements ChangeListener {
         physicalParametersPanel.appendChild(controlTypeComboBox);
         physicalParametersPanel.appendChild(hydraulicControlPanel);
         physicalParametersPanel.appendChild(physicalControlParametersLabelsPanel);
-
-        kacControlPanel = new KAC();
 
         switchModeButton = new JButton("Switch to expert mode");
         switchModeButton.addActionListener((e) -> {
