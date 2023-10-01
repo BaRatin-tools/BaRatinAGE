@@ -43,9 +43,22 @@ public class KAC extends PriorControlPanel {
         a.distributionField.setParameters(mean, std);
     }
 
+    public void setFromKACGaussianConfig(KACGaussianConfig kacCongig) {
+        k.distributionField.setDistributionType(DistributionType.GAUSSIAN);
+        k.distributionField.setParameters(kacCongig.kMean(), kacCongig.kStd());
+        k.initialGuessField.setValue(kacCongig.kMean());
+        a.distributionField.setDistributionType(DistributionType.GAUSSIAN);
+        a.distributionField.setParameters(kacCongig.aMean(), kacCongig.aStd());
+        a.initialGuessField.setValue(kacCongig.aMean());
+        c.distributionField.setDistributionType(DistributionType.GAUSSIAN);
+        c.distributionField.setParameters(kacCongig.cMean(), kacCongig.cStd());
+        c.initialGuessField.setValue(kacCongig.cMean());
+    }
+
     @Override
-    public Double[] toA() {
-        return new Double[] {}; // irrelevant here
+    public KACGaussianConfig toKACGaussianConfig() {
+        // irrelevant
+        return null;
     }
 
 }

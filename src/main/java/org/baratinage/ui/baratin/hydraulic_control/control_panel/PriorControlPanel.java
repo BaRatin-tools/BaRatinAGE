@@ -22,6 +22,12 @@ import org.json.JSONArray;
 
 public abstract class PriorControlPanel extends GridPanel implements ChangeListener {
 
+        protected record KACGaussianConfig(
+                        Double kMean, Double kStd,
+                        Double aMean, Double aStd,
+                        Double cMean, Double cStd) {
+        };
+
         private static String vAlignFixString = "<sup>&nbsp;</sup><sub>&nbsp;</sub>";
 
         private static final Font MONOSPACE_FONT = new Font(Font.MONOSPACED, Font.PLAIN, 14);
@@ -216,6 +222,6 @@ public abstract class PriorControlPanel extends GridPanel implements ChangeListe
                 fireChangeListeners();
         }
 
-        public abstract Double[] toA();
+        public abstract KACGaussianConfig toKACGaussianConfig();
 
 }

@@ -56,8 +56,7 @@ public class ChannelRect extends PriorControlPanel {
         });
     }
 
-    @Override
-    public Double[] toA() {
+    public Double[] toAMeanAndStd() {
 
         if (!stricklerCoef.meanValueField.isValueValid() ||
                 !width.meanValueField.isValueValid() ||
@@ -92,4 +91,19 @@ public class ChannelRect extends PriorControlPanel {
 
     }
 
+    @Override
+    public KACGaussianConfig toKACGaussianConfig() {
+
+        Double[] AGaussianConfig = toAMeanAndStd();
+
+        Double kMean = activationHeight.meanValueField.getDoubleValue();
+        Double kStd = activationHeight.uncertaintyValueField.getDoubleValue();
+        Double cMean = exponent.meanValueField.getDoubleValue();
+        Double cStd = exponent.uncertaintyValueField.getDoubleValue();
+
+        return new KACGaussianConfig(
+                kMean, kStd == null ? null : kStd / 2,
+                AGaussianConfig[0], AGaussianConfig[1],
+                cMean, cStd == null ? null : cStd / 2);
+    }
 }

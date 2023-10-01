@@ -7,6 +7,7 @@ import java.util.List;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -57,13 +58,15 @@ public class OneHydraulicControl extends RowColPanel implements ChangeListener {
     private String toKACmodeText = "to kac";
     private String toPhysicalModeText = "to physical mode";
 
-    // FIXME: refactor!
+    // FIXME: refactor?
     private record HydraulicControlOption(
-            String lgKey, ImageIcon icon,
+            String lgKey,
+            ImageIcon icon,
             PriorControlPanel panel) {
     };
 
     private final List<HydraulicControlOption> allControlOptions;
+    private int currentPriorControlPanelIndex = 0;
 
     public OneHydraulicControl(int controlNumber) {
         super(AXIS.COL, ALIGN.START);
@@ -83,11 +86,7 @@ public class OneHydraulicControl extends RowColPanel implements ChangeListener {
                         new ChannelRect()));
         for (HydraulicControlOption hco : allControlOptions) {
             hco.panel.addChangeListener((ChangeEvent chEvt) -> {
-                PriorControlPanel panel = (PriorControlPanel) chEvt.getSource();
-                Double[] a = panel.toA();
-                if (a[0] != null) {
-                    // kacControlPanel.setfrom
-                }
+                updateKACfromPhysicalControl();
             });
         }
 
@@ -123,7 +122,8 @@ public class OneHydraulicControl extends RowColPanel implements ChangeListener {
         controlTypeComboBox.addChangeListener((chEvt) -> {
             hydraulicControlPanel.clear();
             int index = controlTypeComboBox.getSelectedIndex();
-            setPhysicalControlType(index);
+            currentPriorControlPanelIndex = index;
+            // setPhysicalControlType();
         });
         setControlTypeCombobox();
 
@@ -161,7 +161,7 @@ public class OneHydraulicControl extends RowColPanel implements ChangeListener {
         appendChild(buttonsPanel, 0);
 
         controlTypeComboBox.setSelectedItem(0);
-        setPhysicalControlType(0);
+        updatePhysicalControl();
 
         updateMode();
     }
@@ -182,11 +182,17 @@ public class OneHydraulicControl extends RowColPanel implements ChangeListener {
         }
     }
 
-    private void setPhysicalControlType(int index) {
-        if (index >= 0) {
-            hydraulicControlPanel.appendChild(allControlOptions.get(index).panel);
+    private void updatePhysicalControl() {
+        if (currentPriorControlPanelIndex >= 0) {
+            hydraulicControlPanel.appendChild(allControlOptions.get(currentPriorControlPanelIndex).panel);
         }
-        hydraulicControlPanel.updateUI();
+        updateKACfromPhysicalControl();
+        updateUI();
+    }
+
+    private void updateKACfromPhysicalControl() {
+        PriorControlPanel panel = allControlOptions.get(currentPriorControlPanelIndex).panel;
+        kacControlPanel.setFromKACGaussianConfig(panel.toKACGaussianConfig());
     }
 
     private void updateMode() {
