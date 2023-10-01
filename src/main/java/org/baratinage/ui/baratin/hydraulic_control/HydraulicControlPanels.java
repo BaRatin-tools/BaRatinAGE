@@ -26,10 +26,13 @@ public class HydraulicControlPanels extends RowColPanel implements IPriors, Chan
         controls = new ArrayList<>();
         tabs = new TabContainer(TabContainer.SIDE.TOP);
 
-        Lg.register(tabs, () -> {
-            updateTabs();
+        Lg.register(this, () -> {
+            int n = tabs.getTabCount();
+            for (int k = 0; k < n; k++) {
+                OneHydraulicControl ohc = controls.get(k);
+                tabs.setTitleTextAt(k, Lg.html("control_number", ohc.controlNumber));
+            }
         });
-
         appendChild(tabs, 1);
     }
 
