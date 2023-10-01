@@ -29,8 +29,6 @@ public class ChannelRect extends PriorControlPanel {
         slope = new ParameterPriorDistSimplified();
         slope.setIcon(slopeIcon);
         slope.setSymbolUnitLabels("S", "-");
-        slope.setDefaultValues(9.81, 0.01);
-        slope.setLocalLock(true);
 
         exponent = new ParameterPriorDistSimplified();
         exponent.setIcon(exponentIcon);
