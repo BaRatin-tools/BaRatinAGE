@@ -133,8 +133,21 @@ public class OneHydraulicControl extends RowColPanel implements ChangeListener {
 
         switchModeButton = new JButton("Switch to expert mode");
         switchModeButton.addActionListener((e) -> {
-            kacMode = !kacMode;
-            updateMode();
+            boolean proceed = true;
+            if (kacMode) {
+                proceed = false;
+                int response = JOptionPane.showConfirmDialog(this,
+                        Lg.text("kac_to_physical_parameters_warning") + "\n" + Lg.text("proceed_question"),
+                        Lg.text("warning"),
+                        JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+                if (response == JOptionPane.YES_OPTION) {
+                    proceed = true;
+                }
+            }
+            if (proceed) {
+                kacMode = !kacMode;
+                updateMode();
+            }
         });
         resetButton = new JButton("Reset all fields");
 
@@ -199,7 +212,8 @@ public class OneHydraulicControl extends RowColPanel implements ChangeListener {
         switchModeButton.setText(kacMode ? toPhysicalModeText : toKACmodeText);
         physicalParametersPanel.setVisible(!kacMode);
         kacControlPanel.setGlobalLock(!kacMode);
-        revalidate();
+        updateKACfromPhysicalControl();
+        updateUI();
     }
 
     @Override
