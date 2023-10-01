@@ -1,6 +1,5 @@
 package org.baratinage.ui.baratin.hydraulic_control;
 
-import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,8 +27,6 @@ public class ControlMatrix extends RowColPanel implements ChangeListener {
         super(AXIS.COL);
 
         RowColPanel buttonsPanel = new RowColPanel(AXIS.COL, ALIGN.STRETCH);
-
-        setPreferredSize(new Dimension(400, 300));
 
         addControlButton = new JButton(" > Ajouter un contrôle");
         addControlButton.addActionListener((e) -> {

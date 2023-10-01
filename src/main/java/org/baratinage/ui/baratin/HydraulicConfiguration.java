@@ -1,5 +1,6 @@
 package org.baratinage.ui.baratin;
 
+import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -79,6 +80,10 @@ public class HydraulicConfiguration
         });
 
         plotPanel = new PriorRatingCurvePlot();
+
+        Dimension dim = new Dimension(400, 300);
+        controlMatrix.setPreferredSize(dim);
+        plotPanel.setPreferredSize(dim);
 
         runPanel = new RunPanel(false, true, false);
         runPanel.setModelDefintion(this);
@@ -316,6 +321,7 @@ public class HydraulicConfiguration
         } else {
             System.out.println("HydraulicConfiguration: missing 'hydraulicControls'");
         }
+
         // **********************************************************
         // Stage grid configuration
 
