@@ -153,6 +153,9 @@ public class SimpleNumberField extends SimpleTextField {
         if (integer) {
             return;
         }
+        if (value != null && Double.isNaN(value)) {
+            value = null;
+        }
         doubleValue = value;
         updateTextFieldFromValue();
         updateValidityView();
