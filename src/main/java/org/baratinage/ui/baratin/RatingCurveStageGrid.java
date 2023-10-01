@@ -187,7 +187,13 @@ public class RatingCurveStageGrid extends RowColPanel implements IPredictionData
     private void updateStepNbr() {
         if (!valStepField.isValueValid() || !minStageField.isValueValid() ||
                 !maxStageField.isValueValid()) {
-            nbrStepField.unsetValue();
+            if (!valStepField.isValueValid() && !minStageField.isValueValid() &&
+                    !maxStageField.isValueValid()) {
+                // if all is unset, reset to default 100
+                nbrStepField.setValue(100);
+            } else {
+                nbrStepField.unsetValue();
+            }
             return;
         }
         double step = valStepField.getDoubleValue();
