@@ -35,7 +35,7 @@ public class ChannelRect extends PriorControlPanel {
         exponent = new ParameterPriorDistSimplified();
         exponent.setIcon(exponentIcon);
         exponent.setSymbolUnitLabels("c", "-");
-        exponent.setDefaultValues(1.5, 0.05);
+        exponent.setDefaultValues(1.67, 0.05);
         exponent.setLocalLock(true);
 
         addParameter(activationHeight);
