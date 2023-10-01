@@ -222,8 +222,6 @@ public class OneHydraulicControl extends RowColPanel implements ChangeListener {
     }
 
     public void fromJSON(JSONObject json) {
-        kacMode = json.getBoolean("isKACmode");
-        switchModeButton.setText(kacMode ? toPhysicalModeText : toKACmodeText);
 
         controlTypeComboBox.setSelectedItem(json.getInt("controlTypeIndex"));
         JSONArray allControlOptionsJSON = json.getJSONArray("allControlOptions");
@@ -233,6 +231,8 @@ public class OneHydraulicControl extends RowColPanel implements ChangeListener {
         }
 
         kacControlPanel.fromJSON(json.getJSONArray("kacControl"));
+        kacMode = json.getBoolean("isKACmode");
+        updateMode();
 
     }
 
