@@ -16,6 +16,7 @@ import org.baratinage.ui.component.SimpleTextField;
 import org.baratinage.ui.container.GridPanel;
 import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.ui.lg.Lg;
+import org.baratinage.utils.JSONcomparator;
 import org.json.JSONObject;
 
 abstract public class BamItem extends GridPanel {
@@ -138,12 +139,9 @@ abstract public class BamItem extends GridPanel {
             jsonB = filteredJsonB;
         }
 
-        String jsonStringA = jsonA.toString();
-        String jsonStringB = jsonB.toString();
+        boolean matching2 = JSONcomparator.areMatching(jsonA, jsonB);
 
-        // printJsonStrings(jsonStringA, jsonStringB);
-
-        return jsonStringA.equals(jsonStringB);
+        return matching2;
     }
 
     public boolean isMatchingWith(String jsonString, String[] keys, boolean exclude) {
