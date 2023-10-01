@@ -17,14 +17,14 @@ public class DistributionField {
     public final List<SimpleNumberField> parameterFields;
     public final SimpleComboBox distributionCombobox;
 
-    private final static DISTRIBUTION[] DISTRIBS = DISTRIBUTION.values();
+    private final static DISTRIBUTION[] DISTRIBUTION_TYPES = DISTRIBUTION.values();
 
     private int currentDistributionIndex;
 
     public DistributionField() {
 
         allParameterFields = new HashMap<>();
-        for (DISTRIBUTION d : DISTRIBS) {
+        for (DISTRIBUTION d : DISTRIBUTION_TYPES) {
             List<SimpleNumberField> parameterFields = new ArrayList<>();
             for (String pName : d.parameterNames) {
                 SimpleNumberField field = new SimpleNumberField();
@@ -43,7 +43,7 @@ public class DistributionField {
                 return;
             }
             currentDistributionIndex = index;
-            DISTRIBUTION d = DISTRIBS[index];
+            DISTRIBUTION d = DISTRIBUTION_TYPES[index];
             List<SimpleNumberField> fields = allParameterFields.get(d);
             parameterFieldsPanel.clear();
             parameterFields.clear();
@@ -55,14 +55,14 @@ public class DistributionField {
         });
 
         Lg.register(this, () -> {
-            int n = DISTRIBS.length;
+            int n = DISTRIBUTION_TYPES.length;
             String[] distribLabels = new String[n];
             for (int k = 0; k < n; k++) {
-                List<SimpleNumberField> parameterFields = allParameterFields.get(DISTRIBS[k]);
+                List<SimpleNumberField> parameterFields = allParameterFields.get(DISTRIBUTION_TYPES[k]);
                 for (int i = 0; i < parameterFields.size(); i++) {
-                    parameterFields.get(i).setPlaceholder(Lg.text(DISTRIBS[k].parameterNames[i]));
+                    parameterFields.get(i).setPlaceholder(Lg.text(DISTRIBUTION_TYPES[k].parameterNames[i]));
                 }
-                distribLabels[k] = Lg.text("dist_" + DISTRIBS[k].bamName);
+                distribLabels[k] = Lg.text("dist_" + DISTRIBUTION_TYPES[k].bamName);
             }
             int selectedIndex = distributionCombobox.getSelectedIndex();
             distributionCombobox.setEmptyItem(null);
@@ -75,40 +75,95 @@ public class DistributionField {
         distributionCombobox.fireChangeListeners();
     }
 
+    private SimpleNumberField getParameterField(int index) {
+        DISTRIBUTION distribution = getDistributionType();
+        if (distribution == null) {
+            return null;
+        }
+        if (index < 0 || index >= distribution.parameterNames.length) {
+            return null;
+        }
+        return parameterFields.get(index);
+    }
+
+    public DISTRIBUTION getDistributionType() {
+        return currentDistributionIndex < 0 ? null : DISTRIBUTION_TYPES[currentDistributionIndex];
+    }
+
+    public Double getParameter(int index) {
+        SimpleNumberField field = getParameterField(index);
+        return field != null && field.isValueValid() ? field.getDoubleValue() : null;
+    }
+
+    public Double[] getParameters() {
+        DISTRIBUTION distributionType = getDistributionType();
+        if (distributionType == null) {
+            return null;
+        }
+        int nPars = distributionType.parameterNames.length;
+        Double[] parValues = new Double[nPars];
+        for (int k = 0; k < nPars; k++) {
+            parValues[k] = getParameter(k);
+        }
+        return parValues;
+    }
+
+    public void setDistributionType(DISTRIBUTION distributionType) {
+        if (distributionType != null) {
+            int index = -1;
+            for (int k = 0; k < DISTRIBUTION_TYPES.length; k++) {
+                if (DISTRIBUTION_TYPES[k].equals(distributionType)) {
+                    index = k;
+                    break;
+                }
+            }
+            if (index >= 0) {
+                distributionCombobox.setSelectedItem(index, false);
+            }
+        }
+    }
+
+    public void setParameter(int index, Double value) {
+        DISTRIBUTION distributionType = getDistributionType();
+        if (distributionType == null) {
+            return;
+        }
+        if (index < 0 || index >= distributionType.parameterNames.length) {
+            return;
+        }
+        SimpleNumberField field = parameterFields.get(index);
+        field.setValue(value);
+    }
+
+    public void setParameters(Double... values) {
+        DISTRIBUTION distributionType = getDistributionType();
+        if (distributionType == null) {
+            return;
+        }
+        int n = distributionType.parameterNames.length;
+        if (n != values.length) {
+            return;
+        }
+        for (int k = 0; k < n; k++) {
+            parameterFields.get(k).setValue(values[k]);
+        }
+    }
+
     public Distribution getDistribution() {
-        int nPar = parameterFields.size();
-        double[] parameterValues = new double[nPar];
-        for (int k = 0; k < nPar; k++) {
-            SimpleNumberField field = parameterFields.get(k);
+        DISTRIBUTION distributionType = getDistributionType();
+        if (distributionType == null) {
+            return null;
+        }
+        int nPars = distributionType.parameterNames.length;
+        double[] parValues = new double[nPars];
+        for (int k = 0; k < nPars; k++) {
+            SimpleNumberField field = getParameterField(k);
             if (!field.isValueValid()) {
                 return null;
             }
-            parameterValues[k] = field.getDoubleValue();
+            parValues[k] = field.getDoubleValue();
         }
-        return new Distribution(DISTRIBS[currentDistributionIndex], parameterValues);
+        return new Distribution(distributionType, parValues);
     }
 
-    public void setDistribution(Distribution distribution) {
-        int index = -1;
-        for (int k = 0; k < DISTRIBS.length; k++) {
-            if (DISTRIBS[k].equals(distribution.distribution)) {
-                index = k;
-                break;
-            }
-        }
-        if (index == -1) {
-            System.err.println("DistributionField Error: Unknown distribution! The field cannot be configured!");
-            return;
-        }
-        distributionCombobox.setSelectedItem(index, false);
-        if (parameterFields.size() != distribution.parameterValues.length) {
-            System.err.println(
-                    "DistributionField Error: Number of parameters doesn't match! The field cannot be configured!");
-            return;
-        }
-        // for (int k = 0; k < DISTRIBS[k].parameterNames.length; k++) {
-        for (int k = 0; k < distribution.parameterValues.length; k++) {
-            parameterFields.get(k).setValue(distribution.parameterValues[k]);
-        }
-    }
 }

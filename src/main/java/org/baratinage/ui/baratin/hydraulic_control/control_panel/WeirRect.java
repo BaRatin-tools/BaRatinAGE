@@ -5,31 +5,37 @@ import org.baratinage.ui.lg.Lg;
 
 public class WeirRect extends PriorControlPanel {
 
+    private final ParameterPriorDistSimplified activationHeight;
+    private final ParameterPriorDistSimplified weirCoef;
+    private final ParameterPriorDistSimplified width;
+    private final ParameterPriorDistSimplified gravity;
+    private final ParameterPriorDistSimplified exponent;
+
     public WeirRect() {
         super(
                 2,
                 "C<sub>r</sub>B<sub>w</sub>(2g)<sup>1/2</sup>(h-b)<sup>c</sup>&nbsp;(h>k)");
 
-        ParameterPriorDistSimplified activationHeight = new ParameterPriorDistSimplified();
+        activationHeight = new ParameterPriorDistSimplified();
         activationHeight.setIcon(activationHeightIcon);
         activationHeight.setSymbolUnitLabels("k", "m");
 
-        ParameterPriorDistSimplified weirCoef = new ParameterPriorDistSimplified();
+        weirCoef = new ParameterPriorDistSimplified();
         weirCoef.setIcon(weirCoefIcon);
         weirCoef.setSymbolUnitLabels("C<sub>r</sub>", "-");
         weirCoef.setDefaultValues(0.4, 0.1);
 
-        ParameterPriorDistSimplified width = new ParameterPriorDistSimplified();
+        width = new ParameterPriorDistSimplified();
         width.setIcon(widthIcon);
         width.setSymbolUnitLabels("B<sub>w</sub>", "m");
 
-        ParameterPriorDistSimplified gravity = new ParameterPriorDistSimplified();
+        gravity = new ParameterPriorDistSimplified();
         gravity.setIcon(gravityIcon);
         gravity.setSymbolUnitLabels("g", "m.s<sup>-2</sup>");
         gravity.setDefaultValues(9.81, 0.01);
         gravity.setLocalLock(true);
 
-        ParameterPriorDistSimplified exponent = new ParameterPriorDistSimplified();
+        exponent = new ParameterPriorDistSimplified();
         exponent.setIcon(exponentIcon);
         exponent.setSymbolUnitLabels("c", "-");
         exponent.setDefaultValues(1.5, 0.05);
@@ -54,16 +60,40 @@ public class WeirRect extends PriorControlPanel {
 
     }
 
-    // @Override
-    // public JSONObject toJSON() {
-    // // TODO Auto-generated method stub
-    // throw new UnsupportedOperationException("Unimplemented method 'toJSON'");
-    // }
+    @Override
+    public Double[] toA() {
 
-    // @Override
-    // public void fromJSON(JSONObject json) {
-    // // TODO Auto-generated method stub
-    // throw new UnsupportedOperationException("Unimplemented method 'fromJSON'");
-    // }
+        if (!weirCoef.meanValueField.isValueValid() ||
+                !width.meanValueField.isValueValid() ||
+                !gravity.meanValueField.isValueValid()) {
+            return new Double[] { null, null };
+        }
+
+        double C = weirCoef.meanValueField.getDoubleValue();
+        double W = width.meanValueField.getDoubleValue();
+        double G = gravity.meanValueField.getDoubleValue();
+
+        double sqrtOfTwoG = Math.sqrt(2 * G);
+
+        double A = C * W * sqrtOfTwoG;
+
+        if (!weirCoef.uncertaintyValueField.isValueValid() ||
+                !width.uncertaintyValueField.isValueValid() ||
+                !gravity.uncertaintyValueField.isValueValid()) {
+            return new Double[] { A, null };
+        }
+
+        double Cstd = weirCoef.uncertaintyValueField.getDoubleValue() / 2;
+        double Wstd = width.uncertaintyValueField.getDoubleValue() / 2;
+        double Gstd = gravity.uncertaintyValueField.getDoubleValue() / 2;
+
+        double Astd = Math.sqrt(
+                Math.pow(Cstd, 2) * Math.pow(W * sqrtOfTwoG, 2) +
+                        Math.pow(Wstd, 2) * Math.pow(C * sqrtOfTwoG, 2) +
+                        Math.pow(Gstd, 2) * Math.pow(W * C * Math.pow(2 * G, -1 / 2), 2));
+
+        return new Double[] { A, Astd };
+
+    }
 
 }

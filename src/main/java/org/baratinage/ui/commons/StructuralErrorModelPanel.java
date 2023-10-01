@@ -83,9 +83,14 @@ public class StructuralErrorModelPanel extends GridPanel {
         insertChild(gamma.distributionField.parameterFieldsPanel, 3, index);
         insertChild(gamma.lockCheckbox, 4, index);
 
-        Distribution d = new Distribution(Distribution.DISTRIBUTION.UNIFORM, parameterValues);
-        Parameter p = new Parameter(symbol, initialGuess, d);
-        gamma.configure(true, p);
+        gamma.setDistributionType(Distribution.DISTRIBUTION.UNIFORM);
+        int nPars = parameterValues.length;
+        Double[] nonPrimitiveParamValues = new Double[nPars];
+        for (int k = 0; k < nPars; k++) {
+            nonPrimitiveParamValues[k] = parameterValues[k];
+        }
+        gamma.setDistributionParameters(nonPrimitiveParamValues);
+        gamma.setInitialGuess(initialGuess);
     }
 
     public Parameter[] getParameters() {

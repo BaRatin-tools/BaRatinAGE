@@ -8,6 +8,7 @@ import javax.swing.JLabel;
 
 import org.baratinage.jbam.Distribution;
 import org.baratinage.jbam.Parameter;
+import org.baratinage.jbam.Distribution.DISTRIBUTION;
 import org.baratinage.ui.component.SimpleNumberField;
 
 public class ParameterPriorDist extends AbstractParameterPriorDist {
@@ -82,25 +83,49 @@ public class ParameterPriorDist extends AbstractParameterPriorDist {
     }
 
     @Override
-    public void configure(boolean isLocked, Parameter parameter) {
-        if (parameter != null) {
-            initialGuessField.setValue(parameter.initalGuess);
-            distributionField.setDistribution(parameter.distribution);
-        }
-        setLocalLock(isLocked);
-    }
-
-    @Override
     public boolean isLocked() {
         return lockCheckbox.isSelected();
     }
 
     @Override
     public Parameter getParameter() {
-        Distribution d = distributionField.getDistribution();
-        if (!initialGuessField.isValueValid() || d == null) {
+        Distribution distribution = distributionField.getDistribution();
+        if (distribution == null) {
             return null;
         }
-        return new Parameter("", initialGuessField.getDoubleValue(), d);
+        if (!initialGuessField.isValueValid()) {
+            return null;
+        }
+        return new Parameter("", initialGuessField.getDoubleValue(), distribution);
+    }
+
+    @Override
+    public DISTRIBUTION getDistributionType() {
+        return distributionField.getDistributionType();
+    }
+
+    @Override
+    public Double[] getDistributionParameters() {
+        return distributionField.getParameters();
+    }
+
+    @Override
+    public Double getInitialGuess() {
+        return initialGuessField.getDoubleValue();
+    }
+
+    @Override
+    public void setDistributionType(DISTRIBUTION distributionType) {
+        distributionField.setDistributionType(distributionType);
+    }
+
+    @Override
+    public void setDistributionParameters(Double[] values) {
+        distributionField.setParameters(values);
+    }
+
+    @Override
+    public void setInitialGuess(Double value) {
+        initialGuessField.setValue(value);
     }
 }

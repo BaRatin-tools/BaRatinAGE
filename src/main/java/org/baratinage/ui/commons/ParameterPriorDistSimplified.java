@@ -89,19 +89,6 @@ public class ParameterPriorDistSimplified extends AbstractParameterPriorDist {
     }
 
     @Override
-    public void configure(boolean isLocked, Parameter parameter) {
-        setLocalLock(isLocked);
-
-        if (parameter != null) {
-            // assuming gaussian distribution!
-            double meanValue = parameter.distribution.parameterValues[0];
-            double uncertaintyValue = parameter.distribution.parameterValues[1] * 2;
-            meanValueField.setValue(meanValue);
-            uncertaintyValueField.setValue(uncertaintyValue);
-        }
-    }
-
-    @Override
     public boolean isLocked() {
         return lockCheckbox.isSelected();
     }
@@ -115,5 +102,43 @@ public class ParameterPriorDistSimplified extends AbstractParameterPriorDist {
         double std = uncertaintyValueField.getDoubleValue() / 2;
         Distribution d = new Distribution(DISTRIBUTION.GAUSSIAN, mean, std);
         return new Parameter(vAlignFixString, mean, d);
+    }
+
+    @Override
+    public DISTRIBUTION getDistributionType() {
+        return DISTRIBUTION.GAUSSIAN;
+    }
+
+    @Override
+    public Double[] getDistributionParameters() {
+        Double uncertainty = uncertaintyValueField.getDoubleValue();
+
+        return new Double[] {
+                meanValueField.getDoubleValue(),
+                uncertainty == null ? null : uncertainty / 2
+        };
+    }
+
+    @Override
+    public Double getInitialGuess() {
+        return meanValueField.getDoubleValue();
+    }
+
+    @Override
+    public void setDistributionType(DISTRIBUTION distributionType) {
+        // ignored since always gaussian...
+    }
+
+    @Override
+    public void setDistributionParameters(Double[] values) {
+        if (values.length == 2) {
+            meanValueField.setValue(values[0]);
+            uncertaintyValueField.setValue(values[1] == null ? null : values[1] * 2);
+        }
+    }
+
+    @Override
+    public void setInitialGuess(Double value) {
+        // ignored
     }
 }

@@ -56,4 +56,40 @@ public class ChannelRect extends PriorControlPanel {
         });
     }
 
+    @Override
+    public Double[] toA() {
+
+        if (!stricklerCoef.meanValueField.isValueValid() ||
+                !width.meanValueField.isValueValid() ||
+                !slope.meanValueField.isValueValid()) {
+            return new Double[] { null, null };
+        }
+
+        double K = stricklerCoef.meanValueField.getDoubleValue();
+        double W = width.meanValueField.getDoubleValue();
+        double S = slope.meanValueField.getDoubleValue();
+
+        double sqrtOfSlope = Math.sqrt(S);
+
+        double A = K * W * sqrtOfSlope;
+
+        if (!stricklerCoef.uncertaintyValueField.isValueValid() ||
+                !width.uncertaintyValueField.isValueValid() ||
+                !slope.uncertaintyValueField.isValueValid()) {
+            return new Double[] { A, null };
+        }
+
+        double Kstd = stricklerCoef.uncertaintyValueField.getDoubleValue() / 2;
+        double Wstd = width.uncertaintyValueField.getDoubleValue() / 2;
+        double Sstd = slope.uncertaintyValueField.getDoubleValue() / 2;
+
+        double Astd = Math.sqrt(
+                Math.pow(Kstd, 2) * Math.pow(W * sqrtOfSlope, 2) +
+                        Math.pow(Wstd, 2) * Math.pow(K * sqrtOfSlope, 2) +
+                        Math.pow(Sstd, 2) * Math.pow(K * W * 1 / sqrtOfSlope * 0.5, 2));
+
+        return new Double[] { A, Astd };
+
+    }
+
 }

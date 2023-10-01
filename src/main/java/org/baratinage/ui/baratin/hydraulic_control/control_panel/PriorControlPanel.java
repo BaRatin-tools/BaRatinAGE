@@ -7,20 +7,20 @@ import java.util.List;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JSeparator;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import org.baratinage.jbam.Parameter;
 import org.baratinage.ui.AppConfig;
 import org.baratinage.ui.commons.AbstractParameterPriorDist;
 import org.baratinage.ui.commons.ParameterPriorDist;
 import org.baratinage.ui.commons.ParameterPriorDistSimplified;
+import org.baratinage.ui.component.SimpleNumberField;
 import org.baratinage.ui.component.SvgIcon;
 import org.baratinage.ui.container.GridPanel;
 import org.json.JSONArray;
 
-public abstract class PriorControlPanel extends GridPanel {
-
-        protected record MeanStdRecord(Double mean, Double std) {
-        };
+public abstract class PriorControlPanel extends GridPanel implements ChangeListener {
 
         private static String vAlignFixString = "<sup>&nbsp;</sup><sub>&nbsp;</sub>";
 
@@ -130,6 +130,9 @@ public abstract class PriorControlPanel extends GridPanel {
                 insertChild(parameter.lockCheckbox, colIndex, index);
                 colIndex++;
 
+                parameter.meanValueField.addChangeListener(this);
+                parameter.uncertaintyValueField.addChangeListener(this);
+
                 parameters.add(parameter);
         }
 
@@ -153,14 +156,12 @@ public abstract class PriorControlPanel extends GridPanel {
                 insertChild(parameter.lockCheckbox, colIndex, index);
                 colIndex++;
 
-                parameters.add(parameter);
-        }
-
-        protected void setParameterPriorDist(int index, boolean isLocked, Parameter parameter) {
-                AbstractParameterPriorDist p = parameters.get(index);
-                if (p != null) {
-                        p.configure(isLocked, parameter);
+                parameter.initialGuessField.addChangeListener(this);
+                parameter.distributionField.distributionCombobox.addChangeListener(this);
+                for (SimpleNumberField f : parameter.distributionField.parameterFields) {
+                        f.addChangeListener(this);
                 }
+                parameters.add(parameter);
         }
 
         public Parameter[] getParameters() {
@@ -193,5 +194,28 @@ public abstract class PriorControlPanel extends GridPanel {
                         parameters.get(k).fromJSON(json.getJSONObject(k));
                 }
         }
+
+        private final List<ChangeListener> changeListeners = new ArrayList<>();
+
+        public void addChangeListener(ChangeListener l) {
+                changeListeners.add(l);
+        }
+
+        public void removeChangeListener(ChangeListener l) {
+                changeListeners.remove(l);
+        }
+
+        private void fireChangeListeners() {
+                for (ChangeListener l : changeListeners) {
+                        l.stateChanged(new ChangeEvent(this));
+                }
+        }
+
+        @Override
+        public void stateChanged(ChangeEvent chEvt) {
+                fireChangeListeners();
+        }
+
+        public abstract Double[] toA();
 
 }

@@ -2,8 +2,8 @@ package org.baratinage.ui.commons;
 
 import javax.swing.Icon;
 
-import org.baratinage.jbam.Distribution;
 import org.baratinage.jbam.Parameter;
+import org.baratinage.jbam.Distribution.DISTRIBUTION;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -19,30 +19,44 @@ public abstract class AbstractParameterPriorDist {
 
     public abstract void setGlobalLock(boolean locked);
 
-    public abstract void configure(boolean isLocked, Parameter parameter);
+    // public abstract void configure(boolean isLocked, Parameter parameter);
 
     public abstract boolean isLocked();
 
     public abstract Parameter getParameter();
 
+    public abstract DISTRIBUTION getDistributionType();
+
+    public abstract void setDistributionType(DISTRIBUTION distributionType);
+
+    public abstract Double[] getDistributionParameters();
+
+    public abstract void setDistributionParameters(Double[] values);
+
+    public abstract Double getInitialGuess();
+
+    public abstract void setInitialGuess(Double value);
+
     public JSONObject toJSON() {
         JSONObject json = new JSONObject();
-        Parameter p = getParameter();
 
-        if (p != null) {
-            JSONObject parameterJSON = new JSONObject();
+        // json.put("name", ???);
 
-            parameterJSON.put("name", p.name);
-            parameterJSON.put("initalGuess", p.initalGuess);
-            parameterJSON.put("distributionBamName", p.distribution.distribution.bamName);
-            JSONArray paramValues = new JSONArray();
-            int nParam = p.distribution.parameterValues.length;
-            for (int k = 0; k < nParam; k++) {
-                paramValues.put(k, p.distribution.parameterValues[k]);
+        DISTRIBUTION distributionType = getDistributionType();
+        if (distributionType != null) {
+            json.put("distributionBamName", distributionType.bamName);
+        }
+
+        json.put("initialGuess", getInitialGuess());
+
+        if (distributionType != null) {
+            Double[] parameterValues = getDistributionParameters();
+            int nPars = parameterValues.length;
+            JSONArray parameterValuesJSON = new JSONArray();
+            for (int k = 0; k < nPars; k++) {
+                parameterValuesJSON.put(k, parameterValues[k]);
             }
-            parameterJSON.put("parameters", paramValues);
-
-            json.put("parameter", parameterJSON);
+            json.put("distributionParameters", parameterValuesJSON);
         }
 
         json.put("isLocked", isLocked());
@@ -51,20 +65,33 @@ public abstract class AbstractParameterPriorDist {
     }
 
     public void fromJSON(JSONObject json) {
-        Parameter p = null;
-        if (json.has("parameter")) {
-            JSONObject parameterJSON = json.getJSONObject("parameter");
-            JSONArray paramValues = parameterJSON.getJSONArray("parameters");
-            int nParam = paramValues.length();
-            double[] parameterValues = new double[nParam];
-            for (int k = 0; k < nParam; k++) {
-                parameterValues[k] = paramValues.getDouble(k);
+
+        if (json.has("distributionBamName")) {
+            DISTRIBUTION distributionType = DISTRIBUTION.getDistribFromBamName(json.getString("distributionBamName"));
+            if (distributionType != null) {
+                setDistributionType(distributionType);
             }
-            String distributionBamName = parameterJSON.getString("distributionBamName");
-            Distribution d = Distribution.buildDistributionFromBamName(distributionBamName, parameterValues);
-            p = new Parameter(parameterJSON.getString("name"), parameterJSON.getDouble("initalGuess"), d);
         }
+
+        if (json.has("initialGuess")) {
+            Double initialGuessValue = json.optDouble("initialGuess");
+            if (initialGuessValue != null) {
+                setInitialGuess(initialGuessValue);
+            }
+        }
+
+        if (json.has("distributionParameters")) {
+            JSONArray distParametersJSON = json.getJSONArray("distributionParameters");
+            int nPars = distParametersJSON.length();
+            Double[] distParameterValues = new Double[nPars];
+            for (int k = 0; k < nPars; k++) {
+                double d = distParametersJSON.optDouble(k);
+                distParameterValues[k] = Double.isNaN(d) ? null : d;
+            }
+            setDistributionParameters(distParameterValues);
+        }
+
         boolean locked = json.getBoolean("isLocked");
-        configure(locked, p);
+        setLocalLock(locked);
     }
 }
