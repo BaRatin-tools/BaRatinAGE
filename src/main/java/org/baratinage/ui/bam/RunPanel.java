@@ -12,6 +12,7 @@ import org.baratinage.jbam.BaM;
 import org.baratinage.jbam.CalDataResidualConfig;
 import org.baratinage.jbam.CalibrationConfig;
 import org.baratinage.jbam.CalibrationData;
+import org.baratinage.jbam.CalibrationResult;
 import org.baratinage.jbam.McmcConfig;
 import org.baratinage.jbam.McmcCookingConfig;
 import org.baratinage.jbam.McmcSummaryConfig;
@@ -37,8 +38,6 @@ public class RunPanel extends RowColPanel {
     private IPredictionMaster bamPredictions;
     private ICalibratedModel bamCalibratedModel;
 
-    // private RunConfigAndRes bamRunConfigAndRes;
-
     private final boolean calibRun;
     private final boolean priorPredRun;
     private final boolean postPredRun;
@@ -63,7 +62,7 @@ public class RunPanel extends RowColPanel {
         hasChanged();
     }
 
-    private void hasChanged() {
+    public void hasChanged() {
         runButton.setEnabled(canRun());
     }
 
@@ -114,21 +113,177 @@ public class RunPanel extends RowColPanel {
         return calibOk && priorOk && postOk;
     }
 
+    private boolean isBamModelDefValid() {
+        if (bamModelDef == null) {
+            return false;
+        }
+        String[] parNames = bamModelDef.getParameterNames();
+        if (parNames == null) {
+            return false;
+        }
+        String[] outputNames = bamModelDef.getOutputNames();
+        if (outputNames == null) {
+            return false;
+        }
+        String[] inputNames = bamModelDef.getInputNames();
+        if (inputNames == null) {
+            return false;
+        }
+        return true;
+    }
+
+    private boolean isBamPriorsValid() {
+        // bamModelDef must be check beforhand
+        if (bamPriors == null) {
+            return false;
+        }
+        Parameter[] pars = bamPriors.getParameters();
+        if (pars == null) {
+            return false;
+        }
+        String[] parNames = bamModelDef.getParameterNames();
+        if (parNames.length != pars.length) {
+            System.err.println(
+                    "RunPanel Error: number of parameters of bamPriors doesn't match expected number of parameters");
+            return false;
+        }
+        return true;
+    }
+
+    private boolean isBamStructErrorValid() {
+        // bamModelDef must be check beforhand
+        if (bamStructError == null) {
+            return false;
+        }
+        StructuralErrorModel[] strucErrorModels = bamStructError.getStructuralErrorModels();
+        if (strucErrorModels == null) {
+            return false;
+        }
+        String[] outputNames = bamModelDef.getOutputNames();
+        if (outputNames.length != strucErrorModels.length) {
+            System.err.println(
+                    "RunPanel Error: number of structural error models doesn't match the number of outputs");
+            return false;
+        }
+        return true;
+    }
+
+    private boolean isBamCalibDataValid() {
+        // bamModelDef must be check beforhand
+        if (bamCalibData == null || bamModelDef == null) {
+            return false;
+        }
+
+        UncertainData[] inputs = bamCalibData.getInputs();
+        if (inputs == null) {
+            return false;
+        }
+        UncertainData[] outputs = bamCalibData.getInputs();
+        if (outputs == null) {
+            return false;
+        }
+        String[] inputNames = bamModelDef.getInputNames();
+        if (inputs.length != inputNames.length) {
+            return false;
+        }
+        String[] outputNames = bamModelDef.getOutputNames();
+        if (outputs.length != outputNames.length) {
+            return false;
+        }
+        return true;
+    }
+
+    private boolean isBamPredictionValid(int nInputs, int nOutputs) {
+        if (bamPredictions == null) {
+            return false;
+        }
+        IPredictionExperiment[] experiments = bamPredictions.getPredictionExperiments();
+        if (experiments == null) {
+            return false;
+        }
+        for (IPredictionExperiment exp : experiments) {
+            PredictionConfig predConf = exp.getPredictionConfig();
+            if (predConf.inputs == null) {
+                return false;
+            }
+            if (predConf.inputs.length != nInputs) {
+                return false;
+            }
+            if (predConf.outputs == null) {
+                return false;
+            }
+            if (predConf.outputs.length != nOutputs) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private boolean isBamCalibratedModelValid() {
+        if (bamCalibratedModel == null) {
+            return false;
+        }
+        CalibrationConfig calConfig = bamCalibratedModel.getCalibrationConfig();
+        if (calConfig == null) {
+            return false;
+        }
+        if (calConfig.model == null) {
+            return false;
+        }
+        // even if not needed, a calibrated model should be able to provide results
+        CalibrationResult calResult = bamCalibratedModel.getCalibrationResults();
+        if (calResult == null) {
+            return false;
+        }
+        return true;
+    }
+
     public boolean canRunCalibration() {
-        return bamModelDef != null &&
-                bamPriors != null &&
-                bamStructError != null &&
-                bamCalibData != null;
+        return isBamModelDefValid() &&
+                isBamPriorsValid() &&
+                isBamStructErrorValid() &&
+                isBamCalibDataValid();
     }
 
     public boolean canRunPriorPrediction() {
-        return ((bamModelDef != null && bamPriors != null) || bamCalibratedModel != null) &&
-                bamPredictions != null;
+        int nInputs;
+        int nOutputs;
+        if (isBamCalibratedModelValid()) {
+            nInputs = bamCalibratedModel.getCalibrationConfig().model.nInput;
+            nOutputs = bamCalibratedModel.getCalibrationConfig().model.nInput;
+        } else {
+            if (isBamModelDefValid() && isBamPriorsValid()) {
+                nInputs = bamModelDef.getInputNames().length;
+                nOutputs = bamModelDef.getOutputNames().length;
+            } else {
+                return false;
+            }
+        }
+        if (!isBamPredictionValid(nInputs, nOutputs)) {
+            return false;
+        }
+        return true;
     }
 
     public boolean canRunPostPrediction() {
-        return (canRunCalibration() || bamCalibratedModel != null)
-                && bamPredictions != null;
+
+        int nInputs = -1;
+        int nOutputs = -1;
+        if (isBamCalibratedModelValid()) {
+            nInputs = bamCalibratedModel.getCalibrationConfig().model.nInput;
+            nOutputs = bamCalibratedModel.getCalibrationConfig().model.nInput;
+        } else {
+            if (canRunCalibration()) {
+                nInputs = bamModelDef.getInputNames().length;
+                nInputs = bamModelDef.getOutputNames().length;
+            } else {
+                return false;
+            }
+        }
+        if (!isBamPredictionValid(nInputs, nOutputs)) {
+            return false;
+        }
+        return true;
     }
 
     private CalibrationConfig buildCalibrationConfig(String id) {
