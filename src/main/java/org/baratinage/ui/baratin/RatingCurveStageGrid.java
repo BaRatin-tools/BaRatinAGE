@@ -11,7 +11,6 @@ import org.baratinage.jbam.PredictionInput;
 import org.baratinage.ui.bam.IPredictionData;
 
 import org.baratinage.ui.component.SimpleNumberField;
-import org.baratinage.ui.container.GridPanel;
 import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.ui.lg.Lg;
 
@@ -31,17 +30,10 @@ public class RatingCurveStageGrid extends RowColPanel implements IPredictionData
     private boolean isValueValid;
 
     public RatingCurveStageGrid() {
-        // super(AXIS.COL, ALIGN.STRETCH);
 
         setCrossAxisAlign(ALIGN.CENTER);
         setGap(5);
         setPadding(5);
-        // GridPanel gridPanel = new GridPanel();
-        // setGap(5);
-        // setPadding(5);
-
-        // appendChild(stageGridLabel, 0);
-        // appendChild(gridPanel, 1);
 
         minStageField = new SimpleNumberField();
         minStageField.addChangeListener((e) -> {
@@ -77,13 +69,6 @@ public class RatingCurveStageGrid extends RowColPanel implements IPredictionData
         });
 
         JLabel stageGridLabel = new JLabel();
-        // JLabel minLabel = new JLabel();
-
-        // JLabel maxLabel = new JLabel();
-
-        // JLabel nLabel = new JLabel();
-
-        // JLabel stepLabel = new JLabel();
 
         Lg.register(this, () -> {
             stageGridLabel.setText(Lg.text("stage_grid"));
@@ -98,21 +83,6 @@ public class RatingCurveStageGrid extends RowColPanel implements IPredictionData
         appendChild(maxStageField, 1);
         appendChild(nbrStepField, 1);
         appendChild(valStepField, 1);
-
-        // gridPanel.setGap(5);
-        // gridPanel.setColWeight(1, 1);
-        // gridPanel.setColWeight(3, 1);
-        // gridPanel.setColWeight(5, 1);
-        // gridPanel.setColWeight(7, 1);
-        // gridPanel.insertChild(minStageField, 1, 0);
-        // gridPanel.insertChild(maxStageField, 3, 0);
-        // gridPanel.insertChild(nbrStepField, 5, 0);
-        // gridPanel.insertChild(valStepField, 7, 0);
-
-        // gridPanel.insertChild(minLabel, 0, 0);
-        // gridPanel.insertChild(maxLabel, 2, 0);
-        // gridPanel.insertChild(nLabel, 4, 0);
-        // gridPanel.insertChild(stepLabel, 6, 0);
 
         isValueValid = false;
         stageGridConfig = new StageGridConfig(null, null, null);
