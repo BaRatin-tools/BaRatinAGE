@@ -174,7 +174,11 @@ public abstract class PriorControlPanel extends GridPanel implements ChangeListe
                 int n = parameters.size();
                 Parameter[] pars = new Parameter[n];
                 for (int k = 0; k < n; k++) {
-                        pars[k] = parameters.get(k).getParameter();
+                        Parameter par = parameters.get(k).getParameter();
+                        if (par == null) {
+                                return null;
+                        }
+                        pars[k] = par;
                 }
                 return pars;
         }

@@ -50,7 +50,6 @@ public class OneHydraulicControl extends RowColPanel implements ChangeListener {
     private final RowColPanel physicalParametersPanel;
     private final RowColPanel hydraulicControlPanel;
     private final JButton switchModeButton;
-    private final JButton resetButton;
     private final SimpleComboBox controlTypeComboBox;
     private final KAC kacControlPanel;
 
@@ -155,11 +154,9 @@ public class OneHydraulicControl extends RowColPanel implements ChangeListener {
                 updateMode();
             }
         });
-        resetButton = new JButton("Reset all fields");
 
         RowColPanel buttonsPanel = new RowColPanel();
         buttonsPanel.appendChild(switchModeButton);
-        buttonsPanel.appendChild(resetButton);
 
         Lg.register(this, () -> {
 
@@ -172,7 +169,6 @@ public class OneHydraulicControl extends RowColPanel implements ChangeListener {
             toPhysicalModeText = Lg.text("switch_to_physical_mode");
             switchModeButton.setText(kacMode ? toPhysicalModeText : toKACmodeText);
 
-            resetButton.setText(Lg.text("reset"));
         });
 
         appendChild(physicalParametersPanel, 0);
