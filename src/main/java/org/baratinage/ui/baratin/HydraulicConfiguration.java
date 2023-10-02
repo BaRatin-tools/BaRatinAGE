@@ -75,7 +75,7 @@ public class HydraulicConfiguration
 
         priorRatingCurveStageGrid = new RatingCurveStageGrid();
         priorRatingCurveStageGrid.addChangeListener((e) -> {
-            fireChangeListeners();
+            // fireChangeListeners();
             checkPriorRatingCurveSync();
         });
 
