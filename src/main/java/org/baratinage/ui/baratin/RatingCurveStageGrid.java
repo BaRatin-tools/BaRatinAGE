@@ -31,15 +31,17 @@ public class RatingCurveStageGrid extends RowColPanel implements IPredictionData
     private boolean isValueValid;
 
     public RatingCurveStageGrid() {
-        super(AXIS.COL, ALIGN.STRETCH);
+        // super(AXIS.COL, ALIGN.STRETCH);
 
-        GridPanel gridPanel = new GridPanel();
+        setCrossAxisAlign(ALIGN.CENTER);
         setGap(5);
         setPadding(5);
+        // GridPanel gridPanel = new GridPanel();
+        // setGap(5);
+        // setPadding(5);
 
-        JLabel stageGridLabel = new JLabel();
-        appendChild(stageGridLabel, 0);
-        appendChild(gridPanel, 1);
+        // appendChild(stageGridLabel, 0);
+        // appendChild(gridPanel, 1);
 
         minStageField = new SimpleNumberField();
         minStageField.addChangeListener((e) -> {
@@ -74,36 +76,43 @@ public class RatingCurveStageGrid extends RowColPanel implements IPredictionData
             return d != null && d > 0;
         });
 
-        JLabel minLabel = new JLabel();
+        JLabel stageGridLabel = new JLabel();
+        // JLabel minLabel = new JLabel();
 
-        JLabel maxLabel = new JLabel();
+        // JLabel maxLabel = new JLabel();
 
-        JLabel nLabel = new JLabel();
+        // JLabel nLabel = new JLabel();
 
-        JLabel stepLabel = new JLabel();
+        // JLabel stepLabel = new JLabel();
 
         Lg.register(this, () -> {
             stageGridLabel.setText(Lg.text("stage_grid"));
-            maxLabel.setText(Lg.text("max"));
-            minLabel.setText(Lg.text("min"));
-            nLabel.setText(Lg.text("n"));
-            stepLabel.setText(Lg.text("step"));
+            minStageField.setPlaceholder(Lg.text("min"));
+            maxStageField.setPlaceholder(Lg.text("max"));
+            nbrStepField.setPlaceholder(Lg.text("n"));
+            valStepField.setPlaceholder(Lg.text("step"));
         });
 
-        gridPanel.setGap(5);
-        gridPanel.setColWeight(1, 1);
-        gridPanel.setColWeight(3, 1);
-        gridPanel.setColWeight(5, 1);
-        gridPanel.setColWeight(7, 1);
-        gridPanel.insertChild(minStageField, 1, 0);
-        gridPanel.insertChild(maxStageField, 3, 0);
-        gridPanel.insertChild(nbrStepField, 5, 0);
-        gridPanel.insertChild(valStepField, 7, 0);
+        appendChild(stageGridLabel, 0);
+        appendChild(minStageField, 1);
+        appendChild(maxStageField, 1);
+        appendChild(nbrStepField, 1);
+        appendChild(valStepField, 1);
 
-        gridPanel.insertChild(minLabel, 0, 0);
-        gridPanel.insertChild(maxLabel, 2, 0);
-        gridPanel.insertChild(nLabel, 4, 0);
-        gridPanel.insertChild(stepLabel, 6, 0);
+        // gridPanel.setGap(5);
+        // gridPanel.setColWeight(1, 1);
+        // gridPanel.setColWeight(3, 1);
+        // gridPanel.setColWeight(5, 1);
+        // gridPanel.setColWeight(7, 1);
+        // gridPanel.insertChild(minStageField, 1, 0);
+        // gridPanel.insertChild(maxStageField, 3, 0);
+        // gridPanel.insertChild(nbrStepField, 5, 0);
+        // gridPanel.insertChild(valStepField, 7, 0);
+
+        // gridPanel.insertChild(minLabel, 0, 0);
+        // gridPanel.insertChild(maxLabel, 2, 0);
+        // gridPanel.insertChild(nLabel, 4, 0);
+        // gridPanel.insertChild(stepLabel, 6, 0);
 
         isValueValid = false;
         stageGridConfig = new StageGridConfig(null, null, null);
