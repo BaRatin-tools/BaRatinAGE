@@ -1,17 +1,21 @@
 package org.baratinage.ui.commons;
 
 import java.awt.Font;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.Icon;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import org.baratinage.jbam.Distribution;
 import org.baratinage.jbam.DistributionType;
 import org.baratinage.jbam.Parameter;
 import org.baratinage.ui.component.SimpleNumberField;
 
-public class ParameterPriorDist extends AbstractParameterPriorDist {
+public class ParameterPriorDist extends AbstractParameterPriorDist implements ChangeListener {
     public final JLabel iconLabel;
     public final JLabel symbolUnitLabel;
     public final JLabel nameLabel;
@@ -31,12 +35,15 @@ public class ParameterPriorDist extends AbstractParameterPriorDist {
         nameLabel = new JLabel();
         symbolUnitLabel.setFont(MONOSPACE_FONT);
         initialGuessField = new SimpleNumberField();
+        initialGuessField.addChangeListener(this);
 
         distributionField = new DistributionField();
+        distributionField.addChangeListener(this);
 
         lockCheckbox = new JCheckBox();
         lockCheckbox.addChangeListener((chEvt) -> {
             updateLock();
+            fireChangeListeners();
         });
     }
 
@@ -128,4 +135,26 @@ public class ParameterPriorDist extends AbstractParameterPriorDist {
     public void setInitialGuess(Double value) {
         initialGuessField.setValue(value);
     }
+
+    private final List<ChangeListener> changeListeners = new ArrayList<>();
+
+    public void addChangeListener(ChangeListener l) {
+        changeListeners.add(l);
+    }
+
+    public void removeChangeListener(ChangeListener l) {
+        changeListeners.remove(l);
+    }
+
+    public void fireChangeListeners() {
+        for (ChangeListener l : changeListeners) {
+            l.stateChanged(new ChangeEvent(this));
+        }
+    }
+
+    @Override
+    public void stateChanged(ChangeEvent e) {
+        fireChangeListeners();
+    }
+
 }

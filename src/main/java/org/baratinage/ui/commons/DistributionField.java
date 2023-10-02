@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+
 import org.baratinage.jbam.Distribution;
 import org.baratinage.jbam.DistributionType;
 import org.baratinage.ui.component.SimpleComboBox;
@@ -11,7 +14,7 @@ import org.baratinage.ui.component.SimpleNumberField;
 import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.ui.lg.Lg;
 
-public class DistributionField {
+public class DistributionField implements ChangeListener {
     private final HashMap<DistributionType, List<SimpleNumberField>> allParameterFields;
     public final RowColPanel parameterFieldsPanel;
     public final List<SimpleNumberField> parameterFields;
@@ -29,6 +32,7 @@ public class DistributionField {
             for (String pName : d.parameterNames) {
                 SimpleNumberField field = new SimpleNumberField();
                 field.setPlaceholder(Lg.text(pName));
+                field.addChangeListener(this);
                 parameterFields.add(field);
             }
             allParameterFields.put(d, parameterFields);
@@ -38,6 +42,7 @@ public class DistributionField {
         parameterFieldsPanel.setGap(5);
         distributionCombobox = new SimpleComboBox();
         distributionCombobox.addChangeListener((chEvt) -> {
+            fireChangeListeners();
             int index = distributionCombobox.getSelectedIndex();
             if (index == -1) {
                 return;
@@ -164,6 +169,27 @@ public class DistributionField {
             parValues[k] = field.getDoubleValue();
         }
         return new Distribution(distributionType, parValues);
+    }
+
+    private final List<ChangeListener> changeListeners = new ArrayList<>();
+
+    public void addChangeListener(ChangeListener l) {
+        changeListeners.add(l);
+    }
+
+    public void removeChangeListener(ChangeListener l) {
+        changeListeners.remove(l);
+    }
+
+    private void fireChangeListeners() {
+        for (ChangeListener l : changeListeners) {
+            l.stateChanged(new ChangeEvent(this));
+        }
+    }
+
+    @Override
+    public void stateChanged(ChangeEvent e) {
+        fireChangeListeners();
     }
 
 }
