@@ -71,14 +71,12 @@ public class HydraulicConfiguration
         hydraulicControls.addChangeListener((e) -> {
             fireChangeListeners();
             checkPriorRatingCurveSync();
-            runPanel.hasChanged();
         });
 
         priorRatingCurveStageGrid = new RatingCurveStageGrid();
         priorRatingCurveStageGrid.addChangeListener((e) -> {
             // fireChangeListeners();
             checkPriorRatingCurveSync();
-            runPanel.hasChanged();
         });
 
         plotPanel = new PriorRatingCurvePlot();
