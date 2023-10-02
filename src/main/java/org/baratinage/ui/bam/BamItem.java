@@ -140,6 +140,9 @@ abstract public class BamItem extends GridPanel {
         }
 
         boolean matching2 = JSONcomparator.areMatching(jsonA, jsonB);
+        if (!matching2) {
+            printJsonStrings(jsonA.toString(), jsonB.toString());
+        }
 
         return matching2;
     }
