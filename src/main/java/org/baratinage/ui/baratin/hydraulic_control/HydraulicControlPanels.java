@@ -7,8 +7,8 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import org.baratinage.jbam.Parameter;
+import org.baratinage.ui.bam.BamItemType;
 import org.baratinage.ui.bam.IPriors;
-import org.baratinage.ui.baratin.HydraulicConfiguration;
 import org.baratinage.ui.container.TabContainer;
 import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.ui.lg.Lg;
@@ -47,7 +47,7 @@ public class HydraulicControlPanels extends RowColPanel implements IPriors, Chan
                 OneHydraulicControl ohc = controls.get(k);
                 tabs.addTab(
                         Lg.html("control_number", ohc.controlNumber),
-                        HydraulicConfiguration.priorSpecificationIcon,
+                        BamItemType.HYDRAULIC_CONFIG.getIcon(),
                         ohc);
             }
         }
@@ -57,10 +57,6 @@ public class HydraulicControlPanels extends RowColPanel implements IPriors, Chan
         int n = controls.size() + 1;
         OneHydraulicControl ohc = new OneHydraulicControl(n);
         ohc.addChangeListener(this);
-        // Lg.register(ohc, () -> {
-        // String text = Lg.html("control_number", ohc.controlNumber);
-        // // ohc.nameLabel.setText(text);
-        // });
         controls.add(ohc);
         nVisibleHydraulicControls = controls.size();
     }
@@ -72,6 +68,7 @@ public class HydraulicControlPanels extends RowColPanel implements IPriors, Chan
             updateTabs();
             fireChangeListeners();
             // Note: we actually keep the controls in memory, we simply stop displaying them
+            // FIXME: might be confusing for the user by the way...
         } else if (nControls > controls.size()) {
             // add controls
             int n = nControls - controls.size();
@@ -93,6 +90,9 @@ public class HydraulicControlPanels extends RowColPanel implements IPriors, Chan
 
         for (int k = 0; k < nVisibleHydraulicControls; k++) {
             Parameter[] pars = controls.get(k).getParameters();
+            if (pars == null) {
+                return null;
+            }
             parameters[k * 3 + 0] = pars[0].getRenamedClone("k_" + k);
             parameters[k * 3 + 1] = pars[1].getRenamedClone("a_" + k);
             parameters[k * 3 + 2] = pars[2].getRenamedClone("c_" + k);
@@ -124,8 +124,7 @@ public class HydraulicControlPanels extends RowColPanel implements IPriors, Chan
     public JSONObject toJSON() {
         JSONObject json = new JSONObject();
         JSONArray controlsJSON = new JSONArray();
-        int n = controls.size();
-        for (int k = 0; k < n; k++) {
+        for (int k = 0; k < nVisibleHydraulicControls; k++) {
             controlsJSON.put(k, controls.get(k).toJSON());
         }
         json.put("controls", controlsJSON);
