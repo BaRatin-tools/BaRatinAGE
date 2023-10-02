@@ -64,6 +64,7 @@ public class ParameterPriorDist extends AbstractParameterPriorDist implements Ch
     @Override
     public void setLocalLock(boolean locked) {
         lockCheckbox.setSelected(locked);
+        updateLock();
     }
 
     @Override
@@ -76,16 +77,10 @@ public class ParameterPriorDist extends AbstractParameterPriorDist implements Ch
         if (lockCheckbox.isEnabled()) {
             boolean isLocked = lockCheckbox.isSelected();
             initialGuessField.setEnabled(!isLocked);
-            distributionField.distributionCombobox.setEnabled(!isLocked);
-            for (SimpleNumberField field : distributionField.parameterFields) {
-                field.setEnabled(!isLocked);
-            }
+            distributionField.setEnabled(!isLocked);
         } else {
             initialGuessField.setEnabled(false);
-            distributionField.distributionCombobox.setEnabled(false);
-            for (SimpleNumberField field : distributionField.parameterFields) {
-                field.setEnabled(false);
-            }
+            distributionField.setEnabled(false);
         }
     }
 

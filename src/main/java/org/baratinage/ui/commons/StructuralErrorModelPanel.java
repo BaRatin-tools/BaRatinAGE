@@ -74,6 +74,7 @@ public class StructuralErrorModelPanel extends GridPanel {
         ParameterPriorDist gamma = new ParameterPriorDist();
         gamma.setNameLabel("");
         gamma.setSymbolUnitLabels(symbol, unit);
+        gamma.setLocalLock(true);
         parameters.add(gamma);
 
         insertChild(gamma.symbolUnitLabel, 0, index);

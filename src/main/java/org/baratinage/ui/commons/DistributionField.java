@@ -80,6 +80,15 @@ public class DistributionField implements ChangeListener {
         distributionCombobox.fireChangeListeners();
     }
 
+    public void setEnabled(boolean enabled) {
+        distributionCombobox.setEnabled(enabled);
+        for (List<SimpleNumberField> fields : allParameterFields.values()) {
+            for (SimpleNumberField field : fields) {
+                field.setEnabled(enabled);
+            }
+        }
+    }
+
     private SimpleNumberField getParameterField(int index) {
         DistributionType distType = getDistributionType();
         if (distType == null) {
