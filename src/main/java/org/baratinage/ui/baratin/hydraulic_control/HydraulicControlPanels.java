@@ -15,7 +15,7 @@ import org.baratinage.ui.lg.Lg;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-public class HydraulicControlPanels extends RowColPanel implements IPriors, ChangeListener {
+public class HydraulicControlPanels extends RowColPanel implements IPriors {
 
     private final List<OneHydraulicControl> controls;
     private int nVisibleHydraulicControls = 0;
@@ -56,7 +56,9 @@ public class HydraulicControlPanels extends RowColPanel implements IPriors, Chan
     private void addHydraulicControl() {
         int n = controls.size() + 1;
         OneHydraulicControl ohc = new OneHydraulicControl(n);
-        ohc.addChangeListener(this);
+        ohc.addChangeListener((chEvt) -> {
+            fireChangeListeners();
+        });
         controls.add(ohc);
         nVisibleHydraulicControls = controls.size();
     }
@@ -98,11 +100,6 @@ public class HydraulicControlPanels extends RowColPanel implements IPriors, Chan
             parameters[k * 3 + 2] = pars[2].getRenamedClone("c_" + k);
         }
         return parameters;
-    }
-
-    @Override
-    public void stateChanged(ChangeEvent arg0) {
-        fireChangeListeners();
     }
 
     private final List<ChangeListener> changeListeners = new ArrayList<>();

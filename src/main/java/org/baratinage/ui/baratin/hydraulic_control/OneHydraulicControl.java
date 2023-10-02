@@ -26,7 +26,7 @@ import org.baratinage.ui.lg.Lg;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-public class OneHydraulicControl extends RowColPanel implements ChangeListener {
+public class OneHydraulicControl extends RowColPanel {
 
     public static final ImageIcon rectWeirIcon = SvgIcon.buildCustomAppImageIcon(
             "hc_rect_weir.svg", AppConfig.AC.ICON_SIZE);
@@ -72,6 +72,9 @@ public class OneHydraulicControl extends RowColPanel implements ChangeListener {
         setGap(5);
 
         kacControlPanel = new KAC();
+        kacControlPanel.addChangeListener((chEvt) -> {
+            fireChangeListeners();
+        });
 
         allControlOptions = new ArrayList<>();
         allControlOptions.add(
@@ -122,7 +125,6 @@ public class OneHydraulicControl extends RowColPanel implements ChangeListener {
             int index = controlTypeComboBox.getSelectedIndex();
             currentPriorControlPanelIndex = index;
             updatePhysicalControl();
-            // setPhysicalControlType();
         });
         setControlTypeCombobox();
 
@@ -219,11 +221,6 @@ public class OneHydraulicControl extends RowColPanel implements ChangeListener {
         updateUI();
     }
 
-    @Override
-    public void stateChanged(ChangeEvent arg0) {
-        fireChangeListeners();
-    }
-
     private final List<ChangeListener> changeListeners = new ArrayList<>();
 
     public void addChangeListener(ChangeListener l) {
@@ -277,4 +274,5 @@ public class OneHydraulicControl extends RowColPanel implements ChangeListener {
 
         return json;
     }
+
 }

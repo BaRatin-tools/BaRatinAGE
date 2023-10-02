@@ -215,7 +215,7 @@ public abstract class PriorControlPanel extends GridPanel implements ChangeListe
                 changeListeners.remove(l);
         }
 
-        private void fireChangeListeners() {
+        protected void fireChangeListeners() {
                 for (ChangeListener l : changeListeners) {
                         l.stateChanged(new ChangeEvent(this));
                 }

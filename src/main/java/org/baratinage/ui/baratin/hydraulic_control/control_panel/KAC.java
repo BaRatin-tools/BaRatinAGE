@@ -6,9 +6,9 @@ import org.baratinage.ui.lg.Lg;
 
 public class KAC extends PriorControlPanel {
 
-    private final ParameterPriorDist k;
-    private final ParameterPriorDist a;
-    private final ParameterPriorDist c;
+    public final ParameterPriorDist k;
+    public final ParameterPriorDist a;
+    public final ParameterPriorDist c;
 
     public KAC() {
         super(
@@ -53,6 +53,8 @@ public class KAC extends PriorControlPanel {
         c.distributionField.setDistributionType(DistributionType.GAUSSIAN);
         c.distributionField.setParameters(kacCongig.cMean(), kacCongig.cStd());
         c.initialGuessField.setValue(kacCongig.cMean());
+
+        fireChangeListeners();
     }
 
     @Override
