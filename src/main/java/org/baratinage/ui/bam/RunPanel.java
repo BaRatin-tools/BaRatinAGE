@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.function.Consumer;
 
 import javax.swing.JButton;
+import javax.swing.JOptionPane;
 
 import org.baratinage.jbam.BaM;
 import org.baratinage.jbam.CalDataResidualConfig;
@@ -53,48 +54,46 @@ public class RunPanel extends RowColPanel {
         appendChild(runButton);
 
         runButton.addActionListener((e) -> {
-            run();
+            if (canRun()) {
+                run();
+            } else {
+                JOptionPane.showOptionDialog(this,
+                        Lg.text("cannot_run_invalid_configuration"),
+                        Lg.text("error"),
+                        JOptionPane.OK_OPTION,
+                        JOptionPane.ERROR_MESSAGE,
+                        null,
+                        new String[] { Lg.text("ok") },
+                        "");
+            }
         });
 
         runButton.setText(Lg.text("launch_bam"));
         runButton.setFont(runButton.getFont().deriveFont(Font.BOLD));
-
-        hasChanged();
-    }
-
-    public void hasChanged() {
-        runButton.setEnabled(canRun());
     }
 
     public void setModelDefintion(IModelDefinition modelDefinition) {
         bamModelDef = modelDefinition;
-        hasChanged();
     }
 
     public void setPriors(IPriors priors) {
         bamPriors = priors;
-        hasChanged();
     }
 
     public void setStructuralErrorModel(IStructuralErrorModels structuralErrorModel) {
         bamStructError = structuralErrorModel;
-        hasChanged();
     }
 
     public void setCalibrationData(ICalibrationData calibrationData) {
         bamCalibData = calibrationData;
-        hasChanged();
     }
 
     public void setPredictionExperiments(IPredictionMaster predictionExperiments) {
         bamPredictions = predictionExperiments;
-        hasChanged();
     }
 
     public void setCalibratedModel(ICalibratedModel calibratedModel) {
         bamCalibratedModel = calibratedModel;
-        // setModelDefintion(bamCalibratedModel);
-        hasChanged();
     }
 
     public boolean canRun() {
@@ -173,7 +172,6 @@ public class RunPanel extends RowColPanel {
         if (bamCalibData == null || bamModelDef == null) {
             return false;
         }
-
         UncertainData[] inputs = bamCalibData.getInputs();
         if (inputs == null) {
             return false;
