@@ -146,7 +146,7 @@ public class OneHydraulicControl extends RowColPanel {
                         JOptionPane.WARNING_MESSAGE,
                         null,
                         new String[] { Lg.text("continue"), Lg.text("cancel") },
-                        Lg.text("cancel"));
+                        null);
                 if (response == JOptionPane.YES_OPTION) {
                     proceed = true;
                 }
