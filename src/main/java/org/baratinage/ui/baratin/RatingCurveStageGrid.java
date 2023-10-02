@@ -115,7 +115,7 @@ public class RatingCurveStageGrid extends RowColPanel implements IPredictionData
     public double[] getStageGrid() {
         if (!isValueValid()) {
             System.err.println("RatingCurveStageGrid Error: Invalid stage grid");
-            return new double[0];
+            return null;
         }
         int n = (int) ((stageGridConfig.max - stageGridConfig.min) / stageGridConfig.step);
         double[] stageGrid = new double[n];
@@ -160,7 +160,11 @@ public class RatingCurveStageGrid extends RowColPanel implements IPredictionData
     @Override
     public PredictionInput[] getPredictionInputs() {
         List<double[]> stageGrid = new ArrayList<>();
-        stageGrid.add(getStageGrid());
+        double[] hValues = getStageGrid();
+        if (hValues == null) {
+            return null;
+        }
+        stageGrid.add(hValues);
         String predictionInputName = "stage_grid";
         PredictionInput predInput = new PredictionInput(
                 predictionInputName,
