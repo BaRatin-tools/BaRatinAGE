@@ -71,12 +71,14 @@ public class HydraulicConfiguration
         hydraulicControls.addChangeListener((e) -> {
             fireChangeListeners();
             checkPriorRatingCurveSync();
+            runPanel.hasChanged();
         });
 
         priorRatingCurveStageGrid = new RatingCurveStageGrid();
         priorRatingCurveStageGrid.addChangeListener((e) -> {
             // fireChangeListeners();
             checkPriorRatingCurveSync();
+            runPanel.hasChanged();
         });
 
         plotPanel = new PriorRatingCurvePlot();
@@ -195,6 +197,9 @@ public class HydraulicConfiguration
     @Override
     public String[] getParameterNames() {
         Parameter[] parameters = getParameters();
+        if (parameters == null) {
+            return null;
+        }
         String[] parameterNames = new String[parameters.length];
         for (int k = 0; k < parameters.length; k++) {
             parameterNames[k] = parameters[k].name;
