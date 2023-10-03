@@ -39,7 +39,7 @@ public class HydraulicControlPanels extends RowColPanel implements IPriors {
     private void updateTabs() {
         int nTabs = tabs.getTabCount();
         if (nTabs > nVisibleHydraulicControls) {
-            for (int k = nVisibleHydraulicControls; k < nTabs; k++) {
+            for (int k = nTabs - 1; k >= nVisibleHydraulicControls; k--) {
                 tabs.remove(k);
             }
         } else if (nTabs < nVisibleHydraulicControls) {
@@ -51,6 +51,7 @@ public class HydraulicControlPanels extends RowColPanel implements IPriors {
                         ohc);
             }
         }
+        tabs.updateUI();
     }
 
     private void addHydraulicControl() {
@@ -64,22 +65,18 @@ public class HydraulicControlPanels extends RowColPanel implements IPriors {
     }
 
     public void setHydraulicControls(int nControls) {
-        if (nControls < controls.size()) {
-            // remove controls
-            nVisibleHydraulicControls = nControls;
-            updateTabs();
-            fireChangeListeners();
-            // Note: we actually keep the controls in memory, we simply stop displaying them
-            // FIXME: might be confusing for the user by the way...
-        } else if (nControls > controls.size()) {
+        if (nControls > controls.size()) {
             // add controls
             int n = nControls - controls.size();
             for (int k = 0; k < n; k++) {
                 addHydraulicControl();
             }
-            updateTabs();
-            fireChangeListeners();
+
         }
+        nVisibleHydraulicControls = nControls;
+        updateTabs();
+        fireChangeListeners();
+
     }
 
     public List<OneHydraulicControl> getHydraulicControls() {

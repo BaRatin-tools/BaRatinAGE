@@ -3,6 +3,7 @@ package org.baratinage.ui.baratin;
 import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -32,6 +33,7 @@ import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.ui.container.SplitContainer;
 import org.baratinage.ui.lg.Lg;
 import org.baratinage.utils.JSONcomparator;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class HydraulicConfiguration
@@ -164,24 +166,97 @@ public class HydraulicConfiguration
 
     private void checkPriorRatingCurveSync() {
         outOufSyncPanel.clear();
-        if (jsonStringBackup != null) {
-            // JSONcomparator.
-            // if (!isMatchingWith(jsonStringBackup, "stageGridConfig", false)) {
+        if (jsonStringBackup == null) {
+            Lg.register(runPanel.runButton, "compute_prior_rc", true);
+            runPanel.runButton.setForeground(new JButton().getForeground());
+            updateUI();
+            return;
+        }
 
-            // }
-            if (!JSONcomparator.areMatchingExcluding(toJSON(), jsonStringBackup,
-                    "ui", "name", "description", "jsonStringBackup")) {
-                MsgPanel errMsg = new MsgPanel(MsgPanel.TYPE.ERROR);
-                Lg.register(errMsg.message, "oos_prior_rating_curve", true);
-                outOufSyncPanel.appendChild(errMsg);
-                Lg.register(runPanel.runButton, "recompute_prior_rc", true);
-                runPanel.runButton.setForeground(AppConfig.AC.INVALID_COLOR_FG);
-                return;
+        JSONObject currentJson = toJSON();
+        JSONObject backupJson = new JSONObject(jsonStringBackup);
+        Map<String, Boolean> matching = JSONcomparator.areMatchingByEntry(currentJson, backupJson);
+
+        List<MsgPanel> outOfSyncMessages = new ArrayList<>();
+
+        if (!matching.get("stageGridConfig")) {
+            System.out.println("Stage grid config different");
+            MsgPanel msg = new MsgPanel(MsgPanel.TYPE.ERROR);
+            msg.message.setText("oos_stage_grid");
+            JButton revertBackBtn = new JButton();
+            revertBackBtn.setText("cancel_changes");
+            revertBackBtn.addActionListener((e) -> {
+                priorRatingCurveStageGrid.fromJSON(
+                        backupJson.getJSONObject("stageGridConfig"));
+                checkPriorRatingCurveSync();
+            });
+            msg.addButton(revertBackBtn);
+            outOfSyncMessages.add(msg);
+        }
+        if (!matching.get("controlMatrix")) {
+            System.out.println("Control matrix different");
+            MsgPanel msg = new MsgPanel(MsgPanel.TYPE.ERROR);
+            msg.message.setText("oos_control_matrix");
+            JButton revertBackBtn = new JButton();
+            revertBackBtn.setText("cancel_changes");
+            revertBackBtn.addActionListener((e) -> {
+                controlMatrix.fromJSON(
+                        backupJson.getJSONObject("controlMatrix"));
+                checkPriorRatingCurveSync();
+            });
+            msg.addButton(revertBackBtn);
+            outOfSyncMessages.add(msg);
+        } else {
+            // check priors only if matrix control match
+            // otherwise, likely to run into some issues
+            // e.g. I want to make sure the number of control matches
+            if (!matching.get("hydraulicControls")) {
+
+                JSONArray currentControls = currentJson.getJSONObject("hydraulicControls").getJSONArray("controls");
+                JSONArray backupControls = backupJson.getJSONObject("hydraulicControls").getJSONArray("controls");
+                boolean controlsMatching = true;
+                for (int k = 0; k < currentControls.length(); k++) {
+                    Map<String, Boolean> matchingControl = JSONcomparator.areMatchingByEntry(
+                            currentControls.getJSONObject(k),
+                            backupControls.getJSONObject(k));
+                    if (!matchingControl.get("kacControl")) {
+                        controlsMatching = false;
+                        break;
+                    }
+                }
+                if (!controlsMatching) {
+                    System.out.println("Hydraulic controls are different");
+                    MsgPanel msg = new MsgPanel(MsgPanel.TYPE.ERROR);
+                    msg.message.setText("oos_hydraulic_controls");
+                    JButton revertBackBtn = new JButton();
+                    revertBackBtn.setText("cancel_changes");
+                    revertBackBtn.addActionListener((e) -> {
+                        hydraulicControls.fromJSON(
+                                backupJson.getJSONObject("hydraulicControls"));
+                        checkPriorRatingCurveSync();
+                    });
+                    msg.addButton(revertBackBtn);
+                    outOfSyncMessages.add(msg);
+                }
+
             }
         }
-        Lg.register(runPanel.runButton, "compute_prior_rc", true);
-        runPanel.runButton.setForeground(new JButton().getForeground());
-        outOufSyncPanel.updateUI();
+        for (MsgPanel mp : outOfSyncMessages) {
+            outOufSyncPanel.appendChild(mp);
+        }
+        if (outOfSyncMessages.size() > 0) {
+            Lg.register(runPanel.runButton, "recompute_prior_rc", true);
+            runPanel.runButton.setForeground(AppConfig.AC.INVALID_COLOR_FG);
+        } else {
+            Lg.register(runPanel.runButton, "compute_prior_rc", true);
+            runPanel.runButton.setForeground(new JButton().getForeground());
+        }
+        Lg.register(outOufSyncPanel, () -> {
+
+        });
+
+        updateUI();
+
     }
 
     private void updateHydraulicControls(boolean[][] controlMatrix) {
@@ -241,23 +316,8 @@ public class HydraulicConfiguration
         JSONObject json = new JSONObject();
 
         // **********************************************************
-        // ui only elements
-        JSONObject uiJson = new JSONObject();
-        uiJson.put("reversedControlMatrix", controlMatrix.getIsReversed());
-        json.put("ui", uiJson);
-
-        // **********************************************************
         // Control matrix
-        boolean[][] matrix = controlMatrix.getControlMatrix();
-        String stringMatrix = "";
-        int n = matrix.length;
-        for (int i = 0; i < n; i++) {
-            for (int j = 0; j < n; j++) {
-                stringMatrix += matrix[i][j] ? "0" : "1";
-            }
-            stringMatrix += ";";
-        }
-        json.put("controlMatrix", stringMatrix);
+        json.put("controlMatrix", controlMatrix.toJSON());
 
         // **********************************************************
         // Hydraulic controls
@@ -287,28 +347,9 @@ public class HydraulicConfiguration
     public void fromJSON(JSONObject json) {
 
         // **********************************************************
-        // ui only elements
-        if (json.has("ui")) {
-            JSONObject uiJson = json.getJSONObject("ui");
-            controlMatrix.setIsReversed(uiJson.getBoolean("reversedControlMatrix"));
-        } else {
-            System.out.println("HydraulicConfiguration: missing 'ui'");
-        }
-
-        // **********************************************************
         // Control matrix
         if (json.has("controlMatrix")) {
-            String stringMatrix = (String) json.get("controlMatrix");
-            String[] stringMatrixRow = stringMatrix.split(";");
-            int n = stringMatrixRow.length;
-            boolean[][] matrix = new boolean[n][n];
-            char one = "1".charAt(0);
-            for (int i = 0; i < n; i++) {
-                for (int j = 0; j < n; j++) {
-                    matrix[i][j] = stringMatrixRow[i].charAt(j) != one;
-                }
-            }
-            controlMatrix.setControlMatrix(matrix);
+            controlMatrix.fromJSON(json.getJSONObject("controlMatrix"));
         } else {
             System.out.println("HydraulicConfiguration: missing 'controlMatrix'");
         }

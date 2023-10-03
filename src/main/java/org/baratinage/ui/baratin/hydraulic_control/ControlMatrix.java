@@ -14,6 +14,7 @@ import javax.swing.event.ChangeListener;
 import org.baratinage.ui.container.GridPanel;
 import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.ui.lg.Lg;
+import org.json.JSONObject;
 
 public class ControlMatrix extends RowColPanel implements ChangeListener {
 
@@ -111,7 +112,7 @@ public class ControlMatrix extends RowColPanel implements ChangeListener {
             for (int k = 1; k <= nDiff; k++) {
                 ControlMatrixColumn c = controls.get(nCtrlOld - k);
                 c.destroyControl();
-                controls.remove(k);
+                controls.remove(nCtrlOld - k);
             }
         } else if (nDiff < 0) { // not enough controls
             for (int k = 1; k <= -nDiff; k++) {
@@ -228,5 +229,36 @@ public class ControlMatrix extends RowColPanel implements ChangeListener {
         for (ChangeListener l : changeListeners) {
             l.stateChanged(new ChangeEvent(this));
         }
+    }
+
+    public JSONObject toJSON() {
+        JSONObject json = new JSONObject();
+        boolean[][] matrix = getControlMatrix();
+        String stringMatrix = "";
+        int n = matrix.length;
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                stringMatrix += matrix[i][j] ? "0" : "1";
+            }
+            stringMatrix += ";";
+        }
+        json.put("controlMatrixString", stringMatrix);
+        json.put("isReversed", getIsReversed());
+        return json;
+    }
+
+    public void fromJSON(JSONObject json) {
+        String stringMatrix = json.getString("controlMatrixString");
+        String[] stringMatrixRow = stringMatrix.split(";");
+        int n = stringMatrixRow.length;
+        boolean[][] matrix = new boolean[n][n];
+        char one = "1".charAt(0);
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                matrix[i][j] = stringMatrixRow[i].charAt(j) != one;
+            }
+        }
+        setControlMatrix(matrix);
+        setIsReversed(json.getBoolean("isReversed"));
     }
 }
