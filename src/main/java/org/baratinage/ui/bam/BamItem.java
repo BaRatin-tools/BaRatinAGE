@@ -1,22 +1,20 @@
 package org.baratinage.ui.bam;
 
-import java.awt.Font;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.awt.Component;
 
 import javax.swing.JButton;
-import javax.swing.JLabel;
 import javax.swing.JSeparator;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import org.baratinage.ui.component.SimpleTextField;
+import org.baratinage.ui.component.Title;
 import org.baratinage.ui.container.GridPanel;
 import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.ui.lg.Lg;
-import org.baratinage.utils.JSONcomparator;
 import org.json.JSONObject;
 
 abstract public class BamItem extends GridPanel {
@@ -25,7 +23,7 @@ abstract public class BamItem extends GridPanel {
     public final String ID;
     public final BamProject PROJECT;
 
-    public final JLabel bamItemTypeLabel = new JLabel();
+    public final Title bamItemTypeLabel = new Title();
     public final SimpleTextField bamItemNameField = new SimpleTextField();
     public final SimpleTextField bamItemDescriptionField = new SimpleTextField();
     public final JButton cloneButton = new JButton();
@@ -45,7 +43,6 @@ abstract public class BamItem extends GridPanel {
         headerPanel.setColWeight(1, 1);
 
         bamItemTypeLabel.setText("BamItem");
-        bamItemTypeLabel.setFont(bamItemTypeLabel.getFont().deriveFont(Font.BOLD));
         bamItemNameField.setText("Unnamed");
 
         Lg.register(bamItemNameField, () -> {
@@ -57,8 +54,8 @@ abstract public class BamItem extends GridPanel {
 
         headerPanel.insertChild(bamItemTypeLabel, 0, 0);
         headerPanel.insertChild(bamItemNameField, 1, 0, ANCHOR.C, FILL.H);
-        headerPanel.insertChild(cloneButton, 2, 0, ANCHOR.C, FILL.H);
-        headerPanel.insertChild(deleteButton, 3, 0, ANCHOR.C, FILL.H);
+        headerPanel.insertChild(cloneButton, 2, 0, ANCHOR.C, FILL.BOTH);
+        headerPanel.insertChild(deleteButton, 3, 0, ANCHOR.C, FILL.BOTH);
         headerPanel.insertChild(bamItemDescriptionField, 0, 1, 4, 1);
 
         contentPanel = new RowColPanel();
@@ -100,67 +97,6 @@ abstract public class BamItem extends GridPanel {
     @Override
     public String toString() {
         return "BamItem | " + TYPE + " | " + bamItemNameField.getText() + " (" + ID + ")";
-    }
-
-    public static boolean areMatching(JSONObject jsonA, JSONObject jsonB, String[] keys, boolean exclude) {
-
-        String[] namesA = JSONObject.getNames(jsonA);
-        String[] namesB = JSONObject.getNames(jsonB);
-
-        if (namesA == null || namesB == null) {
-            System.err.println("BamItem Error: At least one of the JSON object to compare is empty!");
-            return namesA == null && namesB == null;
-        }
-
-        if (exclude) {
-            // create shallow copies (see: https://stackoverflow.com/a/12809884)
-            jsonA = new JSONObject(jsonA, JSONObject.getNames(jsonA));
-            jsonB = new JSONObject(jsonB, JSONObject.getNames(jsonB));
-            for (String key : keys) {
-                if (jsonA.has(key)) {
-                    jsonA.remove(key);
-                }
-                if (jsonB.has(key)) {
-                    jsonB.remove(key);
-                }
-            }
-        } else {
-            JSONObject filteredJsonA = new JSONObject();
-            JSONObject filteredJsonB = new JSONObject();
-            for (String key : keys) {
-                if (jsonA.has(key)) {
-                    filteredJsonA.put(key, jsonA.get(key));
-                }
-                if (jsonB.has(key)) {
-                    filteredJsonB.put(key, jsonB.get(key));
-                }
-            }
-            jsonA = filteredJsonA;
-            jsonB = filteredJsonB;
-        }
-
-        boolean matching2 = JSONcomparator.areMatching(jsonA, jsonB);
-        if (!matching2) {
-            printJsonStrings(jsonA.toString(), jsonB.toString());
-        }
-
-        return matching2;
-    }
-
-    public boolean isMatchingWith(String jsonString, String[] keys, boolean exclude) {
-        return isMatchingWith(new JSONObject(jsonString), keys, exclude);
-    }
-
-    public boolean isMatchingWith(JSONObject json, String[] keys, boolean exclude) {
-        return areMatching(toJSON(), json, keys, exclude);
-    }
-
-    public static void printJsonStrings(String jsonA, String jsonB) {
-        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
-        System.out.println(jsonA);
-        System.out.println("------------------------------------------------");
-        System.out.println(jsonB);
-        System.out.println("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
     }
 
     private final List<ChangeListener> changeListeners = new ArrayList<>();
