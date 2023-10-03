@@ -31,7 +31,7 @@ public class DistributionField implements ChangeListener {
             List<SimpleNumberField> parameterFields = new ArrayList<>();
             for (String pName : d.parameterNames) {
                 SimpleNumberField field = new SimpleNumberField();
-                field.setPlaceholder(Lg.text(pName));
+                field.setInnerLabel(Lg.text(pName));
                 field.addChangeListener(this);
                 parameterFields.add(field);
             }
@@ -65,7 +65,7 @@ public class DistributionField implements ChangeListener {
             for (int k = 0; k < n; k++) {
                 List<SimpleNumberField> parameterFields = allParameterFields.get(DISTRIBUTION_TYPES[k]);
                 for (int i = 0; i < parameterFields.size(); i++) {
-                    parameterFields.get(i).setPlaceholder(Lg.text(DISTRIBUTION_TYPES[k].parameterNames[i]));
+                    parameterFields.get(i).setInnerLabel(Lg.text(DISTRIBUTION_TYPES[k].parameterNames[i]));
                 }
                 distribLabels[k] = Lg.text("dist_" + DISTRIBUTION_TYPES[k].bamName);
             }

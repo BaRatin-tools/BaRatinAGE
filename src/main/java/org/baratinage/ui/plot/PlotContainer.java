@@ -98,13 +98,9 @@ public class PlotContainer extends RowColPanel {
             chartPanel.restoreAutoBounds();
         });
 
-        String saveIconPath = Path.of(AppConfig.AC.ICONS_RESOURCES_DIR, "feather", "save.svg").toString();
-        String copyIconPath = Path.of(AppConfig.AC.ICONS_RESOURCES_DIR, "feather", "copy.svg").toString();
-        String windowPlotIconPath = Path.of(AppConfig.AC.ICONS_RESOURCES_DIR, "feather", "external-link.svg")
-                .toString();
-        ImageIcon saveIcon = SvgIcon.buildNoScalingIcon(saveIconPath, 24);
-        ImageIcon copyIcon = SvgIcon.buildNoScalingIcon(copyIconPath, 24);
-        ImageIcon windowPlotIcon = SvgIcon.buildNoScalingIcon(windowPlotIconPath, 24);
+        ImageIcon saveIcon = SvgIcon.buildFeatherAppImageIcon("save.svg");
+        ImageIcon copyIcon = SvgIcon.buildFeatherAppImageIcon("copy.svg");
+        ImageIcon windowPlotIcon = SvgIcon.buildFeatherAppImageIcon("external-link.svg");
 
         JButton btnWindowPlot = new JButton();
 

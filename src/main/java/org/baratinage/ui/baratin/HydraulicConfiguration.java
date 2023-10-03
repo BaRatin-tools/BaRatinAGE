@@ -31,7 +31,7 @@ import org.baratinage.ui.component.Title;
 import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.ui.container.SplitContainer;
 import org.baratinage.ui.lg.Lg;
-
+import org.baratinage.utils.JSONcomparator;
 import org.json.JSONObject;
 
 public class HydraulicConfiguration
@@ -50,12 +50,9 @@ public class HydraulicConfiguration
 
     private String jsonStringBackup;
 
-    public static final ImageIcon controlMatrixIcon = SvgIcon.buildCustomAppImageIcon("control_matrix.svg",
-            AppConfig.AC.ICON_SIZE);
-    public static final ImageIcon priorSpecificationIcon = SvgIcon.buildCustomAppImageIcon("prior_densities.svg",
-            AppConfig.AC.ICON_SIZE);
-    public static final ImageIcon priorRatingCurveIcon = SvgIcon.buildCustomAppImageIcon("prior_rating_curve.svg",
-            AppConfig.AC.ICON_SIZE);
+    public static final ImageIcon controlMatrixIcon = SvgIcon.buildCustomAppImageIcon("control_matrix.svg");
+    public static final ImageIcon priorSpecificationIcon = SvgIcon.buildCustomAppImageIcon("prior_densities.svg");
+    public static final ImageIcon priorRatingCurveIcon = SvgIcon.buildCustomAppImageIcon("prior_rating_curve.svg");
 
     public HydraulicConfiguration(String uuid, BaratinProject project) {
         super(BamItemType.HYDRAULIC_CONFIG, uuid, project);
@@ -168,8 +165,12 @@ public class HydraulicConfiguration
     private void checkPriorRatingCurveSync() {
         outOufSyncPanel.clear();
         if (jsonStringBackup != null) {
-            String[] keysToIgnore = new String[] { "ui", "name", "description", "jsonStringBackup" };
-            if (!isMatchingWith(jsonStringBackup, keysToIgnore, true)) {
+            // JSONcomparator.
+            // if (!isMatchingWith(jsonStringBackup, "stageGridConfig", false)) {
+
+            // }
+            if (!JSONcomparator.areMatchingExcluding(toJSON(), jsonStringBackup,
+                    "ui", "name", "description", "jsonStringBackup")) {
                 MsgPanel errMsg = new MsgPanel(MsgPanel.TYPE.ERROR);
                 Lg.register(errMsg.message, "oos_prior_rating_curve", true);
                 outOufSyncPanel.appendChild(errMsg);
@@ -265,10 +266,7 @@ public class HydraulicConfiguration
 
         // **********************************************************
         // Stage grid configuration
-        JSONObject stageGridConfigJson = new JSONObject();
-        stageGridConfigJson.put("min", priorRatingCurveStageGrid.getMinValue());
-        stageGridConfigJson.put("max", priorRatingCurveStageGrid.getMaxValue());
-        stageGridConfigJson.put("step", priorRatingCurveStageGrid.getStepValue());
+        JSONObject stageGridConfigJson = priorRatingCurveStageGrid.toJSON();
 
         json.put("stageGridConfig", stageGridConfigJson);
 
@@ -331,9 +329,7 @@ public class HydraulicConfiguration
         if (json.has("stageGridConfig")) {
 
             JSONObject stageGridJson = json.getJSONObject("stageGridConfig");
-            priorRatingCurveStageGrid.setMinValue(stageGridJson.optDouble("min"));
-            priorRatingCurveStageGrid.setMaxValue(stageGridJson.optDouble("max"));
-            priorRatingCurveStageGrid.setStepValue(stageGridJson.optDouble("step"));
+            priorRatingCurveStageGrid.fromJSON(stageGridJson);
 
         } else {
             System.out.println("HydraulicConfiguration: missing 'stageGridConfig'");

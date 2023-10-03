@@ -48,8 +48,9 @@ public class MainFrame extends JFrame {
         Lg.setLocale("fr");
         Lg.setDefaultOwnerKey("main_frame");
 
-        String iconPath = Path.of(AppConfig.AC.ICONS_RESOURCES_DIR, "icon.svg").toString();
-        ImageIcon baratinageIcon = SvgIcon.buildNoScalingIcon(iconPath, 64);
+        ImageIcon baratinageIcon = new SvgIcon(Path.of(
+                AppConfig.AC.ICONS_RESOURCES_DIR,
+                "icon.svg").toString(), 64, 64);
 
         setIconImage(baratinageIcon.getImage());
         setTitle(AppConfig.AC.APP_NAME);
@@ -293,6 +294,7 @@ public class MainFrame extends JFrame {
             BamProject bamProject = BamProject.loadProject(projectFilePath);
             bamProject.setProjectPath(projectFilePath);
             setCurrentProject(bamProject);
+            updateUI();
         }
     }
 

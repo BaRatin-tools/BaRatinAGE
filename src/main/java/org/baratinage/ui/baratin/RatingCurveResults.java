@@ -6,7 +6,6 @@ import java.util.List;
 import javax.swing.ImageIcon;
 
 import org.baratinage.jbam.EstimatedParameter;
-import org.baratinage.ui.AppConfig;
 import org.baratinage.ui.commons.DensityPlotGrid;
 import org.baratinage.ui.container.TabContainer;
 import org.baratinage.ui.component.SvgIcon;
@@ -17,8 +16,8 @@ public class RatingCurveResults extends TabContainer {
     private PosteriorRatingCurvePlot ratingCurvePlot;
     private DensityPlotGrid paramDensityPlots;
 
-    private static ImageIcon rcIcon = SvgIcon.buildCustomAppImageIcon("rating_curve.svg", AppConfig.AC.ICON_SIZE);
-    private static ImageIcon dpIcon = SvgIcon.buildCustomAppImageIcon("densities.svg", AppConfig.AC.ICON_SIZE);
+    private static ImageIcon rcIcon = SvgIcon.buildCustomAppImageIcon("rating_curve.svg");
+    private static ImageIcon dpIcon = SvgIcon.buildCustomAppImageIcon("densities.svg");
 
     public RatingCurveResults() {
 

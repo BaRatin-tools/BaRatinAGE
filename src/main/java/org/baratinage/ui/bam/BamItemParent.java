@@ -14,7 +14,7 @@ import org.baratinage.ui.commons.MsgPanel;
 import org.baratinage.ui.component.SimpleComboBox;
 import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.ui.lg.Lg;
-
+import org.baratinage.utils.JSONcomparator;
 import org.json.JSONObject;
 
 public class BamItemParent extends RowColPanel {
@@ -224,7 +224,13 @@ public class BamItemParent extends RowColPanel {
             return false;
         }
         JSONObject backupItemJson = new JSONObject(backupItemString);
-        return currentItem.isMatchingWith(backupItemJson, comparisonJsonKeys, excludeKeys);
+        JSONObject currentItemJson = currentItem.toJSON();
+
+        if (excludeKeys) {
+            return JSONcomparator.areMatchingExcluding(currentItemJson, backupItemJson, comparisonJsonKeys);
+        } else {
+            return JSONcomparator.areMatchingIncluding(currentItemJson, backupItemJson, comparisonJsonKeys);
+        }
     }
 
     public boolean isBamRerunRequired() {

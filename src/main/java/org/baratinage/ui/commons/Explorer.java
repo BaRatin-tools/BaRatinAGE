@@ -8,6 +8,7 @@ import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 import javax.swing.JTree;
+import javax.swing.border.EmptyBorder;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
@@ -32,6 +33,8 @@ public class Explorer extends RowColPanel {
         setMinimumSize(new Dimension(200, 100));
 
         this.appendChild(headerLabel, 0);
+
+        headerLabel.setBorder(new EmptyBorder(5, 5, 5, 5));
 
         this.explorerTree = new JTree();
         this.explorerTree.setBorder(BorderFactory.createEmptyBorder());

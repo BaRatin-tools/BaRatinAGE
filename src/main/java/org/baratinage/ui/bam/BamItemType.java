@@ -4,7 +4,6 @@ import java.util.UUID;
 
 import javax.swing.ImageIcon;
 
-import org.baratinage.ui.AppConfig;
 import org.baratinage.ui.component.SvgIcon;
 
 public enum BamItemType {
@@ -65,14 +64,14 @@ public enum BamItemType {
 
     public ImageIcon getIcon() {
         if (icon == null) {
-            icon = SvgIcon.buildCustomAppImageIcon(id + ".svg", AppConfig.AC.ICON_SIZE);
+            icon = SvgIcon.buildCustomAppImageIcon(id + ".svg");
         }
         return icon;
     }
 
     public ImageIcon getAddIcon() {
         if (addIcon == null) {
-            addIcon = SvgIcon.buildCustomAppImageIcon(id + "_add.svg", AppConfig.AC.ICON_SIZE);
+            addIcon = SvgIcon.buildCustomAppImageIcon(id + "_add.svg");
         }
         return addIcon;
     }

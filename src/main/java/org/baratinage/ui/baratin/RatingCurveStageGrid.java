@@ -13,6 +13,7 @@ import org.baratinage.ui.bam.IPredictionData;
 import org.baratinage.ui.component.SimpleNumberField;
 import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.ui.lg.Lg;
+import org.json.JSONObject;
 
 // FIXME: should have a fromJSON / toJSON methods
 public class RatingCurveStageGrid extends RowColPanel implements IPredictionData {
@@ -72,10 +73,10 @@ public class RatingCurveStageGrid extends RowColPanel implements IPredictionData
 
         Lg.register(this, () -> {
             stageGridLabel.setText(Lg.text("stage_grid"));
-            minStageField.setPlaceholder(Lg.text("min"));
-            maxStageField.setPlaceholder(Lg.text("max"));
-            nbrStepField.setPlaceholder(Lg.text("n"));
-            valStepField.setPlaceholder(Lg.text("step"));
+            minStageField.setInnerLabel(Lg.text("min"));
+            maxStageField.setInnerLabel(Lg.text("max"));
+            nbrStepField.setInnerLabel(Lg.text("n"));
+            valStepField.setInnerLabel(Lg.text("step"));
         });
 
         appendChild(stageGridLabel, 0);
@@ -104,36 +105,23 @@ public class RatingCurveStageGrid extends RowColPanel implements IPredictionData
         return stageGrid;
     }
 
+    public JSONObject toJSON() {
+        JSONObject json = new JSONObject();
+        json.put("min", stageGridConfig.min);
+        json.put("max", stageGridConfig.max);
+        json.put("step", stageGridConfig.step);
+        return json;
+    }
+
+    public void fromJSON(JSONObject json) {
+        minStageField.setValue(json.optDouble("min"));
+        maxStageField.setValue(json.optDouble("max"));
+        valStepField.setValue(json.optDouble("step"));
+        updateStageGridConfig();
+    }
+
     public boolean isValueValid() {
         return isValueValid;
-    }
-
-    public Double getMinValue() {
-        return stageGridConfig.min;
-    }
-
-    public void setMinValue(double value) {
-        minStageField.setValue(value);
-        updateStageGridConfig();
-    }
-
-    public Double getMaxValue() {
-        return stageGridConfig.max;
-    }
-
-    public void setMaxValue(double value) {
-        maxStageField.setValue(value);
-        updateStageGridConfig();
-    }
-
-    public Double getStepValue() {
-        return stageGridConfig.step;
-    }
-
-    public void setStepValue(double value) {
-        valStepField.setValue(value);
-        updateStepNbr();
-        updateStageGridConfig();
     }
 
     @Override

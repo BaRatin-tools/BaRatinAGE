@@ -162,10 +162,8 @@ public abstract class BamProject extends RowColPanel {
             addBamItem(clonedItem);
         });
 
-        String cloneIconPath = Path.of(AppConfig.AC.ICONS_RESOURCES_DIR, "feather", "copy.svg").toString();
-        String deleteIconPath = Path.of(AppConfig.AC.ICONS_RESOURCES_DIR, "feather", "trash.svg").toString();
-        bamItem.cloneButton.setIcon(SvgIcon.buildNoScalingIcon(cloneIconPath, 24));
-        bamItem.deleteButton.setIcon(SvgIcon.buildNoScalingIcon(deleteIconPath, 24));
+        bamItem.cloneButton.setIcon(SvgIcon.buildFeatherAppImageIcon("copy.svg"));
+        bamItem.deleteButton.setIcon(SvgIcon.buildFeatherAppImageIcon("trash.svg"));
 
         Lg.register(bamItem.cloneButton, "duplicate");
         Lg.register(bamItem.deleteButton, "delete");

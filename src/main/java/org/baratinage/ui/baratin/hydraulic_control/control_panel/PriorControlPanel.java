@@ -11,7 +11,6 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import org.baratinage.jbam.Parameter;
-import org.baratinage.ui.AppConfig;
 import org.baratinage.ui.commons.AbstractParameterPriorDist;
 import org.baratinage.ui.commons.ParameterPriorDist;
 import org.baratinage.ui.commons.ParameterPriorDistSimplified;
@@ -33,31 +32,31 @@ public abstract class PriorControlPanel extends GridPanel implements ChangeListe
         private static final Font MONOSPACE_FONT = new Font(Font.MONOSPACED, Font.PLAIN, 14);
 
         public static final ImageIcon activationHeightIcon = SvgIcon.buildCustomAppImageIcon(
-                        "activation_height.svg", AppConfig.AC.ICON_SIZE);
+                        "activation_height.svg");
 
         public static final ImageIcon slopeIcon = SvgIcon.buildCustomAppImageIcon(
-                        "slope.svg", AppConfig.AC.ICON_SIZE);
+                        "slope.svg");
 
         public static final ImageIcon weirCoefIcon = SvgIcon.buildCustomAppImageIcon(
-                        "weir_coefficient.svg", AppConfig.AC.ICON_SIZE);
+                        "weir_coefficient.svg");
 
         public static final ImageIcon stricklerCoefIcon = SvgIcon.buildCustomAppImageIcon(
-                        "strickler_coef.svg", AppConfig.AC.ICON_SIZE);
+                        "strickler_coef.svg");
 
         public static final ImageIcon widthIcon = SvgIcon.buildCustomAppImageIcon(
-                        "width.svg", AppConfig.AC.ICON_SIZE);
+                        "width.svg");
 
         public static final ImageIcon gravityIcon = SvgIcon.buildCustomAppImageIcon(
-                        "gravity.svg", AppConfig.AC.ICON_SIZE);
+                        "gravity.svg");
 
         public static final ImageIcon exponentIcon = SvgIcon.buildCustomAppImageIcon(
-                        "exponent.svg", AppConfig.AC.ICON_SIZE);
+                        "exponent.svg");
 
         public static final ImageIcon coefficientIcon = SvgIcon.buildCustomAppImageIcon(
-                        "coefficient.svg", AppConfig.AC.ICON_SIZE);
+                        "coefficient.svg");
 
         private static final ImageIcon lockIcon = SvgIcon.buildFeatherAppImageIcon(
-                        "lock.svg", AppConfig.AC.ICON_SIZE * 0.8f);
+                        "lock.svg");
 
         private final JLabel equationLabel;
 

@@ -13,7 +13,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import org.baratinage.jbam.Parameter;
-import org.baratinage.ui.AppConfig;
+
 import org.baratinage.ui.baratin.hydraulic_control.control_panel.KAC;
 import org.baratinage.ui.baratin.hydraulic_control.control_panel.PriorControlPanel;
 import org.baratinage.ui.baratin.hydraulic_control.control_panel.WeirRect;
@@ -29,22 +29,22 @@ import org.json.JSONObject;
 public class OneHydraulicControl extends RowColPanel {
 
     public static final ImageIcon rectWeirIcon = SvgIcon.buildCustomAppImageIcon(
-            "hc_rect_weir.svg", AppConfig.AC.ICON_SIZE);
+            "hc_rect_weir.svg");
 
     public static final ImageIcon rectChannelIcon = SvgIcon.buildCustomAppImageIcon(
-            "hc_rect_channel.svg", AppConfig.AC.ICON_SIZE);
+            "hc_rect_channel.svg");
 
     public static final ImageIcon arrowLeftDownIcon = SvgIcon.buildFeatherAppImageIcon(
-            "corner-left-down.svg", AppConfig.AC.ICON_SIZE);
+            "corner-left-down.svg");
 
     public static final ImageIcon arrowRightDownIcon = SvgIcon.buildFeatherAppImageIcon(
-            "corner-right-down.svg", AppConfig.AC.ICON_SIZE);
+            "corner-right-down.svg");
 
     public static final ImageIcon arrowLeftUpIcon = SvgIcon.buildFeatherAppImageIcon(
-            "corner-left-up.svg", AppConfig.AC.ICON_SIZE);
+            "corner-left-up.svg");
 
     public static final ImageIcon arrowRightUpIcon = SvgIcon.buildFeatherAppImageIcon(
-            "corner-right-up.svg", AppConfig.AC.ICON_SIZE);
+            "corner-right-up.svg");
 
     public final int controlNumber;
     private final RowColPanel physicalParametersPanel;

@@ -9,7 +9,6 @@ import javax.swing.JSeparator;
 
 import org.baratinage.jbam.DistributionType;
 import org.baratinage.jbam.Parameter;
-import org.baratinage.ui.AppConfig;
 import org.baratinage.ui.component.SvgIcon;
 import org.baratinage.ui.container.GridPanel;
 import org.baratinage.ui.lg.Lg;
@@ -18,7 +17,7 @@ import org.json.JSONArray;
 public class StructuralErrorModelPanel extends GridPanel {
 
     private static final ImageIcon lockIcon = SvgIcon.buildFeatherAppImageIcon(
-            "lock.svg", AppConfig.AC.ICON_SIZE * 0.8f);
+            "lock.svg");
     private final List<ParameterPriorDist> parameters;
 
     public StructuralErrorModelPanel() {
@@ -70,7 +69,7 @@ public class StructuralErrorModelPanel extends GridPanel {
     public void addParameter(String symbol, String unit, DistributionType distribution, double initialGuess,
             double... parameterValues) {
 
-        int index = parameters.size() + 1;
+        int index = parameters.size() + 2;
         ParameterPriorDist gamma = new ParameterPriorDist();
         gamma.setNameLabel("");
         gamma.setSymbolUnitLabels(symbol, unit);

@@ -37,6 +37,7 @@ import org.baratinage.ui.commons.MsgPanel;
 import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.ui.lg.Lg;
 import org.baratinage.utils.Calc;
+import org.baratinage.utils.JSONcomparator;
 import org.json.JSONObject;
 
 public class RatingCurve extends BamItem implements IPredictionMaster, ICalibratedModel, IMcmc {
@@ -218,7 +219,7 @@ public class RatingCurve extends BamItem implements IPredictionMaster, ICalibrat
                 structErrorParent.isBamRerunRequired();
 
         boolean isStageGridOutOfSync = jsonStringBackup != null &&
-                !isMatchingWith(jsonStringBackup, new String[] { "stageGridConfig" }, false);
+                JSONcomparator.areMatchingIncluding(toJSON(), jsonStringBackup, "stageGridConfig");
 
         if (isStageGridOutOfSync) {
 
@@ -228,9 +229,7 @@ public class RatingCurve extends BamItem implements IPredictionMaster, ICalibrat
             cancelChangeButton.addActionListener((e) -> {
                 JSONObject json = new JSONObject(jsonStringBackup);
                 JSONObject stageGridJson = json.getJSONObject("stageGridConfig");
-                ratingCurveStageGrid.setMinValue(stageGridJson.getDouble("min"));
-                ratingCurveStageGrid.setMaxValue(stageGridJson.getDouble("max"));
-                ratingCurveStageGrid.setStepValue(stageGridJson.getDouble("step"));
+                ratingCurveStageGrid.fromJSON(stageGridJson);
                 checkSync();
             });
             errorMsg.addButton(cancelChangeButton);
@@ -278,10 +277,10 @@ public class RatingCurve extends BamItem implements IPredictionMaster, ICalibrat
 
         // **********************************************************
         // Stage grid configuration
-        JSONObject stageGridConfigJson = new JSONObject();
-        stageGridConfigJson.put("min", ratingCurveStageGrid.getMinValue());
-        stageGridConfigJson.put("max", ratingCurveStageGrid.getMaxValue());
-        stageGridConfigJson.put("step", ratingCurveStageGrid.getStepValue());
+
+        JSONObject stageGridConfigJson = ratingCurveStageGrid.toJSON();
+
+        json.put("stageGridConfig", stageGridConfigJson);
 
         json.put("stageGridConfig", stageGridConfigJson);
 
@@ -320,10 +319,9 @@ public class RatingCurve extends BamItem implements IPredictionMaster, ICalibrat
         }
 
         if (json.has("stageGridConfig")) {
-            JSONObject stageGridJson = json.getJSONObject("stageGridConfig");
-            ratingCurveStageGrid.setMinValue(stageGridJson.getDouble("min"));
-            ratingCurveStageGrid.setMaxValue(stageGridJson.getDouble("max"));
-            ratingCurveStageGrid.setStepValue(stageGridJson.getDouble("step"));
+            JSONObject stageGridConfigJson = ratingCurveStageGrid.toJSON();
+            json.put("stageGridConfig", stageGridConfigJson);
+
         } else {
             System.out.println("RatingCurve: missing 'stageGridConfig'");
         }
