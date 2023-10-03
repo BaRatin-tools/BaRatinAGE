@@ -2,7 +2,10 @@ package org.baratinage.utils;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.json.JSONArray;
@@ -14,19 +17,31 @@ public class JSONcomparator {
 
     private static List<String> logs = new ArrayList<>();
 
-    public static boolean areMatchingIncluding(String jsonAstr, String jsonBstr, String... keysToInclude) {
+    public static boolean areMatchingIncluding(
+            String jsonAstr,
+            String jsonBstr,
+            String... keysToInclude) {
         return areMatchingIncluding(new JSONObject(jsonAstr), new JSONObject(jsonBstr), keysToInclude);
     }
 
-    public static boolean areMatchingIncluding(String jsonAstr, JSONObject jsonB, String... keysToInclude) {
+    public static boolean areMatchingIncluding(
+            String jsonAstr,
+            JSONObject jsonB,
+            String... keysToInclude) {
         return areMatchingIncluding(new JSONObject(jsonAstr), jsonB, keysToInclude);
     }
 
-    public static boolean areMatchingIncluding(JSONObject jsonA, String jsonBstr, String... keysToInclude) {
+    public static boolean areMatchingIncluding(
+            JSONObject jsonA,
+            String jsonBstr,
+            String... keysToInclude) {
         return areMatchingIncluding(jsonA, new JSONObject(jsonBstr), keysToInclude);
     }
 
-    public static boolean areMatchingIncluding(JSONObject jsonA, JSONObject jsonB, String... keysToInclude) {
+    public static boolean areMatchingIncluding(
+            JSONObject jsonA,
+            JSONObject jsonB,
+            String... keysToInclude) {
 
         JSONObject filteredJsonA = new JSONObject();
         JSONObject filteredJsonB = new JSONObject();
@@ -44,19 +59,31 @@ public class JSONcomparator {
         return areMatching(jsonA, jsonB);
     }
 
-    public static boolean areMatchingExcluding(String jsonAstr, String jsonBstr, String... keysToExclude) {
+    public static boolean areMatchingExcluding(
+            String jsonAstr,
+            String jsonBstr,
+            String... keysToExclude) {
         return areMatchingExcluding(new JSONObject(jsonAstr), new JSONObject(jsonBstr), keysToExclude);
     }
 
-    public static boolean areMatchingExcluding(String jsonAstr, JSONObject jsonB, String... keysToExclude) {
+    public static boolean areMatchingExcluding(
+            String jsonAstr,
+            JSONObject jsonB,
+            String... keysToExclude) {
         return areMatchingExcluding(new JSONObject(jsonAstr), jsonB, keysToExclude);
     }
 
-    public static boolean areMatchingExcluding(JSONObject jsonA, String jsonBstr, String... keysToExclude) {
+    public static boolean areMatchingExcluding(
+            JSONObject jsonA,
+            String jsonBstr,
+            String... keysToExclude) {
         return areMatchingExcluding(jsonA, new JSONObject(jsonBstr), keysToExclude);
     }
 
-    public static boolean areMatchingExcluding(JSONObject jsonA, JSONObject jsonB, String... keysToExclude) {
+    public static boolean areMatchingExcluding(
+            JSONObject jsonA,
+            JSONObject jsonB,
+            String... keysToExclude) {
         // create shallow copies (see: https://stackoverflow.com/a/12809884)
         jsonA = new JSONObject(jsonA, JSONObject.getNames(jsonA));
         jsonB = new JSONObject(jsonB, JSONObject.getNames(jsonB));
@@ -69,6 +96,41 @@ public class JSONcomparator {
             }
         }
         return areMatching(jsonA, jsonB);
+    }
+
+    public static Map<String, Boolean> areMatchingByEntry(JSONObject a, JSONObject b) {
+
+        Set<String> keys = new HashSet<>();
+        keys.addAll(a.keySet());
+        keys.addAll(b.keySet());
+
+        Map<String, Boolean> results = new HashMap<>();
+
+        for (String key : keys) {
+
+            if (!a.has(key) || !b.has(key)) {
+                results.put(key, false);
+                continue;
+            }
+
+            // NULL HANDLING
+            if ((a.isNull(key) && !b.isNull(key)) || (!a.isNull(key) && b.isNull(key))) {
+                results.put(key, false);
+                continue;
+            }
+
+            Object oA = a.opt(key);
+            Object oB = b.opt(key);
+
+            boolean matching = areJSONObjectsMatching(oA, oB, 1);
+            results.put(key, matching);
+        }
+
+        for (String key : results.keySet()) {
+            System.out.println("Entry '" + key + "': " + results.get(key));
+
+        }
+        return results;
     }
 
     public static boolean areMatching(JSONObject a, JSONObject b) {
@@ -86,22 +148,22 @@ public class JSONcomparator {
 
     private static boolean areMatching(JSONObject a, JSONObject b, int depth) {
 
-        Set<String> keysA = a.keySet();
-        Set<String> keysB = b.keySet();
+        Set<String> keys = new HashSet<>();
+        keys.addAll(a.keySet());
+        keys.addAll(b.keySet());
 
-        if (!keysA.containsAll(keysB) || !keysB.containsAll(keysA)) {
-            logs.add(depthStr.repeat(depth) + "NOT MATCHING > keys not matching");
-            return false;
-        }
+        for (String key : keys) {
 
-        for (String key : keysA) {
-            // NULL HANDLING
-            if (a.isNull(key) && !b.isNull(key)) {
+            if (!a.has(key) || !b.has(key)) {
                 logs.add(depthStr.repeat(depth) + "NOT MATCHING > KEY = '" + key
-                        + "' > A is null while B is not for key.");
+                        + "' > A or B is missing an entry for this key.");
                 return false;
-            } else if (!a.isNull(key) && b.isNull(key)) {
-                logs.add(depthStr.repeat(depth) + "NOT MATCHING > KEY = '" + key + "' > A is not null while B is.");
+            }
+
+            // NULL HANDLING
+            if ((a.isNull(key) && !b.isNull(key)) || (!a.isNull(key) && b.isNull(key))) {
+                logs.add(depthStr.repeat(depth) + "NOT MATCHING > KEY = '" + key
+                        + "' > one of A or B is null while not the other.");
                 return false;
             } else if (a.isNull(key) && b.isNull(key)) {
                 continue;
@@ -117,6 +179,7 @@ public class JSONcomparator {
             }
         }
         return true;
+
     }
 
     private static boolean areJSONArrayMatching(JSONArray a, JSONArray b, int depth) {
