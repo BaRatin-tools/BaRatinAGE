@@ -3,78 +3,86 @@ package org.baratinage.ui.component;
 import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.GraphicsConfiguration;
+import java.awt.GraphicsEnvironment;
 import java.awt.Image;
 import java.awt.geom.AffineTransform;
-import java.awt.Frame;
 import javax.swing.ImageIcon;
 
 public class NoScalingIcon extends ImageIcon {
 
-    private Component component;
+    private double scaleX;
+    private double scaleY;
 
-    /**
-     * Currently, the image stays small even if the user preferences are
-     * to have everything zoomed 200%... But at least, it's no longer
-     * pixelated...
-     */
-
-    public NoScalingIcon(String iconFilePath) {
-        super(iconFilePath);
-        this.setComponent();
+    public NoScalingIcon() {
+        super();
+        init();
     }
 
     public NoScalingIcon(Image image) {
         super(image);
-        this.setComponent();
+        init();
     }
 
     public NoScalingIcon(ImageIcon icon) {
         super(icon.getImage());
-        this.setComponent();
+        init();
     }
 
-    private void setComponent() {
-        Frame[] frames = Frame.getFrames();
-        Component component = frames[0].getComponent(0);
-        this.component = component;
+    private void init() {
+
+        // See: https://stackoverflow.com/a/52693087
+        GraphicsConfiguration asdf = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice()
+                .getDefaultConfiguration();
+
+        AffineTransform asfd2 = asdf.getDefaultTransform();
+
+        scaleX = asfd2.getScaleX();
+        scaleY = asfd2.getScaleY();
     }
 
     @Override
     public void paintIcon(Component c, Graphics g, int x, int y) {
-        // Many thanks to: https://stackoverflow.com/a/65742492
-        // This idea solve my problem
-        Graphics2D g2d = (Graphics2D) g.create();
-        AffineTransform at = g2d.getTransform();
 
-        g2d.scale(1 / at.getScaleX(), 1 / at.getScaleY());
+        // See: https://stackoverflow.com/a/65742492
+
+        Graphics2D g2d = (Graphics2D) g.create();
+        AffineTransform aT = g2d.getTransform();
+
+        scaleX = aT.getScaleX();
+        scaleY = aT.getScaleY();
+
+        g2d.scale(1 / scaleX, 1 / scaleY);
+
+        int iconHeight = super.getIconHeight();
+        int componentHeight = c.getHeight();
+
+        y = scale(componentHeight, scaleY, false) / 2 - iconHeight / 2;
 
         super.paintIcon(c, g2d, x, y);
         g2d.dispose();
 
     }
 
-    private AffineTransform getAffineTransform() {
-        Graphics g = component.getGraphics();
-        if (g == null) {
-            return new AffineTransform();
+    private static int scale(int value, double factor, boolean inverse) {
+        if (inverse) {
+            return (int) Math.round(value / factor);
+        } else {
+            return (int) Math.round(value * factor);
         }
-        Graphics2D g2d = (Graphics2D) g.create();
-        AffineTransform aT = g2d.getTransform();
-        g2d.dispose();
-        return aT;
     }
 
     @Override
     public int getIconWidth() {
         int d = super.getIconWidth();
-        AffineTransform aT = getAffineTransform();
-        return (int) (d / aT.getScaleX());
+        d = scale(d, scaleX, true);
+        return d;
     }
 
     @Override
     public int getIconHeight() {
         int d = super.getIconHeight();
-        AffineTransform aT = getAffineTransform();
-        return (int) (d / aT.getScaleY());
+        d = scale(d, scaleY, true);
+        return d;
     }
 }
