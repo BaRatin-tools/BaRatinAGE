@@ -5,6 +5,7 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Insets;
 import java.awt.RenderingHints;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,16 +23,20 @@ import javax.swing.event.DocumentListener;
 public class SimpleTextField extends JTextField {
 
     private String placeholder;
+    private String innerLabel;
 
-    private boolean placeholderAlwaysVisibleOnTop = true;
     private final Border defaultBorder;
+
     private final Font placeholderFont;
     private final Color placeholderColor;
+
+    private final Font innerLabelFont;
+    private final Color innerLabelColor;
 
     public SimpleTextField() {
         super();
 
-        int H = 35;
+        int H = 32;
 
         Dimension prefDim = this.getPreferredSize();
         prefDim.width = 100;
@@ -47,8 +52,11 @@ public class SimpleTextField extends JTextField {
         setMinimumSize(maxDim);
 
         defaultBorder = getBorder();
-        placeholderFont = getFont().deriveFont(13f);
-        placeholderColor = new Color(150, 150, 175);
+        placeholderFont = getFont();
+        placeholderColor = new Color(180, 180, 200);
+
+        innerLabelFont = getFont().deriveFont(13f);
+        innerLabelColor = new Color(180, 180, 200);
 
         getDocument().addDocumentListener(new DocumentListener() {
 
@@ -74,45 +82,54 @@ public class SimpleTextField extends JTextField {
     @Override
     protected void paintComponent(final Graphics g) {
 
-        boolean hasNoPlaceHolder = placeholder == null || placeholder.length() == 0;
-
-        if (placeholderAlwaysVisibleOnTop && !hasNoPlaceHolder) {
-            setBorder(new CompoundBorder(defaultBorder, new EmptyBorder(12, 0, 0, 0)));
-        } else {
-            setBorder(defaultBorder);
-        }
+        boolean hasPlaceholder = placeholder != null && placeholder.length() > 0;
+        boolean hasInnerLabel = innerLabel != null && innerLabel.length() > 0;
 
         super.paintComponent(g);
-
-        if (hasNoPlaceHolder) {
-            return;
-        }
-        if (!placeholderAlwaysVisibleOnTop && getText().length() > 0) {
-            return;
-        }
 
         final Graphics2D g2D = (Graphics2D) g;
         g2D.setRenderingHint(
                 RenderingHints.KEY_ANTIALIASING,
                 RenderingHints.VALUE_ANTIALIAS_ON);
-        g2D.setColor(placeholderColor);
-        g2D.setFont(placeholderFont);
-        float maxCharHeight = g2D.getFontMetrics().getMaxAscent();
-        float totalHeight = getHeight();
-        float x = getInsets().left;
-        float y;
-        // original value x, y is the baseline of first character
-        if (!placeholderAlwaysVisibleOnTop) {
-            // fixed vertical centering of placeholder
-            y = maxCharHeight / 2 + totalHeight / 2 - getInsets().top / 2;
-        } else {
-            y = maxCharHeight;
+
+        Insets insets = getInsets();
+        float fieldHeight = getHeight();
+
+        if (hasPlaceholder && getText().length() == 0) {
+
+            g2D.setColor(placeholderColor);
+            g2D.setFont(placeholderFont);
+            float maxCharHeight = g2D.getFontMetrics().getMaxAscent();
+
+            float x = insets.left;
+
+            float y = maxCharHeight / 2 + fieldHeight / 2 - Math.round((float) insets.top / 2f);
+            g2D.drawString(placeholder, x, y);
+
         }
-        g2D.drawString(placeholder, x, y);
+        if (hasInnerLabel) {
+            g2D.setColor(innerLabelColor);
+            g2D.setFont(innerLabelFont);
+            setBorder(new CompoundBorder(defaultBorder, new EmptyBorder(12, 0, 0, 0)));
+
+            float maxCharHeight = g2D.getFontMetrics().getMaxAscent();
+
+            float x = insets.left;
+            float y = maxCharHeight;
+
+            g2D.drawString(innerLabel, x, y);
+        } else {
+            setBorder(defaultBorder);
+        }
+
     }
 
     public void setPlaceholder(final String s) {
         placeholder = s;
+    }
+
+    public void setInnerLabel(final String s) {
+        innerLabel = s;
     }
 
     private boolean doNotFireChange = false;
