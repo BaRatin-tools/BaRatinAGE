@@ -18,7 +18,7 @@ public class AppConfig {
     public final String ICONS_RESOURCES_DIR;
     public final MainFrame APP_MAIN_FRAME;
 
-    public Color INVALID_COLOR_BG = new Color(232, 180, 165);
+    public Color INVALID_COLOR_BG = new Color(255, 231, 231);
     public Color INVALID_COLOR_FG = new Color(200, 50, 40);
     public Color WARNING_COLOR = new Color(230, 149, 0);
     public Color INFO_COLOR = new Color(0, 63, 179);
@@ -40,7 +40,7 @@ public class AppConfig {
     public Color STAGE_TRANSITION_VALUE_COLOR = new Color(4, 182, 0);
     public Color STAGE_TRANSITION_UNCERTAINTY_COLOR = new Color(164, 255, 162);
 
-    public float ICON_SIZE = 32;
+    public float ICON_SIZE = 28;
 
     public String lastUsedDir;
 
