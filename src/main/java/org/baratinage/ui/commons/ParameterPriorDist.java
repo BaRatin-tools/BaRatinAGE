@@ -16,6 +16,7 @@ import org.baratinage.jbam.Parameter;
 import org.baratinage.ui.component.SimpleNumberField;
 
 public class ParameterPriorDist extends AbstractParameterPriorDist implements ChangeListener {
+    public final String bamName;
     public final JLabel iconLabel;
     public final JLabel symbolUnitLabel;
     public final JLabel nameLabel;
@@ -28,7 +29,8 @@ public class ParameterPriorDist extends AbstractParameterPriorDist implements Ch
 
     private static final Font MONOSPACE_FONT = new Font(Font.MONOSPACED, Font.PLAIN, 14);
 
-    public ParameterPriorDist() {
+    public ParameterPriorDist(String bamName) {
+        this.bamName = bamName;
 
         iconLabel = new JLabel();
         symbolUnitLabel = new JLabel();
@@ -98,7 +100,7 @@ public class ParameterPriorDist extends AbstractParameterPriorDist implements Ch
         if (!initialGuessField.isValueValid()) {
             return null;
         }
-        return new Parameter("", initialGuessField.getDoubleValue(), distribution);
+        return new Parameter(bamName, initialGuessField.getDoubleValue(), distribution);
     }
 
     @Override
