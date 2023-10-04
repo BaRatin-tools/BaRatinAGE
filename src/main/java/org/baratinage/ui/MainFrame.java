@@ -15,8 +15,6 @@ import org.baratinage.ui.bam.BamProject;
 import org.baratinage.ui.baratin.BaratinProject;
 import org.baratinage.ui.component.SvgIcon;
 import org.baratinage.ui.container.RowColPanel;
-import org.baratinage.ui.lg.Lg;
-import org.baratinage.ui.lg.LgTest;
 import org.baratinage.utils.Misc;
 
 import java.awt.Dimension;
@@ -27,12 +25,8 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.awt.image.DataBuffer;
-import java.awt.image.Raster;
-import java.awt.image.WritableRaster;
 import java.io.File;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -51,10 +45,6 @@ public class MainFrame extends JFrame {
         new AppConfig(this);
 
         T.init();
-
-        Lg.init();
-        Lg.setLocale("fr");
-        Lg.setDefaultOwnerKey("main_frame");
 
         ImageIcon baratinageIcon = new SvgIcon(Path.of(
                 AppConfig.AC.ICONS_RESOURCES_DIR,
@@ -86,44 +76,7 @@ public class MainFrame extends JFrame {
         JMenuItem lgResetBtn = new JMenuItem("Reload Lg ressources");
         debugMenu.add(lgResetBtn);
         lgResetBtn.addActionListener((e) -> {
-            Lg.reloadResources();
             T.reloadResources();
-        });
-        JMenuItem lgTestCheckBtn = new JMenuItem("LgTest CHECK");
-        debugMenu.add(lgTestCheckBtn);
-        lgTestCheckBtn.addActionListener((e) -> {
-            System.out.println("===============> TESTING DATA");
-            LgTest.checkRegisteredObject();
-        });
-        List<WritableRaster> FAKE_DATA = new ArrayList<>();
-        JMenuItem lgTestAddCheckBtn = new JMenuItem("LgTest  ADD");
-        debugMenu.add(lgTestAddCheckBtn);
-        lgTestAddCheckBtn.addActionListener((e) -> {
-            System.out.println("===============> ADDING DATA");
-            int size = 10000;
-            WritableRaster r = Raster.createBandedRaster(DataBuffer.TYPE_INT,
-                    size,
-                    size,
-                    1,
-                    new Point(0, 0));
-            int value = FAKE_DATA.size();
-            r.setPixel(10, 10, new int[] { value });
-            System.out.println(r.getSample(10, 10, 0));
-            FAKE_DATA.add(r);
-            LgTest.register(r, (innerR) -> {
-                System.out.println("Raster value = " + innerR.getSample(10, 10, 0));
-                System.out.println(innerR.getHeight());
-            });
-            LgTest.checkRegisteredObject();
-        });
-        JMenuItem lgTestRemCheckBtn = new JMenuItem("LgTest  REMOVE");
-        debugMenu.add(lgTestRemCheckBtn);
-        lgTestRemCheckBtn.addActionListener((e) -> {
-            System.out.println("===============> REMOVING DATA");
-            int n = FAKE_DATA.size();
-            FAKE_DATA.remove(n - 1);
-            System.out.println("FAKE_DATA length is (before deleteion) = " + FAKE_DATA.size() + " ( " + n + ")");
-            LgTest.checkRegisteredObject();
         });
 
         JMenu fileMenu = new JMenu();
@@ -252,7 +205,6 @@ public class MainFrame extends JFrame {
 
             item.addActionListener((e) -> {
                 System.out.println("MainFrame: swtiching language to '" + tKey + "'");
-                Lg.setLocale(tKey);
                 T.setLocale(tKey);
                 updateLanguageSwitcherMenu();
                 // FIXME: how to recursively update the whole Frame?
