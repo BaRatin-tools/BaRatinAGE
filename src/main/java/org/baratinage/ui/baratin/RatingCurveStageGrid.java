@@ -121,6 +121,7 @@ public class RatingCurveStageGrid extends RowColPanel implements IPredictionData
         minStageField.setValue(json.optDouble("min"));
         maxStageField.setValue(json.optDouble("max"));
         valStepField.setValue(json.optDouble("step"));
+        updateStepNbr();
         updateStageGridConfig();
     }
 
