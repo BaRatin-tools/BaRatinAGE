@@ -34,7 +34,6 @@ import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.ui.container.SplitContainer;
 // import org.baratinage.ui.container.TabContainer;
 import org.baratinage.utils.JSONcomparator;
-import org.baratinage.utils.Misc;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
