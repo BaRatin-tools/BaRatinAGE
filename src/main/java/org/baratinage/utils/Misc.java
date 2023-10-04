@@ -17,7 +17,7 @@ import java.util.regex.Pattern;
 
 import javax.swing.JFrame;
 
-import org.baratinage.ui.lg.Lg;
+import org.baratinage.translation.T;
 
 public class Misc {
 
@@ -44,7 +44,7 @@ public class Misc {
     }
 
     public static String getLocalTimeStamp() {
-        Locale l = Lg.getLocale();
+        Locale l = T.getLocale();
         LocalDateTime date = LocalDateTime.now();
         // SHORT format style omit seconds... which I need here.
         String text = date.format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM).withLocale(l));
