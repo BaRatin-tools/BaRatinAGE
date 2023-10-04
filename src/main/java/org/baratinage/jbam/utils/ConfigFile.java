@@ -8,33 +8,6 @@ import java.util.List;
 
 public class ConfigFile {
 
-    // public static final String DATA_CALIBRATION = "Data_%s.txt";
-    // public static final String DATA_PREDICTION = "Data_%s.txt";
-
-    // public static final String CONFIG_BAM = "Config_BaM.txt";
-    // public static final String CONFIG_CALIBRATION = "Config_Data.txt";
-    // public static final String CONFIG_RESIDUALS = "Config_Data_Residuals.txt";
-    // public static final String CONFIG_MCMC = "Config_MCMC.txt";
-    // public static final String CONFIG_MCMC_COOKING = "Config_MCMC_Cooking.txt";
-    // public static final String CONFIG_MCMC_SUMMARY = "Config_MCMC_Summary.txt";
-    // public static final String CONFIG_MODEL = "Config_Model.txt";
-    // public static final String CONFIG_XTRA = "Config_xTra.txt";
-    // public static final String CONFIG_RUN_OPTIONS = "Config_RunOptions.txt";
-    // public static final String CONFIG_STRUCTURAL_ERRORS =
-    // "Config_StructuralError_%s.txt";
-    // public static final String CONFIG_PREDICTION = "Config_Pred_%s.txt";
-    // public static final String CONFIG_PREDICTION_MASTER =
-    // "Config_Prediction_Master.txt";
-
-    // public static final String RESULTS_RESIDUALS = "Results_Residuals.txt";
-    // public static final String RESULTS_MCMC = "Results_MCMC.txt";
-    // public static final String RESULTS_MCMC_COOKING = "Results_MCMC_Cooked.txt";
-    // public static final String RESULTS_MCMC_SUMMARY = "Results_Summary.txt";
-    // public static final String RESULTS_OUTPUT_SPAG = "output_%s_%s.spag";
-    // public static final String RESULTS_OUTPUT_ENV = "output_%s_%s.env";
-    // public static final String RESULTS_STATE_SPAG = "state_%s_%s.spag";
-    // public static final String RESULTS_STATE_ENV = "state_%s_%s.env";
-
     private static final String COMMENT_SEPARATOR = "  ! ";
 
     private record ValueCommentPair(String value, String comment) {
