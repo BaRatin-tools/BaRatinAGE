@@ -18,6 +18,9 @@ public class AppConfig {
     public final String ICONS_RESOURCES_DIR;
     public final MainFrame APP_MAIN_FRAME;
 
+    public final String DEFAULT_RESSOURCE_FILE_KEY = "ui";
+    public final String DEFAULT_RESSOURCE_FILE_LOCALE_KEY = "en";
+
     public Color INVALID_COLOR_BG = new Color(255, 231, 231);
     public Color INVALID_COLOR_FG = new Color(200, 50, 40);
     public Color WARNING_COLOR = new Color(230, 149, 0);

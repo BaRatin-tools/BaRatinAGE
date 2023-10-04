@@ -10,6 +10,7 @@ import javax.swing.AbstractButton;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 
+@Deprecated
 public class Lg {
 
     static private Map<String, Map<Object, LgTranslator>> registered;
