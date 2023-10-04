@@ -273,7 +273,7 @@ public class RunPanel extends RowColPanel {
         } else {
             if (canRunCalibration()) {
                 nInputs = bamModelDef.getInputNames().length;
-                nInputs = bamModelDef.getOutputNames().length;
+                nOutputs = bamModelDef.getOutputNames().length;
             } else {
                 return false;
             }
