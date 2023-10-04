@@ -34,6 +34,7 @@ import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.ui.container.SplitContainer;
 // import org.baratinage.ui.container.TabContainer;
 import org.baratinage.utils.JSONcomparator;
+import org.baratinage.utils.Misc;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -184,9 +185,9 @@ public class HydraulicConfiguration
         if (!matching.get("stageGridConfig")) {
             System.out.println("Stage grid config different");
             MsgPanel msg = new MsgPanel(MsgPanel.TYPE.ERROR);
-            msg.message.setText("oos_stage_grid");
+            T.t(msg.message, true, "oos_stage_grid");
             JButton revertBackBtn = new JButton();
-            revertBackBtn.setText("cancel_changes");
+            T.t(revertBackBtn, true, "cancel_changes");
             revertBackBtn.addActionListener((e) -> {
                 priorRatingCurveStageGrid.fromJSON(
                         backupJson.getJSONObject("stageGridConfig"));
@@ -198,9 +199,9 @@ public class HydraulicConfiguration
         if (!matching.get("controlMatrix")) {
             System.out.println("Control matrix different");
             MsgPanel msg = new MsgPanel(MsgPanel.TYPE.ERROR);
-            msg.message.setText("oos_control_matrix");
+            T.t(msg.message, true, "oos_control_matrix");
             JButton revertBackBtn = new JButton();
-            revertBackBtn.setText("cancel_changes");
+            T.t(revertBackBtn, true, "cancel_changes");
             revertBackBtn.addActionListener((e) -> {
                 controlMatrix.fromJSON(
                         backupJson.getJSONObject("controlMatrix"));
@@ -229,9 +230,9 @@ public class HydraulicConfiguration
                 if (!controlsMatching) {
                     System.out.println("Hydraulic controls are different");
                     MsgPanel msg = new MsgPanel(MsgPanel.TYPE.ERROR);
-                    msg.message.setText("oos_hydraulic_controls");
+                    T.t(msg.message, true, "oos_hydraulic_controls");
                     JButton revertBackBtn = new JButton();
-                    revertBackBtn.setText("cancel_changes");
+                    T.t(revertBackBtn, true, "cancel_changes");
                     revertBackBtn.addActionListener((e) -> {
                         hydraulicControls.fromJSON(
                                 backupJson.getJSONObject("hydraulicControls"));
@@ -253,10 +254,6 @@ public class HydraulicConfiguration
             T.t(runPanel.runButton, true, "compute_prior_rc");
             runPanel.runButton.setForeground(new JButton().getForeground());
         }
-        // T.t(outOufSyncPanel, () -> {
-        // FIXME: implement!
-        // });
-
         updateUI();
 
     }
