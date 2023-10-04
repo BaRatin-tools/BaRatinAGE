@@ -14,6 +14,7 @@ import org.baratinage.jbam.DistributionType;
 import org.baratinage.jbam.Parameter;
 import org.baratinage.jbam.PredictionConfig;
 import org.baratinage.jbam.PredictionResult;
+import org.baratinage.translation.T;
 import org.baratinage.ui.AppConfig;
 import org.baratinage.ui.bam.BamItem;
 import org.baratinage.ui.bam.BamItemType;
@@ -31,7 +32,7 @@ import org.baratinage.ui.component.SvgIcon;
 import org.baratinage.ui.component.Title;
 import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.ui.container.SplitContainer;
-import org.baratinage.ui.lg.Lg;
+// import org.baratinage.ui.container.TabContainer;
 import org.baratinage.utils.JSONcomparator;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -83,6 +84,8 @@ public class HydraulicConfiguration
         Dimension dim = new Dimension(400, 300);
         controlMatrix.setPreferredSize(dim);
         plotPanel.setPreferredSize(dim);
+        controlMatrix.setMinimumSize(dim);
+        plotPanel.setMinimumSize(dim);
 
         runPanel = new RunPanel(false, true, false);
         runPanel.setModelDefintion(this);
@@ -136,38 +139,37 @@ public class HydraulicConfiguration
                 priorRCplotPanel,
                 priorSepecificationPanel);
 
-        Lg.register(mainContainer, () -> {
-            controlMatrixTitle.setText(Lg.html("control_matrix"));
-            priorSpecificationTitle.setText(Lg.html("prior_parameter_specification"));
-            priorRCplotTitle.setText(Lg.html("prior_rating_curve"));
-        });
+        T.t(controlMatrixTitle, true, "control_matrix");
+        T.t(priorSpecificationTitle, true, "prior_parameter_specification");
+        T.t(priorRCplotTitle, true, "prior_rating_curve");
 
         // **********************************************************************
         // TAB SYSTEM APPROACH
-
-        // SimpleTabContainer mainContainer = new SimpleTabContainer();
-        // mainContainer.addTab("control_matrix", controlMatrixIcon, controlMatrix);
-        // mainContainer.addTab("prior_parameter_specification", priorSpecificationIcon,
+        // TabContainer mainContainerTab = new TabContainer();
+        // mainContainerTab.addTab("control_matrix", controlMatrixIcon, controlMatrix);
+        // mainContainerTab.addTab("prior_parameter_specification",
+        // priorSpecificationIcon,
         // hydraulicControls);
-        // mainContainer.addTab("prior_rating_curve", priorRatingCurveIcon,
+        // mainContainerTab.addTab("prior_rating_curve", priorRatingCurveIcon,
         // priorRatingCurvePanel);
-
-        // Lg.register(mainContainer, () -> {
-        // mainContainer.setTitleTextAt(0, Lg.html("control_matrix"));
-        // mainContainer.setTitleTextAt(1, Lg.html("prior_parameter_specification"));
-        // mainContainer.setTitleTextAt(2, Lg.html("prior_rating_curve"));
+        // T.t(mainContainerTab, (mc) -> {
+        // mc.setTitleTextAt(0, T.html("control_matrix"));
+        // mc.setTitleTextAt(1, T.html("prior_parameter_specification"));
+        // mc.setTitleTextAt(2, T.html("prior_rating_curve"));
         // });
+        // setContent(mainContainerTab);
 
         setContent(mainContainer);
 
         boolean[][] mat = controlMatrix.getControlMatrix();
         updateHydraulicControls(mat);
+
     }
 
     private void checkPriorRatingCurveSync() {
         outOufSyncPanel.clear();
         if (jsonStringBackup == null) {
-            Lg.register(runPanel.runButton, "compute_prior_rc", true);
+            T.t(runPanel.runButton, true, "compute_prior_rc");
             runPanel.runButton.setForeground(new JButton().getForeground());
             updateUI();
             return;
@@ -245,15 +247,15 @@ public class HydraulicConfiguration
             outOufSyncPanel.appendChild(mp);
         }
         if (outOfSyncMessages.size() > 0) {
-            Lg.register(runPanel.runButton, "recompute_prior_rc", true);
+            T.t(runPanel.runButton, true, "recompute_prior_rc");
             runPanel.runButton.setForeground(AppConfig.AC.INVALID_COLOR_FG);
         } else {
-            Lg.register(runPanel.runButton, "compute_prior_rc", true);
+            T.t(runPanel.runButton, true, "compute_prior_rc");
             runPanel.runButton.setForeground(new JButton().getForeground());
         }
-        Lg.register(outOufSyncPanel, () -> {
-
-        });
+        // T.t(outOufSyncPanel, () -> {
+        // FIXME: implement!
+        // });
 
         updateUI();
 

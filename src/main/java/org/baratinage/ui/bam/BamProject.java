@@ -23,6 +23,7 @@ import javax.swing.JSplitPane;
 import javax.swing.JToolBar;
 import javax.swing.filechooser.FileFilter;
 
+import org.baratinage.translation.T;
 import org.baratinage.ui.AppConfig;
 import org.baratinage.ui.bam.BamItemType.BamItemBuilderFunction;
 import org.baratinage.ui.baratin.BaratinProject;
@@ -30,7 +31,6 @@ import org.baratinage.ui.commons.Explorer;
 import org.baratinage.ui.commons.ExplorerItem;
 import org.baratinage.ui.component.SvgIcon;
 import org.baratinage.ui.container.RowColPanel;
-import org.baratinage.ui.lg.Lg;
 import org.baratinage.utils.ReadFile;
 import org.baratinage.utils.ReadWriteZip;
 import org.baratinage.utils.WriteFile;
@@ -68,7 +68,7 @@ public abstract class BamProject extends RowColPanel {
         appendChild(content, 1);
 
         explorer = new Explorer();
-        Lg.register(explorer.headerLabel, "explorer");
+        T.t(explorer.headerLabel, false, "explorer");
 
         setupExplorer();
 
@@ -118,8 +118,8 @@ public abstract class BamProject extends RowColPanel {
             addBamItem(itemType);
         };
 
-        String lgKey = itemType.id;
-        String lgCreateKey = "create_" + itemType.id;
+        String tKey = itemType.id;
+        String tCreateKey = "create_" + itemType.id;
 
         JMenuItem menuButton = new JMenuItem();
         menuButton.setIcon(itemType.getAddIcon());
@@ -132,17 +132,19 @@ public abstract class BamProject extends RowColPanel {
 
         ExplorerItem explorerItem = new ExplorerItem(
                 itemType.id,
-                Lg.text(lgKey),
+                T.text(tKey),
                 itemType.getIcon());
         this.explorer.appendItem(explorerItem);
 
-        Lg.register(itemType, () -> {
-            String createText = Lg.text(lgCreateKey);
-            menuButton.setText(createText);
-            toolbarButton.setToolTipText(createText);
-            explorerItem.label = Lg.text(lgKey);
-            explorer.updateItemView(explorerItem);
+        T.t(menuButton, false, tCreateKey);
+        T.t(toolbarButton, (btn) -> {
+            btn.setToolTipText(T.text(tCreateKey));
         });
+        T.t(explorerItem, (eItem) -> {
+            eItem.label = T.text(tKey);
+            explorer.updateItemView(eItem);
+        });
+
     }
 
     protected BamItem addBamItem(BamItem bamItem) {
@@ -153,7 +155,7 @@ public abstract class BamProject extends RowColPanel {
                 bamItem.TYPE.getIcon(),
                 explorer.getItem(bamItem.TYPE.id));
 
-        Lg.register(bamItem.bamItemTypeLabel, bamItem.TYPE.id);
+        T.t(bamItem.bamItemTypeLabel, false, bamItem.TYPE.id);
 
         bamItem.bamItemTypeLabel.setIcon(bamItem.TYPE.getIcon());
         bamItem.cloneButton.addActionListener((e) -> {
@@ -165,8 +167,8 @@ public abstract class BamProject extends RowColPanel {
         bamItem.cloneButton.setIcon(SvgIcon.buildFeatherAppImageIcon("copy.svg"));
         bamItem.deleteButton.setIcon(SvgIcon.buildFeatherAppImageIcon("trash.svg"));
 
-        Lg.register(bamItem.cloneButton, "duplicate");
-        Lg.register(bamItem.deleteButton, "delete");
+        T.t(bamItem.cloneButton, false, "duplicate");
+        T.t(bamItem.deleteButton, false, "delete");
 
         BAM_ITEMS.add(bamItem);
         EXPLORER_ITEMS.add(explorerItem);
@@ -174,7 +176,7 @@ public abstract class BamProject extends RowColPanel {
         bamItem.bamItemNameField.addChangeListener((e) -> {
             String newName = bamItem.bamItemNameField.getText();
             if (newName.equals("")) {
-                newName = "<html><div style='color: red; font-style: italic'>" + Lg.text("untitled") + "</div></html>";
+                newName = "<html><div style='color: red; font-style: italic'>" + T.text("untitled") + "</div></html>";
             }
             explorerItem.label = newName;
             explorer.updateItemView(explorerItem);
@@ -182,8 +184,8 @@ public abstract class BamProject extends RowColPanel {
 
         bamItem.deleteButton.addActionListener((e) -> {
             int response = JOptionPane.showConfirmDialog(this,
-                    Lg.html("delete_component_question", bamItem.bamItemNameField.getText()),
-                    Lg.text("warning"),
+                    T.html("delete_component_question", bamItem.bamItemNameField.getText()),
+                    T.text("warning"),
                     JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
             if (response == JOptionPane.YES_OPTION) {
                 deleteBamItem(bamItem, explorerItem);

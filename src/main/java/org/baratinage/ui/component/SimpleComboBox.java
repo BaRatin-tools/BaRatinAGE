@@ -52,8 +52,6 @@ public class SimpleComboBox extends RowColPanel {
                     label.setText(originalLabel.getText());
                     label.setIcon(originalLabel.getIcon());
                     label.setBorder(originalLabel.getBorder());
-                } else {
-                    System.out.println("Null");
                 }
                 return label;
             }

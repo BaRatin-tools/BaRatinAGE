@@ -11,7 +11,8 @@ import org.baratinage.jbam.DistributionType;
 import org.baratinage.jbam.Parameter;
 import org.baratinage.ui.component.SvgIcon;
 import org.baratinage.ui.container.GridPanel;
-import org.baratinage.ui.lg.Lg;
+import org.baratinage.translation.T;
+
 import org.json.JSONArray;
 
 public class StructuralErrorModelPanel extends GridPanel {
@@ -52,11 +53,9 @@ public class StructuralErrorModelPanel extends GridPanel {
         insertChild(parametersSep, 3, 1);
         insertChild(lockSep, 4, 1);
 
-        Lg.register(this, () -> {
-            initialGuessLabel.setText(Lg.text("initial_guess"));
-            distributionLabel.setText(Lg.text("distribution"));
-            distributionParametersLabel.setText(Lg.text("distribution_parameters"));
-        });
+        T.t(initialGuessLabel, false, "initial_guess");
+        T.t(distributionLabel, false, "distribution");
+        T.t(distributionParametersLabel, false, "distribution_parameters");
 
         parameters = new ArrayList<>();
 

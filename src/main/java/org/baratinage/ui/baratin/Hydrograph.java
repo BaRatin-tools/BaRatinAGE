@@ -22,7 +22,7 @@ import org.baratinage.ui.bam.RunPanel;
 import org.baratinage.ui.commons.MsgPanel;
 import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.ui.container.RowColPanel.AXIS;
-import org.baratinage.ui.lg.Lg;
+import org.baratinage.translation.T;
 import org.baratinage.utils.DateTime;
 import org.json.JSONObject;
 
@@ -115,16 +115,17 @@ public class Hydrograph extends BamItem implements IPredictionMaster {
         // --------------------------------------------------------------------
         // update run bam button
         if (needBamRerun) {
-            Lg.register(runPanel.runButton, "recompute_qt");
+            T.t(runPanel.runButton, false, "recompute_qt");
             runPanel.runButton.setForeground(AppConfig.AC.INVALID_COLOR_FG);
         } else {
-            Lg.register(runPanel.runButton, "compute_qt");
+            T.t(runPanel.runButton, false, "compute_qt");
             runPanel.runButton.setForeground(new JButton().getForeground());
         }
 
+        // FIXME: check if message below is still relevant
         // since text within warnings changes, it is necessary to
         // call Lg.updateRegisteredComponents() so changes are accounted for.
-        Lg.updateRegisteredObjects();
+        // T.updateRegisteredObjects();
 
     }
 

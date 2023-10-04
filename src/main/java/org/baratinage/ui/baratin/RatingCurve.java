@@ -22,6 +22,7 @@ import org.baratinage.jbam.PredictionInput;
 import org.baratinage.jbam.PredictionResult;
 import org.baratinage.jbam.StructuralErrorModel;
 import org.baratinage.jbam.utils.BamFilesHelpers;
+import org.baratinage.translation.T;
 import org.baratinage.ui.AppConfig;
 import org.baratinage.ui.bam.BamItem;
 import org.baratinage.ui.bam.BamItemType;
@@ -35,7 +36,6 @@ import org.baratinage.ui.bam.RunConfigAndRes;
 import org.baratinage.ui.bam.RunPanel;
 import org.baratinage.ui.commons.MsgPanel;
 import org.baratinage.ui.container.RowColPanel;
-import org.baratinage.ui.lg.Lg;
 import org.baratinage.utils.Calc;
 import org.baratinage.utils.JSONcomparator;
 import org.json.JSONObject;
@@ -233,8 +233,8 @@ public class RatingCurve extends BamItem implements IPredictionMaster, ICalibrat
                 checkSync();
             });
             errorMsg.addButton(cancelChangeButton);
-            Lg.register(cancelChangeButton, "cancel_changes");
-            Lg.register(errorMsg.message, "oos_stage_grid");
+            T.t(cancelChangeButton, false, "cancel_changes");
+            T.t(errorMsg.message, false, "oos_stage_grid");
             warnings.add(errorMsg);
 
         }
@@ -249,11 +249,10 @@ public class RatingCurve extends BamItem implements IPredictionMaster, ICalibrat
         // --------------------------------------------------------------------
         // update run bam button
         if (isStageGridOutOfSync || needBamRerun) {
-            Lg.register(runPanel.runButton, "recompute_posterior_rc",
-                    true);
+            T.t(runPanel.runButton, true, "recompute_posterior_rc");
             runPanel.runButton.setForeground(AppConfig.AC.INVALID_COLOR_FG);
         } else {
-            Lg.register(runPanel.runButton, "compute_posterior_rc", true);
+            T.t(runPanel.runButton, true, "compute_posterior_rc");
             runPanel.runButton.setForeground(new JButton().getForeground());
         }
 

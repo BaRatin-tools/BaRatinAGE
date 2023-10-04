@@ -20,7 +20,7 @@ import org.baratinage.ui.baratin.gaugings.GaugingsDataset;
 import org.baratinage.ui.baratin.gaugings.GaugingsImporter;
 import org.baratinage.ui.baratin.gaugings.GaugingsTable;
 import org.baratinage.ui.container.RowColPanel;
-import org.baratinage.ui.lg.Lg;
+import org.baratinage.translation.T;
 import org.baratinage.ui.plot.Plot;
 import org.baratinage.ui.plot.PlotContainer;
 import org.baratinage.ui.plot.PlotPoints;
@@ -50,10 +50,11 @@ public class Gaugings extends BamItem implements ICalibrationData {
         content.setRightComponent(plotPanel);
 
         importedDataSetSourceLabel = new JLabel();
-        Lg.register(importedDataSetSourceLabel, "empty_gauging_set");
+        T.t(importedDataSetSourceLabel, false, "empty_gauging_set");
 
         JButton importDataButton = new JButton();
-        Lg.register(importDataButton, "import_gauging_set");
+        T.t(importDataButton, false, "import_gauging_set");
+
         importDataButton.addActionListener((e) -> {
             GaugingsImporter gaugingsImporter = new GaugingsImporter();
             gaugingsImporter.showDialog();
@@ -74,16 +75,21 @@ public class Gaugings extends BamItem implements ICalibrationData {
         importGaugingsPanel.appendChild(importedDataSetSourceLabel, 0);
         importGaugingsPanel.appendChild(gaugingsTable, 1);
 
+        T.t(this, g -> {
+            String name = g.gaugingDataset == null ? "" : g.gaugingDataset.getDatasetName();
+            g.importedDataSetSourceLabel.setText(T.html("gauging_set_imported_from", name));
+        });
         setContent(content);
     }
 
-    public void updateTable() {
+    private void updateTable() {
         gaugingsTable.set(gaugingDataset);
-        Lg.register(importedDataSetSourceLabel, () -> {
-            importedDataSetSourceLabel.setText(
-                    Lg.html("gauging_set_imported_from",
-                            gaugingDataset.getDatasetName()));
-        });
+        T.updateRegisteredObject(importedDataSetSourceLabel);
+        // T.t(importedDataSetSourceLabel, (idsl) -> {
+        // idsl.setText(
+        // T.html("gauging_set_imported_from",
+        // idsl.gaugingDataset.getDatasetName()));
+        // });
     }
 
     private void setPlot() {
@@ -99,12 +105,13 @@ public class Gaugings extends BamItem implements ICalibrationData {
         plot.addXYItem(points.get(0));
         plot.addXYItem(points.get(1));
 
-        Lg.register(plot, () -> {
-            points.get(0).setLabel(Lg.text("lgd_active_gaugings"));
-            points.get(1).setLabel(Lg.text("lgd_inactive_gaugings"));
-            plot.axisX.setLabel(Lg.text("stage_level"));
-            plot.axisY.setLabel(Lg.text("discharge"));
-            plot.axisYlog.setLabel(Lg.text("discharge"));
+        T.t(points.get(0), "lgd_active_gaugings");
+        T.t(points.get(1), "lgd_inactive_gaugings");
+
+        T.t(plot, (plt) -> {
+            plt.axisX.setLabel(T.text("stage_level"));
+            plt.axisY.setLabel(T.text("discharge"));
+            plt.axisYlog.setLabel(T.text("discharge"));
         });
 
         PlotContainer plotContainer = new PlotContainer(plot);

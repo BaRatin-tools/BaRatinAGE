@@ -12,6 +12,7 @@ import javax.swing.JLabel;
 import javax.swing.JSeparator;
 import javax.swing.event.ChangeListener;
 
+import org.baratinage.translation.T;
 import org.baratinage.ui.AppConfig;
 import org.baratinage.utils.Misc;
 
@@ -21,7 +22,6 @@ import org.baratinage.ui.component.SimpleComboBox;
 
 import org.baratinage.ui.container.GridPanel;
 import org.baratinage.ui.container.RowColPanel;
-import org.baratinage.ui.lg.Lg;
 
 public class GaugingsImporter extends RowColPanel {
 
@@ -102,7 +102,7 @@ public class GaugingsImporter extends RowColPanel {
         RowColPanel actionPanel = new RowColPanel();
         actionPanel.setPadding(5);
         actionPanel.setGap(5);
-        JButton validateButton = new JButton(Lg.text("import"));
+        JButton validateButton = new JButton(T.text("import"));
         validateButton.addActionListener((e) -> {
             String filePath = dataFileReader.getFilePath();
             String fileName = Path.of(filePath).getFileName().toString();
@@ -121,7 +121,7 @@ public class GaugingsImporter extends RowColPanel {
             dialog.setVisible(false);
 
         });
-        JButton cancelButton = new JButton(Lg.text("cancel"));
+        JButton cancelButton = new JButton(T.text("cancel"));
         cancelButton.addActionListener((e) -> {
             dialog.setVisible(false);
         });
@@ -151,15 +151,15 @@ public class GaugingsImporter extends RowColPanel {
 
         columnsMapping.setChangeListener(cbChangeListener);
 
-        JLabel hColMapLabel = new JLabel(Lg.text("stage_level_column"));
+        JLabel hColMapLabel = new JLabel(T.text("stage_level_column"));
         columnMappingPanel.insertChild(hColMapLabel, 0, 0);
         columnMappingPanel.insertChild(columnsMapping.hCol, 1, 0);
 
-        JLabel qColMapLabel = new JLabel(Lg.text("discharge_column"));
+        JLabel qColMapLabel = new JLabel(T.text("discharge_column"));
         columnMappingPanel.insertChild(qColMapLabel, 0, 1);
         columnMappingPanel.insertChild(columnsMapping.qCol, 1, 1);
 
-        JLabel uqColMapLabel = new JLabel(Lg.text("discharge_uncertainty_column"));
+        JLabel uqColMapLabel = new JLabel(T.text("discharge_uncertainty_column"));
         columnMappingPanel.insertChild(uqColMapLabel, 0, 2);
         columnMappingPanel.insertChild(columnsMapping.uqCol, 1, 2);
 
@@ -177,7 +177,7 @@ public class GaugingsImporter extends RowColPanel {
         dialog = new JDialog(AppConfig.AC.APP_MAIN_FRAME, true);
         dialog.setContentPane(this);
 
-        dialog.setTitle(Lg.text("import_gauging_set"));
+        dialog.setTitle(T.text("import_gauging_set"));
         dialog.setMinimumSize(new Dimension(600, 400));
         dialog.setPreferredSize(new Dimension(900, 600));
 

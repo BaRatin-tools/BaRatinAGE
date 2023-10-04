@@ -1,7 +1,7 @@
 package org.baratinage.ui.baratin.hydraulic_control.control_panel;
 
 import org.baratinage.ui.commons.ParameterPriorDistSimplified;
-import org.baratinage.ui.lg.Lg;
+import org.baratinage.translation.T;
 
 public class WeirRect extends PriorControlPanel {
 
@@ -47,15 +47,15 @@ public class WeirRect extends PriorControlPanel {
         addParameter(gravity);
         addParameter(exponent);
 
-        Lg.register(this, () -> {
-            setHeaders(
-                    Lg.html("mean_value"),
-                    Lg.html("uncertainty_value"));
-            activationHeight.setNameLabel(Lg.html("activation_stage"));
-            weirCoef.setNameLabel(Lg.html("weir_coefficient"));
-            width.setNameLabel(Lg.html("weir_width"));
-            gravity.setNameLabel(Lg.html("gravity_acceleration"));
-            exponent.setNameLabel(Lg.html("exponent"));
+        T.t(this, (wRect) -> {
+            wRect.setHeaders(
+                    T.html("mean_value"),
+                    T.html("uncertainty_value"));
+            wRect.activationHeight.setNameLabel(T.html("activation_stage"));
+            wRect.weirCoef.setNameLabel(T.html("weir_coefficient"));
+            wRect.width.setNameLabel(T.html("weir_width"));
+            wRect.gravity.setNameLabel(T.html("gravity_acceleration"));
+            wRect.exponent.setNameLabel(T.html("exponent"));
         });
 
     }

@@ -21,7 +21,8 @@ import javax.swing.filechooser.FileFilter;
 import org.baratinage.ui.AppConfig;
 import org.baratinage.ui.container.GridPanel;
 import org.baratinage.ui.container.RowColPanel;
-import org.baratinage.ui.lg.Lg;
+import org.baratinage.translation.T;
+
 import org.baratinage.utils.ReadFile;
 
 public class DataFileReader extends RowColPanel {
@@ -46,12 +47,16 @@ public class DataFileReader extends RowColPanel {
         importFilePanel.setGap(5);
         importFilePanel.setColWeight(1, 1);
         // importFilePanel.setRowWeight(2, 10000);
+
         JLabel explainLabel = new JLabel();
-        Lg.register(explainLabel, "select_file_to_import");
+        explainLabel.setText(T.text("select_file_to_import"));
+
         selectedFilePathLabel = new JLabel();
         selectedFilePathLabel.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 14));
+
         JButton browseFileSystemButon = new JButton();
-        Lg.register(browseFileSystemButon, "browse");
+        browseFileSystemButon.setText(T.text("browse"));
+
         browseFileSystemButon.addActionListener(e -> {
             final JFileChooser fileChooser = new JFileChooser();
             fileChooser.setCurrentDirectory(new File(AppConfig.AC.lastUsedDir));
@@ -70,11 +75,11 @@ public class DataFileReader extends RowColPanel {
 
                 @Override
                 public String getDescription() {
-                    return Lg.text("data_text_file") + " (.txt, .csv, .dat, .bad)";
+                    return T.text("data_text_file") + " (.txt, .csv, .dat, .bad)";
                 }
 
             });
-            fileChooser.setDialogTitle(Lg.text("select_data_text_file"));
+            fileChooser.setDialogTitle(T.text("select_data_text_file"));
             fileChooser.setAcceptAllFileFilterUsed(false);
             if (fileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
                 readFilesLines(fileChooser.getSelectedFile().getAbsolutePath());
@@ -95,13 +100,13 @@ public class DataFileReader extends RowColPanel {
         importSettingsPanel.setGap(5, 5);
         importSettingsPanel.setPadding(5);
 
-        JLabel separatorLabel = new JLabel(Lg.text("separator"));
+        JLabel separatorLabel = new JLabel(T.text("separator"));
 
         RadioButtons separatorOptions = new RadioButtons();
-        separatorOptions.addOption("\t", new JRadioButton(Lg.text("sep_tab")));
-        separatorOptions.addOption(";", new JRadioButton(Lg.text("sep_semicolon")));
-        separatorOptions.addOption(",", new JRadioButton(Lg.text("sep_comma")));
-        separatorOptions.addOption(" ", new JRadioButton(Lg.text("sep_space")));
+        separatorOptions.addOption("\t", new JRadioButton(T.text("sep_tab")));
+        separatorOptions.addOption(";", new JRadioButton(T.text("sep_semicolon")));
+        separatorOptions.addOption(",", new JRadioButton(T.text("sep_comma")));
+        separatorOptions.addOption(" ", new JRadioButton(T.text("sep_space")));
         separatorOptions.addChangeListener((chEvt) -> {
             sep = separatorOptions.getSelectedValue();
             fireChangeListeners();
@@ -111,7 +116,7 @@ public class DataFileReader extends RowColPanel {
         importSettingsPanel.insertChild(separatorLabel, 0, 0);
         importSettingsPanel.insertChild(separatorOptions, 1, 0);
 
-        JCheckBox hasHeaderCheckBox = new JCheckBox(Lg.text("has_header_row"));
+        JCheckBox hasHeaderCheckBox = new JCheckBox(T.text("has_header_row"));
         hasHeaderCheckBox.setSelected(hasHeaderRow);
         hasHeaderCheckBox.addActionListener((e) -> {
             hasHeaderRow = hasHeaderCheckBox.isSelected();
@@ -120,7 +125,7 @@ public class DataFileReader extends RowColPanel {
 
         importSettingsPanel.insertChild(hasHeaderCheckBox, 0, 1, 2, 1);
 
-        JLabel nSkipRowLabel = new JLabel(Lg.text("n_rows_to_skip"));
+        JLabel nSkipRowLabel = new JLabel(T.text("n_rows_to_skip"));
         SpinnerNumberModel spinnerModel = new SpinnerNumberModel(0, 0, Integer.MAX_VALUE, 1);
         JSpinner nSkipRowField = new JSpinner(spinnerModel);
         nSkipRowField.addChangeListener((e) -> {
@@ -131,7 +136,7 @@ public class DataFileReader extends RowColPanel {
         importSettingsPanel.insertChild(nSkipRowLabel, 0, 2);
         importSettingsPanel.insertChild(nSkipRowField, 1, 2);
 
-        JLabel missingValueCodeLabel = new JLabel(Lg.text("missing_value_code"));
+        JLabel missingValueCodeLabel = new JLabel(T.text("missing_value_code"));
         SimpleTextField missingValueCodeField = new SimpleTextField();
         missingValueCodeField.setText(missingValueString);
         missingValueCodeField.addChangeListener((chEvt) -> {
@@ -142,7 +147,7 @@ public class DataFileReader extends RowColPanel {
         importSettingsPanel.insertChild(missingValueCodeLabel, 0, 3);
         importSettingsPanel.insertChild(missingValueCodeField, 1, 3);
 
-        JLabel nRowPreloadLabel = new JLabel(Lg.text("n_rows_to_preload"));
+        JLabel nRowPreloadLabel = new JLabel(T.text("n_rows_to_preload"));
         SpinnerNumberModel nRowPreloadSpinnerModel = new SpinnerNumberModel(nPreload, 10, Integer.MAX_VALUE, 1);
         JSpinner nRowPreloadField = new JSpinner(nRowPreloadSpinnerModel);
         nRowPreloadField.addChangeListener((e) -> {

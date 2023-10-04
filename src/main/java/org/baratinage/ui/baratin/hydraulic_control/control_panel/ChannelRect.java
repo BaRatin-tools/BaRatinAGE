@@ -1,7 +1,8 @@
 package org.baratinage.ui.baratin.hydraulic_control.control_panel;
 
 import org.baratinage.ui.commons.ParameterPriorDistSimplified;
-import org.baratinage.ui.lg.Lg;
+
+import org.baratinage.translation.T;
 
 public class ChannelRect extends PriorControlPanel {
 
@@ -42,15 +43,15 @@ public class ChannelRect extends PriorControlPanel {
         addParameter(slope);
         addParameter(exponent);
 
-        Lg.register(this, () -> {
-            setHeaders(
-                    Lg.html("mean_value"),
-                    Lg.html("uncertainty_value"));
-            activationHeight.setNameLabel(Lg.html("activation_stage"));
-            stricklerCoef.setNameLabel(Lg.html("strickler_coef"));
-            width.setNameLabel(Lg.html("channel_width"));
-            slope.setNameLabel(Lg.html("channel_slope"));
-            exponent.setNameLabel(Lg.html("exponent"));
+        T.t(this, (chRect) -> {
+            chRect.setHeaders(
+                    T.html("mean_value"),
+                    T.html("uncertainty_value"));
+            chRect.activationHeight.setNameLabel(T.html("activation_stage"));
+            chRect.stricklerCoef.setNameLabel(T.html("strickler_coef"));
+            chRect.width.setNameLabel(T.html("channel_width"));
+            chRect.slope.setNameLabel(T.html("channel_slope"));
+            chRect.exponent.setNameLabel(T.html("exponent"));
         });
     }
 

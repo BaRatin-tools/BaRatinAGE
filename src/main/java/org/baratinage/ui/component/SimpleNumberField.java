@@ -10,15 +10,15 @@ import java.util.List;
 import java.util.function.Predicate;
 
 import org.baratinage.ui.AppConfig;
-import org.baratinage.ui.lg.Lg;
+import org.baratinage.translation.T;
 
 public class SimpleNumberField extends SimpleTextField {
 
     private Double doubleValue = null;
     private Integer intValue = null;
 
-    private static NumberFormat doubleFormatter = NumberFormat.getNumberInstance();
-    private static NumberFormat integerFormatter = NumberFormat.getIntegerInstance();
+    private static NumberFormat DOUBLE_FORMATTER = NumberFormat.getNumberInstance();
+    private static NumberFormat INTEGER_FORMATTER = NumberFormat.getIntegerInstance();
     private boolean integer = false;
 
     private List<Predicate<Number>> validators = new ArrayList<>();
@@ -30,7 +30,7 @@ public class SimpleNumberField extends SimpleTextField {
         if (value == null) {
             return "";
         } else {
-            return doubleFormatter.format(value);
+            return DOUBLE_FORMATTER.format(value);
         }
     }
 
@@ -40,7 +40,7 @@ public class SimpleNumberField extends SimpleTextField {
             return d;
         } catch (Exception e) {
             try {
-                Number n = doubleFormatter.parse(str);
+                Number n = DOUBLE_FORMATTER.parse(str);
                 Double d = n.doubleValue();
                 return d;
             } catch (ParseException e1) {
@@ -53,7 +53,7 @@ public class SimpleNumberField extends SimpleTextField {
         if (value == null) {
             return "";
         } else {
-            return integerFormatter.format(value);
+            return INTEGER_FORMATTER.format(value);
         }
 
     }
@@ -64,7 +64,7 @@ public class SimpleNumberField extends SimpleTextField {
             return i;
         } catch (Exception e) {
             try {
-                Number n = integerFormatter.parse(str);
+                Number n = INTEGER_FORMATTER.parse(str);
                 Integer i = n.intValue();
                 return i;
             } catch (ParseException e1) {
@@ -81,12 +81,13 @@ public class SimpleNumberField extends SimpleTextField {
         super();
         this.integer = integer;
 
-        Lg.register(this, () -> {
-            doubleFormatter = NumberFormat.getNumberInstance(Lg.getLocale());
-            integerFormatter = NumberFormat.getIntegerInstance(Lg.getLocale());
-            doubleFormatter.setGroupingUsed(false);
-            integerFormatter.setGroupingUsed(false);
-            updateTextFieldFromValue();
+        // using tLasting to make sure it doesn't get overriden elsewhere
+        T.tLasting(this, (field) -> {
+            DOUBLE_FORMATTER = NumberFormat.getNumberInstance(T.getLocale());
+            INTEGER_FORMATTER = NumberFormat.getIntegerInstance(T.getLocale());
+            DOUBLE_FORMATTER.setGroupingUsed(false);
+            INTEGER_FORMATTER.setGroupingUsed(false);
+            field.updateTextFieldFromValue();
         });
 
         addChangeListener((chEvt) -> {

@@ -11,7 +11,7 @@ import org.baratinage.ui.bam.BamItemType;
 import org.baratinage.ui.bam.IPriors;
 import org.baratinage.ui.container.TabContainer;
 import org.baratinage.ui.container.RowColPanel;
-import org.baratinage.ui.lg.Lg;
+import org.baratinage.translation.T;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -26,11 +26,11 @@ public class HydraulicControlPanels extends RowColPanel implements IPriors {
         controls = new ArrayList<>();
         tabs = new TabContainer(TabContainer.SIDE.TOP);
 
-        Lg.register(this, () -> {
-            int n = tabs.getTabCount();
+        T.t(this, (hcp) -> {
+            int n = hcp.tabs.getTabCount();
             for (int k = 0; k < n; k++) {
-                OneHydraulicControl ohc = controls.get(k);
-                tabs.setTitleTextAt(k, Lg.html("control_number", ohc.controlNumber));
+                OneHydraulicControl ohc = hcp.controls.get(k);
+                hcp.tabs.setTitleTextAt(k, T.html("control_number", ohc.controlNumber));
             }
         });
         appendChild(tabs, 1);
@@ -46,7 +46,7 @@ public class HydraulicControlPanels extends RowColPanel implements IPriors {
             for (int k = nTabs; k < nVisibleHydraulicControls; k++) {
                 OneHydraulicControl ohc = controls.get(k);
                 tabs.addTab(
-                        Lg.html("control_number", ohc.controlNumber),
+                        T.html("control_number", ohc.controlNumber),
                         BamItemType.HYDRAULIC_CONFIG.getIcon(),
                         ohc);
             }

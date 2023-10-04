@@ -2,6 +2,8 @@ package org.baratinage.ui.baratin.gaugings;
 
 import java.awt.Dimension;
 
+import org.baratinage.translation.T;
+
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
@@ -9,7 +11,6 @@ import javax.swing.table.JTableHeader;
 import javax.swing.table.TableColumnModel;
 
 import org.baratinage.ui.container.RowColPanel;
-import org.baratinage.ui.lg.Lg;
 
 public class GaugingsTable extends RowColPanel {
 
@@ -33,8 +34,8 @@ public class GaugingsTable extends RowColPanel {
 
         appendChild(scrollpane);
 
-        Lg.register(this, () -> {
-            setHeaders();
+        T.t(this, (gT) -> {
+            gT.setHeaders();
         });
 
     }
@@ -48,10 +49,10 @@ public class GaugingsTable extends RowColPanel {
     public void setHeaders() {
         JTableHeader tableHeader = table.getTableHeader();
         TableColumnModel tableColModel = tableHeader.getColumnModel();
-        tableColModel.getColumn(0).setHeaderValue(Lg.text("stage_level"));
-        tableColModel.getColumn(1).setHeaderValue(Lg.text("discharge"));
-        tableColModel.getColumn(2).setHeaderValue(Lg.text("uncertainty_percent"));
-        tableColModel.getColumn(3).setHeaderValue(Lg.text("active_gauging"));
+        tableColModel.getColumn(0).setHeaderValue(T.text("stage_level"));
+        tableColModel.getColumn(1).setHeaderValue(T.text("discharge"));
+        tableColModel.getColumn(2).setHeaderValue(T.text("uncertainty_percent"));
+        tableColModel.getColumn(3).setHeaderValue(T.text("active_gauging"));
         tableHeader.updateUI();
     }
 

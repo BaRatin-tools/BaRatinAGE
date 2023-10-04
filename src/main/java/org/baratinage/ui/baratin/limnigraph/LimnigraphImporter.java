@@ -22,7 +22,7 @@ import org.baratinage.ui.component.SimpleComboBox;
 import org.baratinage.ui.component.SimpleTextField;
 import org.baratinage.ui.container.GridPanel;
 import org.baratinage.ui.container.RowColPanel;
-import org.baratinage.ui.lg.Lg;
+import org.baratinage.translation.T;
 
 public class LimnigraphImporter extends RowColPanel {
 
@@ -47,7 +47,7 @@ public class LimnigraphImporter extends RowColPanel {
         timeColFormatField = new SimpleTextField();
 
         stageColComboBox = new SimpleComboBox();
-        stageAllColumnsCheckBox = new JCheckBox(Lg.text("use_all_columns_for_stage"));
+        stageAllColumnsCheckBox = new JCheckBox(T.text("use_all_columns_for_stage"));
         stageAllColumnsCheckBox.setSelected(true);
         stageAllColumnsCheckBox.addChangeListener((chEvt) -> {
             stageColComboBox.setEnabled(!stageAllColumnsCheckBox.isSelected());
@@ -85,7 +85,7 @@ public class LimnigraphImporter extends RowColPanel {
         RowColPanel actionPanel = new RowColPanel();
         actionPanel.setPadding(5);
         actionPanel.setGap(5);
-        JButton validateButton = new JButton(Lg.text("import"));
+        JButton validateButton = new JButton(T.text("import"));
         validateButton.setEnabled(false);
         validateButton.addActionListener((e) -> {
             String filePath = dataFileReader.getFilePath();
@@ -112,7 +112,7 @@ public class LimnigraphImporter extends RowColPanel {
             dialog.setVisible(false);
 
         });
-        JButton cancelButton = new JButton(Lg.text("cancel"));
+        JButton cancelButton = new JButton(T.text("cancel"));
         cancelButton.addActionListener((e) -> {
             dialog.setVisible(false);
         });
@@ -164,20 +164,20 @@ public class LimnigraphImporter extends RowColPanel {
         stageAllColumnsCheckBox.addChangeListener(cbChangeListener);
         stageColComboBox.addChangeListener(cbChangeListener);
 
-        JLabel timeColMappingLabel = new JLabel(Lg.text("date_time_column"));
+        JLabel timeColMappingLabel = new JLabel(T.text("date_time_column"));
         columnMappingPanel.insertChild(timeColMappingLabel, 0, 0);
         columnMappingPanel.insertChild(timeColComboBox, 1, 0);
 
-        JLabel timeColFormatLabel = new JLabel(Lg.text("date_time_format"));
+        JLabel timeColFormatLabel = new JLabel(T.text("date_time_format"));
         timeColFormatField.setText("y/M/d H:m:s");
         JLabel timeFormatDetails = new JLabel(
                 "<html><code>" +
-                        "y = " + Lg.text("year") + ", " +
-                        "M = " + Lg.text("month") + ", " +
-                        "d = " + Lg.text("day") + ", " +
-                        "H = " + Lg.text("hour") + " (0-23)" + ", " +
-                        "m = " + Lg.text("minute") + " (0-59)" + ", " +
-                        "s = " + Lg.text("second") + " (0-59)" +
+                        "y = " + T.text("year") + ", " +
+                        "M = " + T.text("month") + ", " +
+                        "d = " + T.text("day") + ", " +
+                        "H = " + T.text("hour") + " (0-23)" + ", " +
+                        "m = " + T.text("minute") + " (0-59)" + ", " +
+                        "s = " + T.text("second") + " (0-59)" +
                         "<br>" +
                         "yyyy-MM-dd HH:mm:ss = 2005-07-26 14:32:09" +
                         "</code></html>");
@@ -187,7 +187,7 @@ public class LimnigraphImporter extends RowColPanel {
         columnMappingPanel.insertChild(timeFormatDetails, 1, 2, 2, 1);
 
         columnMappingPanel.insertChild(stageAllColumnsCheckBox, 0, 3, 2, 1);
-        JLabel stageColLabel = new JLabel(Lg.text("stage_level_column"));
+        JLabel stageColLabel = new JLabel(T.text("stage_level_column"));
         columnMappingPanel.insertChild(stageColLabel, 0, 4);
         columnMappingPanel.insertChild(stageColComboBox, 1, 4);
 
@@ -205,7 +205,7 @@ public class LimnigraphImporter extends RowColPanel {
         dialog = new JDialog(AppConfig.AC.APP_MAIN_FRAME, true);
         dialog.setContentPane(this);
 
-        dialog.setTitle(Lg.text("import_limnigraph"));
+        dialog.setTitle(T.text("import_limnigraph"));
         dialog.setMinimumSize(new Dimension(600, 400));
         dialog.setPreferredSize(new Dimension(900, 600));
 

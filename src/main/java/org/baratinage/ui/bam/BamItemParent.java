@@ -9,11 +9,11 @@ import javax.swing.JOptionPane;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import org.baratinage.translation.T;
 import org.baratinage.ui.AppConfig;
 import org.baratinage.ui.commons.MsgPanel;
 import org.baratinage.ui.component.SimpleComboBox;
 import org.baratinage.ui.container.RowColPanel;
-import org.baratinage.ui.lg.Lg;
 import org.baratinage.utils.JSONcomparator;
 import org.json.JSONObject;
 
@@ -77,8 +77,8 @@ public class BamItemParent extends RowColPanel {
             if (item == null) {
                 JOptionPane.showConfirmDialog(
                         AppConfig.AC.APP_MAIN_FRAME,
-                        Lg.text("impossible_component_deleted"),
-                        Lg.text("error"),
+                        T.text("impossible_component_deleted"),
+                        T.text("error"),
                         JOptionPane.CLOSED_OPTION,
                         JOptionPane.ERROR_MESSAGE);
                 return;
@@ -95,13 +95,13 @@ public class BamItemParent extends RowColPanel {
             setCurrentBamItem(bamItem);
         });
 
-        Lg.register(this, () -> {
-            updateMessagesTexts();
+        T.t(this, (bamItemParent) -> {
+            bamItemParent.updateMessagesTexts();
         });
 
         onBamItemNameChange = (chEvt) -> {
             syncWithBamItemList();
-            Lg.updateRegisteredObject(this);
+            T.updateRegisteredObject(this);
         };
 
         onBamItemContentChange = (chEvt) -> {
@@ -112,20 +112,20 @@ public class BamItemParent extends RowColPanel {
     }
 
     private void updateMessagesTexts() {
-        String typeText = Lg.text(TYPE.id);
+        String typeText = T.text(TYPE.id);
         String backupItemName = getBackupItemName();
         String currentItemName = getCurrentItemName();
         comboboxLabel.setText(typeText);
         syncIssueMsg.message.setText(
-                Lg.html("msg_component_content_out_of_sync", typeText, currentItemName));
+                T.html("msg_component_content_out_of_sync", typeText, currentItemName));
         revertToSelectCompBtn.setText(
-                Lg.html("btn_revert_component_selection", backupItemName));
+                T.html("btn_revert_component_selection", backupItemName));
         createInSyncCompBtn.setText(
-                Lg.html("btn_create_component_from_backup", typeText));
+                T.html("btn_create_component_from_backup", typeText));
     }
 
     private String getCurrentItemName() {
-        return currentItem == null ? Lg.text("msg_empty_selection")
+        return currentItem == null ? T.text("msg_empty_selection")
                 : currentItem.bamItemNameField.getText();
     }
 

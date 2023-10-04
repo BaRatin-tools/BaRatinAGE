@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.baratinage.ui.AppConfig;
 import org.baratinage.ui.container.RowColPanel;
-import org.baratinage.ui.lg.Lg;
+import org.baratinage.translation.T;
 import org.baratinage.ui.plot.Plot;
 import org.baratinage.ui.plot.PlotBand;
 import org.baratinage.ui.plot.PlotContainer;
@@ -51,14 +51,15 @@ public class PriorRatingCurvePlot extends RowColPanel {
         plot.addXYItem(parEnv);
         plot.addXYItem(mp);
 
-        Lg.register(plot, () -> {
-            mp.setLabel(Lg.text("lgd_prior_rating_curve"));
-            parEnv.setLabel(Lg.text("lgd_prior_parametric_uncertainty"));
-            bands[0].setLabel(Lg.text("lgd_prior_transition_stage"));
-            plot.axisX.setLabel(Lg.text("stage_level"));
-            plot.axisY.setLabel(Lg.text("discharge"));
-            plot.axisYlog.setLabel(Lg.text("discharge"));
-            plot.update(); // needed to make sure change are reflected in plot
+        T.t(mp, "lgd_posterior_rating_curve");
+        T.t(parEnv, "lgd_prior_parametric_uncertainty");
+        T.t(bands[0], "lgd_prior_transition_stage");
+
+        T.t(plot, (plt) -> {
+            plt.axisX.setLabel(T.text("stage_level"));
+            plt.axisY.setLabel(T.text("discharge"));
+            plt.axisYlog.setLabel(T.text("discharge"));
+            plt.update(); // needed to make sure change are reflected in plot
             // actually useless here since axis label changes also notify the chart
             // that it must update...
         });

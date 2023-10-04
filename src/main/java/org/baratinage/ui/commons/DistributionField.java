@@ -12,7 +12,7 @@ import org.baratinage.jbam.DistributionType;
 import org.baratinage.ui.component.SimpleComboBox;
 import org.baratinage.ui.component.SimpleNumberField;
 import org.baratinage.ui.container.RowColPanel;
-import org.baratinage.ui.lg.Lg;
+import org.baratinage.translation.T;
 
 public class DistributionField implements ChangeListener {
     private final HashMap<DistributionType, List<SimpleNumberField>> allParameterFields;
@@ -31,7 +31,7 @@ public class DistributionField implements ChangeListener {
             List<SimpleNumberField> parameterFields = new ArrayList<>();
             for (String pName : d.parameterNames) {
                 SimpleNumberField field = new SimpleNumberField();
-                field.setInnerLabel(Lg.text(pName));
+                field.setInnerLabel(T.text(pName));
                 field.addChangeListener(this);
                 parameterFields.add(field);
             }
@@ -59,20 +59,20 @@ public class DistributionField implements ChangeListener {
             parameterFieldsPanel.updateUI();
         });
 
-        Lg.register(this, () -> {
+        T.t(this, (distField) -> {
             int n = DISTRIBUTION_TYPES.length;
             String[] distribLabels = new String[n];
             for (int k = 0; k < n; k++) {
-                List<SimpleNumberField> parameterFields = allParameterFields.get(DISTRIBUTION_TYPES[k]);
+                List<SimpleNumberField> parameterFields = distField.allParameterFields.get(DISTRIBUTION_TYPES[k]);
                 for (int i = 0; i < parameterFields.size(); i++) {
-                    parameterFields.get(i).setInnerLabel(Lg.text(DISTRIBUTION_TYPES[k].parameterNames[i]));
+                    parameterFields.get(i).setInnerLabel(T.text(DISTRIBUTION_TYPES[k].parameterNames[i]));
                 }
-                distribLabels[k] = Lg.text("dist_" + DISTRIBUTION_TYPES[k].bamName);
+                distribLabels[k] = T.text("dist_" + DISTRIBUTION_TYPES[k].bamName);
             }
-            int selectedIndex = distributionCombobox.getSelectedIndex();
-            distributionCombobox.setEmptyItem(null);
-            distributionCombobox.setItems(distribLabels, true);
-            distributionCombobox.setSelectedItem(selectedIndex, true);
+            int selectedIndex = distField.distributionCombobox.getSelectedIndex();
+            distField.distributionCombobox.setEmptyItem(null);
+            distField.distributionCombobox.setItems(distribLabels, true);
+            distField.distributionCombobox.setSelectedItem(selectedIndex, true);
         });
 
         distributionCombobox.setSelectedItem(0);

@@ -4,7 +4,7 @@ import java.awt.Dimension;
 
 import javax.swing.JProgressBar;
 
-import org.baratinage.ui.lg.Lg;
+import org.baratinage.translation.T;
 
 public class ProgressBar extends JProgressBar {
 
@@ -23,20 +23,20 @@ public class ProgressBar extends JProgressBar {
         setValue(progress);
 
         double percent = total > 0 ? (double) progress / (double) total * 100 : 0;
-        String stepTxt = Lg.text("step_n_out_of_m", step, totalStep);
+        String stepTxt = T.text("step_n_out_of_m", step, totalStep);
         String s = "";
         if (id.equals("MCMC")) {
-            String mainTxt = Lg.text("mcmc_running");
+            String mainTxt = T.text("mcmc_running");
             s = String.format("%s - %.0f %% - %s", stepTxt, percent, mainTxt);
         } else if (id.startsWith("Prediction")) {
-            String mainTxt = Lg.text("pred_running");
+            String mainTxt = T.text("pred_running");
             s = String.format("%s - %.0f %% - %s", stepTxt, percent, mainTxt);
         } else if (id.equals("starting")) {
-            s = Lg.text("conf_writing");
+            s = T.text("conf_writing");
         } else if (id.equals("canceled")) {
-            s = Lg.text("canceled");
+            s = T.text("canceled");
         } else {
-            s = Lg.text("done");
+            s = T.text("done");
         }
         setString(s);
         repaint();

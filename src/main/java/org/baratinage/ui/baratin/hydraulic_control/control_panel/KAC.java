@@ -2,7 +2,7 @@ package org.baratinage.ui.baratin.hydraulic_control.control_panel;
 
 import org.baratinage.jbam.DistributionType;
 import org.baratinage.ui.commons.ParameterPriorDist;
-import org.baratinage.ui.lg.Lg;
+import org.baratinage.translation.T;
 
 public class KAC extends PriorControlPanel {
 
@@ -30,11 +30,11 @@ public class KAC extends PriorControlPanel {
         addParameter(a);
         addParameter(c);
 
-        Lg.register(this, () -> {
-            setHeaders(
-                    Lg.html("initial_guess"),
-                    Lg.html("distribution"),
-                    Lg.html("distribution_parameters"));
+        T.t(this, (kac) -> {
+            kac.setHeaders(
+                    T.html("initial_guess"),
+                    T.html("distribution"),
+                    T.html("distribution_parameters"));
         });
     }
 

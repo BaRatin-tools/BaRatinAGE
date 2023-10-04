@@ -8,7 +8,7 @@ import org.baratinage.ui.bam.BamItemList;
 import org.baratinage.ui.bam.BamItemType;
 import org.baratinage.ui.bam.BamProject;
 import org.baratinage.ui.component.NameSymbolUnit;
-import org.baratinage.ui.lg.Lg;
+import org.baratinage.translation.T;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -67,10 +67,10 @@ public class BaratinProject extends BamProject {
                     return new Hydrograph(uuid, this);
                 });
 
-        Lg.register(this, () -> {
-            BamItemList strucErrBamItems = BAM_ITEMS.filterByType(BamItemType.STRUCTURAL_ERROR);
+        T.t(this, (proj) -> {
+            BamItemList strucErrBamItems = proj.BAM_ITEMS.filterByType(BamItemType.STRUCTURAL_ERROR);
             for (BamItem item : strucErrBamItems) {
-                ((StructuralErrorModelBamItem) item).updateOutputNames(Lg.text("discharge"));
+                ((StructuralErrorModelBamItem) item).updateOutputNames(T.text("discharge"));
             }
         });
     }

@@ -9,7 +9,7 @@ import org.baratinage.jbam.EstimatedParameter;
 import org.baratinage.ui.commons.DensityPlotGrid;
 import org.baratinage.ui.container.TabContainer;
 import org.baratinage.ui.component.SvgIcon;
-import org.baratinage.ui.lg.Lg;
+import org.baratinage.translation.T;
 
 public class RatingCurveResults extends TabContainer {
 
@@ -28,9 +28,9 @@ public class RatingCurveResults extends TabContainer {
         addTab("rating_curve", rcIcon, ratingCurvePlot);
         addTab("parameter_densities", dpIcon, paramDensityPlots);
 
-        Lg.register(this, () -> {
-            setTitleTextAt(0, Lg.html("posterior_rating_curve"));
-            setTitleTextAt(1, Lg.html("parameter_densities"));
+        T.t(this, (rcRes) -> {
+            rcRes.setTitleTextAt(0, T.html("posterior_rating_curve"));
+            rcRes.setTitleTextAt(1, T.html("parameter_densities"));
         });
     }
 

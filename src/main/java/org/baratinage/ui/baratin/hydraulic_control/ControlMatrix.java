@@ -13,7 +13,7 @@ import javax.swing.event.ChangeListener;
 
 import org.baratinage.ui.container.GridPanel;
 import org.baratinage.ui.container.RowColPanel;
-import org.baratinage.ui.lg.Lg;
+import org.baratinage.translation.T;
 import org.json.JSONObject;
 
 public class ControlMatrix extends RowColPanel implements ChangeListener {
@@ -51,7 +51,7 @@ public class ControlMatrix extends RowColPanel implements ChangeListener {
         appendChild(controlGridScrollPane, 1);
 
         reversedOrderCheckBox = new JCheckBox(" > Inverser l'ordre des segments");
-        Lg.register(reversedOrderCheckBox, "invert_control_matrix");
+        T.t(reversedOrderCheckBox, false, "invert_control_matrix");
         reversedOrderCheckBox.setSelected(true);
         reversedOrderCheckBox.addItemListener((e) -> {
             updateControlMatrixView();
@@ -199,13 +199,13 @@ public class ControlMatrix extends RowColPanel implements ChangeListener {
         addControlButton.setText(" > Ajouter un contrôle  (" + "Contrôle #" + (nCtrl + 1) + ")");
         removeControlButton.setText(" > Supprimer le dernier contrôle (" + "Contrôle #" + nCtrl + ")");
 
-        Lg.register(this, () -> {
-            String nextCtrlText = Lg.text("control_number", nCtrl + 1);
-            String currCtrlText = Lg.text("control_number", nCtrl);
-            String addCtrlText = Lg.html("add_control", nextCtrlText);
-            String delCtrlText = Lg.html("delete_last_control", currCtrlText);
-            addControlButton.setText(addCtrlText);
-            removeControlButton.setText(delCtrlText);
+        T.t(this, (ctrlMat) -> {
+            String nextCtrlText = T.text("control_number", nCtrl + 1);
+            String currCtrlText = T.text("control_number", nCtrl);
+            String addCtrlText = T.html("add_control", nextCtrlText);
+            String delCtrlText = T.html("delete_last_control", currCtrlText);
+            ctrlMat.addControlButton.setText(addCtrlText);
+            ctrlMat.removeControlButton.setText(delCtrlText);
         });
         removeControlButton.setEnabled(nCtrl > 1);
     }

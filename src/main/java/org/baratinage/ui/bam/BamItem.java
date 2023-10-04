@@ -10,11 +10,11 @@ import javax.swing.JSeparator;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import org.baratinage.translation.T;
 import org.baratinage.ui.component.SimpleTextField;
 import org.baratinage.ui.component.Title;
 import org.baratinage.ui.container.GridPanel;
 import org.baratinage.ui.container.RowColPanel;
-import org.baratinage.ui.lg.Lg;
 import org.json.JSONObject;
 
 abstract public class BamItem extends GridPanel {
@@ -45,13 +45,6 @@ abstract public class BamItem extends GridPanel {
         bamItemTypeLabel.setText("BamItem");
         bamItemNameField.setText("Unnamed");
 
-        Lg.register(bamItemNameField, () -> {
-            bamItemNameField.setPlaceholder(Lg.text("name"));
-        });
-        Lg.register(bamItemDescriptionField, () -> {
-            bamItemDescriptionField.setPlaceholder(Lg.text("description"));
-        });
-
         headerPanel.insertChild(bamItemTypeLabel, 0, 0);
         headerPanel.insertChild(bamItemNameField, 1, 0, ANCHOR.C, FILL.H);
         headerPanel.insertChild(cloneButton, 2, 0, ANCHOR.C, FILL.BOTH);
@@ -66,6 +59,13 @@ abstract public class BamItem extends GridPanel {
 
         setColWeight(0, 1);
         setRowWeight(2, 1);
+
+        T.t(bamItemNameField, (field) -> {
+            field.setPlaceholder(T.text("name"));
+        });
+        T.t(bamItemDescriptionField, (field) -> {
+            field.setPlaceholder(T.text("description"));
+        });
 
     }
 
@@ -124,7 +124,7 @@ abstract public class BamItem extends GridPanel {
 
     public void setCopyName() {
         String oldName = bamItemNameField.getText();
-        String newName = Lg.text("copy_of", oldName);
+        String newName = T.text("copy_of", oldName);
         bamItemNameField.setText(newName);
     }
 

@@ -22,7 +22,7 @@ public class DensityPlotGrid extends RowColPanel {
 
     private final List<EstimatedParameter> estimatedParameters = new ArrayList<>();
 
-    private final List<PlotContainer> plotContainers = new ArrayList<>();
+    // private final List<PlotContainer> plotContainers = new ArrayList<>();
 
     public DensityPlotGrid() {
 
@@ -53,10 +53,10 @@ public class DensityPlotGrid extends RowColPanel {
         for (int k = 0; k < nRow + 1; k++) {
             gridPanel.setRowWeight(k, 1);
         }
-        for (PlotContainer pc : plotContainers) {
-            Lg.unregister(pc);
-        }
-        plotContainers.clear();
+        // for (PlotContainer pc : plotContainers) {
+        // Lg.unregister(pc);
+        // }
+        // plotContainers.clear();
 
         int r = 0;
         int c = 0;
@@ -110,7 +110,7 @@ public class DensityPlotGrid extends RowColPanel {
             plot.addXYItem(maxpostLine);
 
             PlotContainer pc = new PlotContainer(plot, false);
-            plotContainers.add(pc);
+            // plotContainers.add(pc);
 
             gridPanel.insertChild(pc, c, r);
 
@@ -124,7 +124,9 @@ public class DensityPlotGrid extends RowColPanel {
         Legend legend = new Legend();
 
         PlotContainer pc = new PlotContainer(legend.getLegendPlot(), false);
-        plotContainers.add(pc);
+        gridPanel.insertChild(pc, c, r);
+
+        // plotContainers.add(pc);
         Lg.register(this, () -> {
             legend.clearLegend();
 
@@ -142,6 +144,5 @@ public class DensityPlotGrid extends RowColPanel {
             legend.getLegendPlot().update();
         });
 
-        gridPanel.insertChild(pc, c, r);
     }
 }

@@ -10,11 +10,13 @@ import javax.swing.JMenuItem;
 import javax.swing.KeyStroke;
 import javax.swing.filechooser.FileFilter;
 
+import org.baratinage.translation.T;
 import org.baratinage.ui.bam.BamProject;
 import org.baratinage.ui.baratin.BaratinProject;
 import org.baratinage.ui.component.SvgIcon;
 import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.ui.lg.Lg;
+import org.baratinage.ui.lg.LgTest;
 import org.baratinage.utils.Misc;
 
 import java.awt.Dimension;
@@ -25,8 +27,12 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.awt.image.DataBuffer;
+import java.awt.image.Raster;
+import java.awt.image.WritableRaster;
 import java.io.File;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -43,6 +49,8 @@ public class MainFrame extends JFrame {
     public MainFrame() {
 
         new AppConfig(this);
+
+        T.init();
 
         Lg.init();
         Lg.setLocale("fr");
@@ -69,18 +77,61 @@ public class MainFrame extends JFrame {
         gcBtn.addActionListener((e) -> {
             System.gc();
         });
+        JMenuItem tPrintStateBtn = new JMenuItem("T print state");
+        debugMenu.add(tPrintStateBtn);
+        tPrintStateBtn.addActionListener((e) -> {
+            T.printStats();
+        });
+
         JMenuItem lgResetBtn = new JMenuItem("Reload Lg ressources");
         debugMenu.add(lgResetBtn);
         lgResetBtn.addActionListener((e) -> {
             Lg.reloadResources();
+            T.reloadResources();
+        });
+        JMenuItem lgTestCheckBtn = new JMenuItem("LgTest CHECK");
+        debugMenu.add(lgTestCheckBtn);
+        lgTestCheckBtn.addActionListener((e) -> {
+            System.out.println("===============> TESTING DATA");
+            LgTest.checkRegisteredObject();
+        });
+        List<WritableRaster> FAKE_DATA = new ArrayList<>();
+        JMenuItem lgTestAddCheckBtn = new JMenuItem("LgTest  ADD");
+        debugMenu.add(lgTestAddCheckBtn);
+        lgTestAddCheckBtn.addActionListener((e) -> {
+            System.out.println("===============> ADDING DATA");
+            int size = 10000;
+            WritableRaster r = Raster.createBandedRaster(DataBuffer.TYPE_INT,
+                    size,
+                    size,
+                    1,
+                    new Point(0, 0));
+            int value = FAKE_DATA.size();
+            r.setPixel(10, 10, new int[] { value });
+            System.out.println(r.getSample(10, 10, 0));
+            FAKE_DATA.add(r);
+            LgTest.register(r, (innerR) -> {
+                System.out.println("Raster value = " + innerR.getSample(10, 10, 0));
+                System.out.println(innerR.getHeight());
+            });
+            LgTest.checkRegisteredObject();
+        });
+        JMenuItem lgTestRemCheckBtn = new JMenuItem("LgTest  REMOVE");
+        debugMenu.add(lgTestRemCheckBtn);
+        lgTestRemCheckBtn.addActionListener((e) -> {
+            System.out.println("===============> REMOVING DATA");
+            int n = FAKE_DATA.size();
+            FAKE_DATA.remove(n - 1);
+            System.out.println("FAKE_DATA length is (before deleteion) = " + FAKE_DATA.size() + " ( " + n + ")");
+            LgTest.checkRegisteredObject();
         });
 
         JMenu fileMenu = new JMenu();
-        Lg.register(fileMenu, "files");
+        T.t(fileMenu, false, "files");
         mainMenuBar.add(fileMenu);
 
         JMenuItem newProjectMenuItem = new JMenuItem();
-        Lg.register(newProjectMenuItem, "create_baratin_project");
+        T.t(newProjectMenuItem, false, "create_baratin_project");
         newProjectMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, KeyEvent.CTRL_DOWN_MASK));
         newProjectMenuItem.addActionListener((e) -> {
             newProject();
@@ -88,7 +139,7 @@ public class MainFrame extends JFrame {
         fileMenu.add(newProjectMenuItem);
 
         JMenuItem openProjectMenuItem = new JMenuItem();
-        Lg.register(openProjectMenuItem, "open_project");
+        T.t(openProjectMenuItem, false, "open_project");
         openProjectMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, KeyEvent.CTRL_DOWN_MASK));
         openProjectMenuItem.addActionListener((e) -> {
             loadProject();
@@ -96,7 +147,7 @@ public class MainFrame extends JFrame {
         fileMenu.add(openProjectMenuItem);
 
         JMenuItem saveProjectAsMenuItem = new JMenuItem();
-        Lg.register(saveProjectAsMenuItem, "save_project_as");
+        T.t(saveProjectAsMenuItem, false, "save_project_as");
         saveProjectAsMenuItem
                 .setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, ActionEvent.CTRL_MASK + ActionEvent.ALT_MASK));
         saveProjectAsMenuItem.addActionListener((e) -> {
@@ -108,7 +159,7 @@ public class MainFrame extends JFrame {
         fileMenu.add(saveProjectAsMenuItem);
 
         JMenuItem saveProjectMenuItem = new JMenuItem();
-        Lg.register(saveProjectMenuItem, "save_project");
+        T.t(saveProjectMenuItem, false, "save_project");
         saveProjectMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_DOWN_MASK));
         saveProjectMenuItem.addActionListener((e) -> {
             if (currentProject != null) {
@@ -121,7 +172,7 @@ public class MainFrame extends JFrame {
         fileMenu.addSeparator();
 
         JMenuItem closeMenuItem = new JMenuItem();
-        Lg.register(closeMenuItem, "exit");
+        T.t(closeMenuItem, false, "exit");
         closeMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q, KeyEvent.CTRL_DOWN_MASK));
         closeMenuItem.addActionListener((e) -> {
             close();
@@ -179,27 +230,30 @@ public class MainFrame extends JFrame {
         setVisible(true);
     }
 
-    Map<String, JCheckBoxMenuItem> lgMenuItems = new HashMap<>();
+    Map<String, JCheckBoxMenuItem> translationMenuItems = new HashMap<>();
 
     public JMenu createLanguageSwitcherMenu() {
 
         JMenu switchLanguageMenuItem = new JMenu();
-        Lg.register(switchLanguageMenuItem, "change_language");
+        T.t(switchLanguageMenuItem, false, "change_language");
 
-        List<String> lgKeys = Lg.getAvailableLocales();
-        for (String lgKey : lgKeys) {
+        List<String> tKeys = T.getAvailableLocales();
+        for (String tKey : tKeys) {
             JCheckBoxMenuItem item = new JCheckBoxMenuItem();
-            lgMenuItems.put(lgKey, item);
-            Lg.register(item, () -> {
-                Locale currentLocale = Lg.getLocale();
-                Locale targetLocale = Locale.forLanguageTag(lgKey);
+            translationMenuItems.put(tKey, item);
+            // T.t(item, true, "");
+            T.t(item, (i) -> {
+                Locale currentLocale = T.getLocale();
+                Locale targetLocale = Locale.forLanguageTag(tKey);
                 String currentLocaleText = targetLocale.getDisplayName(targetLocale);
                 String targetLocaleText = targetLocale.getDisplayName(currentLocale);
-                item.setText(currentLocaleText + " - " + targetLocaleText);
+                i.setText(currentLocaleText + " - " + targetLocaleText);
             });
+
             item.addActionListener((e) -> {
-                System.out.println("MainFrame: swtiching language to '" + lgKey + "'");
-                Lg.setLocale(lgKey);
+                System.out.println("MainFrame: swtiching language to '" + tKey + "'");
+                Lg.setLocale(tKey);
+                T.setLocale(tKey);
                 updateLanguageSwitcherMenu();
                 // FIXME: how to recursively update the whole Frame?
             });
@@ -218,9 +272,9 @@ public class MainFrame extends JFrame {
     }
 
     public void updateLanguageSwitcherMenu() {
-        String currentLocalKey = Lg.getLocaleKey();
-        for (String key : lgMenuItems.keySet()) {
-            lgMenuItems.get(key).setSelected(key.equals(currentLocalKey));
+        String currentLocalKey = T.getLocaleKey();
+        for (String key : translationMenuItems.keySet()) {
+            translationMenuItems.get(key).setSelected(key.equals(currentLocalKey));
         }
     }
 
@@ -243,16 +297,7 @@ public class MainFrame extends JFrame {
         }
     }
 
-    public void resetLg() {
-        String previousProjectOwnerKey = Lg.getDefaultOwnerKey();
-        Lg.setDefaultOwnerKey(Misc.getTimeStampedId());
-        if (!previousProjectOwnerKey.equals("main_frame")) {
-            Lg.unregisterOwner(previousProjectOwnerKey);
-        }
-    }
-
     public void newProject() {
-        resetLg();
         BaratinProject newProject = new BaratinProject();
         newProject.addDefaultBamItems();
         setCurrentProject(newProject);
@@ -276,11 +321,11 @@ public class MainFrame extends JFrame {
 
             @Override
             public String getDescription() {
-                return Lg.text("baratinage_file");
+                return T.text("baratinage_file");
             }
 
         });
-        fileChooser.setDialogTitle(Lg.text("open_project"));
+        fileChooser.setDialogTitle(T.text("open_project"));
         fileChooser.setAcceptAllFileFilterUsed(false);
         if (fileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
             String fullFilePath = fileChooser.getSelectedFile().getAbsolutePath();
@@ -290,7 +335,6 @@ public class MainFrame extends JFrame {
 
     public void loadProject(String projectFilePath) {
         if (projectFilePath != null) {
-            resetLg();
             BamProject bamProject = BamProject.loadProject(projectFilePath);
             bamProject.setProjectPath(projectFilePath);
             setCurrentProject(bamProject);

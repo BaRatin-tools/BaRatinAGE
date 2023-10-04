@@ -27,15 +27,16 @@ import org.jfree.svg.SVGGraphics2D;
 import org.baratinage.ui.AppConfig;
 import org.baratinage.ui.component.SvgIcon;
 import org.baratinage.ui.container.RowColPanel;
-import org.baratinage.ui.lg.Lg;
+import org.baratinage.translation.T;
 
 public class PlotContainer extends RowColPanel {
 
-    Plot plot;
-    JFreeChart chart;
-    ChartPanel chartPanel;
-    boolean logYaxis;
-    Color backgroundColor = Color.WHITE;
+    private Plot plot;
+    private JFreeChart chart;
+    private ChartPanel chartPanel;
+    private boolean logYaxis;
+    private Color backgroundColor = Color.WHITE;
+    private JButton toggleYaxisLogButton;
 
     public PlotContainer(Plot plot) {
         this(plot, true);
@@ -88,14 +89,14 @@ public class PlotContainer extends RowColPanel {
         topPanel.appendChild(actionPanel, 1);
 
         logYaxis = false;
-        JButton toggleYaxisLogButton = new JButton(logYaxis ? "Axe Y linéaire" : "Axe Y logarithmique");
+        toggleYaxisLogButton = new JButton();
 
         toolsPanel.appendChild(toggleYaxisLogButton, 0);
         toggleYaxisLogButton.addActionListener((e) -> {
             logYaxis = !logYaxis;
-            Lg.updateRegisteredObject(toggleYaxisLogButton);
             plot.setAxisLogY(logYaxis);
             chartPanel.restoreAutoBounds();
+            T.updateRegisteredObject(this);
         });
 
         ImageIcon saveIcon = SvgIcon.buildFeatherAppImageIcon("save.svg");
@@ -103,6 +104,9 @@ public class PlotContainer extends RowColPanel {
         ImageIcon windowPlotIcon = SvgIcon.buildFeatherAppImageIcon("external-link.svg");
 
         JButton btnWindowPlot = new JButton();
+        T.t(btnWindowPlot, (btn) -> {
+            btn.setToolTipText(T.text("window_plot"));
+        });
 
         btnWindowPlot.setIcon(windowPlotIcon);
         btnWindowPlot.addActionListener((e) -> {
@@ -110,6 +114,10 @@ public class PlotContainer extends RowColPanel {
         });
 
         JButton btnSaveAsSvg = new JButton();
+        T.t(btnSaveAsSvg, (btn) -> {
+            btn.setText("SVG");
+            btn.setToolTipText(T.text("to_svg"));
+        });
 
         btnSaveAsSvg.setIcon(saveIcon);
         btnSaveAsSvg.setText("SVG");
@@ -118,7 +126,10 @@ public class PlotContainer extends RowColPanel {
         });
 
         JButton btnSaveAsPng = new JButton();
-
+        T.t(btnSaveAsPng, (btn) -> {
+            btn.setText("PNG");
+            btn.setToolTipText(T.text("to_png"));
+        });
         btnSaveAsPng.setIcon(saveIcon);
         btnSaveAsPng.setText("PNG");
         btnSaveAsPng.addActionListener((e) -> {
@@ -126,6 +137,9 @@ public class PlotContainer extends RowColPanel {
         });
 
         JButton btnCopyToClipboard = new JButton();
+        T.t(btnCopyToClipboard, (btn) -> {
+            btn.setToolTipText(T.text("to_clipboard"));
+        });
 
         btnCopyToClipboard.setIcon(copyIcon);
         btnCopyToClipboard.addActionListener((e) -> {
@@ -138,27 +152,28 @@ public class PlotContainer extends RowColPanel {
         actionPanel.appendChild(btnCopyToClipboard);
 
         JPopupMenu popupMenu = new JPopupMenu();
-
         JMenuItem menuWindowPlot = new JMenuItem();
-
+        T.t(menuWindowPlot, false, "window_plot");
         menuWindowPlot.addActionListener((e) -> {
             windowPlot();
         });
         popupMenu.add(menuWindowPlot);
 
         JMenuItem menuSaveSvg = new JMenuItem();
+        T.t(menuSaveSvg, false, "to_svg");
         menuSaveSvg.addActionListener((e) -> {
             saveAsSvg();
         });
         popupMenu.add(menuSaveSvg);
 
         JMenuItem menuSavePng = new JMenuItem();
-
+        T.t(menuSavePng, false, "to_png");
         menuSavePng.addActionListener((e) -> {
             saveAsPng();
         });
         popupMenu.add(menuSavePng);
         JMenuItem menuCopyClipboard = new JMenuItem();
+        T.t(menuCopyClipboard, false, "to_clipboard");
         menuCopyClipboard.addActionListener((e) -> {
             copyToClipboard();
         });
@@ -175,18 +190,9 @@ public class PlotContainer extends RowColPanel {
         toolsPanel.setGap(5);
         actionPanel.setGap(5);
 
-        Lg.register(this, () -> {
-            toggleYaxisLogButton.setText(logYaxis ? Lg.text("linear_y_axis") : Lg.text("log_y_axis"));
-            btnWindowPlot.setToolTipText(Lg.text("window_plot"));
-            btnSaveAsSvg.setText("SVG");
-            btnSaveAsSvg.setToolTipText(Lg.text("to_svg"));
-            btnSaveAsPng.setText("PNG");
-            btnSaveAsPng.setToolTipText(Lg.text("to_png"));
-            btnCopyToClipboard.setToolTipText(Lg.text("to_clipboard"));
-            menuWindowPlot.setText(Lg.text("window_plot"));
-            menuSaveSvg.setText(Lg.text("to_svg"));
-            menuSavePng.setText(Lg.text("to_png"));
-            menuCopyClipboard.setText(Lg.text("to_clipboard"));
+        T.t(this, (pltContainer) -> {
+            pltContainer.toggleYaxisLogButton.setText(
+                    pltContainer.logYaxis ? T.text("linear_y_axis") : T.text("log_y_axis"));
         });
 
     }
@@ -218,7 +224,7 @@ public class PlotContainer extends RowColPanel {
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setFileFilter(
                 new FileNameExtensionFilter(
-                        Lg.text("svg_format"),
+                        T.text("svg_format"),
                         "svg"));
 
         fileChooser.showSaveDialog(this);
@@ -227,8 +233,8 @@ public class PlotContainer extends RowColPanel {
             return;
         if (file.exists()) {
             int response = JOptionPane.showConfirmDialog(this,
-                    Lg.text("file_already_exists_overwrite"),
-                    Lg.text("overwrite_file"),
+                    T.text("file_already_exists_overwrite"),
+                    T.text("overwrite_file"),
                     JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
             if (response != JOptionPane.YES_OPTION) {
                 return;
@@ -248,7 +254,7 @@ public class PlotContainer extends RowColPanel {
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setFileFilter(
                 new FileNameExtensionFilter(
-                        Lg.text("png_format"),
+                        T.text("png_format"),
                         "png"));
 
         fileChooser.showSaveDialog(this);
@@ -257,8 +263,8 @@ public class PlotContainer extends RowColPanel {
             return;
         if (file.exists()) {
             int response = JOptionPane.showConfirmDialog(this,
-                    Lg.text("file_already_exists_overwrite"),
-                    Lg.text("overwrite_file"),
+                    T.text("file_already_exists_overwrite"),
+                    T.text("overwrite_file"),
                     JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
             if (response != JOptionPane.YES_OPTION) {
                 return;

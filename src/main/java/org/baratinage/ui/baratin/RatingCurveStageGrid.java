@@ -12,7 +12,7 @@ import org.baratinage.ui.bam.IPredictionData;
 
 import org.baratinage.ui.component.SimpleNumberField;
 import org.baratinage.ui.container.RowColPanel;
-import org.baratinage.ui.lg.Lg;
+import org.baratinage.translation.T;
 import org.json.JSONObject;
 
 // FIXME: should have a fromJSON / toJSON methods
@@ -71,12 +71,16 @@ public class RatingCurveStageGrid extends RowColPanel implements IPredictionData
 
         JLabel stageGridLabel = new JLabel();
 
-        Lg.register(this, () -> {
-            stageGridLabel.setText(Lg.text("stage_grid"));
-            minStageField.setInnerLabel(Lg.text("min"));
-            maxStageField.setInnerLabel(Lg.text("max"));
-            nbrStepField.setInnerLabel(Lg.text("n"));
-            valStepField.setInnerLabel(Lg.text("step"));
+        T.t(stageGridLabel, false, "stage_grid");
+        T.t(valStepField, (field) -> {
+            field.setInnerLabel(T.text("step"));
+        });
+
+        T.t(this, (rcStageGrid) -> {
+            rcStageGrid.minStageField.setInnerLabel(T.text("min"));
+            rcStageGrid.maxStageField.setInnerLabel(T.text("max"));
+            rcStageGrid.nbrStepField.setInnerLabel(T.text("n"));
+            // rcStageGrid.valStepField.setInnerLabel(T.text("step"));
         });
 
         appendChild(stageGridLabel, 0);

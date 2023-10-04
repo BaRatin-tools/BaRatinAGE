@@ -14,11 +14,11 @@ import javax.swing.SwingWorker;
 
 import org.baratinage.jbam.BaM;
 import org.baratinage.jbam.utils.Monitoring;
+import org.baratinage.translation.T;
 import org.baratinage.ui.AppConfig;
 import org.baratinage.ui.component.ProgressBar;
 import org.baratinage.ui.component.SimpleLogger;
 import org.baratinage.ui.container.RowColPanel;
-import org.baratinage.ui.lg.Lg;
 
 public class RunDialog extends JDialog {
 
@@ -51,12 +51,12 @@ public class RunDialog extends JDialog {
         logger = new SimpleLogger();
         logger.setPreferredSize(new Dimension(900, 300));
 
-        cancelButton.setText(Lg.text("cancel"));
+        cancelButton.setText(T.text("cancel"));
         cancelButton.addActionListener((e) -> {
             cancel();
         });
 
-        closeButton.setText(Lg.text("close"));
+        closeButton.setText(T.text("close"));
         closeButton.setEnabled(false);
         closeButton.addActionListener((e) -> {
             dispose();
@@ -76,7 +76,7 @@ public class RunDialog extends JDialog {
         mainPanel.appendChild(closeButton, 0);
 
         setContentPane(mainPanel);
-        setTitle(Lg.text("bam_running"));
+        setTitle(T.text("bam_running"));
 
         addWindowListener(new WindowAdapter() {
             @Override
@@ -138,13 +138,13 @@ public class RunDialog extends JDialog {
                 cancelButton.setEnabled(false);
 
                 if (!isCancelled()) {
-                    setTitle(Lg.text("bam_result_processing"));
-                    progressBar.setString(Lg.text("bam_result_processing")); // FIXME: not updating for some reason...
+                    setTitle(T.text("bam_result_processing"));
+                    progressBar.setString(T.text("bam_result_processing")); // FIXME: not updating for some reason...
                     onSuccess.accept(RunConfigAndRes.buildFromWorkspace(id, workspacePath));
-                    setTitle(Lg.text("bam_done"));
-                    progressBar.setString(Lg.text("bam_done"));
+                    setTitle(T.text("bam_done"));
+                    progressBar.setString(T.text("bam_done"));
                 } else {
-                    setTitle(Lg.text("bam_canceled"));
+                    setTitle(T.text("bam_canceled"));
                 }
 
                 System.out.println("RunDialog: BaM run done!");

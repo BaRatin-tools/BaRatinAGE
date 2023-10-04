@@ -8,6 +8,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JScrollPane;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -22,11 +23,11 @@ import org.baratinage.ui.component.SimpleComboBox;
 import org.baratinage.ui.component.SvgIcon;
 import org.baratinage.ui.container.GridPanel;
 import org.baratinage.ui.container.RowColPanel;
-import org.baratinage.ui.lg.Lg;
+import org.baratinage.translation.T;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-public class OneHydraulicControl extends RowColPanel {
+public class OneHydraulicControl extends JScrollPane {
 
     public static final ImageIcon rectWeirIcon = SvgIcon.buildCustomAppImageIcon(
             "hc_rect_weir.svg");
@@ -68,8 +69,12 @@ public class OneHydraulicControl extends RowColPanel {
     private int currentPriorControlPanelIndex = 0;
 
     public OneHydraulicControl(int controlNumber) {
-        super(AXIS.COL, ALIGN.START);
-        setGap(5);
+        // super(AXIS.COL, ALIGN.START);
+        super();
+
+        setBorder(new EmptyBorder(0, 0, 0, 0));
+        RowColPanel mainPanel = new RowColPanel(RowColPanel.AXIS.COL, RowColPanel.ALIGN.START);
+        setViewportView(mainPanel);
 
         kacControlPanel = new KAC();
         kacControlPanel.addChangeListener((chEvt) -> {
@@ -94,7 +99,7 @@ public class OneHydraulicControl extends RowColPanel {
 
         this.controlNumber = controlNumber;
 
-        physicalParametersPanel = new RowColPanel(AXIS.COL);
+        physicalParametersPanel = new RowColPanel(RowColPanel.AXIS.COL);
 
         GridPanel physicalControlParametersLabelsPanel = new GridPanel();
         int gapAndPadding = 10;
@@ -117,7 +122,7 @@ public class OneHydraulicControl extends RowColPanel {
         physicalParLabel.setFont(f);
         controlParLabel.setFont(f);
 
-        hydraulicControlPanel = new RowColPanel(AXIS.COL);
+        hydraulicControlPanel = new RowColPanel(RowColPanel.AXIS.COL);
 
         controlTypeComboBox = new SimpleComboBox();
         controlTypeComboBox.setEmptyItem(null);
@@ -139,13 +144,13 @@ public class OneHydraulicControl extends RowColPanel {
                 proceed = false;
 
                 int response = JOptionPane.showOptionDialog(this,
-                        Lg.text("kac_to_physical_parameters_warning") + "\n" +
-                                Lg.text("proceed_question"),
-                        Lg.text("warning"),
+                        T.text("kac_to_physical_parameters_warning") + "\n" +
+                                T.text("proceed_question"),
+                        T.text("warning"),
                         JOptionPane.YES_NO_OPTION,
                         JOptionPane.WARNING_MESSAGE,
                         null,
-                        new String[] { Lg.text("continue"), Lg.text("cancel") },
+                        new String[] { T.text("continue"), T.text("cancel") },
                         null);
                 if (response == JOptionPane.YES_OPTION) {
                     proceed = true;
@@ -160,22 +165,18 @@ public class OneHydraulicControl extends RowColPanel {
         RowColPanel buttonsPanel = new RowColPanel();
         buttonsPanel.appendChild(switchModeButton);
 
-        Lg.register(this, () -> {
-
-            setControlTypeCombobox();
-
-            physicalParLabel.setText(Lg.text("physical_parameters"));
-            controlParLabel.setText(Lg.text("control_parameters"));
-
-            toKACmodeText = Lg.text("switch_to_kac_mode");
-            toPhysicalModeText = Lg.text("switch_to_physical_mode");
-            switchModeButton.setText(kacMode ? toPhysicalModeText : toKACmodeText);
-
+        T.t(physicalParLabel, false, "physical_parameters");
+        T.t(controlParLabel, false, "control_parameters");
+        T.t(this, (ohc) -> {
+            ohc.setControlTypeCombobox();
+            ohc.toKACmodeText = T.text("switch_to_kac_mode");
+            ohc.toPhysicalModeText = T.text("switch_to_physical_mode");
+            ohc.switchModeButton.setText(kacMode ? toPhysicalModeText : toKACmodeText);
         });
 
-        appendChild(physicalParametersPanel, 0);
-        appendChild(kacControlPanel, 0);
-        appendChild(buttonsPanel, 0);
+        mainPanel.appendChild(physicalParametersPanel, 0);
+        mainPanel.appendChild(kacControlPanel, 0);
+        mainPanel.appendChild(buttonsPanel, 0);
 
         controlTypeComboBox.setSelectedItem(0);
         updatePhysicalControl();
@@ -188,7 +189,7 @@ public class OneHydraulicControl extends RowColPanel {
         JLabel[] options = new JLabel[nOption];
         for (int k = 0; k < nOption; k++) {
             options[k] = new JLabel();
-            options[k].setText(Lg.text(allControlOptions.get(k).lgKey));
+            options[k].setText(T.text(allControlOptions.get(k).lgKey));
             options[k].setIcon(allControlOptions.get(k).icon);
             options[k].setBorder(new EmptyBorder(5, 5, 5, 5));
         }

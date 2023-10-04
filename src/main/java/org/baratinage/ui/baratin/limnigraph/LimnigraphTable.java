@@ -14,7 +14,7 @@ import javax.swing.table.JTableHeader;
 import javax.swing.table.TableColumnModel;
 
 import org.baratinage.ui.container.RowColPanel;
-import org.baratinage.ui.lg.Lg;
+import org.baratinage.translation.T;
 
 public class LimnigraphTable extends RowColPanel {
 
@@ -43,12 +43,12 @@ public class LimnigraphTable extends RowColPanel {
 
         appendChild(scrollpane);
 
-        Lg.register(this, () -> {
-            if (dataModel.limniDataset == null) {
-                setHeaders(new String[] { "" });
+        T.t(this, (limniTable) -> {
+            if (limniTable.dataModel.limniDataset == null) {
+                limniTable.setHeaders(new String[] { "" });
                 return;
             }
-            setHeaders(dataModel.limniDataset.getHeaders());
+            limniTable.setHeaders(limniTable.dataModel.limniDataset.getHeaders());
         });
 
     }
@@ -70,7 +70,7 @@ public class LimnigraphTable extends RowColPanel {
         for (int k = 0; k < headers.length; k++) {
             tableColModel.getColumn(k).setHeaderValue(headers[k]);
         }
-        tableColModel.getColumn(0).setHeaderValue(Lg.text("date_time"));
+        tableColModel.getColumn(0).setHeaderValue(T.text("date_time"));
 
         table.getTableHeader().updateUI();
     }

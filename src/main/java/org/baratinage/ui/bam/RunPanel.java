@@ -24,10 +24,10 @@ import org.baratinage.jbam.PredictionConfig;
 import org.baratinage.jbam.StructuralErrorModel;
 import org.baratinage.jbam.UncertainData;
 import org.baratinage.jbam.utils.BamFilesHelpers;
+import org.baratinage.translation.T;
 import org.baratinage.ui.AppConfig;
 import org.baratinage.ui.commons.DefaultStructuralErrorModels;
 import org.baratinage.ui.container.RowColPanel;
-import org.baratinage.ui.lg.Lg;
 import org.baratinage.utils.Misc;
 
 public class RunPanel extends RowColPanel {
@@ -58,17 +58,17 @@ public class RunPanel extends RowColPanel {
                 run();
             } else {
                 JOptionPane.showOptionDialog(this,
-                        Lg.text("cannot_run_invalid_configuration"),
-                        Lg.text("error"),
+                        T.text("cannot_run_invalid_configuration"),
+                        T.text("error"),
                         JOptionPane.OK_OPTION,
                         JOptionPane.ERROR_MESSAGE,
                         null,
-                        new String[] { Lg.text("ok") },
+                        new String[] { T.text("ok") },
                         "");
             }
         });
 
-        runButton.setText(Lg.text("launch_bam"));
+        runButton.setText(T.text("launch_bam"));
         runButton.setFont(runButton.getFont().deriveFont(Font.BOLD));
     }
 
