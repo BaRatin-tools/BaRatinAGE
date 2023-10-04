@@ -14,15 +14,15 @@ public class KAC extends PriorControlPanel {
         super(
                 3, "a(h-b)<sup>c</sup> (h>k)");
 
-        k = new ParameterPriorDist();
+        k = new ParameterPriorDist("k");
         k.setIcon(activationHeightIcon);
         k.setSymbolUnitLabels("k", "m");
 
-        a = new ParameterPriorDist();
+        a = new ParameterPriorDist("a");
         a.setIcon(coefficientIcon);
         a.setSymbolUnitLabels("a", "m<sup>3</sup>.s<sup>-1</sup>");
 
-        c = new ParameterPriorDist();
+        c = new ParameterPriorDist("c");
         c.setIcon(exponentIcon);
         c.setSymbolUnitLabels("c", "-");
 

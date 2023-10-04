@@ -69,7 +69,7 @@ public class StructuralErrorModelPanel extends GridPanel {
             double... parameterValues) {
 
         int index = parameters.size() + 2;
-        ParameterPriorDist gamma = new ParameterPriorDist();
+        ParameterPriorDist gamma = new ParameterPriorDist("gamma_" + parameters.size());
         gamma.setNameLabel("");
         gamma.setSymbolUnitLabels(symbol, unit);
         gamma.setLocalLock(true);
@@ -113,7 +113,7 @@ public class StructuralErrorModelPanel extends GridPanel {
         int nPar = json.length();
         parameters.clear();
         for (int k = 0; k < nPar; k++) {
-            ParameterPriorDist ppd = new ParameterPriorDist();
+            ParameterPriorDist ppd = new ParameterPriorDist("gamma_" + (k + 1));
             parameters.add(ppd);
             ppd.fromJSON(json.getJSONObject(k));
         }
