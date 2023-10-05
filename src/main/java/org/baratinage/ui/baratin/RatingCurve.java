@@ -182,7 +182,7 @@ public class RatingCurve extends BamItem implements IPredictionMaster, ICalibrat
         ModelOutput[] modelOutputs = new ModelOutput[outputNames.length];
         StructuralErrorModel[] structErrModels = se.getStructuralErrorModels();
         for (int k = 0; k < outputNames.length; k++) {
-            modelOutputs[k] = new ModelOutput(outputNames[k], structErrModels[k]);
+            modelOutputs[k] = new ModelOutput(k, structErrModels[k]);
 
         }
 
@@ -219,7 +219,7 @@ public class RatingCurve extends BamItem implements IPredictionMaster, ICalibrat
                 structErrorParent.isBamRerunRequired();
 
         boolean isStageGridOutOfSync = jsonStringBackup != null &&
-                JSONcomparator.areMatchingIncluding(toJSON(), jsonStringBackup, "stageGridConfig");
+                !JSONcomparator.areMatchingIncluding(toJSON(), jsonStringBackup, "stageGridConfig");
 
         if (isStageGridOutOfSync) {
 
@@ -318,9 +318,8 @@ public class RatingCurve extends BamItem implements IPredictionMaster, ICalibrat
         }
 
         if (json.has("stageGridConfig")) {
-            JSONObject stageGridConfigJson = ratingCurveStageGrid.toJSON();
-            json.put("stageGridConfig", stageGridConfigJson);
-
+            JSONObject stageGridConfigJson = json.getJSONObject("stageGridConfig");
+            ratingCurveStageGrid.fromJSON(stageGridConfigJson);
         } else {
             System.out.println("RatingCurve: missing 'stageGridConfig'");
         }

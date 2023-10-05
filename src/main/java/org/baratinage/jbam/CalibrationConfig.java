@@ -93,11 +93,9 @@ public class CalibrationConfig {
         StructuralErrorModel[] structuralErrorModels = new StructuralErrorModel[nOutput];
         ModelOutput[] modelOutputs = new ModelOutput[nOutput];
         for (int k = 0; k < nOutput; k++) {
-            // FIXME: cannot infer any name from configuration files....
-            String outputName = "Output_" + (k + 1);
             structuralErrorModels[k] = StructuralErrorModel.readStructuralErrorModel(
                     workspace, structuralErrorModelFileNames[k]);
-            modelOutputs[k] = new ModelOutput(outputName, structuralErrorModels[k]);
+            modelOutputs[k] = new ModelOutput(k, structuralErrorModels[k]);
         }
 
         CalibrationData calibrationData = CalibrationData.readCalibrationData(

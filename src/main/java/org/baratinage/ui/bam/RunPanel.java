@@ -318,7 +318,7 @@ public class RunPanel extends RowColPanel {
         StructuralErrorModel[] structErrorModels = bamStructError.getStructuralErrorModels();
         ModelOutput[] modelOutputs = new ModelOutput[nOutputs];
         for (int k = 0; k < nOutputs; k++) {
-            modelOutputs[k] = new ModelOutput(outputNames[k], structErrorModels[k]);
+            modelOutputs[k] = new ModelOutput(k, structErrorModels[k]);
         }
 
         // --------------------------------------------------------------------
