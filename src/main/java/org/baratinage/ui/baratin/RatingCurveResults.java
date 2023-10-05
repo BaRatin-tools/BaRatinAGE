@@ -78,14 +78,22 @@ public class RatingCurveResults extends TabContainer {
             } else if (rawName.startsWith("Y") && rawName.contains("gamma")) {
                 int n = getParameterIndex(rawName, "gamma_");
                 String niceName = String.format("<html>&gamma;<sub>%d</sub></html>", n);
-                strucErrorParameters[n - 1] = new EstimatedParameter(niceName, p.mcmc, p.summary, p.maxpostIndex,
-                        p.parameterConfig);
+                strucErrorParameters[n - 1] = new EstimatedParameter(
+                        niceName,
+                        p.mcmc,
+                        p.summary,
+                        p.maxpostIndex,
+                        null); // null so prior dist is not accounted for in plot
                 nStrucErrPar++;
             } else if (rawName.startsWith("b")) {
                 int n = getParameterIndex(rawName, "b");
                 String niceName = String.format("<html>b<sub>%s</sub></html>", n);
                 int m = (n - 1) * 4 + 3;
-                controlParameters[m] = new EstimatedParameter(niceName, p.mcmc, p.summary, p.maxpostIndex,
+                controlParameters[m] = new EstimatedParameter(
+                        niceName,
+                        p.mcmc,
+                        p.summary,
+                        p.maxpostIndex,
                         p.parameterConfig);
                 nControlPar++;
             } else {
@@ -99,7 +107,11 @@ public class RatingCurveResults extends TabContainer {
                 } else if (rawName.startsWith("c")) {
                     m = m + 2;
                 }
-                controlParameters[m] = new EstimatedParameter(niceName, p.mcmc, p.summary, p.maxpostIndex,
+                controlParameters[m] = new EstimatedParameter(
+                        niceName,
+                        p.mcmc,
+                        p.summary,
+                        p.maxpostIndex,
                         p.parameterConfig);
                 nControlPar++;
             }
