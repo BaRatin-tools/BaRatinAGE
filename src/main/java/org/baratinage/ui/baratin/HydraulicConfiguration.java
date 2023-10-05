@@ -81,11 +81,12 @@ public class HydraulicConfiguration
 
         plotPanel = new PriorRatingCurvePlot();
 
-        Dimension dim = new Dimension(400, 300);
-        controlMatrix.setPreferredSize(dim);
-        plotPanel.setPreferredSize(dim);
-        controlMatrix.setMinimumSize(dim);
-        plotPanel.setMinimumSize(dim);
+        Dimension dimPref = new Dimension(500, 300);
+        controlMatrix.setPreferredSize(dimPref);
+        plotPanel.setPreferredSize(dimPref);
+        Dimension dimMin = new Dimension(250, 150);
+        controlMatrix.setMinimumSize(dimMin);
+        plotPanel.setMinimumSize(dimMin);
 
         runPanel = new RunPanel(false, true, false);
         runPanel.setModelDefintion(this);
