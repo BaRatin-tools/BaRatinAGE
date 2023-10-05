@@ -3,31 +3,36 @@ package org.baratinage.ui.baratin.hydraulic_control.control_panel;
 import org.baratinage.ui.commons.ParameterPriorDistSimplified;
 import org.baratinage.translation.T;
 
-public class WeirRect extends PriorControlPanel {
+public class WeirParabola extends PriorControlPanel {
 
     private final ParameterPriorDistSimplified activationHeight;
     private final ParameterPriorDistSimplified weirCoef;
     private final ParameterPriorDistSimplified width;
+    private final ParameterPriorDistSimplified height;
     private final ParameterPriorDistSimplified gravity;
     private final ParameterPriorDistSimplified exponent;
 
-    public WeirRect() {
+    public WeirParabola() {
         super(
                 2,
-                "C<sub>r</sub>B<sub>w</sub>(2g)<sup>1/2</sup>(h-b)<sup>c</sup>&nbsp;(h>k)");
+                "C<sub>p</sub>B<sub>p</sub>H<sub>p</sub><sup>-1/2</sup>(2g)<sup>1/2</sup>(h-b)<sup>c</sup>&nbsp;(h>k)");
 
         activationHeight = new ParameterPriorDistSimplified();
         activationHeight.setIcon(activationHeightIcon);
         activationHeight.setSymbolUnitLabels("k", "m");
 
         weirCoef = new ParameterPriorDistSimplified();
-        weirCoef.setIcon(weirCoefRIcon);
-        weirCoef.setSymbolUnitLabels("C<sub>r</sub>", "-");
-        weirCoef.setDefaultValues(0.4, 0.05);
+        weirCoef.setIcon(weirCoefPIcon);
+        weirCoef.setSymbolUnitLabels("C<sub>p</sub>", "-");
+        weirCoef.setDefaultValues(0.22, 0.05);
 
         width = new ParameterPriorDistSimplified();
-        width.setIcon(widthIcon);
-        width.setSymbolUnitLabels("B<sub>w</sub>", "m");
+        width.setIcon(parabolaWidthIcon);
+        width.setSymbolUnitLabels("B<sub>p</sub>", "m");
+
+        height = new ParameterPriorDistSimplified();
+        height.setIcon(parabolaHeightIcon);
+        height.setSymbolUnitLabels("H<sub>p</sub>", "m");
 
         gravity = new ParameterPriorDistSimplified();
         gravity.setIcon(gravityIcon);
@@ -38,24 +43,26 @@ public class WeirRect extends PriorControlPanel {
         exponent = new ParameterPriorDistSimplified();
         exponent.setIcon(exponentIcon);
         exponent.setSymbolUnitLabels("c", "-");
-        exponent.setDefaultValues(1.5, 0.05);
+        exponent.setDefaultValues(2, 0.05);
         exponent.setLocalLock(true);
 
         addParameter(activationHeight);
         addParameter(weirCoef);
         addParameter(width);
+        addParameter(height);
         addParameter(gravity);
         addParameter(exponent);
 
-        T.t(this, (wRect) -> {
-            wRect.setHeaders(
+        T.t(this, (wParabola) -> {
+            wParabola.setHeaders(
                     T.html("mean_value"),
                     T.html("uncertainty_value"));
-            wRect.activationHeight.setNameLabel(T.html("activation_stage"));
-            wRect.weirCoef.setNameLabel(T.html("weir_coefficient"));
-            wRect.width.setNameLabel(T.html("weir_width"));
-            wRect.gravity.setNameLabel(T.html("gravity_acceleration"));
-            wRect.exponent.setNameLabel(T.html("exponent"));
+            wParabola.activationHeight.setNameLabel(T.html("activation_stage"));
+            wParabola.weirCoef.setNameLabel(T.html("weir_coefficient"));
+            wParabola.width.setNameLabel(T.html("parabola_width"));
+            wParabola.height.setNameLabel(T.html("parabola_height"));
+            wParabola.gravity.setNameLabel(T.html("gravity_acceleration"));
+            wParabola.exponent.setNameLabel(T.html("exponent"));
         });
 
     }
@@ -64,32 +71,43 @@ public class WeirRect extends PriorControlPanel {
 
         if (!weirCoef.meanValueField.isValueValid() ||
                 !width.meanValueField.isValueValid() ||
+                !height.meanValueField.isValueValid() ||
                 !gravity.meanValueField.isValueValid()) {
             return new Double[] { null, null };
         }
 
+        // double toRadFact = Math.PI / 180d;
+
         double C = weirCoef.meanValueField.getDoubleValue();
         double W = width.meanValueField.getDoubleValue();
+        double H = height.meanValueField.getDoubleValue();
         double G = gravity.meanValueField.getDoubleValue();
 
         double sqrtOfTwoG = Math.sqrt(2 * G);
+        double sqrtOfHeight = 1 / Math.sqrt(H);
+        // double toRadFactorOverTwo = Math.PI / 180d * V / 2d;
+        // double VOverTwoInRad = toRadFactorOverTwo * toRadFactorOverTwo;
+        // double tanOfVOverTwo = Math.tan(VOverTwoInRad);
 
-        double A = C * W * sqrtOfTwoG;
+        double A = C * W / sqrtOfHeight * sqrtOfTwoG;
 
         if (!weirCoef.uncertaintyValueField.isValueValid() ||
                 !width.uncertaintyValueField.isValueValid() ||
+                !height.uncertaintyValueField.isValueValid() ||
                 !gravity.uncertaintyValueField.isValueValid()) {
             return new Double[] { A, null };
         }
 
         double Cstd = weirCoef.uncertaintyValueField.getDoubleValue() / 2;
         double Wstd = width.uncertaintyValueField.getDoubleValue() / 2;
+        double Hstd = height.uncertaintyValueField.getDoubleValue() / 2;
         double Gstd = gravity.uncertaintyValueField.getDoubleValue() / 2;
 
         double Astd = Math.sqrt(
-                Math.pow(Cstd, 2) * Math.pow(W * sqrtOfTwoG, 2) +
-                        Math.pow(Wstd, 2) * Math.pow(C * sqrtOfTwoG, 2) +
-                        Math.pow(Gstd, 2) * Math.pow(W * C * Math.pow(2 * G, -1 / 2), 2));
+                Math.pow(Cstd, 2) * Math.pow(W / sqrtOfHeight * sqrtOfTwoG, 2) +
+                        Math.pow(Wstd, 2) * Math.pow(C / sqrtOfHeight * sqrtOfTwoG, 2) +
+                        Math.pow(Hstd, 2) * Math.pow(C * W * sqrtOfTwoG * Math.pow(H, -1.5), 2) +
+                        Math.pow(Gstd, 2) * Math.pow(C * W * Math.pow(2 * G * H, -1 / 2), 2));
 
         return new Double[] { A, Astd };
 

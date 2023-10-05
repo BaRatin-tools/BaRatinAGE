@@ -37,14 +37,35 @@ public abstract class PriorControlPanel extends GridPanel implements ChangeListe
         public static final ImageIcon slopeIcon = SvgIcon.buildCustomAppImageIcon(
                         "slope.svg");
 
-        public static final ImageIcon weirCoefIcon = SvgIcon.buildCustomAppImageIcon(
-                        "weir_coefficient.svg");
+        public static final ImageIcon weirCoefRIcon = SvgIcon.buildCustomAppImageIcon(
+                        "weir_coef_r.svg");
+
+        public static final ImageIcon weirCoefOIcon = SvgIcon.buildCustomAppImageIcon(
+                        "weir_coef_o.svg");
+
+        public static final ImageIcon weirCoefTIcon = SvgIcon.buildCustomAppImageIcon(
+                        "weir_coef_t.svg");
+
+        public static final ImageIcon weirCoefPIcon = SvgIcon.buildCustomAppImageIcon(
+                        "weir_coef_p.svg");
 
         public static final ImageIcon stricklerCoefIcon = SvgIcon.buildCustomAppImageIcon(
                         "strickler_coef.svg");
 
+        public static final ImageIcon angleIcon = SvgIcon.buildCustomAppImageIcon(
+                        "angle.svg");
+
+        public static final ImageIcon parabolaWidthIcon = SvgIcon.buildCustomAppImageIcon(
+                        "parabola_width.svg");
+
+        public static final ImageIcon parabolaHeightIcon = SvgIcon.buildCustomAppImageIcon(
+                        "parabola_height.svg");
+
         public static final ImageIcon widthIcon = SvgIcon.buildCustomAppImageIcon(
                         "width.svg");
+
+        public static final ImageIcon areaIcon = SvgIcon.buildCustomAppImageIcon(
+                        "orifice_area.svg");
 
         public static final ImageIcon gravityIcon = SvgIcon.buildCustomAppImageIcon(
                         "gravity.svg");

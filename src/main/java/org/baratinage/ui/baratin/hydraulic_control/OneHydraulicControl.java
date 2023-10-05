@@ -17,8 +17,13 @@ import org.baratinage.jbam.Parameter;
 
 import org.baratinage.ui.baratin.hydraulic_control.control_panel.KAC;
 import org.baratinage.ui.baratin.hydraulic_control.control_panel.PriorControlPanel;
+import org.baratinage.ui.baratin.hydraulic_control.control_panel.WeirOrifice;
+import org.baratinage.ui.baratin.hydraulic_control.control_panel.WeirParabola;
 import org.baratinage.ui.baratin.hydraulic_control.control_panel.WeirRect;
+import org.baratinage.ui.baratin.hydraulic_control.control_panel.WeirTriangle;
+import org.baratinage.ui.baratin.hydraulic_control.control_panel.ChannelParabola;
 import org.baratinage.ui.baratin.hydraulic_control.control_panel.ChannelRect;
+import org.baratinage.ui.baratin.hydraulic_control.control_panel.ChannelTriangle;
 import org.baratinage.ui.component.SimpleComboBox;
 import org.baratinage.ui.component.SvgIcon;
 import org.baratinage.ui.container.GridPanel;
@@ -29,11 +34,26 @@ import org.json.JSONObject;
 
 public class OneHydraulicControl extends JScrollPane {
 
+    public static final ImageIcon parabolaWeirIcon = SvgIcon.buildCustomAppImageIcon(
+            "hc_parabola_weir.svg");
+
+    public static final ImageIcon triangleWeirIcon = SvgIcon.buildCustomAppImageIcon(
+            "hc_triangle_weir.svg");
+
     public static final ImageIcon rectWeirIcon = SvgIcon.buildCustomAppImageIcon(
             "hc_rect_weir.svg");
 
+    public static final ImageIcon orificeWeirIcon = SvgIcon.buildCustomAppImageIcon(
+            "hc_orifice_weir.svg");
+
     public static final ImageIcon rectChannelIcon = SvgIcon.buildCustomAppImageIcon(
             "hc_rect_channel.svg");
+
+    public static final ImageIcon triangleChannelIcon = SvgIcon.buildCustomAppImageIcon(
+            "hc_triangle_channel.svg");
+
+    public static final ImageIcon parabolaChannelIcon = SvgIcon.buildCustomAppImageIcon(
+            "hc_parabola_channel.svg");
 
     public static final ImageIcon arrowLeftDownIcon = SvgIcon.buildFeatherAppImageIcon(
             "corner-left-down.svg");
@@ -88,9 +108,31 @@ public class OneHydraulicControl extends JScrollPane {
                         new WeirRect()));
         allControlOptions.add(
                 new HydraulicControlOption(
+                        "triangular_weir", triangleWeirIcon,
+                        new WeirTriangle()));
+        allControlOptions.add(
+                new HydraulicControlOption(
+                        "parabola_weir", parabolaWeirIcon,
+                        new WeirParabola()));
+        allControlOptions.add(
+                new HydraulicControlOption(
+                        "orifice_weir", orificeWeirIcon,
+                        new WeirOrifice()));
+        allControlOptions.add(
+                new HydraulicControlOption(
                         "rectangular_channel",
                         rectChannelIcon,
                         new ChannelRect()));
+        allControlOptions.add(
+                new HydraulicControlOption(
+                        "triangular_channel",
+                        triangleChannelIcon,
+                        new ChannelTriangle()));
+        allControlOptions.add(
+                new HydraulicControlOption(
+                        "parabola_channel",
+                        parabolaChannelIcon,
+                        new ChannelParabola()));
         for (HydraulicControlOption hco : allControlOptions) {
             hco.panel.addChangeListener((ChangeEvent chEvt) -> {
                 updateKACfromPhysicalControl();
