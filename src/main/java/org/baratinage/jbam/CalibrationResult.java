@@ -3,8 +3,10 @@ package org.baratinage.jbam;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Stream;
 
 import org.baratinage.jbam.utils.BamFilesHelpers;
 import org.baratinage.jbam.utils.Read;
@@ -53,12 +55,26 @@ public class CalibrationResult {
 
         List<double[]> mcmcSummaryValues = readMcmcSummaryValues(summaryMcmcFilePath);
 
+        Parameter[] allParameterConfigs = calibConfig.model.parameters;
+        for (ModelOutput mo : calibConfig.modelOutputs) {
+            allParameterConfigs = Stream
+                    .concat(
+                            Arrays.stream(allParameterConfigs),
+                            Arrays.stream(mo.structuralErrorModel.parameters).map(p -> {
+                                return new Parameter(
+                                        mo.name + "_" + p.name,
+                                        p.initalGuess,
+                                        p.distribution);
+                            }))
+                    .toArray(Parameter[]::new);
+        }
+
         estimatedParameters = buildEstimatedParameters(
                 mcmcHeaders,
                 mcmcValues,
                 mcmcSummaryValues,
                 maxpostIndex,
-                calibConfig.model.parameters);
+                allParameterConfigs);
 
         calibrationDataResiduals = readCalibrationDataResiduals(calDatResidulatFilePath,
                 calibrationConfig.calibrationData);
