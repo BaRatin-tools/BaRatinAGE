@@ -141,7 +141,7 @@ public class JSONcomparator {
             for (String s : logs) {
                 System.out.println(s);
             }
-            printJsonStrings(a, b, 0);
+            // printJsonStrings(a, b, 0);
         }
         return matching;
     }
