@@ -52,9 +52,9 @@ public class HydrographPlot extends RowColPanel {
                 plot.addXYItem(paramBand);
                 plot.addXYItem(mpLine);
 
-                T.t(mpLine, "discharge_maxpost");
-                T.t(paramBand, "discharge_param_u");
-                T.t(totalBand, "discharge_total_u");
+                T.t(mpLine, "lgd_discharge_maxpost");
+                T.t(paramBand, "lgd_discharge_param_u");
+                T.t(totalBand, "lgd_discharge_total_u");
 
                 T.t(plot, (plt) -> {
                         plt.axisXdate.setLabel(T.text("time"));
