@@ -28,7 +28,7 @@ public class MsgPanel extends RowColPanel {
     }
 
     public MsgPanel(TYPE type) {
-        super(AXIS.COL);
+        super(AXIS.ROW);
 
         appendChild(message);
         appendChild(actionButtonsPanel);
