@@ -77,8 +77,8 @@ public class RatingCurveResults extends TabContainer {
                 logPostParameter = p;
             } else if (rawName.startsWith("Y") && rawName.contains("gamma")) {
                 int n = getParameterIndex(rawName, "gamma_");
-                String niceName = String.format("<html>&gamma;<sub>%d</sub></html>", n);
-                strucErrorParameters[n - 1] = new EstimatedParameter(
+                String niceName = String.format("<html>&gamma;<sub>%d</sub></html>", n + 1);
+                strucErrorParameters[n] = new EstimatedParameter(
                         niceName,
                         p.mcmc,
                         p.summary,
