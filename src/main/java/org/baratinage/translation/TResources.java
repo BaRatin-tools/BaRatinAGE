@@ -17,7 +17,7 @@ import java.util.regex.Pattern;
 
 import org.baratinage.ui.AppConfig;
 
-public class TRessources {
+public class TResources {
 
     // Data structure is:
     // - RessourceBundle: contains key, value pairs to retrieve a text from a key
@@ -28,7 +28,7 @@ public class TRessources {
     private Set<String> localKeys;
     private Set<String> filekeys;
 
-    public TRessources() {
+    public TResources() {
 
         File resourceDir = new File(AppConfig.AC.I18N_RESOURCES_DIR);
         File[] files = resourceDir.listFiles();
@@ -58,7 +58,7 @@ public class TRessources {
                     fileTranslations.put(fileKey, resourceBundle);
                 } catch (IOException e) {
                     System.err.println(
-                            "LgRessources Error: Failed to read expected resource bundle '" + resourceName + "'!");
+                            "TResources Error: Failed to read expected resource bundle '" + resourceName + "'!");
                 }
             }
             translations.put(localKey, fileTranslations);
@@ -71,12 +71,12 @@ public class TRessources {
             if (localKey.equals(AppConfig.AC.DEFAULT_RESSOURCE_FILE_LOCALE_KEY)) {
                 System.err.println(
                         String.format(
-                                "LgRessources Error: no translation found for key '%s' and default locale '%s' in bundle '%s'!",
+                                "TResources Error: no translation found for key '%s' and default locale '%s' in bundle '%s'!",
                                 itemKey, localKey, fileKey));
                 return "<no-translation-found>";
             } else {
                 System.out.println(
-                        String.format("LgRessources: No locale '%s' found! Looking in default locale '%s' instead.",
+                        String.format("TResources: No locale '%s' found! Looking in default locale '%s' instead.",
                                 localKey, AppConfig.AC.DEFAULT_RESSOURCE_FILE_LOCALE_KEY));
                 return getTranslation(AppConfig.AC.DEFAULT_RESSOURCE_FILE_LOCALE_KEY, fileKey, itemKey);
             }
@@ -84,14 +84,14 @@ public class TRessources {
         ResourceBundle resourceBundle = fileTranslations.get(fileKey);
         if (resourceBundle == null) {
             System.err.println(
-                    String.format("LgRessources Error: No bundle for locale '%s' named '%s' found!",
+                    String.format("TResources Error: No bundle for locale '%s' named '%s' found!",
                             localKey, fileKey));
             return "<no-translation-found>";
         }
         if (!resourceBundle.containsKey(itemKey)) {
             System.err.println(
                     String.format(
-                            "LgRessourcs Error: no item with key '%s' found for locale '%s' and bundle '%s'!",
+                            "TResources Error: no item with key '%s' found for locale '%s' and bundle '%s'!",
                             itemKey, localKey, fileKey));
             return "<no-translation-found>";
         }
