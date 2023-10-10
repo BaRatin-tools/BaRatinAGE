@@ -43,7 +43,6 @@ public class DistributionField implements ChangeListener {
         parameterFieldsPanel.setGap(5);
         distributionCombobox = new SimpleComboBox();
         distributionCombobox.addChangeListener((chEvt) -> {
-            fireChangeListeners();
             int index = distributionCombobox.getSelectedIndex();
             if (index == -1) {
                 return;
@@ -58,6 +57,7 @@ public class DistributionField implements ChangeListener {
                 parameterFields.add(field);
             }
             parameterFieldsPanel.updateUI();
+            fireChangeListeners();
         });
 
         T.t(this, this::updateDistributionParameterFields);
@@ -121,6 +121,7 @@ public class DistributionField implements ChangeListener {
             }
             if (index >= 0) {
                 distributionCombobox.setSelectedItem(index, false);
+                currentDistributionIndex = index;
             }
         }
     }
