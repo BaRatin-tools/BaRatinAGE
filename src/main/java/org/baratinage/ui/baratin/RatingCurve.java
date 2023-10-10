@@ -35,6 +35,7 @@ import org.baratinage.ui.bam.PredictionExperiment;
 import org.baratinage.ui.bam.RunConfigAndRes;
 import org.baratinage.ui.bam.RunPanel;
 import org.baratinage.ui.commons.MsgPanel;
+import org.baratinage.ui.commons.StructuralErrorModelBamItem;
 import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.utils.Calc;
 import org.baratinage.utils.JSONcomparator;

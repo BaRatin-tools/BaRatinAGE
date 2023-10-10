@@ -7,6 +7,7 @@ import org.baratinage.ui.bam.BamItem;
 import org.baratinage.ui.bam.BamItemList;
 import org.baratinage.ui.bam.BamItemType;
 import org.baratinage.ui.bam.BamProject;
+import org.baratinage.ui.commons.StructuralErrorModelBamItem;
 import org.baratinage.ui.component.NameSymbolUnit;
 import org.baratinage.translation.T;
 import org.json.JSONArray;

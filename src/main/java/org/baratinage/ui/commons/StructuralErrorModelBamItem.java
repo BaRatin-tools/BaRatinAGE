@@ -1,4 +1,4 @@
-package org.baratinage.ui.baratin;
+package org.baratinage.ui.commons;
 
 import org.baratinage.jbam.DistributionType;
 import org.baratinage.jbam.Parameter;
@@ -15,7 +15,6 @@ import org.baratinage.ui.bam.BamItem;
 import org.baratinage.ui.bam.BamItemType;
 import org.baratinage.ui.bam.BamProject;
 import org.baratinage.ui.bam.IStructuralErrorModels;
-import org.baratinage.ui.commons.StructuralErrorModelPanel;
 import org.baratinage.ui.component.NameSymbolUnit;
 import org.baratinage.ui.container.RowColPanel;
 import org.json.JSONArray;
