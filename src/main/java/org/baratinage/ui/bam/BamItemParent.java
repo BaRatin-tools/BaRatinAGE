@@ -10,6 +10,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import org.baratinage.translation.T;
+import org.baratinage.translation.Translatable;
 import org.baratinage.ui.AppConfig;
 import org.baratinage.ui.commons.MsgPanel;
 import org.baratinage.ui.component.SimpleComboBox;
@@ -17,7 +18,7 @@ import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.utils.JSONcomparator;
 import org.json.JSONObject;
 
-public class BamItemParent extends RowColPanel {
+public class BamItemParent extends RowColPanel implements Translatable {
 
     private final BamItemType TYPE;
     private final BamItem CHILD;
@@ -95,13 +96,10 @@ public class BamItemParent extends RowColPanel {
             setCurrentBamItem(bamItem);
         });
 
-        T.t(this, (bamItemParent) -> {
-            bamItemParent.updateMessagesTexts();
-        });
-
         onBamItemNameChange = (chEvt) -> {
             syncWithBamItemList();
-            T.updateRegisteredObject(this);
+            // T.updateRegisteredObject(this);
+            T.updateTranslation(this);
         };
 
         onBamItemContentChange = (chEvt) -> {
@@ -296,6 +294,11 @@ public class BamItemParent extends RowColPanel {
         for (ChangeListener l : changeListeners) {
             l.stateChanged(new ChangeEvent(this));
         }
+    }
+
+    @Override
+    public void translate() {
+        updateMessagesTexts();
     }
 
 }

@@ -68,7 +68,8 @@ public abstract class BamProject extends RowColPanel {
         appendChild(content, 1);
 
         explorer = new Explorer();
-        T.t(explorer.headerLabel, false, "explorer");
+        // T.t(explorer.headerLabel, false, "explorer");
+        T.t(this, explorer.headerLabel, false, "explorer");
 
         setupExplorer();
 
@@ -136,13 +137,11 @@ public abstract class BamProject extends RowColPanel {
                 itemType.getIcon());
         this.explorer.appendItem(explorerItem);
 
-        T.t(menuButton, false, tCreateKey);
-        T.t(toolbarButton, (btn) -> {
-            btn.setToolTipText(T.text(tCreateKey));
-        });
-        T.t(explorerItem, (eItem) -> {
-            eItem.label = T.text(tKey);
-            explorer.updateItemView(eItem);
+        T.t(this, menuButton, false, tCreateKey);
+        T.t(this, () -> toolbarButton.setToolTipText(T.text(tCreateKey)));
+        T.t(this, () -> {
+            explorerItem.label = T.text(tKey);
+            explorer.updateItemView(explorerItem);
         });
 
     }
@@ -155,7 +154,7 @@ public abstract class BamProject extends RowColPanel {
                 bamItem.TYPE.getIcon(),
                 explorer.getItem(bamItem.TYPE.id));
 
-        T.t(bamItem.bamItemTypeLabel, false, bamItem.TYPE.id);
+        T.t(bamItem, bamItem.bamItemTypeLabel, false, bamItem.TYPE.id);
 
         bamItem.bamItemTypeLabel.setIcon(bamItem.TYPE.getIcon());
         bamItem.cloneButton.addActionListener((e) -> {
@@ -167,8 +166,9 @@ public abstract class BamProject extends RowColPanel {
         bamItem.cloneButton.setIcon(SvgIcon.buildFeatherAppImageIcon("copy.svg"));
         bamItem.deleteButton.setIcon(SvgIcon.buildFeatherAppImageIcon("trash.svg"));
 
-        T.t(bamItem.cloneButton, false, "duplicate");
-        T.t(bamItem.deleteButton, false, "delete");
+        T.t(bamItem, bamItem.cloneButton, false, "duplicate");
+        T.t(bamItem, bamItem.deleteButton, false, "delete");
+        T.updateHierarchy(this, bamItem);
 
         BAM_ITEMS.add(bamItem);
         EXPLORER_ITEMS.add(explorerItem);
@@ -216,6 +216,7 @@ public abstract class BamProject extends RowColPanel {
         EXPLORER_ITEMS.remove(explorerItem);
         this.explorer.removeItem(explorerItem);
         this.explorer.selectItem(explorerItem.parentItem);
+        T.clear(bamItem);
     }
 
     public BamItem getBamItem(String id) {

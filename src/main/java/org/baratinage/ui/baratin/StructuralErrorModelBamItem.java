@@ -10,6 +10,7 @@ import javax.swing.JLabel;
 import javax.swing.JSeparator;
 
 import org.baratinage.jbam.utils.BamFilesHelpers;
+import org.baratinage.translation.T;
 import org.baratinage.ui.bam.BamItem;
 import org.baratinage.ui.bam.BamItemType;
 import org.baratinage.ui.bam.BamProject;
@@ -69,6 +70,7 @@ public class StructuralErrorModelBamItem extends BamItem implements IStructuralE
             strucErrModelPanel.addParameter("&gamma;<sub>2</sub>", "-",
                     DistributionType.UNIFORM, 0.1, 0, 10000);
             strucErrModelPanels[k] = strucErrModelPanel;
+            T.updateHierarchy(this, strucErrModelPanel);
 
             panel.appendChild(parameterNameLabels[k], 0);
             panel.appendChild(infoLabel, 0);

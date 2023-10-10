@@ -53,16 +53,16 @@ public class WeirParabola extends PriorControlPanel {
         addParameter(gravity);
         addParameter(exponent);
 
-        T.t(this, (wParabola) -> {
-            wParabola.setHeaders(
+        T.t(this, () -> {
+            setHeaders(
                     T.html("mean_value"),
                     T.html("uncertainty_value"));
-            wParabola.activationHeight.setNameLabel(T.html("activation_stage"));
-            wParabola.weirCoef.setNameLabel(T.html("weir_coefficient"));
-            wParabola.width.setNameLabel(T.html("parabola_width"));
-            wParabola.height.setNameLabel(T.html("parabola_height"));
-            wParabola.gravity.setNameLabel(T.html("gravity_acceleration"));
-            wParabola.exponent.setNameLabel(T.html("exponent"));
+            activationHeight.setNameLabel(T.html("activation_stage"));
+            weirCoef.setNameLabel(T.html("weir_coefficient"));
+            width.setNameLabel(T.html("parabola_width"));
+            height.setNameLabel(T.html("parabola_height"));
+            gravity.setNameLabel(T.html("gravity_acceleration"));
+            exponent.setNameLabel(T.html("exponent"));
         });
 
     }

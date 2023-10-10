@@ -21,6 +21,15 @@ public class SimpleNumberField extends SimpleTextField {
     private static NumberFormat INTEGER_FORMATTER = NumberFormat.getIntegerInstance();
     private boolean integer = false;
 
+    public static void init() {
+        T.t(AppConfig.AC.APP_MAIN_FRAME, () -> {
+            DOUBLE_FORMATTER = NumberFormat.getNumberInstance(T.getLocale());
+            INTEGER_FORMATTER = NumberFormat.getIntegerInstance(T.getLocale());
+            DOUBLE_FORMATTER.setGroupingUsed(false);
+            INTEGER_FORMATTER.setGroupingUsed(false);
+        });
+    }
+
     private List<Predicate<Number>> validators = new ArrayList<>();
 
     private final Color defaultBg;
@@ -82,13 +91,6 @@ public class SimpleNumberField extends SimpleTextField {
         this.integer = integer;
 
         // using tLasting to make sure it doesn't get overriden elsewhere
-        T.tLasting(this, (field) -> {
-            DOUBLE_FORMATTER = NumberFormat.getNumberInstance(T.getLocale());
-            INTEGER_FORMATTER = NumberFormat.getIntegerInstance(T.getLocale());
-            DOUBLE_FORMATTER.setGroupingUsed(false);
-            INTEGER_FORMATTER.setGroupingUsed(false);
-            field.updateTextFieldFromValue();
-        });
 
         addChangeListener((chEvt) -> {
             String str = getText();
@@ -118,6 +120,8 @@ public class SimpleNumberField extends SimpleTextField {
         invalidBg = AppConfig.AC.INVALID_COLOR_BG;
 
         updateValidityView();
+
+        T.t(this, this::updateTextFieldFromValue);
     }
 
     public boolean isValueValid() {

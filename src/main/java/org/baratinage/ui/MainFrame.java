@@ -13,6 +13,7 @@ import javax.swing.filechooser.FileFilter;
 import org.baratinage.translation.T;
 import org.baratinage.ui.bam.BamProject;
 import org.baratinage.ui.baratin.BaratinProject;
+import org.baratinage.ui.component.SimpleNumberField;
 import org.baratinage.ui.component.SvgIcon;
 import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.utils.Misc;
@@ -25,8 +26,12 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.awt.image.DataBuffer;
+import java.awt.image.Raster;
+import java.awt.image.WritableRaster;
 import java.io.File;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -40,11 +45,14 @@ public class MainFrame extends JFrame {
     public JMenuBar mainMenuBar;
     public JMenu baratinMenu;
 
+    private List<WritableRaster> rasters = new ArrayList<>();
+
     public MainFrame() {
 
         new AppConfig(this);
 
         T.init();
+        SimpleNumberField.init();
 
         ImageIcon baratinageIcon = new SvgIcon(Path.of(
                 AppConfig.AC.ICONS_RESOURCES_DIR,
@@ -67,24 +75,53 @@ public class MainFrame extends JFrame {
         gcBtn.addActionListener((e) -> {
             System.gc();
         });
+
         JMenuItem tPrintStateBtn = new JMenuItem("T print state");
         debugMenu.add(tPrintStateBtn);
         tPrintStateBtn.addActionListener((e) -> {
-            T.printStats();
+            // System.gc();
+            T.printStats(false);
         });
-
-        JMenuItem lgResetBtn = new JMenuItem("Reload Lg ressources");
+        JMenuItem tPrintStateAllBtn = new JMenuItem("T print state complete");
+        debugMenu.add(tPrintStateAllBtn);
+        tPrintStateAllBtn.addActionListener((e) -> {
+            // System.gc();
+            T.printStats(true);
+        });
+        JMenuItem cleanupTranslationBtn = new JMenuItem("Cleanup translations");
+        debugMenu.add(cleanupTranslationBtn);
+        cleanupTranslationBtn.addActionListener((e) -> {
+            // T.cleanup();
+        });
+        JMenuItem remTranslatorsBtn = new JMenuItem("Remove all registered translators");
+        debugMenu.add(remTranslatorsBtn);
+        remTranslatorsBtn.addActionListener((e) -> {
+            T.reset();
+        });
+        JMenuItem lgResetBtn = new JMenuItem("Reload T resources");
         debugMenu.add(lgResetBtn);
         lgResetBtn.addActionListener((e) -> {
             T.reloadResources();
         });
 
+        JMenuItem allocateHugeRasterBtn = new JMenuItem("Allocate huge Raster");
+        debugMenu.add(allocateHugeRasterBtn);
+        allocateHugeRasterBtn.addActionListener((e) -> {
+            int size = 10000;
+            WritableRaster raster = Raster.createBandedRaster(DataBuffer.TYPE_INT, size, size, 3, new Point(0, 0));
+            rasters.add(raster);
+        });
+        JMenuItem clearRasters = new JMenuItem("Clear Rasters");
+        debugMenu.add(clearRasters);
+        clearRasters.addActionListener((e) -> {
+            rasters.clear();
+        });
         JMenu fileMenu = new JMenu();
-        T.t(fileMenu, false, "files");
+        T.t(this, fileMenu, false, "files");
         mainMenuBar.add(fileMenu);
 
         JMenuItem newProjectMenuItem = new JMenuItem();
-        T.t(newProjectMenuItem, false, "create_baratin_project");
+        T.t(this, newProjectMenuItem, false, "create_baratin_project");
         newProjectMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, KeyEvent.CTRL_DOWN_MASK));
         newProjectMenuItem.addActionListener((e) -> {
             newProject();
@@ -92,7 +129,7 @@ public class MainFrame extends JFrame {
         fileMenu.add(newProjectMenuItem);
 
         JMenuItem openProjectMenuItem = new JMenuItem();
-        T.t(openProjectMenuItem, false, "open_project");
+        T.t(this, openProjectMenuItem, false, "open_project");
         openProjectMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, KeyEvent.CTRL_DOWN_MASK));
         openProjectMenuItem.addActionListener((e) -> {
             loadProject();
@@ -100,7 +137,7 @@ public class MainFrame extends JFrame {
         fileMenu.add(openProjectMenuItem);
 
         JMenuItem saveProjectAsMenuItem = new JMenuItem();
-        T.t(saveProjectAsMenuItem, false, "save_project_as");
+        T.t(this, saveProjectAsMenuItem, false, "save_project_as");
         saveProjectAsMenuItem
                 .setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, ActionEvent.CTRL_MASK + ActionEvent.ALT_MASK));
         saveProjectAsMenuItem.addActionListener((e) -> {
@@ -112,7 +149,7 @@ public class MainFrame extends JFrame {
         fileMenu.add(saveProjectAsMenuItem);
 
         JMenuItem saveProjectMenuItem = new JMenuItem();
-        T.t(saveProjectMenuItem, false, "save_project");
+        T.t(this, saveProjectMenuItem, false, "save_project");
         saveProjectMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_DOWN_MASK));
         saveProjectMenuItem.addActionListener((e) -> {
             if (currentProject != null) {
@@ -125,7 +162,7 @@ public class MainFrame extends JFrame {
         fileMenu.addSeparator();
 
         JMenuItem closeMenuItem = new JMenuItem();
-        T.t(closeMenuItem, false, "exit");
+        T.t(this, closeMenuItem, false, "exit");
         closeMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q, KeyEvent.CTRL_DOWN_MASK));
         closeMenuItem.addActionListener((e) -> {
             close();
@@ -188,19 +225,18 @@ public class MainFrame extends JFrame {
     public JMenu createLanguageSwitcherMenu() {
 
         JMenu switchLanguageMenuItem = new JMenu();
-        T.t(switchLanguageMenuItem, false, "change_language");
+        T.t(this, switchLanguageMenuItem, false, "change_language");
 
         List<String> tKeys = T.getAvailableLocales();
         for (String tKey : tKeys) {
             JCheckBoxMenuItem item = new JCheckBoxMenuItem();
             translationMenuItems.put(tKey, item);
-            // T.t(item, true, "");
-            T.t(item, (i) -> {
+            T.t(this, () -> {
                 Locale currentLocale = T.getLocale();
                 Locale targetLocale = Locale.forLanguageTag(tKey);
                 String currentLocaleText = targetLocale.getDisplayName(targetLocale);
                 String targetLocaleText = targetLocale.getDisplayName(currentLocale);
-                i.setText(currentLocaleText + " - " + targetLocaleText);
+                item.setText(currentLocaleText + " - " + targetLocaleText);
             });
 
             item.addActionListener((e) -> {
@@ -231,11 +267,18 @@ public class MainFrame extends JFrame {
     }
 
     public void setCurrentProject(BamProject project) {
+        if (currentProject != null) {
+            // currentProject.BAM_ITEMS.forEach(item -> {
+            // T.clear(item);
+            // });
+            T.clear(currentProject);
+        }
         currentProject = project;
         projectPanel.clear();
         projectPanel.appendChild(project);
         updateFrameTitle();
         // Lg.printInfo();
+        T.updateTranslations();
     }
 
     public void updateFrameTitle() {

@@ -50,10 +50,8 @@ public class Gaugings extends BamItem implements ICalibrationData {
         content.setRightComponent(plotPanel);
 
         importedDataSetSourceLabel = new JLabel();
-        T.t(importedDataSetSourceLabel, false, "empty_gauging_set");
 
         JButton importDataButton = new JButton();
-        T.t(importDataButton, false, "import_gauging_set");
 
         importDataButton.addActionListener((e) -> {
             GaugingsImporter gaugingsImporter = new GaugingsImporter();
@@ -75,21 +73,26 @@ public class Gaugings extends BamItem implements ICalibrationData {
         importGaugingsPanel.appendChild(importedDataSetSourceLabel, 0);
         importGaugingsPanel.appendChild(gaugingsTable, 1);
 
-        T.t(this, g -> {
-            String name = g.gaugingDataset == null ? "" : g.gaugingDataset.getDatasetName();
-            g.importedDataSetSourceLabel.setText(T.html("gauging_set_imported_from", name));
-        });
         setContent(content);
+
+        T.updateHierarchy(this, gaugingsTable);
+        T.updateHierarchy(this, plotPanel);
+        T.t(this, importDataButton, false, "import_gauging_set");
+        T.t(this, () -> {
+            if (gaugingDataset == null) {
+                importedDataSetSourceLabel.setText(T.text("empty_gauging_set"));
+            } else {
+                importedDataSetSourceLabel.setText(
+                        T.html("gauging_set_imported_from",
+                                gaugingDataset.getDatasetName()));
+            }
+        });
+
     }
 
     private void updateTable() {
         gaugingsTable.set(gaugingDataset);
-        T.updateRegisteredObject(importedDataSetSourceLabel);
-        // T.t(importedDataSetSourceLabel, (idsl) -> {
-        // idsl.setText(
-        // T.html("gauging_set_imported_from",
-        // idsl.gaugingDataset.getDatasetName()));
-        // });
+        T.updateTranslation(this);
     }
 
     private void setPlot() {
@@ -105,16 +108,34 @@ public class Gaugings extends BamItem implements ICalibrationData {
         plot.addXYItem(points.get(0));
         plot.addXYItem(points.get(1));
 
-        T.t(points.get(0), "lgd_active_gaugings");
-        T.t(points.get(1), "lgd_inactive_gaugings");
+        // T.t(points.get(0), "lgd_active_gaugings");
+        // T.t(points.get(1), "lgd_inactive_gaugings");
 
-        T.t(plot, (plt) -> {
-            plt.axisX.setLabel(T.text("stage_level"));
-            plt.axisY.setLabel(T.text("discharge"));
-            plt.axisYlog.setLabel(T.text("discharge"));
+        // T.t(() -> {
+        // points.get(0).setLabel(T.text("lgd_active_gaugings"));
+        // });
+
+        // T.t(() -> {
+        // points.get(0).setLabel(T.text("lgd_inactive_gaugings"));
+        // });
+
+        // T.t(plot, (plt) -> {
+        // plt.axisX.setLabel(T.text("stage_level"));
+        // plt.axisY.setLabel(T.text("discharge"));
+        // plt.axisYlog.setLabel(T.text("discharge"));
+        // });
+
+        T.clear(plotPanel);
+        T.t(plotPanel, () -> {
+            points.get(0).setLabel(T.text("lgd_active_gaugings"));
+            points.get(0).setLabel(T.text("lgd_inactive_gaugings"));
+            plot.axisX.setLabel(T.text("stage_level"));
+            plot.axisY.setLabel(T.text("discharge"));
+            plot.axisYlog.setLabel(T.text("discharge"));
         });
 
         PlotContainer plotContainer = new PlotContainer(plot);
+        T.updateHierarchy(this, plotContainer);
 
         plotPanel.clear();
         plotPanel.appendChild(plotContainer);

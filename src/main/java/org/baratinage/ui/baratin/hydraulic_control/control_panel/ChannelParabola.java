@@ -49,16 +49,16 @@ public class ChannelParabola extends PriorControlPanel {
         addParameter(slope);
         addParameter(exponent);
 
-        T.t(this, (chParabola) -> {
-            chParabola.setHeaders(
+        T.t(this, () -> {
+            setHeaders(
                     T.html("mean_value"),
                     T.html("uncertainty_value"));
-            chParabola.activationHeight.setNameLabel(T.html("activation_stage"));
-            chParabola.stricklerCoef.setNameLabel(T.html("strickler_coef"));
-            chParabola.width.setNameLabel(T.html("parabola_width"));
-            chParabola.height.setNameLabel(T.html("parabola_height"));
-            chParabola.slope.setNameLabel(T.html("channel_slope"));
-            chParabola.exponent.setNameLabel(T.html("exponent"));
+            activationHeight.setNameLabel(T.html("activation_stage"));
+            stricklerCoef.setNameLabel(T.html("strickler_coef"));
+            width.setNameLabel(T.html("parabola_width"));
+            height.setNameLabel(T.html("parabola_height"));
+            slope.setNameLabel(T.html("channel_slope"));
+            exponent.setNameLabel(T.html("exponent"));
         });
     }
 

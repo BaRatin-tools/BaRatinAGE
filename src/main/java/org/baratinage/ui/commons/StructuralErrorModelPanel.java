@@ -53,9 +53,9 @@ public class StructuralErrorModelPanel extends GridPanel {
         insertChild(parametersSep, 3, 1);
         insertChild(lockSep, 4, 1);
 
-        T.t(initialGuessLabel, false, "initial_guess");
-        T.t(distributionLabel, false, "distribution");
-        T.t(distributionParametersLabel, false, "distribution_parameters");
+        T.t(this, initialGuessLabel, false, "initial_guess");
+        T.t(this, distributionLabel, false, "distribution");
+        T.t(this, distributionParametersLabel, false, "distribution_parameters");
 
         parameters = new ArrayList<>();
 
@@ -80,6 +80,8 @@ public class StructuralErrorModelPanel extends GridPanel {
         insertChild(gamma.distributionField.distributionCombobox, 2, index);
         insertChild(gamma.distributionField.parameterFieldsPanel, 3, index);
         insertChild(gamma.lockCheckbox, 4, index);
+
+        T.updateHierarchy(this, gamma);
 
         gamma.setDistributionType(DistributionType.UNIFORM);
         int nPars = parameterValues.length;
@@ -113,7 +115,9 @@ public class StructuralErrorModelPanel extends GridPanel {
         int nPar = json.length();
         parameters.clear();
         for (int k = 0; k < nPar; k++) {
-            ParameterPriorDist ppd = new ParameterPriorDist("gamma_" + (k + 1));
+            ParameterPriorDist ppd = new ParameterPriorDist("gamma_" + k);
+            T.updateHierarchy(this, ppd);
+
             parameters.add(ppd);
             ppd.fromJSON(json.getJSONObject(k));
         }

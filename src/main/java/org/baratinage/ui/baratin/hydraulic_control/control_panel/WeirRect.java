@@ -47,15 +47,15 @@ public class WeirRect extends PriorControlPanel {
         addParameter(gravity);
         addParameter(exponent);
 
-        T.t(this, (wRect) -> {
-            wRect.setHeaders(
+        T.t(this, () -> {
+            setHeaders(
                     T.html("mean_value"),
                     T.html("uncertainty_value"));
-            wRect.activationHeight.setNameLabel(T.html("activation_stage"));
-            wRect.weirCoef.setNameLabel(T.html("weir_coefficient"));
-            wRect.width.setNameLabel(T.html("weir_width"));
-            wRect.gravity.setNameLabel(T.html("gravity_acceleration"));
-            wRect.exponent.setNameLabel(T.html("exponent"));
+            activationHeight.setNameLabel(T.html("activation_stage"));
+            weirCoef.setNameLabel(T.html("weir_coefficient"));
+            width.setNameLabel(T.html("weir_width"));
+            gravity.setNameLabel(T.html("gravity_acceleration"));
+            exponent.setNameLabel(T.html("exponent"));
         });
 
     }

@@ -71,18 +71,6 @@ public class RatingCurveStageGrid extends RowColPanel implements IPredictionData
 
         JLabel stageGridLabel = new JLabel();
 
-        T.t(stageGridLabel, false, "stage_grid");
-        T.t(valStepField, (field) -> {
-            field.setInnerLabel(T.text("step"));
-        });
-
-        T.t(this, (rcStageGrid) -> {
-            rcStageGrid.minStageField.setInnerLabel(T.text("min"));
-            rcStageGrid.maxStageField.setInnerLabel(T.text("max"));
-            rcStageGrid.nbrStepField.setInnerLabel(T.text("n"));
-            // rcStageGrid.valStepField.setInnerLabel(T.text("step"));
-        });
-
         appendChild(stageGridLabel, 0);
         appendChild(minStageField, 1);
         appendChild(maxStageField, 1);
@@ -94,6 +82,18 @@ public class RatingCurveStageGrid extends RowColPanel implements IPredictionData
 
         nbrStepField.setValue(100);
         updateStageGridConfig();
+
+        T.t(this, stageGridLabel, false, "stage_grid");
+        T.t(this, () -> {
+            minStageField.setInnerLabel(T.text("min"));
+            maxStageField.setInnerLabel(T.text("max"));
+            nbrStepField.setInnerLabel(T.text("n"));
+            valStepField.setInnerLabel(T.text("step"));
+        });
+        T.updateHierarchy(this, minStageField);
+        T.updateHierarchy(this, maxStageField);
+        T.updateHierarchy(this, nbrStepField);
+        T.updateHierarchy(this, valStepField);
     }
 
     public double[] getStageGrid() {

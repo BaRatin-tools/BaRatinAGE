@@ -47,7 +47,6 @@ public class Limnigraph extends BamItem implements IPredictionData {
         importedDataSetSourceLabel = new JLabel();
 
         JButton importDataButton = new JButton();
-        T.t(importDataButton, false, "import_limnigraph");
         importDataButton.addActionListener((e) -> {
             LimnigraphImporter limniImporter = new LimnigraphImporter();
             limniImporter.showDialog();
@@ -73,21 +72,26 @@ public class Limnigraph extends BamItem implements IPredictionData {
         plotPanel = new RowColPanel();
         content.setRightComponent(plotPanel);
 
-        T.t(this, l -> {
-            String name = l.limniDataset == null ? null : l.limniDataset.getDatasetName();
-            if (name == null) {
-                l.importedDataSetSourceLabel.setText(T.html("empty_limnigraph"));
+        setContent(content);
+
+        T.updateHierarchy(this, limniTable);
+        T.updateHierarchy(this, plotPanel);
+        T.t(this, importDataButton, false, "import_limnigraph");
+        T.t(this, () -> {
+            if (limniDataset == null) {
+                importedDataSetSourceLabel.setText(T.text("empty_limnigraph"));
             } else {
-                l.importedDataSetSourceLabel.setText(T.html("limnigraph_imported_from", name));
+                importedDataSetSourceLabel.setText(
+                        T.html("limnigraph_imported_from",
+                                limniDataset.getDatasetName()));
             }
         });
-
-        setContent(content);
     }
 
     private void updateTable() {
         limniTable.set(limniDataset);
-        T.updateRegisteredObject(this);
+        // T.updateRegisteredObject(this);
+        T.updateTranslation(this);
         // Lg.register(importedDataSetSourceLabel, () -> {
         // importedDataSetSourceLabel.setText(
         // Lg.html("limnigraph_imported_from",
@@ -105,13 +109,14 @@ public class Limnigraph extends BamItem implements IPredictionData {
             plot.addXYItem(item);
         }
 
-        T.t(plot, (plt) -> {
-            plt.axisXdate.setLabel(T.text("time"));
-            plt.axisY.setLabel(T.text("stage_level"));
-            plt.axisYlog.setLabel(T.text("stage_level"));
+        T.clear(plotPanel);
+        T.t(plotPanel, () -> {
+            plot.axisXdate.setLabel(T.text("time"));
+            plot.axisY.setLabel(T.text("stage_level"));
+            plot.axisYlog.setLabel(T.text("stage_level"));
         });
-
         PlotContainer plotContainer = new PlotContainer(plot);
+        T.updateHierarchy(this, plotContainer);
 
         plotPanel.clear();
         plotPanel.appendChild(plotContainer);

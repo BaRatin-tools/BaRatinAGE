@@ -52,18 +52,17 @@ public class HydrographPlot extends RowColPanel {
                 plot.addXYItem(paramBand);
                 plot.addXYItem(mpLine);
 
-                T.t(mpLine, "lgd_discharge_maxpost");
-                T.t(paramBand, "lgd_discharge_param_u");
-                T.t(totalBand, "lgd_discharge_total_u");
-
-                T.t(plot, (plt) -> {
-                        plt.axisXdate.setLabel(T.text("time"));
-                        plt.axisY.setLabel(T.text("discharge"));
-                        plt.axisYlog.setLabel(T.text("discharge"));
-
+                T.t(this, () -> {
+                        mpLine.setLabel(T.text("lgd_discharge_maxpost"));
+                        paramBand.setLabel(T.text("lgd_discharge_param_u"));
+                        totalBand.setLabel(T.text("lgd_discharge_total_u"));
+                        plot.axisXdate.setLabel(T.text("time"));
+                        plot.axisY.setLabel(T.text("discharge"));
+                        plot.axisYlog.setLabel(T.text("discharge"));
                 });
 
                 PlotContainer plotContainer = new PlotContainer(plot);
+                T.updateHierarchy(this, plotContainer);
 
                 clear();
                 appendChild(plotContainer);

@@ -30,7 +30,7 @@ public class DensityPlotGrid extends RowColPanel {
         estimatedParameters.clear();
     }
 
-    public void updatePlot() {
+    public void updatePlots() {
         GridPanel gridPanel = new GridPanel();
         int nColMax = 4;
         int nPlots = estimatedParameters.size();
@@ -100,6 +100,7 @@ public class DensityPlotGrid extends RowColPanel {
             plot.addXYItem(maxpostLine);
 
             PlotContainer pc = new PlotContainer(plot, false);
+            T.updateHierarchy(this, pc);
             gridPanel.insertChild(pc, c, r);
 
             c++;
@@ -112,23 +113,25 @@ public class DensityPlotGrid extends RowColPanel {
         Legend legend = new Legend();
 
         PlotContainer pc = new PlotContainer(legend.getLegendPlot(), false);
+        T.updateHierarchy(this, pc);
+
         gridPanel.insertChild(pc, c, r);
 
-        T.t(legend, (lgd) -> {
-            lgd.clearLegend();
+        T.t(this, () -> {
+            legend.clearLegend();
 
-            lgd.addLegendItem(PlotBand.buildLegendItem(
+            legend.addLegendItem(PlotBand.buildLegendItem(
                     T.text("prior_density"),
                     AppConfig.AC.PRIOR_ENVELOP_COLOR));
-            lgd.addLegendItem(PlotBand.buildLegendItem(
+            legend.addLegendItem(PlotBand.buildLegendItem(
                     T.text("posterior_density"),
                     AppConfig.AC.POSTERIOR_ENVELOP_COLOR));
-            lgd.addLegendItem(PlotLine.buildLegendItem(
+            legend.addLegendItem(PlotLine.buildLegendItem(
                     T.text("maxpost"),
                     AppConfig.AC.POSTERIOR_LINE_COLOR,
                     new BasicStroke(3f)));
 
-            lgd.getLegendPlot().update();
+            legend.getLegendPlot().update();
         });
 
     }

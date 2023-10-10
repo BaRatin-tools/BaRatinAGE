@@ -128,8 +128,16 @@ public class SimpleTextField extends JTextField {
         placeholder = s;
     }
 
+    public String getPlaceholder() {
+        return placeholder;
+    }
+
     public void setInnerLabel(final String s) {
         innerLabel = s;
+    }
+
+    public String getInnerLabel() {
+        return innerLabel;
     }
 
     private boolean doNotFireChange = false;

@@ -148,6 +148,16 @@ public class RatingCurve extends BamItem implements IPredictionMaster, ICalibrat
         content.appendChild(mainContentPanel, 1);
 
         setContent(content);
+
+        T.updateHierarchy(this, hydrauConfParent);
+        T.updateHierarchy(this, gaugingsParent);
+        T.updateHierarchy(this, structErrorParent);
+        T.updateHierarchy(this, ratingCurveStageGrid);
+        T.updateHierarchy(this, runPanel);
+        T.updateHierarchy(this, resultsPanel);
+        T.updateHierarchy(this, outdatedPanel);
+
+        T.t(runPanel, runPanel.runButton, true, "compute_posterior_rc");
     }
 
     @Override
@@ -208,6 +218,8 @@ public class RatingCurve extends BamItem implements IPredictionMaster, ICalibrat
 
     private void checkSync() {
         // FIXME: called too often? Optimization may be possible.
+        outdatedPanel.clear();
+        T.clear(outdatedPanel);
 
         List<MsgPanel> warnings = new ArrayList<>();
         warnings.addAll(hydrauConfParent.getMessages());
@@ -233,26 +245,26 @@ public class RatingCurve extends BamItem implements IPredictionMaster, ICalibrat
                 checkSync();
             });
             errorMsg.addButton(cancelChangeButton);
-            T.t(cancelChangeButton, false, "cancel_changes");
-            T.t(errorMsg.message, false, "oos_stage_grid");
+            T.t(outdatedPanel, cancelChangeButton, false, "cancel_changes");
+            T.t(outdatedPanel, errorMsg.message, false, "oos_stage_grid");
             warnings.add(errorMsg);
 
         }
 
         // --------------------------------------------------------------------
         // update message panel
-        outdatedPanel.clear();
 
         for (MsgPanel w : warnings) {
             outdatedPanel.appendChild(w);
         }
         // --------------------------------------------------------------------
         // update run bam button
+        T.clear(runPanel);
         if (isStageGridOutOfSync || needBamRerun) {
-            T.t(runPanel.runButton, true, "recompute_posterior_rc");
+            T.t(runPanel, runPanel.runButton, true, "recompute_posterior_rc");
             runPanel.runButton.setForeground(AppConfig.AC.INVALID_COLOR_FG);
         } else {
-            T.t(runPanel.runButton, true, "compute_posterior_rc");
+            T.t(runPanel, runPanel.runButton, true, "compute_posterior_rc");
             runPanel.runButton.setForeground(new JButton().getForeground());
         }
 

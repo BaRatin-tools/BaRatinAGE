@@ -30,8 +30,8 @@ public class KAC extends PriorControlPanel {
         addParameter(a);
         addParameter(c);
 
-        T.t(this, (kac) -> {
-            kac.setHeaders(
+        T.t(this, () -> {
+            setHeaders(
                     T.html("initial_guess"),
                     T.html("distribution"),
                     T.html("distribution_parameters"));

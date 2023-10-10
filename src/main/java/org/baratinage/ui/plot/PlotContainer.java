@@ -2,6 +2,8 @@ package org.baratinage.ui.plot;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.awt.geom.Rectangle2D;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -96,7 +98,8 @@ public class PlotContainer extends RowColPanel {
             logYaxis = !logYaxis;
             plot.setAxisLogY(logYaxis);
             chartPanel.restoreAutoBounds();
-            T.updateRegisteredObject(this);
+            // T.updateRegisteredObject(this);
+            T.updateTranslation(this);
         });
 
         ImageIcon saveIcon = SvgIcon.buildFeatherAppImageIcon("save.svg");
@@ -104,9 +107,6 @@ public class PlotContainer extends RowColPanel {
         ImageIcon windowPlotIcon = SvgIcon.buildFeatherAppImageIcon("external-link.svg");
 
         JButton btnWindowPlot = new JButton();
-        T.t(btnWindowPlot, (btn) -> {
-            btn.setToolTipText(T.text("window_plot"));
-        });
 
         btnWindowPlot.setIcon(windowPlotIcon);
         btnWindowPlot.addActionListener((e) -> {
@@ -114,11 +114,6 @@ public class PlotContainer extends RowColPanel {
         });
 
         JButton btnSaveAsSvg = new JButton();
-        T.t(btnSaveAsSvg, (btn) -> {
-            btn.setText("SVG");
-            btn.setToolTipText(T.text("to_svg"));
-        });
-
         btnSaveAsSvg.setIcon(saveIcon);
         btnSaveAsSvg.setText("SVG");
         btnSaveAsSvg.addActionListener((e) -> {
@@ -126,10 +121,6 @@ public class PlotContainer extends RowColPanel {
         });
 
         JButton btnSaveAsPng = new JButton();
-        T.t(btnSaveAsPng, (btn) -> {
-            btn.setText("PNG");
-            btn.setToolTipText(T.text("to_png"));
-        });
         btnSaveAsPng.setIcon(saveIcon);
         btnSaveAsPng.setText("PNG");
         btnSaveAsPng.addActionListener((e) -> {
@@ -137,10 +128,6 @@ public class PlotContainer extends RowColPanel {
         });
 
         JButton btnCopyToClipboard = new JButton();
-        T.t(btnCopyToClipboard, (btn) -> {
-            btn.setToolTipText(T.text("to_clipboard"));
-        });
-
         btnCopyToClipboard.setIcon(copyIcon);
         btnCopyToClipboard.addActionListener((e) -> {
             copyToClipboard();
@@ -153,27 +140,23 @@ public class PlotContainer extends RowColPanel {
 
         JPopupMenu popupMenu = new JPopupMenu();
         JMenuItem menuWindowPlot = new JMenuItem();
-        T.t(menuWindowPlot, false, "window_plot");
         menuWindowPlot.addActionListener((e) -> {
             windowPlot();
         });
         popupMenu.add(menuWindowPlot);
 
         JMenuItem menuSaveSvg = new JMenuItem();
-        T.t(menuSaveSvg, false, "to_svg");
         menuSaveSvg.addActionListener((e) -> {
             saveAsSvg();
         });
         popupMenu.add(menuSaveSvg);
 
         JMenuItem menuSavePng = new JMenuItem();
-        T.t(menuSavePng, false, "to_png");
         menuSavePng.addActionListener((e) -> {
             saveAsPng();
         });
         popupMenu.add(menuSavePng);
         JMenuItem menuCopyClipboard = new JMenuItem();
-        T.t(menuCopyClipboard, false, "to_clipboard");
         menuCopyClipboard.addActionListener((e) -> {
             copyToClipboard();
         });
@@ -190,9 +173,21 @@ public class PlotContainer extends RowColPanel {
         toolsPanel.setGap(5);
         actionPanel.setGap(5);
 
-        T.t(this, (pltContainer) -> {
-            pltContainer.toggleYaxisLogButton.setText(
-                    pltContainer.logYaxis ? T.text("linear_y_axis") : T.text("log_y_axis"));
+        T.t(this, menuWindowPlot, false, "window_plot");
+        T.t(this, menuSaveSvg, false, "to_svg");
+        T.t(this, menuSavePng, false, "to_png");
+        T.t(this, menuCopyClipboard, false, "to_clipboard");
+
+        T.t(this, () -> {
+            btnWindowPlot.setToolTipText(T.text("window_plot"));
+            btnSaveAsSvg.setText("SVG");
+            btnSaveAsSvg.setToolTipText(T.text("to_svg"));
+            btnSaveAsPng.setText("PNG");
+            btnSaveAsPng.setToolTipText(T.text("to_png"));
+            btnCopyToClipboard.setToolTipText(T.text("to_clipboard"));
+
+            toggleYaxisLogButton.setText(
+                    logYaxis ? T.text("linear_y_axis") : T.text("log_y_axis"));
         });
 
     }
@@ -306,6 +301,13 @@ public class PlotContainer extends RowColPanel {
     public void windowPlot() {
         JFrame f = new JFrame();
         PlotContainer p = new PlotContainer(plot);
+
+        f.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                T.clear(f);
+            }
+        });
 
         f.setPreferredSize(new Dimension(1000, 500));
         f.setIconImage(AppConfig.AC.APP_MAIN_FRAME.getIconImage());

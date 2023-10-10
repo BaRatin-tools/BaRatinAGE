@@ -93,6 +93,18 @@ public class Hydrograph extends BamItem implements IPredictionMaster {
         content.appendChild(runPanel, 0);
         content.appendChild(plotPanel, 1);
         setContent(content);
+
+        // private final RunPanel runPanel;
+        // private final HydrographPlot plotPanel;
+        // private final RowColPanel outdatedPanel;
+
+        // private final BamItemParent ratingCurveParent;
+        // private final BamItemParent limnigraphParent;
+
+        T.updateHierarchy(this, runPanel);
+        T.updateHierarchy(this, plotPanel);
+        T.updateHierarchy(this, outdatedPanel);
+        T.t(runPanel, runPanel.runButton, false, "compute_qt");
     }
 
     private void checkSync() {
@@ -107,6 +119,7 @@ public class Hydrograph extends BamItem implements IPredictionMaster {
 
         // --------------------------------------------------------------------
         // update message panel
+        T.clear(outdatedPanel);
         outdatedPanel.clear();
 
         for (MsgPanel w : warnings) {
@@ -114,11 +127,12 @@ public class Hydrograph extends BamItem implements IPredictionMaster {
         }
         // --------------------------------------------------------------------
         // update run bam button
+        T.clear(runPanel);
         if (needBamRerun) {
-            T.t(runPanel.runButton, false, "recompute_qt");
+            T.t(runPanel, runPanel.runButton, false, "recompute_qt");
             runPanel.runButton.setForeground(AppConfig.AC.INVALID_COLOR_FG);
         } else {
-            T.t(runPanel.runButton, false, "compute_qt");
+            T.t(runPanel, runPanel.runButton, false, "compute_qt");
             runPanel.runButton.setForeground(new JButton().getForeground());
         }
 

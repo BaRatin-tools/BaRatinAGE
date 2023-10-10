@@ -47,15 +47,15 @@ public class WeirTriangle extends PriorControlPanel {
         addParameter(gravity);
         addParameter(exponent);
 
-        T.t(this, (wTriangle) -> {
-            wTriangle.setHeaders(
+        T.t(this, () -> {
+            setHeaders(
                     T.html("mean_value"),
                     T.html("uncertainty_value"));
-            wTriangle.activationHeight.setNameLabel(T.html("activation_stage"));
-            wTriangle.weirCoef.setNameLabel(T.html("weir_coefficient"));
-            wTriangle.angle.setNameLabel(T.html("angle"));
-            wTriangle.gravity.setNameLabel(T.html("gravity_acceleration"));
-            wTriangle.exponent.setNameLabel(T.html("exponent"));
+            activationHeight.setNameLabel(T.html("activation_stage"));
+            weirCoef.setNameLabel(T.html("weir_coefficient"));
+            angle.setNameLabel(T.html("angle"));
+            gravity.setNameLabel(T.html("gravity_acceleration"));
+            exponent.setNameLabel(T.html("exponent"));
         });
 
     }

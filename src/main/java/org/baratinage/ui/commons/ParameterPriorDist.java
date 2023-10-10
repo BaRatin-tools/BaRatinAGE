@@ -13,6 +13,7 @@ import javax.swing.event.ChangeListener;
 import org.baratinage.jbam.Distribution;
 import org.baratinage.jbam.DistributionType;
 import org.baratinage.jbam.Parameter;
+import org.baratinage.translation.T;
 import org.baratinage.ui.component.SimpleNumberField;
 
 public class ParameterPriorDist extends AbstractParameterPriorDist implements ChangeListener {
@@ -47,6 +48,9 @@ public class ParameterPriorDist extends AbstractParameterPriorDist implements Ch
             updateLock();
             fireChangeListeners();
         });
+
+        T.updateHierarchy(this, initialGuessField);
+        T.updateHierarchy(this, distributionField);
     }
 
     @Override

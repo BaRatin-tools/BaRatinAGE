@@ -26,14 +26,15 @@ public class HydraulicControlPanels extends RowColPanel implements IPriors {
         controls = new ArrayList<>();
         tabs = new TabContainer(TabContainer.SIDE.TOP);
 
-        T.t(this, (hcp) -> {
-            int n = hcp.tabs.getTabCount();
+        appendChild(tabs, 1);
+
+        T.t(this, () -> {
+            int n = tabs.getTabCount();
             for (int k = 0; k < n; k++) {
-                OneHydraulicControl ohc = hcp.controls.get(k);
-                hcp.tabs.setTitleTextAt(k, T.html("control_number", ohc.controlNumber));
+                OneHydraulicControl ohc = controls.get(k);
+                tabs.setTitleTextAt(k, T.html("control_number", ohc.controlNumber));
             }
         });
-        appendChild(tabs, 1);
     }
 
     private void updateTabs() {
@@ -62,6 +63,7 @@ public class HydraulicControlPanels extends RowColPanel implements IPriors {
         });
         controls.add(ohc);
         nVisibleHydraulicControls = controls.size();
+        T.updateHierarchy(this, ohc);
     }
 
     public void setHydraulicControls(int nControls) {

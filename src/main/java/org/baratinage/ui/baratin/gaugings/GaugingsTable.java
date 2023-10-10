@@ -34,10 +34,7 @@ public class GaugingsTable extends RowColPanel {
 
         appendChild(scrollpane);
 
-        T.t(this, (gT) -> {
-            gT.setHeaders();
-        });
-
+        T.t(this, this::setHeaders);
     }
 
     public void set(GaugingsDataset gaugingDataset) {

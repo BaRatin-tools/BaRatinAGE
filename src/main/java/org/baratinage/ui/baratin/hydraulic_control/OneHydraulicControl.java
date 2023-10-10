@@ -134,6 +134,7 @@ public class OneHydraulicControl extends JScrollPane {
                         parabolaChannelIcon,
                         new ChannelParabola()));
         for (HydraulicControlOption hco : allControlOptions) {
+            T.updateHierarchy(this, hco.panel);
             hco.panel.addChangeListener((ChangeEvent chEvt) -> {
                 updateKACfromPhysicalControl();
             });
@@ -207,15 +208,6 @@ public class OneHydraulicControl extends JScrollPane {
         RowColPanel buttonsPanel = new RowColPanel();
         buttonsPanel.appendChild(switchModeButton);
 
-        T.t(physicalParLabel, false, "physical_parameters");
-        T.t(controlParLabel, false, "control_parameters");
-        T.t(this, (ohc) -> {
-            ohc.setControlTypeCombobox();
-            ohc.toKACmodeText = T.text("switch_to_kac_mode");
-            ohc.toPhysicalModeText = T.text("switch_to_physical_mode");
-            ohc.switchModeButton.setText(kacMode ? toPhysicalModeText : toKACmodeText);
-        });
-
         mainPanel.appendChild(physicalParametersPanel, 0);
         mainPanel.appendChild(kacControlPanel, 0);
         mainPanel.appendChild(buttonsPanel, 0);
@@ -224,6 +216,16 @@ public class OneHydraulicControl extends JScrollPane {
         updatePhysicalControl();
 
         updateMode();
+
+        T.updateHierarchy(this, kacControlPanel);
+        T.t(this, physicalParLabel, false, "physical_parameters");
+        T.t(this, controlParLabel, false, "control_parameters");
+        T.t(this, () -> {
+            setControlTypeCombobox();
+            toKACmodeText = T.text("switch_to_kac_mode");
+            toPhysicalModeText = T.text("switch_to_physical_mode");
+            switchModeButton.setText(kacMode ? toPhysicalModeText : toKACmodeText);
+        });
     }
 
     private void setControlTypeCombobox() {

@@ -28,9 +28,11 @@ public class RatingCurveResults extends TabContainer {
         addTab("rating_curve", rcIcon, ratingCurvePlot);
         addTab("parameter_densities", dpIcon, paramDensityPlots);
 
-        T.t(this, (rcRes) -> {
-            rcRes.setTitleTextAt(0, T.html("posterior_rating_curve"));
-            rcRes.setTitleTextAt(1, T.html("parameter_densities"));
+        T.updateHierarchy(this, ratingCurvePlot);
+        T.updateHierarchy(this, paramDensityPlots);
+        T.t(this, () -> {
+            setTitleTextAt(0, T.html("posterior_rating_curve"));
+            setTitleTextAt(1, T.html("parameter_densities"));
         });
     }
 
@@ -58,7 +60,7 @@ public class RatingCurveResults extends TabContainer {
             paramDensityPlots.addPlot(p);
         }
 
-        paramDensityPlots.updatePlot();
+        paramDensityPlots.updatePlots();
 
     }
 

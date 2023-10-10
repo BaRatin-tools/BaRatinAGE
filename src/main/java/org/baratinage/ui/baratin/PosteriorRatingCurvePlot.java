@@ -73,22 +73,23 @@ public class PosteriorRatingCurvePlot extends RowColPanel {
                 plot.addXYItem(mp);
                 plot.addXYItem(gaugingsPoints);
 
-                T.t(mp, "lgd_posterior_rating_curve");
-                T.t(parEnv, "lgd_posterior_parametric_uncertainty");
-                T.t(totEnv, "lgd_posterior_parametric_structural_uncertainty");
-                T.t(bands[0], "lgd_posterior_transition_stage");
-                T.t(gaugingsPoints, "lgd_active_gaugings");
-
-                T.t(plot, (plt) -> {
-                        plt.axisX.setLabel(T.text("stage_level"));
-                        plt.axisY.setLabel(T.text("discharge"));
-                        plt.axisYlog.setLabel(T.text("discharge"));
-                        plt.update(); // needed to make sure change are reflected in plot
+                T.clear(this);
+                T.t(this, () -> {
+                        mp.setLabel(T.text("lgd_posterior_rating_curve"));
+                        parEnv.setLabel(T.text("lgd_posterior_parametric_uncertainty"));
+                        totEnv.setLabel(T.text("lgd_posterior_parametric_structural_uncertainty"));
+                        bands[0].setLabel(T.text("lgd_posterior_transition_stage"));
+                        gaugingsPoints.setLabel(T.text("lgd_active_gaugings"));
+                        plot.axisX.setLabel(T.text("stage_level"));
+                        plot.axisY.setLabel(T.text("discharge"));
+                        plot.axisYlog.setLabel(T.text("discharge"));
+                        plot.update(); // needed to make sure change are reflected in plot
                         // actually useless here since axis label changes also notify the chart
                         // that it must update...
                 });
 
                 PlotContainer plotContainer = new PlotContainer(plot);
+                T.updateHierarchy(this, plotContainer);
 
                 clear();
                 appendChild(plotContainer);

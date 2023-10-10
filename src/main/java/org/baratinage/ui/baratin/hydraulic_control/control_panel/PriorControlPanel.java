@@ -11,6 +11,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import org.baratinage.jbam.Parameter;
+import org.baratinage.translation.T;
 import org.baratinage.ui.commons.AbstractParameterPriorDist;
 import org.baratinage.ui.commons.ParameterPriorDist;
 import org.baratinage.ui.commons.ParameterPriorDistSimplified;
@@ -160,6 +161,8 @@ public abstract class PriorControlPanel extends GridPanel implements ChangeListe
                 parameter.uncertaintyValueField.addChangeListener(this);
 
                 parameters.add(parameter);
+
+                T.updateHierarchy(this, parameter);
         }
 
         protected void addParameter(ParameterPriorDist parameter) {
@@ -188,6 +191,7 @@ public abstract class PriorControlPanel extends GridPanel implements ChangeListe
                         f.addChangeListener(this);
                 }
                 parameters.add(parameter);
+                T.updateHierarchy(this, parameter);
         }
 
         public Parameter[] getParameters() {

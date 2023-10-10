@@ -43,15 +43,15 @@ public class ChannelTriangle extends PriorControlPanel {
         addParameter(slope);
         addParameter(exponent);
 
-        T.t(this, (chTriangle) -> {
-            chTriangle.setHeaders(
+        T.t(this, () -> {
+            setHeaders(
                     T.html("mean_value"),
                     T.html("uncertainty_value"));
-            chTriangle.activationHeight.setNameLabel(T.html("activation_stage"));
-            chTriangle.stricklerCoef.setNameLabel(T.html("strickler_coef"));
-            chTriangle.angle.setNameLabel(T.html("angle"));
-            chTriangle.slope.setNameLabel(T.html("channel_slope"));
-            chTriangle.exponent.setNameLabel(T.html("exponent"));
+            activationHeight.setNameLabel(T.html("activation_stage"));
+            stricklerCoef.setNameLabel(T.html("strickler_coef"));
+            angle.setNameLabel(T.html("angle"));
+            slope.setNameLabel(T.html("channel_slope"));
+            exponent.setNameLabel(T.html("exponent"));
         });
     }
 

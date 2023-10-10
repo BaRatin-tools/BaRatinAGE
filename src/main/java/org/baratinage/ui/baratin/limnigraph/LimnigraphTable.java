@@ -43,12 +43,12 @@ public class LimnigraphTable extends RowColPanel {
 
         appendChild(scrollpane);
 
-        T.t(this, (limniTable) -> {
-            if (limniTable.dataModel.limniDataset == null) {
-                limniTable.setHeaders(new String[] { "" });
+        T.t(this, () -> {
+            if (dataModel.limniDataset == null) {
+                setHeaders(new String[] { "" });
                 return;
             }
-            limniTable.setHeaders(limniTable.dataModel.limniDataset.getHeaders());
+            setHeaders(dataModel.limniDataset.getHeaders());
         });
 
     }

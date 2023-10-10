@@ -51,7 +51,7 @@ public class ControlMatrix extends RowColPanel implements ChangeListener {
         appendChild(controlGridScrollPane, 1);
 
         reversedOrderCheckBox = new JCheckBox(" > Inverser l'ordre des segments");
-        T.t(reversedOrderCheckBox, false, "invert_control_matrix");
+        // T.t(reversedOrderCheckBox, false, "invert_control_matrix");
         reversedOrderCheckBox.setSelected(true);
         reversedOrderCheckBox.addItemListener((e) -> {
             updateControlMatrixView();
@@ -64,6 +64,19 @@ public class ControlMatrix extends RowColPanel implements ChangeListener {
         controls.add(cmc);
 
         updateControlMatrixView();
+
+        T.t(this, reversedOrderCheckBox, false, "invert_control_matrix");
+        T.t(this, this::updateLabelsAndButtons);
+    }
+
+    private void updateLabelsAndButtons() {
+        int nCtrl = controls.size();
+        String nextCtrlText = T.text("control_number", nCtrl + 1);
+        String currCtrlText = T.text("control_number", nCtrl);
+        String addCtrlText = T.html("add_control", nextCtrlText);
+        String delCtrlText = T.html("delete_last_control", currCtrlText);
+        addControlButton.setText(addCtrlText);
+        removeControlButton.setText(delCtrlText);
     }
 
     public boolean getIsReversed() {
@@ -199,14 +212,14 @@ public class ControlMatrix extends RowColPanel implements ChangeListener {
         addControlButton.setText(" > Ajouter un contrôle  (" + "Contrôle #" + (nCtrl + 1) + ")");
         removeControlButton.setText(" > Supprimer le dernier contrôle (" + "Contrôle #" + nCtrl + ")");
 
-        T.t(this, (ctrlMat) -> {
-            String nextCtrlText = T.text("control_number", nCtrl + 1);
-            String currCtrlText = T.text("control_number", nCtrl);
-            String addCtrlText = T.html("add_control", nextCtrlText);
-            String delCtrlText = T.html("delete_last_control", currCtrlText);
-            ctrlMat.addControlButton.setText(addCtrlText);
-            ctrlMat.removeControlButton.setText(delCtrlText);
-        });
+        // T.t(this, (ctrlMat) -> {
+        // String nextCtrlText = T.text("control_number", nCtrl + 1);
+        // String currCtrlText = T.text("control_number", nCtrl);
+        // String addCtrlText = T.html("add_control", nextCtrlText);
+        // String delCtrlText = T.html("delete_last_control", currCtrlText);
+        // ctrlMat.addControlButton.setText(addCtrlText);
+        // ctrlMat.removeControlButton.setText(delCtrlText);
+        // });
         removeControlButton.setEnabled(nCtrl > 1);
     }
 

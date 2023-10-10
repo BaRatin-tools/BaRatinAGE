@@ -67,8 +67,8 @@ public class BaratinProject extends BamProject {
                     return new Hydrograph(uuid, this);
                 });
 
-        T.t(this, (proj) -> {
-            BamItemList strucErrBamItems = proj.BAM_ITEMS.filterByType(BamItemType.STRUCTURAL_ERROR);
+        T.t(this, () -> {
+            BamItemList strucErrBamItems = BAM_ITEMS.filterByType(BamItemType.STRUCTURAL_ERROR);
             for (BamItem item : strucErrBamItems) {
                 ((StructuralErrorModelBamItem) item).updateOutputNames(T.text("discharge"));
             }
@@ -76,8 +76,8 @@ public class BaratinProject extends BamProject {
     }
 
     public void addDefaultBamItems() {
-        addBamItem(BamItemType.STRUCTURAL_ERROR);
-        addBamItem(BamItemType.HYDRAULIC_CONFIG);
+        // addBamItem(BamItemType.STRUCTURAL_ERROR);
+        // addBamItem(BamItemType.HYDRAULIC_CONFIG);
     }
 
     @Override

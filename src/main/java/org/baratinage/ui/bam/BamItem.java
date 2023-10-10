@@ -11,13 +11,14 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import org.baratinage.translation.T;
+import org.baratinage.translation.Translatable;
 import org.baratinage.ui.component.SimpleTextField;
 import org.baratinage.ui.component.Title;
 import org.baratinage.ui.container.GridPanel;
 import org.baratinage.ui.container.RowColPanel;
 import org.json.JSONObject;
 
-abstract public class BamItem extends GridPanel {
+abstract public class BamItem extends GridPanel implements Translatable {
 
     public final BamItemType TYPE;
     public final String ID;
@@ -60,13 +61,13 @@ abstract public class BamItem extends GridPanel {
         setColWeight(0, 1);
         setRowWeight(2, 1);
 
-        T.t(bamItemNameField, (field) -> {
-            field.setPlaceholder(T.text("name"));
-        });
-        T.t(bamItemDescriptionField, (field) -> {
-            field.setPlaceholder(T.text("description"));
-        });
+        T.t(this, this);
+    }
 
+    @Override
+    public void translate() {
+        bamItemNameField.setPlaceholder(T.text("name"));
+        bamItemDescriptionField.setPlaceholder(T.text("name"));
     }
 
     public void setContent(Component component) {

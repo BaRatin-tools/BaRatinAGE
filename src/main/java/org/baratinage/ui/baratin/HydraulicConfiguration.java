@@ -140,10 +140,6 @@ public class HydraulicConfiguration
                 priorRCplotPanel,
                 priorSepecificationPanel);
 
-        T.t(controlMatrixTitle, true, "control_matrix");
-        T.t(priorSpecificationTitle, true, "prior_parameter_specification");
-        T.t(priorRCplotTitle, true, "prior_rating_curve");
-
         // **********************************************************************
         // TAB SYSTEM APPROACH
         // TabContainer mainContainerTab = new TabContainer();
@@ -165,12 +161,26 @@ public class HydraulicConfiguration
         boolean[][] mat = controlMatrix.getControlMatrix();
         updateHydraulicControls(mat);
 
+        T.updateHierarchy(this, controlMatrix);
+        T.updateHierarchy(this, hydraulicControls);
+        T.updateHierarchy(this, priorRatingCurveStageGrid);
+        T.updateHierarchy(this, plotPanel);
+        T.updateHierarchy(this, runPanel);
+        T.updateHierarchy(this, outOufSyncPanel);
+        T.t(this, () -> {
+            controlMatrixTitle.setText(T.html("control_matrix"));
+            priorSpecificationTitle.setText(T.html("prior_parameter_specification"));
+            priorRCplotTitle.setText(T.html("prior_rating_curve"));
+        });
+
     }
 
     private void checkPriorRatingCurveSync() {
+        T.clear(outOufSyncPanel);
         outOufSyncPanel.clear();
         if (jsonStringBackup == null) {
-            T.t(runPanel.runButton, true, "compute_prior_rc");
+            // T.t(runPanel.runButton, true, "compute_prior_rc");
+            T.t(runPanel, runPanel.runButton, true, "compute_prior_rc");
             runPanel.runButton.setForeground(new JButton().getForeground());
             updateUI();
             return;
@@ -185,9 +195,9 @@ public class HydraulicConfiguration
         if (!matching.get("stageGridConfig")) {
             System.out.println("Stage grid config different");
             MsgPanel msg = new MsgPanel(MsgPanel.TYPE.ERROR);
-            T.t(msg.message, true, "oos_stage_grid");
+            T.t(outOufSyncPanel, msg.message, true, "oos_stage_grid");
             JButton revertBackBtn = new JButton();
-            T.t(revertBackBtn, true, "cancel_changes");
+            T.t(outOufSyncPanel, revertBackBtn, true, "cancel_changes");
             revertBackBtn.addActionListener((e) -> {
                 priorRatingCurveStageGrid.fromJSON(
                         backupJson.getJSONObject("stageGridConfig"));
@@ -199,9 +209,9 @@ public class HydraulicConfiguration
         if (!matching.get("controlMatrix")) {
             System.out.println("Control matrix different");
             MsgPanel msg = new MsgPanel(MsgPanel.TYPE.ERROR);
-            T.t(msg.message, true, "oos_control_matrix");
+            T.t(outOufSyncPanel, msg.message, true, "oos_control_matrix");
             JButton revertBackBtn = new JButton();
-            T.t(revertBackBtn, true, "cancel_changes");
+            T.t(outOufSyncPanel, revertBackBtn, true, "cancel_changes");
             revertBackBtn.addActionListener((e) -> {
                 controlMatrix.fromJSON(
                         backupJson.getJSONObject("controlMatrix"));
@@ -230,9 +240,9 @@ public class HydraulicConfiguration
                 if (!controlsMatching) {
                     System.out.println("Hydraulic controls are different");
                     MsgPanel msg = new MsgPanel(MsgPanel.TYPE.ERROR);
-                    T.t(msg.message, true, "oos_hydraulic_controls");
+                    T.t(outOufSyncPanel, msg.message, true, "oos_hydraulic_controls");
                     JButton revertBackBtn = new JButton();
-                    T.t(revertBackBtn, true, "cancel_changes");
+                    T.t(outOufSyncPanel, revertBackBtn, true, "cancel_changes");
                     revertBackBtn.addActionListener((e) -> {
                         hydraulicControls.fromJSON(
                                 backupJson.getJSONObject("hydraulicControls"));
@@ -248,10 +258,10 @@ public class HydraulicConfiguration
             outOufSyncPanel.appendChild(mp);
         }
         if (outOfSyncMessages.size() > 0) {
-            T.t(runPanel.runButton, true, "recompute_prior_rc");
+            T.t(runPanel, runPanel.runButton, true, "recompute_prior_rc");
             runPanel.runButton.setForeground(AppConfig.AC.INVALID_COLOR_FG);
         } else {
-            T.t(runPanel.runButton, true, "compute_prior_rc");
+            T.t(runPanel, runPanel.runButton, true, "compute_prior_rc");
             runPanel.runButton.setForeground(new JButton().getForeground());
         }
         updateUI();

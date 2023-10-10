@@ -43,15 +43,15 @@ public class ChannelRect extends PriorControlPanel {
         addParameter(slope);
         addParameter(exponent);
 
-        T.t(this, (chRect) -> {
-            chRect.setHeaders(
+        T.t(this, () -> {
+            setHeaders(
                     T.html("mean_value"),
                     T.html("uncertainty_value"));
-            chRect.activationHeight.setNameLabel(T.html("activation_stage"));
-            chRect.stricklerCoef.setNameLabel(T.html("strickler_coef"));
-            chRect.width.setNameLabel(T.html("channel_width"));
-            chRect.slope.setNameLabel(T.html("channel_slope"));
-            chRect.exponent.setNameLabel(T.html("exponent"));
+            activationHeight.setNameLabel(T.html("activation_stage"));
+            stricklerCoef.setNameLabel(T.html("strickler_coef"));
+            width.setNameLabel(T.html("channel_width"));
+            slope.setNameLabel(T.html("channel_slope"));
+            exponent.setNameLabel(T.html("exponent"));
         });
     }
 
