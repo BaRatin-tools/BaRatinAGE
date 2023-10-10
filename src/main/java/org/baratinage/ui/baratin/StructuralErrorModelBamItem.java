@@ -62,7 +62,7 @@ public class StructuralErrorModelBamItem extends BamItem implements IStructuralE
                             "<html>N&sim;(&gamma;<sub>1</sub> + &gamma;<sub>2</sub>%s)</html>",
                             nameSymbolUnits[k].symbol()));
 
-            // support only linear model, but with fixced gamma2 set to 0, it is equivalent
+            // support only linear model, but with fixed gamma2 set to 0, it is equivalent
             // to the constant model
             StructuralErrorModelPanel strucErrModelPanel = new StructuralErrorModelPanel();
             strucErrModelPanel.addParameter("&gamma;<sub>1</sub>", nameSymbolUnits[k].unit(),
@@ -70,6 +70,11 @@ public class StructuralErrorModelBamItem extends BamItem implements IStructuralE
             strucErrModelPanel.addParameter("&gamma;<sub>2</sub>", "-",
                     DistributionType.UNIFORM, 0.1, 0, 10000);
             strucErrModelPanels[k] = strucErrModelPanel;
+
+            strucErrModelPanel.addChangeListener((chEvt) -> {
+                fireChangeListeners();
+            });
+
             T.updateHierarchy(this, strucErrModelPanel);
 
             panel.appendChild(parameterNameLabels[k], 0);

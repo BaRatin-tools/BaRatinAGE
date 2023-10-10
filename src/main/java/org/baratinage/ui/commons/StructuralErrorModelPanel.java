@@ -6,6 +6,8 @@ import java.util.List;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JSeparator;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import org.baratinage.jbam.DistributionType;
 import org.baratinage.jbam.Parameter;
@@ -15,7 +17,7 @@ import org.baratinage.translation.T;
 
 import org.json.JSONArray;
 
-public class StructuralErrorModelPanel extends GridPanel {
+public class StructuralErrorModelPanel extends GridPanel implements ChangeListener {
 
     private static final ImageIcon lockIcon = SvgIcon.buildFeatherAppImageIcon(
             "lock.svg");
@@ -68,22 +70,13 @@ public class StructuralErrorModelPanel extends GridPanel {
     public void addParameter(String symbol, String unit, DistributionType distribution, double initialGuess,
             double... parameterValues) {
 
-        int index = parameters.size() + 2;
         ParameterPriorDist gamma = new ParameterPriorDist("gamma_" + parameters.size());
         gamma.setNameLabel("");
         gamma.setSymbolUnitLabels(symbol, unit);
         gamma.setLocalLock(true);
-        parameters.add(gamma);
-
-        insertChild(gamma.symbolUnitLabel, 0, index);
-        insertChild(gamma.initialGuessField, 1, index);
-        insertChild(gamma.distributionField.distributionCombobox, 2, index);
-        insertChild(gamma.distributionField.parameterFieldsPanel, 3, index);
-        insertChild(gamma.lockCheckbox, 4, index);
-
-        T.updateHierarchy(this, gamma);
 
         gamma.setDistributionType(DistributionType.UNIFORM);
+
         int nPars = parameterValues.length;
         Double[] nonPrimitiveParamValues = new Double[nPars];
         for (int k = 0; k < nPars; k++) {
@@ -91,6 +84,23 @@ public class StructuralErrorModelPanel extends GridPanel {
         }
         gamma.setDistributionParameters(nonPrimitiveParamValues);
         gamma.setInitialGuess(initialGuess);
+
+        addParameter(gamma);
+
+    }
+
+    private void addParameter(ParameterPriorDist parameter) {
+        int index = parameters.size() + 2;
+        parameters.add(parameter);
+        insertChild(parameter.symbolUnitLabel, 0, index);
+        insertChild(parameter.initialGuessField, 1, index);
+        insertChild(parameter.distributionField.distributionCombobox, 2, index);
+        insertChild(parameter.distributionField.parameterFieldsPanel, 3, index);
+        insertChild(parameter.lockCheckbox, 4, index);
+
+        parameter.addChangeListener(this);
+
+        T.updateHierarchy(this, parameter);
     }
 
     public Parameter[] getParameters() {
@@ -113,14 +123,38 @@ public class StructuralErrorModelPanel extends GridPanel {
 
     public void fromJSON(JSONArray json) {
         int nPar = json.length();
-        parameters.clear();
+        // parameters.clear();
         for (int k = 0; k < nPar; k++) {
-            ParameterPriorDist ppd = new ParameterPriorDist("gamma_" + k);
-            T.updateHierarchy(this, ppd);
-
-            parameters.add(ppd);
-            ppd.fromJSON(json.getJSONObject(k));
+            // ParameterPriorDist ppd = new ParameterPriorDist("gamma_" + k);
+            // ppd.fromJSON(json.getJSONObject(k));
+            // addParameter(ppd);
+            if (k < parameters.size()) {
+                parameters.get(k).fromJSON(json.getJSONObject(k));
+            } else {
+                System.err.println("StructuralErrorModelPanel Error: number of parameters not matching!");
+            }
         }
+    }
+
+    private final List<ChangeListener> changeListeners = new ArrayList<>();
+
+    public void addChangeListener(ChangeListener l) {
+        changeListeners.add(l);
+    }
+
+    public void removeChangeListener(ChangeListener l) {
+        changeListeners.remove(l);
+    }
+
+    public void fireChangeListeners() {
+        for (ChangeListener l : changeListeners) {
+            l.stateChanged(new ChangeEvent(this));
+        }
+    }
+
+    @Override
+    public void stateChanged(ChangeEvent e) {
+        fireChangeListeners();
     }
 
 }
