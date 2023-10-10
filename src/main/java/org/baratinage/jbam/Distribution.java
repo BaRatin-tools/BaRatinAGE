@@ -3,7 +3,9 @@ package org.baratinage.jbam;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import org.baratinage.jbam.utils.BamFilesHelpers;
@@ -33,8 +35,13 @@ public class Distribution {
         id = UUID.randomUUID().toString();
     }
 
-    public static final String EXE_DIR = BamFilesHelpers.EXE_DIR;
-    public static final String EXE_NAME = "Distribution";
+    private static final String EXE_DIR = BamFilesHelpers.EXE_DIR;
+    private static final String EXE_NAME = "Distribution";
+    private static final int DENSITY_SAMPLES = 100;
+    private static final double DENSITY_RANGE_EDGE = 1e-5;
+    private static final double[] DENSITY_RANGE = new double[] {
+            0d + DENSITY_RANGE_EDGE, 1d - DENSITY_RANGE_EDGE
+    };
 
     public static final String EXE_COMMAND = BamFilesHelpers.OS.startsWith("windows")
             ? Path.of(BamFilesHelpers.EXE_DIR, String.format("%s.exe", EXE_NAME)).toString()
@@ -61,15 +68,30 @@ public class Distribution {
         return String.join(",", valuesString);
     }
 
+    private static Map<String, List<double[]>> memoizedDensities = new HashMap<>();
+
     public List<double[]> getDensity() {
 
         if (density != null) {
             return density;
         }
-
         String parametersArg = doubleArrToStringArg(parameterValues);
 
+        String densityResultKey = type.bamName + "_" + parametersArg;
+
+        // ----------------------------------------------------------
+        // using memoized data
+        if (memoizedDensities.containsKey(densityResultKey)) {
+            System.out.println("Using memoized data");
+            return memoizedDensities.get(densityResultKey);
+        }
+
+        // ----------------------------------------------------------
+        // computing range
         String rangeResFileName = id + "_range.txt";
+
+        String xGridArgRange = DENSITY_RANGE[0] + "," + DENSITY_RANGE[1] + ",2";
+        System.out.println(xGridArgRange);
 
         ExeRun rangeRun = new ExeRun();
         rangeRun.setExeDir(EXE_DIR);
@@ -77,7 +99,7 @@ public class Distribution {
                 "--name", type.bamName,
                 "--parameters", parametersArg,
                 "--action", "q",
-                "--xgrid", "0.00001,0.99999,2",
+                "--xgrid", xGridArgRange,
                 "--result", rangeResFileName);
 
         rangeRun.run();
@@ -87,9 +109,11 @@ public class Distribution {
             System.err.println("Distribution Error: error while reading quantiles result files! Aborting");
             return null;
         }
-        String gridArg = doubleArrToStringArg(rangeRes.get(1)[0], rangeRes.get(1)[1]);
-        gridArg += ",500";
+        String xGridArgDensity = doubleArrToStringArg(rangeRes.get(1)[0], rangeRes.get(1)[1]);
+        xGridArgDensity = xGridArgDensity + "," + DENSITY_SAMPLES;
 
+        // ----------------------------------------------------------
+        // computing density
         String densityResFileName = id + "_density.txt";
 
         ExeRun densityRun = new ExeRun();
@@ -98,7 +122,7 @@ public class Distribution {
                 "--name", type.bamName,
                 "--parameters", parametersArg,
                 "--action", "d",
-                "--xgrid", gridArg,
+                "--xgrid", xGridArgDensity,
                 "--result", densityResFileName);
 
         densityRun.run();
@@ -109,8 +133,11 @@ public class Distribution {
             return null;
         }
 
-        return densityRes;
+        // ----------------------------------------------------------
+        // memoizing
+        memoizedDensities.put(densityResultKey, densityRes);
 
+        return densityRes;
     }
 
     @Override
