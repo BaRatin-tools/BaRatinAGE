@@ -43,6 +43,7 @@ public class T {
 
     static public void setLocale(Locale locale) {
         currentLocale = locale;
+        Locale.setDefault(locale);
         updateTranslations();
     }
 
@@ -137,9 +138,9 @@ public class T {
         if (printList) {
             for (Object o : hierarchy.keySet()) {
                 String oStr = o.toString();
-                oStr = oStr.substring(0, Math.min(oStr.length(), 50));
+                oStr = oStr.substring(0, Math.min(oStr.length(), 40));
                 int n = hierarchy.get(o).size();
-                System.out.println("> " + oStr + "  >  " + n + " children.");
+                System.out.println("> " + oStr + "  >  " + (n < 2 ? n + " child." : n + " children."));
             }
         }
         System.out.println("-------------------------------------------------");
