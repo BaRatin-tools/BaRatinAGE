@@ -262,7 +262,9 @@ public class OneHydraulicControl extends JScrollPane {
         switchModeButton.setText(kacMode ? toPhysicalModeText : toKACmodeText);
         physicalParametersPanel.setVisible(!kacMode);
         kacControlPanel.setGlobalLock(!kacMode);
-        updateKACfromPhysicalControl();
+        if (!kacMode) {
+            updateKACfromPhysicalControl();
+        }
         updateUI();
     }
 

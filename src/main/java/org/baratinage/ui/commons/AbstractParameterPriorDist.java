@@ -40,8 +40,6 @@ public abstract class AbstractParameterPriorDist {
     public JSONObject toJSON() {
         JSONObject json = new JSONObject();
 
-        // json.put("name", ???);
-
         DistributionType distributionType = getDistributionType();
         if (distributionType != null) {
             json.put("distributionBamName", distributionType.bamName);

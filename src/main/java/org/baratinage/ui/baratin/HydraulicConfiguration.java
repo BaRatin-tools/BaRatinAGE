@@ -216,6 +216,7 @@ public class HydraulicConfiguration
                 controlMatrix.fromJSON(
                         backupJson.getJSONObject("controlMatrix"));
                 checkPriorRatingCurveSync();
+                fireChangeListeners();
             });
             msg.addButton(revertBackBtn);
             outOfSyncMessages.add(msg);
@@ -247,6 +248,7 @@ public class HydraulicConfiguration
                         hydraulicControls.fromJSON(
                                 backupJson.getJSONObject("hydraulicControls"));
                         checkPriorRatingCurveSync();
+                        fireChangeListeners();
                     });
                     msg.addButton(revertBackBtn);
                     outOfSyncMessages.add(msg);

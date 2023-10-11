@@ -209,18 +209,8 @@ public class ControlMatrix extends RowColPanel implements ChangeListener {
             }
         }
         controlCheckBoxPanel.updateUI();
-        addControlButton.setText(" > Ajouter un contrôle  (" + "Contrôle #" + (nCtrl + 1) + ")");
-        removeControlButton.setText(" > Supprimer le dernier contrôle (" + "Contrôle #" + nCtrl + ")");
-
-        // T.t(this, (ctrlMat) -> {
-        // String nextCtrlText = T.text("control_number", nCtrl + 1);
-        // String currCtrlText = T.text("control_number", nCtrl);
-        // String addCtrlText = T.html("add_control", nextCtrlText);
-        // String delCtrlText = T.html("delete_last_control", currCtrlText);
-        // ctrlMat.addControlButton.setText(addCtrlText);
-        // ctrlMat.removeControlButton.setText(delCtrlText);
-        // });
         removeControlButton.setEnabled(nCtrl > 1);
+        updateLabelsAndButtons();
     }
 
     @Override

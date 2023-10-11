@@ -108,23 +108,6 @@ public class Gaugings extends BamItem implements ICalibrationData {
         plot.addXYItem(points.get(0));
         plot.addXYItem(points.get(1));
 
-        // T.t(points.get(0), "lgd_active_gaugings");
-        // T.t(points.get(1), "lgd_inactive_gaugings");
-
-        // T.t(() -> {
-        // points.get(0).setLabel(T.text("lgd_active_gaugings"));
-        // });
-
-        // T.t(() -> {
-        // points.get(0).setLabel(T.text("lgd_inactive_gaugings"));
-        // });
-
-        // T.t(plot, (plt) -> {
-        // plt.axisX.setLabel(T.text("stage_level"));
-        // plt.axisY.setLabel(T.text("discharge"));
-        // plt.axisYlog.setLabel(T.text("discharge"));
-        // });
-
         T.clear(plotPanel);
         T.t(plotPanel, () -> {
             points.get(0).setLabel(T.text("lgd_active_gaugings"));
@@ -132,6 +115,7 @@ public class Gaugings extends BamItem implements ICalibrationData {
             plot.axisX.setLabel(T.text("stage_level"));
             plot.axisY.setLabel(T.text("discharge"));
             plot.axisYlog.setLabel(T.text("discharge"));
+            plot.update();
         });
 
         PlotContainer plotContainer = new PlotContainer(plot);
