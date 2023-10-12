@@ -116,6 +116,10 @@ public class T {
     static public void updateTranslations() {
         for (Object object : translatables.keySet()) {
             TranslatableList list = translatables.get(object);
+            if (list == null) {
+                System.err.println("T Error: translatables list is null for the following object > " + object);
+                continue;
+            }
             for (Translatable tr : list) {
                 tr.translate();
             }
