@@ -38,7 +38,10 @@ import org.baratinage.ui.commons.MsgPanel;
 import org.baratinage.ui.commons.StructuralErrorModelBamItem;
 import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.utils.Calc;
-import org.baratinage.utils.JSONcomparator;
+import org.baratinage.utils.json.JSONCompare;
+import org.baratinage.utils.json.JSONCompareResult;
+import org.baratinage.utils.json.JSONFilter;
+import org.baratinage.utils.perf.Throttler;
 import org.json.JSONObject;
 
 public class RatingCurve extends BamItem implements IPredictionMaster, ICalibratedModel, IMcmc {
@@ -72,7 +75,8 @@ public class RatingCurve extends BamItem implements IPredictionMaster, ICalibrat
             HydraulicConfiguration bamItem = (HydraulicConfiguration) hydrauConfParent.getCurrentBamItem();
             runPanel.setModelDefintion(bamItem);
             runPanel.setPriors(bamItem);
-            checkSync();
+
+            Throttler.throttle(ID, AppConfig.AC.THROTTLED_DELAY_MS, this::checkSync);
         });
 
         // **********************************************************
@@ -84,7 +88,8 @@ public class RatingCurve extends BamItem implements IPredictionMaster, ICalibrat
         gaugingsParent.addChangeListener((e) -> {
             Gaugings bamItem = (Gaugings) gaugingsParent.getCurrentBamItem();
             runPanel.setCalibrationData(bamItem);
-            checkSync();
+
+            Throttler.throttle(ID, AppConfig.AC.THROTTLED_DELAY_MS, this::checkSync);
         });
 
         // **********************************************************
@@ -93,10 +98,14 @@ public class RatingCurve extends BamItem implements IPredictionMaster, ICalibrat
         structErrorParent = new BamItemParent(
                 this,
                 BamItemType.STRUCTURAL_ERROR);
+        structErrorParent.setComparisonJSONfilter((JSONObject json) -> {
+            return JSONFilter.filter(json, true, true, "isLocked");
+        });
         structErrorParent.addChangeListener((e) -> {
             StructuralErrorModelBamItem bamItem = (StructuralErrorModelBamItem) structErrorParent.getCurrentBamItem();
             runPanel.setStructuralErrorModel(bamItem);
-            checkSync();
+
+            Throttler.throttle(ID, AppConfig.AC.THROTTLED_DELAY_MS, this::checkSync);
         });
 
         // **********************************************************
@@ -110,7 +119,7 @@ public class RatingCurve extends BamItem implements IPredictionMaster, ICalibrat
 
         ratingCurveStageGrid = new RatingCurveStageGrid();
         ratingCurveStageGrid.addChangeListener((e) -> {
-            checkSync();
+            Throttler.throttle(ID, AppConfig.AC.THROTTLED_DELAY_MS, this::checkSync);
         });
 
         mainConfigPanel.appendChild(hydrauConfParent, 1);
@@ -130,7 +139,8 @@ public class RatingCurve extends BamItem implements IPredictionMaster, ICalibrat
             hydrauConfParent.updateBackup();
             gaugingsParent.updateBackup();
             structErrorParent.updateBackup();
-            checkSync();
+
+            Throttler.throttle(ID, AppConfig.AC.THROTTLED_DELAY_MS, this::checkSync);
         });
 
         resultsPanel = new RatingCurveResults();
@@ -217,8 +227,18 @@ public class RatingCurve extends BamItem implements IPredictionMaster, ICalibrat
         return bamRunConfigAndRes == null ? null : bamRunConfigAndRes.getCalibrationResults();
     }
 
+    private boolean isRatingCurveStageGridInSync() {
+        if (jsonStringBackup == null) {
+            return true;
+        }
+        JSONCompareResult results = JSONCompare.compare(toJSON(), new JSONObject(jsonStringBackup));
+        if (!results.children().containsKey("stageGridConfig")) {
+            return false;
+        }
+        return results.children().get("stageGridConfig").matching();
+    }
+
     private void checkSync() {
-        // FIXME: called too often? Optimization may be possible.
         outdatedPanel.clear();
         T.clear(outdatedPanel);
 
@@ -227,23 +247,23 @@ public class RatingCurve extends BamItem implements IPredictionMaster, ICalibrat
         warnings.addAll(gaugingsParent.getMessages());
         warnings.addAll(structErrorParent.getMessages());
 
+        boolean isStageGridOutOfSync = !isRatingCurveStageGridInSync();
+
         boolean needBamRerun = hydrauConfParent.isBamRerunRequired() ||
                 gaugingsParent.isBamRerunRequired() ||
-                structErrorParent.isBamRerunRequired();
-
-        boolean isStageGridOutOfSync = jsonStringBackup != null &&
-                !JSONcomparator.areMatchingIncluding(toJSON(), jsonStringBackup, "stageGridConfig");
+                structErrorParent.isBamRerunRequired() || isStageGridOutOfSync;
 
         if (isStageGridOutOfSync) {
 
             // FIXME: errorMsg should be a final instance variable to limit memory leak
-            MsgPanel errorMsg = new MsgPanel(MsgPanel.TYPE.ERROR);
+            MsgPanel errorMsg = new MsgPanel(MsgPanel.TYPE.ERROR, true);
             JButton cancelChangeButton = new JButton();
             cancelChangeButton.addActionListener((e) -> {
                 JSONObject json = new JSONObject(jsonStringBackup);
                 JSONObject stageGridJson = json.getJSONObject("stageGridConfig");
                 ratingCurveStageGrid.fromJSON(stageGridJson);
-                checkSync();
+
+                Throttler.throttle(ID, AppConfig.AC.THROTTLED_DELAY_MS, this::checkSync);
             });
             errorMsg.addButton(cancelChangeButton);
             T.t(outdatedPanel, cancelChangeButton, false, "cancel_changes");
@@ -271,7 +291,8 @@ public class RatingCurve extends BamItem implements IPredictionMaster, ICalibrat
 
         // since text within warnings changes, it is necessary to
         // call Lg.updateRegisteredComponents() so changes are accounted for.
-        // Lg.updateRegisteredObject(); // disabled because throws IllegalStateException
+        // T.updateTranslations();
+        // disabled because throws IllegalStateException
         // with SimpleNumberField class
 
         fireChangeListeners();
@@ -353,7 +374,7 @@ public class RatingCurve extends BamItem implements IPredictionMaster, ICalibrat
             System.out.println("RatingCurve: missing 'jsonStringBackup'");
         }
 
-        checkSync();
+        Throttler.throttle(ID, AppConfig.AC.THROTTLED_DELAY_MS, this::checkSync);
     }
 
     @Override

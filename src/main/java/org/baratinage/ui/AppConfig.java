@@ -18,6 +18,8 @@ public class AppConfig {
     public final String ICONS_RESOURCES_DIR;
     public final MainFrame APP_MAIN_FRAME;
 
+    public final int THROTTLED_DELAY_MS = 250;
+
     public final String DEFAULT_RESSOURCE_FILE_KEY = "ui";
     public final String DEFAULT_RESSOURCE_FILE_LOCALE_KEY = "en";
 
