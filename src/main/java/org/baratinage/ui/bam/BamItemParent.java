@@ -2,6 +2,7 @@ package org.baratinage.ui.bam;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -15,7 +16,9 @@ import org.baratinage.ui.AppConfig;
 import org.baratinage.ui.commons.MsgPanel;
 import org.baratinage.ui.component.SimpleComboBox;
 import org.baratinage.ui.container.RowColPanel;
-import org.baratinage.utils.JSONcomparator;
+import org.baratinage.utils.json.JSONCompare;
+import org.baratinage.utils.json.JSONCompareResult;
+import org.baratinage.utils.json.JSONFilter;
 import org.json.JSONObject;
 
 public class BamItemParent extends RowColPanel implements Translatable {
@@ -144,6 +147,12 @@ public class BamItemParent extends RowColPanel implements Translatable {
         excludeKeys = exclude;
     }
 
+    private Function<JSONObject, JSONObject> filter;
+
+    public void setComparisonJSONfilter(Function<JSONObject, JSONObject> filter) {
+        this.filter = filter;
+    }
+
     public BamItem getCurrentBamItem() {
         return currentItem;
     }
@@ -224,10 +233,30 @@ public class BamItemParent extends RowColPanel implements Translatable {
         JSONObject backupItemJson = new JSONObject(backupItemString);
         JSONObject currentItemJson = currentItem.toJSON();
 
-        if (excludeKeys) {
-            return JSONcomparator.areMatchingExcluding(currentItemJson, backupItemJson, comparisonJsonKeys);
+        // if (excludeKeys) {
+        // return JSONcomparator.areMatchingExcluding(currentItemJson, backupItemJson,
+        // comparisonJsonKeys);
+        // } else {
+        // return JSONcomparator.areMatchingIncluding(currentItemJson, backupItemJson,
+        // comparisonJsonKeys);
+        // }
+        if (filter != null) {
+            JSONObject backupFiltered = filter.apply(backupItemJson);
+            JSONObject currentFiltered = filter.apply(currentItemJson);
+
+            JSONCompareResult result = JSONCompare.compare(backupFiltered, currentFiltered);
+
+            return result.matching();
         } else {
-            return JSONcomparator.areMatchingIncluding(currentItemJson, backupItemJson, comparisonJsonKeys);
+
+            JSONObject backupFiltered = JSONFilter.filter(
+                    backupItemJson, false, excludeKeys, comparisonJsonKeys);
+            JSONObject currentFiltered = JSONFilter.filter(
+                    currentItemJson, false, excludeKeys, comparisonJsonKeys);
+
+            JSONCompareResult result = JSONCompare.compare(backupFiltered, currentFiltered);
+
+            return result.matching();
         }
     }
 
