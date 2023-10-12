@@ -1,4 +1,4 @@
-package org.baratinage.utils;
+package org.baratinage.utils.perf;
 
 public class Performance {
 
