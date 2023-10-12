@@ -17,7 +17,6 @@ import org.baratinage.ui.component.SimpleComboBox;
 import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.utils.json.JSONCompare;
 import org.baratinage.utils.json.JSONCompareResult;
-import org.baratinage.utils.json.JSONFilter;
 import org.json.JSONObject;
 
 public class BamItemParent extends RowColPanel {
