@@ -34,9 +34,6 @@ public class BamItemParent extends RowColPanel {
     private BamItemList allItems = new BamItemList();
     private BamItem currentItem = null;
 
-    private boolean excludeKeys = true;
-    private String[] comparisonJsonKeys = new String[] {};
-
     private final SimpleComboBox cb;
 
     private final ChangeListener onBamItemNameChange;
@@ -104,11 +101,6 @@ public class BamItemParent extends RowColPanel {
         }
         return name;
 
-    }
-
-    public void setComparisonJsonKeys(boolean exclude, String... keys) {
-        comparisonJsonKeys = keys;
-        excludeKeys = exclude;
     }
 
     private Function<JSONObject, JSONObject> filter;
@@ -197,31 +189,17 @@ public class BamItemParent extends RowColPanel {
         JSONObject backupItemJson = new JSONObject(backupItemString);
         JSONObject currentItemJson = currentItem.toJSON();
 
-        // if (excludeKeys) {
-        // return JSONcomparator.areMatchingExcluding(currentItemJson, backupItemJson,
-        // comparisonJsonKeys);
-        // } else {
-        // return JSONcomparator.areMatchingIncluding(currentItemJson, backupItemJson,
-        // comparisonJsonKeys);
-        // }
+        JSONObject backupFiltered = backupItemJson;
+        JSONObject currentFiltered = currentItemJson;
+
         if (filter != null) {
-            JSONObject backupFiltered = filter.apply(backupItemJson);
-            JSONObject currentFiltered = filter.apply(currentItemJson);
-
-            JSONCompareResult result = JSONCompare.compare(backupFiltered, currentFiltered);
-
-            return result.matching();
-        } else {
-
-            JSONObject backupFiltered = JSONFilter.filter(
-                    backupItemJson, false, excludeKeys, comparisonJsonKeys);
-            JSONObject currentFiltered = JSONFilter.filter(
-                    currentItemJson, false, excludeKeys, comparisonJsonKeys);
-
-            JSONCompareResult result = JSONCompare.compare(backupFiltered, currentFiltered);
-
-            return result.matching();
+            backupFiltered = filter.apply(backupItemJson);
+            currentFiltered = filter.apply(currentItemJson);
         }
+
+        JSONCompareResult result = JSONCompare.compare(backupFiltered, currentFiltered);
+
+        return result.matching();
     }
 
     public boolean isBamRerunRequired() {

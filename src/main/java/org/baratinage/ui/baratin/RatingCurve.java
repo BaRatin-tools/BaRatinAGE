@@ -68,9 +68,17 @@ public class RatingCurve extends BamItem implements IPredictionMaster, ICalibrat
         hydrauConfParent = new BamItemParent(
                 this,
                 BamItemType.HYDRAULIC_CONFIG);
-        hydrauConfParent.setComparisonJsonKeys(
-                true,
-                "ui", "bamRunId", "jsonStringBackup", "stageGridConfig");
+        hydrauConfParent.setComparisonJSONfilter((JSONObject json) -> {
+            return JSONFilter.filter(json, true, true,
+                    "ui",
+                    "bamRunId",
+                    "jsonStringBackup",
+                    "stageGridConfig",
+                    "allControlOptions",
+                    "controlTypeIndex",
+                    "isKACmode",
+                    "isLocked");
+        });
         hydrauConfParent.addChangeListener((e) -> {
             HydraulicConfiguration bamItem = (HydraulicConfiguration) hydrauConfParent.getCurrentBamItem();
             runPanel.setModelDefintion(bamItem);

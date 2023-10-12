@@ -24,6 +24,7 @@ import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.ui.container.RowColPanel.AXIS;
 import org.baratinage.translation.T;
 import org.baratinage.utils.DateTime;
+import org.baratinage.utils.json.JSONFilter;
 import org.json.JSONObject;
 
 public class Hydrograph extends BamItem implements IPredictionMaster {
@@ -48,7 +49,9 @@ public class Hydrograph extends BamItem implements IPredictionMaster {
         runPanel.setPredictionExperiments(this);
 
         ratingCurveParent = new BamItemParent(this, BamItemType.RATING_CURVE);
-        ratingCurveParent.setComparisonJsonKeys(false, "bamRunId");
+        ratingCurveParent.setComparisonJSONfilter((JSONObject json) -> {
+            return JSONFilter.filter(json, false, false, "bamRunId");
+        });
         ratingCurveParent.addChangeListener((chEvt) -> {
             RatingCurve rc = (RatingCurve) ratingCurveParent.getCurrentBamItem();
             currentRatingCurve = rc;

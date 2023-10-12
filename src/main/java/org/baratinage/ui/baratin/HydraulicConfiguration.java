@@ -189,9 +189,9 @@ public class HydraulicConfiguration
         JSONObject backupJson = new JSONObject(jsonStringBackup);
 
         JSONObject filteredCurrentJson = JSONFilter.filter(currentJson, true, true,
-                "allControlOptions", "controlTypeIndex", "isKACmode");
+                "allControlOptions", "controlTypeIndex", "isKACmode", "isLocked");
         JSONObject filteredBackupJson = JSONFilter.filter(backupJson, true, true,
-                "allControlOptions", "controlTypeIndex", "isKACmode");
+                "allControlOptions", "controlTypeIndex", "isKACmode", "isLocked");
 
         // I need to:
         // - filter out non kac controls /HH kacControl: allControlOptions,
