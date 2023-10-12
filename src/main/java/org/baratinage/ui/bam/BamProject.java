@@ -282,8 +282,16 @@ public abstract class BamProject extends RowColPanel {
 
     public abstract void fromJSON(JSONObject json);
 
-    public void saveProject(String saveFilePath) {
+    private void syncTempDirectoryWithProject() {
 
+        clearTempDirectory();
+
+        registeredFiles.clear();
+
+        // creating the "mainConfigFile" will call the toJSON() method which
+        // will call each BamItem toJSON() method which each are responsible
+        // for writting down the data it needs and registering the data file
+        // including BaM run zip files.
         String mainConfigFilePath = Path.of(AppConfig.AC.APP_TEMP_DIR, "main_config.json").toString();
         File mainConfigFile = new File(mainConfigFilePath);
         try {
@@ -292,6 +300,20 @@ public abstract class BamProject extends RowColPanel {
             System.err.println("BamProject Error: Failed to save file");
             saveError.printStackTrace();
         }
+        registerFile(mainConfigFilePath);
+    }
+
+    static private void clearTempDirectory() {
+        // Clear Temp Directory!
+        for (File file : new File(AppConfig.AC.APP_TEMP_DIR).listFiles()) {
+            if (!file.isDirectory())
+                file.delete();
+        }
+    }
+
+    public void saveProject(String saveFilePath) {
+
+        syncTempDirectoryWithProject();
 
         try {
 
@@ -299,13 +321,6 @@ public abstract class BamProject extends RowColPanel {
             FileOutputStream zipFileOutStream = new FileOutputStream(zipFile);
 
             ZipOutputStream zipOutStream = new ZipOutputStream(zipFileOutStream);
-
-            System.out.println("BamProject: Including file '" + mainConfigFile + "'...");
-            ZipEntry zipEntry = new ZipEntry(mainConfigFile.getName());
-
-            zipOutStream.putNextEntry(zipEntry);
-
-            Files.copy(mainConfigFile.toPath(), zipOutStream);
 
             cleanupRegisteredFile();
             for (File file : registeredFiles) {
@@ -326,11 +341,7 @@ public abstract class BamProject extends RowColPanel {
 
     static public BamProject loadProject(String projectFilePath) {
 
-        // Clear Temp Directory!
-        for (File file : new File(AppConfig.AC.APP_TEMP_DIR).listFiles()) {
-            if (!file.isDirectory())
-                file.delete();
-        }
+        clearTempDirectory();
 
         File projectFile = new File(projectFilePath);
         if (!projectFile.exists()) {
