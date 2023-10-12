@@ -47,6 +47,8 @@ public class BamItemParent extends RowColPanel {
             BamItemType type) {
 
         super(AXIS.COL);
+        setGap(5);
+        setPadding(5);
 
         TYPE = type;
         CHILD = child;
@@ -67,8 +69,8 @@ public class BamItemParent extends RowColPanel {
         messages = new ArrayList<>();
 
         comboboxLabel = new JLabel();
+        comboboxLabel.setIcon(TYPE.getIcon());
 
-        setPadding(5);
         appendChild(comboboxLabel, 0);
         appendChild(cb, 1);
 
@@ -241,6 +243,7 @@ public class BamItemParent extends RowColPanel {
                 MsgPanel syncIssueMsg = new MsgPanel(MsgPanel.TYPE.ERROR);
                 JButton revertToSelectCompBtn = new JButton();
                 JButton createInSyncCompBtn = new JButton();
+                createInSyncCompBtn.setIcon(TYPE.getAddIcon());
 
                 revertToSelectCompBtn.addActionListener((e) -> {
                     if (backupItemId == null) {

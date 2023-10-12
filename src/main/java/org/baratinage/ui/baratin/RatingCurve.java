@@ -146,8 +146,8 @@ public class RatingCurve extends BamItem implements IPredictionMaster, ICalibrat
         resultsPanel = new RatingCurveResults();
 
         outdatedPanel = new RowColPanel(RowColPanel.AXIS.COL);
-        outdatedPanel.setPadding(2);
-        outdatedPanel.setGap(2);
+        outdatedPanel.setPadding(5);
+        outdatedPanel.setGap(5);
         outdatedPanel.setColWeight(0, 1);
 
         mainContentPanel.appendChild(outdatedPanel, 0);
