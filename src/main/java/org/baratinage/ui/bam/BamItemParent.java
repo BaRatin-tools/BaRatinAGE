@@ -11,7 +11,6 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import org.baratinage.translation.T;
-import org.baratinage.translation.Translatable;
 import org.baratinage.ui.AppConfig;
 import org.baratinage.ui.commons.MsgPanel;
 import org.baratinage.ui.component.SimpleComboBox;
@@ -21,16 +20,14 @@ import org.baratinage.utils.json.JSONCompareResult;
 import org.baratinage.utils.json.JSONFilter;
 import org.json.JSONObject;
 
-public class BamItemParent extends RowColPanel implements Translatable {
+public class BamItemParent extends RowColPanel {
 
     private final BamItemType TYPE;
     private final BamItem CHILD;
 
     private final JLabel comboboxLabel;
 
-    private final MsgPanel syncIssueMsg = new MsgPanel(MsgPanel.TYPE.ERROR);
-    private final JButton revertToSelectCompBtn = new JButton();
-    private final JButton createInSyncCompBtn = new JButton();
+    private final List<MsgPanel> messages;
 
     private String backupItemString = null;
     private String backupItemId = null;
@@ -67,41 +64,16 @@ public class BamItemParent extends RowColPanel implements Translatable {
             setCurrentBamItem(selectedIndex);
         });
 
+        messages = new ArrayList<>();
+
         comboboxLabel = new JLabel();
 
         setPadding(5);
         appendChild(comboboxLabel, 0);
         appendChild(cb, 1);
 
-        revertToSelectCompBtn.addActionListener((e) -> {
-            if (backupItemId == null) {
-                return;
-            }
-            BamItem item = allItems.getBamItemWithId(backupItemId);
-            if (item == null) {
-                JOptionPane.showConfirmDialog(
-                        AppConfig.AC.APP_MAIN_FRAME,
-                        T.text("impossible_component_deleted"),
-                        T.text("error"),
-                        JOptionPane.CLOSED_OPTION,
-                        JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-            setCurrentBamItem(item);
-        });
-        createInSyncCompBtn.addActionListener((e) -> {
-            if (backupItemString == null) {
-                return;
-            }
-            BamItem bamItem = CHILD.PROJECT.addBamItem(TYPE);
-            bamItem.fromJSON(new JSONObject(backupItemString));
-            CHILD.PROJECT.setCurrentBamItem(CHILD);
-            setCurrentBamItem(bamItem);
-        });
-
         onBamItemNameChange = (chEvt) -> {
             syncWithBamItemList();
-            // T.updateRegisteredObject(this);
             T.updateTranslation(this);
         };
 
@@ -109,20 +81,10 @@ public class BamItemParent extends RowColPanel implements Translatable {
             fireChangeListeners();
         };
 
-        updateCombobox();
-    }
+        T.t(this, comboboxLabel, false, TYPE.id);
+        T.updateHierarchy(this, messages);
 
-    private void updateMessagesTexts() {
-        String typeText = T.text(TYPE.id);
-        String backupItemName = getBackupItemName();
-        String currentItemName = getCurrentItemName();
-        comboboxLabel.setText(typeText);
-        syncIssueMsg.message.setText(
-                T.html("msg_component_content_out_of_sync", typeText, currentItemName));
-        revertToSelectCompBtn.setText(
-                T.html("btn_revert_component_selection", backupItemName));
-        createInSyncCompBtn.setText(
-                T.html("btn_create_component_from_backup", typeText));
+        updateCombobox();
     }
 
     private String getCurrentItemName() {
@@ -268,18 +230,63 @@ public class BamItemParent extends RowColPanel implements Translatable {
     }
 
     public List<MsgPanel> getMessages() {
-        updateMessagesTexts();
-        List<MsgPanel> messages = new ArrayList<>();
+        messages.clear();
+        T.clear(messages);
+
         if (backupItemString != null && backupItemId != null) {
             boolean inSync = isCurrentInSyncWithBackup();
 
             if (!inSync) {
-                syncIssueMsg.clearButtons();
+
+                MsgPanel syncIssueMsg = new MsgPanel(MsgPanel.TYPE.ERROR);
+                JButton revertToSelectCompBtn = new JButton();
+                JButton createInSyncCompBtn = new JButton();
+
+                revertToSelectCompBtn.addActionListener((e) -> {
+                    if (backupItemId == null) {
+                        return;
+                    }
+                    BamItem item = allItems.getBamItemWithId(backupItemId);
+                    if (item == null) {
+                        JOptionPane.showConfirmDialog(
+                                AppConfig.AC.APP_MAIN_FRAME,
+                                T.text("impossible_component_deleted"),
+                                T.text("error"),
+                                JOptionPane.CLOSED_OPTION,
+                                JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+                    setCurrentBamItem(item);
+                });
+
+                createInSyncCompBtn.addActionListener((e) -> {
+                    if (backupItemString == null) {
+                        return;
+                    }
+                    BamItem bamItem = CHILD.PROJECT.addBamItem(TYPE);
+                    bamItem.fromJSON(new JSONObject(backupItemString));
+                    CHILD.PROJECT.setCurrentBamItem(CHILD);
+                    setCurrentBamItem(bamItem);
+                });
+
                 if (hasSelectionChanged() && allItems.getBamItemWithId(backupItemId) != null) {
                     syncIssueMsg.addButton(revertToSelectCompBtn);
                 }
                 syncIssueMsg.addButton(createInSyncCompBtn);
                 messages.add(syncIssueMsg);
+
+                T.t(messages, () -> {
+                    String typeText = T.text(TYPE.id);
+                    String backupItemName = getBackupItemName();
+                    String currentItemName = getCurrentItemName();
+                    syncIssueMsg.message.setText(
+                            T.html("msg_component_content_out_of_sync", typeText, currentItemName));
+                    revertToSelectCompBtn.setText(
+                            T.html("btn_revert_component_selection", backupItemName));
+                    createInSyncCompBtn.setText(
+                            T.html("btn_create_component_from_backup", typeText));
+                });
+
             }
 
         }
@@ -324,10 +331,4 @@ public class BamItemParent extends RowColPanel implements Translatable {
             l.stateChanged(new ChangeEvent(this));
         }
     }
-
-    @Override
-    public void translate() {
-        updateMessagesTexts();
-    }
-
 }
