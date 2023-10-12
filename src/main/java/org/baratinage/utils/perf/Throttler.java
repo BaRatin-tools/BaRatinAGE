@@ -1,4 +1,4 @@
-package org.baratinage.utils;
+package org.baratinage.utils.perf;
 
 import java.util.HashMap;
 import java.util.Map;
