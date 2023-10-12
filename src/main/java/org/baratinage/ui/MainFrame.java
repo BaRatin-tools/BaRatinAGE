@@ -26,12 +26,8 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.awt.image.DataBuffer;
-import java.awt.image.Raster;
-import java.awt.image.WritableRaster;
 import java.io.File;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -44,8 +40,6 @@ public class MainFrame extends JFrame {
 
     public JMenuBar mainMenuBar;
     public JMenu baratinMenu;
-
-    private List<WritableRaster> rasters = new ArrayList<>();
 
     public MainFrame() {
 
@@ -68,54 +62,9 @@ public class MainFrame extends JFrame {
 
         mainMenuBar = new JMenuBar();
 
-        JMenu debugMenu = new JMenu("DEBUG / DEV");
+        DebugMenu debugMenu = new DebugMenu();
         mainMenuBar.add(debugMenu);
-        JMenuItem gcBtn = new JMenuItem("Garbage collection");
-        debugMenu.add(gcBtn);
-        gcBtn.addActionListener((e) -> {
-            System.gc();
-        });
 
-        JMenuItem tPrintStateBtn = new JMenuItem("T print state");
-        debugMenu.add(tPrintStateBtn);
-        tPrintStateBtn.addActionListener((e) -> {
-            // System.gc();
-            T.printStats(false);
-        });
-        JMenuItem tPrintStateAllBtn = new JMenuItem("T print state complete");
-        debugMenu.add(tPrintStateAllBtn);
-        tPrintStateAllBtn.addActionListener((e) -> {
-            // System.gc();
-            T.printStats(true);
-        });
-        JMenuItem cleanupTranslationBtn = new JMenuItem("Cleanup translations");
-        debugMenu.add(cleanupTranslationBtn);
-        cleanupTranslationBtn.addActionListener((e) -> {
-            // T.cleanup();
-        });
-        JMenuItem remTranslatorsBtn = new JMenuItem("Remove all registered translators");
-        debugMenu.add(remTranslatorsBtn);
-        remTranslatorsBtn.addActionListener((e) -> {
-            T.reset();
-        });
-        JMenuItem lgResetBtn = new JMenuItem("Reload T resources");
-        debugMenu.add(lgResetBtn);
-        lgResetBtn.addActionListener((e) -> {
-            T.reloadResources();
-        });
-
-        JMenuItem allocateHugeRasterBtn = new JMenuItem("Allocate huge Raster");
-        debugMenu.add(allocateHugeRasterBtn);
-        allocateHugeRasterBtn.addActionListener((e) -> {
-            int size = 10000;
-            WritableRaster raster = Raster.createBandedRaster(DataBuffer.TYPE_INT, size, size, 3, new Point(0, 0));
-            rasters.add(raster);
-        });
-        JMenuItem clearRasters = new JMenuItem("Clear Rasters");
-        debugMenu.add(clearRasters);
-        clearRasters.addActionListener((e) -> {
-            rasters.clear();
-        });
         JMenu fileMenu = new JMenu();
         T.t(this, fileMenu, false, "files");
         mainMenuBar.add(fileMenu);
