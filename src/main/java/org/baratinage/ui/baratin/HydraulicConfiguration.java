@@ -3,7 +3,6 @@ package org.baratinage.ui.baratin;
 import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -32,9 +31,9 @@ import org.baratinage.ui.component.SvgIcon;
 import org.baratinage.ui.component.Title;
 import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.ui.container.SplitContainer;
-// import org.baratinage.ui.container.TabContainer;
-import org.baratinage.utils.JSONcomparator;
-import org.json.JSONArray;
+import org.baratinage.utils.json.JSONCompare;
+import org.baratinage.utils.json.JSONCompareResult;
+import org.baratinage.utils.json.JSONFilter;
 import org.json.JSONObject;
 
 public class HydraulicConfiguration
@@ -188,11 +187,30 @@ public class HydraulicConfiguration
 
         JSONObject currentJson = toJSON();
         JSONObject backupJson = new JSONObject(jsonStringBackup);
-        Map<String, Boolean> matching = JSONcomparator.areMatchingByEntry(currentJson, backupJson);
+
+        JSONObject filteredCurrentJson = JSONFilter.filter(currentJson, true, true,
+                "allControlOptions", "controlTypeIndex", "isKACmode");
+        JSONObject filteredBackupJson = JSONFilter.filter(backupJson, true, true,
+                "allControlOptions", "controlTypeIndex", "isKACmode");
+
+        // I need to:
+        // - filter out non kac controls /HH kacControl: allControlOptions,
+        // controlTypeIndex, isKACmode
+        // -
+
+        JSONCompareResult comparison = JSONCompare.compare(
+                filteredBackupJson,
+                filteredCurrentJson);
+
+        if (comparison.matching()) {
+            return;
+        }
 
         List<MsgPanel> outOfSyncMessages = new ArrayList<>();
 
-        if (!matching.get("stageGridConfig")) {
+        JSONCompareResult stageGridComparison = comparison.children().get("stageGridConfig");
+
+        if (!stageGridComparison.matching()) {
             System.out.println("Stage grid config different");
             MsgPanel msg = new MsgPanel(MsgPanel.TYPE.ERROR);
             T.t(outOufSyncPanel, msg.message, true, "oos_stage_grid");
@@ -206,7 +224,10 @@ public class HydraulicConfiguration
             msg.addButton(revertBackBtn);
             outOfSyncMessages.add(msg);
         }
-        if (!matching.get("controlMatrix")) {
+
+        JSONCompareResult controlMatrixComparison = comparison.children().get("controlMatrix");
+
+        if (!controlMatrixComparison.matching()) {
             System.out.println("Control matrix different");
             MsgPanel msg = new MsgPanel(MsgPanel.TYPE.ERROR);
             T.t(outOufSyncPanel, msg.message, true, "oos_control_matrix");
@@ -221,41 +242,29 @@ public class HydraulicConfiguration
             msg.addButton(revertBackBtn);
             outOfSyncMessages.add(msg);
         } else {
-            // check priors only if matrix control match
-            // otherwise, likely to run into some issues
-            // e.g. I want to make sure the number of control matches
-            if (!matching.get("hydraulicControls")) {
 
-                JSONArray currentControls = currentJson.getJSONObject("hydraulicControls").getJSONArray("controls");
-                JSONArray backupControls = backupJson.getJSONObject("hydraulicControls").getJSONArray("controls");
-                boolean controlsMatching = true;
-                for (int k = 0; k < currentControls.length(); k++) {
-                    Map<String, Boolean> matchingControl = JSONcomparator.areMatchingByEntry(
-                            currentControls.getJSONObject(k),
-                            backupControls.getJSONObject(k));
-                    if (!matchingControl.get("kacControl")) {
-                        controlsMatching = false;
-                        break;
-                    }
-                }
-                if (!controlsMatching) {
-                    System.out.println("Hydraulic controls are different");
-                    MsgPanel msg = new MsgPanel(MsgPanel.TYPE.ERROR);
-                    T.t(outOufSyncPanel, msg.message, true, "oos_hydraulic_controls");
-                    JButton revertBackBtn = new JButton();
-                    T.t(outOufSyncPanel, revertBackBtn, true, "cancel_changes");
-                    revertBackBtn.addActionListener((e) -> {
-                        hydraulicControls.fromJSON(
-                                backupJson.getJSONObject("hydraulicControls"));
-                        checkPriorRatingCurveSync();
-                        fireChangeListeners();
-                    });
-                    msg.addButton(revertBackBtn);
-                    outOfSyncMessages.add(msg);
-                }
+            JSONCompareResult hydraulicControlsComparison = comparison.children().get("hydraulicControls");
+
+            if (!hydraulicControlsComparison.matching()) {
+
+                System.out.println("Hydraulic controls are different");
+                MsgPanel msg = new MsgPanel(MsgPanel.TYPE.ERROR);
+                T.t(outOufSyncPanel, msg.message, true, "oos_hydraulic_controls");
+                JButton revertBackBtn = new JButton();
+                T.t(outOufSyncPanel, revertBackBtn, true, "cancel_changes");
+                revertBackBtn.addActionListener((e) -> {
+                    hydraulicControls.fromJSON(
+                            backupJson.getJSONObject("hydraulicControls"));
+                    checkPriorRatingCurveSync();
+                    fireChangeListeners();
+                });
+                msg.addButton(revertBackBtn);
+                outOfSyncMessages.add(msg);
 
             }
+
         }
+
         for (MsgPanel mp : outOfSyncMessages) {
             outOufSyncPanel.appendChild(mp);
         }
