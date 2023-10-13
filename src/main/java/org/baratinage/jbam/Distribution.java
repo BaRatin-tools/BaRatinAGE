@@ -82,7 +82,7 @@ public class Distribution {
         // ----------------------------------------------------------
         // using memoized data
         if (memoizedDensities.containsKey(densityResultKey)) {
-            System.out.println("Using memoized data");
+            System.out.println("Distribution: using memoized density data");
             return memoizedDensities.get(densityResultKey);
         }
 
