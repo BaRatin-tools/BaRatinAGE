@@ -15,10 +15,11 @@ public class Debouncer {
 
         if (debouncedActions.containsKey(id)) {
             Timer timer = debouncedActions.get(id);
-            System.out.println("Canceling debounced action... (" + id + ")");
+            System.out.println("Debouncer: Canceling debounced action... (" + id + ")");
             timer.cancel();
         }
 
+        System.out.println("Debouncer: Setting up debouncer... (" + id + ")");
         Timer timer = new Timer();
         TimerTask task = new TimerTask() {
 
@@ -26,7 +27,7 @@ public class Debouncer {
             public void run() {
                 SwingUtilities.invokeLater(
                         () -> {
-                            System.out.println("Running debounced action... (" + id + ")");
+                            System.out.println("Debouncer: Running debounced action... (" + id + ")");
                             action.run();
                             debouncedActions.remove(id);
                         });

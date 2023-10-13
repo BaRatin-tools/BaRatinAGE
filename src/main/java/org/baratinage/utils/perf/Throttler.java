@@ -14,12 +14,12 @@ public class Throttler {
     public static void throttle(String id, int delayMilliseconds, Runnable action) {
 
         if (throttledActions.containsKey(id)) {
-            System.out.println("Updating throttled action... (" + id + ")");
+            System.out.println("Throttler: Updating throttled action... (" + id + ")");
             throttledActions.put(id, action);
             return;
         }
 
-        System.out.println("Running action to throttle... (" + id + ")");
+        System.out.println("Throttler: Setting up throttler and running action... (" + id + ")");
         action.run();
 
         Timer timer = new Timer();
@@ -31,7 +31,7 @@ public class Throttler {
                         () -> {
                             Runnable throttledAction = throttledActions.get(id);
                             if (throttledAction != null) {
-                                System.out.println("Running throttled action ... (" + id + ")");
+                                System.out.println("Throttler Running throttled action ... (" + id + ")");
                                 throttledAction.run();
                             }
                             throttledActions.remove(id);
