@@ -2,9 +2,9 @@ package org.baratinage.ui.component;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Predicate;
 
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
@@ -12,11 +12,11 @@ import javax.swing.JList;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import javax.swing.plaf.basic.BasicBorders;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.Icon;
 
+import org.baratinage.ui.AppConfig;
 import org.baratinage.ui.container.RowColPanel;
 
 public class SimpleComboBox extends RowColPanel {
@@ -30,37 +30,42 @@ public class SimpleComboBox extends RowColPanel {
         return label;
     }
 
-    private DefaultComboBoxModel<JLabel> model;
-    private JComboBox<JLabel> comboBox;
+    private final CustomListCellRenderer renderer;
+    private final DefaultComboBoxModel<JLabel> model;
+    private final JComboBox<JLabel> comboBox;
     private boolean changeListenersDisabled = false;
 
     private final JLabel defaultEmptyLabel = buildLabel("<html>&mdash;</html>", null);
     private JLabel emptyLabel = defaultEmptyLabel;
 
     public SimpleComboBox() {
+
+        int H = 32;
+
+        Dimension prefDim = this.getPreferredSize();
+        prefDim.width = 100;
+        prefDim.height = H;
+        Dimension minDim = getMinimumSize();
+        minDim.width = 50;
+        minDim.height = H;
+        Dimension maxDim = getMaximumSize();
+        maxDim.height = H;
+
+        setPreferredSize(prefDim);
+        setMinimumSize(minDim);
+        setMinimumSize(maxDim);
+
         model = new DefaultComboBoxModel<>();
         comboBox = new JComboBox<>();
         comboBox.setModel(model);
-        comboBox.setRenderer(new DefaultListCellRenderer() {
-            @Override
-            public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected,
-                    boolean cellHasFocus) {
-                JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected,
-                        cellHasFocus);
-                JLabel originalLabel = (JLabel) value;
-                if (originalLabel != null) {
-                    label.setText(originalLabel.getText());
-                    label.setIcon(originalLabel.getIcon());
-                    label.setBorder(originalLabel.getBorder());
-                }
-                return label;
-            }
-        });
+
+        renderer = new CustomListCellRenderer();
+        comboBox.setRenderer(renderer);
         comboBox.addActionListener((e) -> {
             if (!changeListenersDisabled) {
                 fireChangeListeners();
             }
-            fireValidators();
+            // fireValidators();
         });
         appendChild(comboBox);
     }
@@ -170,31 +175,9 @@ public class SimpleComboBox extends RowColPanel {
         return emptyLabel != null ? size - 1 : size;
     }
 
-    private final List<Predicate<Integer>> validators = new ArrayList<>();
-
-    public void addValidator(Predicate<Integer> validator) {
-        this.validators.add(validator);
-    }
-
-    public void removeValidator(Predicate<Integer> validator) {
-        this.validators.remove(validator);
-    }
-
-    public void fireValidators() {
-        setValidity(true);
-        for (Predicate<Integer> p : validators) {
-            if (!p.test(getSelectedIndex())) {
-                setValidity(false);
-            }
-        }
-    }
-
-    private void setValidity(boolean isValid) {
-        Color color = new Color(125, 255, 125, 0);
-        if (!isValid) {
-            color = new Color(255, 125, 125, 200);
-        }
-        setBorder(new BasicBorders.FieldBorder(color, color, color, color));
+    public void setValidityView(boolean isValid) {
+        renderer.isValid = isValid;
+        repaint();
     }
 
     private final List<ChangeListener> changeListeners = new ArrayList<>();
@@ -213,4 +196,36 @@ public class SimpleComboBox extends RowColPanel {
         }
     }
 
+    private static class CustomListCellRenderer extends DefaultListCellRenderer {
+
+        private static Color REGULAR_BG = null;
+        private static Color INVALID_BG = AppConfig.AC.INVALID_COLOR_BG;
+        private Color currentColor = null;
+        public boolean isValid = true;
+
+        @Override
+        public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected,
+                boolean cellHasFocus) {
+            JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected,
+                    cellHasFocus);
+            JLabel originalLabel = (JLabel) value;
+            if (originalLabel != null) {
+                label.setText(originalLabel.getText());
+                label.setIcon(originalLabel.getIcon());
+                label.setBorder(originalLabel.getBorder());
+            }
+            if (index == -1) {
+                currentColor = isValid ? REGULAR_BG : INVALID_BG;
+            } else {
+                currentColor = null;
+            }
+            return label;
+        }
+
+        @Override
+        public Color getBackground() {
+            return currentColor == null ? super.getBackground() : currentColor;
+        }
+
+    }
 }
