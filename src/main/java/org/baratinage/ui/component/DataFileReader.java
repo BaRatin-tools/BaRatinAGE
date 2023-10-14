@@ -12,8 +12,6 @@ import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JRadioButton;
 import javax.swing.JSeparator;
-import javax.swing.JSpinner;
-import javax.swing.SpinnerNumberModel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.filechooser.FileFilter;
@@ -95,11 +93,6 @@ public class DataFileReader extends RowColPanel {
         // **********************************************************
         // import settings section
 
-        GridPanel importSettingsPanel = new GridPanel();
-        importSettingsPanel.setColWeight(1, 1);
-        importSettingsPanel.setGap(5, 5);
-        importSettingsPanel.setPadding(5);
-
         JLabel separatorLabel = new JLabel(T.text("separator"));
 
         RadioButtons separatorOptions = new RadioButtons();
@@ -113,9 +106,6 @@ public class DataFileReader extends RowColPanel {
         });
         separatorOptions.setSelectedValue("\t");
 
-        importSettingsPanel.insertChild(separatorLabel, 0, 0);
-        importSettingsPanel.insertChild(separatorOptions, 1, 0);
-
         JCheckBox hasHeaderCheckBox = new JCheckBox(T.text("has_header_row"));
         hasHeaderCheckBox.setSelected(hasHeaderRow);
         hasHeaderCheckBox.addActionListener((e) -> {
@@ -123,18 +113,13 @@ public class DataFileReader extends RowColPanel {
             fireChangeListeners();
         });
 
-        importSettingsPanel.insertChild(hasHeaderCheckBox, 0, 1, 2, 1);
-
         JLabel nSkipRowLabel = new JLabel(T.text("n_rows_to_skip"));
-        SpinnerNumberModel spinnerModel = new SpinnerNumberModel(0, 0, Integer.MAX_VALUE, 1);
-        JSpinner nSkipRowField = new JSpinner(spinnerModel);
+        SimpleIntegerField nSkipRowField = new SimpleIntegerField(0, Integer.MAX_VALUE, 1);
+        nSkipRowField.setValue(0);
         nSkipRowField.addChangeListener((e) -> {
-            nRowSkip = (int) nSkipRowField.getValue();
+            nRowSkip = nSkipRowField.getIntValue();
             fireChangeListeners();
         });
-
-        importSettingsPanel.insertChild(nSkipRowLabel, 0, 2);
-        importSettingsPanel.insertChild(nSkipRowField, 1, 2);
 
         JLabel missingValueCodeLabel = new JLabel(T.text("missing_value_code"));
         SimpleTextField missingValueCodeField = new SimpleTextField();
@@ -144,19 +129,41 @@ public class DataFileReader extends RowColPanel {
             fireChangeListeners();
         });
 
-        importSettingsPanel.insertChild(missingValueCodeLabel, 0, 3);
-        importSettingsPanel.insertChild(missingValueCodeField, 1, 3);
-
         JLabel nRowPreloadLabel = new JLabel(T.text("n_rows_to_preload"));
-        SpinnerNumberModel nRowPreloadSpinnerModel = new SpinnerNumberModel(nPreload, 10, Integer.MAX_VALUE, 1);
-        JSpinner nRowPreloadField = new JSpinner(nRowPreloadSpinnerModel);
+        SimpleIntegerField nRowPreloadField = new SimpleIntegerField(10, Integer.MAX_VALUE, 1);
+        nRowPreloadField.setValue(nPreload);
         nRowPreloadField.addChangeListener((e) -> {
-            nPreload = (int) nRowPreloadField.getValue();
+            nPreload = nRowPreloadField.getIntValue();
             fireChangeListeners();
         });
 
-        importSettingsPanel.insertChild(nRowPreloadLabel, 0, 4);
-        importSettingsPanel.insertChild(nRowPreloadField, 1, 4);
+        // **********************************************************
+        // import settings panel
+
+        GridPanel importSettingsPanel = new GridPanel();
+        importSettingsPanel.setColWeight(1, 1);
+        importSettingsPanel.setColWeight(3, 1);
+        importSettingsPanel.setGap(5, 5);
+        importSettingsPanel.setPadding(5);
+
+        int rowIndex = 0;
+
+        importSettingsPanel.insertChild(separatorLabel, 0, rowIndex);
+        importSettingsPanel.insertChild(separatorOptions, 1, rowIndex, 3, 1);
+        rowIndex++;
+
+        importSettingsPanel.insertChild(hasHeaderCheckBox, 0, rowIndex, 2, 1);
+
+        importSettingsPanel.insertChild(nSkipRowLabel, 2, rowIndex);
+        importSettingsPanel.insertChild(nSkipRowField, 3, rowIndex);
+        rowIndex++;
+
+        importSettingsPanel.insertChild(missingValueCodeLabel, 0, rowIndex);
+        importSettingsPanel.insertChild(missingValueCodeField, 1, rowIndex);
+
+        importSettingsPanel.insertChild(nRowPreloadLabel, 2, rowIndex);
+        importSettingsPanel.insertChild(nRowPreloadField, 3, rowIndex);
+        rowIndex++;
 
         // **********************************************************
         // final panel
