@@ -1,6 +1,5 @@
 package org.baratinage.ui.component;
 
-import java.awt.Color;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.text.NumberFormat;
@@ -31,9 +30,6 @@ public class SimpleNumberField extends SimpleTextField {
     }
 
     private List<Predicate<Number>> validators = new ArrayList<>();
-
-    private final Color defaultBg;
-    private final Color invalidBg;
 
     private static String doubleToString(Double value) {
         if (value == null) {
@@ -116,9 +112,6 @@ public class SimpleNumberField extends SimpleTextField {
 
         });
 
-        defaultBg = getBackground();
-        invalidBg = AppConfig.AC.INVALID_COLOR_BG;
-
         updateValidityView();
 
         T.t(this, this::updateTextFieldFromValue);
@@ -151,7 +144,7 @@ public class SimpleNumberField extends SimpleTextField {
     }
 
     private void updateValidityView() {
-        setBackground(isValueValid() ? defaultBg : invalidBg);
+        setValidityView(isValueValid());
     }
 
     public void setValue(Double value) {

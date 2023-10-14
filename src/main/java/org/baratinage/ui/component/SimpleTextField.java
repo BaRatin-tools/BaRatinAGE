@@ -20,7 +20,12 @@ import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
+import org.baratinage.ui.AppConfig;
+
 public class SimpleTextField extends JTextField {
+
+    private static Color REGULAR_BG = new JTextField().getBackground();
+    private static Color INVALID_BG = AppConfig.AC.INVALID_COLOR_BG;
 
     private String placeholder;
     private String innerLabel;
@@ -183,6 +188,10 @@ public class SimpleTextField extends JTextField {
                 return false;
         }
         return true;
+    }
+
+    public void setValidityView(boolean valid) {
+        setBackground(valid ? REGULAR_BG : INVALID_BG);
     }
 
 }
