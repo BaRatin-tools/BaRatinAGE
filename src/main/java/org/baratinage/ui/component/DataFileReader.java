@@ -98,7 +98,7 @@ public class DataFileReader extends RowColPanel {
         SimpleRadioButtons<String> sepRatioButtons = new SimpleRadioButtons<>();
 
         sepRatioButtons.addChangeListener((chEvt) -> {
-            sep = sepRatioButtons.getSelectedId();
+            sep = sepRatioButtons.getSelectedValue();
             fireChangeListeners();
         });
         JRadioButton tabOptBtn = sepRatioButtons.addOption("tab", T.text("sep_tab"), "\t");
