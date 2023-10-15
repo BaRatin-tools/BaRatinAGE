@@ -54,12 +54,10 @@ public class BamItemParent extends RowColPanel {
         });
 
         cb = new SimpleComboBox();
-        cb.addValidator((k) -> {
-            return k >= 0;
-        });
         cb.addChangeListener((chEvt) -> {
             int selectedIndex = cb.getSelectedIndex();
             setCurrentBamItem(selectedIndex);
+            cb.setValidityView(selectedIndex >= 0);
         });
 
         messages = new ArrayList<>();
