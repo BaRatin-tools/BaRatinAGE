@@ -3,7 +3,6 @@ package org.baratinage.ui.baratin.gaugings;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JButton;
@@ -111,12 +110,11 @@ public class GaugingsImporter extends RowColPanel {
             rawData = dataFileReader.getData();
             dataParser.setRawData(rawData, headers, missingValueString);
 
-            List<double[]> data = new ArrayList<>();
-            data.add(dataParser.getDoubleCol(columnsMapping.hCol.getSelectedIndex()));
-            data.add(dataParser.getDoubleCol(columnsMapping.qCol.getSelectedIndex()));
-            data.add(dataParser.getDoubleCol(columnsMapping.uqCol.getSelectedIndex()));
-
-            dataset = GaugingsDataset.buildGaugingDataset(fileName, data);
+            dataset = GaugingsDataset.buildFromData(
+                    fileName,
+                    dataParser.getDoubleCol(columnsMapping.hCol.getSelectedIndex()),
+                    dataParser.getDoubleCol(columnsMapping.qCol.getSelectedIndex()),
+                    dataParser.getDoubleCol(columnsMapping.uqCol.getSelectedIndex()));
 
             dialog.setVisible(false);
 
@@ -151,17 +149,26 @@ public class GaugingsImporter extends RowColPanel {
 
         columnsMapping.setChangeListener(cbChangeListener);
 
-        JLabel hColMapLabel = new JLabel(T.text("stage_level_column"));
-        columnMappingPanel.insertChild(hColMapLabel, 0, 0);
-        columnMappingPanel.insertChild(columnsMapping.hCol, 1, 0);
+        int rowIndex = 0;
 
-        JLabel qColMapLabel = new JLabel(T.text("discharge_column"));
-        columnMappingPanel.insertChild(qColMapLabel, 0, 1);
-        columnMappingPanel.insertChild(columnsMapping.qCol, 1, 1);
+        // JLabel mappingLabel = new JLabel(T.text("columns_selection"));
+        // columnMappingPanel.insertChild(mappingLabel, 0, rowIndex, 2, 1);
+        // rowIndex++;
 
-        JLabel uqColMapLabel = new JLabel(T.text("discharge_uncertainty_column"));
-        columnMappingPanel.insertChild(uqColMapLabel, 0, 2);
-        columnMappingPanel.insertChild(columnsMapping.uqCol, 1, 2);
+        JLabel hColMapLabel = new JLabel(T.text("stage_level"));
+        columnMappingPanel.insertChild(hColMapLabel, 0, rowIndex);
+        columnMappingPanel.insertChild(columnsMapping.hCol, 1, rowIndex);
+        rowIndex++;
+
+        JLabel qColMapLabel = new JLabel(T.text("discharge"));
+        columnMappingPanel.insertChild(qColMapLabel, 0, rowIndex);
+        columnMappingPanel.insertChild(columnsMapping.qCol, 1, rowIndex);
+        rowIndex++;
+
+        JLabel uqColMapLabel = new JLabel(T.text("discharge_uncertainty_percent"));
+        columnMappingPanel.insertChild(uqColMapLabel, 0, rowIndex);
+        columnMappingPanel.insertChild(columnsMapping.uqCol, 1, rowIndex);
+        // rowIndex++;
 
         appendChild(dataFileReader, 0);
         appendChild(dataPreviewPanel, 1);

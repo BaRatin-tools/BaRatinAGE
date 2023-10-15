@@ -66,8 +66,8 @@ public class LimnigraphTable extends RowColPanel {
 
     public void setHeaders(String[] headers) {
         TableColumnModel tableColModel = getTableColumnModel();
-
-        for (int k = 0; k < headers.length; k++) {
+        int n = Math.min(headers.length, tableColModel.getColumnCount());
+        for (int k = 0; k < n; k++) {
             tableColModel.getColumn(k).setHeaderValue(headers[k]);
         }
         tableColModel.getColumn(0).setHeaderValue(T.text("date_time"));
@@ -112,8 +112,8 @@ public class LimnigraphTable extends RowColPanel {
             }
 
             if (columnIndex == 0)
-                return limniDataset.getDateTime(rowIndex);
-            List<double[]> data = limniDataset.getStageMatrix();
+                return limniDataset.getDateTime()[rowIndex];
+            List<double[]> data = limniDataset.getStageErrMatrix();
             if (data.size() >= columnIndex) {
                 double[] column = data.get(columnIndex - 1);
                 if (column.length > rowIndex) {

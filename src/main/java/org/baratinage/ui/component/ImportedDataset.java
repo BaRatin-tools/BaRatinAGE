@@ -1,27 +1,61 @@
 package org.baratinage.ui.component;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+
+import org.baratinage.ui.AppConfig;
+import org.baratinage.ui.bam.BamProject;
 import org.baratinage.ui.bam.IDataset;
 import org.baratinage.utils.ReadFile;
 import org.baratinage.utils.WriteFile;
+import org.json.JSONObject;
 
-public class ImportedDataset implements IDataset {
+public abstract class ImportedDataset implements IDataset {
 
     private String name;
-    private List<double[]> data;
-    private String[] headers;
+    protected List<double[]> data;
+    protected List<String> headers;
 
-    public ImportedDataset(String name, String dataFilePath) {
+    public ImportedDataset(
+            String name,
+            List<double[]> data,
+            String... headers) {
         this.name = name;
+        this.data = data;
+        this.headers = new ArrayList<>(Arrays.asList(headers));
+    }
+
+    public ImportedDataset(JSONObject json) {
+
+        name = json.getString("name");
+
+        int hashCode = json.getInt("hashCode");
+
+        Path dataFilePath = buildDataFilePath(name, hashCode);
+
+        if (Files.exists(dataFilePath)) {
+            System.out.println("ImportedDataset: Reading file '" + dataFilePath + "'...");
+            setDataFromFile(dataFilePath.toString());
+        } else {
+            System.err.println("ImportedDataset Error: File '" + dataFilePath + "' not found!");
+        }
+    }
+
+    private void setDataFromFile(String dataFilePath) {
+        // this.name = name;
         data = new ArrayList<>();
-        headers = new String[] {};
+        headers = new ArrayList<>();
         try {
             String headerLine = ReadFile.getLines(dataFilePath, 1, false)[0];
-            headers = ReadFile.parseString(headerLine, ";", false);
+            headers = new ArrayList<>(Arrays.asList(ReadFile.parseString(headerLine, ";",
+                    false)));
         } catch (IOException e1) {
-            System.out.println("ImportedDataset: Failed to read data file ...(" + dataFilePath + ")");
+            System.out.println("ImportedDataset: Failed to read data file ...(" +
+                    dataFilePath + ")");
             e1.printStackTrace();
         }
 
@@ -35,18 +69,10 @@ public class ImportedDataset implements IDataset {
                     false,
                     false);
         } catch (IOException e2) {
-            System.out.println("ImportedDataset: Failed to read data file ...(" + dataFilePath + ")");
+            System.out.println("ImportedDataset: Failed to read data file ...(" +
+                    dataFilePath + ")");
             e2.printStackTrace();
         }
-    }
-
-    public ImportedDataset(
-            String name,
-            List<double[]> data,
-            String[] headers) {
-        this.name = name;
-        this.data = data;
-        this.headers = headers;
     }
 
     public List<double[]> getData() {
@@ -59,14 +85,14 @@ public class ImportedDataset implements IDataset {
     }
 
     public String[] getHeaders() {
-        return headers;
+        return headers.toArray(new String[headers.size()]);
     }
 
     @Override
     public int hashCode() {
         Integer hashSum = 0;
         for (int k = 0; k < data.size(); k++) {
-            hashSum += headers[k].hashCode();
+            hashSum += headers.get(k).hashCode();
             int s = 0;
             for (Double d : data.get(k)) {
                 s += d.hashCode();
@@ -84,7 +110,7 @@ public class ImportedDataset implements IDataset {
                     data,
                     ";",
                     "NA",
-                    headers);
+                    getHeaders());
         } catch (IOException e) {
             System.err.println("ImportedDataset Error: Failed to write data to file... (" + getDatasetName() + ")");
             e.printStackTrace();
@@ -93,14 +119,14 @@ public class ImportedDataset implements IDataset {
 
     @Override
     public String[] getColumnNames() {
-        return this.headers;
+        return getHeaders();
     }
 
     @Override
     public double[] getColumn(String name) {
         int nCol = getNumberOfColumns();
         for (int k = 0; k < nCol; k++) {
-            if (headers[k].equals(name)) {
+            if (headers.get(k).equals(name)) {
                 return data.get(k);
             }
         }
@@ -140,6 +166,67 @@ public class ImportedDataset implements IDataset {
     @Override
     public String getDatasetName() {
         return name;
+    }
+
+    public JSONObject toJSON(BamProject project) {
+        JSONObject json = new JSONObject();
+
+        String name = getDatasetName();
+        int hashCode = hashCode();
+
+        json.put("name", name);
+        json.put("hashCode", hashCode);
+
+        String dataFilePath = buildDataFilePath(name, hashCode).toString();
+
+        writeDataFile(dataFilePath);
+        project.registerFile(dataFilePath);
+
+        return json;
+    }
+
+    // public void fromJSON(JSONObject json) {
+
+    // }
+
+    private static Path buildDataFilePath(String name, int hashCode) {
+        return Path.of(AppConfig.AC.APP_TEMP_DIR, name + "_" + hashCode + ".txt");
+    }
+
+    protected static double[] toDouble(boolean[] src) {
+        int n = src.length;
+        double[] tgt = new double[n];
+        for (int k = 0; k < n; k++) {
+            tgt[k] = src[k] ? 1d : 0d;
+        }
+        return tgt;
+    }
+
+    protected static boolean[] toBoolean(double[] src) {
+        int n = src.length;
+        boolean[] tgt = new boolean[n];
+        for (int k = 0; k < n; k++) {
+            tgt[k] = src[k] == 1d;
+        }
+        return tgt;
+    }
+
+    protected static double[] toDouble(int[] src) {
+        int n = src.length;
+        double[] tgt = new double[n];
+        for (int k = 0; k < n; k++) {
+            tgt[k] = (double) src[k];
+        }
+        return tgt;
+    }
+
+    protected static int[] toInt(double[] src) {
+        int n = src.length;
+        int[] tgt = new int[n];
+        for (int k = 0; k < n; k++) {
+            tgt[k] = ((Double) src[k]).intValue();
+        }
+        return tgt;
     }
 
 }

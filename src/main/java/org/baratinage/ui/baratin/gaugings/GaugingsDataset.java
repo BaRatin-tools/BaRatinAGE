@@ -6,17 +6,21 @@ import java.util.List;
 import org.baratinage.ui.AppConfig;
 import org.baratinage.ui.component.ImportedDataset;
 import org.baratinage.ui.plot.PlotPoints;
+import org.json.JSONObject;
 
 public class GaugingsDataset extends ImportedDataset {
 
-    public static GaugingsDataset buildGaugingDataset(String name, List<double[]> data) {
+    public static GaugingsDataset buildFromData(String name,
+            double[] stage,
+            double[] discharge,
+            double[] dischargeUncertainty) {
 
-        // WARNINGS:
-        // - data must have three columns! Stage, discharge and discharge uncertainty!
-        // - uncertainty is specified in percent and represents extended (+/-)
-        // uncertainty
+        List<double[]> data = new ArrayList<>();
+        data.add(stage);
+        data.add(discharge);
+        data.add(dischargeUncertainty);
 
-        int nRow = data.get(0).length;
+        int nRow = stage.length;
         double[] gaugingsActiveState = new double[nRow];
         for (int k = 0; k < nRow; k++) {
             gaugingsActiveState[k] = 1;
@@ -28,16 +32,16 @@ public class GaugingsDataset extends ImportedDataset {
         return new GaugingsDataset(name, data, headers);
     }
 
-    public static GaugingsDataset buildGaugingDataset(String name, String dataFilePath) {
-        return new GaugingsDataset(name, dataFilePath);
+    public static GaugingsDataset buildFromJSON(JSONObject json) {
+        return new GaugingsDataset(json);
     }
 
     private GaugingsDataset(String name, List<double[]> data, String[] headers) {
         super(name, data, headers);
     }
 
-    private GaugingsDataset(String name, String dataFilePath) {
-        super(name, dataFilePath);
+    private GaugingsDataset(JSONObject json) {
+        super(json);
     }
 
     public double[] getStageValues() {
@@ -92,13 +96,7 @@ public class GaugingsDataset extends ImportedDataset {
     }
 
     public boolean[] getActiveStateAsBoolean() {
-        int nRow = getNumberOfRows();
-        double[] activeStateAsDouble = getActiveStateAsDouble();
-        boolean[] activeStateAsBoolean = new boolean[activeStateAsDouble.length];
-        for (int k = 0; k < nRow; k++) {
-            activeStateAsBoolean[k] = activeStateAsDouble[k] == 1.0;
-        }
-        return activeStateAsBoolean;
+        return toBoolean(getActiveStateAsDouble());
     }
 
     public Gauging getGauging(int gaugingIndex) {

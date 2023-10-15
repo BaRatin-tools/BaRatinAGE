@@ -1,7 +1,5 @@
 package org.baratinage.ui.baratin;
 
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.List;
 
 import javax.swing.BorderFactory;
@@ -13,7 +11,6 @@ import org.baratinage.jbam.CalibrationData;
 import org.baratinage.jbam.UncertainData;
 import org.baratinage.jbam.utils.BamFilesHelpers;
 
-import org.baratinage.ui.AppConfig;
 import org.baratinage.ui.bam.BamItem;
 import org.baratinage.ui.bam.ICalibrationData;
 import org.baratinage.ui.baratin.gaugings.GaugingsDataset;
@@ -168,25 +165,13 @@ public class Gaugings extends BamItem implements ICalibrationData {
                 getOutputs());
     }
 
-    private static String buildDataFileName(String name, int hashCode) {
-        return name + "_" + hashCode + ".txt";
-    }
-
     @Override
     public JSONObject toJSON() {
 
         JSONObject json = new JSONObject();
 
         if (gaugingDataset != null) {
-            JSONObject gaugingDatasetJson = new JSONObject();
-            gaugingDatasetJson.put("name", gaugingDataset.getDatasetName());
-            gaugingDatasetJson.put("hashCode", gaugingDataset.hashCode());
-            json.put("gaugingDataset", gaugingDatasetJson);
-            String dataFilePath = Path.of(AppConfig.AC.APP_TEMP_DIR, buildDataFileName(
-                    gaugingDataset.getDatasetName(),
-                    gaugingDataset.hashCode())).toString();
-            gaugingDataset.writeDataFile(dataFilePath);
-            registerFile(dataFilePath);
+            json.put("gaugingDataset", gaugingDataset.toJSON(PROJECT));
         }
 
         return json;
@@ -197,17 +182,7 @@ public class Gaugings extends BamItem implements ICalibrationData {
 
         if (json.has("gaugingDataset")) {
             JSONObject gaugingDatasetJson = json.getJSONObject("gaugingDataset");
-            String name = gaugingDatasetJson.getString("name");
-            int hashCode = gaugingDatasetJson.getInt("hashCode");
-
-            String dataFilePath = Path.of(AppConfig.AC.APP_TEMP_DIR, buildDataFileName(name, hashCode))
-                    .toString();
-            if (Files.exists(Path.of(dataFilePath))) {
-                System.out.println("Gaugings: Reading file '" + dataFilePath + "'...");
-                gaugingDataset = GaugingsDataset.buildGaugingDataset(name, dataFilePath);
-            } else {
-                System.err.println("Gaugings Error: File '" + dataFilePath + "' not found!");
-            }
+            gaugingDataset = GaugingsDataset.buildFromJSON(gaugingDatasetJson);
             updateTable();
         }
     }

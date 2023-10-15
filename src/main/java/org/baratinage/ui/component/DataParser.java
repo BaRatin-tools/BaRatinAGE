@@ -28,7 +28,7 @@ import org.baratinage.ui.container.RowColPanel;
 public class DataParser extends RowColPanel {
 
     private enum COL_TYPE {
-        DOUBLE, DATETIME
+        INT, DOUBLE, DATETIME
     }
 
     private record ColSettings(
@@ -57,6 +57,24 @@ public class DataParser extends RowColPanel {
         try {
             Double d = Double.parseDouble(v);
             return !(d == null || d.isNaN());
+        } catch (Exception e) {
+            return false;
+        }
+    };
+
+    private static final Function<String, Integer> TO_INT = (String v) -> {
+        try {
+            Integer i = Integer.parseInt(v);
+            return i == null ? -9999 : i;
+        } catch (Exception e) {
+            return -9999;
+        }
+    };
+
+    private static final Predicate<String> INT_VALIDATOR = (String v) -> {
+        try {
+            Integer i = Integer.parseInt(v);
+            return !(i == null);
         } catch (Exception e) {
             return false;
         }
@@ -119,12 +137,15 @@ public class DataParser extends RowColPanel {
         TableColumnModel tableColModel = tableHeader.getColumnModel();
 
         CustomCellRenderer doubleColRenderer = new CustomCellRenderer(missingValueCode, DOUBLE_VALIDATOR);
+        CustomCellRenderer intColRenderer = new CustomCellRenderer(missingValueCode, INT_VALIDATOR);
 
         for (int k = 0; k < nCol; k++) {
             TableColumn tableCol = tableColModel.getColumn(k);
             ColSettings cs = colSettings.get(k);
             if (cs == null) {
                 tableCol.setCellRenderer(IGNORE_COL_RENDERER);
+            } else if (cs.type == COL_TYPE.INT) {
+                tableCol.setCellRenderer(intColRenderer);
             } else if (cs.type == COL_TYPE.DOUBLE) {
                 tableCol.setCellRenderer(doubleColRenderer);
             } else if (cs.type == COL_TYPE.DATETIME) {
@@ -145,8 +166,12 @@ public class DataParser extends RowColPanel {
         colSettings.remove(colIndex);
     }
 
+    public void setAsIntCol(int colIndex) {
+        colSettings.put(colIndex, new ColSettings(COL_TYPE.INT, null));
+    }
+
     public void setAsDoubleCol(int colIndex) {
-        colSettings.put(colIndex, new ColSettings(COL_TYPE.DOUBLE, ""));
+        colSettings.put(colIndex, new ColSettings(COL_TYPE.DOUBLE, null));
     }
 
     public void setAsDateTimeCol(int colIndex, String format) {
@@ -175,6 +200,23 @@ public class DataParser extends RowColPanel {
             }
         }
         return true;
+    }
+
+    public int[] getIntCol(int colIndex) {
+        Function<String, Integer> converter = (String v) -> {
+            if (v.equals(missingValueCode)) {
+                return -9999;
+            } else {
+                return TO_INT.apply(v);
+            }
+        };
+        String[] rawCol = rawData.get(colIndex);
+        int n = rawCol.length;
+        int[] col = new int[n];
+        for (int k = 0; k < n; k++) {
+            col[k] = converter.apply(rawCol[k]);
+        }
+        return col;
     }
 
     public double[] getDoubleCol(int colIndex) {

@@ -1,5 +1,8 @@
 package org.baratinage.ui.baratin.limnigraph;
 
+// import java.awt.Color;
+// import javax.swing.border.MatteBorder;
+
 import java.awt.Component;
 import java.awt.Dimension;
 import java.nio.file.Path;
@@ -8,7 +11,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JButton;
-import javax.swing.JCheckBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JSeparator;
@@ -22,151 +24,47 @@ import org.baratinage.ui.component.SimpleComboBox;
 import org.baratinage.ui.component.SimpleTextField;
 import org.baratinage.ui.container.GridPanel;
 import org.baratinage.ui.container.RowColPanel;
+import org.baratinage.utils.Misc;
+import org.baratinage.utils.perf.Throttler;
 import org.baratinage.translation.T;
 
 public class LimnigraphImporter extends RowColPanel {
+
+    private final String ID;
 
     private List<String[]> rawData;
     private String[] headers;
     private String missingValueString;
 
-    private SimpleComboBox timeColComboBox;
-    private SimpleTextField timeColFormatField;
-
-    private JCheckBox stageAllColumnsCheckBox;
-    private SimpleComboBox stageColComboBox;
-
-    private JDialog dialog;
-    private RowColPanel dataPreviewPanel;
     private LimnigraphDataset dataset;
+    private JDialog dialog;
+
+    private final SimpleComboBox timeColComboBox;
+    private final SimpleTextField timeColFormatField;
+    private final SimpleComboBox stageColComboBox;
+
+    private final SimpleComboBox nonSysStdComboBox;
+    private final SimpleComboBox sysStdComboBox;
+    private final SimpleComboBox sysIndComboBox;
+
+    private final JButton validateButton;
+
+    private final RowColPanel dataPreviewPanel;
+
+    private final DataParser dataParser;
 
     public LimnigraphImporter() {
         super(AXIS.COL);
 
+        ID = Misc.getTimeStampedId();
+
+        // ********************************************************
+        // Time related fields
+
         timeColComboBox = new SimpleComboBox();
         timeColFormatField = new SimpleTextField();
 
-        stageColComboBox = new SimpleComboBox();
-        stageAllColumnsCheckBox = new JCheckBox(T.text("use_all_columns_for_stage"));
-        stageAllColumnsCheckBox.setSelected(true);
-        stageAllColumnsCheckBox.addChangeListener((chEvt) -> {
-            stageColComboBox.setEnabled(!stageAllColumnsCheckBox.isSelected());
-        });
-        dataset = null;
-
-        dataPreviewPanel = new RowColPanel();
-
-        DataFileReader dataFileReader = new DataFileReader();
-        DataParser dataParser = new DataParser();
-
-        dataPreviewPanel.appendChild(dataParser);
-
-        dataFileReader.addChangeListener((chEvt) -> {
-
-            rawData = dataFileReader.getData(dataFileReader.nPreload);
-            headers = dataFileReader.getHeaders();
-            missingValueString = dataFileReader.missingValueString;
-
-            dataParser.setRawData(rawData, headers, missingValueString);
-
-            int nItems = timeColComboBox.getItemCount();
-            int timeIndex = timeColComboBox.getSelectedIndex();
-            int stageIndex = stageColComboBox.getSelectedIndex();
-
-            timeColComboBox.setItems(headers);
-            stageColComboBox.setItems(headers);
-
-            if (nItems == headers.length) {
-                timeColComboBox.setSelectedItem(timeIndex);
-                stageColComboBox.setSelectedItem(stageIndex);
-            }
-        });
-
-        RowColPanel actionPanel = new RowColPanel();
-        actionPanel.setPadding(5);
-        actionPanel.setGap(5);
-        JButton validateButton = new JButton(T.text("import"));
-        validateButton.setEnabled(false);
-        validateButton.addActionListener((e) -> {
-            String filePath = dataFileReader.getFilePath();
-            String fileName = Path.of(filePath).getFileName().toString();
-
-            dataParser.setRawData(dataFileReader.getData(), headers, fileName);
-
-            int dateTimeColIndex = timeColComboBox.getSelectedIndex();
-            LocalDateTime[] dateTimeVector = dataParser.getDateTimeCol(
-                    dateTimeColIndex,
-                    timeColFormatField.getText());
-            List<double[]> stageData = new ArrayList<>();
-            if (stageAllColumnsCheckBox.isSelected()) {
-                for (int k = 0; k < rawData.size(); k++) {
-                    if (k != dateTimeColIndex) {
-                        stageData.add(dataParser.getDoubleCol(k));
-                    }
-                }
-            } else {
-                int stageColIndex = stageColComboBox.getSelectedIndex();
-                stageData.add(dataParser.getDoubleCol(stageColIndex));
-            }
-            dataset = LimnigraphDataset.buildLimnigraphDataset(fileName, dateTimeVector, stageData);
-            dialog.setVisible(false);
-
-        });
-        JButton cancelButton = new JButton(T.text("cancel"));
-        cancelButton.addActionListener((e) -> {
-            dialog.setVisible(false);
-        });
-
-        actionPanel.appendChild(cancelButton, 0);
-        actionPanel.appendChild(new Component() {
-        }, 1);
-        actionPanel.appendChild(validateButton, 0);
-
-        GridPanel columnMappingPanel = new GridPanel();
-        columnMappingPanel.setPadding(5);
-        columnMappingPanel.setGap(5);
-        columnMappingPanel.setColWeight(1, 1);
-
-        ChangeListener cbChangeListener = (chEvt) -> {
-            if (rawData == null) {
-                return;
-            }
-            dataParser.ignoreAll();
-
-            int timeColIndex = timeColComboBox.getSelectedIndex();
-            dataParser.setAsDateTimeCol(timeColIndex, timeColFormatField.getText());
-            boolean isTimeVectorValid = dataParser.testColValidity(timeColIndex);
-
-            boolean areStageVectorsValid = true;
-            if (stageAllColumnsCheckBox.isSelected()) {
-                for (int k = 0; k < rawData.size(); k++) {
-                    if (k == timeColIndex)
-                        continue;
-                    dataParser.setAsDoubleCol(k);
-                    if (!dataParser.testColValidity(k)) {
-                        areStageVectorsValid = false;
-                    }
-                }
-            } else {
-                int stageColIndex = stageColComboBox.getSelectedIndex();
-                dataParser.setAsDoubleCol(stageColIndex);
-                areStageVectorsValid = dataParser.testColValidity(stageColIndex);
-            }
-
-            dataParser.setRawData(rawData, headers, missingValueString);
-
-            validateButton.setEnabled(isTimeVectorValid && areStageVectorsValid);
-
-        };
-
-        timeColComboBox.addChangeListener(cbChangeListener);
-        timeColFormatField.addChangeListener(cbChangeListener);
-        stageAllColumnsCheckBox.addChangeListener(cbChangeListener);
-        stageColComboBox.addChangeListener(cbChangeListener);
-
-        JLabel timeColMappingLabel = new JLabel(T.text("date_time_column"));
-        columnMappingPanel.insertChild(timeColMappingLabel, 0, 0);
-        columnMappingPanel.insertChild(timeColComboBox, 1, 0);
+        JLabel timeColMappingLabel = new JLabel(T.text("date_time"));
 
         JLabel timeColFormatLabel = new JLabel(T.text("date_time_format"));
         timeColFormatField.setText("y/M/d H:m:s");
@@ -182,14 +80,154 @@ public class LimnigraphImporter extends RowColPanel {
                         "yyyy-MM-dd HH:mm:ss = 2005-07-26 14:32:09" +
                         "</code></html>");
 
-        columnMappingPanel.insertChild(timeColFormatLabel, 0, 1);
-        columnMappingPanel.insertChild(timeColFormatField, 1, 1);
-        columnMappingPanel.insertChild(timeFormatDetails, 1, 2, 2, 1);
+        // ********************************************************
+        // Stage related fields
 
-        columnMappingPanel.insertChild(stageAllColumnsCheckBox, 0, 3, 2, 1);
-        JLabel stageColLabel = new JLabel(T.text("stage_level_column"));
-        columnMappingPanel.insertChild(stageColLabel, 0, 4);
-        columnMappingPanel.insertChild(stageColComboBox, 1, 4);
+        stageColComboBox = new SimpleComboBox();
+        JLabel stageColLabel = new JLabel(T.text("stage_level"));
+
+        nonSysStdComboBox = new SimpleComboBox();
+        JLabel nonSysStdLabel = new JLabel(T.text("stage_non_sys_error_std"));
+
+        sysStdComboBox = new SimpleComboBox();
+        JLabel sysStdLabel = new JLabel(T.text("stage_sys_error_std"));
+
+        sysIndComboBox = new SimpleComboBox();
+        JLabel sysIndLabel = new JLabel(T.text("stage_sys_error_ind"));
+
+        // ********************************************************
+        // Import configuration panel layout
+
+        GridPanel columnMappingPanel = new GridPanel();
+        columnMappingPanel.setPadding(5);
+        columnMappingPanel.setGap(5);
+        columnMappingPanel.setColWeight(1, 1);
+
+        int rowIndex = 0;
+
+        // JLabel mappingLabel = new JLabel();
+        // mappingLabel.setText(T.text("columns_selection"));
+        // mappingLabel.setBorder(new MatteBorder(0, 0, 1, 0, Color.black));
+        // columnMappingPanel.insertChild(mappingLabel, 0, rowIndex, 2, 1);
+        // rowIndex++;
+
+        columnMappingPanel.insertChild(timeColMappingLabel, 0, rowIndex);
+        columnMappingPanel.insertChild(timeColComboBox, 1, rowIndex);
+        rowIndex++;
+
+        columnMappingPanel.insertChild(timeColFormatLabel, 0, rowIndex);
+        columnMappingPanel.insertChild(timeColFormatField, 1, rowIndex);
+        rowIndex++;
+
+        columnMappingPanel.insertChild(timeFormatDetails, 0, rowIndex, 2, 1);
+        rowIndex++;
+
+        columnMappingPanel.insertChild(stageColLabel, 0, rowIndex);
+        columnMappingPanel.insertChild(stageColComboBox, 1, rowIndex);
+        rowIndex++;
+
+        columnMappingPanel.insertChild(nonSysStdLabel, 0, rowIndex);
+        columnMappingPanel.insertChild(nonSysStdComboBox, 1, rowIndex);
+        rowIndex++;
+
+        columnMappingPanel.insertChild(sysStdLabel, 0, rowIndex);
+        columnMappingPanel.insertChild(sysStdComboBox, 1, rowIndex);
+        rowIndex++;
+
+        columnMappingPanel.insertChild(sysIndLabel, 0, rowIndex);
+        columnMappingPanel.insertChild(sysIndComboBox, 1, rowIndex);
+        rowIndex++;
+
+        // ********************************************************
+        // dataset preview panel
+
+        dataset = null;
+
+        dataPreviewPanel = new RowColPanel();
+
+        DataFileReader dataFileReader = new DataFileReader();
+        dataParser = new DataParser();
+
+        dataPreviewPanel.appendChild(dataParser);
+
+        dataFileReader.addChangeListener((chEvt) -> {
+
+            rawData = dataFileReader.getData(dataFileReader.nPreload);
+            headers = dataFileReader.getHeaders();
+            missingValueString = dataFileReader.missingValueString;
+
+            dataParser.setRawData(rawData, headers, missingValueString);
+
+            int nItems = timeColComboBox.getItemCount();
+            int timeIndex = timeColComboBox.getSelectedIndex();
+            int stageIndex = stageColComboBox.getSelectedIndex();
+            int nonSysStdIndex = nonSysStdComboBox.getSelectedIndex();
+            int sysStdIndex = sysStdComboBox.getSelectedIndex();
+            int sysIndIndex = sysIndComboBox.getSelectedIndex();
+
+            timeColComboBox.setItems(headers);
+            stageColComboBox.setItems(headers);
+            nonSysStdComboBox.setItems(headers);
+            sysStdComboBox.setItems(headers);
+            sysIndComboBox.setItems(headers);
+
+            if (nItems == headers.length) {
+                timeColComboBox.setSelectedItem(timeIndex);
+                stageColComboBox.setSelectedItem(stageIndex);
+                nonSysStdComboBox.setSelectedItem(nonSysStdIndex);
+                sysStdComboBox.setSelectedItem(sysStdIndex);
+                sysIndComboBox.setSelectedItem(sysIndIndex);
+            }
+        });
+
+        // ********************************************************
+        // action buttons
+
+        RowColPanel actionPanel = new RowColPanel();
+        actionPanel.setPadding(5);
+        actionPanel.setGap(5);
+        validateButton = new JButton(T.text("import"));
+        validateButton.setEnabled(false);
+        validateButton.addActionListener((e) -> {
+            String filePath = dataFileReader.getFilePath();
+            String fileName = Path.of(filePath).getFileName().toString();
+
+            dataParser.setRawData(dataFileReader.getData(), headers, fileName);
+
+            int dateTimeColIndex = timeColComboBox.getSelectedIndex();
+            LocalDateTime[] dateTimeVector = dataParser.getDateTimeCol(
+                    dateTimeColIndex,
+                    timeColFormatField.getText());
+            int stageColIndex = stageColComboBox.getSelectedIndex();
+            double[] stage = dataParser.getDoubleCol(stageColIndex);
+            dataset = LimnigraphDataset.buildLimnigraphDataset(fileName, dateTimeVector, stage);
+
+            int nonSysInd = nonSysStdComboBox.getSelectedIndex();
+            if (nonSysInd >= 0) {
+                dataset.addNonSysError(dataParser.getDoubleCol(nonSysInd));
+            }
+            int sysStdInd = sysStdComboBox.getSelectedIndex();
+            int sysIndInd = sysIndComboBox.getSelectedIndex();
+            if (sysStdInd >= 0 && sysIndInd >= 0) {
+                dataset.addSysError(
+                        dataParser.getDoubleCol(sysStdInd),
+                        dataParser.getIntCol(sysIndInd));
+            }
+            dialog.setVisible(false);
+
+        });
+        JButton cancelButton = new JButton(T.text("cancel"));
+        cancelButton.addActionListener((e) -> {
+            dialog.setVisible(false);
+        });
+
+        actionPanel.appendChild(cancelButton, 0);
+        actionPanel.appendChild(new Component() {
+        }, 1);
+        actionPanel.appendChild(validateButton, 0);
+
+        // ********************************************************
+        // final import panel layout
 
         appendChild(dataFileReader, 0);
         appendChild(dataPreviewPanel, 1);
@@ -197,6 +235,96 @@ public class LimnigraphImporter extends RowColPanel {
         appendChild(columnMappingPanel, 0);
         appendChild(new JSeparator(), 0);
         appendChild(actionPanel, 0);
+
+        // ********************************************************
+        // react to change in user inputs (preview table and import button)
+
+        ChangeListener cbChangeListener = (chEvt) -> {
+            Throttler.throttle(ID, AppConfig.AC.THROTTLED_DELAY_MS, this::updateValidityStatus);
+        };
+
+        timeColComboBox.addChangeListener(cbChangeListener);
+        timeColFormatField.addChangeListener(cbChangeListener);
+        stageColComboBox.addChangeListener(cbChangeListener);
+        nonSysStdComboBox.addChangeListener(cbChangeListener);
+        sysStdComboBox.addChangeListener(cbChangeListener);
+        sysIndComboBox.addChangeListener(cbChangeListener);
+
+    }
+
+    private void updateValidityStatus() {
+        List<Integer> usedColumns = new ArrayList<>();
+
+        // time and stage vector are mandatory
+        int timeInd = timeColComboBox.getSelectedIndex();
+        boolean timeOk = timeInd >= 0;
+        if (timeInd >= 0) {
+            usedColumns.add(timeInd);
+        }
+        int stageInd = stageColComboBox.getSelectedIndex();
+        boolean stageOk = stageInd >= 0 && !usedColumns.contains(stageInd);
+        if (stageInd >= 0) {
+            usedColumns.add(stageInd);
+        }
+
+        // non-sys error
+
+        int nonSysStdInd = nonSysStdComboBox.getSelectedIndex();
+
+        // if sys std specified sys ind must also be set
+        int sysStdInd = sysStdComboBox.getSelectedIndex();
+        int sysIndInd = sysIndComboBox.getSelectedIndex();
+        boolean sysStdOk = ((sysStdInd >= 0 && sysIndInd >= 0) ||
+                (sysStdInd < 0 && sysIndInd < 0)) &&
+                !usedColumns.contains(sysStdInd) &&
+                !usedColumns.contains(sysIndInd);
+        if (sysStdInd >= 0) {
+            usedColumns.add(sysStdInd);
+        }
+        if (sysIndInd >= 0) {
+            usedColumns.add(sysIndInd);
+        }
+
+        // if there's data, update preview
+        if (rawData != null) {
+
+            dataParser.ignoreAll();
+            dataParser.setAsDateTimeCol(timeInd, timeColFormatField.getText());
+
+            dataParser.setAsDoubleCol(stageInd);
+
+            dataParser.setAsDoubleCol(nonSysStdInd);
+            dataParser.setAsDoubleCol(sysStdInd);
+            dataParser.setAsIntCol(sysIndInd);
+
+            dataParser.setRawData(rawData, headers, missingValueString);
+
+        }
+
+        // final data validty check, according to dataParser
+
+        boolean timeFormatOk = dataParser.testColValidity(timeInd);
+        timeOk = timeOk && timeFormatOk;
+        stageOk = stageOk && dataParser.testColValidity(stageInd);
+
+        boolean nonSysStdOk = true;
+        if (nonSysStdInd >= 0) {
+            nonSysStdOk = dataParser.testColValidity(nonSysStdInd);
+        }
+        if (sysStdInd >= 0 && sysIndInd >= 0) {
+            sysStdOk = sysStdOk &&
+                    dataParser.testColValidity(sysStdInd) &&
+                    dataParser.testColValidity(sysIndInd);
+        }
+
+        // update ui
+        timeColComboBox.setValidityView(timeOk);
+        timeColFormatField.setValidityView(timeFormatOk);
+        stageColComboBox.setValidityView(stageOk);
+        nonSysStdComboBox.setValidityView(nonSysStdOk);
+        sysStdComboBox.setValidityView(sysStdOk);
+        sysIndComboBox.setValidityView(sysStdOk);
+        validateButton.setEnabled(timeOk && stageOk && nonSysStdOk && sysStdOk);
 
     }
 
@@ -207,7 +335,7 @@ public class LimnigraphImporter extends RowColPanel {
 
         dialog.setTitle(T.text("import_limnigraph"));
         dialog.setMinimumSize(new Dimension(600, 400));
-        dialog.setPreferredSize(new Dimension(900, 600));
+        dialog.setPreferredSize(new Dimension(900, 800));
 
         dialog.pack();
         dialog.setLocationRelativeTo(AppConfig.AC.APP_MAIN_FRAME);
