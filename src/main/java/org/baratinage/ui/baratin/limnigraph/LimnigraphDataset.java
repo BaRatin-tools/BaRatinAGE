@@ -45,6 +45,7 @@ public class LimnigraphDataset extends ImportedDataset {
     private int sysErrResamplingIndicesIndex = -1;
     private int errorMatrixStartIndex = -1;
     private int errorMatrixSize = -1;
+    private int[] sysErrInd = null;
 
     private LimnigraphDataset(String name, List<double[]> data, String[] headers, LocalDateTime[] dateTime) {
         super(name, data, headers);
@@ -67,6 +68,7 @@ public class LimnigraphDataset extends ImportedDataset {
         }
         if (json.has("sysErrResamplingIndicesIndex")) {
             sysErrResamplingIndicesIndex = json.getInt("sysErrResamplingIndicesIndex");
+            sysErrInd = toInt(getColumn(sysErrResamplingIndicesIndex));
         }
         if (json.has("errorMatrixStartIndex")) {
             errorMatrixStartIndex = json.getInt("errorMatrixStartIndex");
@@ -101,6 +103,7 @@ public class LimnigraphDataset extends ImportedDataset {
         }
         sysErrStdIndex = data.size();
         sysErrResamplingIndicesIndex = data.size() + 1;
+        sysErrInd = sysErrResampling;
         data.add(sysErrStd);
         data.add(toDouble(sysErrResampling));
         headers.add("sys_std");
@@ -164,11 +167,11 @@ public class LimnigraphDataset extends ImportedDataset {
         return getColumn(sysErrStdIndex);
     }
 
-    public double[] getSysErrInd() {
+    public int[] getSysErrInd() {
         if (!hasSysErr()) {
             return null;
         }
-        return getColumn(sysErrResamplingIndicesIndex);
+        return sysErrInd;
     }
 
     public List<double[]> getStageErrMatrix() {
