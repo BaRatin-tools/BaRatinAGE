@@ -93,18 +93,27 @@ public class DataFileReader extends RowColPanel {
         // **********************************************************
         // import settings section
 
-        JLabel separatorLabel = new JLabel(T.text("separator"));
+        JLabel separatorLabel = new JLabel(T.text("column_separator"));
 
-        RadioButtons separatorOptions = new RadioButtons();
-        separatorOptions.addOption("\t", new JRadioButton(T.text("sep_tab")));
-        separatorOptions.addOption(";", new JRadioButton(T.text("sep_semicolon")));
-        separatorOptions.addOption(",", new JRadioButton(T.text("sep_comma")));
-        separatorOptions.addOption(" ", new JRadioButton(T.text("sep_space")));
-        separatorOptions.addChangeListener((chEvt) -> {
-            sep = separatorOptions.getSelectedValue();
+        SimpleRadioButtons<String> sepRatioButtons = new SimpleRadioButtons<>();
+
+        sepRatioButtons.addChangeListener((chEvt) -> {
+            sep = sepRatioButtons.getSelectedId();
             fireChangeListeners();
         });
-        separatorOptions.setSelectedValue("\t");
+        JRadioButton tabOptBtn = sepRatioButtons.addOption("tab", T.text("sep_tab"), "\t");
+        JRadioButton semicolOptBtn = sepRatioButtons.addOption("semicolon", T.text("sep_semicolon"), ";");
+        JRadioButton commaOptBtn = sepRatioButtons.addOption("comma", T.text("sep_comma"), ",");
+        JRadioButton spaceOptBtn = sepRatioButtons.addOption("space", T.text("sep_space"), " ");
+
+        sepRatioButtons.setSelected("tab");
+
+        RowColPanel sepOptionButtons = new RowColPanel(AXIS.ROW, ALIGN.START);
+        sepOptionButtons.setGap(5);
+        sepOptionButtons.appendChild(tabOptBtn);
+        sepOptionButtons.appendChild(semicolOptBtn);
+        sepOptionButtons.appendChild(commaOptBtn);
+        sepOptionButtons.appendChild(spaceOptBtn);
 
         JCheckBox hasHeaderCheckBox = new JCheckBox(T.text("has_header_row"));
         hasHeaderCheckBox.setSelected(hasHeaderRow);
@@ -149,7 +158,7 @@ public class DataFileReader extends RowColPanel {
         int rowIndex = 0;
 
         importSettingsPanel.insertChild(separatorLabel, 0, rowIndex);
-        importSettingsPanel.insertChild(separatorOptions, 1, rowIndex, 3, 1);
+        importSettingsPanel.insertChild(sepOptionButtons, 1, rowIndex, 3, 1);
         rowIndex++;
 
         importSettingsPanel.insertChild(hasHeaderCheckBox, 0, rowIndex, 2, 1);
