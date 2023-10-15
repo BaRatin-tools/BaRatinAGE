@@ -253,78 +253,69 @@ public class LimnigraphImporter extends RowColPanel {
     }
 
     private void updateValidityStatus() {
-        List<Integer> usedColumns = new ArrayList<>();
+        // if there's not data, not point checking validity
+        if (rawData == null) {
+            timeColComboBox.setValidityView(false);
+            timeColFormatField.setValidityView(false);
+            stageColComboBox.setValidityView(false);
+            nonSysStdComboBox.setValidityView(false);
+            sysStdComboBox.setValidityView(false);
+            sysIndComboBox.setValidityView(false);
+            validateButton.setEnabled(false);
+            return;
+        }
+        dataParser.ignoreAll();
 
-        // time and stage vector are mandatory
+        // time
+
         int timeInd = timeColComboBox.getSelectedIndex();
-        boolean timeOk = timeInd >= 0;
-        if (timeInd >= 0) {
-            usedColumns.add(timeInd);
-        }
+        String dateTimeFormat = timeColFormatField.getText();
+        dataParser.setAsDateTimeCol(timeInd, dateTimeFormat);
+        boolean timeOk = timeInd >= 0 && dataParser.testColValidity(timeInd);
+        boolean timeFormatOk = dataParser.testDateTimeFormat(dateTimeFormat);
+
+        // stage
+
         int stageInd = stageColComboBox.getSelectedIndex();
-        boolean stageOk = stageInd >= 0 && !usedColumns.contains(stageInd);
-        if (stageInd >= 0) {
-            usedColumns.add(stageInd);
-        }
+        dataParser.setAsDoubleCol(stageInd);
+        boolean stageOk = stageInd >= 0 &&
+                dataParser.testColValidity(stageInd);
 
         // non-sys error
 
         int nonSysStdInd = nonSysStdComboBox.getSelectedIndex();
+        boolean nonSysErrOk = true;
+        if (nonSysStdInd >= 0) {
+            dataParser.setAsDoubleCol(nonSysStdInd);
+            nonSysErrOk = dataParser.testColValidity(nonSysStdInd);
+        }
 
-        // if sys std specified sys ind must also be set
+        // sys err
+
         int sysStdInd = sysStdComboBox.getSelectedIndex();
         int sysIndInd = sysIndComboBox.getSelectedIndex();
-        boolean sysStdOk = ((sysStdInd >= 0 && sysIndInd >= 0) ||
-                (sysStdInd < 0 && sysIndInd < 0)) &&
-                !usedColumns.contains(sysStdInd) &&
-                !usedColumns.contains(sysIndInd);
+
+        boolean sysErrOk = ((sysStdInd >= 0 && sysIndInd >= 0) ||
+                (sysStdInd < 0 && sysIndInd < 0));
+
         if (sysStdInd >= 0) {
-            usedColumns.add(sysStdInd);
+            dataParser.setAsDoubleCol(sysStdInd);
+            sysErrOk = sysErrOk && dataParser.testColValidity(sysStdInd);
         }
         if (sysIndInd >= 0) {
-            usedColumns.add(sysIndInd);
-        }
-
-        // if there's data, update preview
-        if (rawData != null) {
-
-            dataParser.ignoreAll();
-            dataParser.setAsDateTimeCol(timeInd, timeColFormatField.getText());
-
-            dataParser.setAsDoubleCol(stageInd);
-
-            dataParser.setAsDoubleCol(nonSysStdInd);
-            dataParser.setAsDoubleCol(sysStdInd);
             dataParser.setAsIntCol(sysIndInd);
-
-            dataParser.setRawData(rawData, headers, missingValueString);
-
-        }
-
-        // final data validty check, according to dataParser
-
-        boolean timeFormatOk = dataParser.testColValidity(timeInd);
-        timeOk = timeOk && timeFormatOk;
-        stageOk = stageOk && dataParser.testColValidity(stageInd);
-
-        boolean nonSysStdOk = true;
-        if (nonSysStdInd >= 0) {
-            nonSysStdOk = dataParser.testColValidity(nonSysStdInd);
-        }
-        if (sysStdInd >= 0 && sysIndInd >= 0) {
-            sysStdOk = sysStdOk &&
-                    dataParser.testColValidity(sysStdInd) &&
-                    dataParser.testColValidity(sysIndInd);
+            sysErrOk = sysErrOk && dataParser.testColValidity(sysIndInd);
         }
 
         // update ui
+        dataParser.updateColumnTypes();
         timeColComboBox.setValidityView(timeOk);
         timeColFormatField.setValidityView(timeFormatOk);
         stageColComboBox.setValidityView(stageOk);
-        nonSysStdComboBox.setValidityView(nonSysStdOk);
-        sysStdComboBox.setValidityView(sysStdOk);
-        sysIndComboBox.setValidityView(sysStdOk);
-        validateButton.setEnabled(timeOk && stageOk && nonSysStdOk && sysStdOk);
+        nonSysStdComboBox.setValidityView(nonSysErrOk);
+        sysStdComboBox.setValidityView(sysErrOk);
+        sysIndComboBox.setValidityView(sysErrOk);
+        validateButton.setEnabled(timeOk && timeFormatOk && stageOk && nonSysErrOk && sysErrOk);
 
     }
 
