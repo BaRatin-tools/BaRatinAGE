@@ -142,7 +142,7 @@ public abstract class PriorControlPanel extends GridPanel implements ChangeListe
 
         protected void addParameter(ParameterPriorDistSimplified parameter) {
 
-                int index = parameters.size() + 3;
+                int index = parameters.size() + 2;
                 int colIndex = 0;
                 insertChild(parameter.iconLabel, colIndex, index);
                 colIndex++;
@@ -167,7 +167,7 @@ public abstract class PriorControlPanel extends GridPanel implements ChangeListe
 
         protected void addParameter(ParameterPriorDist parameter) {
 
-                int index = parameters.size() + 3;
+                int index = parameters.size() + 2;
                 int colIndex = 0;
 
                 insertChild(parameter.iconLabel, colIndex, index);
