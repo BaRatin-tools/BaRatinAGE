@@ -1,13 +1,9 @@
 package org.baratinage.ui.baratin.limnigraph;
 
-// import java.awt.Color;
-// import javax.swing.border.MatteBorder;
-
 import java.awt.Component;
 import java.awt.Dimension;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JButton;
@@ -104,12 +100,6 @@ public class LimnigraphImporter extends RowColPanel {
         columnMappingPanel.setColWeight(1, 1);
 
         int rowIndex = 0;
-
-        // JLabel mappingLabel = new JLabel();
-        // mappingLabel.setText(T.text("columns_selection"));
-        // mappingLabel.setBorder(new MatteBorder(0, 0, 1, 0, Color.black));
-        // columnMappingPanel.insertChild(mappingLabel, 0, rowIndex, 2, 1);
-        // rowIndex++;
 
         columnMappingPanel.insertChild(timeColMappingLabel, 0, rowIndex);
         columnMappingPanel.insertChild(timeColComboBox, 1, rowIndex);
