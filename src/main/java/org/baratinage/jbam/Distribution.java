@@ -140,6 +140,32 @@ public class Distribution {
         return densityRes;
     }
 
+    public double[] getRandomValues(int n) {
+
+        String randomValuesResFileName = id + "_random.txt";
+
+        String parametersArg = doubleArrToStringArg(parameterValues);
+
+        ExeRun densityRun = new ExeRun();
+        densityRun.setExeDir(EXE_DIR);
+        densityRun.setCommand(EXE_COMMAND,
+                "--name", type.bamName,
+                "--parameters", parametersArg,
+                "--action", "r",
+                "--nsim", "" + n,
+                "--result", randomValuesResFileName);
+
+        densityRun.run();
+
+        List<double[]> randomValues = getExeRunResult(Path.of(EXE_DIR, randomValuesResFileName).toString());
+        if (randomValues == null || randomValues.size() < 1) {
+            System.err.println("Distribution Error: error while reading random values result files! Aborting");
+            return null;
+        }
+
+        return randomValues.get(0);
+    }
+
     @Override
     public String toString() {
         String str = String.format("'%s' (", type.name());
