@@ -135,6 +135,20 @@ public class DataParser extends RowColPanel {
         int nCol = rawData.size();
         JTableHeader tableHeader = dataTable.getTableHeader();
         TableColumnModel tableColModel = tableHeader.getColumnModel();
+        for (int k = 0; k < nCol; k++) {
+            if (headers != null && headers.length > k) {
+                TableColumn tableCol = tableColModel.getColumn(k);
+                tableCol.setHeaderValue(headers[k]);
+            }
+        }
+
+    }
+
+    public void updateColumnTypes() {
+
+        int nCol = rawData.size();
+        JTableHeader tableHeader = dataTable.getTableHeader();
+        TableColumnModel tableColModel = tableHeader.getColumnModel();
 
         CustomCellRenderer doubleColRenderer = new CustomCellRenderer(missingValueCode, DOUBLE_VALIDATOR);
         CustomCellRenderer intColRenderer = new CustomCellRenderer(missingValueCode, INT_VALIDATOR);
@@ -152,10 +166,10 @@ public class DataParser extends RowColPanel {
                 Predicate<String> dataTimeValidator = buildDateTimeValidator(cs.dateTimeFormat);
                 tableCol.setCellRenderer(new CustomCellRenderer(missingValueCode, dataTimeValidator));
             }
-            if (headers != null && headers.length > k) {
-                tableCol.setHeaderValue(headers[k]);
-            }
+
         }
+
+        dataTableModel.fireTableDataChanged();
     }
 
     public void ignoreAll() {
@@ -178,6 +192,15 @@ public class DataParser extends RowColPanel {
         colSettings.put(colIndex, new ColSettings(COL_TYPE.DATETIME, format));
     }
 
+    public boolean testDateTimeFormat(String format) {
+        try {
+            DateTimeFormatter.ofPattern(format);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
     public boolean testColValidity(int colIndex) {
         if (colIndex < 0 || colIndex > rawData.size()) {
             return false;
@@ -185,6 +208,12 @@ public class DataParser extends RowColPanel {
         ColSettings cs = colSettings.get(colIndex);
         if (cs == null) {
             return true;
+        } else if (cs.type == COL_TYPE.INT) {
+            for (String v : rawData.get(colIndex)) {
+                if (!INT_VALIDATOR.test(v)) {
+                    return false;
+                }
+            }
         } else if (cs.type == COL_TYPE.DOUBLE) {
             for (String v : rawData.get(colIndex)) {
                 if (!DOUBLE_VALIDATOR.test(v)) {
