@@ -97,24 +97,24 @@ public abstract class PriorControlPanel extends GridPanel implements ChangeListe
                 equationLabel.setText(String.format("<html>%s %s</html>", equation, vAlignFixString));
                 equationLabel.setFont(MONOSPACE_FONT);
 
-                insertLabel(equationLabel, 0, 1, 3);
+                insertLabel(equationLabel, 0, 0, 3);
 
                 JSeparator iconNamSymbolUnitSep = new JSeparator(JSeparator.HORIZONTAL);
-                insertChild(iconNamSymbolUnitSep, 0, 2, 3, 1);
+                insertChild(iconNamSymbolUnitSep, 0, 1, 3, 1);
 
                 JLabel lockLabel = new JLabel();
                 lockLabel.setIcon(lockIcon);
-                insertLabel(lockLabel, 3 + nColumns, 1);
+                insertLabel(lockLabel, 3 + nColumns, 0);
                 JSeparator lockSeparator = new JSeparator(JSeparator.HORIZONTAL);
-                insertChild(lockSeparator, 3 + nColumns, 2);
+                insertChild(lockSeparator, 3 + nColumns, 1);
 
                 columnHeaders = new ArrayList<>();
                 for (int k = 0; k < nColumns; k++) {
                         JLabel label = new JLabel("column #" + k + 1);
                         columnHeaders.add(label);
-                        insertLabel(label, 3 + k, 1);
+                        insertLabel(label, 3 + k, 0);
                         JSeparator sep = new JSeparator(JSeparator.HORIZONTAL);
-                        insertChild(sep, 3 + k, 2);
+                        insertChild(sep, 3 + k, 1);
                 }
 
         }
