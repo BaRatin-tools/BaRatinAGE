@@ -25,6 +25,7 @@ import org.baratinage.ui.container.RowColPanel.AXIS;
 import org.baratinage.translation.T;
 import org.baratinage.utils.DateTime;
 import org.baratinage.utils.json.JSONFilter;
+import org.baratinage.utils.perf.Throttler;
 import org.json.JSONObject;
 
 public class Hydrograph extends BamItem implements IPredictionMaster {
@@ -56,14 +57,14 @@ public class Hydrograph extends BamItem implements IPredictionMaster {
             RatingCurve rc = (RatingCurve) ratingCurveParent.getCurrentBamItem();
             currentRatingCurve = rc;
             runPanel.setCalibratedModel(rc);
-            checkSync();
+            Throttler.throttle(ID, 250, this::checkSync);
         });
 
         limnigraphParent = new BamItemParent(this, BamItemType.LIMNIGRAPH);
         limnigraphParent.addChangeListener((chEvt) -> {
             Limnigraph l = (Limnigraph) limnigraphParent.getCurrentBamItem();
             currentLimnigraph = l;
-            checkSync();
+            Throttler.throttle(ID, 250, this::checkSync);
         });
 
         runPanel.addRunSuccessListerner((RunConfigAndRes res) -> {
@@ -72,6 +73,7 @@ public class Hydrograph extends BamItem implements IPredictionMaster {
             buildPlot();
             ratingCurveParent.updateBackup();
             limnigraphParent.updateBackup();
+            Throttler.throttle(ID, 250, this::checkSync);
         });
 
         RowColPanel parentItemPanel = new RowColPanel();
@@ -111,7 +113,6 @@ public class Hydrograph extends BamItem implements IPredictionMaster {
     }
 
     private void checkSync() {
-        // FIXME: called too often? Optimization may be possible.
 
         List<MsgPanel> warnings = new ArrayList<>();
         warnings.addAll(ratingCurveParent.getMessages());
@@ -190,7 +191,7 @@ public class Hydrograph extends BamItem implements IPredictionMaster {
         } else {
             System.out.println("Hydrograph: missing 'jsonStringBackup'");
         }
-        checkSync();
+        Throttler.throttle(ID, 250, this::checkSync);
     }
 
     @Override
@@ -211,8 +212,23 @@ public class Hydrograph extends BamItem implements IPredictionMaster {
 
         PredictionInput maxpostInput = new PredictionInput(
                 "maxpost_pred_input",
-                predInputs[0].dataColumns.subList(0, 1),
-                predInputs[0].extraData.subList(0, 1));
+                predInputs[0].dataColumns,
+                predInputs[0].extraData);
+
+        PredictionInput uncertainInput = maxpostInput;
+        PredictionExperiment limniU = null;
+        if (predInputs.length > 1) {
+            uncertainInput = new PredictionInput(
+                    "uncertain_pred_input",
+                    predInputs[1].dataColumns);
+
+            limniU = new PredictionExperiment(
+                    "limniU",
+                    false,
+                    false,
+                    calibrationConfig,
+                    uncertainInput);
+        }
 
         PredictionExperiment maxpost = new PredictionExperiment(
                 "maxpost",
@@ -226,17 +242,24 @@ public class Hydrograph extends BamItem implements IPredictionMaster {
                 true,
                 false,
                 calibrationConfig,
-                predInputs);
+                uncertainInput);
         PredictionExperiment totalU = new PredictionExperiment(
                 "totalU",
                 true,
                 true,
                 calibrationConfig,
-                predInputs);
+                uncertainInput);
 
-        return new PredictionExperiment[] {
-                maxpost, paramU, totalU
-        };
+        if (limniU == null) {
+            return new PredictionExperiment[] {
+                    maxpost, paramU, totalU
+            };
+        } else {
+            return new PredictionExperiment[] {
+                    maxpost, limniU, paramU, totalU
+            };
+        }
+
     }
 
     public void buildPlot() {
@@ -253,11 +276,18 @@ public class Hydrograph extends BamItem implements IPredictionMaster {
 
         String outName = "Output_1";
         double[] maxpost = predResults[0].outputResults.get(outName).spag().get(0);
+        int index = 1;
+        List<double[]> limniU = null;
+        if (predResults.length > 3) {
+            limniU = predResults[index].outputResults.get(outName).get95UncertaintyInterval();
+            index++;
+        }
 
-        List<double[]> paramU = predResults[1].outputResults.get(outName).get95UncertaintyInterval();
-        List<double[]> totalU = predResults[2].outputResults.get(outName).get95UncertaintyInterval();
+        List<double[]> paramU = predResults[index].outputResults.get(outName).get95UncertaintyInterval();
+        index++;
+        List<double[]> totalU = predResults[index].outputResults.get(outName).get95UncertaintyInterval();
 
-        plotPanel.updatePlot(dateTimeVector, maxpost, paramU, totalU);
+        plotPanel.updatePlot(dateTimeVector, maxpost, limniU, paramU, totalU);
 
     }
 

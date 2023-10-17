@@ -1,6 +1,7 @@
 package org.baratinage.ui.baratin;
 
 import java.awt.BasicStroke;
+import java.awt.Color;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -18,8 +19,11 @@ public class HydrographPlot extends RowColPanel {
         public void updatePlot(
                         LocalDateTime[] dateTime,
                         double[] dischargeMaxpost,
+                        List<double[]> dischargelimniU,
                         List<double[]> dischargeParamU,
                         List<double[]> dischargeTotalU) {
+
+                boolean includeLimniBand = dischargelimniU != null;
 
                 System.out.println("HydrographPlot");
 
@@ -41,6 +45,13 @@ public class HydrographPlot extends RowColPanel {
                                 dischargeParamU.get(1),
                                 AppConfig.AC.RATING_CURVE_PARAM_UNCERTAINTY_COLOR);
 
+                PlotTimeSeriesBand limniBand = new PlotTimeSeriesBand(
+                                "Limnigraph uncertainty",
+                                time,
+                                includeLimniBand ? dischargelimniU.get(0) : dischargeParamU.get(0),
+                                includeLimniBand ? dischargelimniU.get(1) : dischargeParamU.get(1),
+                                Color.YELLOW);
+
                 PlotTimeSeriesBand totalBand = new PlotTimeSeriesBand(
                                 "Total uncertainty",
                                 time,
@@ -50,12 +61,19 @@ public class HydrographPlot extends RowColPanel {
 
                 plot.addXYItem(totalBand);
                 plot.addXYItem(paramBand);
+                if (includeLimniBand) {
+                        plot.addXYItem(limniBand);
+                }
                 plot.addXYItem(mpLine);
 
                 T.t(this, () -> {
                         mpLine.setLabel(T.text("lgd_discharge_maxpost"));
-                        paramBand.setLabel(T.text("lgd_discharge_param_u"));
+                        paramBand.setLabel(T.text(
+                                        includeLimniBand ? "lgd_discharge_limni_param_u" : "lgd_discharge_param_u"));
                         totalBand.setLabel(T.text("lgd_discharge_total_u"));
+                        if (includeLimniBand) {
+                                limniBand.setLabel(T.text("lgd_discharge_limni_u"));
+                        }
                         plot.axisXdate.setLabel(T.text("time"));
                         plot.axisY.setLabel(T.text("discharge"));
                         plot.axisYlog.setLabel(T.text("discharge"));

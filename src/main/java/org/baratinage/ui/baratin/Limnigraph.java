@@ -174,17 +174,27 @@ public class Limnigraph extends BamItem implements IPredictionData {
         }
 
         double[] stage = limniDataset.getStage();
-        List<double[]> stageMatrix = new ArrayList<>();
-        stageMatrix.add(stage);
-        // List<double[]> stageMatrix = limniDataset.getStageErrMatrix();
+        List<double[]> stageVector = new ArrayList<>();
+        stageVector.add(stage);
+
+        int nPred = limniDataset.hasStageErrMatrix() ? 2 : 1;
+
+        PredictionInput[] predInputs = new PredictionInput[nPred];
 
         List<double[]> dateTimeMatrix = new ArrayList<>();
         dateTimeMatrix.add(limniDataset.getDateTimeAsDouble());
-        return new PredictionInput[] {
-                new PredictionInput(
-                        "limni_" + Misc.getTimeStampedId(),
-                        stageMatrix,
-                        dateTimeMatrix) };
+        predInputs[0] = new PredictionInput(
+                "limni_" + Misc.getTimeStampedId(),
+                stageVector,
+                dateTimeMatrix);
+        if (nPred > 1) {
+            List<double[]> stageMatrix = limniDataset.getStageErrMatrix();
+            predInputs[1] = new PredictionInput(
+                    "limni_errors_" + Misc.getTimeStampedId(),
+                    stageMatrix);
+        }
+
+        return predInputs;
 
     }
 
