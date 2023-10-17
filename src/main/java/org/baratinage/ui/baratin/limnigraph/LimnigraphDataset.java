@@ -16,7 +16,6 @@ import org.baratinage.ui.commons.UncertaintyDataset;
 import org.baratinage.ui.plot.PlotItem;
 import org.baratinage.ui.plot.PlotTimeSeriesBand;
 import org.baratinage.ui.plot.PlotTimeSeriesLine;
-import org.baratinage.utils.Calc;
 import org.baratinage.utils.DateTime;
 import org.jfree.data.time.Second;
 import org.json.JSONObject;
@@ -51,6 +50,9 @@ public class LimnigraphDataset extends AbstractDataset {
         this.dateTime = DateTime.doubleToDateTimeVector(getColumn("dateTime"));
         double[] sysErrIndAsDouble = getColumn("sysErrInd");
         this.sysErrInd = sysErrIndAsDouble == null ? null : toInt(sysErrIndAsDouble);
+        if (json.has("errorMatrixDataset")) {
+            errorMatrixDataset = new UncertaintyDataset(json.getJSONObject("errorMatrixDataset"));
+        }
     }
 
     public double[] getDateTimeAsDouble() {
@@ -85,8 +87,7 @@ public class LimnigraphDataset extends AbstractDataset {
     }
 
     public List<double[]> getStageErrUncertaintyEnvelop() {
-        List<double[]> matrix = errorMatrixDataset.getMatrix();
-        return matrix.subList(matrix.size() - 2, matrix.size());
+        return errorMatrixDataset.getUncertaintyEnvelop();
     }
 
     public boolean hasNonSysErr() {

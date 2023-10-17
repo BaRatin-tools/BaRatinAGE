@@ -51,6 +51,9 @@ public class Limnigraph extends BamItem implements IPredictionData {
             limniImporter.showDialog();
             LimnigraphDataset newLimniDataset = limniImporter.getDataset();
             if (newLimniDataset != null && newLimniDataset.getNumberOfColumns() >= 1) {
+                if (!newLimniDataset.hasStageErrMatrix()) {
+                    newLimniDataset.computeErroMatrix(200);
+                }
                 updateDataset(newLimniDataset);
             }
         });
@@ -96,7 +99,7 @@ public class Limnigraph extends BamItem implements IPredictionData {
             } else {
                 importedDataSetSourceLabel.setText(
                         T.html("limnigraph_imported_from",
-                                limniDataset.getDatasetName()));
+                                limniDataset.getName()));
             }
         });
     }
@@ -119,17 +122,25 @@ public class Limnigraph extends BamItem implements IPredictionData {
 
         limniTable.addColumn(limniDataset.getDateTime());
         limniTable.addColumn(limniDataset.getStage());
+        if (limniDataset.hasStageErrMatrix()) {
+            List<double[]> errEnv = limniDataset.getStageErrUncertaintyEnvelop();
+            limniTable.addColumn(errEnv.get(0));
+            limniTable.addColumn(errEnv.get(1));
+        }
+
         limniTable.updateData();
 
         T.t(limniTable, () -> {
-            limniTable.setHeaderWidth(0, 150);
             limniTable.setHeader(0, T.text("date_time"));
             limniTable.setHeader(1, T.text("stage_level"));
+            if (limniDataset.hasStageErrMatrix()) {
+                limniTable.setHeader(2, T.text("percentile_0025"));
+                limniTable.setHeader(3, T.text("percentile_0975"));
+            }
+            limniTable.autosetHeadersWidths(25, 150);
+            limniTable.setHeaderWidth(0, 150);
             limniTable.updateHeader();
         });
-
-        // T.updateTranslation(limniTable);
-        // T.updateTranslation(limniErrConfigTable);
 
     }
 
@@ -138,6 +149,9 @@ public class Limnigraph extends BamItem implements IPredictionData {
 
         Plot plot = new Plot(false, true);
 
+        if (limniDataset.hasStageErrMatrix()) {
+            plot.addXYItem(limniDataset.getPlotEnv());
+        }
         plot.addXYItem(limniDataset.getPlotLine());
 
         T.clear(plotPanel);
@@ -191,7 +205,7 @@ public class Limnigraph extends BamItem implements IPredictionData {
 
         if (json.has("limniDataset")) {
             JSONObject limniDatasetJson = json.getJSONObject("limniDataset");
-            updateDataset(LimnigraphDataset.buildFromJSON(limniDatasetJson));
+            updateDataset(new LimnigraphDataset(limniDatasetJson));
         }
     }
 
