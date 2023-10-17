@@ -154,8 +154,7 @@ public class Gaugings extends BamItem implements ICalibrationData {
         if (gaugingDataset == null) {
             return null;
         }
-        int hashCode = gaugingDataset.hashCode();
-        String sanitizedName = Misc.sanitizeName(bamItemNameField.getText()) + "_" + hashCode;
+        String sanitizedName = Misc.sanitizeName(bamItemNameField.getText()) + "_" + ID;
         String dataFileName = String.format(BamFilesHelpers.DATA_CALIBRATION, sanitizedName);
         return new CalibrationData(
                 sanitizedName,
