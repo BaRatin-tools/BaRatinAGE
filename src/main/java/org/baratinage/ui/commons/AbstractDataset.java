@@ -48,7 +48,7 @@ public class AbstractDataset {
 
         name = json.getString("name");
 
-        String hashString = json.getString("hashCode");
+        String hashString = json.getString("hashString");
 
         JSONArray headersJson = json.getJSONArray("headers");
         int nCol = headersJson.length();
