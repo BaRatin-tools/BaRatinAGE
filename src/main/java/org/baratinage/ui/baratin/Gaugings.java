@@ -81,7 +81,7 @@ public class Gaugings extends BamItem implements ICalibrationData {
             } else {
                 importedDataSetSourceLabel.setText(
                         T.html("gauging_set_imported_from",
-                                gaugingDataset.getDatasetName()));
+                                gaugingDataset.getName()));
             }
         });
 
@@ -182,7 +182,7 @@ public class Gaugings extends BamItem implements ICalibrationData {
 
         if (json.has("gaugingDataset")) {
             JSONObject gaugingDatasetJson = json.getJSONObject("gaugingDataset");
-            gaugingDataset = GaugingsDataset.buildFromJSON(gaugingDatasetJson);
+            gaugingDataset = new GaugingsDataset(gaugingDatasetJson);
             updateTable();
         }
     }

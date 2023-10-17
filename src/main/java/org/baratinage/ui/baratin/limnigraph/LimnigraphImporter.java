@@ -190,19 +190,19 @@ public class LimnigraphImporter extends RowColPanel {
                     timeColFormatField.getText());
             int stageColIndex = stageColComboBox.getSelectedIndex();
             double[] stage = dataParser.getDoubleCol(stageColIndex);
-            dataset = LimnigraphDataset.buildLimnigraphDataset(fileName, dateTimeVector, stage);
 
             int nonSysInd = nonSysStdComboBox.getSelectedIndex();
-            if (nonSysInd >= 0) {
-                dataset.addNonSysError(dataParser.getDoubleCol(nonSysInd));
-            }
             int sysStdInd = sysStdComboBox.getSelectedIndex();
             int sysIndInd = sysIndComboBox.getSelectedIndex();
-            if (sysStdInd >= 0 && sysIndInd >= 0) {
-                dataset.addSysError(
-                        dataParser.getDoubleCol(sysStdInd),
-                        dataParser.getIntCol(sysIndInd));
-            }
+
+            dataset = new LimnigraphDataset(
+                    fileName,
+                    dateTimeVector,
+                    stage,
+                    nonSysInd < 0 ? null : dataParser.getDoubleCol(nonSysInd),
+                    sysStdInd < 0 ? null : dataParser.getDoubleCol(sysStdInd),
+                    sysIndInd < 0 ? null : dataParser.getIntCol(sysIndInd));
+
             dialog.setVisible(false);
 
         });

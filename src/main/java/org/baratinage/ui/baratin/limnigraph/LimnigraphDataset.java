@@ -4,145 +4,57 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import org.baratinage.jbam.Distribution;
+import org.baratinage.jbam.DistributionType;
 import org.baratinage.ui.bam.BamProject;
-import org.baratinage.ui.component.ImportedDataset;
+import org.baratinage.ui.commons.AbstractDataset;
+import org.baratinage.ui.commons.UncertaintyDataset;
 import org.baratinage.ui.plot.PlotItem;
+import org.baratinage.ui.plot.PlotTimeSeriesBand;
 import org.baratinage.ui.plot.PlotTimeSeriesLine;
+import org.baratinage.utils.Calc;
 import org.baratinage.utils.DateTime;
 import org.jfree.data.time.Second;
 import org.json.JSONObject;
 
-// FIXME: do I need specific/generic data structure such as:
-// - TimeSeriesMatrix
-// - TimeSeriesVector
-// - TimeSeriesTimestep ?
-public class LimnigraphDataset extends ImportedDataset {
+public class LimnigraphDataset extends AbstractDataset {
 
-    public static LimnigraphDataset buildLimnigraphDataset(
-            String name,
+    private final LocalDateTime[] dateTime;
+    private final int[] sysErrInd;
+
+    private UncertaintyDataset errorMatrixDataset;
+
+    public LimnigraphDataset(String name,
             LocalDateTime[] dateTime,
-            double[] stage) {
-        int nRow = dateTime.length;
-        if (stage.length != nRow) {
-            System.err.println("LimnigraphDataset Error: stage vector length must match dateTime vector length!");
-            return null;
-        }
-        List<double[]> data = new ArrayList<>();
-        data.add(DateTime.dateTimeToDoubleVector(dateTime));
-        data.add(stage);
-        return new LimnigraphDataset(name, data, new String[] { "date_time", "stage" }, dateTime);
-    }
+            double[] stage,
+            double[] nonSysErrStd,
+            double[] sysErrStd,
+            int[] sysErrInd) {
+        super(name,
+                new NamedColumn("dateTime", DateTime.dateTimeToDoubleVector(dateTime)),
+                new NamedColumn("stage", stage),
+                new NamedColumn("nonSysErrStd", nonSysErrStd),
+                new NamedColumn("sysErrStd", sysErrStd),
+                new NamedColumn("sysErrInd", sysErrInd == null ? null : toDouble(sysErrInd)));
 
-    public static LimnigraphDataset buildFromJSON(JSONObject json) {
-        return new LimnigraphDataset(json);
-    }
-
-    private LocalDateTime[] dateTime = null;
-    private int nonSysErrStdIndex = -1;
-    private int sysErrStdIndex = -1;
-    private int sysErrResamplingIndicesIndex = -1;
-    private int errorMatrixStartIndex = -1;
-    private int errorMatrixSize = -1;
-    private int[] sysErrInd = null;
-
-    private LimnigraphDataset(String name, List<double[]> data, String[] headers, LocalDateTime[] dateTime) {
-        super(name, data, headers);
         this.dateTime = dateTime;
+        this.sysErrInd = sysErrInd;
 
     }
 
-    private LimnigraphDataset(JSONObject json) {
+    public LimnigraphDataset(JSONObject json) {
         super(json);
-        if (getNumberOfColumns() > 1) {
-            dateTime = DateTime.doubleToDateTimeVector(getColumn(0));
-        } else {
-            System.err.println("LimnigraphDataset Error: At least two columns are expected for a limnigraph dataset!");
-        }
-        if (json.has("nonSysErrStdIndex")) {
-            nonSysErrStdIndex = json.getInt("nonSysErrStdIndex");
-        }
-        if (json.has("nonSysErrStdIndex")) {
-            sysErrStdIndex = json.getInt("sysErrStdIndex");
-        }
-        if (json.has("sysErrResamplingIndicesIndex")) {
-            sysErrResamplingIndicesIndex = json.getInt("sysErrResamplingIndicesIndex");
-            sysErrInd = toInt(getColumn(sysErrResamplingIndicesIndex));
-        }
-        if (json.has("errorMatrixStartIndex")) {
-            errorMatrixStartIndex = json.getInt("errorMatrixStartIndex");
-        }
-        if (json.has("errorMatrixSize")) {
-            errorMatrixSize = json.getInt("errorMatrixSize");
-        } else {
-
-        }
-    }
-
-    public void addNonSysError(double[] nonSysErrStd) {
-        if (nonSysErrStd.length != getNumberOfRows()) {
-            System.err.println("LimnigraphDataset Error: nonSysErrStd length doesn't match the number of timesteps!");
-            return;
-        }
-        nonSysErrStdIndex = data.size();
-        data.add(nonSysErrStd);
-        headers.add("non_sys_std");
-    }
-
-    public void addSysError(double[] sysErrStd, int[] sysErrResampling) {
-        int nRow = getNumberOfRows();
-        if (sysErrStd.length != nRow) {
-            System.err.println("LimnigraphDataset Error: sysErrStd length doesn't match the number of timesteps!");
-            return;
-        }
-        if (sysErrResampling.length != nRow) {
-            System.err
-                    .println("LimnigraphDataset Error: sysErrResampling length doesn't match the number of timesteps!");
-            return;
-        }
-        sysErrStdIndex = data.size();
-        sysErrResamplingIndicesIndex = data.size() + 1;
-        sysErrInd = sysErrResampling;
-        data.add(sysErrStd);
-        data.add(toDouble(sysErrResampling));
-        headers.add("sys_std");
-        headers.add("sys_resampling_indices");
-    }
-
-    public void addErrorMatrix(List<double[]> errorMatrix) {
-        int nRow = getNumberOfRows();
-        int nCol = errorMatrix.size();
-        List<String> newHeaders = new ArrayList<>();
-        for (int k = 0; k < nCol; k++) {
-            if (errorMatrix.get(k).length != nRow) {
-                System.err
-                        .println(
-                                "LimnigraphDataset Error: errorMatrix column #+ " + k
-                                        + " length doesn't match the number of timesteps!");
-                return;
-            }
-            newHeaders.add("h_" + (k + 1));
-        }
-        errorMatrixStartIndex = data.size();
-        errorMatrixSize = nCol;
-        data.addAll(errorMatrix);
-        headers.addAll(newHeaders);
-    }
-
-    public PlotItem getPlotLine() {
-        Second[] timeVector = PlotTimeSeriesLine.localDateTimeToSecond(dateTime);
-        PlotTimeSeriesLine plotLine = new PlotTimeSeriesLine(
-                getDatasetName(),
-                timeVector,
-                getStage(),
-                Color.BLACK, new BasicStroke(2));
-
-        return plotLine;
+        this.dateTime = DateTime.doubleToDateTimeVector(getColumn("dateTime"));
+        double[] sysErrIndAsDouble = getColumn("sysErrInd");
+        this.sysErrInd = sysErrIndAsDouble == null ? null : toInt(sysErrIndAsDouble);
     }
 
     public double[] getDateTimeAsDouble() {
-        return getColumn(0);
+        return getColumn("dateTime");
     }
 
     public LocalDateTime[] getDateTime() {
@@ -150,58 +62,200 @@ public class LimnigraphDataset extends ImportedDataset {
     }
 
     public double[] getStage() {
-        return getColumn(1);
+        return getColumn("stage");
     }
 
     public double[] getNonSysErrStd() {
-        if (!hasNonSysErr()) {
-            return null;
-        }
-        return getColumn(nonSysErrStdIndex);
+        return getColumn("nonSysErrStd");
     }
 
     public double[] getSysErrStd() {
-        if (!hasSysErr()) {
-            return null;
-        }
-        return getColumn(sysErrStdIndex);
+        return getColumn("sysErrStd");
     }
 
     public int[] getSysErrInd() {
-        if (!hasSysErr()) {
-            return null;
-        }
         return sysErrInd;
     }
 
     public List<double[]> getStageErrMatrix() {
-        List<double[]> data = getData();
         if (!hasStageErrMatrix()) {
             return null;
         }
-        return data.subList(errorMatrixStartIndex, errorMatrixStartIndex + errorMatrixSize);
+        return errorMatrixDataset.getMatrix();
+    }
+
+    public List<double[]> getStageErrUncertaintyEnvelop() {
+        List<double[]> matrix = errorMatrixDataset.getMatrix();
+        return matrix.subList(matrix.size() - 2, matrix.size());
     }
 
     public boolean hasNonSysErr() {
-        return nonSysErrStdIndex != -1;
+        return getNonSysErrStd() != null;
     }
 
     public boolean hasSysErr() {
-        return sysErrStdIndex != -1 && sysErrResamplingIndicesIndex != -1;
+        return getSysErrStd() != null && getSysErrInd() != null;
     }
 
     public boolean hasStageErrMatrix() {
-        return errorMatrixStartIndex != -1 && errorMatrixSize != -1;
+        return errorMatrixDataset != null;
+    }
+
+    public PlotItem getPlotLine() {
+        Second[] timeVector = PlotTimeSeriesLine.localDateTimeToSecond(dateTime);
+        PlotTimeSeriesLine plotLine = new PlotTimeSeriesLine(
+                getName(),
+                timeVector,
+                getStage(),
+                Color.BLACK, new BasicStroke(2));
+
+        return plotLine;
+    }
+
+    public PlotItem getPlotEnv() {
+        // FIXME: timeVector is shared with plotLine... refactoring needed.
+        Second[] timeVector = PlotTimeSeriesLine.localDateTimeToSecond(dateTime);
+        List<double[]> errEnv = getStageErrUncertaintyEnvelop();
+        PlotTimeSeriesBand plotBand = new PlotTimeSeriesBand(
+                getName(),
+                timeVector,
+                errEnv.get(0), errEnv.get(1), Color.YELLOW);
+        return plotBand;
     }
 
     @Override
     public JSONObject toJSON(BamProject project) {
         JSONObject json = super.toJSON(project);
-        json.put("nonSysErrStdIndex", nonSysErrStdIndex);
-        json.put("sysErrStdIndex", sysErrStdIndex);
-        json.put("sysErrResamplingIndicesIndex", sysErrResamplingIndicesIndex);
-        json.put("errorMatrixSize", errorMatrixSize);
+        if (hasStageErrMatrix()) {
+            json.put("errorMatrixDataset", errorMatrixDataset.toJSON(project));
+        }
         return json;
+    }
+
+    public void computeErroMatrix(int nCol) {
+        // make memory reclaimable (if no other ref elsewhere)
+        errorMatrixDataset = null;
+
+        double[] stage = getStage();
+
+        int nRow = getNumberOfRows();
+        List<double[]> matrix = new ArrayList<>(nCol);
+        try {
+            for (int i = 0; i < nCol; i++) {
+                double[] column = new double[nRow];
+                // initialize with stage values
+                for (int j = 0; j < nRow; j++) {
+                    column[j] = stage[j];
+                    // column[j] = 0;
+                }
+                matrix.add(column);
+            }
+        } catch (OutOfMemoryError E) {
+            System.err.println("LimnigraphDataset Error: cannot create error matrix because memory is insufficient.");
+            return;
+        }
+
+        if (hasNonSysErr()) {
+            double[] nsStd = getNonSysErrStd();
+            addNonSysError(matrix, nsStd);
+        }
+
+        if (hasSysErr()) {
+            double[] sStd = getSysErrStd();
+            int[] sInd = getSysErrInd();
+            addSysError(matrix, sStd, sInd);
+        }
+
+        if (hasNonSysErr() || hasSysErr()) {
+            errorMatrixDataset = new UncertaintyDataset("stageErrorMatrix", matrix);
+        }
+
+    }
+
+    // Note: this is coded to limit the number of calls to get the very slow method
+    // getErrors() however, this may be quite inefficient memory wise...
+    private static void addSysError(List<double[]> errorMatrix, double[] sStd, int[] sInd) {
+        Map<Double, Map<Integer, List<Integer>>> indicesPerSysIndAndSysStd = new HashMap<>();
+
+        int nRow = sStd.length;
+
+        for (int k = 0; k < nRow; k++) {
+            Double std = sStd[k];
+            Integer ind = sInd[k];
+            Map<Integer, List<Integer>> indicesPerSysInd = indicesPerSysIndAndSysStd.containsKey(std)
+                    ? indicesPerSysIndAndSysStd.get(std)
+                    : new HashMap<>();
+
+            List<Integer> indices = indicesPerSysInd.containsKey(ind) ? indicesPerSysInd.get(ind) : new ArrayList<>();
+
+            indices.add(k);
+            indicesPerSysInd.put(ind, indices);
+            indicesPerSysIndAndSysStd.put(std, indicesPerSysInd);
+
+        }
+
+        int nCol = errorMatrix.size();
+        for (Double std : indicesPerSysIndAndSysStd.keySet()) {
+            // generate error vector for each unique std
+            Map<Integer, List<Integer>> indicesPerSysInd = indicesPerSysIndAndSysStd.get(std);
+            int nInd = indicesPerSysInd.size(); // number of sys resampling indices
+            double[] errors = getErrors(std, nInd * nCol);
+            int k = 0;
+            for (Integer ind : indicesPerSysInd.keySet()) {
+                // for each resamplgin index, loop over all its associated row indices
+                // and for each column add the appropriate error
+                List<Integer> indices = indicesPerSysInd.get(ind);
+                for (int index : indices) {
+                    for (int i = 0; i < nCol; i++) {
+                        errorMatrix.get(i)[index] = errorMatrix.get(i)[index] + errors[k * nCol + i];
+                    }
+                }
+                k++;
+            }
+        }
+    }
+
+    // Note: note for method addSysError() also applies here
+    private static void addNonSysError(List<double[]> errorMatrix, double[] nsStd) {
+        Map<Double, List<Integer>> indicesPerStd = new HashMap<>();
+        int nRow = nsStd.length;
+        for (int k = 0; k < nRow; k++) {
+            Double std = nsStd[k];
+            List<Integer> indices = indicesPerStd.containsKey(std) ? indicesPerStd.get(std) : new ArrayList<>();
+            indices.add(k);
+            indicesPerStd.put(std, indices);
+        }
+
+        int nCol = errorMatrix.size();
+        for (Double std : indicesPerStd.keySet()) {
+            List<Integer> indices = indicesPerStd.get(std);
+            int nInd = indices.size();
+            double[] errors = getErrors(std, nInd * nCol);
+            for (int i = 0; i < nCol; i++) {
+                double[] e = errorMatrix.get(i);
+                for (int j = 0; j < nInd; j++) {
+                    int index = indices.get(j);
+                    e[index] = e[index] + errors[j * nCol + i];
+                }
+            }
+        }
+    }
+
+    // Note: very slow since getRandomValues() method actually calls an external exe
+    // and requires read / write operations to / from the hard drive
+    private static double[] getErrors(double std, int n) {
+        if (std == 0) {
+            double[] zeros = new double[n];
+            for (int k = 0; k < n; k++) {
+                zeros[k] = 0;
+            }
+            return zeros;
+        }
+        Distribution distribution = new Distribution(
+                DistributionType.GAUSSIAN,
+                0, std);
+
+        return distribution.getRandomValues(n);
     }
 
 }

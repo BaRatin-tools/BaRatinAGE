@@ -4,56 +4,72 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.baratinage.ui.AppConfig;
-import org.baratinage.ui.component.ImportedDataset;
+import org.baratinage.ui.commons.AbstractDataset;
 import org.baratinage.ui.plot.PlotPoints;
 import org.json.JSONObject;
 
-public class GaugingsDataset extends ImportedDataset {
+public class GaugingsDataset extends AbstractDataset {
 
-    public static GaugingsDataset buildFromData(String name,
-            double[] stage,
-            double[] discharge,
-            double[] dischargeUncertainty) {
+    // public static GaugingsDataset buildFromData(String name,
+    // double[] stage,
+    // double[] discharge,
+    // double[] dischargeUncertainty) {
 
-        List<double[]> data = new ArrayList<>();
-        data.add(stage);
-        data.add(discharge);
-        data.add(dischargeUncertainty);
+    // List<double[]> data = new ArrayList<>();
+    // data.add(stage);
+    // data.add(discharge);
+    // data.add(dischargeUncertainty);
 
-        int nRow = stage.length;
-        double[] gaugingsActiveState = new double[nRow];
-        for (int k = 0; k < nRow; k++) {
-            gaugingsActiveState[k] = 1;
+    // int nRow = stage.length;
+    // double[] gaugingsActiveState = new double[nRow];
+    // for (int k = 0; k < nRow; k++) {
+    // gaugingsActiveState[k] = 1;
+    // }
+    // data.add(gaugingsActiveState);
+
+    // String[] headers = new String[] { "h", "Q", "uQ_percent", "active" };
+
+    // return new GaugingsDataset(name, data, headers);
+    // }
+
+    // public static GaugingsDataset buildFromJSON(JSONObject json) {
+    // return new GaugingsDataset(json);
+    // }
+
+    // private GaugingsDataset(String name, List<double[]> data, String[] headers) {
+    // super(name, data, headers);
+    // }
+    private static double[] ones(int n) {
+        double[] d = new double[n];
+        for (int k = 0; k < n; k++) {
+            d[k] = 1;
         }
-        data.add(gaugingsActiveState);
-
-        String[] headers = new String[] { "h", "Q", "uQ_percent", "active" };
-
-        return new GaugingsDataset(name, data, headers);
+        return d;
     }
 
-    public static GaugingsDataset buildFromJSON(JSONObject json) {
-        return new GaugingsDataset(json);
+    public GaugingsDataset(String name, double[] stage, double[] discharge, double[] dischargePercentUncertainty) {
+        super(name,
+                new NamedColumn("stage", stage),
+                new NamedColumn("discharge", discharge),
+                new NamedColumn("dischargePercentUncertainty",
+                        dischargePercentUncertainty),
+                new NamedColumn("active", ones(stage.length)));
     }
 
-    private GaugingsDataset(String name, List<double[]> data, String[] headers) {
-        super(name, data, headers);
-    }
-
-    private GaugingsDataset(JSONObject json) {
+    public GaugingsDataset(JSONObject json) {
         super(json);
     }
 
     public double[] getStageValues() {
-        return getColumn(0);
+        return getColumn("stage");
     }
 
     public double[] getDischargeValues() {
-        return getColumn(1);
+        return getColumn("discharge");
     }
 
     public double[] getDischargePercentUncertainty() {
-        return getColumn(2);
+        return getColumn("dischargePercentUncertainty");
     }
 
     public double[] getDischargeStdUncertainty() {
@@ -92,27 +108,11 @@ public class GaugingsDataset extends ImportedDataset {
     }
 
     public double[] getActiveStateAsDouble() {
-        return getColumn(3);
+        return getColumn("active");
     }
 
     public boolean[] getActiveStateAsBoolean() {
         return toBoolean(getActiveStateAsDouble());
-    }
-
-    public Gauging getGauging(int gaugingIndex) {
-        double[] row = getRow(gaugingIndex);
-        return new Gauging(
-                row[0],
-                row[1],
-                row[2],
-                row[3] == 1.0);
-    }
-
-    public void setGauging(int gaugingIndex, Gauging newGauging) {
-        getColumn(0)[gaugingIndex] = newGauging.stage;
-        getColumn(1)[gaugingIndex] = newGauging.discharge;
-        getColumn(2)[gaugingIndex] = newGauging.dischargeUncertainty;
-        getColumn(3)[gaugingIndex] = newGauging.activeState ? 1 : 0;
     }
 
     private static List<List<double[]>> splitMatrix(List<double[]> data,

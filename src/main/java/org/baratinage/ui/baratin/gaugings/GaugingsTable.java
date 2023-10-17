@@ -85,37 +85,8 @@ public class GaugingsTable extends RowColPanel {
             if (columnIndex >= 4 || rowIndex >= gaugingDataset.getNumberOfRows()) {
                 return -9999;
             }
-            Gauging gauging = gaugingDataset.getGauging(rowIndex);
-            if (columnIndex == 0)
-                return gauging.stage;
-            if (columnIndex == 1)
-                return gauging.discharge;
-            if (columnIndex == 2)
-                return gauging.dischargeUncertainty;
-            if (columnIndex == 3)
-                return gauging.activeState;
-            return -9999;
-        }
-
-        @Override
-        public void setValueAt(Object value, int rowIndex, int columnIndex) {
-            Gauging gauging = gaugingDataset.getGauging(rowIndex);
-            if (columnIndex < 3 && value.getClass() == Double.class) {
-                Double doubleValue = (Double) value;
-                if (columnIndex == 0) {
-                    gauging.stage = doubleValue;
-                } else if (columnIndex == 1) {
-                    gauging.discharge = doubleValue;
-                } else if (columnIndex == 2) {
-                    gauging.dischargeUncertainty = doubleValue;
-                }
-            } else if (columnIndex == 3) {
-                if (value.getClass() == Boolean.class) {
-                    gauging.activeState = (Boolean) value;
-                }
-            }
-            gaugingDataset.setGauging(rowIndex, gauging);
-            fireTableCellUpdated(rowIndex, columnIndex);
+            Double value = gaugingDataset.getValue(gaugingDataset.getHeader(columnIndex), rowIndex);
+            return columnIndex == 3 ? value == 1d : value;
         }
 
         @Override
