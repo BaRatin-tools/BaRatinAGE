@@ -52,6 +52,11 @@ public class TabContainer extends JTabbedPane {
     }
 
     @Override
+    public void addTab(String label, Component component) {
+        this.addTab(label, null, component);
+    }
+
+    @Override
     public void remove(int index) {
         if (index >= 0 && index < tabItems.size()) {
             tabItems.remove(index);
@@ -59,7 +64,8 @@ public class TabContainer extends JTabbedPane {
         }
     }
 
-    public void setTitleTextAt(int index, String text) {
+    @Override
+    public void setTitleAt(int index, String text) {
         if (index >= 0 && index < tabItems.size()) {
             TabItem item = tabItems.get(index);
             if (item != null) {

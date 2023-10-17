@@ -32,7 +32,7 @@ public class HydraulicControlPanels extends RowColPanel implements IPriors {
             int n = tabs.getTabCount();
             for (int k = 0; k < n; k++) {
                 OneHydraulicControl ohc = controls.get(k);
-                tabs.setTitleTextAt(k, T.html("control_number", ohc.controlNumber));
+                tabs.setTitleAt(k, T.html("control_number", ohc.controlNumber));
             }
         });
     }

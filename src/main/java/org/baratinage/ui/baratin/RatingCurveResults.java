@@ -31,8 +31,8 @@ public class RatingCurveResults extends TabContainer {
         T.updateHierarchy(this, ratingCurvePlot);
         T.updateHierarchy(this, paramDensityPlots);
         T.t(this, () -> {
-            setTitleTextAt(0, T.html("posterior_rating_curve"));
-            setTitleTextAt(1, T.html("parameter_densities"));
+            setTitleAt(0, T.html("posterior_rating_curve"));
+            setTitleAt(1, T.html("parameter_densities"));
         });
     }
 
