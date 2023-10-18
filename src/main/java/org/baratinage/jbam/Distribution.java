@@ -32,7 +32,7 @@ public class Distribution {
         }
         this.type = type;
         this.parameterValues = parameterValues;
-        id = UUID.randomUUID().toString();
+        id = UUID.randomUUID().toString().split("-")[0];
     }
 
     private static final String EXE_DIR = BamFilesHelpers.EXE_DIR;
@@ -96,11 +96,11 @@ public class Distribution {
         ExeRun rangeRun = new ExeRun();
         rangeRun.setExeDir(EXE_DIR);
         rangeRun.setCommand(EXE_COMMAND,
-                "--name", type.bamName,
-                "--parameters", parametersArg,
-                "--action", "q",
-                "--xgrid", xGridArgRange,
-                "--result", rangeResFileName);
+                "-name", type.bamName,
+                "-par", parametersArg,
+                "-act", "q",
+                "-x", xGridArgRange,
+                "-rf", rangeResFileName);
 
         rangeRun.run();
 
@@ -119,11 +119,11 @@ public class Distribution {
         ExeRun densityRun = new ExeRun();
         densityRun.setExeDir(EXE_DIR);
         densityRun.setCommand(EXE_COMMAND,
-                "--name", type.bamName,
-                "--parameters", parametersArg,
-                "--action", "d",
-                "--xgrid", xGridArgDensity,
-                "--result", densityResFileName);
+                "-name", type.bamName,
+                "-par", parametersArg,
+                "-act", "d",
+                "-x", xGridArgDensity,
+                "-rf", densityResFileName);
 
         densityRun.run();
 
@@ -149,11 +149,11 @@ public class Distribution {
         ExeRun densityRun = new ExeRun();
         densityRun.setExeDir(EXE_DIR);
         densityRun.setCommand(EXE_COMMAND,
-                "--name", type.bamName,
-                "--parameters", parametersArg,
-                "--action", "r",
-                "--nsim", "" + n,
-                "--result", randomValuesResFileName);
+                "-name", type.bamName,
+                "-par", parametersArg,
+                "-act", "r",
+                "-n", "" + n,
+                "-rf", randomValuesResFileName);
 
         densityRun.run();
 
