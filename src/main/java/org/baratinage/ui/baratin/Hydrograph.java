@@ -263,13 +263,11 @@ public class Hydrograph extends BamItem implements IPredictionMaster {
     }
 
     public void buildPlot() {
-        System.out.println("BUILDING PLOT");
         if (currentConfigAndRes == null) {
             System.err.println("Hydrograph Error: No results to plot! Aborting.");
             return;
         }
         PredictionResult[] predResults = currentConfigAndRes.getPredictionResults();
-        System.out.println(predResults);
 
         double[] dateTimeVectorAsDouble = predResults[0].predictionConfig.inputs[0].extraData.get(0);
         LocalDateTime[] dateTimeVector = DateTime.doubleToDateTimeVector(dateTimeVectorAsDouble);
