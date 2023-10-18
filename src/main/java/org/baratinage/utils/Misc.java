@@ -54,7 +54,8 @@ public class Misc {
     }
 
     public static String getTimeStampedId() {
-        return Misc.getTimeStamp() + "_" + UUID.randomUUID().toString().substring(0, 5);
+        String id = Misc.getTimeStamp() + "_" + UUID.randomUUID().toString().substring(0, 5);
+        return id;
     }
 
     public static String getNextName(String defaultName, String[] allNames) {

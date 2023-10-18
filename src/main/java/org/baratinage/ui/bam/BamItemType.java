@@ -1,10 +1,9 @@
 package org.baratinage.ui.bam;
 
-import java.util.UUID;
-
 import javax.swing.ImageIcon;
 
 import org.baratinage.ui.component.SvgIcon;
+import org.baratinage.utils.Misc;
 
 public enum BamItemType {
     /**
@@ -59,7 +58,7 @@ public enum BamItemType {
         if (builder == null) {
             return null;
         }
-        return builder.build(UUID.randomUUID().toString());
+        return builder.build(Misc.getTimeStampedId());
     }
 
     public ImageIcon getIcon() {
