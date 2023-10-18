@@ -315,6 +315,11 @@ public abstract class BamProject extends RowColPanel {
             ZipOutputStream zipOutStream = new ZipOutputStream(zipFileOutStream);
 
             cleanupRegisteredFile();
+
+            // ReadWriteZip.flatZip(saveFilePath, )
+            // FIXME: cannot use flatZip because here we actually use a list of files...
+            // FIXME: implement overload for flatZip(String targetZipPath, List<String>
+            // FIXME: filesToZip)?
             for (File file : registeredFiles) {
                 System.out.println("BamProject: Including file '" + file.toString() + "'...");
                 String name = file.getName();
