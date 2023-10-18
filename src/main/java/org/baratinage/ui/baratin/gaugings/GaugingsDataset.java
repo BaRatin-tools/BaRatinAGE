@@ -10,35 +10,6 @@ import org.json.JSONObject;
 
 public class GaugingsDataset extends AbstractDataset {
 
-    // public static GaugingsDataset buildFromData(String name,
-    // double[] stage,
-    // double[] discharge,
-    // double[] dischargeUncertainty) {
-
-    // List<double[]> data = new ArrayList<>();
-    // data.add(stage);
-    // data.add(discharge);
-    // data.add(dischargeUncertainty);
-
-    // int nRow = stage.length;
-    // double[] gaugingsActiveState = new double[nRow];
-    // for (int k = 0; k < nRow; k++) {
-    // gaugingsActiveState[k] = 1;
-    // }
-    // data.add(gaugingsActiveState);
-
-    // String[] headers = new String[] { "h", "Q", "uQ_percent", "active" };
-
-    // return new GaugingsDataset(name, data, headers);
-    // }
-
-    // public static GaugingsDataset buildFromJSON(JSONObject json) {
-    // return new GaugingsDataset(json);
-    // }
-
-    // private GaugingsDataset(String name, List<double[]> data, String[] headers) {
-    // super(name, data, headers);
-    // }
     private static double[] ones(int n) {
         double[] d = new double[n];
         for (int k = 0; k < n; k++) {
