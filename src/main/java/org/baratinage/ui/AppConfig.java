@@ -1,6 +1,7 @@
 package org.baratinage.ui;
 
 import java.awt.Color;
+import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -81,6 +82,14 @@ public class AppConfig {
         Misc.createDir(BAM_WORKSPACE_ROOT);
 
         lastUsedDir = System.getProperty("user.home");
+    }
+
+    public void clearTempDirectory() {
+        // Clear Temp Directory!
+        for (File file : new File(APP_TEMP_DIR).listFiles()) {
+            if (!file.isDirectory())
+                file.delete();
+        }
     }
 
     public void cleanup() {

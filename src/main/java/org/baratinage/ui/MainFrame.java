@@ -242,6 +242,7 @@ public class MainFrame extends JFrame {
     }
 
     public void newProject() {
+        AppConfig.AC.clearTempDirectory();
         BaratinProject newProject = new BaratinProject();
         newProject.addDefaultBamItems();
         setCurrentProject(newProject);

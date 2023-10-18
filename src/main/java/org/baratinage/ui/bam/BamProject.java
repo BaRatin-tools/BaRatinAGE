@@ -284,7 +284,7 @@ public abstract class BamProject extends RowColPanel {
 
     private void syncTempDirectoryWithProject() {
 
-        clearTempDirectory();
+        AppConfig.AC.clearTempDirectory();
 
         registeredFiles.clear();
 
@@ -301,14 +301,6 @@ public abstract class BamProject extends RowColPanel {
             saveError.printStackTrace();
         }
         registerFile(mainConfigFilePath);
-    }
-
-    static private void clearTempDirectory() {
-        // Clear Temp Directory!
-        for (File file : new File(AppConfig.AC.APP_TEMP_DIR).listFiles()) {
-            if (!file.isDirectory())
-                file.delete();
-        }
     }
 
     public void saveProject(String saveFilePath) {
@@ -341,7 +333,7 @@ public abstract class BamProject extends RowColPanel {
 
     static public BamProject loadProject(String projectFilePath) {
 
-        clearTempDirectory();
+        AppConfig.AC.clearTempDirectory();
 
         File projectFile = new File(projectFilePath);
         if (!projectFile.exists()) {
