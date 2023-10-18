@@ -212,7 +212,7 @@ public class HydraulicConfiguration
 
         if (!stageGridComparison.matching()) {
             System.out.println("Stage grid config different");
-            MsgPanel msg = new MsgPanel(MsgPanel.TYPE.ERROR);
+            MsgPanel msg = new MsgPanel(MsgPanel.TYPE.ERROR, true);
             T.t(outOufSyncPanel, msg.message, true, "oos_stage_grid");
             JButton revertBackBtn = new JButton();
             T.t(outOufSyncPanel, revertBackBtn, true, "cancel_changes");
