@@ -28,8 +28,6 @@ public class BamItemParent extends RowColPanel {
 
     private final List<MsgPanel> messages;
 
-    private BamItem backupItemForDatasetSafekeeping = null;
-
     private String backupItemString = null;
     private String backupItemId = null;
     private BamItemList allItems = new BamItemList();
@@ -116,9 +114,6 @@ public class BamItemParent extends RowColPanel {
         backupItemId = currentItem.ID;
         JSONObject json = currentItem.toJSON();
         backupItemString = json.toString();
-
-        backupItemForDatasetSafekeeping = TYPE.buildBamItem();
-        backupItemForDatasetSafekeeping.fromJSON(json);
     }
 
     public void updateCombobox() {
@@ -285,9 +280,6 @@ public class BamItemParent extends RowColPanel {
         if (backupItemString != null) {
             json.put("backupItemString", backupItemString);
             json.put("backupItemId", backupItemId);
-
-            // will write dataset (if any) and register it to PROJECT for zipping
-            backupItemForDatasetSafekeeping.toJSON();
         }
         return json;
     }
@@ -300,9 +292,6 @@ public class BamItemParent extends RowColPanel {
         if (json.has("backupItemString")) {
             backupItemString = json.getString("backupItemString");
             backupItemId = json.getString("backupItemId");
-
-            backupItemForDatasetSafekeeping = TYPE.buildBamItem();
-            backupItemForDatasetSafekeeping.fromJSON(new JSONObject(backupItemString));
         }
     }
 
