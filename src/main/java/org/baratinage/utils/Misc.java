@@ -3,6 +3,8 @@ package org.baratinage.utils;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -107,7 +109,13 @@ public class Misc {
             if (f.isDirectory()) {
                 deleteDir(f.toString());
             } else {
-                boolean success = f.delete();
+                boolean success = true;
+                try {
+                    Files.delete(f.toPath());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    success = false;
+                }
                 System.out.println("Misc: Deleting file '" + f + "'... " + (success ? "SUCCESS" : "FAIL"));
 
             }
