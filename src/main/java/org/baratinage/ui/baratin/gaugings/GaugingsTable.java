@@ -90,6 +90,15 @@ public class GaugingsTable extends RowColPanel {
         }
 
         @Override
+        public void setValueAt(Object value, int rowIndex, int columnIndex) {
+            if (columnIndex == 3 && value instanceof Boolean) {
+                Boolean v = (Boolean) value;
+                gaugingDataset.getColumn("active")[rowIndex] = v ? 1d : 0d;
+                fireTableDataChanged();
+            }
+        }
+
+        @Override
         public boolean isCellEditable(int rowIndex, int columnIndex) {
             return columnIndex == 3;
         }
