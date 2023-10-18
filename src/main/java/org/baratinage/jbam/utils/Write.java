@@ -61,6 +61,7 @@ public class Write {
             bufferedWriter.newLine();
         }
         bufferedWriter.close();
+        fileWriter.close();
     }
 
     private static String processMatrixRow(String[] row, String sep) {
