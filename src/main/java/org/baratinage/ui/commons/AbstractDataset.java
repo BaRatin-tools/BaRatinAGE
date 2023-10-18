@@ -6,6 +6,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.baratinage.ui.AppConfig;
@@ -175,23 +176,23 @@ public class AbstractDataset {
     }
 
     private String computeHashString() {
-        System.out.println("AbstractDataset: building hash code...");
-        Integer hashSum = 0;
+        System.out.println("******************************************************************");
+        Thread.dumpStack();
+        System.out.println("AbstractDataset: building hash string for '" + name + "'...");
+        int[] hashCodes = new int[data.size() * 2];
+        int k = 0;
         for (NamedColumn column : data) {
-            hashSum += column.name().hashCode();
-            int s = 0;
-            double[] colValues = column.values();
-            if (colValues != null) {
-                for (Double d : colValues) {
-                    s += d.hashCode();
-                }
-            }
-            hashSum += s;
+            hashCodes[k] = column.name().hashCode();
+            k++;
+            hashCodes[k] = Arrays.hashCode(column.values());
+            k++;
         }
-        hashSum = hashSum < 0 ? hashSum * -1 : hashSum;
-        String hashCode = hashSum.toString();
-        System.out.println("AbstractDataset: hash code built '" + hashCode + "'");
-        return hashCode;
+        int hashCode = Arrays.hashCode(hashCodes);
+        hashCode = hashCode < 0 ? hashCode * -1 : hashCode;
+        String hashString = "" + hashCode;
+        System.out.println("AbstractDataset: hash code built '" + hashString + "'");
+        System.out.println("******************************************************************");
+        return hashString;
     }
 
     private void writeDataFile(String dataFilePath) {
@@ -206,6 +207,7 @@ public class AbstractDataset {
         }
 
         try {
+            System.out.println("AbstractDataset: Writting data '" + name + "' to file...");
             WriteFile.writeMatrix(
                     dataFilePath,
                     nonNullMatrix,
