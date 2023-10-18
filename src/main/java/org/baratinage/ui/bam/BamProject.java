@@ -3,14 +3,10 @@ package org.baratinage.ui.bam;
 import java.awt.event.ActionListener;
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -34,7 +30,6 @@ import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.utils.ReadFile;
 import org.baratinage.utils.ReadWriteZip;
 import org.baratinage.utils.WriteFile;
-
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -282,58 +277,82 @@ public abstract class BamProject extends RowColPanel {
 
     public abstract void fromJSON(JSONObject json);
 
-    private void syncTempDirectoryWithProject() {
+    // private void syncTempDirectoryWithProject() {
 
-        AppConfig.AC.clearTempDirectory();
+    // // DISABLED TO PREVENT DATA LOSS FOR BACKUPS
 
-        registeredFiles.clear();
+    // // AppConfig.AC.clearTempDirectory();
 
-        // creating the "mainConfigFile" will call the toJSON() method which
-        // will call each BamItem toJSON() method which each are responsible
-        // for writting down the data it needs and registering the data file
-        // including BaM run zip files.
-        String mainConfigFilePath = Path.of(AppConfig.AC.APP_TEMP_DIR, "main_config.json").toString();
-        File mainConfigFile = new File(mainConfigFilePath);
-        try {
-            WriteFile.writeLines(mainConfigFile, new String[] { toJSON().toString(4) });
-        } catch (IOException saveError) {
-            System.err.println("BamProject Error: Failed to save file");
-            saveError.printStackTrace();
-        }
-        registerFile(mainConfigFilePath);
-    }
+    // // registeredFiles.clear();
+
+    // // // creating the "mainConfigFile" will call the toJSON() method which
+    // // // will call each BamItem toJSON() method which each are responsible
+    // // // for writting down the data it needs and registering the data file
+    // // // including BaM run zip files.
+
+    // String mainConfigFilePath = Path.of(AppConfig.AC.APP_TEMP_DIR,
+    // "main_config.json").toString();
+
+    // File mainConfigFile = new File(mainConfigFilePath);
+    // try {
+    // WriteFile.writeLines(mainConfigFile, new String[] { toJSON().toString(4) });
+    // registerFile(mainConfigFilePath);
+    // } catch (IOException saveError) {
+    // System.err.println("BamProject Error: Failed to save file");
+    // saveError.printStackTrace();
+    // }
+    // }
 
     public void saveProject(String saveFilePath) {
 
-        syncTempDirectoryWithProject();
+        String mainConfigFilePath = Path.of(AppConfig.AC.APP_TEMP_DIR,
+                "main_config.json").toString();
 
+        String mainJsonString = toJSON().toString(4);
+
+        File mainConfigFile = new File(mainConfigFilePath);
         try {
-
-            File zipFile = new File(saveFilePath);
-            FileOutputStream zipFileOutStream = new FileOutputStream(zipFile);
-
-            ZipOutputStream zipOutStream = new ZipOutputStream(zipFileOutStream);
-
-            cleanupRegisteredFile();
-
-            // ReadWriteZip.flatZip(saveFilePath, )
-            // FIXME: cannot use flatZip because here we actually use a list of files...
-            // FIXME: implement overload for flatZip(String targetZipPath, List<String>
-            // FIXME: filesToZip)?
-            for (File file : registeredFiles) {
-                System.out.println("BamProject: Including file '" + file.toString() + "'...");
-                String name = file.getName();
-                ZipEntry ze = new ZipEntry(name);
-                zipOutStream.putNextEntry(ze);
-                Files.copy(file.toPath(), zipOutStream);
-            }
-
-            zipOutStream.close();
-
-            setProjectPath(saveFilePath);
-        } catch (IOException e1) {
-            e1.printStackTrace();
+            WriteFile.writeLines(mainConfigFile, new String[] { mainJsonString });
+        } catch (IOException saveError) {
+            System.err.println("BamProject Error: Failed to save file!");
+            saveError.printStackTrace();
+            return;
         }
+
+        ReadWriteZip.flatZip(saveFilePath, AppConfig.AC.APP_TEMP_DIR);
+        setProjectPath(saveFilePath);
+
+        // syncTempDirectoryWithProject();
+
+        // try {
+
+        // File zipFile = new File(saveFilePath);
+        // FileOutputStream zipFileOutStream = new FileOutputStream(zipFile);
+
+        // ZipOutputStream zipOutStream = new ZipOutputStream(zipFileOutStream);
+
+        // cleanupRegisteredFile();
+
+        // // ReadWriteZip.flatZip(saveFilePath, )
+        // // FIXME: cannot use flatZip because here we actually use a list of files...
+        // // FIXME: implement overload for flatZip(String targetZipPath, List<String>
+        // // FIXME: filesToZip)?
+        // for (File file : registeredFiles) {
+        // System.out.println("BamProject: Including file '" + file.toString() +
+        // "'...");
+        // String name = file.getName();
+        // ZipEntry ze = new ZipEntry(name);
+        // zipOutStream.putNextEntry(ze);
+        // Files.copy(file.toPath(), zipOutStream);
+        // }
+
+        // zipOutStream.close();
+
+        // setProjectPath(saveFilePath);
+        // } catch (IOException e1) {
+        // e1.printStackTrace();
+        // }
+
     }
 
     static public BamProject loadProject(String projectFilePath) {
@@ -399,7 +418,7 @@ public abstract class BamProject extends RowColPanel {
         registeredFiles.add(f);
     }
 
-    public boolean registeredFileContains(File file) {
+    private boolean registeredFileContains(File file) {
         for (File f : registeredFiles) {
             if (f.compareTo(file) == 0) {
                 return true;
@@ -408,29 +427,31 @@ public abstract class BamProject extends RowColPanel {
         return false;
     }
 
-    private void cleanupRegisteredFile() {
-        List<File> toRemove = new ArrayList<>();
-        List<String> usedNames = new ArrayList<>();
-        for (File file : registeredFiles) {
-            if (!file.exists()) {
-                System.out.println("BamProject: File '" + file.toString() + "' doesn't exist.");
-                toRemove.add(file);
-            }
-            String name = file.getName();
-            if (usedNames.stream().anyMatch(s -> s.equals(name))) {
-                // necessary when creating flat zip file! No duplicated name allowed.
-                System.out
-                        .println("BamProject: File '" + file.toString()
-                                + "' has a name already used by another registered file.");
-                toRemove.add(file);
-                continue;
-            }
-            usedNames.add(name);
-        }
-        for (File file : toRemove) {
-            System.out.println("BamProject: Unregistering file '" + file.toString() + "'...");
-            registeredFiles.remove(file);
-        }
-    }
+    // private void cleanupRegisteredFile() {
+    // List<File> toRemove = new ArrayList<>();
+    // List<String> usedNames = new ArrayList<>();
+    // for (File file : registeredFiles) {
+    // if (!file.exists()) {
+    // System.out.println("BamProject: File '" + file.toString() + "' doesn't
+    // exist.");
+    // toRemove.add(file);
+    // }
+    // String name = file.getName();
+    // if (usedNames.stream().anyMatch(s -> s.equals(name))) {
+    // // necessary when creating flat zip file! No duplicated name allowed.
+    // System.out
+    // .println("BamProject: File '" + file.toString()
+    // + "' has a name already used by another registered file.");
+    // toRemove.add(file);
+    // continue;
+    // }
+    // usedNames.add(name);
+    // }
+    // for (File file : toRemove) {
+    // System.out.println("BamProject: Unregistering file '" + file.toString() +
+    // "'...");
+    // registeredFiles.remove(file);
+    // }
+    // }
 
 }
