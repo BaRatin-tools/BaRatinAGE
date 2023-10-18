@@ -205,12 +205,12 @@ public class BamItemParent extends RowColPanel {
         return result.matching();
     }
 
-    public boolean isBamRerunRequired() {
-        if (backupItemString == null || backupItemId == null) {
-            return false;
-        }
-        return !isCurrentInSyncWithBackup();
-    }
+    // public boolean isBamRerunRequired() {
+    // if (backupItemString == null || backupItemId == null) {
+    // return false;
+    // }
+    // return !isCurrentInSyncWithBackup();
+    // }
 
     public List<MsgPanel> getMessages() {
         messages.clear();

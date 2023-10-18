@@ -57,14 +57,14 @@ public class Hydrograph extends BamItem implements IPredictionMaster {
             RatingCurve rc = (RatingCurve) ratingCurveParent.getCurrentBamItem();
             currentRatingCurve = rc;
             runPanel.setCalibratedModel(rc);
-            Throttler.throttle(ID, 250, this::checkSync);
+            Throttler.throttle(ID, AppConfig.AC.THROTTLED_DELAY_MS, this::checkSync);
         });
 
         limnigraphParent = new BamItemParent(this, BamItemType.LIMNIGRAPH);
         limnigraphParent.addChangeListener((chEvt) -> {
             Limnigraph l = (Limnigraph) limnigraphParent.getCurrentBamItem();
             currentLimnigraph = l;
-            Throttler.throttle(ID, 250, this::checkSync);
+            Throttler.throttle(ID, AppConfig.AC.THROTTLED_DELAY_MS, this::checkSync);
         });
 
         runPanel.addRunSuccessListerner((RunConfigAndRes res) -> {
@@ -73,7 +73,7 @@ public class Hydrograph extends BamItem implements IPredictionMaster {
             buildPlot();
             ratingCurveParent.updateBackup();
             limnigraphParent.updateBackup();
-            Throttler.throttle(ID, 250, this::checkSync);
+            Throttler.throttle(ID, AppConfig.AC.THROTTLED_DELAY_MS, this::checkSync);
         });
 
         RowColPanel parentItemPanel = new RowColPanel();
@@ -118,8 +118,7 @@ public class Hydrograph extends BamItem implements IPredictionMaster {
         warnings.addAll(ratingCurveParent.getMessages());
         warnings.addAll(limnigraphParent.getMessages());
 
-        boolean needBamRerun = ratingCurveParent.isBamRerunRequired() ||
-                limnigraphParent.isBamRerunRequired();
+        boolean needBamRerun = warnings.size() > 0;
 
         // --------------------------------------------------------------------
         // update message panel
@@ -191,7 +190,7 @@ public class Hydrograph extends BamItem implements IPredictionMaster {
         } else {
             System.out.println("Hydrograph: missing 'jsonStringBackup'");
         }
-        Throttler.throttle(ID, 250, this::checkSync);
+        Throttler.throttle(ID, AppConfig.AC.THROTTLED_DELAY_MS, this::checkSync);
     }
 
     @Override

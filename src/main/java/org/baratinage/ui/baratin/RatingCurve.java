@@ -239,11 +239,14 @@ public class RatingCurve extends BamItem implements IPredictionMaster, ICalibrat
         if (jsonStringBackup == null) {
             return true;
         }
-        JSONCompareResult results = JSONCompare.compare(toJSON(), new JSONObject(jsonStringBackup));
-        if (!results.children().containsKey("stageGridConfig")) {
+        JSONObject jsonBackup = new JSONObject(jsonStringBackup);
+        if (!jsonBackup.has("stageGridConfig")) {
             return false;
         }
-        return results.children().get("stageGridConfig").matching();
+        JSONCompareResult results = JSONCompare.compare(
+                ratingCurveStageGrid.toJSON(),
+                jsonBackup.getJSONObject("stageGridConfig"));
+        return results.matching();
     }
 
     private void checkSync() {
@@ -257,9 +260,7 @@ public class RatingCurve extends BamItem implements IPredictionMaster, ICalibrat
 
         boolean isStageGridOutOfSync = !isRatingCurveStageGridInSync();
 
-        boolean needBamRerun = hydrauConfParent.isBamRerunRequired() ||
-                gaugingsParent.isBamRerunRequired() ||
-                structErrorParent.isBamRerunRequired() || isStageGridOutOfSync;
+        boolean needBamRerun = warnings.size() > 0 || isStageGridOutOfSync;
 
         if (isStageGridOutOfSync) {
 
