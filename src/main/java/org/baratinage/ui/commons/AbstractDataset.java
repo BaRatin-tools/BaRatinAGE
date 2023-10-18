@@ -1,5 +1,6 @@
 package org.baratinage.ui.commons;
 
+import java.io.File;
 import java.io.IOException;
 
 import java.nio.file.Files;
@@ -11,7 +12,6 @@ import java.util.List;
 
 import org.baratinage.ui.AppConfig;
 import org.baratinage.ui.bam.BamProject;
-
 import org.baratinage.utils.ReadFile;
 import org.baratinage.utils.WriteFile;
 import org.json.JSONArray;
@@ -25,6 +25,8 @@ public class AbstractDataset {
 
     private final String name;
     private final List<NamedColumn> data;
+
+    private String dataFilePath;
 
     protected AbstractDataset(String name, NamedColumn... namedColumns) {
         this.name = name;
@@ -176,9 +178,6 @@ public class AbstractDataset {
     }
 
     private String computeHashString() {
-        System.out.println("******************************************************************");
-        Thread.dumpStack();
-        System.out.println("AbstractDataset: building hash string for '" + name + "'...");
         int[] hashCodes = new int[data.size() * 2];
         int k = 0;
         for (NamedColumn column : data) {
@@ -190,12 +189,22 @@ public class AbstractDataset {
         int hashCode = Arrays.hashCode(hashCodes);
         hashCode = hashCode < 0 ? hashCode * -1 : hashCode;
         String hashString = "" + hashCode;
-        System.out.println("AbstractDataset: hash code built '" + hashString + "'");
-        System.out.println("******************************************************************");
+        System.out.println("AbstractDataset: hash string  '" + hashString + "' was built for '" + name + "' ");
         return hashString;
     }
 
-    private void writeDataFile(String dataFilePath) {
+    private void writeDataFile() {
+        if (dataFilePath == null) {
+            System.err.println("AbstractDataset Error: cannot write data file because dataFilePath is null");
+            return;
+        }
+        File f = new File(dataFilePath);
+        if (f.exists()) {
+            // dataFilePath is suppose to have a name with a hash string reflecting actual
+            // data, if same name, it means same data!
+            System.out.println("AbstractDataset: no need to write file, it already exists.");
+            return;
+        }
         List<String> nonNullHeaders = new ArrayList<>();
         List<double[]> nonNullMatrix = new ArrayList<>();
         for (NamedColumn col : data) {
@@ -205,7 +214,6 @@ public class AbstractDataset {
                 nonNullMatrix.add(values);
             }
         }
-
         try {
             System.out.println("AbstractDataset: Writting data '" + name + "' to file...");
             WriteFile.writeMatrix(
@@ -235,9 +243,11 @@ public class AbstractDataset {
         JSONArray headersJson = new JSONArray(headers);
         json.put("headers", headersJson);
 
-        String dataFilePath = buildDataFilePath(name, hashString).toString();
+        dataFilePath = buildDataFilePath(name, hashString).toString();
 
-        writeDataFile(dataFilePath);
+        // FIXME: this method may be called too many times... throttle?
+        writeDataFile();
+
         project.registerFile(dataFilePath);
 
         return json;
