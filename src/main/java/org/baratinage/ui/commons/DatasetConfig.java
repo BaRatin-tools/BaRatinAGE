@@ -28,6 +28,20 @@ public class DatasetConfig {
         }
     }
 
+    public String[] getAllFilePaths() {
+        List<String> filePaths = new ArrayList<>();
+        if (filePath != null) {
+            filePaths.add(filePath);
+        }
+        for (DatasetConfig dc : nested) {
+            String[] nestedFilePaths = dc.getAllFilePaths();
+            for (String nestedFilePath : nestedFilePaths) {
+                filePaths.add(nestedFilePath);
+            }
+        }
+        return filePaths.toArray(new String[filePaths.size()]);
+    }
+
     public JSONObject toJSON() {
         JSONObject json = new JSONObject();
         json.put("name", name);
