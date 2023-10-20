@@ -64,6 +64,7 @@ public class Limnigraph extends BamItem implements IPredictionData {
         plotPanel = new RowColPanel();
 
         limniTable = new DataTable();
+        limniTable.setPadding(0);
 
         limniErrors = new LimnigraphErrors();
 
