@@ -6,7 +6,6 @@ import java.util.List;
 import org.baratinage.ui.AppConfig;
 import org.baratinage.ui.commons.AbstractDataset;
 import org.baratinage.ui.plot.PlotPoints;
-import org.json.JSONObject;
 
 public class GaugingsDataset extends AbstractDataset {
 
@@ -27,8 +26,8 @@ public class GaugingsDataset extends AbstractDataset {
                 new NamedColumn("active", ones(stage.length)));
     }
 
-    public GaugingsDataset(JSONObject json) {
-        super(json);
+    public GaugingsDataset(String name, String hashString) {
+        super(name, hashString, "stage", "discharge", "dischargePercentUncertainty", "active");
     }
 
     public double[] getStageValues() {

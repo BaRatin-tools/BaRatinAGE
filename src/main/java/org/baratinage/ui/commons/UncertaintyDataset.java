@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.baratinage.utils.Calc;
-import org.json.JSONObject;
 
 public class UncertaintyDataset extends AbstractDataset {
 
@@ -17,6 +16,14 @@ public class UncertaintyDataset extends AbstractDataset {
         return namedColumns;
     }
 
+    private static String[] toHeaders(int n) {
+        String[] headers = new String[n];
+        for (int k = 0; k < n; k++) {
+            headers[k] = "" + k;
+        }
+        return headers;
+    }
+
     private final List<double[]> uncertaintyEnvelop;
 
     public UncertaintyDataset(String name, List<double[]> matrix) {
@@ -24,8 +31,8 @@ public class UncertaintyDataset extends AbstractDataset {
         uncertaintyEnvelop = computeUncertaintyEnvelop(0.025, 0.975);
     }
 
-    public UncertaintyDataset(JSONObject json) {
-        super(json);
+    public UncertaintyDataset(String name, String hashString, int nCol) {
+        super(name, hashString, toHeaders(nCol));
         uncertaintyEnvelop = computeUncertaintyEnvelop(0.025, 0.975);
     }
 

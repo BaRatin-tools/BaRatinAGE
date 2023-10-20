@@ -11,11 +11,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.baratinage.ui.AppConfig;
-import org.baratinage.ui.bam.BamProject;
 import org.baratinage.utils.ReadFile;
 import org.baratinage.utils.WriteFile;
-import org.json.JSONArray;
-import org.json.JSONObject;
 
 public class AbstractDataset {
 
@@ -25,8 +22,6 @@ public class AbstractDataset {
 
     private final String name;
     private final List<NamedColumn> data;
-
-    private String dataFilePath;
 
     protected AbstractDataset(String name, NamedColumn... namedColumns) {
         this.name = name;
@@ -47,18 +42,9 @@ public class AbstractDataset {
         }
     }
 
-    protected AbstractDataset(JSONObject json) {
+    protected AbstractDataset(String name, String hashString, String... headers) {
 
-        name = json.getString("name");
-
-        String hashString = json.getString("hashString");
-
-        JSONArray headersJson = json.getJSONArray("headers");
-        int nCol = headersJson.length();
-        String[] headers = new String[nCol];
-        for (int k = 0; k < nCol; k++) {
-            headers[k] = headersJson.getString(k);
-        }
+        this.name = name;
 
         Path dataFilePath = buildDataFilePath(name, hashString);
         String[] fileHeaders = null;
@@ -193,7 +179,7 @@ public class AbstractDataset {
         return hashString;
     }
 
-    private void writeDataFile() {
+    private void writeDataFile(String dataFilePath) {
         if (dataFilePath == null) {
             System.err.println("AbstractDataset Error: cannot write data file because dataFilePath is null");
             return;
@@ -231,30 +217,26 @@ public class AbstractDataset {
         }
     }
 
-    public JSONObject toJSON(BamProject project) {
-        JSONObject json = new JSONObject();
+    public DatasetConfig save(boolean writeFile) {
 
         String hashString = computeHashString();
 
-        json.put("name", name);
-        json.put("hashString", hashString);
-
         String[] headers = getHeaders();
-        JSONArray headersJson = new JSONArray(headers);
-        json.put("headers", headersJson);
+        String dataFilePath = buildDataFilePath(name, hashString).toString();
+        if (writeFile) {
+            writeDataFile(dataFilePath);
+        }
+        return new DatasetConfig(
+                name, hashString, headers, dataFilePath);
+    }
 
-        dataFilePath = buildDataFilePath(name, hashString).toString();
-
-        // FIXME: this method may be called too many times... throttle?
-        writeDataFile();
-
-        project.registerFile(dataFilePath);
-
-        return json;
+    private static String buildDataFileName(String name, String hashString) {
+        return name + "_" + hashString + ".txt";
     }
 
     private static Path buildDataFilePath(String name, String hashString) {
-        return Path.of(AppConfig.AC.APP_TEMP_DIR, name + "_" + hashString + ".txt");
+        return Path.of(AppConfig.AC.APP_TEMP_DIR,
+                buildDataFileName(name, hashString));
     }
 
     protected static double[] toDouble(boolean[] src) {

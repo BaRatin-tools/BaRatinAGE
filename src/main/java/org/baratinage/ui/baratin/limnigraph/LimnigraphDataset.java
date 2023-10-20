@@ -10,15 +10,14 @@ import java.util.Map;
 
 import org.baratinage.jbam.Distribution;
 import org.baratinage.jbam.DistributionType;
-import org.baratinage.ui.bam.BamProject;
 import org.baratinage.ui.commons.AbstractDataset;
+import org.baratinage.ui.commons.DatasetConfig;
 import org.baratinage.ui.commons.UncertaintyDataset;
 import org.baratinage.ui.plot.PlotItem;
 import org.baratinage.ui.plot.PlotTimeSeriesBand;
 import org.baratinage.ui.plot.PlotTimeSeriesLine;
 import org.baratinage.utils.DateTime;
 import org.jfree.data.time.Second;
-import org.json.JSONObject;
 
 public class LimnigraphDataset extends AbstractDataset {
 
@@ -45,13 +44,23 @@ public class LimnigraphDataset extends AbstractDataset {
 
     }
 
-    public LimnigraphDataset(JSONObject json) {
-        super(json);
+    public LimnigraphDataset(String name, String hashString) {
+        this(name, hashString, null, null, -1);
+    }
+
+    public LimnigraphDataset(String name, String hashString, String errMatrixName, String errMatrixHashString,
+            int nCol) {
+        super(name, hashString,
+                "dateTime",
+                "stage",
+                "nonSysErrStd",
+                "sysErrStd",
+                "sysErrInd");
         this.dateTime = DateTime.doubleToDateTimeVector(getColumn("dateTime"));
         double[] sysErrIndAsDouble = getColumn("sysErrInd");
         this.sysErrInd = sysErrIndAsDouble == null ? null : toInt(sysErrIndAsDouble);
-        if (json.has("errorMatrixDataset")) {
-            errorMatrixDataset = new UncertaintyDataset(json.getJSONObject("errorMatrixDataset"));
+        if (errMatrixName != null && errMatrixHashString != null && nCol > 0) {
+            errorMatrixDataset = new UncertaintyDataset(errMatrixName, errMatrixHashString, nCol);
         }
     }
 
@@ -125,12 +134,14 @@ public class LimnigraphDataset extends AbstractDataset {
     }
 
     @Override
-    public JSONObject toJSON(BamProject project) {
-        JSONObject json = super.toJSON(project);
-        if (hasStageErrMatrix()) {
-            json.put("errorMatrixDataset", errorMatrixDataset.toJSON(project));
+    public DatasetConfig save(boolean writeToFile) {
+        DatasetConfig adcr = super.save(writeToFile);
+        if (!hasStageErrMatrix()) {
+            return adcr;
         }
-        return json;
+        DatasetConfig errMatrixSaveRecord = errorMatrixDataset.save(writeToFile);
+        adcr.nested.add(errMatrixSaveRecord);
+        return adcr;
     }
 
     public void computeErroMatrix(int nCol) {
