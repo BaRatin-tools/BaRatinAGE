@@ -12,7 +12,7 @@ import javax.swing.JSeparator;
 import org.baratinage.jbam.utils.BamFilesHelpers;
 import org.baratinage.translation.T;
 import org.baratinage.ui.bam.BamItem;
-import org.baratinage.ui.bam.BamItemConfig;
+import org.baratinage.ui.bam.BamConfigRecord;
 import org.baratinage.ui.bam.BamItemType;
 import org.baratinage.ui.bam.BamProject;
 import org.baratinage.ui.bam.IStructuralErrorModels;
@@ -119,18 +119,18 @@ public class StructuralErrorModelBamItem extends BamItem implements IStructuralE
     }
 
     @Override
-    public BamItemConfig save(boolean writeFiles) {
+    public BamConfigRecord save(boolean writeFiles) {
         JSONObject json = new JSONObject();
         JSONArray strucErrModelPanelsJSON = new JSONArray();
         for (int k = 0; k < nOutputs; k++) {
             strucErrModelPanelsJSON.put(k, strucErrModelPanels[k].toJSON());
         }
         json.put("strucErrModelPanels", strucErrModelPanelsJSON);
-        return new BamItemConfig(json);
+        return new BamConfigRecord(json);
     }
 
     @Override
-    public void load(BamItemConfig bamItemBackup) {
+    public void load(BamConfigRecord bamItemBackup) {
         JSONArray strucErrModelPanelsJSON = bamItemBackup.jsonObject().getJSONArray("strucErrModelPanels");
         for (int k = 0; k < nOutputs; k++) {
             strucErrModelPanels[k].fromJSON(strucErrModelPanelsJSON.getJSONArray(k));

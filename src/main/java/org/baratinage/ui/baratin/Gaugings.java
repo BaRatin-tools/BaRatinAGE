@@ -12,7 +12,7 @@ import org.baratinage.jbam.UncertainData;
 import org.baratinage.jbam.utils.BamFilesHelpers;
 
 import org.baratinage.ui.bam.BamItem;
-import org.baratinage.ui.bam.BamItemConfig;
+import org.baratinage.ui.bam.BamConfigRecord;
 import org.baratinage.ui.bam.ICalibrationData;
 import org.baratinage.ui.baratin.gaugings.GaugingsDataset;
 import org.baratinage.ui.baratin.gaugings.GaugingsImporter;
@@ -167,7 +167,7 @@ public class Gaugings extends BamItem implements ICalibrationData {
     }
 
     @Override
-    public BamItemConfig save(boolean writeFiles) {
+    public BamConfigRecord save(boolean writeFiles) {
 
         JSONObject json = new JSONObject();
 
@@ -179,11 +179,11 @@ public class Gaugings extends BamItem implements ICalibrationData {
             dataFilePaths = dc.getAllFilePaths();
         }
 
-        return new BamItemConfig(json, dataFilePaths);
+        return new BamConfigRecord(json, dataFilePaths);
     }
 
     @Override
-    public void load(BamItemConfig bamItemBackup) {
+    public void load(BamConfigRecord bamItemBackup) {
 
         JSONObject json = bamItemBackup.jsonObject();
 

@@ -272,7 +272,7 @@ public abstract class BamProject extends RowColPanel {
         }
     }
 
-    public BamItemConfig save() {
+    public BamConfigRecord save() {
         JSONObject json = new JSONObject();
         List<String> files = new ArrayList<>();
         JSONArray bamItemsJson = new JSONArray();
@@ -280,7 +280,7 @@ public abstract class BamProject extends RowColPanel {
         int n = bamItemList.size();
         for (int k = 0; k < n; k++) {
             BamItem item = bamItemList.get(k);
-            BamItemConfig itemConfig = item.save(true);
+            BamConfigRecord itemConfig = item.save(true);
             JSONObject bamItemJson = new JSONObject();
             bamItemJson.put("id", item.ID);
             bamItemJson.put("type", item.TYPE.toString());
@@ -300,7 +300,7 @@ public abstract class BamProject extends RowColPanel {
             json.put("selectedItemId", exItem.id);
         }
 
-        return new BamItemConfig(json, files.toArray(new String[files.size()]));
+        return new BamConfigRecord(json, files.toArray(new String[files.size()]));
     }
 
     public static BamProject load(JSONObject json) {
@@ -320,7 +320,7 @@ public abstract class BamProject extends RowColPanel {
             BamItem item = bamProject.addBamItem(itemType, id);
             item.bamItemNameField.setText(bamItemJson.getString("name"));
             item.bamItemDescriptionField.setText(bamItemJson.getString("description"));
-            item.load(new BamItemConfig(bamItemJson.getJSONObject("config")));
+            item.load(new BamConfigRecord(bamItemJson.getJSONObject("config")));
         }
         ExplorerItem exItem = bamProject.explorer.getLastSelectedPathComponent();
         if (exItem != null) {
@@ -342,7 +342,7 @@ public abstract class BamProject extends RowColPanel {
         String mainConfigFilePath = Path.of(AppConfig.AC.APP_TEMP_DIR,
                 "main_config.json").toString();
 
-        BamItemConfig bamConfig = save().addPaths(mainConfigFilePath);
+        BamConfigRecord bamConfig = save().addPaths(mainConfigFilePath);
         JSONObject json = bamConfig.jsonObject();
 
         String mainJsonString = json.toString(4);

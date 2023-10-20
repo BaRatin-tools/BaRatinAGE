@@ -30,7 +30,7 @@ public class BamItemParent extends RowColPanel {
 
     // private String backupItemString = null;
     private String bamItemBackupId = null;
-    private BamItemConfig bamItemBackup = null;
+    private BamConfigRecord bamItemBackup = null;
 
     // private JSON
 
@@ -188,7 +188,7 @@ public class BamItemParent extends RowColPanel {
             return false;
         }
 
-        BamItemConfig currentBamItemBackup = currentBamItem.save(false);
+        BamConfigRecord currentBamItemBackup = currentBamItem.save(false);
 
         JSONObject backupFiltered = bamItemBackup.jsonObject();
         JSONObject currentFiltered = currentBamItemBackup.jsonObject();
@@ -274,7 +274,7 @@ public class BamItemParent extends RowColPanel {
             json.put("bamItemId", currentBamItem.ID);
         }
         if (bamItemBackup != null) {
-            json.put("bamItemBackup", BamItemConfig.toJSON(bamItemBackup));
+            json.put("bamItemBackup", BamConfigRecord.toJSON(bamItemBackup));
             json.put("bamItemBackupId", bamItemBackupId);
         }
         return json;
@@ -286,7 +286,7 @@ public class BamItemParent extends RowColPanel {
             setCurrentBamItem(bamItemId);
         }
         if (json.has("bamItemBackup")) {
-            bamItemBackup = BamItemConfig.fromJSON(json.getJSONObject("bamItemBackup"));
+            bamItemBackup = BamConfigRecord.fromJSON(json.getJSONObject("bamItemBackup"));
             bamItemBackupId = json.getString("bamItemBackupId");
         }
     }

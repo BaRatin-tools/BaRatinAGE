@@ -12,7 +12,7 @@ import org.baratinage.jbam.PredictionInput;
 import org.baratinage.jbam.PredictionResult;
 import org.baratinage.ui.AppConfig;
 import org.baratinage.ui.bam.BamItem;
-import org.baratinage.ui.bam.BamItemConfig;
+import org.baratinage.ui.bam.BamConfigRecord;
 import org.baratinage.ui.bam.BamItemParent;
 import org.baratinage.ui.bam.BamItemType;
 import org.baratinage.ui.bam.IPredictionExperiment;
@@ -42,7 +42,7 @@ public class Hydrograph extends BamItem implements IPredictionMaster {
     private Limnigraph currentLimnigraph;
     private RunConfigAndRes currentConfigAndRes;
 
-    private BamItemConfig backup;
+    private BamConfigRecord backup;
 
     public Hydrograph(String uuid, BaratinProject project) {
         super(BamItemType.HYDROGRAPH, uuid, project);
@@ -141,7 +141,7 @@ public class Hydrograph extends BamItem implements IPredictionMaster {
     }
 
     @Override
-    public BamItemConfig save(boolean writeFiles) {
+    public BamConfigRecord save(boolean writeFiles) {
 
         JSONObject json = new JSONObject();
 
@@ -155,14 +155,14 @@ public class Hydrograph extends BamItem implements IPredictionMaster {
         }
 
         if (backup != null) {
-            json.put("backup", BamItemConfig.toJSON(backup));
+            json.put("backup", BamConfigRecord.toJSON(backup));
         }
 
-        return zipPath == null ? new BamItemConfig(json) : new BamItemConfig(json, zipPath);
+        return zipPath == null ? new BamConfigRecord(json) : new BamConfigRecord(json, zipPath);
     }
 
     @Override
-    public void load(BamItemConfig bamItemBackup) {
+    public void load(BamConfigRecord bamItemBackup) {
 
         JSONObject json = bamItemBackup.jsonObject();
 
@@ -187,7 +187,7 @@ public class Hydrograph extends BamItem implements IPredictionMaster {
 
         if (json.has("backup")) {
             JSONObject backupJson = json.getJSONObject("backup");
-            backup = BamItemConfig.fromJSON(backupJson);
+            backup = BamConfigRecord.fromJSON(backupJson);
 
         } else {
             System.out.println("Hydrograph: missing 'backup'");

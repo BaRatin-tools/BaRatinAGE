@@ -16,7 +16,7 @@ import org.baratinage.jbam.PredictionResult;
 import org.baratinage.translation.T;
 import org.baratinage.ui.AppConfig;
 import org.baratinage.ui.bam.BamItem;
-import org.baratinage.ui.bam.BamItemConfig;
+import org.baratinage.ui.bam.BamConfigRecord;
 import org.baratinage.ui.bam.BamItemType;
 import org.baratinage.ui.bam.IModelDefinition;
 import org.baratinage.ui.bam.IPredictionExperiment;
@@ -51,7 +51,7 @@ public class HydraulicConfiguration
     private PriorRatingCurvePlot plotPanel;
     private RunConfigAndRes bamRunConfigAndRes;
 
-    private BamItemConfig backup;
+    private BamConfigRecord backup;
 
     public static final ImageIcon controlMatrixIcon = SvgIcon.buildCustomAppImageIcon("control_matrix.svg");
     public static final ImageIcon priorSpecificationIcon = SvgIcon.buildCustomAppImageIcon("prior_densities.svg");
@@ -329,7 +329,7 @@ public class HydraulicConfiguration
     }
 
     @Override
-    public BamItemConfig save(boolean writeFiles) {
+    public BamConfigRecord save(boolean writeFiles) {
         JSONObject json = new JSONObject();
 
         // **********************************************************
@@ -355,14 +355,14 @@ public class HydraulicConfiguration
         }
 
         if (backup != null) {
-            json.put("backup", BamItemConfig.toJSON(backup));
+            json.put("backup", BamConfigRecord.toJSON(backup));
         }
 
-        return zipPath == null ? new BamItemConfig(json) : new BamItemConfig(json, zipPath);
+        return zipPath == null ? new BamConfigRecord(json) : new BamConfigRecord(json, zipPath);
     }
 
     @Override
-    public void load(BamItemConfig bamItemBackup) {
+    public void load(BamConfigRecord bamItemBackup) {
 
         JSONObject json = bamItemBackup.jsonObject();
 
@@ -398,7 +398,7 @@ public class HydraulicConfiguration
 
         if (json.has("backup")) {
             JSONObject backupJson = json.getJSONObject("backup");
-            backup = BamItemConfig.fromJSON(backupJson);
+            backup = BamConfigRecord.fromJSON(backupJson);
 
         } else {
             System.out.println("HydraulicConfiguration: missing 'backup'");

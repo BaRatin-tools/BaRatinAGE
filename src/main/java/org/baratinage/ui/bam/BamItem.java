@@ -73,9 +73,9 @@ abstract public class BamItem extends GridPanel implements Translatable {
         this.contentPanel.appendChild(component);
     }
 
-    public abstract BamItemConfig save(boolean writeFiles);
+    public abstract BamConfigRecord save(boolean writeFiles);
 
-    public abstract void load(BamItemConfig bamItemBackup);
+    public abstract void load(BamConfigRecord bamItemBackup);
 
     @Override
     public String toString() {

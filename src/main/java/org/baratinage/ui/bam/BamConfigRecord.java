@@ -3,9 +3,9 @@ package org.baratinage.ui.bam;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-public record BamItemConfig(JSONObject jsonObject, String... filePaths) {
+public record BamConfigRecord(JSONObject jsonObject, String... filePaths) {
 
-    public BamItemConfig addPaths(String... filePathsToAdd) {
+    public BamConfigRecord addPaths(String... filePathsToAdd) {
         String[] oldFilePaths = filePaths();
         int nOld = oldFilePaths.length;
         int nAdd = filePathsToAdd.length;
@@ -20,10 +20,10 @@ public record BamItemConfig(JSONObject jsonObject, String... filePaths) {
             newFilePaths[k] = add;
             k++;
         }
-        return new BamItemConfig(jsonObject(), newFilePaths);
+        return new BamConfigRecord(jsonObject(), newFilePaths);
     }
 
-    public static JSONObject toJSON(BamItemConfig bamItemBackup) {
+    public static JSONObject toJSON(BamConfigRecord bamItemBackup) {
         JSONObject json = new JSONObject();
         json.put("jsonObject", bamItemBackup.jsonObject());
         String[] filePaths = bamItemBackup.filePaths();
@@ -34,7 +34,7 @@ public record BamItemConfig(JSONObject jsonObject, String... filePaths) {
         return json;
     }
 
-    public static BamItemConfig fromJSON(JSONObject json) {
+    public static BamConfigRecord fromJSON(JSONObject json) {
         JSONObject jsonObject = json.getJSONObject("jsonObject");
         String[] filePaths = new String[0];
         if (json.has("filePaths")) {
@@ -45,6 +45,6 @@ public record BamItemConfig(JSONObject jsonObject, String... filePaths) {
                 filePaths[k] = filePathsJson.getString(k);
             }
         }
-        return new BamItemConfig(jsonObject, filePaths);
+        return new BamConfigRecord(jsonObject, filePaths);
     }
 }

@@ -11,7 +11,7 @@ import javax.swing.JSplitPane;
 
 import org.baratinage.jbam.PredictionInput;
 import org.baratinage.ui.bam.BamItem;
-import org.baratinage.ui.bam.BamItemConfig;
+import org.baratinage.ui.bam.BamConfigRecord;
 import org.baratinage.ui.bam.BamItemType;
 import org.baratinage.ui.bam.IPredictionData;
 import org.baratinage.ui.baratin.limnigraph.LimnigraphDataset;
@@ -202,7 +202,7 @@ public class Limnigraph extends BamItem implements IPredictionData {
     }
 
     @Override
-    public BamItemConfig save(boolean writeFiles) {
+    public BamConfigRecord save(boolean writeFiles) {
 
         JSONObject json = new JSONObject();
 
@@ -214,11 +214,11 @@ public class Limnigraph extends BamItem implements IPredictionData {
             dataFilePaths = dc.getAllFilePaths();
         }
 
-        return new BamItemConfig(json, dataFilePaths);
+        return new BamConfigRecord(json, dataFilePaths);
     }
 
     @Override
-    public void load(BamItemConfig bamItemBackup) {
+    public void load(BamConfigRecord bamItemBackup) {
 
         JSONObject json = bamItemBackup.jsonObject();
 
