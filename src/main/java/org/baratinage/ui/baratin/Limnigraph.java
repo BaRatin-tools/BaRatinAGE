@@ -246,11 +246,4 @@ public class Limnigraph extends BamItem implements IPredictionData {
         }
     }
 
-    @Override
-    public BamItem clone(String uuid) {
-        Limnigraph cloned = new Limnigraph(uuid, (BaratinProject) PROJECT);
-        cloned.fromFullJSON(toFullJSON());
-        return cloned;
-    }
-
 }

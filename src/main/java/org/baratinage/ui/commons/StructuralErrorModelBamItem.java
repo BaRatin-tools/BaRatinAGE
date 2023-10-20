@@ -137,11 +137,4 @@ public class StructuralErrorModelBamItem extends BamItem implements IStructuralE
         }
     }
 
-    @Override
-    public BamItem clone(String uuid) {
-        StructuralErrorModelBamItem cloned = new StructuralErrorModelBamItem(uuid, PROJECT, nameSymbolUnits);
-        cloned.fromFullJSON(toFullJSON());
-        return cloned;
-    }
-
 }

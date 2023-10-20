@@ -418,13 +418,6 @@ public class HydraulicConfiguration
     }
 
     @Override
-    public HydraulicConfiguration clone(String uuid) {
-        HydraulicConfiguration cloned = new HydraulicConfiguration(uuid, (BaratinProject) PROJECT);
-        cloned.fromFullJSON(toFullJSON());
-        return cloned;
-    }
-
-    @Override
     public IPredictionExperiment[] getPredictionExperiments() {
         int nReplicates = 500;
         PriorPredictionExperiment ppeMaxpost = new PriorPredictionExperiment("maxpost",

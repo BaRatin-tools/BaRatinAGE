@@ -193,9 +193,4 @@ public class Gaugings extends BamItem implements ICalibrationData {
         }
     }
 
-    public Gaugings clone(String uuid) {
-        Gaugings cloned = new Gaugings(uuid, (BaratinProject) PROJECT);
-        cloned.fromFullJSON(toFullJSON());
-        return cloned;
-    }
 }

@@ -397,13 +397,6 @@ public class RatingCurve extends BamItem implements IPredictionMaster, ICalibrat
     }
 
     @Override
-    public RatingCurve clone(String uuid) {
-        RatingCurve cloned = new RatingCurve(uuid, (BaratinProject) PROJECT);
-        cloned.fromFullJSON(toFullJSON());
-        return cloned;
-    }
-
-    @Override
     public IPredictionExperiment[] getPredictionExperiments() {
         PredictionExperiment[] predictionConfigs = new PredictionExperiment[3];
         CalibrationConfig calibrationConfig = getCalibrationConfig();

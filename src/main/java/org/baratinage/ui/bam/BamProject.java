@@ -27,6 +27,7 @@ import org.baratinage.ui.commons.Explorer;
 import org.baratinage.ui.commons.ExplorerItem;
 import org.baratinage.ui.component.SvgIcon;
 import org.baratinage.ui.container.RowColPanel;
+import org.baratinage.utils.Misc;
 import org.baratinage.utils.ReadFile;
 import org.baratinage.utils.ReadWriteZip;
 import org.baratinage.utils.WriteFile;
@@ -153,9 +154,11 @@ public abstract class BamProject extends RowColPanel {
 
         bamItem.bamItemTypeLabel.setIcon(bamItem.TYPE.getIcon());
         bamItem.cloneButton.addActionListener((e) -> {
-            BamItem clonedItem = bamItem.clone();
-            clonedItem.setCopyName();
-            addBamItem(clonedItem);
+            String uuid = Misc.getTimeStampedId();
+            BamItem clonedBamItem = bamItem.TYPE.buildBamItem(uuid);
+            clonedBamItem.fromFullJSON(bamItem.toFullJSON());
+            clonedBamItem.setCopyName();
+            addBamItem(clonedBamItem);
         });
 
         bamItem.cloneButton.setIcon(SvgIcon.buildFeatherAppImageIcon("copy.svg"));

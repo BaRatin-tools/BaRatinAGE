@@ -15,7 +15,6 @@ import org.baratinage.ui.component.SimpleTextField;
 import org.baratinage.ui.component.Title;
 import org.baratinage.ui.container.GridPanel;
 import org.baratinage.ui.container.RowColPanel;
-import org.baratinage.utils.Misc;
 import org.json.JSONObject;
 
 abstract public class BamItem extends GridPanel implements Translatable {
@@ -115,13 +114,6 @@ abstract public class BamItem extends GridPanel implements Translatable {
         for (ChangeListener l : changeListeners) {
             l.stateChanged(new ChangeEvent(this));
         }
-    }
-
-    public abstract BamItem clone(String uuid);
-
-    public BamItem clone() {
-        String uuid = Misc.getTimeStampedId();
-        return clone(uuid);
     }
 
     public void setCopyName() {

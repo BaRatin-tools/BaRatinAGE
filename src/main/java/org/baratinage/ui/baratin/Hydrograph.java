@@ -196,13 +196,6 @@ public class Hydrograph extends BamItem implements IPredictionMaster {
     }
 
     @Override
-    public BamItem clone(String uuid) {
-        Hydrograph cloned = new Hydrograph(uuid, (BaratinProject) PROJECT);
-        cloned.fromFullJSON(toFullJSON());
-        return cloned;
-    }
-
-    @Override
     public IPredictionExperiment[] getPredictionExperiments() {
         if (currentLimnigraph == null || currentRatingCurve == null) {
             return null;
