@@ -61,8 +61,8 @@ public class BamItemParent extends RowColPanel {
         cb.addChangeListener((chEvt) -> {
             int selectedIndex = cb.getSelectedIndex();
             setCurrentBamItem(selectedIndex);
-            cb.setValidityView(selectedIndex >= 0);
         });
+        cb.setValidityView(false);
 
         messages = new ArrayList<>();
 
@@ -140,6 +140,9 @@ public class BamItemParent extends RowColPanel {
         } else {
             int index = allItems.indexOf(currentBamItem);
             cb.setSelectedItem(index, true);
+            if (index == -1) {
+                cb.fireChangeListeners();
+            }
         }
     }
 
@@ -265,6 +268,7 @@ public class BamItemParent extends RowColPanel {
             }
 
         }
+        cb.setValidityView(messages.size() == 0 && cb.getSelectedIndex() != -1);
         return messages;
     }
 
