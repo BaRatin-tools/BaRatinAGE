@@ -9,6 +9,12 @@ import java.util.List;
 
 public class Write {
 
+    // FIXME: a complete rewrite of this class should be done
+    // much simpler implementation possible using String.join(...)
+    // combined with simple array convertion methods
+    // a more complexe, monitorable approach using bufferwriter could also be
+    // implemented...
+
     /**
      * Given lines of texts in an array and file path, write the lines of text to
      * the file.
@@ -64,7 +70,16 @@ public class Write {
         fileWriter.close();
     }
 
-    private static String processMatrixRow(String[] row, String sep) {
+    /**
+     * Build a string from an array of string by contatenating each element using
+     * sep
+     * as a seperator.
+     * 
+     * @param row array of Strings
+     * @param sep sseparator Sring
+     * @return concatenated string.
+     */
+    public static String processMatrixRow(String[] row, String sep) {
         String line = "";
         for (int k = 0; k < row.length; k++) {
             String currentSep = k == 0 ? "" : sep;
