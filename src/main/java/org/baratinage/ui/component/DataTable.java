@@ -4,26 +4,36 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.text.DecimalFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.JButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
 
+import org.baratinage.translation.T;
 import org.baratinage.ui.container.RowColPanel;
 
 public class DataTable extends RowColPanel {
 
     private final CustomTableModel model;
     private final JTable table;
+    private CustomCellRenderer cellRenderer;
 
     public DataTable() {
+        super(AXIS.COL);
+        setPadding(5);
+        setGap(5);
+
         model = new CustomTableModel();
         table = new JTable();
 
@@ -34,19 +44,92 @@ public class DataTable extends RowColPanel {
 
         JScrollPane scrollpane = new JScrollPane(table);
 
+        RowColPanel actionPanel = new RowColPanel();
+        actionPanel.setMainAxisAlign(ALIGN.START);
+        JButton exportButton = new JButton();
+        exportButton.addActionListener((e) -> {
+            saveAsCSV();
+        });
+        exportButton.setIcon(SvgIcon.buildFeatherAppImageIcon("save.svg"));
+        exportButton.setText("CSV");
+        T.t(this, () -> {
+            exportButton.setToolTipText(T.text("to_csv"));
+        });
+        actionPanel.appendChild(exportButton);
+
         Dimension defaultPrefDim = scrollpane.getPreferredSize();
         defaultPrefDim.height = 300;
         defaultPrefDim.width = 300;
         scrollpane.setPreferredSize(defaultPrefDim);
 
-        appendChild(scrollpane);
+        appendChild(actionPanel, 0);
+        appendChild(scrollpane, 1);
 
     }
 
     public void updateCellRenderer() {
-        CustomCellRenderer cellRenderer = new CustomCellRenderer("yyyy-MM-dd HH:mm:ss");
+        cellRenderer = new CustomCellRenderer("yyyy-MM-dd HH:mm:ss");
         table.setDefaultRenderer(LocalDateTime.class, cellRenderer);
         table.setDefaultRenderer(Double.class, cellRenderer);
+    }
+
+    private String getStringValue(int row, int col) {
+        Object obj = table.getValueAt(row, col);
+        if (obj == null) {
+            return "";
+        } else if (obj instanceof LocalDateTime) {
+            return cellRenderer.dateTimeFormatter.format((LocalDateTime) obj);
+        } else {
+            return obj.toString();
+        }
+    }
+
+    // private void buildSaveData
+
+    private void saveAsCSV() {
+        // creating row wise data matrix;
+        int nCol = model.getColumnCount();
+        int nRow = model.getRowCount();
+        // List<String[]> rows = new ArrayList<>();
+        String[] rows = new String[nRow + 1];
+        String[] headerRow = new String[nCol];
+        for (int k = 0; k < nCol; k++) {
+            TableColumn tableColumn = table.getColumnModel().getColumn(k);
+            Object headerValue = tableColumn.getHeaderValue();
+            if (headerValue instanceof String) {
+                headerRow[k] = (String) headerValue;
+            } else {
+                headerRow[k] = table.getColumnName(k);
+            }
+            headerRow[k] = "\"" + headerRow[k] + "\"";
+        }
+        rows[0] = String.join(",", headerRow);
+        for (int i = 0; i < nRow; i++) {
+            String[] row = new String[nCol];
+            for (int j = 0; j < nCol; j++) {
+                row[j] = getStringValue(i, j);
+            }
+            rows[i + 1] = String.join(",", row);
+        }
+
+        File file = CommonDialog.saveFileDialog(null, T.text("csv_format"), "csv");
+        if (file == null) {
+            System.err.println("DataTable Error: chosen file is null.");
+            return;
+        }
+
+        String data = String.join("\n", rows);
+        try {
+            if (!file.exists()) {
+                file.createNewFile();
+            }
+            FileWriter fileWriter = new FileWriter(file);
+            fileWriter.write(data);
+            fileWriter.close();
+        } catch (IOException e) {
+            System.err.println("DataTable Error: failed to write data to CSV file!");
+            e.printStackTrace();
+        }
     }
 
     public void updateData() {
@@ -231,12 +314,12 @@ public class DataTable extends RowColPanel {
 
     private static class CustomCellRenderer extends DefaultTableCellRenderer {
 
-        private DateTimeFormatter formatter;
+        private DateTimeFormatter dateTimeFormatter;
         private DecimalFormat scientificFormatter;
         private DecimalFormat numberFormatter;
 
         public CustomCellRenderer(String printFormat) {
-            formatter = DateTimeFormatter.ofPattern(printFormat);
+            dateTimeFormatter = DateTimeFormatter.ofPattern(printFormat);
             scientificFormatter = new DecimalFormat("0.00E0");
             numberFormatter = new DecimalFormat();
         }
@@ -246,7 +329,7 @@ public class DataTable extends RowColPanel {
                 int row, int column) {
             if (value instanceof LocalDateTime) {
                 LocalDateTime ldt = (LocalDateTime) value;
-                value = ldt.format(formatter);
+                value = ldt.format(dateTimeFormatter);
             } else if (value instanceof Double) {
                 Double d = (Double) value;
                 Double absD = Math.abs(d);
