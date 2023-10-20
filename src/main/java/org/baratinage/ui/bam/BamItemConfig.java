@@ -5,6 +5,24 @@ import org.json.JSONObject;
 
 public record BamItemConfig(JSONObject jsonObject, String... filePaths) {
 
+    public BamItemConfig addPaths(String... filePathsToAdd) {
+        String[] oldFilePaths = filePaths();
+        int nOld = oldFilePaths.length;
+        int nAdd = filePathsToAdd.length;
+        int nNew = nOld + nAdd;
+        String[] newFilePaths = new String[nNew];
+        int k = 0;
+        for (String old : oldFilePaths) {
+            newFilePaths[k] = old;
+            k++;
+        }
+        for (String add : filePathsToAdd) {
+            newFilePaths[k] = add;
+            k++;
+        }
+        return new BamItemConfig(jsonObject(), newFilePaths);
+    }
+
     public static JSONObject toJSON(BamItemConfig bamItemBackup) {
         JSONObject json = new JSONObject();
         json.put("jsonObject", bamItemBackup.jsonObject());
