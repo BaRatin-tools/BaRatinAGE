@@ -75,9 +75,9 @@ abstract public class BamItem extends GridPanel implements Translatable {
         this.contentPanel.appendChild(component);
     }
 
-    public abstract JSONObject toJSON();
+    public abstract BamItemConfig save(boolean writeFiles);
 
-    public abstract void fromJSON(JSONObject json);
+    public abstract void load(BamItemConfig bamItemBackup);
 
     public JSONObject toFullJSON() {
         JSONObject json = new JSONObject();
@@ -85,14 +85,15 @@ abstract public class BamItem extends GridPanel implements Translatable {
         json.put("uuid", ID);
         json.put("name", bamItemNameField.getText());
         json.put("description", bamItemDescriptionField.getText());
-        json.put("content", toJSON());
+        json.put("content", BamItemConfig.toJSON(save(true)));
         return json;
     }
 
     public void fromFullJSON(JSONObject json) {
         bamItemNameField.setText(json.getString("name"));
         bamItemDescriptionField.setText(json.getString("description"));
-        fromJSON(json.getJSONObject("content"));
+        BamItemConfig bamItemBackup = BamItemConfig.fromJSON(json.getJSONObject("content"));
+        load(bamItemBackup);
     }
 
     @Override
@@ -128,9 +129,4 @@ abstract public class BamItem extends GridPanel implements Translatable {
         String newName = T.text("copy_of", oldName);
         bamItemNameField.setText(newName);
     }
-
-    protected void registerFile(String dataFilePath) {
-        PROJECT.registerFile(dataFilePath);
-    }
-
 }

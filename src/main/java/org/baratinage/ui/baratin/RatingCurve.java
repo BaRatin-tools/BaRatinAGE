@@ -25,6 +25,7 @@ import org.baratinage.jbam.utils.BamFilesHelpers;
 import org.baratinage.translation.T;
 import org.baratinage.ui.AppConfig;
 import org.baratinage.ui.bam.BamItem;
+import org.baratinage.ui.bam.BamItemConfig;
 import org.baratinage.ui.bam.BamItemType;
 import org.baratinage.ui.bam.BamItemParent;
 import org.baratinage.ui.bam.ICalibratedModel;
@@ -57,7 +58,7 @@ public class RatingCurve extends BamItem implements IPredictionMaster, ICalibrat
 
     private RowColPanel outdatedPanel;
 
-    private String jsonStringBackup;
+    private BamItemConfig backup;
 
     public RatingCurve(String uuid, BaratinProject project) {
         super(BamItemType.RATING_CURVE, uuid, project);
@@ -93,6 +94,9 @@ public class RatingCurve extends BamItem implements IPredictionMaster, ICalibrat
         gaugingsParent = new BamItemParent(
                 this,
                 BamItemType.GAUGINGS);
+        gaugingsParent.setComparisonJSONfilter((JSONObject json) -> {
+            return JSONFilter.filter(json, true, true, "name", "headers", "filePath", "nested");
+        });
         gaugingsParent.addChangeListener((e) -> {
             Gaugings bamItem = (Gaugings) gaugingsParent.getCurrentBamItem();
             runPanel.setCalibrationData(bamItem);
@@ -141,7 +145,7 @@ public class RatingCurve extends BamItem implements IPredictionMaster, ICalibrat
         runPanel = new RunPanel(true, false, true);
         runPanel.setPredictionExperiments(this);
         runPanel.addRunSuccessListerner((RunConfigAndRes res) -> {
-            jsonStringBackup = toJSON().toString();
+            backup = save(true);
             bamRunConfigAndRes = res;
             buildPlot();
             hydrauConfParent.updateBackup();
@@ -236,10 +240,10 @@ public class RatingCurve extends BamItem implements IPredictionMaster, ICalibrat
     }
 
     private boolean isRatingCurveStageGridInSync() {
-        if (jsonStringBackup == null) {
+        if (backup == null) {
             return true;
         }
-        JSONObject jsonBackup = new JSONObject(jsonStringBackup);
+        JSONObject jsonBackup = backup.jsonObject();
         if (!jsonBackup.has("stageGridConfig")) {
             return false;
         }
@@ -268,7 +272,7 @@ public class RatingCurve extends BamItem implements IPredictionMaster, ICalibrat
             MsgPanel errorMsg = new MsgPanel(MsgPanel.TYPE.ERROR, true);
             JButton cancelChangeButton = new JButton();
             cancelChangeButton.addActionListener((e) -> {
-                JSONObject json = new JSONObject(jsonStringBackup);
+                JSONObject json = backup.jsonObject();
                 JSONObject stageGridJson = json.getJSONObject("stageGridConfig");
                 ratingCurveStageGrid.fromJSON(stageGridJson);
 
@@ -309,7 +313,7 @@ public class RatingCurve extends BamItem implements IPredictionMaster, ICalibrat
     }
 
     @Override
-    public JSONObject toJSON() {
+    public BamItemConfig save(boolean writeFiles) {
 
         JSONObject json = new JSONObject();
 
@@ -328,19 +332,23 @@ public class RatingCurve extends BamItem implements IPredictionMaster, ICalibrat
 
         // **********************************************************
         // BaM run
-
+        String zipPath = null;
         if (bamRunConfigAndRes != null) {
             json.put("bamRunId", bamRunConfigAndRes.id);
-            String zipPath = bamRunConfigAndRes.zipRun();
-            registerFile(zipPath);
+            zipPath = bamRunConfigAndRes.zipRun(writeFiles);
         }
 
-        json.put("jsonStringBackup", jsonStringBackup);
-        return json;
+        if (backup != null) {
+            json.put("backup", BamItemConfig.toJSON(backup));
+        }
+
+        return zipPath == null ? new BamItemConfig(json) : new BamItemConfig(json, zipPath);
     }
 
     @Override
-    public void fromJSON(JSONObject json) {
+    public void load(BamItemConfig bamItemBackup) {
+
+        JSONObject json = bamItemBackup.jsonObject();
 
         if (json.has("hydrauConfig")) {
             hydrauConfParent.fromJSON(json.getJSONObject("hydrauConfig"));
@@ -377,10 +385,12 @@ public class RatingCurve extends BamItem implements IPredictionMaster, ICalibrat
             System.out.println("RatingCurve: missing 'bamRunId'");
         }
 
-        if (json.has("jsonStringBackup")) {
-            jsonStringBackup = json.getString("jsonStringBackup");
+        if (json.has("backup")) {
+            JSONObject backupJson = json.getJSONObject("backup");
+            backup = BamItemConfig.fromJSON(backupJson);
+
         } else {
-            System.out.println("RatingCurve: missing 'jsonStringBackup'");
+            System.out.println("RatingCurve: missing 'backup'");
         }
 
         Throttler.throttle(ID, AppConfig.AC.THROTTLED_DELAY_MS, this::checkSync);

@@ -11,11 +11,13 @@ import javax.swing.JSplitPane;
 
 import org.baratinage.jbam.PredictionInput;
 import org.baratinage.ui.bam.BamItem;
+import org.baratinage.ui.bam.BamItemConfig;
 import org.baratinage.ui.bam.BamItemType;
 import org.baratinage.ui.bam.IPredictionData;
 import org.baratinage.ui.baratin.limnigraph.LimnigraphDataset;
 import org.baratinage.ui.baratin.limnigraph.LimnigraphErrors;
 import org.baratinage.ui.baratin.limnigraph.LimnigraphImporter;
+import org.baratinage.ui.commons.DatasetConfig;
 import org.baratinage.ui.component.DataTable;
 import org.baratinage.ui.component.SvgIcon;
 import org.baratinage.ui.container.RowColPanel;
@@ -24,6 +26,7 @@ import org.baratinage.translation.T;
 import org.baratinage.ui.plot.Plot;
 import org.baratinage.ui.plot.PlotContainer;
 import org.baratinage.utils.Misc;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class Limnigraph extends BamItem implements IPredictionData {
@@ -199,23 +202,47 @@ public class Limnigraph extends BamItem implements IPredictionData {
     }
 
     @Override
-    public JSONObject toJSON() {
+    public BamItemConfig save(boolean writeFiles) {
 
         JSONObject json = new JSONObject();
 
         if (limniDataset != null) {
-            json.put("limniDataset", limniDataset.toJSON(PROJECT));
+            DatasetConfig adc = limniDataset.save(writeFiles);
+            JSONObject limniDatasetJson = adc.toJSON();
+            json.put("limniDataset", limniDatasetJson);
         }
 
-        return json;
+        return new BamItemConfig(json);
     }
 
     @Override
-    public void fromJSON(JSONObject json) {
+    public void load(BamItemConfig bamItemBackup) {
+
+        JSONObject json = bamItemBackup.jsonObject();
 
         if (json.has("limniDataset")) {
             JSONObject limniDatasetJson = json.getJSONObject("limniDataset");
-            updateDataset(new LimnigraphDataset(limniDatasetJson));
+            JSONObject limniErrMatrixJson = null;
+            if (limniDatasetJson.has("nested")) {
+                JSONArray nestedJson = limniDatasetJson.getJSONArray("nested");
+                limniErrMatrixJson = nestedJson.getJSONObject(0);
+            }
+            LimnigraphDataset newLimniDataset = null;
+            if (limniErrMatrixJson == null) {
+                newLimniDataset = new LimnigraphDataset(
+                        limniDatasetJson.getString("name"),
+                        limniDatasetJson.getString("hashString"));
+            } else {
+                int nCol = limniErrMatrixJson.getJSONArray("headers").length();
+                newLimniDataset = new LimnigraphDataset(
+                        limniDatasetJson.getString("name"),
+                        limniDatasetJson.getString("hashString"),
+                        limniErrMatrixJson.getString("name"),
+                        limniErrMatrixJson.getString("hashString"), nCol);
+            }
+            if (newLimniDataset != null) {
+                updateDataset(newLimniDataset);
+            }
         }
     }
 

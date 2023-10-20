@@ -28,10 +28,14 @@ public class BamItemParent extends RowColPanel {
 
     private final List<MsgPanel> messages;
 
-    private String backupItemString = null;
-    private String backupItemId = null;
+    // private String backupItemString = null;
+    private String bamItemBackupId = null;
+    private BamItemConfig bamItemBackup = null;
+
+    // private JSON
+
     private BamItemList allItems = new BamItemList();
-    private BamItem currentItem = null;
+    private BamItem currentBamItem = null;
 
     private final SimpleComboBox cb;
 
@@ -84,14 +88,14 @@ public class BamItemParent extends RowColPanel {
     }
 
     private String getCurrentItemName() {
-        return currentItem == null ? T.text("msg_empty_selection")
-                : currentItem.bamItemNameField.getText();
+        return currentBamItem == null ? T.text("msg_empty_selection")
+                : currentBamItem.bamItemNameField.getText();
     }
 
     private String getBackupItemName() {
         String name = " &mdash; ";
-        if (backupItemId != null) {
-            BamItem item = allItems.getBamItemWithId(backupItemId);
+        if (bamItemBackupId != null) {
+            BamItem item = allItems.getBamItemWithId(bamItemBackupId);
             if (item != null) {
                 name = item.bamItemNameField.getText();
             }
@@ -107,13 +111,12 @@ public class BamItemParent extends RowColPanel {
     }
 
     public BamItem getCurrentBamItem() {
-        return currentItem;
+        return currentBamItem;
     }
 
     public void updateBackup() {
-        backupItemId = currentItem.ID;
-        JSONObject json = currentItem.toJSON();
-        backupItemString = json.toString();
+        bamItemBackupId = currentBamItem.ID;
+        bamItemBackup = currentBamItem.save(true);
     }
 
     public void updateCombobox() {
@@ -132,10 +135,10 @@ public class BamItemParent extends RowColPanel {
     private void syncWithBamItemList() {
         String[] itemsName = BamItemList.getBamItemNames(allItems);
         cb.setItems(itemsName, true);
-        if (currentItem == null) {
+        if (currentBamItem == null) {
             cb.setSelectedItem(-1, true);
         } else {
-            int index = allItems.indexOf(currentItem);
+            int index = allItems.indexOf(currentBamItem);
             cb.setSelectedItem(index, true);
         }
     }
@@ -151,48 +154,48 @@ public class BamItemParent extends RowColPanel {
     }
 
     private void setCurrentBamItem(BamItem bamItem) {
-        if (currentItem != null) {
-            currentItem.removeChangeListener(onBamItemContentChange);
+        if (currentBamItem != null) {
+            currentBamItem.removeChangeListener(onBamItemContentChange);
         }
-        currentItem = bamItem;
-        if (currentItem != null) {
-            currentItem.addChangeListener(onBamItemContentChange);
+        currentBamItem = bamItem;
+        if (currentBamItem != null) {
+            currentBamItem.addChangeListener(onBamItemContentChange);
         }
-        int index = allItems.indexOf(currentItem);
+        int index = allItems.indexOf(currentBamItem);
         cb.setSelectedItem(index, true);
         fireChangeListeners();
     }
 
     private boolean hasSelectionChanged() {
-        if (backupItemString == null) {
+        if (bamItemBackup == null) {
             // no backup, irrelevant
             return false;
         }
-        if (currentItem == null) {
+        if (currentBamItem == null) {
             // selection must have changed
             return true;
         }
-        return !backupItemId.equals(currentItem.ID);
+        return !bamItemBackupId.equals(currentBamItem.ID);
     }
 
     private boolean isCurrentInSyncWithBackup() {
-        if (backupItemString == null) {
+        if (bamItemBackup == null) {
             // no backup, irrelevant
             return false;
         }
-        if (currentItem == null) {
+        if (currentBamItem == null) {
             // content is different
             return false;
         }
-        JSONObject backupItemJson = new JSONObject(backupItemString);
-        JSONObject currentItemJson = currentItem.toJSON();
 
-        JSONObject backupFiltered = backupItemJson;
-        JSONObject currentFiltered = currentItemJson;
+        BamItemConfig currentBamItemBackup = currentBamItem.save(false);
+
+        JSONObject backupFiltered = bamItemBackup.jsonObject();
+        JSONObject currentFiltered = currentBamItemBackup.jsonObject();
 
         if (filter != null) {
-            backupFiltered = filter.apply(backupItemJson);
-            currentFiltered = filter.apply(currentItemJson);
+            backupFiltered = filter.apply(backupFiltered);
+            currentFiltered = filter.apply(currentFiltered);
         }
 
         JSONCompareResult result = JSONCompare.compare(backupFiltered, currentFiltered);
@@ -200,18 +203,11 @@ public class BamItemParent extends RowColPanel {
         return result.matching();
     }
 
-    // public boolean isBamRerunRequired() {
-    // if (backupItemString == null || backupItemId == null) {
-    // return false;
-    // }
-    // return !isCurrentInSyncWithBackup();
-    // }
-
     public List<MsgPanel> getMessages() {
         messages.clear();
         T.clear(messages);
 
-        if (backupItemString != null && backupItemId != null) {
+        if (bamItemBackup != null && bamItemBackupId != null) {
             boolean inSync = isCurrentInSyncWithBackup();
 
             if (!inSync) {
@@ -222,10 +218,10 @@ public class BamItemParent extends RowColPanel {
                 createInSyncCompBtn.setIcon(TYPE.getAddIcon());
 
                 revertToSelectCompBtn.addActionListener((e) -> {
-                    if (backupItemId == null) {
+                    if (bamItemBackupId == null) {
                         return;
                     }
-                    BamItem item = allItems.getBamItemWithId(backupItemId);
+                    BamItem item = allItems.getBamItemWithId(bamItemBackupId);
                     if (item == null) {
                         JOptionPane.showConfirmDialog(
                                 AppConfig.AC.APP_MAIN_FRAME,
@@ -239,16 +235,16 @@ public class BamItemParent extends RowColPanel {
                 });
 
                 createInSyncCompBtn.addActionListener((e) -> {
-                    if (backupItemString == null) {
+                    if (bamItemBackup == null) {
                         return;
                     }
                     BamItem bamItem = CHILD.PROJECT.addBamItem(TYPE);
-                    bamItem.fromJSON(new JSONObject(backupItemString));
+                    bamItem.load(bamItemBackup);
                     CHILD.PROJECT.setCurrentBamItem(CHILD);
                     setCurrentBamItem(bamItem);
                 });
 
-                if (hasSelectionChanged() && allItems.getBamItemWithId(backupItemId) != null) {
+                if (hasSelectionChanged() && allItems.getBamItemWithId(bamItemBackupId) != null) {
                     syncIssueMsg.addButton(revertToSelectCompBtn);
                 }
                 syncIssueMsg.addButton(createInSyncCompBtn);
@@ -274,12 +270,12 @@ public class BamItemParent extends RowColPanel {
 
     public JSONObject toJSON() {
         JSONObject json = new JSONObject();
-        if (currentItem != null) {
-            json.put("bamItemId", currentItem.ID);
+        if (currentBamItem != null) {
+            json.put("bamItemId", currentBamItem.ID);
         }
-        if (backupItemString != null) {
-            json.put("backupItemString", backupItemString);
-            json.put("backupItemId", backupItemId);
+        if (bamItemBackup != null) {
+            json.put("bamItemBackup", BamItemConfig.toJSON(bamItemBackup));
+            json.put("bamItemBackupId", bamItemBackupId);
         }
         return json;
     }
@@ -289,9 +285,9 @@ public class BamItemParent extends RowColPanel {
             String bamItemId = json.getString("bamItemId");
             setCurrentBamItem(bamItemId);
         }
-        if (json.has("backupItemString")) {
-            backupItemString = json.getString("backupItemString");
-            backupItemId = json.getString("backupItemId");
+        if (json.has("bamItemBackup")) {
+            bamItemBackup = BamItemConfig.fromJSON(json.getJSONObject("bamItemBackup"));
+            bamItemBackupId = json.getString("bamItemBackupId");
         }
     }
 

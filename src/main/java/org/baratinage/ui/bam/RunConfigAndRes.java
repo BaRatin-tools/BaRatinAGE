@@ -51,13 +51,13 @@ public class RunConfigAndRes extends BaM {
         this.workspace = workspace;
     }
 
-    public String zipRun() {
+    public String zipRun(boolean writeToFile) {
         if (!workspace.toFile().exists()) {
             toFiles(workspace.toString());
         }
         String zipName = id + ".zip";
         Path zipPath = Path.of(AppConfig.AC.APP_TEMP_DIR, zipName);
-        if (!zipPath.toFile().exists()) {
+        if (!zipPath.toFile().exists() && writeToFile) {
             // each run being unique, if the zip file exist, there is no need
             // to recreate it; no modification could have occured
             ReadWriteZip.flatZip(zipPath.toString(), workspace.toString());

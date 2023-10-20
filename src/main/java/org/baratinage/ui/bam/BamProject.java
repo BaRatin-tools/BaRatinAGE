@@ -404,28 +404,29 @@ public abstract class BamProject extends RowColPanel {
         return projectPath;
     }
 
-    private List<File> registeredFiles = new ArrayList<>();
+    // private List<File> registeredFiles = new ArrayList<>();
 
-    public void registerFile(String filePath) {
-        File f = new File(filePath);
-        if (registeredFileContains(f)) {
-            return;
-        }
-        if (!f.exists()) {
-            System.out.println("BamProject: Cannot register file '" + filePath + "' because it doesn't exist.");
-            return;
-        }
-        registeredFiles.add(f);
-    }
+    // public void registerFile(String filePath) {
+    // File f = new File(filePath);
+    // if (registeredFileContains(f)) {
+    // return;
+    // }
+    // if (!f.exists()) {
+    // System.out.println("BamProject: Cannot register file '" + filePath + "'
+    // because it doesn't exist.");
+    // return;
+    // }
+    // registeredFiles.add(f);
+    // }
 
-    private boolean registeredFileContains(File file) {
-        for (File f : registeredFiles) {
-            if (f.compareTo(file) == 0) {
-                return true;
-            }
-        }
-        return false;
-    }
+    // private boolean registeredFileContains(File file) {
+    // for (File f : registeredFiles) {
+    // if (f.compareTo(file) == 0) {
+    // return true;
+    // }
+    // }
+    // return false;
+    // }
 
     // private void cleanupRegisteredFile() {
     // List<File> toRemove = new ArrayList<>();

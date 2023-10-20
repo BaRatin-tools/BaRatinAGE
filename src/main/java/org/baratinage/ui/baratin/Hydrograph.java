@@ -12,6 +12,7 @@ import org.baratinage.jbam.PredictionInput;
 import org.baratinage.jbam.PredictionResult;
 import org.baratinage.ui.AppConfig;
 import org.baratinage.ui.bam.BamItem;
+import org.baratinage.ui.bam.BamItemConfig;
 import org.baratinage.ui.bam.BamItemParent;
 import org.baratinage.ui.bam.BamItemType;
 import org.baratinage.ui.bam.IPredictionExperiment;
@@ -41,7 +42,7 @@ public class Hydrograph extends BamItem implements IPredictionMaster {
     private Limnigraph currentLimnigraph;
     private RunConfigAndRes currentConfigAndRes;
 
-    private String jsonStringBackup;
+    private BamItemConfig backup;
 
     public Hydrograph(String uuid, BaratinProject project) {
         super(BamItemType.HYDROGRAPH, uuid, project);
@@ -68,7 +69,7 @@ public class Hydrograph extends BamItem implements IPredictionMaster {
         });
 
         runPanel.addRunSuccessListerner((RunConfigAndRes res) -> {
-            jsonStringBackup = toJSON().toString();
+            backup = save(true);
             currentConfigAndRes = res;
             buildPlot();
             ratingCurveParent.updateBackup();
@@ -98,13 +99,6 @@ public class Hydrograph extends BamItem implements IPredictionMaster {
         content.appendChild(runPanel, 0);
         content.appendChild(plotPanel, 1);
         setContent(content);
-
-        // private final RunPanel runPanel;
-        // private final HydrographPlot plotPanel;
-        // private final RowColPanel outdatedPanel;
-
-        // private final BamItemParent ratingCurveParent;
-        // private final BamItemParent limnigraphParent;
 
         T.updateHierarchy(this, runPanel);
         T.updateHierarchy(this, plotPanel);
@@ -147,26 +141,31 @@ public class Hydrograph extends BamItem implements IPredictionMaster {
     }
 
     @Override
-    public JSONObject toJSON() {
+    public BamItemConfig save(boolean writeFiles) {
 
         JSONObject json = new JSONObject();
 
         json.put("ratingCurve", ratingCurveParent.toJSON());
         json.put("limnigraph", limnigraphParent.toJSON());
 
+        String zipPath = null;
         if (currentConfigAndRes != null) {
             json.put("bamRunId", currentConfigAndRes.id);
-            String zipPath = currentConfigAndRes.zipRun();
-            registerFile(zipPath);
+            zipPath = currentConfigAndRes.zipRun(writeFiles);
         }
 
-        json.put("jsonStringBackup", jsonStringBackup);
+        if (backup != null) {
+            json.put("backup", BamItemConfig.toJSON(backup));
+        }
 
-        return json;
+        return zipPath == null ? new BamItemConfig(json) : new BamItemConfig(json, zipPath);
     }
 
     @Override
-    public void fromJSON(JSONObject json) {
+    public void load(BamItemConfig bamItemBackup) {
+
+        JSONObject json = bamItemBackup.jsonObject();
+
         if (json.has("ratingCurve")) {
             JSONObject o = json.getJSONObject("ratingCurve");
             ratingCurveParent.fromJSON(o);
@@ -185,10 +184,13 @@ public class Hydrograph extends BamItem implements IPredictionMaster {
         } else {
             System.out.println("Hydrograph: missing 'bamRunId'");
         }
-        if (json.has("jsonStringBackup")) {
-            jsonStringBackup = json.getString("jsonStringBackup");
+
+        if (json.has("backup")) {
+            JSONObject backupJson = json.getJSONObject("backup");
+            backup = BamItemConfig.fromJSON(backupJson);
+
         } else {
-            System.out.println("Hydrograph: missing 'jsonStringBackup'");
+            System.out.println("Hydrograph: missing 'backup'");
         }
         Throttler.throttle(ID, AppConfig.AC.THROTTLED_DELAY_MS, this::checkSync);
     }

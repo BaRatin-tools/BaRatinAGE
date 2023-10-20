@@ -12,10 +12,12 @@ import org.baratinage.jbam.UncertainData;
 import org.baratinage.jbam.utils.BamFilesHelpers;
 
 import org.baratinage.ui.bam.BamItem;
+import org.baratinage.ui.bam.BamItemConfig;
 import org.baratinage.ui.bam.ICalibrationData;
 import org.baratinage.ui.baratin.gaugings.GaugingsDataset;
 import org.baratinage.ui.baratin.gaugings.GaugingsImporter;
 import org.baratinage.ui.baratin.gaugings.GaugingsTable;
+import org.baratinage.ui.commons.DatasetConfig;
 import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.translation.T;
 import org.baratinage.ui.plot.Plot;
@@ -165,23 +167,28 @@ public class Gaugings extends BamItem implements ICalibrationData {
     }
 
     @Override
-    public JSONObject toJSON() {
+    public BamItemConfig save(boolean writeFiles) {
 
         JSONObject json = new JSONObject();
 
         if (gaugingDataset != null) {
-            json.put("gaugingDataset", gaugingDataset.toJSON(PROJECT));
+            DatasetConfig adc = gaugingDataset.save(writeFiles);
+            json.put("gaugingDataset", adc.toJSON());
         }
 
-        return json;
+        return new BamItemConfig(json);
     }
 
     @Override
-    public void fromJSON(JSONObject json) {
+    public void load(BamItemConfig bamItemBackup) {
+
+        JSONObject json = bamItemBackup.jsonObject();
 
         if (json.has("gaugingDataset")) {
             JSONObject gaugingDatasetJson = json.getJSONObject("gaugingDataset");
-            gaugingDataset = new GaugingsDataset(gaugingDatasetJson);
+            gaugingDataset = new GaugingsDataset(
+                    gaugingDatasetJson.getString("name"),
+                    gaugingDatasetJson.getString("hashString"));
             updateTable();
         }
     }

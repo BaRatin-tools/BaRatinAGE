@@ -16,6 +16,7 @@ import org.baratinage.jbam.PredictionResult;
 import org.baratinage.translation.T;
 import org.baratinage.ui.AppConfig;
 import org.baratinage.ui.bam.BamItem;
+import org.baratinage.ui.bam.BamItemConfig;
 import org.baratinage.ui.bam.BamItemType;
 import org.baratinage.ui.bam.IModelDefinition;
 import org.baratinage.ui.bam.IPredictionExperiment;
@@ -50,7 +51,7 @@ public class HydraulicConfiguration
     private PriorRatingCurvePlot plotPanel;
     private RunConfigAndRes bamRunConfigAndRes;
 
-    private String jsonStringBackup;
+    private BamItemConfig backup;
 
     public static final ImageIcon controlMatrixIcon = SvgIcon.buildCustomAppImageIcon("control_matrix.svg");
     public static final ImageIcon priorSpecificationIcon = SvgIcon.buildCustomAppImageIcon("prior_densities.svg");
@@ -93,7 +94,7 @@ public class HydraulicConfiguration
         runPanel.setPredictionExperiments(this);
         runPanel.addRunSuccessListerner((RunConfigAndRes res) -> {
             bamRunConfigAndRes = res;
-            jsonStringBackup = toJSON().toString();
+            backup = save(true);
             buildPlot();
             checkPriorRatingCurveSync();
         });
@@ -177,7 +178,7 @@ public class HydraulicConfiguration
     private void checkPriorRatingCurveSync() {
         T.clear(outOufSyncPanel);
         outOufSyncPanel.clear();
-        if (jsonStringBackup == null) {
+        if (backup == null) {
             // T.t(runPanel.runButton, true, "compute_prior_rc");
             T.t(runPanel, runPanel.runButton, true, "compute_prior_rc");
             runPanel.runButton.setForeground(new JButton().getForeground());
@@ -185,18 +186,14 @@ public class HydraulicConfiguration
             return;
         }
 
-        JSONObject currentJson = toJSON();
-        JSONObject backupJson = new JSONObject(jsonStringBackup);
+        JSONObject currentJson = save(false).jsonObject();
+
+        JSONObject backupJson = backup.jsonObject();
 
         JSONObject filteredCurrentJson = JSONFilter.filter(currentJson, true, true,
-                "allControlOptions", "controlTypeIndex", "isKACmode", "isLocked");
+                "backup", "allControlOptions", "controlTypeIndex", "isKACmode", "isLocked");
         JSONObject filteredBackupJson = JSONFilter.filter(backupJson, true, true,
-                "allControlOptions", "controlTypeIndex", "isKACmode", "isLocked");
-
-        // I need to:
-        // - filter out non kac controls /HH kacControl: allControlOptions,
-        // controlTypeIndex, isKACmode
-        // -
+                "backup", "allControlOptions", "controlTypeIndex", "isKACmode", "isLocked");
 
         JSONCompareResult comparison = JSONCompare.compare(
                 filteredBackupJson,
@@ -332,7 +329,7 @@ public class HydraulicConfiguration
     }
 
     @Override
-    public JSONObject toJSON() {
+    public BamItemConfig save(boolean writeFiles) {
         JSONObject json = new JSONObject();
 
         // **********************************************************
@@ -350,21 +347,24 @@ public class HydraulicConfiguration
 
         json.put("stageGridConfig", stageGridConfigJson);
 
-        json.put("jsonStringBackup", jsonStringBackup);
-
         // **********************************************************
-
+        String zipPath = null;
         if (bamRunConfigAndRes != null) {
             json.put("bamRunId", bamRunConfigAndRes.id);
-            String zipPath = bamRunConfigAndRes.zipRun();
-            registerFile(zipPath);
+            zipPath = bamRunConfigAndRes.zipRun(writeFiles);
         }
 
-        return json;
+        if (backup != null) {
+            json.put("backup", BamItemConfig.toJSON(backup));
+        }
+
+        return zipPath == null ? new BamItemConfig(json) : new BamItemConfig(json, zipPath);
     }
 
     @Override
-    public void fromJSON(JSONObject json) {
+    public void load(BamItemConfig bamItemBackup) {
+
+        JSONObject json = bamItemBackup.jsonObject();
 
         // **********************************************************
         // Control matrix
@@ -396,10 +396,12 @@ public class HydraulicConfiguration
             System.out.println("HydraulicConfiguration: missing 'stageGridConfig'");
         }
 
-        if (json.has("jsonStringBackup")) {
-            jsonStringBackup = json.getString("jsonStringBackup");
+        if (json.has("backup")) {
+            JSONObject backupJson = json.getJSONObject("backup");
+            backup = BamItemConfig.fromJSON(backupJson);
+
         } else {
-            System.out.println("HydraulicConfiguration: missing 'jsonStringBackup'");
+            System.out.println("HydraulicConfiguration: missing 'backup'");
         }
 
         // **********************************************************
