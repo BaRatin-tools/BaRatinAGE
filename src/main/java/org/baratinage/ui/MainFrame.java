@@ -2,17 +2,16 @@ package org.baratinage.ui;
 
 import javax.swing.ImageIcon;
 import javax.swing.JCheckBoxMenuItem;
-import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.KeyStroke;
-import javax.swing.filechooser.FileFilter;
 
 import org.baratinage.translation.T;
 import org.baratinage.ui.bam.BamProject;
 import org.baratinage.ui.baratin.BaratinProject;
+import org.baratinage.ui.component.CommonDialog;
 import org.baratinage.ui.component.SimpleNumberField;
 import org.baratinage.ui.component.SvgIcon;
 import org.baratinage.ui.container.RowColPanel;
@@ -47,6 +46,7 @@ public class MainFrame extends JFrame {
 
         T.init();
         SimpleNumberField.init();
+        CommonDialog.init();
 
         ImageIcon baratinageIcon = new SvgIcon(Path.of(
                 AppConfig.AC.ICONS_RESOURCES_DIR,
@@ -90,10 +90,7 @@ public class MainFrame extends JFrame {
         saveProjectAsMenuItem
                 .setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, ActionEvent.CTRL_MASK + ActionEvent.ALT_MASK));
         saveProjectAsMenuItem.addActionListener((e) -> {
-            if (currentProject != null) {
-                currentProject.saveProjectAs();
-                updateFrameTitle();
-            }
+            saveProject(true);
         });
         fileMenu.add(saveProjectAsMenuItem);
 
@@ -101,10 +98,7 @@ public class MainFrame extends JFrame {
         T.t(this, saveProjectMenuItem, false, "save_project");
         saveProjectMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_DOWN_MASK));
         saveProjectMenuItem.addActionListener((e) -> {
-            if (currentProject != null) {
-                currentProject.saveProject();
-                updateFrameTitle();
-            }
+            saveProject(false);
         });
         fileMenu.add(saveProjectMenuItem);
 
@@ -249,33 +243,17 @@ public class MainFrame extends JFrame {
     }
 
     public void loadProject() {
-        final JFileChooser fileChooser = new JFileChooser();
-        fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-        fileChooser.setFileFilter(new FileFilter() {
+        File f = CommonDialog.openFileDialog(
+                null,
+                T.text("baratinage_file"),
+                "bam", "BAM");
 
-            @Override
-            public boolean accept(File f) {
-                if (f.isDirectory()) {
-                    return true;
-                }
-                if (f.getName().endsWith(".bam")) {
-                    return true;
-                }
-                return false;
-            }
-
-            @Override
-            public String getDescription() {
-                return T.text("baratinage_file");
-            }
-
-        });
-        fileChooser.setDialogTitle(T.text("open_project"));
-        fileChooser.setAcceptAllFileFilterUsed(false);
-        if (fileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
-            String fullFilePath = fileChooser.getSelectedFile().getAbsolutePath();
-            loadProject(fullFilePath);
+        if (f == null) {
+            System.err.println("MainFrame Error: loading project failed! Selected file is null.");
+            return;
         }
+        String fullFilePath = f.getAbsolutePath();
+        loadProject(fullFilePath);
     }
 
     public void loadProject(String projectFilePath) {
@@ -285,6 +263,37 @@ public class MainFrame extends JFrame {
             setCurrentProject(bamProject);
             updateUI();
         }
+    }
+
+    public void saveProject(boolean saveAs) {
+
+        if (currentProject == null) {
+            System.err.println("MainFrame Error: no project to save.");
+            return;
+        }
+        if (!saveAs) {
+            String pp = currentProject.getProjectPath();
+            if (pp != null) {
+                saveProject(pp);
+                return;
+            }
+        }
+        File f = CommonDialog.saveFileDialog(
+                null,
+                T.text("baratinage_file"),
+                "bam", "BAM");
+
+        if (f == null) {
+            System.err.println("MainFrame Error: saving project failed! Selected file is null.");
+            return;
+        }
+        // currentProject.saveProject();
+        saveProject(f.getAbsolutePath());
+    }
+
+    public void saveProject(String projectFilePath) {
+        currentProject.saveProject(projectFilePath);
+        updateFrameTitle();
     }
 
     private void close() {

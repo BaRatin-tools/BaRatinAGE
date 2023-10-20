@@ -14,12 +14,9 @@ import java.nio.file.Path;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
-import javax.swing.filechooser.FileNameExtensionFilter;
 
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.ChartUtils;
@@ -27,6 +24,7 @@ import org.jfree.chart.JFreeChart;
 import org.jfree.data.Range;
 import org.jfree.svg.SVGGraphics2D;
 import org.baratinage.ui.AppConfig;
+import org.baratinage.ui.component.CommonDialog;
 import org.baratinage.ui.component.SvgIcon;
 import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.translation.T;
@@ -216,61 +214,35 @@ public class PlotContainer extends RowColPanel {
     public void saveAsSvg() {
         if (chart == null)
             return;
-        JFileChooser fileChooser = new JFileChooser();
-        fileChooser.setFileFilter(
-                new FileNameExtensionFilter(
-                        T.text("svg_format"),
-                        "svg"));
+        File f = CommonDialog.saveFileDialog(
+                null,
+                T.text("svg_format"),
+                "svg");
 
-        fileChooser.showSaveDialog(this);
-        File file = fileChooser.getSelectedFile();
-        if (file == null)
+        if (f == null) {
+            System.err.println("PlotContainer Error: cannot save to SVG, selected file is null.");
             return;
-        if (file.exists()) {
-            int response = JOptionPane.showConfirmDialog(this,
-                    T.text("file_already_exists_overwrite"),
-                    T.text("overwrite_file"),
-                    JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
-            if (response != JOptionPane.YES_OPTION) {
-                return;
-            }
-        }
-        String filePath = file.toString();
-        if (!file.getName().toLowerCase().endsWith(".svg")) {
-            filePath += ".svg";
         }
 
-        saveToSvg(filePath);
+        saveToSvg(f.getAbsolutePath());
     }
 
     public void saveAsPng() {
+
         if (chart == null)
             return;
-        JFileChooser fileChooser = new JFileChooser();
-        fileChooser.setFileFilter(
-                new FileNameExtensionFilter(
-                        T.text("png_format"),
-                        "png"));
+        File f = CommonDialog.saveFileDialog(
+                null,
+                T.text("png_format"),
+                "png");
 
-        fileChooser.showSaveDialog(this);
-        File file = fileChooser.getSelectedFile();
-        if (file == null)
+        if (f == null) {
+            System.err.println("PlotContainer Error: cannot save to PNG, selected file is null.");
             return;
-        if (file.exists()) {
-            int response = JOptionPane.showConfirmDialog(this,
-                    T.text("file_already_exists_overwrite"),
-                    T.text("overwrite_file"),
-                    JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
-            if (response != JOptionPane.YES_OPTION) {
-                return;
-            }
-        }
-        String filePath = file.toString();
-        if (!file.getName().toLowerCase().endsWith(".png")) {
-            filePath += ".png";
         }
 
-        saveToPng(filePath);
+        saveToPng(f.getAbsolutePath());
+
     }
 
     public void saveToSvg(String filePath) {

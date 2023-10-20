@@ -8,15 +8,12 @@ import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
-import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JRadioButton;
 import javax.swing.JSeparator;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import javax.swing.filechooser.FileFilter;
 
-import org.baratinage.ui.AppConfig;
 import org.baratinage.ui.container.GridPanel;
 import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.translation.T;
@@ -56,34 +53,17 @@ public class DataFileReader extends RowColPanel {
         browseFileSystemButon.setText(T.text("browse"));
 
         browseFileSystemButon.addActionListener(e -> {
-            final JFileChooser fileChooser = new JFileChooser();
-            fileChooser.setCurrentDirectory(new File(AppConfig.AC.lastUsedDir));
-            fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-            fileChooser.setFileFilter(new FileFilter() {
+            File f = CommonDialog.openFileDialog(
+                    T.text("select_data_text_file"),
+                    T.text("data_text_file"),
+                    "txt", "csv", "dat", "bad");
 
-                @Override
-                public boolean accept(File f) {
-                    boolean dir = f.isDirectory();
-                    boolean txt = f.getName().endsWith(".txt");
-                    boolean csv = f.getName().endsWith(".csv");
-                    boolean bad = f.getName().endsWith(".bad");
-                    boolean dat = f.getName().endsWith(".dat");
-                    return dir || txt || csv || bad || dat;
-                }
-
-                @Override
-                public String getDescription() {
-                    return T.text("data_text_file") + " (.txt, .csv, .dat, .bad)";
-                }
-
-            });
-            fileChooser.setDialogTitle(T.text("select_data_text_file"));
-            fileChooser.setAcceptAllFileFilterUsed(false);
-            if (fileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
-                readFilesLines(fileChooser.getSelectedFile().getAbsolutePath());
-                fireChangeListeners();
+            if (f == null) {
+                System.err.println("DataFileReader Error: selected file is null.");
+                return;
             }
-
+            readFilesLines(f.getAbsolutePath());
+            fireChangeListeners();
         });
 
         importFilePanel.insertChild(explainLabel, 0, 0, 2, 1);

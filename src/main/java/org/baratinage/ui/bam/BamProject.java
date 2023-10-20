@@ -10,14 +10,12 @@ import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
-import javax.swing.JFileChooser;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JSeparator;
 import javax.swing.JSplitPane;
 import javax.swing.JToolBar;
-import javax.swing.filechooser.FileFilter;
 
 import org.baratinage.translation.T;
 import org.baratinage.ui.AppConfig;
@@ -230,46 +228,6 @@ public abstract class BamProject extends RowColPanel {
             }
         }
         return null;
-    }
-
-    public void saveProjectAs() {
-        final JFileChooser fileChooser = new JFileChooser();
-        fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-        fileChooser.setFileFilter(new FileFilter() {
-
-            @Override
-            public boolean accept(File f) {
-                if (f.isDirectory()) {
-                    return true;
-                }
-                if (f.getName().endsWith(".bam")) {
-                    return true;
-                }
-                return false;
-            }
-
-            @Override
-            public String getDescription() {
-                return "Fichier BaRatinAGE (.bam)";
-            }
-
-        });
-        fileChooser.setDialogTitle("Sauvegarder le projet");
-        fileChooser.setAcceptAllFileFilterUsed(false);
-        if (fileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
-            String fullFilePath = fileChooser.getSelectedFile().getAbsolutePath();
-            fullFilePath = fullFilePath.endsWith(".bam") ? fullFilePath : fullFilePath + ".bam";
-            saveProject(fullFilePath);
-        }
-    }
-
-    public void saveProject() {
-        String projectPath = getProjectPath();
-        if (projectPath == null) {
-            saveProjectAs();
-        } else {
-            saveProject(projectPath);
-        }
     }
 
     public BamConfigRecord save() {
