@@ -95,7 +95,8 @@ public class RatingCurve extends BamItem implements IPredictionMaster, ICalibrat
                 this,
                 BamItemType.GAUGINGS);
         gaugingsParent.setComparisonJSONfilter((JSONObject json) -> {
-            return JSONFilter.filter(json, true, true, "name", "headers", "filePath", "nested");
+            return JSONFilter.filter(json, true, true,
+                    "name", "headers", "filePath", "nested");
         });
         gaugingsParent.addChangeListener((e) -> {
             Gaugings bamItem = (Gaugings) gaugingsParent.getCurrentBamItem();
