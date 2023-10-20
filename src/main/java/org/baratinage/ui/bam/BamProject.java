@@ -36,6 +36,11 @@ import org.json.JSONObject;
 
 public abstract class BamProject extends RowColPanel {
 
+    protected enum BamProjectType {
+        BARATIN
+    }
+
+    public final BamProjectType PROJECT_TYPE;
     public final BamItemList BAM_ITEMS;
     public final List<ExplorerItem> EXPLORER_ITEMS;
 
@@ -48,9 +53,10 @@ public abstract class BamProject extends RowColPanel {
 
     protected JMenu projectMenu;
 
-    public BamProject() {
+    public BamProject(BamProjectType projectType) {
         super(AXIS.COL);
 
+        PROJECT_TYPE = projectType;
         BAM_ITEMS = new BamItemList();
         EXPLORER_ITEMS = new ArrayList<>();
 
@@ -156,7 +162,7 @@ public abstract class BamProject extends RowColPanel {
         bamItem.cloneButton.addActionListener((e) -> {
             String uuid = Misc.getTimeStampedId();
             BamItem clonedBamItem = bamItem.TYPE.buildBamItem(uuid);
-            clonedBamItem.fromFullJSON(bamItem.toFullJSON());
+            // clonedBamItem.fromFullJSON(bamItem.toFullJSON());
             clonedBamItem.setCopyName();
             addBamItem(clonedBamItem);
         });
@@ -266,95 +272,99 @@ public abstract class BamProject extends RowColPanel {
         }
     }
 
-    public JSONObject toJSON() {
+    public BamItemConfig save() {
         JSONObject json = new JSONObject();
-        JSONArray jsonItems = new JSONArray();
-        for (BamItem item : BAM_ITEMS) {
-            jsonItems.put(item.toFullJSON());
+        List<String> files = new ArrayList<>();
+        JSONArray bamItemsJson = new JSONArray();
+        BamItemList bamItemList = getOrderedBamItemList();
+        int n = bamItemList.size();
+        for (int k = 0; k < n; k++) {
+            BamItem item = bamItemList.get(k);
+            BamItemConfig itemConfig = item.save(true);
+            JSONObject bamItemJson = new JSONObject();
+            bamItemJson.put("id", item.ID);
+            bamItemJson.put("type", item.TYPE.toString());
+            bamItemJson.put("name", item.bamItemNameField.getText());
+            bamItemJson.put("description", item.bamItemDescriptionField.getText());
+            bamItemJson.put("config", itemConfig.jsonObject());
+            bamItemsJson.put(k, bamItemJson);
+            for (String file : itemConfig.filePaths()) {
+                files.add(file);
+            }
         }
-        json.put("version", 0);
-        json.put("items", jsonItems);
-        json.put("model", ""); // must be overriden!
-        return json;
+        json.put("fileVersion", 0);
+        json.put("bamProjectType", PROJECT_TYPE.toString());
+        json.put("bamItems", bamItemsJson);
+        ExplorerItem exItem = explorer.getLastSelectedPathComponent();
+        if (exItem != null) {
+            json.put("selectedItemId", exItem.id);
+        }
+
+        return new BamItemConfig(json, files.toArray(new String[files.size()]));
     }
 
-    public abstract void fromJSON(JSONObject json);
+    public static BamProject load(JSONObject json) {
+        BamProjectType projectType = BamProjectType.valueOf(json.getString("bamProjectType"));
+        BamProject bamProject;
+        if (projectType == BamProjectType.BARATIN) {
+            bamProject = new BaratinProject();
+        } else {
+            return null;
+        }
+        JSONArray bamItemsJson = json.getJSONArray("bamItems");
+        int n = bamItemsJson.length();
+        for (int k = 0; k < n; k++) {
+            JSONObject bamItemJson = bamItemsJson.getJSONObject(k);
+            BamItemType itemType = BamItemType.valueOf(bamItemJson.getString("type"));
+            String id = bamItemJson.getString("id");
+            BamItem item = bamProject.addBamItem(itemType, id);
+            item.bamItemNameField.setText(bamItemJson.getString("name"));
+            item.bamItemDescriptionField.setText(bamItemJson.getString("description"));
+            item.load(new BamItemConfig(bamItemJson.getJSONObject("config")));
+        }
+        ExplorerItem exItem = bamProject.explorer.getLastSelectedPathComponent();
+        if (exItem != null) {
+            json.put("selectedItem", exItem.id);
+        }
+        if (json.has("selectedItemId")) {
+            String id = json.getString("selectedItemId");
+            bamProject.setCurrentBamItem(bamProject.getBamItem(id));
+        }
+        return bamProject;
+    }
 
-    // private void syncTempDirectoryWithProject() {
-
-    // // DISABLED TO PREVENT DATA LOSS FOR BACKUPS
-
-    // // AppConfig.AC.clearTempDirectory();
-
-    // // registeredFiles.clear();
-
-    // // // creating the "mainConfigFile" will call the toJSON() method which
-    // // // will call each BamItem toJSON() method which each are responsible
-    // // // for writting down the data it needs and registering the data file
-    // // // including BaM run zip files.
-
-    // String mainConfigFilePath = Path.of(AppConfig.AC.APP_TEMP_DIR,
-    // "main_config.json").toString();
-
-    // File mainConfigFile = new File(mainConfigFilePath);
-    // try {
-    // WriteFile.writeLines(mainConfigFile, new String[] { toJSON().toString(4) });
-    // registerFile(mainConfigFilePath);
-    // } catch (IOException saveError) {
-    // System.err.println("BamProject Error: Failed to save file");
-    // saveError.printStackTrace();
-    // }
-    // }
+    // needs to return the item in the order in wich they must be loaded
+    public abstract BamItemList getOrderedBamItemList();
 
     public void saveProject(String saveFilePath) {
 
+        System.out.println("BamProject:  saving project...");
         String mainConfigFilePath = Path.of(AppConfig.AC.APP_TEMP_DIR,
                 "main_config.json").toString();
 
-        String mainJsonString = toJSON().toString(4);
+        BamItemConfig bamConfig = save().addPaths(mainConfigFilePath);
+        JSONObject json = bamConfig.jsonObject();
 
+        String mainJsonString = json.toString(4);
         File mainConfigFile = new File(mainConfigFilePath);
         try {
             WriteFile.writeLines(mainConfigFile, new String[] { mainJsonString });
-        } catch (IOException saveError) {
-            System.err.println("BamProject Error: Failed to save file!");
+        } catch (
+
+        IOException saveError) {
+            System.err.println("BamProject Error: Failed to write main config JSON file!");
             saveError.printStackTrace();
             return;
         }
 
-        ReadWriteZip.flatZip(saveFilePath, AppConfig.AC.APP_TEMP_DIR);
-        setProjectPath(saveFilePath);
+        String[] filePaths = bamConfig.filePaths();
 
-        // syncTempDirectoryWithProject();
-
-        // try {
-
-        // File zipFile = new File(saveFilePath);
-        // FileOutputStream zipFileOutStream = new FileOutputStream(zipFile);
-
-        // ZipOutputStream zipOutStream = new ZipOutputStream(zipFileOutStream);
-
-        // cleanupRegisteredFile();
-
-        // // ReadWriteZip.flatZip(saveFilePath, )
-        // // FIXME: cannot use flatZip because here we actually use a list of files...
-        // // FIXME: implement overload for flatZip(String targetZipPath, List<String>
-        // // FIXME: filesToZip)?
-        // for (File file : registeredFiles) {
-        // System.out.println("BamProject: Including file '" + file.toString() +
-        // "'...");
-        // String name = file.getName();
-        // ZipEntry ze = new ZipEntry(name);
-        // zipOutStream.putNextEntry(ze);
-        // Files.copy(file.toPath(), zipOutStream);
-        // }
-
-        // zipOutStream.close();
-
-        // setProjectPath(saveFilePath);
-        // } catch (IOException e1) {
-        // e1.printStackTrace();
-        // }
+        boolean success = ReadWriteZip.flatZip(saveFilePath, filePaths);
+        if (success) {
+            System.out.println("BamProject: project saved!");
+        } else {
+            System.err.println("BamProject Error: an error occured while saving project!");
+        }
 
     }
 
@@ -364,7 +374,8 @@ public abstract class BamProject extends RowColPanel {
 
         File projectFile = new File(projectFilePath);
         if (!projectFile.exists()) {
-            System.err.println("BamProject Error: Project file doesn't exist! (" + projectFilePath + ")");
+            System.err.println("BamProject Error: Project file doesn't exist! (" +
+                    projectFilePath + ")");
             return null;
         }
 
@@ -372,7 +383,8 @@ public abstract class BamProject extends RowColPanel {
 
         try {
             BufferedReader bufReader = ReadFile
-                    .createBufferedReader(Path.of(AppConfig.AC.APP_TEMP_DIR, "main_config.json").toString(),
+                    .createBufferedReader(Path.of(AppConfig.AC.APP_TEMP_DIR,
+                            "main_config.json").toString(),
                             true);
             String jsonString = "";
             String jsonLine;
@@ -381,19 +393,9 @@ public abstract class BamProject extends RowColPanel {
             }
             JSONObject json = new JSONObject(jsonString);
 
-            // FIXME: is this where version conversion should occur?
-            int version = json.getInt("version");
-            System.out.println("BamProject: file version = " + version);
-            String model = json.getString("model");
-            System.out.println("BamProject: model id = " + model);
-            if (model.equals("baratin")) {
-                BamProject project = new BaratinProject();
-                project.fromJSON(json);
-                return project;
-            }
+            return load(json);
 
         } catch (IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
         return null;
@@ -406,56 +408,5 @@ public abstract class BamProject extends RowColPanel {
     public String getProjectPath() {
         return projectPath;
     }
-
-    // private List<File> registeredFiles = new ArrayList<>();
-
-    // public void registerFile(String filePath) {
-    // File f = new File(filePath);
-    // if (registeredFileContains(f)) {
-    // return;
-    // }
-    // if (!f.exists()) {
-    // System.out.println("BamProject: Cannot register file '" + filePath + "'
-    // because it doesn't exist.");
-    // return;
-    // }
-    // registeredFiles.add(f);
-    // }
-
-    // private boolean registeredFileContains(File file) {
-    // for (File f : registeredFiles) {
-    // if (f.compareTo(file) == 0) {
-    // return true;
-    // }
-    // }
-    // return false;
-    // }
-
-    // private void cleanupRegisteredFile() {
-    // List<File> toRemove = new ArrayList<>();
-    // List<String> usedNames = new ArrayList<>();
-    // for (File file : registeredFiles) {
-    // if (!file.exists()) {
-    // System.out.println("BamProject: File '" + file.toString() + "' doesn't
-    // exist.");
-    // toRemove.add(file);
-    // }
-    // String name = file.getName();
-    // if (usedNames.stream().anyMatch(s -> s.equals(name))) {
-    // // necessary when creating flat zip file! No duplicated name allowed.
-    // System.out
-    // .println("BamProject: File '" + file.toString()
-    // + "' has a name already used by another registered file.");
-    // toRemove.add(file);
-    // continue;
-    // }
-    // usedNames.add(name);
-    // }
-    // for (File file : toRemove) {
-    // System.out.println("BamProject: Unregistering file '" + file.toString() +
-    // "'...");
-    // registeredFiles.remove(file);
-    // }
-    // }
 
 }

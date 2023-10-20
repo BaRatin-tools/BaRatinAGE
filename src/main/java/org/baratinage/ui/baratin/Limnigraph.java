@@ -206,13 +206,15 @@ public class Limnigraph extends BamItem implements IPredictionData {
 
         JSONObject json = new JSONObject();
 
+        String[] dataFilePaths = new String[0];
         if (limniDataset != null) {
-            DatasetConfig adc = limniDataset.save(writeFiles);
-            JSONObject limniDatasetJson = adc.toJSON();
+            DatasetConfig dc = limniDataset.save(writeFiles);
+            JSONObject limniDatasetJson = dc.toJSON();
             json.put("limniDataset", limniDatasetJson);
+            dataFilePaths = dc.getAllFilePaths();
         }
 
-        return new BamItemConfig(json);
+        return new BamItemConfig(json, dataFilePaths);
     }
 
     @Override

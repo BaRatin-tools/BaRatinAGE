@@ -84,6 +84,15 @@ public class BamItemList extends ArrayList<BamItem> {
 
     }
 
+    public BamItemList getOrderedCopy(BamItemType... orderedItemTypes) {
+        BamItemList orderedBamItemList = new BamItemList();
+        for (BamItemType itemType : orderedItemTypes) {
+            BamItemList itemOfThatType = filterByType(itemType);
+            orderedBamItemList.addAll(itemOfThatType);
+        }
+        return orderedBamItemList;
+    }
+
     private final List<ChangeListener> changeListeners = new ArrayList<>();
 
     public void addChangeListener(ChangeListener l) {

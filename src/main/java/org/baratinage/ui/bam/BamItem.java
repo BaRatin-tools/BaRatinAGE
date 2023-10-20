@@ -15,7 +15,6 @@ import org.baratinage.ui.component.SimpleTextField;
 import org.baratinage.ui.component.Title;
 import org.baratinage.ui.container.GridPanel;
 import org.baratinage.ui.container.RowColPanel;
-import org.json.JSONObject;
 
 abstract public class BamItem extends GridPanel implements Translatable {
 
@@ -77,23 +76,6 @@ abstract public class BamItem extends GridPanel implements Translatable {
     public abstract BamItemConfig save(boolean writeFiles);
 
     public abstract void load(BamItemConfig bamItemBackup);
-
-    public JSONObject toFullJSON() {
-        JSONObject json = new JSONObject();
-        json.put("type", TYPE);
-        json.put("uuid", ID);
-        json.put("name", bamItemNameField.getText());
-        json.put("description", bamItemDescriptionField.getText());
-        json.put("content", BamItemConfig.toJSON(save(true)));
-        return json;
-    }
-
-    public void fromFullJSON(JSONObject json) {
-        bamItemNameField.setText(json.getString("name"));
-        bamItemDescriptionField.setText(json.getString("description"));
-        BamItemConfig bamItemBackup = BamItemConfig.fromJSON(json.getJSONObject("content"));
-        load(bamItemBackup);
-    }
 
     @Override
     public String toString() {

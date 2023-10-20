@@ -10,13 +10,11 @@ import org.baratinage.ui.bam.BamProject;
 import org.baratinage.ui.commons.StructuralErrorModelBamItem;
 import org.baratinage.ui.component.NameSymbolUnit;
 import org.baratinage.translation.T;
-import org.json.JSONArray;
-import org.json.JSONObject;
 
 public class BaratinProject extends BamProject {
 
     public BaratinProject() {
-        super();
+        super(BamProjectType.BARATIN);
 
         if (AppConfig.AC.APP_MAIN_FRAME.baratinMenu == null) {
             AppConfig.AC.APP_MAIN_FRAME.baratinMenu = new JMenu();
@@ -77,55 +75,20 @@ public class BaratinProject extends BamProject {
     }
 
     public void addDefaultBamItems() {
-        // addBamItem(BamItemType.STRUCTURAL_ERROR);
-        // addBamItem(BamItemType.HYDRAULIC_CONFIG);
+        addBamItem(BamItemType.STRUCTURAL_ERROR);
+        addBamItem(BamItemType.HYDRAULIC_CONFIG);
     }
 
     @Override
-    public JSONObject toJSON() {
-        JSONObject json = super.toJSON();
-        json.put("model", "baratin");
-        return json;
-    }
+    public BamItemList getOrderedBamItemList() {
 
-    @Override
-    public void fromJSON(JSONObject json) {
-        JSONArray items = json.getJSONArray("items");
-
-        BamItemType[][] steps = new BamItemType[][] {
-                new BamItemType[] {
-                        BamItemType.HYDRAULIC_CONFIG,
-                        BamItemType.GAUGINGS,
-                        BamItemType.STRUCTURAL_ERROR,
-                        BamItemType.LIMNIGRAPH
-                },
-                new BamItemType[] {
-                        BamItemType.RATING_CURVE
-                },
-                new BamItemType[] {
-                        BamItemType.HYDROGRAPH
-                }
-        };
-
-        for (BamItemType[] step : steps) {
-            for (Object item : items) {
-
-                JSONObject jsonObj = (JSONObject) item;
-                BamItemType itemType = BamItemType.valueOf(jsonObj.getString("type"));
-                String uuid = jsonObj.getString("uuid");
-
-                BamItem bamItem;
-                if (itemType.matchOneOf(step)) {
-                    System.out.println(
-                            "BaRatinProject: importing item of type '" + itemType + "' with id '" + uuid + "'...");
-                    bamItem = addBamItem(itemType, uuid);
-                } else {
-                    continue;
-                }
-                bamItem.fromFullJSON(jsonObj);
-            }
-        }
-        System.out.println("BaratinProject: all bam items imported with success.");
+        return BAM_ITEMS.getOrderedCopy(
+                BamItemType.HYDRAULIC_CONFIG,
+                BamItemType.GAUGINGS,
+                BamItemType.STRUCTURAL_ERROR,
+                BamItemType.LIMNIGRAPH,
+                BamItemType.RATING_CURVE,
+                BamItemType.HYDROGRAPH);
     }
 
 }
