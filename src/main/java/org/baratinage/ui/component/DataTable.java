@@ -21,6 +21,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
 
 import org.baratinage.translation.T;
+import org.baratinage.ui.AppConfig;
 import org.baratinage.ui.container.RowColPanel;
 
 public class DataTable extends RowColPanel {
@@ -182,9 +183,11 @@ public class DataTable extends RowColPanel {
         int nCol = table.getColumnCount();
         Graphics g = table.getGraphics();
         if (g == null) {
-            System.err
-                    .println("DataTable Error: cannot auto set column widths because rendering context doesn't exist.");
-            return;
+            g = AppConfig.AC.APP_MAIN_FRAME.getGraphics();
+            if (g == null) {
+                System.err.println("DataTable Error: autoset width impossible, graphics is null");
+                return;
+            }
         }
         FontMetrics fm = g.getFontMetrics();
         for (int k = 0; k < nCol; k++) {
