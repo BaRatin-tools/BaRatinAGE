@@ -25,7 +25,9 @@ import org.baratinage.ui.AppConfig;
 public class SimpleTextField extends JTextField {
 
     private static Color REGULAR_BG = new JTextField().getBackground();
+    private boolean isViewValid = true;
     private static Color INVALID_BG = AppConfig.AC.INVALID_COLOR_BG;
+    private static Color INVALID_DISABLED_BG = AppConfig.AC.INVALID_DISABLED_COLOR_BG;
 
     private String placeholder;
     private String innerLabel;
@@ -191,7 +193,26 @@ public class SimpleTextField extends JTextField {
     }
 
     public void setValidityView(boolean valid) {
-        setBackground(valid ? REGULAR_BG : INVALID_BG);
+        isViewValid = valid;
+        updateBackgroundColor();
     }
 
+    private void updateBackgroundColor() {
+        Color c = null;
+        boolean isEnabled = isEnabled();
+        if (!isViewValid && isEnabled) {
+            c = INVALID_BG;
+        } else if (!isViewValid && !isEnabled) {
+            c = INVALID_DISABLED_BG;
+        } else if (isViewValid && isEnabled) {
+            c = REGULAR_BG;
+        }
+        setBackground(c);
+    }
+
+    @Override
+    public void setEnabled(boolean isEnabled) {
+        super.setEnabled(isEnabled);
+        updateBackgroundColor();
+    }
 }
