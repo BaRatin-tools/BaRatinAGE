@@ -8,6 +8,7 @@ import javax.swing.ImageIcon;
 import org.baratinage.jbam.EstimatedParameter;
 import org.baratinage.ui.commons.DensityPlotGrid;
 import org.baratinage.ui.container.TabContainer;
+import org.baratinage.ui.component.DataTable;
 import org.baratinage.ui.component.SvgIcon;
 import org.baratinage.translation.T;
 
@@ -15,9 +16,12 @@ public class RatingCurveResults extends TabContainer {
 
     private PosteriorRatingCurvePlot ratingCurvePlot;
     private DensityPlotGrid paramDensityPlots;
+    private DataTable rcGridTable;
+    private DataTable mcmcTable;
 
     private static ImageIcon rcIcon = SvgIcon.buildCustomAppImageIcon("rating_curve.svg");
     private static ImageIcon dpIcon = SvgIcon.buildCustomAppImageIcon("densities.svg");
+    private static ImageIcon rcTblIcon = SvgIcon.buildCustomAppImageIcon("rating_curve_table.svg");
 
     public RatingCurveResults() {
 
@@ -25,8 +29,11 @@ public class RatingCurveResults extends TabContainer {
 
         paramDensityPlots = new DensityPlotGrid();
 
+        rcGridTable = new DataTable();
+
         addTab("rating_curve", rcIcon, ratingCurvePlot);
         addTab("parameter_densities", dpIcon, paramDensityPlots);
+        addTab("Rating Curve Table", rcTblIcon, rcGridTable);
 
         T.updateHierarchy(this, ratingCurvePlot);
         T.updateHierarchy(this, paramDensityPlots);
@@ -36,7 +43,56 @@ public class RatingCurveResults extends TabContainer {
         });
     }
 
-    public void updatePlot(
+    public void updateResults(
+            double[] stage,
+            double[] dischargeMaxpost,
+            List<double[]> paramU,
+            List<double[]> totalU,
+            List<double[]> transitionStages,
+            List<double[]> gaugings,
+            List<EstimatedParameter> parameters) {
+        updatePlots(stage, dischargeMaxpost, paramU, totalU, transitionStages, gaugings, parameters);
+        updateTables(stage, dischargeMaxpost, paramU, totalU, transitionStages, gaugings, parameters);
+    }
+
+    public void updateTables(
+            double[] stage,
+            double[] dischargeMaxpost,
+            List<double[]> paramU,
+            List<double[]> totalU,
+            List<double[]> transitionStages,
+            List<double[]> gaugings,
+            List<EstimatedParameter> parameters) {
+        rcGridTable.clearColumns();
+        rcGridTable.addColumn(stage);
+        rcGridTable.addColumn(dischargeMaxpost);
+        rcGridTable.addColumn(paramU.get(0));
+        rcGridTable.addColumn(paramU.get(1));
+        rcGridTable.addColumn(totalU.get(0));
+        rcGridTable.addColumn(totalU.get(1));
+        rcGridTable.updateData();
+        T.t(this, () -> {
+            rcGridTable.setHeader(0, T.text("stage_level"));
+            rcGridTable.setHeader(1, T.text("discharge"));
+            rcGridTable.setHeader(2,
+                    T.text("parametric_uncertainty") +
+                            " - " + T.text("percentile_0025"));
+            rcGridTable.setHeader(3,
+                    T.text("parametric_uncertainty") +
+                            " - " + T.text("percentile_0975"));
+            rcGridTable.setHeader(4,
+                    T.text("parametric_structural_uncertainty") +
+                            " - " + T.text("percentile_0025"));
+            rcGridTable.setHeader(5,
+                    T.text("parametric_structural_uncertainty") +
+                            " - " + T.text("percentile_0975"));
+            rcGridTable.autosetHeadersWidths(100, 300);
+            rcGridTable.updateHeader();
+        });
+
+    }
+
+    public void updatePlots(
             double[] stage,
             double[] dischargeMaxpost,
             List<double[]> paramU,

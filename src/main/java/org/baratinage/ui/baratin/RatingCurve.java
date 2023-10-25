@@ -480,7 +480,7 @@ public class RatingCurve extends BamItem implements IPredictionMaster, ICalibrat
         gaugings.add(dischargeMin);
         gaugings.add(dischargeMax);
 
-        resultsPanel.updatePlot(
+        resultsPanel.updateResults(
                 predConfigs[0].inputs[0].dataColumns.get(0),
                 dischargeMaxpost,
                 paramU,
