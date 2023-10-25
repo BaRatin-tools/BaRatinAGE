@@ -40,15 +40,21 @@ abstract public class BamItem extends GridPanel implements Translatable {
         headerPanel.setGap(5);
         headerPanel.setPadding(5);
         headerPanel.setColWeight(1, 1);
+        headerPanel.setColWeight(2, 5);
 
         bamItemTypeLabel.setText("BamItem");
         bamItemNameField.setText("Unnamed");
 
+        // headerPanel.insertChild(bamItemTypeLabel, 0, 0);
+        // headerPanel.insertChild(bamItemNameField, 1, 0, ANCHOR.C, FILL.H);
+        // headerPanel.insertChild(cloneButton, 2, 0, ANCHOR.C, FILL.BOTH);
+        // headerPanel.insertChild(deleteButton, 3, 0, ANCHOR.C, FILL.BOTH);
+        // headerPanel.insertChild(bamItemDescriptionField, 0, 1, 4, 1);
         headerPanel.insertChild(bamItemTypeLabel, 0, 0);
-        headerPanel.insertChild(bamItemNameField, 1, 0, ANCHOR.C, FILL.H);
-        headerPanel.insertChild(cloneButton, 2, 0, ANCHOR.C, FILL.BOTH);
-        headerPanel.insertChild(deleteButton, 3, 0, ANCHOR.C, FILL.BOTH);
-        headerPanel.insertChild(bamItemDescriptionField, 0, 1, 4, 1);
+        headerPanel.insertChild(bamItemNameField, 1, 0);
+        headerPanel.insertChild(bamItemDescriptionField, 2, 0);
+        headerPanel.insertChild(cloneButton, 3, 0);
+        headerPanel.insertChild(deleteButton, 4, 0);
 
         contentPanel = new RowColPanel();
 
@@ -65,7 +71,7 @@ abstract public class BamItem extends GridPanel implements Translatable {
     @Override
     public void translate() {
         bamItemNameField.setPlaceholder(T.text("name"));
-        bamItemDescriptionField.setPlaceholder(T.text("name"));
+        bamItemDescriptionField.setPlaceholder(T.text("description"));
     }
 
     public void setContent(Component component) {
