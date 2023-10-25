@@ -180,12 +180,11 @@ public class OneHydraulicControl extends JScrollPane {
         physicalParametersPanel.appendChild(hydraulicControlPanel);
         physicalParametersPanel.appendChild(physicalControlParametersLabelsPanel);
 
-        switchModeButton = new JButton("Switch to expert mode");
+        switchModeButton = new JButton("Switch to KAC");
         switchModeButton.addActionListener((e) -> {
             boolean proceed = true;
             if (kacMode) {
                 proceed = false;
-
                 int response = JOptionPane.showOptionDialog(this,
                         T.text("kac_to_physical_parameters_warning") + "\n" +
                                 T.text("proceed_question"),
