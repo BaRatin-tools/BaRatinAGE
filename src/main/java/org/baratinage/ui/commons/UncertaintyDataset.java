@@ -60,7 +60,7 @@ public class UncertaintyDataset extends AbstractDataset {
             for (int i = 0; i < nCol; i++) {
                 row[i] = errorMatrix.get(i)[k];
             }
-            double[] perc = Calc.percentiles(row, pLow, pHigh);
+            double[] perc = Calc.percentiles(row, false, pLow, pHigh);
 
             lower[k] = perc[0];
             upper[k] = perc[1];

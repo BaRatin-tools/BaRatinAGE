@@ -1,6 +1,8 @@
 package org.baratinage.utils;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 public class Calc {
 
@@ -66,12 +68,8 @@ public class Calc {
         return sorted;
     }
 
-    public static double[] percentiles(double[] values, double... probabilities) {
-        return percentiles(false, values, probabilities);
-    }
-
-    public static double[] percentiles(boolean valuesAlreadySorted, double[] values, double... probabilities) {
-        double[] sorted = valuesAlreadySorted ? values : sort(values);
+    public static double[] percentiles(double[] values, boolean isSorted, double... probabilities) {
+        double[] sorted = isSorted ? values : sort(values);
         int n = values.length;
         int m = probabilities.length;
         double[] percentiles = new double[m];
@@ -122,6 +120,53 @@ public class Calc {
         }
         return smoothed;
 
+    }
+
+    public static List<double[]> density(double[] sorted, int bins) {
+        int n = sorted.length;
+        double[] p = Misc.makeGrid(sorted[0], sorted[n - 1], bins + 1);
+        double[] values = new double[bins];
+        double[] densities = new double[bins];
+
+        for (int k = 0; k < bins; k++) {
+            values[k] = p[bins];
+            densities[k] = 0;
+        }
+
+        int index = 0;
+        double lower = p[index];
+        double upper = p[index + 1];
+        values[index] = (lower + upper) / 2;
+        double count = 0;
+
+        for (int k = 0; k < n; k++) {
+            if (sorted[k] >= lower && sorted[k] < upper) {
+                count++;
+            } else {
+                double x = (lower + upper) / 2;
+                double xRange = upper - lower;
+                double y = count / (n * xRange);
+
+                values[index] = x;
+                densities[index] = y;
+                index++;
+
+                if (index >= bins) {
+                    break;
+                }
+
+                lower = p[index];
+                upper = p[index + 1];
+                values[index] = (lower + upper) / 2;
+                densities[index] = 0;
+                count = 0;
+            }
+        }
+
+        List<double[]> result = new ArrayList<>();
+        result.add(values);
+        result.add(densities);
+        return result;
     }
 
 }
