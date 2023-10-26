@@ -169,4 +169,12 @@ public class Calc {
         return result;
     }
 
+    public static double[] zeroes(int n) {
+        double[] x = new double[n];
+        for (int k = 0; k < n; k++) {
+            x[k] = 0;
+        }
+        return x;
+    }
+
 }
