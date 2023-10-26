@@ -148,7 +148,7 @@ public class RatingCurve extends BamItem implements IPredictionMaster, ICalibrat
         runPanel.addRunSuccessListerner((RunConfigAndRes res) -> {
             backup = save(true);
             bamRunConfigAndRes = res;
-            buildPlot();
+            updateResults();
             hydrauConfParent.updateBackup();
             gaugingsParent.updateBackup();
             structErrorParent.updateBackup();
@@ -381,7 +381,7 @@ public class RatingCurve extends BamItem implements IPredictionMaster, ICalibrat
         if (json.has("bamRunId")) {
             String bamRunId = json.getString("bamRunId");
             bamRunConfigAndRes = RunConfigAndRes.buildFromTempZipArchive(bamRunId);
-            buildPlot();
+            updateResults();
         } else {
             System.out.println("RatingCurve: missing 'bamRunId'");
         }
@@ -425,7 +425,8 @@ public class RatingCurve extends BamItem implements IPredictionMaster, ICalibrat
         return predictionConfigs;
     }
 
-    private void buildPlot() {
+    private void updateResults() {
+        // FIXME: this method needs to be reworked!
         if (bamRunConfigAndRes == null) {
             return;
         }
@@ -437,6 +438,7 @@ public class RatingCurve extends BamItem implements IPredictionMaster, ICalibrat
         int maxpostIndex = calibrationResults.maxpostIndex;
 
         HashMap<String, EstimatedParameter> pars = calibrationResults.estimatedParameters;
+
         List<double[]> transitionStages = new ArrayList<>();
         List<EstimatedParameter> parameters = new ArrayList<>();
         for (String parName : pars.keySet()) {

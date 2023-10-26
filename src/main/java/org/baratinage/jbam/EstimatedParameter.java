@@ -30,6 +30,10 @@ public class EstimatedParameter {
         return null;
     }
 
+    public double getMaxpost() {
+        return mcmc[maxpostIndex];
+    }
+
     @Override
     public String toString() {
         String str = String.format("Parameter results '%s' with %d samples",

@@ -17,11 +17,13 @@ public class RatingCurveResults extends TabContainer {
     private PosteriorRatingCurvePlot ratingCurvePlot;
     private DensityPlotGrid paramDensityPlots;
     private DataTable rcGridTable;
-    private DataTable mcmcTable;
+    private RatingCurveEquation rcEquation;
+    // private DataTable mcmcTable;
 
     private static ImageIcon rcIcon = SvgIcon.buildCustomAppImageIcon("rating_curve.svg");
     private static ImageIcon dpIcon = SvgIcon.buildCustomAppImageIcon("densities.svg");
     private static ImageIcon rcTblIcon = SvgIcon.buildCustomAppImageIcon("rating_curve_table.svg");
+    private static ImageIcon rcEqIcon = SvgIcon.buildCustomAppImageIcon("rating_curve_equation.svg");
 
     public RatingCurveResults() {
 
@@ -31,15 +33,22 @@ public class RatingCurveResults extends TabContainer {
 
         rcGridTable = new DataTable();
 
+        rcEquation = new RatingCurveEquation();
+
         addTab("rating_curve", rcIcon, ratingCurvePlot);
+        addTab("Rating Curve table", rcTblIcon, rcGridTable);
+        addTab("Rating Curve equation", rcEqIcon, rcEquation);
         addTab("parameter_densities", dpIcon, paramDensityPlots);
-        addTab("Rating Curve Table", rcTblIcon, rcGridTable);
 
         T.updateHierarchy(this, ratingCurvePlot);
         T.updateHierarchy(this, paramDensityPlots);
+        T.updateHierarchy(this, rcGridTable);
+        T.updateHierarchy(this, rcEquation);
         T.t(this, () -> {
             setTitleAt(0, T.html("posterior_rating_curve"));
-            setTitleAt(1, T.html("parameter_densities"));
+            setTitleAt(1, T.html("grid_table"));
+            setTitleAt(2, T.html("equation"));
+            setTitleAt(3, T.html("parameter_densities"));
         });
     }
 
@@ -51,18 +60,19 @@ public class RatingCurveResults extends TabContainer {
             List<double[]> transitionStages,
             List<double[]> gaugings,
             List<EstimatedParameter> parameters) {
-        updatePlots(stage, dischargeMaxpost, paramU, totalU, transitionStages, gaugings, parameters);
-        updateTables(stage, dischargeMaxpost, paramU, totalU, transitionStages, gaugings, parameters);
+
+        RatingCurveEstimatedParameters rcEstimParam = processParameters(parameters);
+
+        updatePlots(stage, dischargeMaxpost, paramU, totalU, transitionStages, gaugings, rcEstimParam);
+        updateTables(stage, dischargeMaxpost, paramU, totalU);
+        rcEquation.updateEquation(rcEstimParam.controls());
     }
 
-    public void updateTables(
+    private void updateTables(
             double[] stage,
             double[] dischargeMaxpost,
             List<double[]> paramU,
-            List<double[]> totalU,
-            List<double[]> transitionStages,
-            List<double[]> gaugings,
-            List<EstimatedParameter> parameters) {
+            List<double[]> totalU) {
         rcGridTable.clearColumns();
         rcGridTable.addColumn(stage);
         rcGridTable.addColumn(dischargeMaxpost);
@@ -92,14 +102,14 @@ public class RatingCurveResults extends TabContainer {
 
     }
 
-    public void updatePlots(
+    private void updatePlots(
             double[] stage,
             double[] dischargeMaxpost,
             List<double[]> paramU,
             List<double[]> totalU,
             List<double[]> transitionStages,
             List<double[]> gaugings,
-            List<EstimatedParameter> parameters) {
+            RatingCurveEstimatedParameters parameters) {
         ratingCurvePlot.updatePlot(
                 stage,
                 dischargeMaxpost,
@@ -108,98 +118,178 @@ public class RatingCurveResults extends TabContainer {
                 transitionStages,
                 gaugings);
 
-        List<EstimatedParameter> modifiedParameters = reorganizeAndRenameParameters(parameters);
-
         paramDensityPlots.clearPlots();
 
-        for (EstimatedParameter p : modifiedParameters) {
-            paramDensityPlots.addPlot(p);
+        for (EstimatedControlParameters p : parameters.controls()) {
+            paramDensityPlots.addPlot(p.k());
+            paramDensityPlots.addPlot(p.a());
+            paramDensityPlots.addPlot(p.c());
+            paramDensityPlots.addPlot(p.b());
         }
+
+        paramDensityPlots.addPlot(parameters.gamma1());
+        paramDensityPlots.addPlot(parameters.gamma2());
+        paramDensityPlots.addPlot(parameters.logPost());
 
         paramDensityPlots.updatePlots();
 
     }
 
-    private List<EstimatedParameter> reorganizeAndRenameParameters(List<EstimatedParameter> parameters) {
-
-        EstimatedParameter logPostParameter = null;
-        EstimatedParameter[] controlParameters = new EstimatedParameter[parameters.size()];
-        EstimatedParameter[] strucErrorParameters = new EstimatedParameter[2];
-
-        int nControlPar = 0;
-        int nStrucErrPar = 0;
-
-        for (EstimatedParameter p : parameters) {
-            String rawName = p.name;
-            if (rawName.equals("LogPost")) {
-                logPostParameter = p;
-            } else if (rawName.startsWith("Y") && rawName.contains("gamma")) {
-                int n = getParameterIndex(rawName, "gamma_");
-                String niceName = String.format("<html>&gamma;<sub>%d</sub></html>", n + 1);
-                strucErrorParameters[n] = new EstimatedParameter(
-                        niceName,
-                        p.mcmc,
-                        p.summary,
-                        p.maxpostIndex,
-                        null); // null so prior dist is not accounted for in plot
-                nStrucErrPar++;
-            } else if (rawName.startsWith("b")) {
-                int n = getParameterIndex(rawName, "b");
-                String niceName = String.format("<html>b<sub>%s</sub></html>", n);
-                int m = (n - 1) * 4 + 3;
-                controlParameters[m] = new EstimatedParameter(
-                        niceName,
-                        p.mcmc,
-                        p.summary,
-                        p.maxpostIndex,
-                        p.parameterConfig);
-                nControlPar++;
-            } else {
-                String[] s = rawName.split("_");
-                String name = s[0];
-                int n = getParameterIndex(rawName, "_");
-                String niceName = String.format("<html>%s<sub>%d</sub></html>", name, n + 1);
-                int m = n * 4;
-                if (rawName.startsWith("a")) {
-                    m = m + 1;
-                } else if (rawName.startsWith("c")) {
-                    m = m + 2;
-                }
-                controlParameters[m] = new EstimatedParameter(
-                        niceName,
-                        p.mcmc,
-                        p.summary,
-                        p.maxpostIndex,
-                        p.parameterConfig);
-                nControlPar++;
-            }
-        }
-
-        List<EstimatedParameter> modifiedParameters = new ArrayList<>();
-        for (int k = 0; k < nControlPar; k++) {
-            modifiedParameters.add(controlParameters[k]);
-        }
-        for (int k = 0; k < nStrucErrPar; k++) {
-            modifiedParameters.add(strucErrorParameters[k]);
-        }
-        if (logPostParameter != null) {
-            modifiedParameters.add(logPostParameter);
-        }
-
-        return modifiedParameters;
+    private record RatingCurveEstimatedParameters(
+            List<EstimatedControlParameters> controls,
+            EstimatedParameter gamma1,
+            EstimatedParameter gamma2,
+            EstimatedParameter logPost) {
     }
 
-    private int getParameterIndex(String rawName, String splitChar) {
-        String[] s = rawName.split(splitChar);
-        int n = -1;
-        if (s.length == 2) {
-            try {
-                n = Integer.parseInt(s[1]);
-            } catch (Exception e) {
+    private RatingCurveEstimatedParameters processParameters(List<EstimatedParameter> parameters) {
 
+        List<ProcessedParameter> processedParameters = new ArrayList<>();
+
+        int nControls = 0;
+        for (EstimatedParameter p : parameters) {
+            ProcessedParameter pp = processParameter(p);
+            if (pp.isControlParameter()) {
+                if (pp.index() > nControls) {
+                    nControls = pp.index();
+                }
+            }
+            processedParameters.add(pp);
+        }
+
+        EstimatedParameter logPostParameter = findParameter(processedParameters, ParameterType.LOG_POST);
+        EstimatedParameter gamma1Parameter = findParameter(processedParameters, ParameterType.GAMMA, 1);
+        EstimatedParameter gamma2Parameter = findParameter(processedParameters, ParameterType.GAMMA, 2);
+        List<EstimatedControlParameters> kacbParameters = new ArrayList<>(nControls);
+        for (int index = 1; index <= nControls; index++) {
+            EstimatedParameter k = findParameter(processedParameters, ParameterType.K, index);
+            EstimatedParameter a = findParameter(processedParameters, ParameterType.A, index);
+            EstimatedParameter c = findParameter(processedParameters, ParameterType.C, index);
+            EstimatedParameter b = findParameter(processedParameters, ParameterType.B, index);
+            kacbParameters.add(new EstimatedControlParameters(k, a, c, b));
+        }
+
+        return new RatingCurveEstimatedParameters(
+                kacbParameters,
+                gamma1Parameter,
+                gamma2Parameter,
+                logPostParameter);
+    }
+
+    private EstimatedParameter findParameter(List<ProcessedParameter> processedParameters, ParameterType type) {
+        return findParameter(processedParameters, type, -1);
+    }
+
+    private EstimatedParameter findParameter(List<ProcessedParameter> processedParameters, ParameterType type,
+            int index) {
+        for (ProcessedParameter p : processedParameters) {
+            if (p.type() == type) {
+                if (index >= 0) {
+                    if (p.index() == index) {
+                        return p.parameter();
+                    }
+                } else {
+                    return p.parameter();
+                }
             }
         }
-        return n;
+        return null;
+    }
+
+    private enum ParameterType {
+        LOG_POST, GAMMA, K, A, C, B;
+
+        public static ParameterType getTypeFromString(String letter) {
+            String l = letter.toLowerCase();
+            if (l.equals("logpost")) {
+                return LOG_POST;
+            } else if (l.equals("gamma")) {
+                return GAMMA;
+            } else if (l.equals("k")) {
+                return K;
+            } else if (l.equals("a")) {
+                return A;
+            } else if (l.equals("c")) {
+                return C;
+            } else if (l.equals("b")) {
+                return B;
+            }
+            return null;
+        }
+    }
+
+    private record ProcessedParameter(
+            ParameterType type,
+            boolean isControlParameter,
+            String niceName,
+            int index,
+            EstimatedParameter parameter) {
+
+    }
+
+    private static ProcessedParameter processParameter(EstimatedParameter parameter) {
+        String rawName = parameter.name;
+        if (rawName.equals("LogPost")) {
+            return new ProcessedParameter(
+                    ParameterType.LOG_POST,
+                    false,
+                    "LogPost",
+                    -1,
+                    parameter);
+        } else if (rawName.startsWith("Y") && rawName.contains("gamma")) {
+            String[] s = rawName.split("gamma_");
+            int i = s.length == 2 ? parseInt(s[1]) : -1;
+            i++;
+            String niceName = String.format("<html>&gamma;<sub>%d</sub></html>", i);
+            return new ProcessedParameter(
+                    ParameterType.GAMMA,
+                    false,
+                    niceName,
+                    i,
+                    modifyEstimatedParameter(parameter, niceName, true));
+        } else if (rawName.startsWith("b")) {
+            String[] s = rawName.split("b");
+            int i = s.length == 2 ? parseInt(s[1]) : -1;
+            String niceName = String.format("<html>b<sub>%d</sub></html>", i);
+            return new ProcessedParameter(
+                    ParameterType.B,
+                    true,
+                    niceName,
+                    i,
+                    modifyEstimatedParameter(parameter, niceName, false));
+        } else {
+            String[] s = rawName.split("_");
+            String n = s[0];
+            int i = s.length == 2 ? parseInt(s[1]) : -1;
+            i++;
+            String niceName = String.format("<html>%s<sub>%d</sub></html>", n, i);
+            return new ProcessedParameter(
+                    ParameterType.getTypeFromString(n),
+                    true,
+                    niceName,
+                    i,
+                    modifyEstimatedParameter(parameter, niceName, false));
+        }
+    }
+
+    private static int parseInt(String intStr) {
+        try {
+            return Integer.parseInt(intStr);
+        } catch (Exception e) {
+            return -9999;
+        }
+    }
+
+    private static EstimatedParameter modifyEstimatedParameter(
+            EstimatedParameter p,
+            String name,
+            boolean noParameterConfig) {
+        return new EstimatedParameter(
+                name,
+                p.mcmc,
+                p.summary,
+                p.maxpostIndex,
+                noParameterConfig ? null : p.parameterConfig);
     }
 
 }
