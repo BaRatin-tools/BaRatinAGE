@@ -16,6 +16,7 @@ import org.baratinage.ui.plot.PlotBand;
 import org.baratinage.ui.plot.PlotContainer;
 import org.baratinage.ui.plot.PlotInfiniteLine;
 import org.baratinage.ui.plot.PlotLine;
+import org.baratinage.utils.Calc;
 import org.baratinage.translation.T;
 
 public class DensityPlotGrid extends RowColPanel {
@@ -70,29 +71,27 @@ public class DensityPlotGrid extends RowColPanel {
                         "",
                         priorDensityData.get(0),
                         priorDensityData.get(1),
-                        DensityData.buildZeroArray(nData),
+                        Calc.zeroes(nData),
                         AppConfig.AC.PRIOR_ENVELOP_COLOR,
                         0.9f);
                 plot.addXYItem(priorDensity);
 
             }
 
-            DensityData plotItem = new DensityData(estimParam.mcmc);
-            plotItem.update(50, 5);
-            List<double[]> lineData = plotItem.getLineData();
-
-            double maxpost = estimParam.mcmc[estimParam.maxpostIndex];
+            double maxpost = estimParam.getMaxpost();
             PlotInfiniteLine maxpostLine = new PlotInfiniteLine(
                     "",
                     maxpost,
                     AppConfig.AC.POSTERIOR_LINE_COLOR,
                     new BasicStroke(2f));
 
+            List<double[]> postDensityData = estimParam.getPostDensity();
+            double[] zeroes = Calc.zeroes(postDensityData.get(0).length);
             PlotBand postDensity = new PlotBand(
                     "",
-                    lineData.get(0),
-                    lineData.get(1),
-                    lineData.get(2),
+                    postDensityData.get(0),
+                    postDensityData.get(1),
+                    zeroes,
                     AppConfig.AC.POSTERIOR_ENVELOP_COLOR,
                     0.7f);
 
