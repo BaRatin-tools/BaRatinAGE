@@ -1,4 +1,4 @@
-package org.baratinage.ui.baratin;
+package org.baratinage.ui.baratin.rating_curve;
 
 import java.util.List;
 
@@ -11,29 +11,39 @@ import org.baratinage.ui.plot.PlotContainer;
 import org.baratinage.ui.plot.PlotInfiniteBand;
 import org.baratinage.ui.plot.PlotInfiniteLine;
 import org.baratinage.ui.plot.PlotLine;
+import org.baratinage.ui.plot.PlotPoints;
 
-public class PriorRatingCurvePlot extends RowColPanel {
-
+public class PosteriorRatingCurvePlot extends RowColPanel {
         public void updatePlot(
                         double[] stage,
                         double[] dischargeMaxpost,
-                        List<double[]> dischargePriorParamUncertainty,
-                        List<double[]> transitionStages) {
+                        List<double[]> dischargeParametricUncertainty,
+                        List<double[]> dischargeTotalUncertainty,
+                        List<double[]> transitionStages,
+                        List<double[]> gaugings) {
 
                 Plot plot = new Plot(true);
 
                 PlotLine mp = new PlotLine(
-                                "Prior rating curve",
+                                "Posterior rating curve",
                                 stage,
                                 dischargeMaxpost,
-                                AppConfig.AC.PRIOR_LINE_COLOR,
+                                AppConfig.AC.RATING_CURVE_COLOR,
                                 5);
-                PlotBand parEnv = new PlotBand(
-                                "Prior parametric uncertainty",
+
+                PlotBand totEnv = new PlotBand(
+                                "Structural and parametric uncertainty",
                                 stage,
-                                dischargePriorParamUncertainty.get(0),
-                                dischargePriorParamUncertainty.get(1),
-                                AppConfig.AC.PRIOR_ENVELOP_COLOR);
+                                dischargeTotalUncertainty.get(0),
+                                dischargeTotalUncertainty.get(1),
+                                AppConfig.AC.RATING_CURVE_TOTAL_UNCERTAINTY_COLOR);
+
+                PlotBand parEnv = new PlotBand(
+                                "Parametric uncertainty",
+                                stage,
+                                dischargeParametricUncertainty.get(0),
+                                dischargeParametricUncertainty.get(1),
+                                AppConfig.AC.RATING_CURVE_PARAM_UNCERTAINTY_COLOR);
 
                 int n = transitionStages.size();
                 PlotInfiniteBand[] bands = new PlotInfiniteBand[n];
@@ -48,13 +58,28 @@ public class PriorRatingCurvePlot extends RowColPanel {
                         plot.addXYItem(bands[k], k == 0);
                 }
 
+                PlotPoints gaugingsPoints = new PlotPoints(
+                                "gaugings",
+                                gaugings.get(0),
+                                gaugings.get(0),
+                                gaugings.get(0),
+                                gaugings.get(1),
+                                gaugings.get(2),
+                                gaugings.get(3),
+                                AppConfig.AC.GAUGING_COLOR);
+
+                plot.addXYItem(totEnv);
                 plot.addXYItem(parEnv);
                 plot.addXYItem(mp);
+                plot.addXYItem(gaugingsPoints);
 
+                T.clear(this);
                 T.t(this, () -> {
                         mp.setLabel(T.text("lgd_posterior_rating_curve"));
-                        parEnv.setLabel(T.text("lgd_prior_parametric_uncertainty"));
-                        bands[0].setLabel(T.text("lgd_prior_transition_stage"));
+                        parEnv.setLabel(T.text("lgd_posterior_parametric_uncertainty"));
+                        totEnv.setLabel(T.text("lgd_posterior_parametric_structural_uncertainty"));
+                        bands[0].setLabel(T.text("lgd_posterior_transition_stage"));
+                        gaugingsPoints.setLabel(T.text("lgd_active_gaugings"));
                         plot.axisX.setLabel(T.text("stage_level"));
                         plot.axisY.setLabel(T.text("discharge"));
                         plot.axisYlog.setLabel(T.text("discharge"));
@@ -69,5 +94,4 @@ public class PriorRatingCurvePlot extends RowColPanel {
                 clear();
                 appendChild(plotContainer);
         }
-
 }

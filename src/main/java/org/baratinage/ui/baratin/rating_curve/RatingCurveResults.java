@@ -1,4 +1,4 @@
-package org.baratinage.ui.baratin;
+package org.baratinage.ui.baratin.rating_curve;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,6 +6,7 @@ import java.util.List;
 import javax.swing.ImageIcon;
 
 import org.baratinage.jbam.EstimatedParameter;
+import org.baratinage.ui.baratin.EstimatedControlParameters;
 import org.baratinage.ui.commons.DensityPlotGrid;
 import org.baratinage.ui.container.TabContainer;
 import org.baratinage.ui.component.DataTable;

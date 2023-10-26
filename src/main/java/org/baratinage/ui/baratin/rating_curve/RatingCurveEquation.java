@@ -1,4 +1,4 @@
-package org.baratinage.ui.baratin;
+package org.baratinage.ui.baratin.rating_curve;
 
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
@@ -10,6 +10,7 @@ import javax.swing.JButton;
 import javax.swing.JTextArea;
 
 import org.baratinage.translation.T;
+import org.baratinage.ui.baratin.EstimatedControlParameters;
 import org.baratinage.ui.component.SvgIcon;
 import org.baratinage.ui.container.RowColPanel;
 

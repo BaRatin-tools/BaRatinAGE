@@ -33,6 +33,8 @@ import org.baratinage.ui.bam.IPredictionMaster;
 import org.baratinage.ui.bam.PredictionExperiment;
 import org.baratinage.ui.bam.RunConfigAndRes;
 import org.baratinage.ui.bam.RunPanel;
+import org.baratinage.ui.baratin.rating_curve.RatingCurveResults;
+import org.baratinage.ui.baratin.rating_curve.RatingCurveStageGrid;
 import org.baratinage.ui.commons.MsgPanel;
 import org.baratinage.ui.commons.StructuralErrorModelBamItem;
 import org.baratinage.ui.container.RowColPanel;

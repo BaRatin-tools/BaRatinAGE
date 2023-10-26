@@ -1,4 +1,4 @@
-package org.baratinage.ui.baratin;
+package org.baratinage.ui.baratin.rating_curve;
 
 import java.util.ArrayList;
 import java.util.List;

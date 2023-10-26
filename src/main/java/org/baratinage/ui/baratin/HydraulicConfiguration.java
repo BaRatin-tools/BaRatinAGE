@@ -26,6 +26,8 @@ import org.baratinage.ui.bam.RunConfigAndRes;
 import org.baratinage.ui.bam.RunPanel;
 import org.baratinage.ui.baratin.hydraulic_control.ControlMatrix;
 import org.baratinage.ui.baratin.hydraulic_control.HydraulicControlPanels;
+import org.baratinage.ui.baratin.rating_curve.PriorRatingCurvePlot;
+import org.baratinage.ui.baratin.rating_curve.RatingCurveStageGrid;
 import org.baratinage.ui.commons.MsgPanel;
 import org.baratinage.ui.component.SvgIcon;
 import org.baratinage.ui.component.Title;
