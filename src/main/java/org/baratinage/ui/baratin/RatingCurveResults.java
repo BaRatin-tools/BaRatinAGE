@@ -57,13 +57,12 @@ public class RatingCurveResults extends TabContainer {
             double[] dischargeMaxpost,
             List<double[]> paramU,
             List<double[]> totalU,
-            List<double[]> transitionStages,
             List<double[]> gaugings,
             List<EstimatedParameter> parameters) {
 
         RatingCurveEstimatedParameters rcEstimParam = processParameters(parameters);
 
-        updatePlots(stage, dischargeMaxpost, paramU, totalU, transitionStages, gaugings, rcEstimParam);
+        updatePlots(stage, dischargeMaxpost, paramU, totalU, gaugings, rcEstimParam);
         updateTables(stage, dischargeMaxpost, paramU, totalU);
         rcEquation.updateEquation(rcEstimParam.controls());
     }
@@ -107,9 +106,16 @@ public class RatingCurveResults extends TabContainer {
             double[] dischargeMaxpost,
             List<double[]> paramU,
             List<double[]> totalU,
-            List<double[]> transitionStages,
             List<double[]> gaugings,
             RatingCurveEstimatedParameters parameters) {
+
+        List<double[]> transitionStages = new ArrayList<>();
+        for (EstimatedControlParameters p : parameters.controls()) {
+            double[] u95 = p.k().get95interval();
+            double mp = p.k().getMaxpost();
+            transitionStages.add(new double[] { mp, u95[0], u95[1] });
+        }
+
         ratingCurvePlot.updatePlot(
                 stage,
                 dischargeMaxpost,

@@ -270,18 +270,17 @@ public class Hydrograph extends BamItem implements IPredictionMaster {
         double[] dateTimeVectorAsDouble = predResults[0].predictionConfig.inputs[0].extraData.get(0);
         LocalDateTime[] dateTimeVector = DateTime.doubleToDateTimeVector(dateTimeVectorAsDouble);
 
-        String outName = "Output_1";
-        double[] maxpost = predResults[0].outputResults.get(outName).spag().get(0);
+        double[] maxpost = predResults[0].outputResults.get(0).spag().get(0);
         int index = 1;
         List<double[]> limniU = null;
         if (predResults.length > 3) {
-            limniU = predResults[index].outputResults.get(outName).get95UncertaintyInterval();
+            limniU = predResults[index].outputResults.get(0).get95UncertaintyInterval();
             index++;
         }
 
-        List<double[]> paramU = predResults[index].outputResults.get(outName).get95UncertaintyInterval();
+        List<double[]> paramU = predResults[index].outputResults.get(0).get95UncertaintyInterval();
         index++;
-        List<double[]> totalU = predResults[index].outputResults.get(outName).get95UncertaintyInterval();
+        List<double[]> totalU = predResults[index].outputResults.get(0).get95UncertaintyInterval();
 
         plotPanel.updatePlot(dateTimeVector, maxpost, limniU, paramU, totalU);
 

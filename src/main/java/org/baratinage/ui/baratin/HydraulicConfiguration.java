@@ -11,7 +11,6 @@ import javax.swing.JSeparator;
 import org.baratinage.jbam.Distribution;
 import org.baratinage.jbam.DistributionType;
 import org.baratinage.jbam.Parameter;
-import org.baratinage.jbam.PredictionConfig;
 import org.baratinage.jbam.PredictionResult;
 import org.baratinage.translation.T;
 import org.baratinage.ui.AppConfig;
@@ -438,15 +437,12 @@ public class HydraulicConfiguration
 
     private void buildPlot() {
 
-        PredictionConfig[] predConfigs = bamRunConfigAndRes.getPredictionConfigs();
         PredictionResult[] predResults = bamRunConfigAndRes.getPredictionResults();
         Parameter[] params = bamRunConfigAndRes.getCalibrationConfig().model.parameters;
 
-        double[] stage = predConfigs[0].inputs[0].dataColumns.get(0);
-        String outputName = predConfigs[0].outputs[0].name;
-
-        double[] dischargeMaxpost = predResults[0].outputResults.get(outputName).spag().get(0);
-        List<double[]> dischargeParamU = predResults[1].outputResults.get(outputName).env().subList(1, 3);
+        double[] stage = predResults[0].predictionConfig.inputs[0].dataColumns.get(0);
+        double[] dischargeMaxpost = predResults[0].outputResults.get(0).spag().get(0);
+        List<double[]> dischargeParamU = predResults[1].outputResults.get(0).env().subList(1, 3);
 
         List<double[]> transitionStages = new ArrayList<>();
         for (Parameter p : params) {

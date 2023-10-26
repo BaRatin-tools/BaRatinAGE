@@ -1,7 +1,6 @@
 package org.baratinage.ui.baratin;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import javax.swing.JButton;
@@ -17,7 +16,6 @@ import org.baratinage.jbam.McmcCookingConfig;
 import org.baratinage.jbam.McmcSummaryConfig;
 import org.baratinage.jbam.Model;
 import org.baratinage.jbam.ModelOutput;
-import org.baratinage.jbam.PredictionConfig;
 import org.baratinage.jbam.PredictionInput;
 import org.baratinage.jbam.PredictionResult;
 import org.baratinage.jbam.StructuralErrorModel;
@@ -38,7 +36,6 @@ import org.baratinage.ui.bam.RunPanel;
 import org.baratinage.ui.commons.MsgPanel;
 import org.baratinage.ui.commons.StructuralErrorModelBamItem;
 import org.baratinage.ui.container.RowColPanel;
-import org.baratinage.utils.Calc;
 import org.baratinage.utils.json.JSONCompare;
 import org.baratinage.utils.json.JSONCompareResult;
 import org.baratinage.utils.json.JSONFilter;
@@ -431,35 +428,15 @@ public class RatingCurve extends BamItem implements IPredictionMaster, ICalibrat
             return;
         }
 
-        PredictionConfig[] predConfigs = bamRunConfigAndRes.getPredictionConfigs();
         PredictionResult[] predResults = bamRunConfigAndRes.getPredictionResults();
         CalibrationResult calibrationResults = bamRunConfigAndRes.getCalibrationResults();
 
-        int maxpostIndex = calibrationResults.maxpostIndex;
+        List<EstimatedParameter> parameters = calibrationResults.estimatedParameters;
 
-        HashMap<String, EstimatedParameter> pars = calibrationResults.estimatedParameters;
+        double[] dischargeMaxpost = predResults[0].outputResults.get(0).spag().get(0);
 
-        List<double[]> transitionStages = new ArrayList<>();
-        List<EstimatedParameter> parameters = new ArrayList<>();
-        for (String parName : pars.keySet()) {
-            if (parName.startsWith("k_")) {
-                EstimatedParameter p = pars.get(parName);
-                double[] vals = p.mcmc;
-                double mp = vals[maxpostIndex];
-                double[] p95 = Calc.percentiles(vals, new double[] { 0.025, 0.975 });
-                transitionStages.add(new double[] {
-                        mp, p95[0], p95[1]
-                });
-            }
-            parameters.add(pars.get(parName));
-        }
-
-        String outputName = predConfigs[0].outputs[0].name;
-
-        double[] dischargeMaxpost = predResults[0].outputResults.get(outputName).spag().get(0);
-
-        List<double[]> paramU = predResults[1].outputResults.get(outputName).env().subList(1, 3);
-        List<double[]> totalU = predResults[2].outputResults.get(outputName).env().subList(1, 3);
+        List<double[]> paramU = predResults[1].outputResults.get(0).env().subList(1, 3);
+        List<double[]> totalU = predResults[2].outputResults.get(0).env().subList(1, 3);
 
         CalibrationData calData = bamRunConfigAndRes.getCalibrationConfig().calibrationData;
 
@@ -483,11 +460,10 @@ public class RatingCurve extends BamItem implements IPredictionMaster, ICalibrat
         gaugings.add(dischargeMax);
 
         resultsPanel.updateResults(
-                predConfigs[0].inputs[0].dataColumns.get(0),
+                predResults[0].predictionConfig.inputs[0].dataColumns.get(0),
                 dischargeMaxpost,
                 paramU,
                 totalU,
-                transitionStages,
                 gaugings,
                 parameters);
     }

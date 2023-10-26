@@ -2,7 +2,7 @@ package org.baratinage.jbam;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.baratinage.jbam.utils.Read;
@@ -13,8 +13,7 @@ public class PredictionResult {
             "Median", "q2.5", "q97.5", "q16", "q84", "Mean", "Stdev"
     };
 
-    // FIXME: should have a 'name' argument as well? So we don't need a hashmap key!
-    public record PredictionOutputResult(List<double[]> env, List<double[]> spag) {
+    public record PredictionOutputResult(String name, List<double[]> env, List<double[]> spag) {
         @Override
         public String toString() {
             int nEnv = 0;
@@ -23,7 +22,13 @@ public class PredictionResult {
             int nSpag = 0;
             if (spag != null && spag.size() > 0)
                 nSpag = spag.size();
-            return "Output results (envelops + samples/replications) with " + nEnv + " rows and " + nSpag + " samples.";
+            return "Output results '" +
+                    name +
+                    "' (envelops + samples/replications) with " +
+                    nEnv +
+                    " rows and " +
+                    nSpag +
+                    " samples.";
         }
 
         public List<double[]> get95UncertaintyInterval() {
@@ -31,17 +36,14 @@ public class PredictionResult {
         }
     }
 
-    // FIXME: using a HashMap may not be required since the outputs order
-    // FIXME: are set during configuration
-    // FIXME: (+ a list is more consistent with configuration approach)
     public final String name;
-    public final HashMap<String, PredictionOutputResult> outputResults;
+    public final List<PredictionOutputResult> outputResults;
     public final PredictionConfig predictionConfig;
 
     public PredictionResult(String workspace, PredictionConfig predictionConfig) {
         this.name = predictionConfig.name;
         this.predictionConfig = predictionConfig;
-        this.outputResults = new HashMap<>();
+        this.outputResults = new ArrayList<>();
         PredictionOutput[] outputConfigs = predictionConfig.outputs;
         for (PredictionOutput outConfig : outputConfigs) {
             String outputName = outConfig.name;
@@ -61,7 +63,7 @@ public class PredictionResult {
                 System.err.println("PredictionResult Error: Failed to read spaghetti file '" + spagFileName + "'");
             }
 
-            this.outputResults.put(outputName, new PredictionOutputResult(env, spag));
+            this.outputResults.add(new PredictionOutputResult(outputName, env, spag));
         }
     }
 
@@ -70,9 +72,8 @@ public class PredictionResult {
         String str = String.format("PredictionResults '%s' :\n",
                 name);
         str += " Outputs: \n";
-        for (String key : this.outputResults.keySet()) {
-            str += " > " + key + ":\n";
-            str += outputResults.get(key).toString() + "\n";
+        for (PredictionOutputResult por : this.outputResults) {
+            str += " > " + por.toString() + "\n";
         }
         return str;
     }

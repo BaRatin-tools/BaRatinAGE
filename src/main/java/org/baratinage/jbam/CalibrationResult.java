@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -14,14 +13,10 @@ import org.baratinage.jbam.utils.Write;
 
 public class CalibrationResult {
 
-    // FIXME: using a HashMap may not be required since the parameters order
-    // FIXME: are set during configuration
-    // FIXME: (+ a list is more consistent with configuration approach)
-
     public final CalibrationConfig calibrationConfig;
     public final List<double[]> mcmcValues;
     public final String[] mcmcHeaders;
-    public final HashMap<String, EstimatedParameter> estimatedParameters;
+    public final List<EstimatedParameter> estimatedParameters;
     public final CalibrationDataResiduals calibrationDataResiduals;
     public final int maxpostIndex;
 
@@ -123,7 +118,7 @@ public class CalibrationResult {
 
     }
 
-    private HashMap<String, EstimatedParameter> buildEstimatedParameters(
+    private List<EstimatedParameter> buildEstimatedParameters(
             String[] headers, List<double[]> mcmc, List<double[]> mcmcSummary, int maxpostIndex,
             Parameter[] parameters) {
 
@@ -132,7 +127,7 @@ public class CalibrationResult {
                     "CalibrationResult Error: Inconsistent sizes between MCMC matrix and MCMC summary matrix!");
         }
 
-        HashMap<String, EstimatedParameter> estimatedParameters = new HashMap<>();
+        List<EstimatedParameter> estimatedParameters = new ArrayList<>();
 
         for (int k = 0; k < headers.length; k++) {
             double[] summary = mcmcSummary == null || k >= mcmcSummary.size() ? null : mcmcSummary.get(k);
@@ -143,7 +138,7 @@ public class CalibrationResult {
                     break;
                 }
             }
-            estimatedParameters.put(headers[k], new EstimatedParameter(
+            estimatedParameters.add(new EstimatedParameter(
                     headers[k],
                     mcmc.get(k),
                     summary,
@@ -212,7 +207,7 @@ public class CalibrationResult {
         String str = "Calibration results: \n";
         if (estimatedParameters != null) {
             str += "- Estimated Parameters: \n";
-            for (EstimatedParameter p : estimatedParameters.values()) {
+            for (EstimatedParameter p : estimatedParameters) {
                 str += "   > " + p.toString() + "\n";
             }
         }
