@@ -1,27 +1,37 @@
 package org.baratinage.ui.baratin.rating_curve;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
 
 import org.baratinage.jbam.EstimatedParameter;
 import org.baratinage.ui.baratin.EstimatedControlParameters;
 import org.baratinage.ui.commons.DensityPlotGrid;
+import org.baratinage.ui.commons.TracePlotGrid;
+import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.ui.container.TabContainer;
+import org.baratinage.utils.WriteFile;
+import org.baratinage.ui.component.CommonDialog;
 import org.baratinage.ui.component.DataTable;
 import org.baratinage.ui.component.SvgIcon;
 import org.baratinage.translation.T;
 
 public class RatingCurveResults extends TabContainer {
 
-    private PosteriorRatingCurvePlot ratingCurvePlot;
-    private DensityPlotGrid paramDensityPlots;
-    private DataTable rcGridTable;
-    private RatingCurveEquation rcEquation;
+    private final PosteriorRatingCurvePlot ratingCurvePlot;
+    private final DensityPlotGrid paramDensityPlots;
+    private final TracePlotGrid paramTracePlots;
+    private final DataTable rcGridTable;
+    private final RatingCurveEquation rcEquation;
+    private final RowColPanel otherPanel;
     // private DataTable mcmcTable;
 
     private static ImageIcon rcIcon = SvgIcon.buildCustomAppImageIcon("rating_curve.svg");
+    private static ImageIcon traceIcon = SvgIcon.buildCustomAppImageIcon("trace.svg");
     private static ImageIcon dpIcon = SvgIcon.buildCustomAppImageIcon("densities.svg");
     private static ImageIcon rcTblIcon = SvgIcon.buildCustomAppImageIcon("rating_curve_table.svg");
     private static ImageIcon rcEqIcon = SvgIcon.buildCustomAppImageIcon("rating_curve_equation.svg");
@@ -36,20 +46,34 @@ public class RatingCurveResults extends TabContainer {
 
         rcEquation = new RatingCurveEquation();
 
+        paramTracePlots = new TracePlotGrid();
+
+        otherPanel = new RowColPanel(
+                RowColPanel.AXIS.COL,
+                RowColPanel.ALIGN.START,
+                RowColPanel.ALIGN.START);
+
         addTab("rating_curve", rcIcon, ratingCurvePlot);
         addTab("Rating Curve table", rcTblIcon, rcGridTable);
         addTab("Rating Curve equation", rcEqIcon, rcEquation);
         addTab("parameter_densities", dpIcon, paramDensityPlots);
+        addTab("parameter_traces", traceIcon, paramTracePlots);
+        addTab("other_results", null, otherPanel);
 
         T.updateHierarchy(this, ratingCurvePlot);
         T.updateHierarchy(this, paramDensityPlots);
+        T.updateHierarchy(this, paramTracePlots);
         T.updateHierarchy(this, rcGridTable);
         T.updateHierarchy(this, rcEquation);
+        T.updateHierarchy(this, otherPanel);
+
         T.t(this, () -> {
             setTitleAt(0, T.html("posterior_rating_curve"));
             setTitleAt(1, T.html("grid_table"));
             setTitleAt(2, T.html("equation"));
             setTitleAt(3, T.html("parameter_densities"));
+            setTitleAt(4, T.html("parameter_traces"));
+            setTitleAt(5, T.html("other_results"));
         });
     }
 
@@ -66,6 +90,65 @@ public class RatingCurveResults extends TabContainer {
         updatePlots(stage, dischargeMaxpost, paramU, totalU, gaugings, rcEstimParam);
         updateTables(stage, dischargeMaxpost, paramU, totalU);
         rcEquation.updateEquation(rcEstimParam.controls());
+
+        JButton mcmcToCsvButton = new JButton();
+        otherPanel.clear();
+        otherPanel.appendChild(mcmcToCsvButton, 0);
+
+        // u = (maxpost - prior.getParval()[0]) / prior.getParval()[1]; // center-scale
+        // if (Math.abs(u) > 2.33d) { // 2.33 corresponds to a 1% probability for a
+        // N(0,1)
+
+        mcmcToCsvButton.setIcon(SvgIcon.buildFeatherAppImageIcon("save.svg"));
+        T.t(otherPanel, () -> {
+            mcmcToCsvButton.setText(T.text("export_mcmc"));
+            mcmcToCsvButton.setToolTipText(T.text("export_mcmc"));
+        });
+        mcmcToCsvButton.addActionListener((e) -> {
+
+            File f = CommonDialog.saveFileDialog(
+                    T.text("export_mcmc"),
+                    T.text("csv_format"),
+                    "csv");
+
+            if (f != null) {
+                int m = rcEstimParam.controls().size();
+                int n = m * 4 + 3;
+                List<double[]> matrix = new ArrayList<>(n);
+                String[] headers = new String[n];
+                for (int k = 0; k < m; k++) {
+                    matrix.add(rcEstimParam.controls().get(k).k().mcmc);
+                    matrix.add(rcEstimParam.controls().get(k).a().mcmc);
+                    matrix.add(rcEstimParam.controls().get(k).c().mcmc);
+                    matrix.add(rcEstimParam.controls().get(k).b().mcmc);
+                    headers[k * 4 + 0] = "k_" + k;
+                    headers[k * 4 + 1] = "a_" + k;
+                    headers[k * 4 + 2] = "c_" + k;
+                    headers[k * 4 + 3] = "b_" + k;
+
+                }
+                matrix.add(rcEstimParam.gamma1().mcmc);
+                matrix.add(rcEstimParam.gamma2().mcmc);
+                matrix.add(rcEstimParam.logPost().mcmc);
+                headers[m * 4 + 0] = "gamma_" + 1;
+                headers[m * 4 + 1] = "gamma_" + 2;
+                headers[m * 4 + 2] = "LogPost";
+
+                try {
+                    WriteFile.writeMatrix(
+                            f.getAbsolutePath(),
+                            matrix,
+                            ",",
+                            "-9999",
+                            headers);
+                } catch (IOException ioe) {
+                    System.err.println("RatingCurveResult Error: error while exporting MCMC simulation");
+                    ioe.printStackTrace();
+                }
+            }
+
+        });
+
     }
 
     private void updateTables(
@@ -139,6 +222,21 @@ public class RatingCurveResults extends TabContainer {
         paramDensityPlots.addPlot(parameters.logPost());
 
         paramDensityPlots.updatePlots();
+
+        paramTracePlots.clearPlots();
+
+        for (EstimatedControlParameters p : parameters.controls()) {
+            paramTracePlots.addPlot(p.k());
+            paramTracePlots.addPlot(p.a());
+            paramTracePlots.addPlot(p.c());
+            paramTracePlots.addPlot(p.b());
+        }
+
+        paramTracePlots.addPlot(parameters.gamma1());
+        paramTracePlots.addPlot(parameters.gamma2());
+        paramTracePlots.addPlot(parameters.logPost());
+
+        paramTracePlots.updatePlots();
 
     }
 
