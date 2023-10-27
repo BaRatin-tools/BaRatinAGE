@@ -177,4 +177,13 @@ public class Calc {
         return x;
     }
 
+    public static double[] sequence(double from, double to, int n) {
+        double[] x = new double[n];
+        double step = (to - from) / n;
+        for (int k = 0; k < n; k++) {
+            x[k] = from + step * k;
+        }
+        return x;
+    }
+
 }
