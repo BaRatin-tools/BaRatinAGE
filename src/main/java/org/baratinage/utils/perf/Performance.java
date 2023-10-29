@@ -14,9 +14,9 @@ public class Performance {
         Runtime runtime = Runtime.getRuntime();
         runtime.gc();
         long memory = runtime.totalMemory() - runtime.freeMemory();
-        System.out.println("Used memory is bytes:         " + memory);
-        System.out.println("Used memory is megabytes:     " +
-                bytesToMegabytes(memory));
+        System.out.println("Performance: Used memory in bytes (megabytes): "
+                + memory + " (" + bytesToMegabytes(memory) + "mb)");
+
     }
 
     private static HashMap<Object, Long> startedTimeMonitoring = new HashMap<>();
@@ -30,16 +30,10 @@ public class Performance {
         if (startTime != null) {
             Long endTime = System.currentTimeMillis();
             Long duration = endTime - startTime;
-            System.out.println("Time elapsed in milliseconds: " + duration);
-            System.out.println("Time elapsed in seconds:      " + duration / 1000.0);
+            System.out.println("Performance: Time elapsed in milliseconds (seconds): " +
+                    duration + "ms (" + duration / 1000.0 + "s)");
             startedTimeMonitoring.remove(key);
         }
     }
 
-    public static void printTimeElapsed(double startTime) {
-        double endTime = System.currentTimeMillis();
-        double elapsedTime = endTime - startTime;
-        System.out.println("Time elapsed in milliseconds: " + elapsedTime);
-        System.out.println("Time elapsed in seconds:      " + elapsedTime / 1000.0);
-    }
 }
