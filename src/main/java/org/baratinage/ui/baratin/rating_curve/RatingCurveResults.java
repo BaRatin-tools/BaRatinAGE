@@ -27,7 +27,8 @@ public class RatingCurveResults extends TabContainer {
     private final TracePlotGrid paramTracePlots;
     private final DataTable rcGridTable;
     private final RatingCurveEquation rcEquation;
-    private final RowColPanel otherPanel;
+    private final RowColPanel mcmcResultPanel;
+    // private final RowColPanel otherPanel;
     private final DataTable paramSummaryTable;
 
     private static ImageIcon rcIcon = SvgIcon.buildCustomAppImageIcon("rating_curve.svg");
@@ -47,38 +48,34 @@ public class RatingCurveResults extends TabContainer {
 
         rcEquation = new RatingCurveEquation();
 
-        paramTracePlots = new TracePlotGrid();
-
         paramSummaryTable = new DataTable();
 
-        otherPanel = new RowColPanel(
-                RowColPanel.AXIS.COL,
-                RowColPanel.ALIGN.START,
-                RowColPanel.ALIGN.START);
+        paramTracePlots = new TracePlotGrid();
+
+        mcmcResultPanel = new RowColPanel(
+                RowColPanel.AXIS.COL);
 
         addTab("rating_curve", rcIcon, ratingCurvePlot);
         addTab("Rating Curve table", rcTblIcon, rcGridTable);
         addTab("Rating Curve equation", rcEqIcon, rcEquation);
         addTab("parameter_densities", dpIcon, paramDensityPlots);
-        addTab("parameter_traces", traceIcon, paramTracePlots);
         addTab("parameter_table", tableIcon, paramSummaryTable);
-        addTab("other_results", null, otherPanel);
+        addTab("other_results", traceIcon, mcmcResultPanel);
 
         T.updateHierarchy(this, ratingCurvePlot);
         T.updateHierarchy(this, paramDensityPlots);
         T.updateHierarchy(this, paramTracePlots);
         T.updateHierarchy(this, rcGridTable);
         T.updateHierarchy(this, rcEquation);
-        T.updateHierarchy(this, otherPanel);
+        T.updateHierarchy(this, mcmcResultPanel);
 
         T.t(this, () -> {
             setTitleAt(0, T.html("posterior_rating_curve"));
             setTitleAt(1, T.html("grid_table"));
             setTitleAt(2, T.html("equation"));
             setTitleAt(3, T.html("parameter_densities"));
-            setTitleAt(4, T.html("parameter_traces"));
-            setTitleAt(5, T.html("parameter_summary_table"));
-            setTitleAt(6, T.html("other_results"));
+            setTitleAt(4, T.html("parameter_summary_table"));
+            setTitleAt(5, T.html("mcmc_results"));
         });
     }
 
@@ -98,7 +95,7 @@ public class RatingCurveResults extends TabContainer {
 
         updateParametersPlots(rcEstimParam);
 
-        updateOtherResultPanel(rcEstimParam);
+        updateMcmcResultPanel(rcEstimParam);
 
         updateParameterSummaryTabel(rcEstimParam);
 
@@ -134,7 +131,7 @@ public class RatingCurveResults extends TabContainer {
             rcGridTable.setHeader(5,
                     T.text("parametric_structural_uncertainty") +
                             " - " + T.text("percentile_0975"));
-            rcGridTable.autosetHeadersWidths(100, 300);
+            rcGridTable.setHeaderWidth(100);
             rcGridTable.updateHeader();
         });
 
@@ -222,7 +219,8 @@ public class RatingCurveResults extends TabContainer {
         paramSummaryTable.setHeader(4, "Posterior Low (2.5%)");
         paramSummaryTable.setHeader(5, "Posterior High (97.5%)");
 
-        paramSummaryTable.autosetHeadersWidths(100, 300);
+        paramSummaryTable.setHeaderWidth(100);
+
         paramSummaryTable.updateHeader();
 
     }
@@ -286,18 +284,21 @@ public class RatingCurveResults extends TabContainer {
 
     }
 
-    private void updateOtherResultPanel(RatingCurveEstimatedParameters parameters) {
+    private void updateMcmcResultPanel(RatingCurveEstimatedParameters parameters) {
 
         JButton mcmcToCsvButton = new JButton();
-        otherPanel.clear();
-        otherPanel.appendChild(mcmcToCsvButton, 0);
+        mcmcResultPanel.clear();
+        RowColPanel actionPanel = new RowColPanel();
+        actionPanel.appendChild(mcmcToCsvButton, 0);
+        mcmcResultPanel.appendChild(actionPanel, 0);
+        mcmcResultPanel.appendChild(paramTracePlots, 1);
 
         // u = (maxpost - prior.getParval()[0]) / prior.getParval()[1]; // center-scale
         // if (Math.abs(u) > 2.33d) { // 2.33 corresponds to a 1% probability for a
         // N(0,1)
 
         mcmcToCsvButton.setIcon(SvgIcon.buildFeatherAppImageIcon("save.svg"));
-        T.t(otherPanel, () -> {
+        T.t(mcmcResultPanel, () -> {
             mcmcToCsvButton.setText(T.text("export_mcmc"));
             mcmcToCsvButton.setToolTipText(T.text("export_mcmc"));
         });
@@ -343,7 +344,6 @@ public class RatingCurveResults extends TabContainer {
                     ioe.printStackTrace();
                 }
             }
-
         });
 
     }
