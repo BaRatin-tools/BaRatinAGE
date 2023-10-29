@@ -1,6 +1,8 @@
 package org.baratinage.ui.bam;
 
 import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -182,11 +184,22 @@ public abstract class BamProject extends RowColPanel {
 
         bamItem.bamItemNameField.addChangeListener((e) -> {
             String newName = bamItem.bamItemNameField.getText();
-            if (newName.equals("")) {
-                newName = "<html><div style='color: red; font-style: italic'>" + T.text("untitled") + "</div></html>";
-            }
             explorerItem.label = newName;
             explorer.updateItemView(explorerItem);
+        });
+        bamItem.bamItemNameField.addFocusListener(new FocusListener() {
+
+            @Override
+            public void focusGained(FocusEvent e) {
+            }
+
+            @Override
+            public void focusLost(FocusEvent e) {
+                if (bamItem.bamItemNameField.getText().equals("")) {
+                    bamItem.bamItemNameField.setText(T.text("untitled"));
+                }
+            }
+
         });
 
         bamItem.deleteButton.addActionListener((e) -> {
