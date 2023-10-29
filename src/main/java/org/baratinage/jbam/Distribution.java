@@ -91,7 +91,6 @@ public class Distribution {
         String rangeResFileName = id + "_range.txt";
 
         String xGridArgRange = DENSITY_RANGE[0] + "," + DENSITY_RANGE[1] + ",2";
-        System.out.println(xGridArgRange);
 
         ExeRun rangeRun = new ExeRun();
         rangeRun.setExeDir(EXE_DIR);
@@ -105,7 +104,7 @@ public class Distribution {
         rangeRun.run();
 
         List<double[]> rangeRes = getExeRunResult(Path.of(EXE_DIR, rangeResFileName).toString());
-        if (rangeRes == null) {
+        if (rangeRes == null || rangeRes.size() != 2) {
             System.err.println("Distribution Error: error while reading quantiles result files! Aborting");
             return null;
         }
@@ -164,6 +163,31 @@ public class Distribution {
         }
 
         return randomValues.get(0);
+    }
+
+    public double[] getPercentile(double low, double high, int nsteps) {
+        String percentilesResultFileName = id + "_percentiles.txt";
+
+        String probsArgs = doubleArrToStringArg(low, high) + "," + nsteps;
+        String parametersArg = doubleArrToStringArg(parameterValues);
+
+        ExeRun percentileRun = new ExeRun();
+        percentileRun.setExeDir(EXE_DIR);
+        percentileRun.setCommand(EXE_COMMAND,
+                "-name", type.bamName,
+                "-par", parametersArg,
+                "-act", "q",
+                "-x", probsArgs,
+                "-rf", percentilesResultFileName);
+
+        percentileRun.run();
+
+        List<double[]> rangeRes = getExeRunResult(Path.of(EXE_DIR, percentilesResultFileName).toString());
+        if (rangeRes == null || rangeRes.size() != 2) {
+            System.err.println("Distribution Error: error while reading quantiles result files! Aborting");
+            return null;
+        }
+        return rangeRes.get(1);
     }
 
     @Override
