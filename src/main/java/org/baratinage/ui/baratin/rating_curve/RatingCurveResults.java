@@ -32,6 +32,7 @@ public class RatingCurveResults extends TabContainer {
 
     private static ImageIcon rcIcon = SvgIcon.buildCustomAppImageIcon("rating_curve.svg");
     private static ImageIcon traceIcon = SvgIcon.buildCustomAppImageIcon("trace.svg");
+    private static ImageIcon tableIcon = SvgIcon.buildCustomAppImageIcon("table.svg");
     private static ImageIcon dpIcon = SvgIcon.buildCustomAppImageIcon("densities.svg");
     private static ImageIcon rcTblIcon = SvgIcon.buildCustomAppImageIcon("rating_curve_table.svg");
     private static ImageIcon rcEqIcon = SvgIcon.buildCustomAppImageIcon("rating_curve_equation.svg");
@@ -60,7 +61,7 @@ public class RatingCurveResults extends TabContainer {
         addTab("Rating Curve equation", rcEqIcon, rcEquation);
         addTab("parameter_densities", dpIcon, paramDensityPlots);
         addTab("parameter_traces", traceIcon, paramTracePlots);
-        addTab("parameter_table", null, paramSummaryTable);
+        addTab("parameter_table", tableIcon, paramSummaryTable);
         addTab("other_results", null, otherPanel);
 
         T.updateHierarchy(this, ratingCurvePlot);
@@ -76,7 +77,7 @@ public class RatingCurveResults extends TabContainer {
             setTitleAt(2, T.html("equation"));
             setTitleAt(3, T.html("parameter_densities"));
             setTitleAt(4, T.html("parameter_traces"));
-            setTitleAt(5, "parameter_table");
+            setTitleAt(5, T.html("parameter_summary_table"));
             setTitleAt(6, T.html("other_results"));
         });
     }
@@ -149,6 +150,7 @@ public class RatingCurveResults extends TabContainer {
         double[] postLow = new double[n];
         double[] postHigh = new double[n];
 
+        int controlIndex = 1;
         int k = 0;
         for (EstimatedControlParameters control : parameters.controls()) {
             EstimatedParameter p;
@@ -158,7 +160,7 @@ public class RatingCurveResults extends TabContainer {
             p = control.k();
             prior95 = p.parameterConfig.distribution.getPercentiles(0.025, 0.975, 2);
             post95 = p.get95interval();
-            parameterNames[k] = p.name;
+            parameterNames[k] = "k_" + controlIndex;
             priorLow[k] = prior95[0];
             priorHigh[k] = prior95[1];
             postMaxpost[k] = p.getMaxpost();
@@ -169,7 +171,7 @@ public class RatingCurveResults extends TabContainer {
             p = control.a();
             prior95 = p.parameterConfig.distribution.getPercentiles(0.025, 0.975, 2);
             post95 = p.get95interval();
-            parameterNames[k] = p.name;
+            parameterNames[k] = "a_" + controlIndex;
             priorLow[k] = prior95[0];
             priorHigh[k] = prior95[1];
             postMaxpost[k] = p.getMaxpost();
@@ -180,7 +182,7 @@ public class RatingCurveResults extends TabContainer {
             p = control.c();
             prior95 = p.parameterConfig.distribution.getPercentiles(0.025, 0.975, 2);
             post95 = p.get95interval();
-            parameterNames[k] = p.name;
+            parameterNames[k] = "c_" + controlIndex;
             priorLow[k] = prior95[0];
             priorHigh[k] = prior95[1];
             postMaxpost[k] = p.getMaxpost();
@@ -191,13 +193,15 @@ public class RatingCurveResults extends TabContainer {
             p = control.b();
             prior95 = new double[] { Double.NaN, Double.NaN };
             post95 = p.get95interval();
-            parameterNames[k] = p.name;
+            parameterNames[k] = "b_" + controlIndex;
             priorLow[k] = prior95[0];
             priorHigh[k] = prior95[1];
             postMaxpost[k] = p.getMaxpost();
             postLow[k] = post95[0];
             postHigh[k] = post95[1];
             k++;
+
+            controlIndex++;
         }
 
         paramSummaryTable.clearColumns();
