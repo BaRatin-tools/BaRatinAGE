@@ -4,6 +4,9 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
+import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.StringSelection;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -57,6 +60,15 @@ public class DataTable extends RowColPanel {
             exportButton.setToolTipText(T.text("to_csv"));
         });
         actionPanel.appendChild(exportButton);
+        JButton copyToClipboardButton = new JButton();
+        copyToClipboardButton.addActionListener((e) -> {
+            copyToCliboard();
+        });
+        copyToClipboardButton.setIcon(SvgIcon.buildFeatherAppImageIcon("copy.svg"));
+        T.t(this, () -> {
+            copyToClipboardButton.setToolTipText(T.text("to_clipboard"));
+        });
+        actionPanel.appendChild(copyToClipboardButton);
 
         Dimension defaultPrefDim = scrollpane.getPreferredSize();
         defaultPrefDim.height = 300;
@@ -86,8 +98,32 @@ public class DataTable extends RowColPanel {
     }
 
     // private void buildSaveData
+    private void copyToCliboard() {
+        Clipboard systemClipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+        systemClipboard.setContents(new StringSelection(buildDataString()), null);
+    }
 
     private void saveAsCSV() {
+        File file = CommonDialog.saveFileDialog(null, T.text("csv_format"), "csv");
+        if (file == null) {
+            System.err.println("DataTable Error: chosen file is null.");
+            return;
+        }
+        String data = buildDataString();
+        try {
+            if (!file.exists()) {
+                file.createNewFile();
+            }
+            FileWriter fileWriter = new FileWriter(file);
+            fileWriter.write(data);
+            fileWriter.close();
+        } catch (IOException e) {
+            System.err.println("DataTable Error: failed to write data to CSV file!");
+            e.printStackTrace();
+        }
+    }
+
+    private String buildDataString() {
         // creating row wise data matrix;
         int nCol = model.getColumnCount();
         int nRow = model.getRowCount();
@@ -113,24 +149,7 @@ public class DataTable extends RowColPanel {
             rows[i + 1] = String.join(",", row);
         }
 
-        File file = CommonDialog.saveFileDialog(null, T.text("csv_format"), "csv");
-        if (file == null) {
-            System.err.println("DataTable Error: chosen file is null.");
-            return;
-        }
-
-        String data = String.join("\n", rows);
-        try {
-            if (!file.exists()) {
-                file.createNewFile();
-            }
-            FileWriter fileWriter = new FileWriter(file);
-            fileWriter.write(data);
-            fileWriter.close();
-        } catch (IOException e) {
-            System.err.println("DataTable Error: failed to write data to CSV file!");
-            e.printStackTrace();
-        }
+        return String.join("\n", rows);
     }
 
     public void updateData() {
