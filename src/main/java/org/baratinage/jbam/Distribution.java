@@ -165,7 +165,7 @@ public class Distribution {
         return randomValues.get(0);
     }
 
-    public double[] getPercentile(double low, double high, int nsteps) {
+    public double[] getPercentiles(double low, double high, int nsteps) {
         String percentilesResultFileName = id + "_percentiles.txt";
 
         String probsArgs = doubleArrToStringArg(low, high) + "," + nsteps;
