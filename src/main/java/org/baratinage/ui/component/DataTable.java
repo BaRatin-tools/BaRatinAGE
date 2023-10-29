@@ -202,24 +202,11 @@ public class DataTable extends RowColPanel {
         tableColumn.setPreferredWidth(width);
     }
 
-    public void autosetHeadersWidths(int min, int max) {
+    public void setHeaderWidth(int width) {
         int nCol = table.getColumnCount();
-        Graphics g = table.getGraphics();
-        if (g == null) {
-            g = AppConfig.AC.APP_MAIN_FRAME.getGraphics();
-            if (g == null) {
-                System.err.println("DataTable Error: autoset width impossible, graphics is null");
-                return;
-            }
-        }
-        FontMetrics fm = g.getFontMetrics();
         for (int k = 0; k < nCol; k++) {
             TableColumn tableColumn = table.getColumnModel().getColumn(k);
-            // find a way to autocompute column width
-            String text = (String) tableColumn.getHeaderValue();
-            int aw = fm.stringWidth(text);
-            int pw = Math.max(Math.min(aw, max), min);
-            tableColumn.setPreferredWidth(pw);
+            tableColumn.setPreferredWidth(width);
         }
     }
 
