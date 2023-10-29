@@ -15,6 +15,7 @@ import org.baratinage.ui.AppConfig;
 import org.baratinage.ui.commons.MsgPanel;
 import org.baratinage.ui.component.SimpleComboBox;
 import org.baratinage.ui.container.RowColPanel;
+import org.baratinage.utils.Misc;
 import org.baratinage.utils.json.JSONCompare;
 import org.baratinage.utils.json.JSONCompareResult;
 import org.json.JSONObject;
@@ -27,12 +28,10 @@ public class BamItemParent extends RowColPanel {
     private final JLabel comboboxLabel;
 
     private final List<MsgPanel> messages;
+    private final String errorMessagesKey = Misc.getTimeStampedId();
 
-    // private String backupItemString = null;
     private String bamItemBackupId = null;
     private BamConfigRecord bamItemBackup = null;
-
-    // private JSON
 
     private BamItemList allItems = new BamItemList();
     private BamItem currentBamItem = null;
@@ -82,7 +81,6 @@ public class BamItemParent extends RowColPanel {
         };
 
         T.t(this, comboboxLabel, false, TYPE.id);
-        T.updateHierarchy(this, messages);
 
         updateCombobox();
     }
@@ -208,7 +206,7 @@ public class BamItemParent extends RowColPanel {
 
     public List<MsgPanel> getMessages() {
         messages.clear();
-        T.clear(messages);
+        T.clear(errorMessagesKey);
 
         if (bamItemBackup != null && bamItemBackupId != null) {
             boolean inSync = isCurrentInSyncWithBackup();
@@ -253,7 +251,7 @@ public class BamItemParent extends RowColPanel {
                 syncIssueMsg.addButton(createInSyncCompBtn);
                 messages.add(syncIssueMsg);
 
-                T.t(messages, () -> {
+                T.t(errorMessagesKey, () -> {
                     String typeText = T.text(TYPE.id);
                     String backupItemName = getBackupItemName();
                     String currentItemName = getCurrentItemName();

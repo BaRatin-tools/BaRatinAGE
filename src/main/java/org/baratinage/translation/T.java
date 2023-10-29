@@ -117,7 +117,10 @@ public class T {
         for (Object object : translatables.keySet()) {
             TranslatableList list = translatables.get(object);
             if (list == null) {
-                System.err.println("T Error: translatables list is null for the following object > " + object);
+                // Note: I've had some issue if Object is an array list that
+                // is emptied with clear() after having elements added to it....
+                System.err.println("T Error: translatables list is null for the following object > " +
+                        object + " (" + object.getClass() + ")");
                 continue;
             }
             for (Translatable tr : list) {
