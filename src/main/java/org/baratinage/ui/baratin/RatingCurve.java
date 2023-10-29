@@ -41,7 +41,7 @@ import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.utils.json.JSONCompare;
 import org.baratinage.utils.json.JSONCompareResult;
 import org.baratinage.utils.json.JSONFilter;
-import org.baratinage.utils.perf.Throttler;
+import org.baratinage.utils.perf.TimedActions;
 import org.json.JSONObject;
 
 public class RatingCurve extends BamItem implements IPredictionMaster, ICalibratedModel, IMcmc {
@@ -84,7 +84,7 @@ public class RatingCurve extends BamItem implements IPredictionMaster, ICalibrat
             runPanel.setModelDefintion(bamItem);
             runPanel.setPriors(bamItem);
 
-            Throttler.throttle(ID, AppConfig.AC.THROTTLED_DELAY_MS, this::checkSync);
+            TimedActions.throttle(ID, AppConfig.AC.THROTTLED_DELAY_MS, this::checkSync);
         });
 
         // **********************************************************
@@ -101,7 +101,7 @@ public class RatingCurve extends BamItem implements IPredictionMaster, ICalibrat
             Gaugings bamItem = (Gaugings) gaugingsParent.getCurrentBamItem();
             runPanel.setCalibrationData(bamItem);
 
-            Throttler.throttle(ID, AppConfig.AC.THROTTLED_DELAY_MS, this::checkSync);
+            TimedActions.throttle(ID, AppConfig.AC.THROTTLED_DELAY_MS, this::checkSync);
         });
 
         // **********************************************************
@@ -117,7 +117,7 @@ public class RatingCurve extends BamItem implements IPredictionMaster, ICalibrat
             StructuralErrorModelBamItem bamItem = (StructuralErrorModelBamItem) structErrorParent.getCurrentBamItem();
             runPanel.setStructuralErrorModel(bamItem);
 
-            Throttler.throttle(ID, AppConfig.AC.THROTTLED_DELAY_MS, this::checkSync);
+            TimedActions.throttle(ID, AppConfig.AC.THROTTLED_DELAY_MS, this::checkSync);
         });
 
         // **********************************************************
@@ -131,7 +131,7 @@ public class RatingCurve extends BamItem implements IPredictionMaster, ICalibrat
 
         ratingCurveStageGrid = new RatingCurveStageGrid();
         ratingCurveStageGrid.addChangeListener((e) -> {
-            Throttler.throttle(ID, AppConfig.AC.THROTTLED_DELAY_MS, this::checkSync);
+            TimedActions.throttle(ID, AppConfig.AC.THROTTLED_DELAY_MS, this::checkSync);
         });
 
         mainConfigPanel.appendChild(hydrauConfParent, 1);
@@ -152,7 +152,7 @@ public class RatingCurve extends BamItem implements IPredictionMaster, ICalibrat
             gaugingsParent.updateBackup();
             structErrorParent.updateBackup();
 
-            Throttler.throttle(ID, AppConfig.AC.THROTTLED_DELAY_MS, this::checkSync);
+            TimedActions.throttle(ID, AppConfig.AC.THROTTLED_DELAY_MS, this::checkSync);
         });
 
         resultsPanel = new RatingCurveResults();
@@ -276,7 +276,7 @@ public class RatingCurve extends BamItem implements IPredictionMaster, ICalibrat
                 JSONObject stageGridJson = json.getJSONObject("stageGridConfig");
                 ratingCurveStageGrid.fromJSON(stageGridJson);
 
-                Throttler.throttle(ID, AppConfig.AC.THROTTLED_DELAY_MS, this::checkSync);
+                TimedActions.throttle(ID, AppConfig.AC.THROTTLED_DELAY_MS, this::checkSync);
             });
             errorMsg.addButton(cancelChangeButton);
             T.t(outdatedPanel, cancelChangeButton, false, "cancel_changes");
@@ -393,7 +393,7 @@ public class RatingCurve extends BamItem implements IPredictionMaster, ICalibrat
             System.out.println("RatingCurve: missing 'backup'");
         }
 
-        Throttler.throttle(ID, AppConfig.AC.THROTTLED_DELAY_MS, this::checkSync);
+        TimedActions.throttle(ID, AppConfig.AC.THROTTLED_DELAY_MS, this::checkSync);
     }
 
     @Override

@@ -21,7 +21,7 @@ import org.baratinage.ui.component.SimpleTextField;
 import org.baratinage.ui.container.GridPanel;
 import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.utils.Misc;
-import org.baratinage.utils.perf.Throttler;
+import org.baratinage.utils.perf.TimedActions;
 import org.baratinage.translation.T;
 
 public class LimnigraphImporter extends RowColPanel {
@@ -230,7 +230,7 @@ public class LimnigraphImporter extends RowColPanel {
         // react to change in user inputs (preview table and import button)
 
         ChangeListener cbChangeListener = (chEvt) -> {
-            Throttler.throttle(ID, AppConfig.AC.THROTTLED_DELAY_MS, this::updateValidityStatus);
+            TimedActions.throttle(ID, AppConfig.AC.THROTTLED_DELAY_MS, this::updateValidityStatus);
         };
 
         timeColComboBox.addChangeListener(cbChangeListener);

@@ -26,7 +26,7 @@ import org.baratinage.ui.container.RowColPanel.AXIS;
 import org.baratinage.translation.T;
 import org.baratinage.utils.DateTime;
 import org.baratinage.utils.json.JSONFilter;
-import org.baratinage.utils.perf.Throttler;
+import org.baratinage.utils.perf.TimedActions;
 import org.json.JSONObject;
 
 public class Hydrograph extends BamItem implements IPredictionMaster {
@@ -58,7 +58,7 @@ public class Hydrograph extends BamItem implements IPredictionMaster {
             RatingCurve rc = (RatingCurve) ratingCurveParent.getCurrentBamItem();
             currentRatingCurve = rc;
             runPanel.setCalibratedModel(rc);
-            Throttler.throttle(ID, AppConfig.AC.THROTTLED_DELAY_MS, this::checkSync);
+            TimedActions.throttle(ID, AppConfig.AC.THROTTLED_DELAY_MS, this::checkSync);
         });
 
         limnigraphParent = new BamItemParent(this, BamItemType.LIMNIGRAPH);
@@ -69,7 +69,7 @@ public class Hydrograph extends BamItem implements IPredictionMaster {
         limnigraphParent.addChangeListener((chEvt) -> {
             Limnigraph l = (Limnigraph) limnigraphParent.getCurrentBamItem();
             currentLimnigraph = l;
-            Throttler.throttle(ID, AppConfig.AC.THROTTLED_DELAY_MS, this::checkSync);
+            TimedActions.throttle(ID, AppConfig.AC.THROTTLED_DELAY_MS, this::checkSync);
         });
 
         runPanel.addRunSuccessListerner((RunConfigAndRes res) -> {
@@ -78,7 +78,7 @@ public class Hydrograph extends BamItem implements IPredictionMaster {
             buildPlot();
             ratingCurveParent.updateBackup();
             limnigraphParent.updateBackup();
-            Throttler.throttle(ID, AppConfig.AC.THROTTLED_DELAY_MS, this::checkSync);
+            TimedActions.throttle(ID, AppConfig.AC.THROTTLED_DELAY_MS, this::checkSync);
         });
 
         RowColPanel parentItemPanel = new RowColPanel();
@@ -196,7 +196,7 @@ public class Hydrograph extends BamItem implements IPredictionMaster {
         } else {
             System.out.println("Hydrograph: missing 'backup'");
         }
-        Throttler.throttle(ID, AppConfig.AC.THROTTLED_DELAY_MS, this::checkSync);
+        TimedActions.throttle(ID, AppConfig.AC.THROTTLED_DELAY_MS, this::checkSync);
     }
 
     @Override
