@@ -53,6 +53,18 @@ public class GaugingsDataset extends AbstractDataset {
         return u;
     }
 
+    public void updateActiveStateValues(Boolean[] newValues) {
+        if (newValues.length != getNumberOfRows()) {
+            System.err.println(
+                    "GaugingsDataset Error: Cannot update active state values because the numbers of rows don't match!");
+            return;
+        }
+        double[] d = getColumn("active");
+        for (int k = 0; k < getNumberOfRows(); k++) {
+            d[k] = newValues[k] ? 1d : 0d;
+        }
+    }
+
     /**
      * Compute and return the 95% uncertainty interval of each gaugings
      * 
@@ -85,6 +97,7 @@ public class GaugingsDataset extends AbstractDataset {
         return toBoolean(getActiveStateAsDouble());
     }
 
+    // FIXME: feels unnefficient and overly complicated...
     private static List<List<double[]>> splitMatrix(List<double[]> data,
             boolean[] filter) {
         List<List<double[]>> res = new ArrayList<>();

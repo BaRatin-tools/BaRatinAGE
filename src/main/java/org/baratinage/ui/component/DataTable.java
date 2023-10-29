@@ -20,6 +20,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
@@ -39,6 +41,11 @@ public class DataTable extends RowColPanel {
         setGap(5);
 
         model = new CustomTableModel();
+
+        model.addTableModelListener(
+                (e) -> {
+                    fireChangeListeners();
+                });
         table = new JTable();
 
         table.setRowHeight(20);
@@ -171,25 +178,60 @@ public class DataTable extends RowColPanel {
     }
 
     public void addColumn(double[] values) {
-        model.addColumn(values);
+        addColumn(values, false);
+    }
+
+    public void addColumn(double[] values, boolean editable) {
+        int n = values.length;
+        Double[] boxed = new Double[values.length];
+        for (int k = 0; k < n; k++) {
+            boxed[k] = values[k];
+        }
+        addColumn(boxed, editable);
     }
 
     public void addColumn(int[] values) {
-        model.addColumn(values);
+        addColumn(values, false);
     }
 
-    public void addColumn(LocalDateTime[] values) {
-        model.addColumn(values);
+    public void addColumn(int[] values, boolean editable) {
+        int n = values.length;
+        Integer[] boxed = new Integer[values.length];
+        for (int k = 0; k < n; k++) {
+            boxed[k] = values[k];
+        }
+        addColumn(boxed, editable);
     }
 
-    public void addColumn(String[] values) {
-        model.addColumn(values);
+    public void addColumn(boolean[] values) {
+        addColumn(values, false);
+    }
+
+    public void addColumn(boolean[] values, boolean editable) {
+        int n = values.length;
+        Boolean[] boxed = new Boolean[values.length];
+        for (int k = 0; k < n; k++) {
+            boxed[k] = values[k];
+        }
+        addColumn(boxed, editable);
+    }
+
+    public <A> void addColumn(A[] values) {
+        addColumn(values, false);
+    }
+
+    public <A> void addColumn(A[] values, boolean editable) {
+        model.addColumn(values, editable);
+    }
+
+    public Object[] getColumn(int colIndex) {
+        return model.getColumnValues(colIndex);
     }
 
     public void setHeader(int colIndex, String headerText) {
         int nCol = table.getColumnCount();
         if (colIndex < 0 || colIndex >= nCol) {
-            System.err.println("DataTable Error: colIndex is invalid!");
+            System.err.println("DataTable Error: Cannot set header text, colIndex is invalid!");
             return;
         }
         TableColumn tableColumn = table.getColumnModel().getColumn(colIndex);
@@ -199,7 +241,7 @@ public class DataTable extends RowColPanel {
     public void setHeaderWidth(int colIndex, int width) {
         int nCol = table.getColumnCount();
         if (colIndex < 0 || colIndex >= nCol) {
-            System.err.println("DataTable Error: colIndex is invalid!");
+            System.err.println("DataTable Error: cannot set header width, colIndex is invalid!");
             return;
         }
         TableColumn tableColumn = table.getColumnModel().getColumn(colIndex);
@@ -214,36 +256,44 @@ public class DataTable extends RowColPanel {
         }
     }
 
+    private List<ChangeListener> changeListeners = new ArrayList<>();
+
+    public void addChangeListener(ChangeListener l) {
+        changeListeners.add(l);
+    }
+
+    public void removeChangeListener(ChangeListener l) {
+        changeListeners.remove(l);
+    }
+
+    private void fireChangeListeners() {
+        for (ChangeListener l : changeListeners) {
+            l.stateChanged(new ChangeEvent(this));
+        }
+    }
+
     private static class CustomTableModel extends AbstractTableModel {
 
-        private static enum TYPE {
-            INT(Integer.class), DOUBLE(Double.class), TIME(LocalDateTime.class), STRING(String.class);
-
-            public final Class<?> c;
-
-            private TYPE(Class<?> c) {
-                this.c = c;
+        private static record Column(Object[] values, boolean editable) {
+            public Class<?> getColumnClass() {
+                if (values.length > 0) {
+                    return values[0].getClass();
+                }
+                return Void.class;
             }
-        };
+        }
 
-        private static record ColSettings(TYPE type, double[] d, int[] i, LocalDateTime[] t, String[] s) {
-
-        };
-
-        private final List<ColSettings> columns;
+        private final List<Column> columns;
         private int nRow;
-        private int nCol;
 
         public CustomTableModel() {
             columns = new ArrayList<>();
             nRow = -1;
-            nCol = 0;
         }
 
         public void clearColumns() {
             columns.clear();
             nRow = -1;
-            nCol = 0;
         }
 
         private boolean isLengthValid(int length) {
@@ -252,59 +302,30 @@ public class DataTable extends RowColPanel {
                 return true;
             } else {
                 if (nRow != length) {
-                    System.err.println("DataTable Error: cannot add a column of length " + length + "! Length " + nRow
-                            + " expected.");
+                    System.err.println(
+                            "DataTable Error: cannot add a column of length " +
+                                    length + "! Length " +
+                                    nRow + " expected.");
                     return false;
                 }
             }
             return true;
         }
 
-        private void addColumn(double[] d, int[] i, LocalDateTime[] t, String[] s) {
-            TYPE type = TYPE.DOUBLE;
-            int n = -1;
-            if (d != null) {
-                type = TYPE.DOUBLE;
-                n = d.length;
-            } else if (i != null) {
-                type = TYPE.INT;
-                n = i.length;
-            } else if (t != null) {
-                type = TYPE.TIME;
-                n = t.length;
-            } else if (s != null) {
-                type = TYPE.STRING;
-                n = s.length;
+        public <A> void addColumn(A[] values, boolean editable) {
+            if (isLengthValid(values.length)) {
+                Column col = new Column(values, editable);
+                columns.add(col);
             }
-            if (n >= 0) {
-                if (isLengthValid(n)) {
-                    columns.add(new ColSettings(type, d, i, t, s));
-                    nCol++;
-                }
-            }
-        }
-
-        public void addColumn(double[] values) {
-            addColumn(values, null, null, null);
-        }
-
-        public void addColumn(int[] values) {
-            addColumn(null, values, null, null);
-        }
-
-        public void addColumn(LocalDateTime[] values) {
-            addColumn(null, null, values, null);
-        }
-
-        public void addColumn(String[] values) {
-            addColumn(null, null, null, values);
         }
 
         @Override
         public Class<?> getColumnClass(int index) {
-            if (index >= 0 && index < nCol) {
-                return columns.get(index).type.c;
-            } else {
+            if (index >= 0 && index < getColumnCount()) {
+                return columns.get(index).getColumnClass();
+            } else
+
+            {
                 return Void.class;
             }
         }
@@ -316,22 +337,49 @@ public class DataTable extends RowColPanel {
 
         @Override
         public int getColumnCount() {
-            return nCol;
+            return columns.size();
         }
 
         @Override
         public Object getValueAt(int rowIndex, int colIndex) {
-            if (rowIndex >= 0 && rowIndex < nRow && colIndex >= 0 && colIndex < nCol) {
-                ColSettings c = columns.get(colIndex);
-                if (c.type == TYPE.DOUBLE) {
-                    return Double.valueOf(c.d[rowIndex]);
-                } else if (c.type == TYPE.INT) {
-                    return Integer.valueOf(c.i[rowIndex]);
-                } else if (c.type == TYPE.TIME) {
-                    return c.t[rowIndex];
-                } else if (c.type == TYPE.STRING) {
-                    return c.s[rowIndex];
+            if (rowIndex >= 0 && rowIndex < getRowCount() && colIndex >= 0 && colIndex < getColumnCount()) {
+                Column c = columns.get(colIndex);
+                return c.values()[rowIndex];
+            }
+            return null;
+        }
+
+        @Override
+        public void setValueAt(Object value, int rowIndex, int colIndex) {
+
+            if (rowIndex >= 0 && rowIndex < getRowCount() && colIndex >= 0 && colIndex < getColumnCount()) {
+                Column c = columns.get(colIndex);
+                if (!c.editable) {
+                    System.err.println("DataTable Error: Cannot set a value in a non-editable column.");
+                    return;
                 }
+
+                if (c.getColumnClass() != value.getClass()) {
+                    System.err.println("DataTable Error: Cannot set a value of a type different from the column type.");
+                    return;
+                }
+                c.values()[rowIndex] = value;
+                fireTableDataChanged();
+            }
+
+        }
+
+        @Override
+        public boolean isCellEditable(int rowIndex, int colIndex) {
+            if (colIndex >= 0 && colIndex < getColumnCount()) {
+                return columns.get(colIndex).editable();
+            }
+            return false;
+        }
+
+        public Object[] getColumnValues(int colIndex) {
+            if (colIndex >= 0 && colIndex < getColumnCount()) {
+                return columns.get(colIndex).values();
             }
             return null;
         }

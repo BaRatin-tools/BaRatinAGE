@@ -16,8 +16,8 @@ import org.baratinage.ui.bam.BamConfigRecord;
 import org.baratinage.ui.bam.ICalibrationData;
 import org.baratinage.ui.baratin.gaugings.GaugingsDataset;
 import org.baratinage.ui.baratin.gaugings.GaugingsImporter;
-import org.baratinage.ui.baratin.gaugings.GaugingsTable;
 import org.baratinage.ui.commons.DatasetConfig;
+import org.baratinage.ui.component.DataTable;
 import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.translation.T;
 import org.baratinage.ui.plot.Plot;
@@ -30,7 +30,7 @@ import org.json.JSONObject;
 
 public class Gaugings extends BamItem implements ICalibrationData {
 
-    private GaugingsTable gaugingsTable;
+    private DataTable gaugingsTable;
     private GaugingsDataset gaugingDataset;
     private RowColPanel plotPanel;
     private JLabel importedDataSetSourceLabel;
@@ -62,8 +62,9 @@ public class Gaugings extends BamItem implements ICalibrationData {
             }
         });
 
-        gaugingsTable = new GaugingsTable();
-        gaugingsTable.getTableModel().addTableModelListener((e) -> {
+        gaugingsTable = new DataTable();
+        gaugingsTable.addChangeListener((e) -> {
+            gaugingDataset.updateActiveStateValues((Boolean[]) gaugingsTable.getColumn(3));
             setPlot();
             fireChangeListeners();
         });
@@ -90,8 +91,23 @@ public class Gaugings extends BamItem implements ICalibrationData {
     }
 
     private void updateTable() {
-        gaugingsTable.set(gaugingDataset);
-        T.updateTranslation(this);
+
+        gaugingsTable.clearColumns();
+        gaugingsTable.addColumn(gaugingDataset.getStageValues());
+        gaugingsTable.addColumn(gaugingDataset.getDischargeValues());
+        gaugingsTable.addColumn(gaugingDataset.getDischargePercentUncertainty());
+        gaugingsTable.addColumn(gaugingDataset.getActiveStateAsBoolean(), true);
+        gaugingsTable.updateData();
+
+        T.clear(gaugingsTable);
+        T.t(gaugingsTable, () -> {
+            gaugingsTable.setHeader(0, T.text("stage_level"));
+            gaugingsTable.setHeader(1, T.text("discharge"));
+            gaugingsTable.setHeader(2, T.text("uncertainty_percent"));
+            gaugingsTable.setHeader(3, T.text("active_gauging"));
+            gaugingsTable.updateHeader();
+        });
+
     }
 
     private void setPlot() {
