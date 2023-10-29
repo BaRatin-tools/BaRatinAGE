@@ -159,6 +159,10 @@ public class DataTable extends RowColPanel {
         model.addColumn(values);
     }
 
+    public void addColumn(String[] values) {
+        model.addColumn(values);
+    }
+
     public void setHeader(int colIndex, String headerText) {
         int nCol = table.getColumnCount();
         if (colIndex < 0 || colIndex >= nCol) {
@@ -203,7 +207,7 @@ public class DataTable extends RowColPanel {
     private static class CustomTableModel extends AbstractTableModel {
 
         private static enum TYPE {
-            INT(Integer.class), DOUBLE(Double.class), TIME(LocalDateTime.class);
+            INT(Integer.class), DOUBLE(Double.class), TIME(LocalDateTime.class), STRING(String.class);
 
             public final Class<?> c;
 
@@ -212,7 +216,7 @@ public class DataTable extends RowColPanel {
             }
         };
 
-        private static record ColSettings(TYPE type, double[] d, int[] i, LocalDateTime[] t) {
+        private static record ColSettings(TYPE type, double[] d, int[] i, LocalDateTime[] t, String[] s) {
 
         };
 
@@ -246,7 +250,7 @@ public class DataTable extends RowColPanel {
             return true;
         }
 
-        private void addColumn(double[] d, int[] i, LocalDateTime[] t) {
+        private void addColumn(double[] d, int[] i, LocalDateTime[] t, String[] s) {
             TYPE type = TYPE.DOUBLE;
             int n = -1;
             if (d != null) {
@@ -258,25 +262,32 @@ public class DataTable extends RowColPanel {
             } else if (t != null) {
                 type = TYPE.TIME;
                 n = t.length;
+            } else if (s != null) {
+                type = TYPE.STRING;
+                n = s.length;
             }
             if (n >= 0) {
                 if (isLengthValid(n)) {
-                    columns.add(new ColSettings(type, d, i, t));
+                    columns.add(new ColSettings(type, d, i, t, s));
                     nCol++;
                 }
             }
         }
 
         public void addColumn(double[] values) {
-            addColumn(values, null, null);
+            addColumn(values, null, null, null);
         }
 
         public void addColumn(int[] values) {
-            addColumn(null, values, null);
+            addColumn(null, values, null, null);
         }
 
         public void addColumn(LocalDateTime[] values) {
-            addColumn(null, null, values);
+            addColumn(null, null, values, null);
+        }
+
+        public void addColumn(String[] values) {
+            addColumn(null, null, null, values);
         }
 
         @Override
@@ -308,6 +319,8 @@ public class DataTable extends RowColPanel {
                     return c.i[rowIndex];
                 } else if (c.type == TYPE.TIME) {
                     return c.t[rowIndex];
+                } else if (c.type == TYPE.STRING) {
+                    return c.s[rowIndex];
                 }
             }
             return null;
@@ -335,11 +348,15 @@ public class DataTable extends RowColPanel {
                 value = ldt.format(dateTimeFormatter);
             } else if (value instanceof Double) {
                 Double d = (Double) value;
-                Double absD = Math.abs(d);
-                if (absD != 0 && (absD < 1e-4 || absD > 1e4)) {
-                    value = scientificFormatter.format(d);
+                if (!d.isNaN()) {
+                    Double absD = Math.abs(d);
+                    if (absD != 0 && (absD < 1e-4 || absD > 1e4)) {
+                        value = scientificFormatter.format(d);
+                    } else {
+                        value = numberFormatter.format(d);
+                    }
                 } else {
-                    value = numberFormatter.format(d);
+                    value = "";
                 }
             }
             return super.getTableCellRendererComponent(table, value, isSelected,
