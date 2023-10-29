@@ -2,8 +2,6 @@ package org.baratinage.ui.component;
 
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.FontMetrics;
-import java.awt.Graphics;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
@@ -17,14 +15,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.border.CompoundBorder;
+import javax.swing.border.EmptyBorder;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
 
 import org.baratinage.translation.T;
-import org.baratinage.ui.AppConfig;
 import org.baratinage.ui.container.RowColPanel;
 
 public class DataTable extends RowColPanel {
@@ -40,6 +40,8 @@ public class DataTable extends RowColPanel {
 
         model = new CustomTableModel();
         table = new JTable();
+
+        table.setRowHeight(20);
 
         table.setModel(model);
         table.getTableHeader().setReorderingAllowed(false);
@@ -84,6 +86,8 @@ public class DataTable extends RowColPanel {
         cellRenderer = new CustomCellRenderer("yyyy-MM-dd HH:mm:ss");
         table.setDefaultRenderer(LocalDateTime.class, cellRenderer);
         table.setDefaultRenderer(Double.class, cellRenderer);
+        table.setDefaultRenderer(Integer.class, cellRenderer);
+        table.setDefaultRenderer(String.class, cellRenderer);
     }
 
     private String getStringValue(int row, int col) {
@@ -320,9 +324,9 @@ public class DataTable extends RowColPanel {
             if (rowIndex >= 0 && rowIndex < nRow && colIndex >= 0 && colIndex < nCol) {
                 ColSettings c = columns.get(colIndex);
                 if (c.type == TYPE.DOUBLE) {
-                    return c.d[rowIndex];
+                    return Double.valueOf(c.d[rowIndex]);
                 } else if (c.type == TYPE.INT) {
-                    return c.i[rowIndex];
+                    return Integer.valueOf(c.i[rowIndex]);
                 } else if (c.type == TYPE.TIME) {
                     return c.t[rowIndex];
                 } else if (c.type == TYPE.STRING) {
@@ -344,11 +348,19 @@ public class DataTable extends RowColPanel {
             dateTimeFormatter = DateTimeFormatter.ofPattern(printFormat);
             scientificFormatter = new DecimalFormat("0.00E0");
             numberFormatter = new DecimalFormat();
+
         }
 
         public Component getTableCellRendererComponent(JTable table,
                 Object value, boolean isSelected, boolean hasFocus,
                 int row, int column) {
+
+            if (value instanceof Number) {
+                setHorizontalAlignment(JLabel.RIGHT);
+            } else {
+                setHorizontalAlignment(JLabel.LEFT);
+            }
+
             if (value instanceof LocalDateTime) {
                 LocalDateTime ldt = (LocalDateTime) value;
                 value = ldt.format(dateTimeFormatter);
@@ -365,9 +377,14 @@ public class DataTable extends RowColPanel {
                     value = "";
                 }
             }
-            return super.getTableCellRendererComponent(table, value, isSelected,
+
+            super.getTableCellRendererComponent(table, value, isSelected,
                     hasFocus, row, column);
+
+            setBorder(new CompoundBorder(getBorder(), new EmptyBorder(0, 5, 0, 5)));
+            return this;
         }
+
     }
 
 }
