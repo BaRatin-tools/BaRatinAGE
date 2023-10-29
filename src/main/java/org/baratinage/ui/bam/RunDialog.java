@@ -32,7 +32,7 @@ public class RunDialog extends JDialog {
     private final SimpleLogger logger;
 
     private SwingWorker<Void, String> runningWorker;
-    private SwingWorker<Void, Void> monitoringWorker;;
+    private SwingWorker<Void, Void> monitoringWorker;
 
     public RunDialog(String id, BaM bam) {
         super(AppConfig.AC.APP_MAIN_FRAME, true);
