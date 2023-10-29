@@ -1,5 +1,7 @@
 package org.baratinage.utils.perf;
 
+import java.util.HashMap;
+
 public class Performance {
 
     private static final long MEGABYTE = 1024L * 1024L;
@@ -15,6 +17,23 @@ public class Performance {
         System.out.println("Used memory is bytes:         " + memory);
         System.out.println("Used memory is megabytes:     " +
                 bytesToMegabytes(memory));
+    }
+
+    private static HashMap<Object, Long> startedTimeMonitoring = new HashMap<>();
+
+    public static void startTimeMonitoring(Object key) {
+        startedTimeMonitoring.put(key, System.currentTimeMillis());
+    }
+
+    public static void endTimeMonitoring(Object key) {
+        Long startTime = startedTimeMonitoring.get(key);
+        if (startTime != null) {
+            Long endTime = System.currentTimeMillis();
+            Long duration = endTime - startTime;
+            System.out.println("Time elapsed in milliseconds: " + duration);
+            System.out.println("Time elapsed in seconds:      " + duration / 1000.0);
+            startedTimeMonitoring.remove(key);
+        }
     }
 
     public static void printTimeElapsed(double startTime) {
