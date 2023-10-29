@@ -32,6 +32,7 @@ public class DensityPlotGrid extends RowColPanel {
     }
 
     public void updatePlots() {
+
         GridPanel gridPanel = new GridPanel();
         int nColMax = 4;
         int nPlots = estimatedParameters.size();
