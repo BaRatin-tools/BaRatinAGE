@@ -58,7 +58,7 @@ public class MainFrame extends JFrame {
         setMinimumSize(new Dimension(900, 600));
         setExtendedState(JFrame.MAXIMIZED_BOTH);
 
-        Misc.showOnScreen(1, this);
+        Misc.showOnScreen(0, this);
 
         mainMenuBar = new JMenuBar();
 
