@@ -141,7 +141,7 @@ public class Limnigraph extends BamItem implements IPredictionData {
                 limniTable.setHeader(2, T.text("percentile_0025"));
                 limniTable.setHeader(3, T.text("percentile_0975"));
             }
-            limniTable.autosetHeadersWidths(25, 150);
+            limniTable.setHeaderWidth(100);
             limniTable.setHeaderWidth(0, 150);
             limniTable.updateHeader();
         });

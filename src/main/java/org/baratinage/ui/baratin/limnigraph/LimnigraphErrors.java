@@ -75,7 +75,7 @@ public class LimnigraphErrors extends RowColPanel {
                     colIndex++;
                 }
 
-                errConfigTable.autosetHeadersWidths(25, 150);
+                errConfigTable.setHeaderWidth(100);
                 errConfigTable.setHeaderWidth(0, 150);
 
                 errConfigTable.updateHeader();
