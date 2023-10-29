@@ -30,10 +30,10 @@ import org.json.JSONObject;
 
 public class Gaugings extends BamItem implements ICalibrationData {
 
-    private DataTable gaugingsTable;
+    private final DataTable gaugingsTable;
     private GaugingsDataset gaugingDataset;
-    private RowColPanel plotPanel;
-    private JLabel importedDataSetSourceLabel;
+    private final RowColPanel plotPanel;
+    private final JLabel importedDataSetSourceLabel;
 
     public Gaugings(String uuid, BaratinProject project) {
         super(BamItemType.GAUGINGS, uuid, project);
