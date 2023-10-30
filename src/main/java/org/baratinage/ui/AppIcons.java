@@ -13,18 +13,20 @@ public class AppIcons {
 
     private List<SvgIcon> allIcons = new ArrayList<>();
 
-    public float ICON_SIZE = 28;
-    public final SvgIcon BARATINAGE_ICON_LARGE;
-    public final SvgIcon COPY_ICON;
-    public final SvgIcon TRASH_ICON;
-    public final SvgIcon LOCK_ICON;
-    public final SvgIcon SAVE_ICON;
-    public final SvgIcon EXTERNAL_ICON;
+    public float ICON_SIZE;
+    private float FEATHER_ICON_SIZE;
 
-    public final SvgIcon LEFT_DOWN_ARROW_ICON;
-    public final SvgIcon RIGHT_DOWN_ARROW_ICON;
-    public final SvgIcon LEFT_UP_ARROW_ICON;
-    public final SvgIcon RIGHT_UP_ARROW_ICON;
+    public SvgIcon BARATINAGE_ICON_LARGE;
+    public SvgIcon COPY_ICON;
+    public SvgIcon TRASH_ICON;
+    public SvgIcon LOCK_ICON;
+    public SvgIcon SAVE_ICON;
+    public SvgIcon EXTERNAL_ICON;
+
+    public SvgIcon LEFT_DOWN_ARROW_ICON;
+    public SvgIcon RIGHT_DOWN_ARROW_ICON;
+    public SvgIcon LEFT_UP_ARROW_ICON;
+    public SvgIcon RIGHT_UP_ARROW_ICON;
 
     private HashMap<String, SvgIcon> otherIcons = new HashMap<>();
 
@@ -34,16 +36,19 @@ public class AppIcons {
                 Path.of(AppConfig.AC.ICONS_RESOURCES_DIR, "icon.svg").toString(),
                 64, 64));
 
-        COPY_ICON = addIcon(buildFeatherAppImageIcon("copy.svg"));
-        TRASH_ICON = addIcon(buildFeatherAppImageIcon("trash.svg"));
-        LOCK_ICON = addIcon(buildFeatherAppImageIcon("lock.svg"));
-        SAVE_ICON = addIcon(buildFeatherAppImageIcon("save.svg"));
-        EXTERNAL_ICON = addIcon(buildFeatherAppImageIcon("external-link.svg"));
+        ICON_SIZE = 28;
+        FEATHER_ICON_SIZE = 20;
 
-        LEFT_DOWN_ARROW_ICON = addIcon(buildFeatherAppImageIcon("corner-left-down.svg"));
-        RIGHT_DOWN_ARROW_ICON = addIcon(buildFeatherAppImageIcon("corner-right-down.svg"));
-        LEFT_UP_ARROW_ICON = addIcon(buildFeatherAppImageIcon("corner-left-up.svg"));
-        RIGHT_UP_ARROW_ICON = addIcon(buildFeatherAppImageIcon("corner-right-up.svg"));
+        COPY_ICON = addIcon(buildFeatherAppImageIcon("copy.svg", FEATHER_ICON_SIZE));
+        TRASH_ICON = addIcon(buildFeatherAppImageIcon("trash.svg", FEATHER_ICON_SIZE));
+        LOCK_ICON = addIcon(buildFeatherAppImageIcon("lock.svg", FEATHER_ICON_SIZE));
+        SAVE_ICON = addIcon(buildFeatherAppImageIcon("save.svg", FEATHER_ICON_SIZE));
+        EXTERNAL_ICON = addIcon(buildFeatherAppImageIcon("external-link.svg", FEATHER_ICON_SIZE));
+
+        LEFT_DOWN_ARROW_ICON = addIcon(buildFeatherAppImageIcon("corner-left-down.svg", FEATHER_ICON_SIZE));
+        RIGHT_DOWN_ARROW_ICON = addIcon(buildFeatherAppImageIcon("corner-right-down.svg", FEATHER_ICON_SIZE));
+        LEFT_UP_ARROW_ICON = addIcon(buildFeatherAppImageIcon("corner-left-up.svg", FEATHER_ICON_SIZE));
+        RIGHT_UP_ARROW_ICON = addIcon(buildFeatherAppImageIcon("corner-right-up.svg", FEATHER_ICON_SIZE));
 
     }
 
@@ -51,7 +56,7 @@ public class AppIcons {
         if (otherIcons.containsKey(fileName)) {
             return otherIcons.get(fileName);
         } else {
-            SvgIcon icon = buildCustomAppImageIcon(fileName);
+            SvgIcon icon = buildCustomAppImageIcon(fileName, ICON_SIZE);
             addIcon(icon);
             otherIcons.put(fileName, icon);
             return icon;
@@ -63,18 +68,10 @@ public class AppIcons {
         return icon;
     }
 
-    static private SvgIcon buildCustomAppImageIcon(String name) {
-        return buildCustomAppImageIcon(name, AppConfig.AC.ICONS.ICON_SIZE);
-    }
-
     static private SvgIcon buildCustomAppImageIcon(String name, float size) {
         return new SvgIcon(
                 Path.of(AppConfig.AC.ICONS_RESOURCES_DIR, "custom", name).toString(),
                 size, size);
-    }
-
-    static private SvgIcon buildFeatherAppImageIcon(String name) {
-        return buildFeatherAppImageIcon(name, AppConfig.AC.ICONS.ICON_SIZE * 0.75f);
     }
 
     static private SvgIcon buildFeatherAppImageIcon(String name, float size) {
