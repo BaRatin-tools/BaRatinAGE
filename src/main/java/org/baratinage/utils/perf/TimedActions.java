@@ -54,6 +54,7 @@ public class TimedActions {
             Timer timer = debouncedActions.get(id);
             System.out.println("TimedActions: Canceling debounced action... (" + id + ")");
             timer.cancel();
+            timer.purge();
         }
 
         System.out.println("TimedActions: Setting up debouncer... (" + id + ")");
@@ -100,4 +101,40 @@ public class TimedActions {
         timer.schedule(task, delayMilliseconds);
     }
 
+    private static Map<String, Timer> intervalAction = new HashMap<>();
+
+    public static void interval(String id, int intervalDelayMilliseconds, Runnable action) {
+
+        if (intervalAction.containsKey(id)) {
+            stopInterval(id);
+        }
+
+        System.out.println("TimedActions: Setting up interval action... (" + id + ")");
+        Timer timer = new Timer();
+        TimerTask task = new TimerTask() {
+
+            @Override
+            public void run() {
+                SwingUtilities.invokeLater(
+                        () -> {
+                            System.out.println("TimedActions: Running interval action... (" + id + ")");
+                            action.run();
+
+                        });
+            }
+
+        };
+        intervalAction.put(id, timer);
+        timer.scheduleAtFixedRate(task, 0, intervalDelayMilliseconds);
+    }
+
+    public static void stopInterval(String id) {
+        Timer timer = intervalAction.get(id);
+        if (timer != null) {
+            System.out.println("TimedActions: Canceling interval action... (" + id + ")");
+            timer.cancel();
+            timer.purge();
+            intervalAction.remove(id);
+        }
+    }
 }
