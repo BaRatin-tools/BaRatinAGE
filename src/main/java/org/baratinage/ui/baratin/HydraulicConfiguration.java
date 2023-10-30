@@ -179,6 +179,7 @@ public class HydraulicConfiguration
 
     private void checkPriorRatingCurveSync() {
         T.clear(outOufSyncPanel);
+        T.clear(runPanel);
         outOufSyncPanel.clear();
         if (backup == null) {
             // T.t(runPanel.runButton, true, "compute_prior_rc");
