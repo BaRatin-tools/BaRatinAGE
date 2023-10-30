@@ -9,6 +9,7 @@ import java.util.List;
 
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
+import javax.swing.SwingUtilities;
 
 import org.baratinage.translation.T;
 
@@ -53,6 +54,18 @@ public class DebugMenu extends JMenu {
         add(lgResetBtn);
         lgResetBtn.addActionListener((e) -> {
             T.reloadResources();
+        });
+
+        JMenuItem modifyAllIconsBtn = new JMenuItem("modify all icons");
+        add(modifyAllIconsBtn);
+        modifyAllIconsBtn.addActionListener((e) -> {
+            AppConfig.AC.ICONS.updateAllIcons();
+        });
+
+        JMenuItem updateCompTreeBtn = new JMenuItem("update component tree UI");
+        add(updateCompTreeBtn);
+        updateCompTreeBtn.addActionListener((e) -> {
+            SwingUtilities.updateComponentTreeUI(AppConfig.AC.APP_MAIN_FRAME);
         });
 
         JMenuItem allocateHugeRasterBtn = new JMenuItem("Allocate huge Raster");
