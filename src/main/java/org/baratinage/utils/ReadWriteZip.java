@@ -1,46 +1,53 @@
 package org.baratinage.utils;
 
 import java.io.File;
-import java.io.BufferedOutputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
-// FIXME: should zip/unzip handle recursion?
 public class ReadWriteZip {
 
     static public boolean unzip(String zipFilePath, String targetDirPath) {
-        File targetDir = new File(targetDirPath);
-        if (!targetDir.exists()) {
-            targetDir.mkdir();
-        }
         try {
-            ZipInputStream zipInputStream = new ZipInputStream(new FileInputStream(zipFilePath));
-            ZipEntry zipEntry = zipInputStream.getNextEntry();
-            while (zipEntry != null) {
-                String targetFilePath = Path.of(targetDirPath, zipEntry.getName()).toString();
-                BufferedOutputStream bufOutStream = new BufferedOutputStream(new FileOutputStream(targetFilePath));
-                byte[] bytesIn = new byte[1024];
-                int read = 0;
-                while ((read = zipInputStream.read(bytesIn)) != -1) {
-                    bufOutStream.write(bytesIn, 0, read);
-                }
-                bufOutStream.close();
-                zipEntry = zipInputStream.getNextEntry();
-            }
-            zipInputStream.close();
+            InputStream is = new FileInputStream(zipFilePath);
+            Path targetDir = Path.of(targetDirPath);
+            unzip(is, targetDir);
+            return true;
+        } catch (RuntimeException re) {
+            System.out.println(re);
+            return false;
         } catch (IOException e) {
-            System.err.println("ReadWriteZip Error: Error while reading bam (zip) file... Aborting.");
-            e.printStackTrace();
+            System.out.println(e);
             return false;
         }
-        return true;
+    }
+
+    private static void unzip(InputStream is, Path targetDir) throws IOException {
+        // copy/pasted, thanks to: https://stackoverflow.com/a/59581898
+        targetDir = targetDir.toAbsolutePath();
+        try (ZipInputStream zipIn = new ZipInputStream(is)) {
+            for (ZipEntry ze; (ze = zipIn.getNextEntry()) != null;) {
+                Path resolvedPath = targetDir.resolve(ze.getName()).normalize();
+                if (!resolvedPath.startsWith(targetDir)) {
+                    // see: https://snyk.io/research/zip-slip-vulnerability
+                    throw new RuntimeException("Entry with an illegal path: "
+                            + ze.getName());
+                }
+                if (ze.isDirectory()) {
+                    Files.createDirectories(resolvedPath);
+                } else {
+                    Files.createDirectories(resolvedPath.getParent());
+                    Files.copy(zipIn, resolvedPath);
+                }
+            }
+        }
     }
 
     static public boolean flatZip(String zipFilePath, String... sourceDirs) {
