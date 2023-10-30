@@ -29,7 +29,6 @@ import org.baratinage.ui.baratin.hydraulic_control.HydraulicControlPanels;
 import org.baratinage.ui.baratin.rating_curve.PriorRatingCurvePlot;
 import org.baratinage.ui.baratin.rating_curve.RatingCurveStageGrid;
 import org.baratinage.ui.commons.MsgPanel;
-import org.baratinage.ui.component.SvgIcon;
 import org.baratinage.ui.component.Title;
 import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.ui.container.SplitContainer;
@@ -54,9 +53,11 @@ public class HydraulicConfiguration
 
     private BamConfigRecord backup;
 
-    public static final ImageIcon controlMatrixIcon = SvgIcon.buildCustomAppImageIcon("control_matrix.svg");
-    public static final ImageIcon priorSpecificationIcon = SvgIcon.buildCustomAppImageIcon("prior_densities.svg");
-    public static final ImageIcon priorRatingCurveIcon = SvgIcon.buildCustomAppImageIcon("prior_rating_curve.svg");
+    public static final ImageIcon controlMatrixIcon = AppConfig.AC.ICONS.getCustomAppImageIcon("control_matrix.svg");
+    public static final ImageIcon priorSpecificationIcon = AppConfig.AC.ICONS
+            .getCustomAppImageIcon("prior_densities.svg");
+    public static final ImageIcon priorRatingCurveIcon = AppConfig.AC.ICONS
+            .getCustomAppImageIcon("prior_rating_curve.svg");
 
     public HydraulicConfiguration(String uuid, BaratinProject project) {
         super(BamItemType.HYDRAULIC_CONFIG, uuid, project);

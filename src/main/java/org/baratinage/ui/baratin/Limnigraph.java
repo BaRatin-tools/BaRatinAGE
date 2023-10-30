@@ -11,6 +11,7 @@ import javax.swing.JSplitPane;
 
 import org.baratinage.jbam.PredictionInput;
 import org.baratinage.ui.bam.BamItem;
+import org.baratinage.ui.AppConfig;
 import org.baratinage.ui.bam.BamConfigRecord;
 import org.baratinage.ui.bam.BamItemType;
 import org.baratinage.ui.bam.IPredictionData;
@@ -19,7 +20,6 @@ import org.baratinage.ui.baratin.limnigraph.LimnigraphErrors;
 import org.baratinage.ui.baratin.limnigraph.LimnigraphImporter;
 import org.baratinage.ui.commons.DatasetConfig;
 import org.baratinage.ui.component.DataTable;
-import org.baratinage.ui.component.SvgIcon;
 import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.ui.container.TabContainer;
 import org.baratinage.translation.T;
@@ -31,8 +31,8 @@ import org.json.JSONObject;
 
 public class Limnigraph extends BamItem implements IPredictionData {
 
-    private ImageIcon chartIcon = SvgIcon.buildCustomAppImageIcon("limnigraph.svg");
-    private ImageIcon errorIcon = SvgIcon.buildCustomAppImageIcon("errors.svg");
+    private ImageIcon chartIcon = AppConfig.AC.ICONS.getCustomAppImageIcon("limnigraph.svg");
+    private ImageIcon errorIcon = AppConfig.AC.ICONS.getCustomAppImageIcon("errors.svg");
 
     private LimnigraphErrors limniErrors;
 

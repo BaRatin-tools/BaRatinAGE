@@ -27,6 +27,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
 
 import org.baratinage.translation.T;
+import org.baratinage.ui.AppConfig;
 import org.baratinage.ui.container.RowColPanel;
 
 public class DataTable extends RowColPanel {
@@ -63,7 +64,7 @@ public class DataTable extends RowColPanel {
         exportButton.addActionListener((e) -> {
             saveAsCSV();
         });
-        exportButton.setIcon(SvgIcon.buildFeatherAppImageIcon("save.svg"));
+        exportButton.setIcon(AppConfig.AC.ICONS.SAVE_ICON);
         exportButton.setText("CSV");
         T.t(this, () -> {
             exportButton.setToolTipText(T.text("to_csv"));
@@ -73,7 +74,7 @@ public class DataTable extends RowColPanel {
         copyToClipboardButton.addActionListener((e) -> {
             copyToCliboard();
         });
-        copyToClipboardButton.setIcon(SvgIcon.buildFeatherAppImageIcon("copy.svg"));
+        copyToClipboardButton.setIcon(AppConfig.AC.ICONS.COPY_ICON);
         T.t(this, () -> {
             copyToClipboardButton.setToolTipText(T.text("to_clipboard"));
         });

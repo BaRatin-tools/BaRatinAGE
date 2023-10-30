@@ -5,21 +5,18 @@ import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
 import java.util.List;
 
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JTextArea;
 
 import org.baratinage.translation.T;
+import org.baratinage.ui.AppConfig;
 import org.baratinage.ui.baratin.EstimatedControlParameters;
-import org.baratinage.ui.component.SvgIcon;
 import org.baratinage.ui.container.RowColPanel;
 
 public class RatingCurveEquation extends RowColPanel {
     private final JTextArea equationTextArea;
 
     // private List<EstimatedControlParameters> parameters;
-
-    private static ImageIcon copyIcon = SvgIcon.buildFeatherAppImageIcon("copy.svg");
 
     RatingCurveEquation() {
         super(AXIS.COL, ALIGN.START, ALIGN.STRETCH);
@@ -28,7 +25,7 @@ public class RatingCurveEquation extends RowColPanel {
         equationTextArea = new JTextArea();
         equationTextArea.setEditable(false);
         JButton btnCopyToClipboard = new JButton();
-        btnCopyToClipboard.setIcon(copyIcon);
+        btnCopyToClipboard.setIcon(AppConfig.AC.ICONS.COPY_ICON);
         btnCopyToClipboard.addActionListener((e) -> {
             Clipboard systemClipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
             systemClipboard.setContents(new StringSelection(equationTextArea.getText()), null);

@@ -47,9 +47,9 @@ public class AppConfig {
     public Color STAGE_TRANSITION_VALUE_COLOR = new Color(4, 182, 0);
     public Color STAGE_TRANSITION_UNCERTAINTY_COLOR = new Color(164, 255, 162);
 
-    public float ICON_SIZE = 28;
-
     public String lastUsedDir;
+
+    public final AppIcons ICONS;
 
     public AppConfig(MainFrame mainFrame) {
 
@@ -74,6 +74,8 @@ public class AppConfig {
         ICONS_RESOURCES_DIR = Path.of(APP_ROOT_DIR, "resources", "icons").toString();
 
         APP_MAIN_FRAME = mainFrame;
+
+        ICONS = new AppIcons();
 
         init();
     }

@@ -1,6 +1,5 @@
 package org.baratinage.ui;
 
-import javax.swing.ImageIcon;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
@@ -13,7 +12,6 @@ import org.baratinage.ui.bam.BamProject;
 import org.baratinage.ui.baratin.BaratinProject;
 import org.baratinage.ui.component.CommonDialog;
 import org.baratinage.ui.component.SimpleNumberField;
-import org.baratinage.ui.component.SvgIcon;
 import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.utils.Misc;
 
@@ -48,11 +46,7 @@ public class MainFrame extends JFrame {
         SimpleNumberField.init();
         CommonDialog.init();
 
-        ImageIcon baratinageIcon = new SvgIcon(Path.of(
-                AppConfig.AC.ICONS_RESOURCES_DIR,
-                "icon.svg").toString(), 64, 64);
-
-        setIconImage(baratinageIcon.getImage());
+        setIconImage(AppConfig.AC.ICONS.BARATINAGE_ICON_LARGE.getImage());
         setTitle(AppConfig.AC.APP_NAME);
 
         setMinimumSize(new Dimension(900, 600));

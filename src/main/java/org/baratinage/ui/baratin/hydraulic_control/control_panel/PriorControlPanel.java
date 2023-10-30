@@ -4,7 +4,6 @@ import java.awt.Font;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JSeparator;
 import javax.swing.event.ChangeEvent;
@@ -12,6 +11,7 @@ import javax.swing.event.ChangeListener;
 
 import org.baratinage.jbam.Parameter;
 import org.baratinage.translation.T;
+import org.baratinage.ui.AppConfig;
 import org.baratinage.ui.commons.AbstractParameterPriorDist;
 import org.baratinage.ui.commons.ParameterPriorDist;
 import org.baratinage.ui.commons.ParameterPriorDistSimplified;
@@ -32,53 +32,50 @@ public abstract class PriorControlPanel extends GridPanel implements ChangeListe
 
         private static final Font MONOSPACE_FONT = new Font(Font.MONOSPACED, Font.PLAIN, 14);
 
-        public static final ImageIcon activationHeightIcon = SvgIcon.buildCustomAppImageIcon(
-                        "activation_height.svg");
+        public static final SvgIcon activationHeightIcon = AppConfig.AC.ICONS
+                        .getCustomAppImageIcon("activation_height.svg");
 
-        public static final ImageIcon slopeIcon = SvgIcon.buildCustomAppImageIcon(
-                        "slope.svg");
+        public static final SvgIcon slopeIcon = AppConfig.AC.ICONS
+                        .getCustomAppImageIcon("slope.svg");
 
-        public static final ImageIcon weirCoefRIcon = SvgIcon.buildCustomAppImageIcon(
-                        "weir_coef_r.svg");
+        public static final SvgIcon weirCoefRIcon = AppConfig.AC.ICONS
+                        .getCustomAppImageIcon("weir_coef_r.svg");
 
-        public static final ImageIcon weirCoefOIcon = SvgIcon.buildCustomAppImageIcon(
-                        "weir_coef_o.svg");
+        public static final SvgIcon weirCoefOIcon = AppConfig.AC.ICONS
+                        .getCustomAppImageIcon("weir_coef_o.svg");
 
-        public static final ImageIcon weirCoefTIcon = SvgIcon.buildCustomAppImageIcon(
-                        "weir_coef_t.svg");
+        public static final SvgIcon weirCoefTIcon = AppConfig.AC.ICONS
+                        .getCustomAppImageIcon("weir_coef_t.svg");
 
-        public static final ImageIcon weirCoefPIcon = SvgIcon.buildCustomAppImageIcon(
-                        "weir_coef_p.svg");
+        public static final SvgIcon weirCoefPIcon = AppConfig.AC.ICONS
+                        .getCustomAppImageIcon("weir_coef_p.svg");
 
-        public static final ImageIcon stricklerCoefIcon = SvgIcon.buildCustomAppImageIcon(
-                        "strickler_coef.svg");
+        public static final SvgIcon stricklerCoefIcon = AppConfig.AC.ICONS
+                        .getCustomAppImageIcon("strickler_coef.svg");
 
-        public static final ImageIcon angleIcon = SvgIcon.buildCustomAppImageIcon(
-                        "angle.svg");
+        public static final SvgIcon angleIcon = AppConfig.AC.ICONS
+                        .getCustomAppImageIcon("angle.svg");
 
-        public static final ImageIcon parabolaWidthIcon = SvgIcon.buildCustomAppImageIcon(
-                        "parabola_width.svg");
+        public static final SvgIcon widthIcon = AppConfig.AC.ICONS
+                        .getCustomAppImageIcon("width.svg");
 
-        public static final ImageIcon parabolaHeightIcon = SvgIcon.buildCustomAppImageIcon(
-                        "parabola_height.svg");
+        public static final SvgIcon parabolaWidthIcon = AppConfig.AC.ICONS
+                        .getCustomAppImageIcon("parabola_width.svg");
 
-        public static final ImageIcon widthIcon = SvgIcon.buildCustomAppImageIcon(
-                        "width.svg");
+        public static final SvgIcon parabolaHeightIcon = AppConfig.AC.ICONS
+                        .getCustomAppImageIcon("parabola_height.svg");
 
-        public static final ImageIcon areaIcon = SvgIcon.buildCustomAppImageIcon(
-                        "orifice_area.svg");
+        public static final SvgIcon areaIcon = AppConfig.AC.ICONS
+                        .getCustomAppImageIcon("orifice_area.svg");
 
-        public static final ImageIcon gravityIcon = SvgIcon.buildCustomAppImageIcon(
-                        "gravity.svg");
+        public static final SvgIcon gravityIcon = AppConfig.AC.ICONS
+                        .getCustomAppImageIcon("gravity.svg");
 
-        public static final ImageIcon exponentIcon = SvgIcon.buildCustomAppImageIcon(
-                        "exponent.svg");
+        public static final SvgIcon exponentIcon = AppConfig.AC.ICONS
+                        .getCustomAppImageIcon("exponent.svg");
 
-        public static final ImageIcon coefficientIcon = SvgIcon.buildCustomAppImageIcon(
-                        "coefficient.svg");
-
-        private static final ImageIcon lockIcon = SvgIcon.buildFeatherAppImageIcon(
-                        "lock.svg");
+        public static final SvgIcon coefficientIcon = AppConfig.AC.ICONS
+                        .getCustomAppImageIcon("coefficient.svg");
 
         private final JLabel equationLabel;
 
@@ -103,7 +100,7 @@ public abstract class PriorControlPanel extends GridPanel implements ChangeListe
                 insertChild(iconNamSymbolUnitSep, 0, 1, 3, 1);
 
                 JLabel lockLabel = new JLabel();
-                lockLabel.setIcon(lockIcon);
+                lockLabel.setIcon(AppConfig.AC.ICONS.LOCK_ICON);
                 insertLabel(lockLabel, 3 + nColumns, 0);
                 JSeparator lockSeparator = new JSeparator(JSeparator.HORIZONTAL);
                 insertChild(lockSeparator, 3 + nColumns, 1);

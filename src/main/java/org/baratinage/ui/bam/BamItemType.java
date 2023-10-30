@@ -2,7 +2,7 @@ package org.baratinage.ui.bam;
 
 import javax.swing.ImageIcon;
 
-import org.baratinage.ui.component.SvgIcon;
+import org.baratinage.ui.AppConfig;
 import org.baratinage.utils.Misc;
 
 public enum BamItemType {
@@ -63,14 +63,14 @@ public enum BamItemType {
 
     public ImageIcon getIcon() {
         if (icon == null) {
-            icon = SvgIcon.buildCustomAppImageIcon(id + ".svg");
+            icon = AppConfig.AC.ICONS.getCustomAppImageIcon(id + ".svg");
         }
         return icon;
     }
 
     public ImageIcon getAddIcon() {
         if (addIcon == null) {
-            addIcon = SvgIcon.buildCustomAppImageIcon(id + "_add.svg");
+            addIcon = AppConfig.AC.ICONS.getCustomAppImageIcon(id + "_add.svg");
         }
         return addIcon;
     }

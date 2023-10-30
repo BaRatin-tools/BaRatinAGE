@@ -9,6 +9,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 
 import org.baratinage.jbam.EstimatedParameter;
+import org.baratinage.ui.AppConfig;
 import org.baratinage.ui.baratin.EstimatedControlParameters;
 import org.baratinage.ui.commons.DensityPlotGrid;
 import org.baratinage.ui.commons.TracePlotGrid;
@@ -17,7 +18,6 @@ import org.baratinage.ui.container.TabContainer;
 import org.baratinage.utils.WriteFile;
 import org.baratinage.ui.component.CommonDialog;
 import org.baratinage.ui.component.DataTable;
-import org.baratinage.ui.component.SvgIcon;
 import org.baratinage.translation.T;
 
 public class RatingCurveResults extends TabContainer {
@@ -31,12 +31,12 @@ public class RatingCurveResults extends TabContainer {
     // private final RowColPanel otherPanel;
     private final DataTable paramSummaryTable;
 
-    private static ImageIcon rcIcon = SvgIcon.buildCustomAppImageIcon("rating_curve.svg");
-    private static ImageIcon traceIcon = SvgIcon.buildCustomAppImageIcon("trace.svg");
-    private static ImageIcon tableIcon = SvgIcon.buildCustomAppImageIcon("table.svg");
-    private static ImageIcon dpIcon = SvgIcon.buildCustomAppImageIcon("densities.svg");
-    private static ImageIcon rcTblIcon = SvgIcon.buildCustomAppImageIcon("rating_curve_table.svg");
-    private static ImageIcon rcEqIcon = SvgIcon.buildCustomAppImageIcon("rating_curve_equation.svg");
+    private static ImageIcon rcIcon = AppConfig.AC.ICONS.getCustomAppImageIcon("rating_curve.svg");
+    private static ImageIcon traceIcon = AppConfig.AC.ICONS.getCustomAppImageIcon("trace.svg");
+    private static ImageIcon tableIcon = AppConfig.AC.ICONS.getCustomAppImageIcon("table.svg");
+    private static ImageIcon dpIcon = AppConfig.AC.ICONS.getCustomAppImageIcon("densities.svg");
+    private static ImageIcon rcTblIcon = AppConfig.AC.ICONS.getCustomAppImageIcon("rating_curve_table.svg");
+    private static ImageIcon rcEqIcon = AppConfig.AC.ICONS.getCustomAppImageIcon("rating_curve_equation.svg");
 
     public RatingCurveResults() {
 
@@ -297,7 +297,7 @@ public class RatingCurveResults extends TabContainer {
         // if (Math.abs(u) > 2.33d) { // 2.33 corresponds to a 1% probability for a
         // N(0,1)
 
-        mcmcToCsvButton.setIcon(SvgIcon.buildFeatherAppImageIcon("save.svg"));
+        mcmcToCsvButton.setIcon(AppConfig.AC.ICONS.SAVE_ICON);
         T.t(mcmcResultPanel, () -> {
             mcmcToCsvButton.setText(T.text("export_mcmc"));
             mcmcToCsvButton.setToolTipText(T.text("export_mcmc"));

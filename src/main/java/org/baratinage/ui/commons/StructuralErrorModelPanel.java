@@ -3,7 +3,6 @@ package org.baratinage.ui.commons;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JSeparator;
 import javax.swing.event.ChangeEvent;
@@ -11,7 +10,7 @@ import javax.swing.event.ChangeListener;
 
 import org.baratinage.jbam.DistributionType;
 import org.baratinage.jbam.Parameter;
-import org.baratinage.ui.component.SvgIcon;
+import org.baratinage.ui.AppConfig;
 import org.baratinage.ui.container.GridPanel;
 import org.baratinage.translation.T;
 
@@ -19,8 +18,6 @@ import org.json.JSONArray;
 
 public class StructuralErrorModelPanel extends GridPanel implements ChangeListener {
 
-    private static final ImageIcon lockIcon = SvgIcon.buildFeatherAppImageIcon(
-            "lock.svg");
     private final List<ParameterPriorDist> parameters;
 
     public StructuralErrorModelPanel() {
@@ -38,7 +35,7 @@ public class StructuralErrorModelPanel extends GridPanel implements ChangeListen
         distributionParametersLabel.setText("Paramètres de la distribution");
 
         JLabel lockLabel = new JLabel();
-        lockLabel.setIcon(lockIcon);
+        lockLabel.setIcon(AppConfig.AC.ICONS.LOCK_ICON);
 
         JSeparator initialGuessSep = new JSeparator(JSeparator.HORIZONTAL);
         JSeparator distributionSep = new JSeparator(JSeparator.HORIZONTAL);

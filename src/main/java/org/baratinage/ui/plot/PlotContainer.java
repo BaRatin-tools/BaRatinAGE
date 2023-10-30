@@ -12,7 +12,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JMenuItem;
@@ -25,7 +24,6 @@ import org.jfree.data.Range;
 import org.jfree.svg.SVGGraphics2D;
 import org.baratinage.ui.AppConfig;
 import org.baratinage.ui.component.CommonDialog;
-import org.baratinage.ui.component.SvgIcon;
 import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.translation.T;
 
@@ -100,33 +98,34 @@ public class PlotContainer extends RowColPanel {
             T.updateTranslation(this);
         });
 
-        ImageIcon saveIcon = SvgIcon.buildFeatherAppImageIcon("save.svg");
-        ImageIcon copyIcon = SvgIcon.buildFeatherAppImageIcon("copy.svg");
-        ImageIcon windowPlotIcon = SvgIcon.buildFeatherAppImageIcon("external-link.svg");
+        // ImageIcon saveIcon = AppConfig.AC.ICONS.SAVE_ICON;
+        // ImageIcon copyIcon = SvgIcon.buildFeatherAppImageIcon("copy.svg");
+        // ImageIcon windowPlotIcon =
+        // SvgIcon.buildFeatherAppImageIcon("external-link.svg");
 
         JButton btnWindowPlot = new JButton();
 
-        btnWindowPlot.setIcon(windowPlotIcon);
+        btnWindowPlot.setIcon(AppConfig.AC.ICONS.EXTERNAL_ICON);
         btnWindowPlot.addActionListener((e) -> {
             windowPlot();
         });
 
         JButton btnSaveAsSvg = new JButton();
-        btnSaveAsSvg.setIcon(saveIcon);
+        btnSaveAsSvg.setIcon(AppConfig.AC.ICONS.SAVE_ICON);
         btnSaveAsSvg.setText("SVG");
         btnSaveAsSvg.addActionListener((e) -> {
             saveAsSvg();
         });
 
         JButton btnSaveAsPng = new JButton();
-        btnSaveAsPng.setIcon(saveIcon);
+        btnSaveAsPng.setIcon(AppConfig.AC.ICONS.SAVE_ICON);
         btnSaveAsPng.setText("PNG");
         btnSaveAsPng.addActionListener((e) -> {
             saveAsPng();
         });
 
         JButton btnCopyToClipboard = new JButton();
-        btnCopyToClipboard.setIcon(copyIcon);
+        btnCopyToClipboard.setIcon(AppConfig.AC.ICONS.COPY_ICON);
         btnCopyToClipboard.addActionListener((e) -> {
             copyToClipboard();
         });

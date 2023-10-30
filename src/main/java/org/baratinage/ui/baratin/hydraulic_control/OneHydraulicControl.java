@@ -21,11 +21,11 @@ import org.baratinage.ui.baratin.hydraulic_control.control_panel.WeirOrifice;
 import org.baratinage.ui.baratin.hydraulic_control.control_panel.WeirParabola;
 import org.baratinage.ui.baratin.hydraulic_control.control_panel.WeirRect;
 import org.baratinage.ui.baratin.hydraulic_control.control_panel.WeirTriangle;
+import org.baratinage.ui.AppConfig;
 import org.baratinage.ui.baratin.hydraulic_control.control_panel.ChannelParabola;
 import org.baratinage.ui.baratin.hydraulic_control.control_panel.ChannelRect;
 import org.baratinage.ui.baratin.hydraulic_control.control_panel.ChannelTriangle;
 import org.baratinage.ui.component.SimpleComboBox;
-import org.baratinage.ui.component.SvgIcon;
 import org.baratinage.ui.container.GridPanel;
 import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.translation.T;
@@ -34,38 +34,33 @@ import org.json.JSONObject;
 
 public class OneHydraulicControl extends JScrollPane {
 
-    public static final ImageIcon parabolaWeirIcon = SvgIcon.buildCustomAppImageIcon(
-            "hc_parabola_weir.svg");
+    public static final ImageIcon parabolaWeirIcon = AppConfig.AC.ICONS
+            .getCustomAppImageIcon(
+                    "hc_parabola_weir.svg");
 
-    public static final ImageIcon triangleWeirIcon = SvgIcon.buildCustomAppImageIcon(
-            "hc_triangle_weir.svg");
+    public static final ImageIcon triangleWeirIcon = AppConfig.AC.ICONS
+            .getCustomAppImageIcon(
+                    "hc_triangle_weir.svg");
 
-    public static final ImageIcon rectWeirIcon = SvgIcon.buildCustomAppImageIcon(
-            "hc_rect_weir.svg");
+    public static final ImageIcon rectWeirIcon = AppConfig.AC.ICONS
+            .getCustomAppImageIcon(
+                    "hc_rect_weir.svg");
 
-    public static final ImageIcon orificeWeirIcon = SvgIcon.buildCustomAppImageIcon(
-            "hc_orifice_weir.svg");
+    public static final ImageIcon orificeWeirIcon = AppConfig.AC.ICONS
+            .getCustomAppImageIcon(
+                    "hc_orifice_weir.svg");
 
-    public static final ImageIcon rectChannelIcon = SvgIcon.buildCustomAppImageIcon(
-            "hc_rect_channel.svg");
+    public static final ImageIcon rectChannelIcon = AppConfig.AC.ICONS
+            .getCustomAppImageIcon(
+                    "hc_rect_channel.svg");
 
-    public static final ImageIcon triangleChannelIcon = SvgIcon.buildCustomAppImageIcon(
-            "hc_triangle_channel.svg");
+    public static final ImageIcon triangleChannelIcon = AppConfig.AC.ICONS
+            .getCustomAppImageIcon(
+                    "hc_triangle_channel.svg");
 
-    public static final ImageIcon parabolaChannelIcon = SvgIcon.buildCustomAppImageIcon(
-            "hc_parabola_channel.svg");
-
-    public static final ImageIcon arrowLeftDownIcon = SvgIcon.buildFeatherAppImageIcon(
-            "corner-left-down.svg");
-
-    public static final ImageIcon arrowRightDownIcon = SvgIcon.buildFeatherAppImageIcon(
-            "corner-right-down.svg");
-
-    public static final ImageIcon arrowLeftUpIcon = SvgIcon.buildFeatherAppImageIcon(
-            "corner-left-up.svg");
-
-    public static final ImageIcon arrowRightUpIcon = SvgIcon.buildFeatherAppImageIcon(
-            "corner-right-up.svg");
+    public static final ImageIcon parabolaChannelIcon = AppConfig.AC.ICONS
+            .getCustomAppImageIcon(
+                    "hc_parabola_channel.svg");
 
     public final int controlNumber;
     private final RowColPanel physicalParametersPanel;
@@ -148,11 +143,11 @@ public class OneHydraulicControl extends JScrollPane {
         int gapAndPadding = 10;
         physicalControlParametersLabelsPanel.setGap(gapAndPadding);
         physicalControlParametersLabelsPanel.setPadding(gapAndPadding, 0, gapAndPadding, 0);
-        JLabel arrowLeftUp = new JLabel(arrowLeftUpIcon);
-        JLabel arrowRightUp = new JLabel(arrowRightUpIcon);
+        JLabel arrowLeftUp = new JLabel(AppConfig.AC.ICONS.LEFT_UP_ARROW_ICON);
+        JLabel arrowRightUp = new JLabel(AppConfig.AC.ICONS.RIGHT_UP_ARROW_ICON);
         JLabel physicalParLabel = new JLabel();
-        JLabel arrowLeftDown = new JLabel(arrowLeftDownIcon);
-        JLabel arrowRightDown = new JLabel(arrowRightDownIcon);
+        JLabel arrowLeftDown = new JLabel(AppConfig.AC.ICONS.LEFT_DOWN_ARROW_ICON);
+        JLabel arrowRightDown = new JLabel(AppConfig.AC.ICONS.RIGHT_DOWN_ARROW_ICON);
         JLabel controlParLabel = new JLabel();
         physicalControlParametersLabelsPanel.insertChild(arrowLeftUp, 0, 0);
         physicalControlParametersLabelsPanel.insertChild(physicalParLabel, 1, 0);
