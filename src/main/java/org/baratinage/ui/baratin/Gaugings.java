@@ -190,8 +190,8 @@ public class Gaugings extends BamItem implements ICalibrationData {
         String[] dataFilePaths = new String[0];
         if (gaugingDataset != null) {
             DatasetConfig dc = gaugingDataset.save(writeFiles);
-            JSONObject limniDatasetJson = dc.toJSON();
-            json.put("gaugingDataset", limniDatasetJson);
+            JSONObject gaugingDatasetJson = dc.toJSON();
+            json.put("gaugingDataset", gaugingDatasetJson);
             dataFilePaths = dc.getAllFilePaths();
         }
 
