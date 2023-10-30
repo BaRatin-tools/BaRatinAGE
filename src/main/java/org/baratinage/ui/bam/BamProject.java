@@ -414,9 +414,19 @@ public abstract class BamProject extends RowColPanel {
             if (exItem != null) {
                 json.put("selectedItem", exItem.id);
             }
+            BamItem toSelectItem = null;
             if (json.has("selectedItemId")) {
                 String id = json.getString("selectedItemId");
-                bamProject.setCurrentBamItem(bamProject.getBamItem(id));
+                if (id != null) {
+                    toSelectItem = bamProject.getBamItem(id);
+
+                }
+            }
+            if (toSelectItem == null && bamProject.BAM_ITEMS.size() > 0) {
+                toSelectItem = bamProject.BAM_ITEMS.get(0);
+            }
+            if (toSelectItem != null) {
+                bamProject.setCurrentBamItem(toSelectItem);
             }
 
             bamProjectLoadingProgress = -1;
