@@ -27,6 +27,13 @@ public class SvgIcon extends ImageIcon {
     private final byte[] svgBytes;
     private final String sourcePath;
 
+    private static Scales lastUsedScales;
+
+    public static boolean scalesHaveChanged() {
+        Scales s = getScales();
+        return !s.toString().equals(lastUsedScales.toString());
+    }
+
     public SvgIcon(String path, float width, float height) {
         super();
 
@@ -54,10 +61,12 @@ public class SvgIcon extends ImageIcon {
 
     private void buildIcon() {
 
+        System.out.println("SvgIcon: building icon '" + sourcePath + "'...");
         float w = width;
         float h = height;
 
         Scales s = getScales();
+        lastUsedScales = s;
 
         w = width * (float) s.x;
         h = height * (float) s.y;
