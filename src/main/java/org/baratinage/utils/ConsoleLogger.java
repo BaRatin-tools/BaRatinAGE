@@ -28,11 +28,12 @@ public class ConsoleLogger {
         }
 
         logFilePath = Path.of(appRootDir, id + ".log");
-        try {
-            logFilePath.toFile().createNewFile();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        createLogFile();
+        // try {
+        // logFilePath.toFile().createNewFile();
+        // } catch (IOException e) {
+        // e.printStackTrace();
+        // }
     }
 
     // FIXME: not sure how/when this method should be called
@@ -45,10 +46,22 @@ public class ConsoleLogger {
         logFilePath = null;
     }
 
+    private static void createLogFile() {
+        File f = logFilePath.toFile();
+        if (!f.exists()) {
+            try {
+                f.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
     private static void addLogToLogFile(String log) {
         if (logFilePath == null) {
             return;
         }
+        createLogFile();
         try {
             Files.write(logFilePath, Arrays.asList(log), StandardCharsets.UTF_8, StandardOpenOption.APPEND);
         } catch (IOException e) {
