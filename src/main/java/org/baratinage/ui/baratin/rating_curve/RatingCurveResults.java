@@ -15,6 +15,7 @@ import org.baratinage.ui.commons.DensityPlotGrid;
 import org.baratinage.ui.commons.TracePlotGrid;
 import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.ui.container.TabContainer;
+import org.baratinage.utils.ConsoleLogger;
 import org.baratinage.utils.WriteFile;
 import org.baratinage.ui.component.CommonDialog;
 import org.baratinage.ui.component.DataTable;
@@ -340,8 +341,8 @@ public class RatingCurveResults extends TabContainer {
                             "-9999",
                             headers);
                 } catch (IOException ioe) {
-                    System.err.println("RatingCurveResult Error: error while exporting MCMC simulation");
-                    ioe.printStackTrace();
+                    ConsoleLogger.error("error while exporting MCMC simulation");
+                    ConsoleLogger.stackTrace(ioe);
                 }
             }
         });

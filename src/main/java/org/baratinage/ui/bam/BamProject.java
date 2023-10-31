@@ -31,6 +31,7 @@ import org.baratinage.ui.commons.ExplorerItem;
 import org.baratinage.ui.component.ProgressFrame;
 import org.baratinage.ui.component.SvgIcon;
 import org.baratinage.ui.container.RowColPanel;
+import org.baratinage.utils.ConsoleLogger;
 import org.baratinage.utils.ReadFile;
 import org.baratinage.utils.ReadWriteZip;
 import org.baratinage.utils.WriteFile;
@@ -99,7 +100,7 @@ public abstract class BamProject extends RowColPanel {
                     this.currentPanel.appendChild(bamItem, 1);
 
                 } else {
-                    System.out.println("BamProject: selected BamItem is null");
+                    ConsoleLogger.log("selected BamItem is null");
                     this.currentPanel.clear();
                 }
                 this.updateUI();
@@ -284,7 +285,7 @@ public abstract class BamProject extends RowColPanel {
 
     public void saveProject(String saveFilePath) {
 
-        System.out.println("BamProject:  saving project...");
+        ConsoleLogger.log("saving project...");
         String mainConfigFilePath = Path.of(AppConfig.AC.APP_TEMP_DIR,
                 "main_config.json").toString();
 
@@ -298,8 +299,8 @@ public abstract class BamProject extends RowColPanel {
         } catch (
 
         IOException saveError) {
-            System.err.println("BamProject Error: Failed to write main config JSON file!");
-            saveError.printStackTrace();
+            ConsoleLogger.error("Failed to write main config JSON file!");
+            ConsoleLogger.stackTrace(saveError);
             return;
         }
 
@@ -307,9 +308,9 @@ public abstract class BamProject extends RowColPanel {
 
         boolean success = ReadWriteZip.flatZip(saveFilePath, filePaths);
         if (success) {
-            System.out.println("BamProject: project saved!");
+            ConsoleLogger.log("project saved!");
         } else {
-            System.err.println("BamProject Error: an error occured while saving project!");
+            ConsoleLogger.error("an error occured while saving project!");
         }
 
     }
@@ -444,15 +445,15 @@ public abstract class BamProject extends RowColPanel {
 
     static private void loadNextBamItem() {
         if (bamProjectLoadingCanceled) {
-            System.out.println("BamProject: loading was canceled.");
+            ConsoleLogger.log("loading was canceled.");
             return;
         }
         if (bamProjectLoadingProgress == -1) {
-            System.out.println("BamProject: no BamItem to load.");
+            ConsoleLogger.log("no BamItem to load.");
             return;
         }
         if (bamProjectLoadingProgress >= bamProjectBamItemsToLoad.size()) {
-            System.out.println("BamProject: all BamItem loaded.");
+            ConsoleLogger.log("all BamItem loaded.");
             doAfterBamItemsLoaded.run();
             return;
         }
@@ -460,7 +461,7 @@ public abstract class BamProject extends RowColPanel {
         BamConfigRecord config = bamProjectBamItemsToLoadConfig.get(bamProjectLoadingProgress);
         BamItem item = bamProjectBamItemsToLoad.get(bamProjectLoadingProgress);
 
-        System.out.println("BamProject: Loading item " + item);
+        ConsoleLogger.log("Loading item " + item);
 
         String itemName = item.bamItemNameField.getText();
         String progressMsg = T.html(
@@ -483,7 +484,7 @@ public abstract class BamProject extends RowColPanel {
 
         File projectFile = new File(projectFilePath);
         if (!projectFile.exists()) {
-            System.err.println("BamProject Error: Project file doesn't exist! (" +
+            ConsoleLogger.error("Project file doesn't exist! (" +
                     projectFilePath + ")");
             return;
         }
@@ -504,7 +505,7 @@ public abstract class BamProject extends RowColPanel {
 
             load(json, projectFile, onLoaded);
         } catch (IOException e) {
-            e.printStackTrace();
+            ConsoleLogger.stackTrace(e);
         }
         return;
     }

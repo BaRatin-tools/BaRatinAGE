@@ -17,7 +17,7 @@ import javax.swing.event.ChangeListener;
 import org.baratinage.ui.container.GridPanel;
 import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.translation.T;
-
+import org.baratinage.utils.ConsoleLogger;
 import org.baratinage.utils.ReadFile;
 
 public class DataFileReader extends RowColPanel {
@@ -59,7 +59,7 @@ public class DataFileReader extends RowColPanel {
                     "txt", "csv", "dat", "bad");
 
             if (f == null) {
-                System.err.println("DataFileReader Error: selected file is null.");
+                ConsoleLogger.error("selected file is null.");
                 return;
             }
             readFilesLines(f.getAbsolutePath());
@@ -171,7 +171,7 @@ public class DataFileReader extends RowColPanel {
                     Integer.MAX_VALUE,
                     true);
         } catch (IOException e) {
-            System.err.println("DataFileReader Error: Error while trying to read file!");
+            ConsoleLogger.error("Error while trying to read file!");
             return;
         }
         this.filePath = filePath;

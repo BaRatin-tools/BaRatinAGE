@@ -9,6 +9,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.baratinage.utils.ConsoleLogger;
 // FIXME: the bam librairy should not take care of encoding issues; 
 // FIXME: it should be a matter for the ui where the user can import random files
 import org.mozilla.universalchardet.ReaderFactory;
@@ -218,7 +219,7 @@ public class Read {
                 } catch (NumberFormatException e) {
                     // NOTE: this try/catch is necessary because BaM sometimes gives
                     // very low/high values that can't be parsed (e.g. -0.179769+309)
-                    System.err.println("Read Error: \n" + e);
+                    ConsoleLogger.error(e);
                     result[k - nColSkip] = Double.NaN;
                 }
             }
@@ -231,7 +232,7 @@ public class Read {
         // Getting matrix dimensions
         int nCol = matrix.size();
         if (nCol == 0) {
-            System.out.println("\nmatrix | 0 x 0 | empty matrix\n");
+            ConsoleLogger.log("\nmatrix | 0 x 0 | empty matrix\n");
             return;
         }
         int[] nRows = new int[nCol];

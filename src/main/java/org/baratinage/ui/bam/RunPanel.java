@@ -28,6 +28,7 @@ import org.baratinage.translation.T;
 import org.baratinage.ui.AppConfig;
 import org.baratinage.ui.commons.DefaultStructuralErrorModels;
 import org.baratinage.ui.container.RowColPanel;
+import org.baratinage.utils.ConsoleLogger;
 import org.baratinage.utils.Misc;
 
 public class RunPanel extends RowColPanel {
@@ -142,7 +143,7 @@ public class RunPanel extends RowColPanel {
         }
         String[] parNames = bamModelDef.getParameterNames();
         if (parNames.length != pars.length) {
-            System.err.println(
+            ConsoleLogger.error(
                     "RunPanel Error: number of parameters of bamPriors doesn't match expected number of parameters");
             return false;
         }
@@ -160,7 +161,7 @@ public class RunPanel extends RowColPanel {
         }
         String[] outputNames = bamModelDef.getOutputNames();
         if (outputNames.length != strucErrorModels.length) {
-            System.err.println(
+            ConsoleLogger.error(
                     "RunPanel Error: number of structural error models doesn't match the number of outputs");
             return false;
         }
@@ -328,7 +329,7 @@ public class RunPanel extends RowColPanel {
 
         if (bamCalibData == null) {
             if (calibRun) {
-                System.out.println(
+                ConsoleLogger.log(
                         "RunPanel: if calibRun is true, calibration data should be specified! Using fake data instead...");
             }
             double[] fakeDataArray = new double[] { 0 };
@@ -390,7 +391,7 @@ public class RunPanel extends RowColPanel {
             bam = BaM.buildBamForCalibration(calibConfig, predConfigs);
         } else {
             if (bamCalibratedModel == null) {
-                System.err.println(
+                ConsoleLogger.error(
                         "RunPanel: cannot run BaM for prediction only if no calibration results are provided!");
                 return;
             }

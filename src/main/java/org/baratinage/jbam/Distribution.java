@@ -11,6 +11,7 @@ import java.util.UUID;
 import org.baratinage.jbam.utils.BamFilesHelpers;
 import org.baratinage.jbam.utils.ExeRun;
 import org.baratinage.jbam.utils.Read;
+import org.baratinage.utils.ConsoleLogger;
 
 public class Distribution {
 
@@ -54,7 +55,7 @@ public class Distribution {
             f.delete();
             return result;
         } catch (IOException e) {
-            e.printStackTrace();
+            ConsoleLogger.stackTrace(e);
             return null;
         }
     }
@@ -82,7 +83,7 @@ public class Distribution {
         // ----------------------------------------------------------
         // using memoized data
         if (memoizedDensities.containsKey(densityResultKey)) {
-            System.out.println("Distribution: using memoized density data");
+            ConsoleLogger.log("using memoized density data");
             return memoizedDensities.get(densityResultKey);
         }
 
@@ -105,7 +106,7 @@ public class Distribution {
 
         List<double[]> rangeRes = getExeRunResult(Path.of(EXE_DIR, rangeResFileName).toString());
         if (rangeRes == null || rangeRes.size() != 2) {
-            System.err.println("Distribution Error: error while reading quantiles result files! Aborting");
+            ConsoleLogger.error("Distribution Error: error while reading quantiles result files! Aborting");
             return null;
         }
         String xGridArgDensity = doubleArrToStringArg(rangeRes.get(1)[0], rangeRes.get(1)[1]);
@@ -128,7 +129,7 @@ public class Distribution {
 
         List<double[]> densityRes = getExeRunResult(Path.of(EXE_DIR, densityResFileName).toString());
         if (densityRes == null) {
-            System.err.println("Distribution Error: error while reading density result files! Aborting");
+            ConsoleLogger.error("Distribution Error: error while reading density result files! Aborting");
             return null;
         }
 
@@ -158,7 +159,7 @@ public class Distribution {
 
         List<double[]> randomValues = getExeRunResult(Path.of(EXE_DIR, randomValuesResFileName).toString());
         if (randomValues == null || randomValues.size() < 1) {
-            System.err.println("Distribution Error: error while reading random values result files! Aborting");
+            ConsoleLogger.error("Distribution Error: error while reading random values result files! Aborting");
             return null;
         }
 
@@ -184,7 +185,7 @@ public class Distribution {
 
         List<double[]> rangeRes = getExeRunResult(Path.of(EXE_DIR, percentilesResultFileName).toString());
         if (rangeRes == null || rangeRes.size() != 2) {
-            System.err.println("Distribution Error: error while reading quantiles result files! Aborting");
+            ConsoleLogger.error("Distribution Error: error while reading quantiles result files! Aborting");
             return null;
         }
         return rangeRes.get(1);

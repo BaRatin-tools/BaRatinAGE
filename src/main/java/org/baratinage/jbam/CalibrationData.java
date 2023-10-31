@@ -9,6 +9,7 @@ import org.baratinage.jbam.utils.BamFilesHelpers;
 import org.baratinage.jbam.utils.ConfigFile;
 import org.baratinage.jbam.utils.Read;
 import org.baratinage.jbam.utils.Write;
+import org.baratinage.utils.ConsoleLogger;
 
 public class CalibrationData {
     public final String name;
@@ -122,7 +123,7 @@ public class CalibrationData {
                     "-9999",
                     headers.toArray(new String[0]));
         } catch (IOException e) {
-            e.printStackTrace();
+            ConsoleLogger.stackTrace(e);
         }
         return dataFilePath;
     }
@@ -182,7 +183,8 @@ public class CalibrationData {
         // Can data file be found? Absolutelty or relatively to workspace
         String dataFilePath = BamFilesHelpers.findDataFilePath(rawPathToDataFile, workspace);
         if (dataFilePath == null) {
-            System.err.println("CalibrationData Error: Cannot find calibration data file '" + rawPathToDataFile + "'!");
+            ConsoleLogger
+                    .error("CalibrationData Error: Cannot find calibration data file '" + rawPathToDataFile + "'!");
             return null;
         }
         String dataFileName = Path.of(dataFilePath).getFileName().toString();
@@ -209,25 +211,25 @@ public class CalibrationData {
             headers = Read.readHeaders(dataFilePath);
 
         } catch (IOException e) {
-            System.err.println("CalibrationData Error: Failed to read data file '" + dataFilePath + "'!");
-            e.printStackTrace();
+            ConsoleLogger.error("CalibrationData Error: Failed to read data file '" + dataFilePath + "'!");
+            ConsoleLogger.stackTrace(e);
             return null;
         }
 
         if (rawData.size() != nColumns) {
-            System.err.println("CalibrationData Error: Number of columns in data file '" + dataFilePath
+            ConsoleLogger.error("CalibrationData Error: Number of columns in data file '" + dataFilePath
                     + "' inconsistant with number of columns in config file!");
             return null;
         }
 
         if (rawData.get(0).length != nRow) {
-            System.err.println("CalibrationData Error: Number of rows in data file '" + dataFilePath
+            ConsoleLogger.error("CalibrationData Error: Number of rows in data file '" + dataFilePath
                     + "' inconsistant with number of rows in config file!");
             return null;
         }
 
         if (headers.length != nColumns) {
-            System.err.println("CalibrationData Error: Number of columns in data file '" + dataFilePath
+            ConsoleLogger.error("CalibrationData Error: Number of columns in data file '" + dataFilePath
                     + "' doesn't match number of headers!");
             return null;
         }

@@ -2,6 +2,8 @@ package org.baratinage.utils.perf;
 
 import java.util.HashMap;
 
+import org.baratinage.utils.ConsoleLogger;
+
 public class Performance {
 
     private static final long MEGABYTE = 1024L * 1024L;
@@ -14,7 +16,7 @@ public class Performance {
         Runtime runtime = Runtime.getRuntime();
         runtime.gc();
         long memory = runtime.totalMemory() - runtime.freeMemory();
-        System.out.println("Performance: Used memory in bytes (megabytes): "
+        ConsoleLogger.log("Used memory in bytes (megabytes): "
                 + memory + " (" + bytesToMegabytes(memory) + "mb)");
 
     }
@@ -30,7 +32,7 @@ public class Performance {
         if (startTime != null) {
             Long endTime = System.currentTimeMillis();
             Long duration = endTime - startTime;
-            System.out.println("Performance: Time elapsed in milliseconds (seconds): " +
+            ConsoleLogger.log("Time elapsed in milliseconds (seconds): " +
                     duration + "ms (" + duration / 1000.0 + "s)");
             startedTimeMonitoring.remove(key);
         }

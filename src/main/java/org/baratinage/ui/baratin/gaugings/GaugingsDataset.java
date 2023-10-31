@@ -6,6 +6,7 @@ import java.util.List;
 import org.baratinage.ui.AppConfig;
 import org.baratinage.ui.commons.AbstractDataset;
 import org.baratinage.ui.plot.PlotPoints;
+import org.baratinage.utils.ConsoleLogger;
 
 public class GaugingsDataset extends AbstractDataset {
 
@@ -55,8 +56,7 @@ public class GaugingsDataset extends AbstractDataset {
 
     public void updateActiveStateValues(Boolean[] newValues) {
         if (newValues.length != getNumberOfRows()) {
-            System.err.println(
-                    "GaugingsDataset Error: Cannot update active state values because the numbers of rows don't match!");
+            ConsoleLogger.error("Cannot update active state values because the numbers of rows don't match!");
             return;
         }
         double[] d = getColumn("active");
@@ -103,14 +103,14 @@ public class GaugingsDataset extends AbstractDataset {
         List<List<double[]>> res = new ArrayList<>();
         int nCol = data.size();
         if (nCol == 0) {
-            System.err.println("GaugingsDataset Error: Empty matrix!");
+            ConsoleLogger.error("Empty matrix!");
             res.add(data);
             res.add(new ArrayList<>());
             return res;
         }
         int nRow = data.get(0).length;
         if (filter.length != nRow) {
-            System.err.println("GaugingsDataset Error: Inconsistent filter array length!");
+            ConsoleLogger.error("Inconsistent filter array length!");
             res.add(data);
             res.add(new ArrayList<>());
             return res;

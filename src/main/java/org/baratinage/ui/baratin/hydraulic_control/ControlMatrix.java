@@ -13,6 +13,7 @@ import javax.swing.event.ChangeListener;
 
 import org.baratinage.ui.container.GridPanel;
 import org.baratinage.ui.container.RowColPanel;
+import org.baratinage.utils.ConsoleLogger;
 import org.baratinage.translation.T;
 import org.json.JSONObject;
 
@@ -111,12 +112,12 @@ public class ControlMatrix extends RowColPanel implements ChangeListener {
     public void setControlMatrix(boolean[][] controlMatrix) {
         int nSeg = controlMatrix.length;
         if (nSeg <= 0) {
-            System.err.println("ControlMatrix Error: Empty controlMatrix not supported");
+            ConsoleLogger.error("Empty controlMatrix not supported");
             return;
         }
         int nCtrl = controlMatrix[0].length;
         if (nSeg != nCtrl) {
-            System.err.println("ControlMatrix Error: Non-square controlMatrix not supported");
+            ConsoleLogger.error("Non-square controlMatrix not supported");
             return;
         }
         int nCtrlOld = controls.size();

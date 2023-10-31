@@ -76,7 +76,7 @@ public class Misc {
                         int i = Integer.parseInt(nbr);
                         usedInts.add(i);
                     } catch (NumberFormatException e) {
-                        System.out.println("Misc: Cannot parse into double");
+                        ConsoleLogger.log("Cannot parse into double");
                         continue;
                     }
                 }
@@ -97,14 +97,14 @@ public class Misc {
         File dirFile = new File(dirPath);
         if (!dirFile.exists()) {
             boolean success = dirFile.mkdirs();
-            System.out.println("Misc: Creating directory '" + dirPath + "'... " + (success ? "SUCCESS" : "FAIL"));
+            ConsoleLogger.log("Creating directory '" + dirPath + "'... " + (success ? "SUCCESS" : "FAIL"));
         }
     }
 
     public static void deleteDir(String dirPath) {
         File dirFile = new File(dirPath);
         if (!dirFile.exists()) {
-            System.err.println("Misc: Cannot delete directory '" + dirPath + "' because it doesn't exist! ");
+            ConsoleLogger.error("Cannot delete directory '" + dirPath + "' because it doesn't exist! ");
             return;
         }
         for (File f : dirFile.listFiles()) {
@@ -115,15 +115,15 @@ public class Misc {
                 try {
                     Files.delete(f.toPath());
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    ConsoleLogger.stackTrace(e);
                     success = false;
                 }
-                System.out.println("Misc: Deleting file '" + f + "'... " + (success ? "SUCCESS" : "FAIL"));
+                ConsoleLogger.log("Deleting file '" + f + "'... " + (success ? "SUCCESS" : "FAIL"));
 
             }
         }
         boolean success = dirFile.delete();
-        System.out.println("Misc: Deleting directory '" + dirPath + "'... " + (success ? "SUCCESS" : "FAILED"));
+        ConsoleLogger.log("Deleting directory '" + dirPath + "'... " + (success ? "SUCCESS" : "FAILED"));
     }
 
     public static Path parsePathFromUnknownOSorigin(String rawPath) {

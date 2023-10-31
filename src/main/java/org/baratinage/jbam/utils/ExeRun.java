@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
+import org.baratinage.utils.ConsoleLogger;
+
 public class ExeRun implements Runnable {
 
     private File exeDirFile;
@@ -86,12 +88,12 @@ public class ExeRun implements Runnable {
     @Override
     public void run() {
         if (exeDirFile == null || cmd == null) {
-            System.err.println(
+            ConsoleLogger.error(
                     "ExeRun Error: exeDir and command must be specified in constructor or with setter methods!");
             return;
         }
         String cmdStr = String.join(" ", cmd);
-        System.out.println("ExeRun: runnning command '" + cmdStr + "'...");
+        ConsoleLogger.log("runnning command '" + cmdStr + "'...");
 
         try {
             process = Runtime.getRuntime().exec(cmd, null, exeDirFile);
@@ -108,14 +110,14 @@ public class ExeRun implements Runnable {
                     publishConsolOutput(currentLine);
                 }
             } catch (IOException e) {
-                e.printStackTrace();
+                ConsoleLogger.stackTrace(e);
             }
 
             boolean hasFinished = true;
             try {
                 hasFinished = process.waitFor(250, TimeUnit.MILLISECONDS);
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                ConsoleLogger.stackTrace(e);
                 return;
             }
 
@@ -123,12 +125,12 @@ public class ExeRun implements Runnable {
                 try {
                     exitValue = process.exitValue();
                 } catch (IllegalThreadStateException e) {
-                    e.printStackTrace();
+                    ConsoleLogger.stackTrace(e);
                     return;
                 }
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            ConsoleLogger.stackTrace(e);
             return;
         }
     }

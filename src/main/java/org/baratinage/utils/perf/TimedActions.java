@@ -7,6 +7,7 @@ import java.util.TimerTask;
 
 import javax.swing.SwingUtilities;
 
+import org.baratinage.utils.ConsoleLogger;
 import org.baratinage.utils.Misc;
 
 public class TimedActions {
@@ -16,12 +17,12 @@ public class TimedActions {
     public static void throttle(String id, int delayMilliseconds, Runnable action) {
 
         if (throttledActions.containsKey(id)) {
-            System.out.println("TimedActions: Updating throttled action... (" + id + ")");
+            ConsoleLogger.log("Updating throttled action... (" + id + ")");
             throttledActions.put(id, action);
             return;
         }
 
-        System.out.println("TimedActions: Setting up throttler and running action... (" + id + ")");
+        ConsoleLogger.log("Setting up throttler and running action... (" + id + ")");
         action.run();
 
         Timer timer = new Timer();
@@ -33,7 +34,7 @@ public class TimedActions {
                         () -> {
                             Runnable throttledAction = throttledActions.get(id);
                             if (throttledAction != null) {
-                                System.out.println("TimedActions: Running throttled action ... (" + id + ")");
+                                ConsoleLogger.log("Running throttled action ... (" + id + ")");
                                 throttledAction.run();
                             }
                             throttledActions.remove(id);
@@ -52,12 +53,12 @@ public class TimedActions {
 
         if (debouncedActions.containsKey(id)) {
             Timer timer = debouncedActions.get(id);
-            System.out.println("TimedActions: Canceling debounced action... (" + id + ")");
+            ConsoleLogger.log("Canceling debounced action... (" + id + ")");
             timer.cancel();
             timer.purge();
         }
 
-        System.out.println("TimedActions: Setting up debouncer... (" + id + ")");
+        ConsoleLogger.log("Setting up debouncer... (" + id + ")");
         Timer timer = new Timer();
         TimerTask task = new TimerTask() {
 
@@ -65,7 +66,7 @@ public class TimedActions {
             public void run() {
                 SwingUtilities.invokeLater(
                         () -> {
-                            System.out.println("TimedActions: Running debounced action... (" + id + ")");
+                            ConsoleLogger.log("Running debounced action... (" + id + ")");
                             action.run();
                             debouncedActions.remove(id);
                         });
@@ -82,7 +83,7 @@ public class TimedActions {
 
         String id = Misc.getTimeStampedId();
 
-        System.out.println("TimedActions: Setting up delayed action... (" + id + ")");
+        ConsoleLogger.log("Setting up delayed action... (" + id + ")");
         Timer timer = new Timer();
         TimerTask task = new TimerTask() {
 
@@ -90,7 +91,7 @@ public class TimedActions {
             public void run() {
                 SwingUtilities.invokeLater(
                         () -> {
-                            System.out.println("TimedActions: Running delayed action... (" + id + ")");
+                            ConsoleLogger.log("Running delayed action... (" + id + ")");
                             action.run();
                             delayedActions.remove(id);
                         });
@@ -109,7 +110,7 @@ public class TimedActions {
             stopInterval(id);
         }
 
-        System.out.println("TimedActions: Setting up interval action... (" + id + ")");
+        ConsoleLogger.log("Setting up interval action... (" + id + ")");
         Timer timer = new Timer();
         TimerTask task = new TimerTask() {
 
@@ -117,7 +118,7 @@ public class TimedActions {
             public void run() {
                 SwingUtilities.invokeLater(
                         () -> {
-                            System.out.println("TimedActions: Running interval action... (" + id + ")");
+                            ConsoleLogger.log("Running interval action... (" + id + ")");
                             action.run();
 
                         });
@@ -131,7 +132,7 @@ public class TimedActions {
     public static void stopInterval(String id) {
         Timer timer = intervalAction.get(id);
         if (timer != null) {
-            System.out.println("TimedActions: Canceling interval action... (" + id + ")");
+            ConsoleLogger.log("Canceling interval action... (" + id + ")");
             timer.cancel();
             timer.purge();
             intervalAction.remove(id);

@@ -10,6 +10,7 @@ import java.util.stream.Stream;
 import org.baratinage.jbam.utils.BamFilesHelpers;
 import org.baratinage.jbam.utils.Read;
 import org.baratinage.jbam.utils.Write;
+import org.baratinage.utils.ConsoleLogger;
 
 public class CalibrationResult {
 
@@ -39,7 +40,7 @@ public class CalibrationResult {
             }
         }
         if (logPostColIndex == -1) {
-            System.err.println("CalibrationResult Error: Cannot find 'LogPost' column in MCMC results!");
+            ConsoleLogger.error("CalibrationResult Error: Cannot find 'LogPost' column in MCMC results!");
             maxpostIndex = -1;
             estimatedParameters = null;
             calibrationDataResiduals = null;
@@ -82,7 +83,7 @@ public class CalibrationResult {
             headers = Read.readHeaders(filePath.toString());
 
         } catch (IOException e) {
-            System.err.println("CalibrationResult Error: Failed to read MCMC headers from file '" +
+            ConsoleLogger.error("CalibrationResult Error: Failed to read MCMC headers from file '" +
                     filePath.getFileName() + "'");
             return headers;
         }
@@ -96,7 +97,7 @@ public class CalibrationResult {
             mcmc = Read.readMatrix(filePath.toString(), 1);
 
         } catch (IOException e) {
-            System.err.println("CalibrationResult Error: Failed to read MCMC values from file '" +
+            ConsoleLogger.error("CalibrationResult Error: Failed to read MCMC values from file '" +
                     filePath.getFileName() + "'");
             return mcmc;
         }
@@ -110,7 +111,7 @@ public class CalibrationResult {
             mcmc = Read.readMatrix(filePath.toString(), "\\s+", 1, 1);
 
         } catch (IOException e) {
-            System.err.println("CalibrationResult Error: Failed to read MCMC summary values from file '" +
+            ConsoleLogger.error("CalibrationResult Error: Failed to read MCMC summary values from file '" +
                     filePath.getFileName() + "'");
             return mcmc;
         }
@@ -123,7 +124,7 @@ public class CalibrationResult {
             Parameter[] parameters) {
 
         if (mcmcSummary != null && mcmcSummary.size() != mcmc.size() - 1) {
-            System.err.println(
+            ConsoleLogger.error(
                     "CalibrationResult Error: Inconsistent sizes between MCMC matrix and MCMC summary matrix!");
         }
 
@@ -176,7 +177,7 @@ public class CalibrationResult {
                     calibrationData);
 
         } catch (IOException e) {
-            System.err.println("CalibrationResult Error: Failed to read Calibration Data Residuals from file '" +
+            ConsoleLogger.error("CalibrationResult Error: Failed to read Calibration Data Residuals from file '" +
                     filePath.getFileName() + "'");
             return calDataResiduals;
         }
@@ -196,7 +197,7 @@ public class CalibrationResult {
                         BamFilesHelpers.BAM_MISSING_VALUE_CODE,
                         mcmcHeaders);
             } catch (IOException e) {
-                e.printStackTrace();
+                ConsoleLogger.stackTrace(e);
             }
         }
 

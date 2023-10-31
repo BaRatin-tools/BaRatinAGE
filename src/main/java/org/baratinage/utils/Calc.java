@@ -81,7 +81,7 @@ public class Calc {
                 p = 0;
             int index = Math.round((float) (p * n));
             if (index >= n) {
-                System.out.println("ERROR!");
+                ConsoleLogger.log("ERROR!");
                 index = n - 1;
             }
             percentiles[k] = sorted[index];

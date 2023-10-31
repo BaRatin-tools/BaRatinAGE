@@ -13,13 +13,15 @@ import java.util.function.Consumer;
 
 import org.baratinage.jbam.utils.BamFilesHelpers;
 import org.baratinage.jbam.utils.ConfigFile;
+import org.baratinage.utils.ConsoleLogger;
 
 public class BaM {
 
     static public BaM buildFromWorkspace(String mainConfigFilePath, String workspacePath) {
-        System.out.println("BaM: building BaM object from workspace... \n" +
-                "BaM: config file = " + mainConfigFilePath + "\n" +
-                "BaM: workspace   = " + workspacePath);
+        ConsoleLogger.log("building BaM object from workspace...");
+        ConsoleLogger.log("config file " + mainConfigFilePath);
+        ConsoleLogger.log("workspace   = " + workspacePath);
+
         ConfigFile configFile = ConfigFile.readConfigFile(mainConfigFilePath);
         // String workspacePath = configFile.getString(0);
         String runOptionFileName = configFile.getString(1);
@@ -150,7 +152,7 @@ public class BaM {
             calibrationResult.toFiles(workspace);
         } else {
             if (!runOptions.doMcmc && runOptions.doPrediction) {
-                System.err.println("BaM: cannot do prediction only if calibrationResult is null!");
+                ConsoleLogger.error("BaM: cannot do prediction only if calibrationResult is null!");
             }
         }
 
@@ -212,7 +214,7 @@ public class BaM {
         // Delete workspace content
         File workspaceDirFile = new File(workspace);
         if (workspaceDirFile.exists()) {
-            System.out.println("BaM: Deleting workspace content...");
+            ConsoleLogger.log("Deleting workspace content...");
             for (File f : workspaceDirFile.listFiles()) {
                 if (!f.isDirectory()) {
                     f.delete();
@@ -226,7 +228,7 @@ public class BaM {
 
         String[] cmd = { EXE_COMMAND, "-cf", mainConfigFilePath };
         String cmdString = String.join(" ", cmd);
-        System.out.println("BaM: BaM run command is '" + cmdString + "'.");
+        ConsoleLogger.log("BaM run command is '" + cmdString + "'.");
 
         File exeDirectory = new File(BamFilesHelpers.EXE_DIR);
         bamExecutionProcess = Runtime.getRuntime().exec(cmd, null, exeDirectory);
@@ -242,18 +244,18 @@ public class BaM {
                 consoleOutputFollower.accept(currentLine);
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            ConsoleLogger.stackTrace(e);
         }
 
         boolean finished = false;
         try {
             finished = bamExecutionProcess.waitFor(250, TimeUnit.MILLISECONDS);
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            ConsoleLogger.stackTrace(e);
         }
         int exitcode = 0;
         if (!finished) {
-            System.err.println("BaM Error: BaM process has not finished and this is unexepected ");
+            ConsoleLogger.error("BaM Error: BaM process has not finished and this is unexepected ");
         } else {
             exitcode = bamExecutionProcess.exitValue();
         }
@@ -275,28 +277,28 @@ public class BaM {
         if (exitcode != 0) {
             switch (exitcode) {
                 case -1:
-                    System.err.println("BaM Error: A FATAL ERROR has occured");
+                    ConsoleLogger.error("BaM Error: A FATAL ERROR has occured");
                     break;
                 case -2:
-                    System.err.println("BaM Error: A FATAL ERROR has occured while opening the following file.");
+                    ConsoleLogger.error("BaM Error: A FATAL ERROR has occured while opening the following file.");
                     break;
                 case -3:
-                    System.err.println("BaM Error: A FATAL ERROR has occured while reading a config file.");
+                    ConsoleLogger.error("BaM Error: A FATAL ERROR has occured while reading a config file.");
                     break;
                 case -4:
-                    System.err.println("BaM Error: A FATAL ERROR has occured while generating the prior model.");
+                    ConsoleLogger.error("BaM Error: A FATAL ERROR has occured while generating the prior model.");
                     break;
                 case -5:
-                    System.err.println("BaM Error: A FATAL ERROR has occured while fitting the model..");
+                    ConsoleLogger.error("BaM Error: A FATAL ERROR has occured while fitting the model..");
                     break;
                 case -6:
-                    System.err.println("BaM Error: A FATAL ERROR has occured while post-processing MCMC samples.");
+                    ConsoleLogger.error("BaM Error: A FATAL ERROR has occured while post-processing MCMC samples.");
                     break;
                 case -7:
-                    System.err.println("BaM Error: A FATAL ERROR has occured while propagating uncertainty.");
+                    ConsoleLogger.error("BaM Error: A FATAL ERROR has occured while propagating uncertainty.");
                     break;
                 case -8:
-                    System.err.println("BaM Error: A FATAL ERROR has occured while writting to a file.");
+                    ConsoleLogger.error("BaM Error: A FATAL ERROR has occured while writting to a file.");
                     break;
                 default:
                     System.err.printf("BaM Error: An unknown FATAL ERROR has occured. Exit Code=%d\n", exitcode);

@@ -11,6 +11,8 @@ import java.util.WeakHashMap;
 import javax.swing.AbstractButton;
 import javax.swing.JLabel;
 
+import org.baratinage.utils.ConsoleLogger;
+
 public class T {
 
     static private class TranslatableList extends ArrayList<Translatable> {
@@ -119,7 +121,7 @@ public class T {
             if (list == null) {
                 // Note: I've had some issue if Object is an array list that
                 // is emptied with clear() after having elements added to it....
-                System.err.println("T Error: translatables list is null for the following object > " +
+                ConsoleLogger.error("translatables list is null for the following object > " +
                         object + " (" + object.getClass() + ")");
                 continue;
             }
@@ -130,27 +132,27 @@ public class T {
     }
 
     static public void printStats(boolean printList) {
-        System.out.println("-------------------------------------------------");
-        System.out.println("There are " + translatables.size() + " translatables owners.");
+        ConsoleLogger.log("-------------------------------------------------");
+        ConsoleLogger.log("There are " + translatables.size() + " translatables owners.");
         if (printList) {
             for (Object o : translatables.keySet()) {
                 String oStr = o.toString();
                 oStr = oStr.substring(0, Math.min(oStr.length(), 40));
                 int n = translatables.get(o).size();
-                System.out.println("> " + oStr + "  >  " + n + " translatable(s).");
+                ConsoleLogger.log("> " + oStr + "  >  " + n + " translatable(s).");
             }
         }
-        System.out.println("-------------------------------------------------");
-        System.out.println("There are " + hierarchy.size() + " owners with children.");
+        ConsoleLogger.log("-------------------------------------------------");
+        ConsoleLogger.log("There are " + hierarchy.size() + " owners with children.");
         if (printList) {
             for (Object o : hierarchy.keySet()) {
                 String oStr = o.toString();
                 oStr = oStr.substring(0, Math.min(oStr.length(), 40));
                 int n = hierarchy.get(o).size();
-                System.out.println("> " + oStr + "  >  " + (n < 2 ? n + " child." : n + " children."));
+                ConsoleLogger.log("> " + oStr + "  >  " + (n < 2 ? n + " child." : n + " children."));
             }
         }
-        System.out.println("-------------------------------------------------");
+        ConsoleLogger.log("-------------------------------------------------");
     }
 
     static private Map<Object, List<WeakReference<Object>>> hierarchy;

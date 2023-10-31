@@ -12,6 +12,7 @@ import org.baratinage.jbam.DistributionType;
 import org.baratinage.jbam.Parameter;
 import org.baratinage.ui.AppConfig;
 import org.baratinage.ui.container.GridPanel;
+import org.baratinage.utils.ConsoleLogger;
 import org.baratinage.translation.T;
 
 import org.json.JSONArray;
@@ -128,7 +129,7 @@ public class StructuralErrorModelPanel extends GridPanel implements ChangeListen
             if (k < parameters.size()) {
                 parameters.get(k).fromJSON(json.getJSONObject(k));
             } else {
-                System.err.println("StructuralErrorModelPanel Error: number of parameters not matching!");
+                ConsoleLogger.error("number of parameters not matching!");
             }
         }
     }

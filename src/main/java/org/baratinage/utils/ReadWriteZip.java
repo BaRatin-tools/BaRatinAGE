@@ -21,10 +21,10 @@ public class ReadWriteZip {
             unzip(is, targetDir);
             return true;
         } catch (RuntimeException re) {
-            System.out.println(re);
+            ConsoleLogger.error(re);
             return false;
         } catch (IOException e) {
-            System.out.println(e);
+            ConsoleLogger.error(e);
             return false;
         }
     }
@@ -57,8 +57,8 @@ public class ReadWriteZip {
         try {
             zipFileOutStream = new FileOutputStream(zipFile);
         } catch (FileNotFoundException e) {
-            System.err.println("ReadWriteZip Error: Cannot create output zipfile '" + zipFilePath + "'!");
-            e.printStackTrace();
+            ConsoleLogger.error("Cannot create output zipfile '" + zipFilePath + "'!");
+            ConsoleLogger.stackTrace(e);
             return false;
         }
         ZipOutputStream zipOutStream = new ZipOutputStream(zipFileOutStream);
@@ -70,8 +70,8 @@ public class ReadWriteZip {
         try {
             zipOutStream.close();
         } catch (IOException e) {
-            System.err.println("ReadWriteZip Error: Cannot close output zipfile '" + zipFilePath + "'!");
-            e.printStackTrace();
+            ConsoleLogger.error("Cannot close output zipfile '" + zipFilePath + "'!");
+            ConsoleLogger.stackTrace(e);
             return false;
         }
         return success;
@@ -90,13 +90,13 @@ public class ReadWriteZip {
             }
 
         } else if (fileOrDir.isFile()) {
-            System.out.println("ReadWriteZip: Zipping file '" + fileOrDir + "'...");
+            ConsoleLogger.log("Zipping file '" + fileOrDir + "'...");
             ZipEntry ze = new ZipEntry(fileOrDir.getName());
             try {
                 zipOutStream.putNextEntry(ze);
                 Files.copy(fileOrDir.toPath(), zipOutStream);
             } catch (IOException e) {
-                System.err.println("ReadWriteZip Error: Failed to add file '" + fileOrDir + "'!");
+                ConsoleLogger.error("Failed to add file '" + fileOrDir + "'!");
                 success = false;
             }
         }

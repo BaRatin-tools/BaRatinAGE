@@ -8,6 +8,7 @@ import java.util.List;
 import org.baratinage.jbam.utils.BamFilesHelpers;
 import org.baratinage.jbam.utils.Read;
 import org.baratinage.jbam.utils.Write;
+import org.baratinage.utils.ConsoleLogger;
 
 public class PredictionInput {
     public final String name;
@@ -61,7 +62,7 @@ public class PredictionInput {
                     "-9999",
                     null);
         } catch (IOException e) {
-            e.printStackTrace();
+            ConsoleLogger.stackTrace(e);
         }
         if (extraData != null) {
             String additionalDataFilePath = Path.of(workspace, extFileName).toAbsolutePath().toString();
@@ -73,7 +74,7 @@ public class PredictionInput {
                         "-9999",
                         null);
             } catch (IOException e) {
-                e.printStackTrace();
+                ConsoleLogger.stackTrace(e);
             }
         }
         return dataFilePath;
@@ -96,7 +97,7 @@ public class PredictionInput {
         try {
             data = Read.readMatrix(dataFilePath, 0);
         } catch (IOException e) {
-            System.err.println(
+            ConsoleLogger.error(
                     "PredictionInput Error: Failed to read input data file '" +
                             fileName + "'. Returning null!");
             return null;
@@ -107,7 +108,7 @@ public class PredictionInput {
             try {
                 extraData = Read.readMatrix(extraDataFile.getAbsolutePath().toString(), 0);
             } catch (IOException e) {
-                System.err.println(
+                ConsoleLogger.error(
                         "PredictionInput Error: Failed to read input extra data file '" +
                                 extFileName + "'!");
             }

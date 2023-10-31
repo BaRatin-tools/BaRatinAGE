@@ -24,6 +24,7 @@ import javax.swing.table.TableColumnModel;
 
 import org.baratinage.ui.AppConfig;
 import org.baratinage.ui.container.RowColPanel;
+import org.baratinage.utils.ConsoleLogger;
 
 public class DataParser extends RowColPanel {
 
@@ -349,7 +350,7 @@ public class DataParser extends RowColPanel {
             }
             for (String[] col : rawData) {
                 if (col.length != nRow) {
-                    System.err.println("DataParser Error: Inconsistent number of rows... Aborting.");
+                    ConsoleLogger.error("Inconsistent number of rows... Aborting.");
                     return false;
                 }
             }

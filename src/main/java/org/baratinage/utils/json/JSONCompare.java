@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.baratinage.utils.ConsoleLogger;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -197,7 +198,7 @@ public class JSONCompare {
                     "",
                     null);
         } else {
-            System.err.println("JSONComparator Error: unhandle comparison case! Should not happend!");
+            ConsoleLogger.error("unhandle comparison case! Should not happend!");
 
             return new JSONCompareResult(
                     a.toString().equals(b.toString()),

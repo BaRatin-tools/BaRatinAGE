@@ -38,6 +38,7 @@ import org.baratinage.ui.baratin.rating_curve.RatingCurveStageGrid;
 import org.baratinage.ui.commons.MsgPanel;
 import org.baratinage.ui.commons.StructuralErrorModelBamItem;
 import org.baratinage.ui.container.RowColPanel;
+import org.baratinage.utils.ConsoleLogger;
 import org.baratinage.utils.json.JSONCompare;
 import org.baratinage.utils.json.JSONCompareResult;
 import org.baratinage.utils.json.JSONFilter;
@@ -353,26 +354,26 @@ public class RatingCurve extends BamItem implements IPredictionMaster, ICalibrat
         if (json.has("hydrauConfig")) {
             hydrauConfParent.fromJSON(json.getJSONObject("hydrauConfig"));
         } else {
-            System.out.println("RatingCurve: missing 'hydrauConfig'");
+            ConsoleLogger.log("missing 'hydrauConfig'");
         }
 
         if (json.has("gaugings")) {
             gaugingsParent.fromJSON(json.getJSONObject("gaugings"));
         } else {
-            System.out.println("RatingCurve: missing 'gaugings'");
+            ConsoleLogger.log("missing 'gaugings'");
         }
 
         if (json.has("structError")) {
             structErrorParent.fromJSON(json.getJSONObject("structError"));
         } else {
-            System.out.println("RatingCurve: missing 'structError'");
+            ConsoleLogger.log("missing 'structError'");
         }
 
         if (json.has("stageGridConfig")) {
             JSONObject stageGridConfigJson = json.getJSONObject("stageGridConfig");
             ratingCurveStageGrid.fromJSON(stageGridConfigJson);
         } else {
-            System.out.println("RatingCurve: missing 'stageGridConfig'");
+            ConsoleLogger.log("missing 'stageGridConfig'");
         }
 
         // **********************************************************
@@ -382,7 +383,7 @@ public class RatingCurve extends BamItem implements IPredictionMaster, ICalibrat
             bamRunConfigAndRes = RunConfigAndRes.buildFromTempZipArchive(bamRunId);
             updateResults();
         } else {
-            System.out.println("RatingCurve: missing 'bamRunId'");
+            ConsoleLogger.log("missing 'bamRunId'");
         }
 
         if (json.has("backup")) {
@@ -390,7 +391,7 @@ public class RatingCurve extends BamItem implements IPredictionMaster, ICalibrat
             backup = BamConfigRecord.fromJSON(backupJson);
 
         } else {
-            System.out.println("RatingCurve: missing 'backup'");
+            ConsoleLogger.log("missing 'backup'");
         }
 
         TimedActions.throttle(ID, AppConfig.AC.THROTTLED_DELAY_MS, this::checkSync);

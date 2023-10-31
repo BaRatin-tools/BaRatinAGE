@@ -32,6 +32,7 @@ import org.baratinage.ui.commons.MsgPanel;
 import org.baratinage.ui.component.Title;
 import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.ui.container.SplitContainer;
+import org.baratinage.utils.ConsoleLogger;
 import org.baratinage.utils.json.JSONCompare;
 import org.baratinage.utils.json.JSONCompareResult;
 import org.baratinage.utils.json.JSONFilter;
@@ -211,7 +212,6 @@ public class HydraulicConfiguration
         JSONCompareResult stageGridComparison = comparison.children().get("stageGridConfig");
 
         if (!stageGridComparison.matching()) {
-            System.out.println("Stage grid config different");
             MsgPanel msg = new MsgPanel(MsgPanel.TYPE.ERROR, true);
             T.t(outOufSyncPanel, msg.message, true, "oos_stage_grid");
             JButton revertBackBtn = new JButton();
@@ -228,7 +228,6 @@ public class HydraulicConfiguration
         JSONCompareResult controlMatrixComparison = comparison.children().get("controlMatrix");
 
         if (!controlMatrixComparison.matching()) {
-            System.out.println("Control matrix different");
             MsgPanel msg = new MsgPanel(MsgPanel.TYPE.ERROR);
             T.t(outOufSyncPanel, msg.message, true, "oos_control_matrix");
             JButton revertBackBtn = new JButton();
@@ -246,8 +245,6 @@ public class HydraulicConfiguration
             JSONCompareResult hydraulicControlsComparison = comparison.children().get("hydraulicControls");
 
             if (!hydraulicControlsComparison.matching()) {
-
-                System.out.println("Hydraulic controls are different");
                 MsgPanel msg = new MsgPanel(MsgPanel.TYPE.ERROR);
                 T.t(outOufSyncPanel, msg.message, true, "oos_hydraulic_controls");
                 JButton revertBackBtn = new JButton();
@@ -374,7 +371,7 @@ public class HydraulicConfiguration
         if (json.has("controlMatrix")) {
             controlMatrix.fromJSON(json.getJSONObject("controlMatrix"));
         } else {
-            System.out.println("HydraulicConfiguration: missing 'controlMatrix'");
+            ConsoleLogger.log("missing 'controlMatrix'");
         }
 
         // **********************************************************
@@ -384,7 +381,7 @@ public class HydraulicConfiguration
             hydraulicControls.fromJSON(json.getJSONObject("hydraulicControls"));
 
         } else {
-            System.out.println("HydraulicConfiguration: missing 'hydraulicControls'");
+            ConsoleLogger.log("missing 'hydraulicControls'");
         }
 
         // **********************************************************
@@ -396,7 +393,7 @@ public class HydraulicConfiguration
             priorRatingCurveStageGrid.fromJSON(stageGridJson);
 
         } else {
-            System.out.println("HydraulicConfiguration: missing 'stageGridConfig'");
+            ConsoleLogger.log("missing 'stageGridConfig'");
         }
 
         if (json.has("backup")) {
@@ -404,7 +401,7 @@ public class HydraulicConfiguration
             backup = BamConfigRecord.fromJSON(backupJson);
 
         } else {
-            System.out.println("HydraulicConfiguration: missing 'backup'");
+            ConsoleLogger.log("missing 'backup'");
         }
 
         // **********************************************************
@@ -414,7 +411,7 @@ public class HydraulicConfiguration
             bamRunConfigAndRes = RunConfigAndRes.buildFromTempZipArchive(bamRunId);
             buildPlot();
         } else {
-            System.out.println("HydraulicConfiguration: missing 'bamRunZipFileName'");
+            ConsoleLogger.log("missing 'bamRunZipFileName'");
         }
 
         checkPriorRatingCurveSync();

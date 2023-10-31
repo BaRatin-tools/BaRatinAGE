@@ -12,6 +12,7 @@ import org.baratinage.ui.bam.IPredictionData;
 
 import org.baratinage.ui.component.SimpleNumberField;
 import org.baratinage.ui.container.RowColPanel;
+import org.baratinage.utils.ConsoleLogger;
 import org.baratinage.translation.T;
 import org.json.JSONObject;
 
@@ -98,7 +99,7 @@ public class RatingCurveStageGrid extends RowColPanel implements IPredictionData
 
     public double[] getStageGrid() {
         if (!isValueValid()) {
-            System.err.println("RatingCurveStageGrid Error: Invalid stage grid");
+            ConsoleLogger.error("Invalid stage grid");
             return null;
         }
         int n = (int) ((stageGridConfig.max - stageGridConfig.min) / stageGridConfig.step);

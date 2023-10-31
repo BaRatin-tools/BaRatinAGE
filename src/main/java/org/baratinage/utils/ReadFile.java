@@ -150,7 +150,7 @@ public class ReadFile {
                 } catch (NumberFormatException e) {
                     // NOTE: this try/catch is necessary because BaM sometimes gives
                     // very low/high values that can't be parsed (e.g. -0.179769+309)
-                    System.err.println("ReadFile Error: \n" + e);
+                    ConsoleLogger.error(e);
                     result[k - nElemSkip] = Double.NaN;
                 }
             }
@@ -194,7 +194,7 @@ public class ReadFile {
             boolean trim) {
         int nLines = lines.length;
         if (nRowSkip >= nLines) {
-            System.err.println("ReadFile Error: nRowSkip greater than number of lines!");
+            ConsoleLogger.error("nRowSkip greater than number of lines!");
             return null;
         }
         int nRow = Math.min(nLines - nRowSkip, nRowMax);
@@ -210,7 +210,7 @@ public class ReadFile {
             int k = nRowSkip + i;
             String[] row = parseString(lines[k], sep, trim);
             if (row.length != nCol) {
-                System.err.println("ReadFile Error: Error while parsing line " + k + "...");
+                ConsoleLogger.error("Error while parsing line " + k + "...");
                 break;
             }
             for (int j = 0; j < nCol; j++) {
@@ -328,7 +328,7 @@ public class ReadFile {
             if (k >= nRowSkip) {
                 String[] row = parseString(line, sep, trim);
                 if (row.length != nCol) {
-                    System.err.println("ReadFile Error: Inconsistent number of columns (row " + k + ")");
+                    ConsoleLogger.error("Inconsistent number of columns (row " + k + ")");
                     continue;
                 }
                 for (int j = 0; j < nCol; j++) {

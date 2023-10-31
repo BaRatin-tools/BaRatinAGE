@@ -144,7 +144,7 @@ public class PredictionConfig {
             // FIXME: for simplicity sake, assuming that data file is in workspace folder!
             String dataFilePath = BamFilesHelpers.findDataFilePath(inputFilePaths[k], workspace);
             if (dataFilePath == null) {
-                System.err.println(
+                ConsoleLogger.error(
                         "PredictionConfig Error: Cannot find prediction data file '" + inputFilePaths[k] + "'!");
                 return null;
             }
@@ -161,7 +161,7 @@ public class PredictionConfig {
         if (propagateStructuralErrors.length != nOutput ||
                 transposeRes.length != nOutput ||
                 createEnvelops.length != nOutput) {
-            System.err.println(
+            ConsoleLogger.error(
                     "PredictionConfig Error: Number of outputs is inconsistant in config file '" +
                             predictionFileName
                             + "'! ");
@@ -193,7 +193,7 @@ public class PredictionConfig {
             if (stateSpagFileNames.length != nState ||
                     stateTransposeRes.length != nState ||
                     stateCreateEnvelops.length != nState) {
-                System.err.println(
+                ConsoleLogger.error(
                         "PredictionConfig Error: Number of states is inconsistant in config file '" +
                                 predictionFileName
                                 + "'! ");

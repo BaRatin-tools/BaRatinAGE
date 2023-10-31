@@ -6,6 +6,8 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.baratinage.utils.ConsoleLogger;
+
 public class ConfigFile {
 
     private static final String COMMENT_SEPARATOR = "  ! ";
@@ -65,9 +67,9 @@ public class ConfigFile {
         try {
             Write.writeLines(filePath, lines);
         } catch (IOException e) {
-            System.err.println(
+            ConsoleLogger.error(
                     String.format("ConfigFile Error: Failed to write configuration \n '%s'...", filePath.toString()));
-            e.printStackTrace();
+            ConsoleLogger.stackTrace(e);
         }
     }
 
@@ -119,7 +121,7 @@ public class ConfigFile {
 
             reader.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            ConsoleLogger.stackTrace(e);
             return null;
         }
 
@@ -132,7 +134,7 @@ public class ConfigFile {
                                 splittedLine[0].trim(),
                                 splittedLine[1].trim()));
             } else {
-                System.out.println("ConfigFile: Ignoring line '" + line + "' ...");
+                ConsoleLogger.log("Ignoring line '" + line + "' ...");
             }
 
         }
@@ -210,7 +212,7 @@ public class ConfigFile {
         } else if (value.equals(".false.")) {
             return false;
         } else {
-            System.err.println(
+            ConsoleLogger.error(
                     "ConfigFile Error: Value is not one of '.true.' or '.false.' as expected! Returning false.");
             return false;
         }
@@ -261,7 +263,7 @@ public class ConfigFile {
         try {
             intValue = Integer.parseInt(value);
         } catch (Exception e) {
-            System.err.println("ConfigFile Error: Value cannot be parsed to integer! Returning -9999.");
+            ConsoleLogger.error("Value cannot be parsed to integer! Returning -9999.");
         }
         return intValue;
     }
@@ -307,7 +309,7 @@ public class ConfigFile {
         try {
             doubleValue = Double.parseDouble(value);
         } catch (Exception e) {
-            System.err.println("ConfigFile Error: Value cannot be parsed to double! Returning -9999.");
+            ConsoleLogger.error("Value cannot be parsed to double! Returning -9999.");
         }
         return doubleValue;
     }

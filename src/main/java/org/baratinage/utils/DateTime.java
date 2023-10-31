@@ -26,23 +26,23 @@ public class DateTime {
             double[] hours, double[] minutes, double[] seconds) {
         int n = years.length;
         if (months.length != n) {
-            System.err.println("DateTime Error: 'months' vector length not matching 'years' vector length!");
+            ConsoleLogger.error("'months' vector length not matching 'years' vector length!");
             return null;
         }
         if (days.length != n) {
-            System.err.println("DateTime Error: 'days' vector length not matching 'years' vector length!");
+            ConsoleLogger.error("'days' vector length not matching 'years' vector length!");
             return null;
         }
         if (hours.length != n) {
-            System.err.println("DateTime Error: 'hours' vector length not matching 'years' vector length!");
+            ConsoleLogger.error("'hours' vector length not matching 'years' vector length!");
             return null;
         }
         if (minutes.length != n) {
-            System.err.println("DateTime Error: 'minutes' vector length not matching 'years' vector length!");
+            ConsoleLogger.error("'minutes' vector length not matching 'years' vector length!");
             return null;
         }
         if (seconds.length != n) {
-            System.err.println("DateTime Error: 'seconds' vector length not matching 'years' vector length!");
+            ConsoleLogger.error("'seconds' vector length not matching 'years' vector length!");
             return null;
         }
         LocalDateTime[] dateTime = new LocalDateTime[n];

@@ -18,6 +18,7 @@ import org.apache.batik.transcoder.TranscoderOutput;
 import org.apache.batik.transcoder.image.ImageTranscoder;
 import org.apache.batik.transcoder.image.PNGTranscoder;
 import org.baratinage.ui.AppConfig;
+import org.baratinage.utils.ConsoleLogger;
 
 public class SvgIcon extends ImageIcon {
 
@@ -54,8 +55,8 @@ public class SvgIcon extends ImageIcon {
             InputStream inputStream = new FileInputStream(new File(sourcePath));
             b = inputStream.readAllBytes();
         } catch (IOException e) {
-            System.err.println("SvgIcon Error: Error while retrieving SVG file");
-            e.printStackTrace();
+            ConsoleLogger.error("Error while retrieving SVG file");
+            ConsoleLogger.stackTrace(e);
         }
 
         this.svgBytes = b;
@@ -69,7 +70,7 @@ public class SvgIcon extends ImageIcon {
 
     private void buildIcon() {
 
-        System.out.println("SvgIcon: building icon '" + sourcePath + "'...");
+        ConsoleLogger.log("building icon '" + sourcePath + "'...");
         float w = width;
         float h = height;
 
@@ -88,8 +89,8 @@ public class SvgIcon extends ImageIcon {
             TranscoderInput transcoderInput = new TranscoderInput(inputStream);
             imgTranscoder.transcode(transcoderInput, null);
         } catch (TranscoderException e) {
-            System.err.println("SvgIcon Error: error while build raster image from SVG.");
-            e.printStackTrace();
+            ConsoleLogger.error("error while build raster image from SVG.");
+            ConsoleLogger.stackTrace(e);
             return;
         }
         BufferedImage image = imgTranscoder.getBufferedImage();

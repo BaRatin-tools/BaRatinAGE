@@ -19,6 +19,7 @@ import org.baratinage.ui.AppConfig;
 import org.baratinage.ui.component.ProgressBar;
 import org.baratinage.ui.component.SimpleLogger;
 import org.baratinage.ui.container.RowColPanel;
+import org.baratinage.utils.ConsoleLogger;
 
 public class RunDialog extends JDialog {
 
@@ -93,13 +94,13 @@ public class RunDialog extends JDialog {
             return;
         }
 
-        System.out.println("RunDialog: Cancelling BaM run...");
+        ConsoleLogger.log("Cancelling BaM run...");
         runningWorker.cancel(true);
         monitoringWorker.cancel(true);
 
         Process bamProcess = bam.getBaMexecutionProcess();
         if (bamProcess != null) {
-            System.out.println("RunDialog: Killing BaM process...");
+            ConsoleLogger.log("Killing BaM process...");
             bamProcess.destroy();
         }
     }
@@ -112,16 +113,16 @@ public class RunDialog extends JDialog {
             protected Void doInBackground() throws Exception {
                 String finalMessage = "";
                 try {
-                    System.out.println("RunDialog: BaM starting...");
+                    ConsoleLogger.log("BaM starting...");
                     finalMessage = bam.run(workspacePath.toString(), txt -> {
                         publish(txt);
                     });
 
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    ConsoleLogger.stackTrace(e);
                     cancel(true);
                 }
-                System.out.println(finalMessage.equals("") ? "BaM ran successfully!"
+                ConsoleLogger.log(finalMessage.equals("") ? "BaM ran successfully!"
                         : "BaM finished with errors!\n" + finalMessage);
                 return null;
             }
@@ -147,7 +148,7 @@ public class RunDialog extends JDialog {
                     setTitle(T.text("bam_canceled"));
                 }
 
-                System.out.println("RunDialog: BaM run done!");
+                ConsoleLogger.log("BaM run done!");
 
             }
 

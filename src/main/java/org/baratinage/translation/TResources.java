@@ -16,6 +16,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.baratinage.ui.AppConfig;
+import org.baratinage.utils.ConsoleLogger;
 
 public class TResources {
 
@@ -57,7 +58,7 @@ public class TResources {
                                     resourcePath));
                     fileTranslations.put(fileKey, resourceBundle);
                 } catch (IOException e) {
-                    System.err.println(
+                    ConsoleLogger.error(
                             "TResources Error: Failed to read expected resource bundle '" + resourceName + "'!");
                 }
             }
@@ -69,13 +70,13 @@ public class TResources {
         Map<String, ResourceBundle> fileTranslations = translations.get(localKey);
         if (fileTranslations == null) {
             if (localKey.equals(AppConfig.AC.DEFAULT_RESSOURCE_FILE_LOCALE_KEY)) {
-                System.err.println(
+                ConsoleLogger.error(
                         String.format(
                                 "TResources Error: no translation found for key '%s' and default locale '%s' in bundle '%s'!",
                                 itemKey, localKey, fileKey));
                 return "<no-translation-found>";
             } else {
-                System.out.println(
+                ConsoleLogger.log(
                         String.format("TResources: No locale '%s' found! Looking in default locale '%s' instead.",
                                 localKey, AppConfig.AC.DEFAULT_RESSOURCE_FILE_LOCALE_KEY));
                 return getTranslation(AppConfig.AC.DEFAULT_RESSOURCE_FILE_LOCALE_KEY, fileKey, itemKey);
@@ -83,13 +84,13 @@ public class TResources {
         }
         ResourceBundle resourceBundle = fileTranslations.get(fileKey);
         if (resourceBundle == null) {
-            System.err.println(
+            ConsoleLogger.error(
                     String.format("TResources Error: No bundle for locale '%s' named '%s' found!",
                             localKey, fileKey));
             return "<no-translation-found>";
         }
         if (!resourceBundle.containsKey(itemKey)) {
-            System.err.println(
+            ConsoleLogger.error(
                     String.format(
                             "TResources Error: no item with key '%s' found for locale '%s' and bundle '%s'!",
                             itemKey, localKey, fileKey));

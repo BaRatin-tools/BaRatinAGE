@@ -29,6 +29,7 @@ import javax.swing.table.TableColumn;
 import org.baratinage.translation.T;
 import org.baratinage.ui.AppConfig;
 import org.baratinage.ui.container.RowColPanel;
+import org.baratinage.utils.ConsoleLogger;
 
 public class DataTable extends RowColPanel {
 
@@ -118,7 +119,7 @@ public class DataTable extends RowColPanel {
     private void saveAsCSV() {
         File file = CommonDialog.saveFileDialog(null, T.text("csv_format"), "csv");
         if (file == null) {
-            System.err.println("DataTable Error: chosen file is null.");
+            ConsoleLogger.error("chosen file is null.");
             return;
         }
         String data = buildDataString();
@@ -130,8 +131,8 @@ public class DataTable extends RowColPanel {
             fileWriter.write(data);
             fileWriter.close();
         } catch (IOException e) {
-            System.err.println("DataTable Error: failed to write data to CSV file!");
-            e.printStackTrace();
+            ConsoleLogger.error("failed to write data to CSV file!");
+            ConsoleLogger.stackTrace(e);
         }
     }
 
@@ -232,7 +233,7 @@ public class DataTable extends RowColPanel {
     public void setHeader(int colIndex, String headerText) {
         int nCol = table.getColumnCount();
         if (colIndex < 0 || colIndex >= nCol) {
-            System.err.println("DataTable Error: Cannot set header text, colIndex is invalid!");
+            ConsoleLogger.error("Cannot set header text, colIndex is invalid!");
             return;
         }
         TableColumn tableColumn = table.getColumnModel().getColumn(colIndex);
@@ -242,7 +243,7 @@ public class DataTable extends RowColPanel {
     public void setHeaderWidth(int colIndex, int width) {
         int nCol = table.getColumnCount();
         if (colIndex < 0 || colIndex >= nCol) {
-            System.err.println("DataTable Error: cannot set header width, colIndex is invalid!");
+            ConsoleLogger.error("cannot set header width, colIndex is invalid!");
             return;
         }
         TableColumn tableColumn = table.getColumnModel().getColumn(colIndex);
@@ -303,10 +304,9 @@ public class DataTable extends RowColPanel {
                 return true;
             } else {
                 if (nRow != length) {
-                    System.err.println(
-                            "DataTable Error: cannot add a column of length " +
-                                    length + "! Length " +
-                                    nRow + " expected.");
+                    ConsoleLogger.error("cannot add a column of length " +
+                            length + "! Length " +
+                            nRow + " expected.");
                     return false;
                 }
             }
@@ -356,12 +356,12 @@ public class DataTable extends RowColPanel {
             if (rowIndex >= 0 && rowIndex < getRowCount() && colIndex >= 0 && colIndex < getColumnCount()) {
                 Column c = columns.get(colIndex);
                 if (!c.editable) {
-                    System.err.println("DataTable Error: Cannot set a value in a non-editable column.");
+                    ConsoleLogger.error("Cannot set a value in a non-editable column.");
                     return;
                 }
 
                 if (c.getColumnClass() != value.getClass()) {
-                    System.err.println("DataTable Error: Cannot set a value of a type different from the column type.");
+                    ConsoleLogger.error("Cannot set a value of a type different from the column type.");
                     return;
                 }
                 c.values()[rowIndex] = value;

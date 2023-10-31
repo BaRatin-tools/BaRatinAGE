@@ -25,8 +25,6 @@ public class HydrographPlot extends RowColPanel {
 
                 boolean includeLimniBand = dischargelimniU != null;
 
-                System.out.println("HydrographPlot");
-
                 Plot plot = new Plot(true, true);
 
                 Second[] time = PlotItem.localDateTimeToSecond(dateTime);

@@ -11,6 +11,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.baratinage.ui.AppConfig;
+import org.baratinage.utils.ConsoleLogger;
 import org.baratinage.utils.ReadFile;
 import org.baratinage.utils.WriteFile;
 
@@ -33,7 +34,7 @@ public class AbstractDataset {
                 nRow = values.length;
             }
             if (values != null && nRow != values.length) {
-                System.err.println("AbstractDataset Error: cannot add NamedVector '" +
+                ConsoleLogger.error("cannot add NamedVector '" +
                         column.name() + "' because its length (" +
                         values.length + ") doesn't match expected length (" + nRow + ").");
             } else {
@@ -50,7 +51,7 @@ public class AbstractDataset {
         String[] fileHeaders = null;
         List<double[]> fileData = null;
         if (Files.exists(dataFilePath)) {
-            System.out.println("AbstractDataset: Reading file '" + dataFilePath + "'...");
+            ConsoleLogger.log("Reading file '" + dataFilePath + "'...");
             String dataFilePathString = dataFilePath.toString();
 
             try {
@@ -66,12 +67,12 @@ public class AbstractDataset {
                         false);
 
             } catch (IOException e) {
-                System.err.println("AbstractDataset Error: Failed to read data file ...(" + dataFilePathString + ")");
-                e.printStackTrace();
+                ConsoleLogger.error("Failed to read data file ...(" + dataFilePathString + ")");
+                ConsoleLogger.stackTrace(e);
             }
 
         } else {
-            System.err.println("AbstractDataset Error: File '" + dataFilePath + "' not found!");
+            ConsoleLogger.error("File '" + dataFilePath + "' not found!");
         }
 
         data = new ArrayList<>();
@@ -85,15 +86,14 @@ public class AbstractDataset {
                     }
                 }
                 if (index == -1) {
-                    System.out.println("AbstractDataset: column '" + headers[k] + "' is null.");
+                    ConsoleLogger.log("column '" + headers[k] + "' is null.");
                     data.add(new NamedColumn(headers[k], null));
                 } else {
                     data.add(new NamedColumn(headers[k], fileData.get(index)));
                 }
             }
         } else {
-            System.err.println(
-                    "AbstractDataset Error: Failed to load data, inconsistencies found between headers and data sizes ...");
+            ConsoleLogger.error("Failed to load data, inconsistencies found between headers and data sizes ...");
         }
 
     }
@@ -175,20 +175,20 @@ public class AbstractDataset {
         int hashCode = Arrays.hashCode(hashCodes);
         hashCode = hashCode < 0 ? hashCode * -1 : hashCode;
         String hashString = "" + hashCode;
-        System.out.println("AbstractDataset: hash string  '" + hashString + "' was built for '" + name + "' ");
+        ConsoleLogger.log("hash string  '" + hashString + "' was built for '" + name + "' ");
         return hashString;
     }
 
     private void writeDataFile(String dataFilePath) {
         if (dataFilePath == null) {
-            System.err.println("AbstractDataset Error: cannot write data file because dataFilePath is null");
+            ConsoleLogger.error("cannot write data file because dataFilePath is null");
             return;
         }
         File f = new File(dataFilePath);
         if (f.exists()) {
             // dataFilePath is suppose to have a name with a hash string reflecting actual
             // data, if same name, it means same data!
-            System.out.println("AbstractDataset: no need to write file, it already exists.");
+            ConsoleLogger.log("no need to write file, it already exists.");
             return;
         }
         List<String> nonNullHeaders = new ArrayList<>();
@@ -201,7 +201,7 @@ public class AbstractDataset {
             }
         }
         try {
-            System.out.println("AbstractDataset: Writting data '" + name + "' to file...");
+            ConsoleLogger.log("Writting data '" + name + "' to file...");
             WriteFile.writeMatrix(
                     dataFilePath,
                     nonNullMatrix,
@@ -209,11 +209,10 @@ public class AbstractDataset {
                     "NA",
                     nonNullHeaders.toArray(new String[nonNullHeaders.size()]));
         } catch (IOException e) {
-            System.err.println(
-                    "AbstractDataset Error: Failed to write data '" +
-                            name + "' to file... (" +
-                            dataFilePath + ")");
-            e.printStackTrace();
+            ConsoleLogger.error("Failed to write data '" +
+                    name + "' to file... (" +
+                    dataFilePath + ")");
+            ConsoleLogger.stackTrace(e);
         }
     }
 

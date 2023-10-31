@@ -25,6 +25,7 @@ import org.jfree.svg.SVGGraphics2D;
 import org.baratinage.ui.AppConfig;
 import org.baratinage.ui.component.CommonDialog;
 import org.baratinage.ui.container.RowColPanel;
+import org.baratinage.utils.ConsoleLogger;
 import org.baratinage.translation.T;
 
 public class PlotContainer extends RowColPanel {
@@ -204,7 +205,7 @@ public class PlotContainer extends RowColPanel {
         try {
             ChartUtils.writeScaledChartAsPNG(bout, chart, dim.width, dim.height, scale, scale);
         } catch (IOException e) {
-            System.err.println("PlotContainer Error: \n" + e);
+            ConsoleLogger.error(e);
         }
         return bout.toByteArray();
     }
@@ -219,7 +220,7 @@ public class PlotContainer extends RowColPanel {
                 "svg");
 
         if (f == null) {
-            System.err.println("PlotContainer Error: cannot save to SVG, selected file is null.");
+            ConsoleLogger.error("cannot save to SVG, selected file is null.");
             return;
         }
 
@@ -236,7 +237,7 @@ public class PlotContainer extends RowColPanel {
                 "png");
 
         if (f == null) {
-            System.err.println("PlotContainer Error: cannot save to PNG, selected file is null.");
+            ConsoleLogger.error("cannot save to PNG, selected file is null.");
             return;
         }
 
@@ -251,7 +252,7 @@ public class PlotContainer extends RowColPanel {
             fileWriter.write(svg);
             fileWriter.close();
         } catch (IOException e) {
-            System.err.println("PlotContainer Error: \n" + e);
+            ConsoleLogger.error(e);
         }
     }
 
@@ -259,7 +260,7 @@ public class PlotContainer extends RowColPanel {
         try {
             Files.write(Path.of(filePath), getImageBytes());
         } catch (IOException e) {
-            System.err.println("PlotContainer Error: \n" + e);
+            ConsoleLogger.error(e);
         }
     }
 

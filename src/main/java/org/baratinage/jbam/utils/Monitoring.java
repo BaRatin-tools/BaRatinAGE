@@ -8,6 +8,7 @@ import java.util.List;
 
 import org.baratinage.jbam.BaM;
 import org.baratinage.jbam.PredictionConfig;
+import org.baratinage.utils.ConsoleLogger;
 
 public class Monitoring {
 
@@ -58,7 +59,7 @@ public class Monitoring {
         try {
             startMonitoring();
         } catch (InterruptedException e) {
-            System.err.println("Monitoring Error: BaM monitoring interrupted!");
+            ConsoleLogger.error("BaM monitoring interrupted!");
         }
 
     }
@@ -93,7 +94,7 @@ public class Monitoring {
                             k = N_MAX;
                         }
                     } catch (IOException e) {
-                        e.printStackTrace();
+                        ConsoleLogger.stackTrace(e);
                     }
                 }
 

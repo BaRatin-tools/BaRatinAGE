@@ -16,6 +16,7 @@ import org.baratinage.ui.commons.UncertaintyDataset;
 import org.baratinage.ui.plot.PlotItem;
 import org.baratinage.ui.plot.PlotTimeSeriesBand;
 import org.baratinage.ui.plot.PlotTimeSeriesLine;
+import org.baratinage.utils.ConsoleLogger;
 import org.baratinage.utils.DateTime;
 import org.jfree.data.time.Second;
 
@@ -163,7 +164,7 @@ public class LimnigraphDataset extends AbstractDataset {
                 matrix.add(column);
             }
         } catch (OutOfMemoryError E) {
-            System.err.println("LimnigraphDataset Error: cannot create error matrix because memory is insufficient.");
+            ConsoleLogger.error("cannot create error matrix because memory is insufficient.");
             return;
         }
 

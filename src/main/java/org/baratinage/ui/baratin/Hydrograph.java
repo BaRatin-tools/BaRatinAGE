@@ -24,6 +24,7 @@ import org.baratinage.ui.commons.MsgPanel;
 import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.ui.container.RowColPanel.AXIS;
 import org.baratinage.translation.T;
+import org.baratinage.utils.ConsoleLogger;
 import org.baratinage.utils.DateTime;
 import org.baratinage.utils.json.JSONFilter;
 import org.baratinage.utils.perf.TimedActions;
@@ -174,19 +175,19 @@ public class Hydrograph extends BamItem implements IPredictionMaster {
             JSONObject o = json.getJSONObject("ratingCurve");
             ratingCurveParent.fromJSON(o);
         } else {
-            System.out.println("Hydrograph: missing 'ratingCurve'");
+            ConsoleLogger.log("missing 'ratingCurve'");
         }
         if (json.has("limnigraph")) {
             limnigraphParent.fromJSON(json.getJSONObject("limnigraph"));
         } else {
-            System.out.println("Hydrograph: missing 'limnigraph'");
+            ConsoleLogger.log("missing 'limnigraph'");
         }
         if (json.has("bamRunId")) {
             String bamRunId = json.getString("bamRunId");
             currentConfigAndRes = RunConfigAndRes.buildFromTempZipArchive(bamRunId);
             buildPlot();
         } else {
-            System.out.println("Hydrograph: missing 'bamRunId'");
+            ConsoleLogger.log("missing 'bamRunId'");
         }
 
         if (json.has("backup")) {
@@ -194,7 +195,7 @@ public class Hydrograph extends BamItem implements IPredictionMaster {
             backup = BamConfigRecord.fromJSON(backupJson);
 
         } else {
-            System.out.println("Hydrograph: missing 'backup'");
+            ConsoleLogger.log("missing 'backup'");
         }
         TimedActions.throttle(ID, AppConfig.AC.THROTTLED_DELAY_MS, this::checkSync);
     }
@@ -262,7 +263,7 @@ public class Hydrograph extends BamItem implements IPredictionMaster {
 
     public void buildPlot() {
         if (currentConfigAndRes == null) {
-            System.err.println("Hydrograph Error: No results to plot! Aborting.");
+            ConsoleLogger.error("No results to plot! Aborting.");
             return;
         }
         PredictionResult[] predResults = currentConfigAndRes.getPredictionResults();

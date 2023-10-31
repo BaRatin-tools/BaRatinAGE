@@ -13,6 +13,7 @@ import org.baratinage.ui.baratin.BaratinProject;
 import org.baratinage.ui.component.CommonDialog;
 import org.baratinage.ui.component.SimpleNumberField;
 import org.baratinage.ui.container.RowColPanel;
+import org.baratinage.utils.ConsoleLogger;
 import org.baratinage.utils.Misc;
 
 import java.awt.Dimension;
@@ -120,12 +121,12 @@ public class MainFrame extends JFrame {
         addComponentListener(new ComponentAdapter() {
             public void componentResized(ComponentEvent e) {
                 Dimension dim = MainFrame.this.getSize();
-                System.out.println(String.format("MainFrame: Resized: %d x %d", dim.width, dim.height));
+                ConsoleLogger.log(String.format("Resized: %d x %d", dim.width, dim.height));
             }
 
             public void componentMoved(ComponentEvent e) {
                 Point loc = MainFrame.this.getLocation();
-                System.out.println(String.format("MainFrame: Relocated: %d, %d", loc.x, loc.y));
+                ConsoleLogger.log(String.format("Relocated: %d, %d", loc.x, loc.y));
             }
         });
 
@@ -140,16 +141,16 @@ public class MainFrame extends JFrame {
 
         addWindowStateListener((e) -> {
             if (MainFrame.this.getExtendedState() == JFrame.MAXIMIZED_BOTH) {
-                System.out.println("MainFrame: maximized window");
+                ConsoleLogger.log("maximized window");
             } else if (MainFrame.this.getExtendedState() == JFrame.NORMAL) {
-                System.out.println("MainFrame: normal window");
+                ConsoleLogger.log("normal window");
             } else if (MainFrame.this.getExtendedState() == JFrame.ICONIFIED) {
-                System.out.println("MainFrame: iconified window");
+                ConsoleLogger.log("iconified window");
             } else {
                 if (MainFrame.this.getExtendedState() == 7) {
-                    System.out.println("MainFrame: iconified window?");
+                    ConsoleLogger.log("iconified window?");
                 } else {
-                    System.out.println("MainFrame: iconified/unknown window?");
+                    ConsoleLogger.log("iconified/unknown window?");
                 }
             }
         });
@@ -177,7 +178,7 @@ public class MainFrame extends JFrame {
             });
 
             item.addActionListener((e) -> {
-                System.out.println("MainFrame: swtiching language to '" + tKey + "'");
+                ConsoleLogger.log("swtiching language to '" + tKey + "'");
                 T.setLocale(tKey);
                 updateLanguageSwitcherMenu();
                 // FIXME: how to recursively update the whole Frame?
@@ -243,7 +244,7 @@ public class MainFrame extends JFrame {
                 "bam", "BAM");
 
         if (f == null) {
-            System.err.println("MainFrame Error: loading project failed! Selected file is null.");
+            ConsoleLogger.error("loading project failed! Selected file is null.");
             return;
         }
         String fullFilePath = f.getAbsolutePath();
@@ -262,7 +263,7 @@ public class MainFrame extends JFrame {
     public void saveProject(boolean saveAs) {
 
         if (currentProject == null) {
-            System.err.println("MainFrame Error: no project to save.");
+            ConsoleLogger.error("no project to save.");
             return;
         }
         if (!saveAs) {
@@ -278,7 +279,7 @@ public class MainFrame extends JFrame {
                 "bam", "BAM");
 
         if (f == null) {
-            System.err.println("MainFrame Error: saving project failed! Selected file is null.");
+            ConsoleLogger.error("saving project failed! Selected file is null.");
             return;
         }
         // currentProject.saveProject();

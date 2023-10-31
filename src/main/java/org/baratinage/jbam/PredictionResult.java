@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.baratinage.jbam.utils.Read;
+import org.baratinage.utils.ConsoleLogger;
 
 public class PredictionResult {
 
@@ -54,13 +55,13 @@ public class PredictionResult {
             try {
                 env = Read.readMatrix(Path.of(workspace, envFileName).toString(), 1);
             } catch (IOException e) {
-                System.err.println("PredictionResult Error: Failed to read envelop file '" + envFileName + "'");
+                ConsoleLogger.error("Failed to read envelop file '" + envFileName + "'");
             }
 
             try {
                 spag = Read.readMatrix(Path.of(workspace, spagFileName).toString(), 0);
             } catch (IOException e) {
-                System.err.println("PredictionResult Error: Failed to read spaghetti file '" + spagFileName + "'");
+                ConsoleLogger.error("Failed to read spaghetti file '" + spagFileName + "'");
             }
 
             this.outputResults.add(new PredictionOutputResult(outputName, env, spag));

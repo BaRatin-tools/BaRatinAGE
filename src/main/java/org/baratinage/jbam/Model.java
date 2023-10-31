@@ -8,6 +8,7 @@ import java.util.List;
 
 import org.baratinage.jbam.utils.ConfigFile;
 import org.baratinage.jbam.utils.Write;
+import org.baratinage.utils.ConsoleLogger;
 
 public class Model {
     public final String fileName;
@@ -56,7 +57,7 @@ public class Model {
             Write.writeLines(Path.of(workspace, xTraFileName),
                     new String[] { xTra });
         } catch (IOException e) {
-            e.printStackTrace();
+            ConsoleLogger.stackTrace(e);
         }
     }
 
@@ -104,8 +105,8 @@ public class Model {
             xTraString = Files.readString(Path.of(workspace, xTraFileName));
             xTraString = xTraString.trim();
         } catch (IOException e) {
-            System.err.println("Model Error: An error occured while reading xTra file'" + xTraFileName + "'!");
-            e.printStackTrace();
+            ConsoleLogger.error("Model Error: An error occured while reading xTra file'" + xTraFileName + "'!");
+            ConsoleLogger.stackTrace(e);
             return null;
         }
 

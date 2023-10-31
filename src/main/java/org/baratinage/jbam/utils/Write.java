@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
 
+import org.baratinage.utils.ConsoleLogger;
+
 public class Write {
 
     // FIXME: a complete rewrite of this class should be done
@@ -110,7 +112,7 @@ public class Write {
 
         int nCol = matrixColumnWise.size();
         if (nCol <= 0) {
-            System.err.println("Write Error: Cannot write an empty matrix.");
+            ConsoleLogger.error("Cannot write an empty matrix.");
             return;
         }
         int nRow = matrixColumnWise.get(0).length;
@@ -118,7 +120,7 @@ public class Write {
             // FIXME: this condition could be skiped if BaM allowed input data with 0 rows!
             // At least for calibration data, Config_Data.txt with nobs = 0 throws an error
             // FIXME: this error should be handled in CalibrationData class!
-            System.err.println("Write Error: Cannot write an empty matrix.");
+            ConsoleLogger.error("Cannot write an empty matrix.");
             // String[] emptyMatrix = new String[nCol];
             // for (int k = 0; k < nCol; k++) {
             // emptyMatrix[k] = "";
