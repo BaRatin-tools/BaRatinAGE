@@ -1,13 +1,16 @@
 package org.baratinage.ui.bam;
 
 import java.awt.Font;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
 import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.SwingWorker;
 
 import org.baratinage.jbam.BaM;
 import org.baratinage.jbam.CalDataResidualConfig;
@@ -24,14 +27,16 @@ import org.baratinage.jbam.PredictionConfig;
 import org.baratinage.jbam.StructuralErrorModel;
 import org.baratinage.jbam.UncertainData;
 import org.baratinage.jbam.utils.BamFilesHelpers;
+import org.baratinage.jbam.utils.Monitoring;
 import org.baratinage.translation.T;
 import org.baratinage.ui.AppConfig;
 import org.baratinage.ui.commons.DefaultStructuralErrorModels;
+import org.baratinage.ui.component.ProgressFrame;
 import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.utils.ConsoleLogger;
 import org.baratinage.utils.Misc;
 
-public class RunPanel extends RowColPanel {
+public class RunBam {
 
     private IModelDefinition bamModelDef;
     private IPriors bamPriors;
@@ -46,19 +51,18 @@ public class RunPanel extends RowColPanel {
 
     public final JButton runButton = new JButton();
 
-    public RunPanel(boolean calibRun, boolean priorPredRun, boolean postPredRun) {
+    public String description = null;
+
+    public RunBam(boolean calibRun, boolean priorPredRun, boolean postPredRun) {
         this.calibRun = calibRun;
         this.priorPredRun = priorPredRun;
         this.postPredRun = postPredRun;
-
-        setPadding(5);
-        appendChild(runButton);
 
         runButton.addActionListener((e) -> {
             if (canRun()) {
                 run();
             } else {
-                JOptionPane.showOptionDialog(this,
+                JOptionPane.showOptionDialog(AppConfig.AC.APP_MAIN_FRAME,
                         T.text("cannot_run_invalid_configuration"),
                         T.text("error"),
                         JOptionPane.OK_OPTION,
@@ -376,7 +380,20 @@ public class RunPanel extends RowColPanel {
     private void run() {
 
         String runId = Misc.getTimeStampedId();
-        BaM bam;
+
+        BaM bam = getBaM(runId);
+
+        if (bam != null) {
+            RunDialog runDialog = new RunDialog(runId, bam);
+            runDialog.executeBam((RunConfigAndRes runConfigAndRes) -> {
+                runOnDoneActions(runConfigAndRes);
+            });
+        }
+
+    }
+
+    public BaM getBaM(String runId) {
+        BaM bam = null;
 
         IPredictionExperiment[] predExperiments = bamPredictions.getPredictionExperiments();
         PredictionConfig[] predConfigs = new PredictionConfig[predExperiments.length];
@@ -393,27 +410,120 @@ public class RunPanel extends RowColPanel {
             if (bamCalibratedModel == null) {
                 ConsoleLogger.error(
                         "RunPanel: cannot run BaM for prediction only if no calibration results are provided!");
-                return;
+                return bam;
             }
             bam = BaM.buildBamForPredictions(bamCalibratedModel.getCalibrationResults(), predConfigs);
         }
+        return bam;
+    }
 
-        RunDialog runDialog = new RunDialog(runId, bam);
-        runDialog.executeBam((RunConfigAndRes runConfigAndRes) -> {
-            for (Consumer<RunConfigAndRes> l : runSuccessListeners) {
-                l.accept(runConfigAndRes);
+    private List<Consumer<RunConfigAndRes>> onDoneActions = new ArrayList<>();
+
+    public void addOnDoneAction(Consumer<RunConfigAndRes> l) {
+        onDoneActions.add(l);
+    }
+
+    public void removeOnDoneAction(Consumer<RunConfigAndRes> l) {
+        onDoneActions.remove(l);
+    }
+
+    private void runOnDoneActions(RunConfigAndRes result) {
+        for (Consumer<RunConfigAndRes> l : onDoneActions) {
+            l.accept(result);
+        }
+    }
+
+    public void runAsync(Runnable onDone) {
+
+        if (!canRun()) {
+            return;
+        }
+
+        String id = Misc.getTimeStampedId();
+        BaM bam = getBaM(id);
+        Path workspacePath = Path.of(AppConfig.AC.BAM_WORKSPACE_ROOT, id);
+
+        Misc.createDir(workspacePath.toString());
+
+        Monitoring monitoring = new Monitoring(bam, workspacePath.toString());
+
+        ProgressFrame progressFrame = new ProgressFrame();
+
+        SwingWorker<Void, String> runningWorker = new SwingWorker<>() {
+
+            @Override
+            protected Void doInBackground() throws Exception {
+                String finalMessage = "";
+                try {
+                    ConsoleLogger.log("BaM starting...");
+                    finalMessage = bam.run(workspacePath.toString(), txt -> {
+                        publish(txt);
+                    });
+
+                } catch (IOException e) {
+                    ConsoleLogger.stackTrace(e);
+                    cancel(true);
+                }
+                ConsoleLogger.log(finalMessage.equals("") ? "BaM ran successfully!"
+                        : "BaM finished with errors!\n" + finalMessage);
+                return null;
             }
+
+            @Override
+            protected void process(List<String> logs) {
+                // for (String s : logs) {
+                // logger.accept(s);
+                // }
+            }
+
+            @Override
+            protected void done() {
+                RunConfigAndRes res = RunConfigAndRes.buildFromWorkspace(id, workspacePath);
+                runOnDoneActions(res);
+                progressFrame.done();
+                onDone.run();
+            }
+
+        };
+
+        SwingWorker<Void, Void> monitoringWorker = new SwingWorker<>() {
+
+            @Override
+            protected Void doInBackground() throws Exception {
+                monitoring.startMonitoring();
+                return null;
+            }
+
+        };
+
+        RowColPanel panel = new RowColPanel();
+        panel.setPadding(10, 5, 10, 5);
+        panel.appendChild(new JLabel(description == null ? T.text("bam_running") : description));
+
+        int nSteps = monitoring.getNumberOfSteps();
+        int nProgressMax = nSteps * 100;
+
+        monitoring.addMonitoringConsumer((monitoringStep) -> {
+            double stepProgress = (double) monitoringStep.progress / (double) monitoringStep.total;
+            int n = monitoringStep.currenStep * 100 + (int) (stepProgress * 100);
+            progressFrame.updateProgress(
+                    String.format("%d/%d - %s",
+                            monitoringStep.currenStep,
+                            monitoringStep.totalSteps,
+                            T.text(monitoringStep.getStepId())),
+                    n);
         });
 
-    }
+        progressFrame.openProgressFrame(
+                AppConfig.AC.APP_MAIN_FRAME,
+                panel,
+                T.text("bam_running"),
+                0,
+                nProgressMax,
+                true);
 
-    private List<Consumer<RunConfigAndRes>> runSuccessListeners = new ArrayList<>();
+        runningWorker.execute();
+        monitoringWorker.execute();
 
-    public void addRunSuccessListerner(Consumer<RunConfigAndRes> l) {
-        runSuccessListeners.add(l);
-    }
-
-    public void removeRunSuccessListerner(Consumer<RunConfigAndRes> l) {
-        runSuccessListeners.remove(l);
     }
 }
