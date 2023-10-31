@@ -5,6 +5,7 @@ import java.awt.GraphicsEnvironment;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -123,6 +124,25 @@ public class Misc {
         }
         boolean success = dirFile.delete();
         System.out.println("Misc: Deleting directory '" + dirPath + "'... " + (success ? "SUCCESS" : "FAILED"));
+    }
+
+    public static Path parsePathFromUnknownOSorigin(String rawPath) {
+        String[] osSplitChars = new String[] { "\\\\", "/" };
+        int maxNumberOfItems = -1;
+        String root = rawPath;
+        String[] bestSplit = new String[] {};
+        for (String splitChar : osSplitChars) {
+            String[] splitRes = rawPath.split(splitChar);
+            int n = splitRes.length;
+            if (n > 1) {
+                if (n > maxNumberOfItems) {
+                    maxNumberOfItems = n;
+                    root = "";
+                    bestSplit = splitRes;
+                }
+            }
+        }
+        return Path.of(root, bestSplit);
     }
 
     public static void showOnScreen(int screen, JFrame frame) {
