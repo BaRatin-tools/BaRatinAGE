@@ -17,17 +17,17 @@ public class AppIcons {
     public float ICON_SIZE;
     private float FEATHER_ICON_SIZE;
 
-    public SvgIcon BARATINAGE_ICON_LARGE;
-    public SvgIcon COPY_ICON;
-    public SvgIcon TRASH_ICON;
-    public SvgIcon LOCK_ICON;
-    public SvgIcon SAVE_ICON;
-    public SvgIcon EXTERNAL_ICON;
-
-    public SvgIcon LEFT_DOWN_ARROW_ICON;
-    public SvgIcon RIGHT_DOWN_ARROW_ICON;
-    public SvgIcon LEFT_UP_ARROW_ICON;
-    public SvgIcon RIGHT_UP_ARROW_ICON;
+    public final SvgIcon BARATINAGE_ICON_LARGE;
+    public final SvgIcon COPY_ICON;
+    public final SvgIcon TRASH_ICON;
+    public final SvgIcon LOCK_ICON;
+    public final SvgIcon SAVE_ICON;
+    public final SvgIcon EXTERNAL_ICON;
+    public final SvgIcon LIST_ICON;
+    public final SvgIcon LEFT_DOWN_ARROW_ICON;
+    public final SvgIcon RIGHT_DOWN_ARROW_ICON;
+    public final SvgIcon LEFT_UP_ARROW_ICON;
+    public final SvgIcon RIGHT_UP_ARROW_ICON;
 
     private HashMap<String, SvgIcon> otherIcons = new HashMap<>();
 
@@ -45,6 +45,7 @@ public class AppIcons {
         LOCK_ICON = addIcon(buildFeatherAppImageIcon("lock.svg", FEATHER_ICON_SIZE));
         SAVE_ICON = addIcon(buildFeatherAppImageIcon("save.svg", FEATHER_ICON_SIZE));
         EXTERNAL_ICON = addIcon(buildFeatherAppImageIcon("external-link.svg", FEATHER_ICON_SIZE));
+        LIST_ICON = addIcon(buildFeatherAppImageIcon("list.svg", FEATHER_ICON_SIZE));
 
         LEFT_DOWN_ARROW_ICON = addIcon(buildFeatherAppImageIcon("corner-left-down.svg", FEATHER_ICON_SIZE));
         RIGHT_DOWN_ARROW_ICON = addIcon(buildFeatherAppImageIcon("corner-right-down.svg", FEATHER_ICON_SIZE));
@@ -94,6 +95,7 @@ public class AppIcons {
         for (SvgIcon icon : allIcons) {
             icon.rebuildIcon();
         }
+        SvgIcon.memorizeCurrentScales();
         SwingUtilities.updateComponentTreeUI(AppConfig.AC.APP_MAIN_FRAME);
     }
 }

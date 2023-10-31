@@ -28,10 +28,18 @@ public class SvgIcon extends ImageIcon {
     private final String sourcePath;
 
     private static Scales lastUsedScales;
+    private static Scales memorizedScales;
+
+    public static void memorizeCurrentScales() {
+        memorizedScales = lastUsedScales;
+    }
 
     public static boolean scalesHaveChanged() {
+        if (memorizedScales == null) {
+            return true;
+        }
         Scales s = getScales();
-        return !s.toString().equals(lastUsedScales.toString());
+        return !s.toString().equals(memorizedScales.toString());
     }
 
     public SvgIcon(String path, float width, float height) {
