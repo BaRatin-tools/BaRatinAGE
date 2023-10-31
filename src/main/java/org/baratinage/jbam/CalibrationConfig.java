@@ -1,5 +1,7 @@
 package org.baratinage.jbam;
 
+import org.baratinage.utils.ConsoleLogger;
+
 public class CalibrationConfig {
     public final Model model;
     public final ModelOutput[] modelOutputs;

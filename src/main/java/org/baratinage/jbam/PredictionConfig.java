@@ -2,6 +2,7 @@ package org.baratinage.jbam;
 
 import org.baratinage.jbam.utils.BamFilesHelpers;
 import org.baratinage.jbam.utils.ConfigFile;
+import org.baratinage.utils.ConsoleLogger;
 
 public class PredictionConfig {
     public final String name;
