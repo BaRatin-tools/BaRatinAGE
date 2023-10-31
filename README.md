@@ -16,7 +16,7 @@ Choisissez l'archive .zip adaptée à votre système d'exploitation (Windows ou 
 Par exemple, pour Windows et pour la version 2.2, allez dans la section **BaRatinAGE 2.2** et cliquez sur **BaRatinAGE_v2.2_windows.zip** pour télécharger l'archive.
 
 **BaRatinAGE** ne nécessite aucune installation.
-Il vous suffit de dézipper / décompresser l'archive .zip dans le répertoire de votre choix. 
+Il vous suffit de dézipper / décompresser l'archive .zip dans le répertoire de votre choix (vous devez avoir les droits d'écriture dans ce répertoire). 
 
 _Note: contrairement aux anciennes versions de BaRatinAGE, les nouvelles versions ne nécessitent plus l'installation de Java._
 
@@ -24,9 +24,10 @@ _Note: contrairement aux anciennes versions de BaRatinAGE, les nouvelles version
 
 Pour lancer **BaRatinAGE**: 
 - sur Windows, à la racine du dossier contenant BaRatinAGE que vous venez de décompresser, il vous suffit de double-cliquer sur l'exécutable nommé **BaRatinAGE.exe** qui s'y trouve.
-- sur Linux, dans le sous dossier `bin\` du dossier contenant BaRatinAGE que vous venez de décompresser, il vous suffit de double-cliquer sur l'exécutable nommé **BaRatinAGE** qui s'y trouve (ou de le lancer en ligne de commande : `./BaRatinAGE`).
+- sur Linux, dans le sous-dossier `bin\` du dossier contenant BaRatinAGE que vous venez de décompresser, il vous suffit de double-cliquer sur l'exécutable nommé **BaRatinAGE** qui s'y trouve (ou de le lancer en ligne de commande : `./BaRatinAGE`).
     - il est fréquent de devoir changer les droits d'exécution de l'exécutable. En ligne de commande : `sudo chmod a=rx BaRatinAGE`.
     - la même manipulation est parfois nécessaire avec l'exécutable de **BaRatin** qui se trouve dans le répertoire `bin\exe\`
+    - si vous n'avez pas les droits d'écriture dans ce sous-dossier: `sudo chmod -R 755`
 
 ## Aide
 
@@ -72,7 +73,7 @@ Choose the .zip archive which matches your operating system (windows or linux).
 For example, for Windows and version 2.2, go to the section **BaRatinAGE 2.2** and click on **BaRatinAGE_v2.2_windows.zip** to download the archive.
 
 **BaRatinAGE** doesn't require any installation.
-You simply need to unzip / uncompress the .zip archive in the repertory of your choice.
+You simply need to unzip / uncompress the .zip archive in the folder of your choice (you need write access in this folder).
 
 _Note: unlike previous versions of BaRatinAGE, new versions do not require installing Java._
 
@@ -81,8 +82,9 @@ _Note: unlike previous versions of BaRatinAGE, new versions do not require insta
 To run **BaRatinAGE**:
 - on Windows, at the root of the folder which contains **BaRatinAGE** (that you've just uncompressed), double-click on the executable file named **BaRatinAGE.exe**.
 - on Linux: in the subfolder `bin\` of the folder containing the unzipped **BaRatinAGE**,  double-click on the executable file named **BaRatinAGE** (or using the terminal, run `./BaRatinAGE`).
-    - it is common to have to modify execution rights of the file **BaRatinAGE**. Using the terminal, run `sudo chmod a=rx BaRatinAGE`.
+    - it is common to have to modify execute access of the file **BaRatinAGE**. Using the terminal, run `sudo chmod a=rx BaRatinAGE`.
     - the same action is sometimes required for the **BaRatin** executable file in the folder `bin\exe\`.
+    - if you do not have write access in this subfolder: `sudo chmod -R 755`
 
 ## Help
 
