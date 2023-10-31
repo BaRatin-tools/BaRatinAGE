@@ -7,6 +7,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -15,6 +16,7 @@ public class ConsoleLogger {
 
     private static String id;
     private static Path logFilePath;
+    private static Path logFolderPath;
 
     public static void init() {
         id = Misc.getTimeStampedId();
@@ -27,23 +29,26 @@ public class ConsoleLogger {
             appRootDir = Path.of(exePath).getParent().toString();
         }
 
-        logFilePath = Path.of(appRootDir, id + ".log");
+        logFolderPath = Path.of(appRootDir, "log");
+        logFilePath = Path.of(appRootDir, "log", id + ".log");
+        cleanup();
         createLogFile();
-        // try {
-        // logFilePath.toFile().createNewFile();
-        // } catch (IOException e) {
-        // e.printStackTrace();
-        // }
     }
 
-    // FIXME: not sure how/when this method should be called
-    // Runtime.getRuntime().addShutdownHook() is an option
-    public static void cleanup() {
-        File f = logFilePath.toFile();
-        if (f.exists()) {
-            f.delete();
+    private static void cleanup() {
+        for (File file : logFolderPath.toFile().listFiles()) {
+            if (file.getName().endsWith(".log")) {
+                try {
+                    BasicFileAttributes attr = Files.readAttributes(file.toPath(), BasicFileAttributes.class);
+                    long elapsed = System.currentTimeMillis() - attr.lastModifiedTime().toMillis();
+                    if (elapsed > 86400000) {
+                        file.delete();
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
         }
-        logFilePath = null;
     }
 
     private static void createLogFile() {
