@@ -74,7 +74,7 @@ public abstract class BamProject extends RowColPanel {
         appendChild(content, 1);
 
         explorer = new Explorer();
-        // T.t(explorer.headerLabel, false, "explorer");
+        explorer.headerLabel.setIcon(AppConfig.AC.ICONS.LIST_ICON);
         T.t(this, explorer.headerLabel, false, "explorer");
 
         setupExplorer();
