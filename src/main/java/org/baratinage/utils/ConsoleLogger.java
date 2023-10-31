@@ -76,6 +76,10 @@ public class ConsoleLogger {
                 + (prefix.length() == 0 ? " " : " ***" + prefix + "*** ") + message;
     }
 
+    public static void log(Object object) {
+        log(object.toString());
+    }
+
     public static void log(String message) {
         String callerClassName = getCallerClassName();
         String parsedMessage = parseMessage(callerClassName, "", message);
