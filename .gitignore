@@ -18,12 +18,20 @@
 /archive
 /.archive
 /dist
+/log/*.log
 *.jar
 *.bar.zip
 /resources/icons/feather/*
 !/resources/icons/feather/trash.svg
 !/resources/icons/feather/copy.svg
 !/resources/icons/feather/save.svg
+!/resources/icons/feather/list.svg
+!/resources/icons/feather/lock.svg
+!/resources/icons/feather/external-link.svg
+!/resources/icons/feather/corner-left-down.svg
+!/resources/icons/feather/corner-right-down.svg
+!/resources/icons/feather/corner-left-up.svg
+!/resources/icons/feather/corner-right-up.svg
 
 # V2 related folder to ignore
 /externalLib
