@@ -70,7 +70,6 @@ public class SvgIcon extends ImageIcon {
 
     private void buildIcon() {
 
-        ConsoleLogger.log("building icon '" + sourcePath + "'...");
         float w = width;
         float h = height;
 
