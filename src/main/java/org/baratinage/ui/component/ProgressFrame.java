@@ -68,6 +68,9 @@ public class ProgressFrame extends JDialog {
             int progressMin,
             int progressMax,
             boolean autoClose) {
+
+        cancelCloseButton.setEnabled(!autoClose);
+
         progressBar.setMinimum(progressMin);
         progressBar.setMaximum(progressMax);
 
