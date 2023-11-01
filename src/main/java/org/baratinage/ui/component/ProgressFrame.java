@@ -7,6 +7,7 @@ import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
@@ -73,11 +74,11 @@ public class ProgressFrame extends JDialog {
             boolean cancelable) {
 
         if (cancelable) {
-            cancelCloseButton.setVisible(false);
-            setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
-        } else {
-            cancelCloseButton.setVisible(true);
+            cancelCloseButton.setEnabled(true);
             setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+        } else {
+            cancelCloseButton.setEnabled(false);
+            setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
         }
 
         progressBar.setMinimum(progressMin);
@@ -113,9 +114,26 @@ public class ProgressFrame extends JDialog {
         dispose();
     }
 
+    public void updateProgress(final int progress) {
+        updateProgress(null, null, progress);
+    }
+
     public void updateProgress(final String message, final int progress) {
-        progressBar.setValue(progress);
-        progressMsg.setText(message);
+        updateProgress(null, message, progress);
+    }
+
+    public void updateProgress(final ImageIcon icon, final String message, final int progress) {
+        if (icon != null) {
+            progressMsg.setIcon(icon);
+        }
+        if (message != null) {
+            progressMsg.setText(message);
+        }
+        int currentProgress = progressBar.getValue();
+        if (currentProgress != progress) {
+            progressBar.setValue(progress);
+            progressBar.repaint();
+        }
     }
 
     public void done() {
