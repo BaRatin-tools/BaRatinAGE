@@ -18,6 +18,7 @@ public class AppIcons {
     private float FEATHER_ICON_SIZE;
 
     public final SvgIcon BARATINAGE_ICON_LARGE;
+    public final SvgIcon BARATINAGE_ICON;
     public final SvgIcon COPY_ICON;
     public final SvgIcon TRASH_ICON;
     public final SvgIcon LOCK_ICON;
@@ -39,6 +40,10 @@ public class AppIcons {
 
         ICON_SIZE = 28;
         FEATHER_ICON_SIZE = 20;
+
+        BARATINAGE_ICON = addIcon(new SvgIcon(
+                Path.of(AppConfig.AC.ICONS_RESOURCES_DIR, "icon.svg").toString(),
+                ICON_SIZE, ICON_SIZE));
 
         COPY_ICON = addIcon(buildFeatherAppImageIcon("copy.svg", FEATHER_ICON_SIZE));
         TRASH_ICON = addIcon(buildFeatherAppImageIcon("trash.svg", FEATHER_ICON_SIZE));
