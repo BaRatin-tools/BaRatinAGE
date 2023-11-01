@@ -160,6 +160,7 @@ public class ConsoleLogger {
             for (String f : showFilters) {
                 if (className.equals(f)) {
                     System.out.println(message);
+                    return;
                 }
             }
         } else if (hideFilters.size() > 0) {
@@ -172,9 +173,11 @@ public class ConsoleLogger {
             }
             if (show) {
                 System.out.println(message);
+                return;
             }
         } else {
             System.out.println(message);
+            return;
         }
 
     }
