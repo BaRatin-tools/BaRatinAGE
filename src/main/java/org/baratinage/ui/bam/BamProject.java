@@ -365,7 +365,6 @@ public abstract class BamProject extends RowColPanel {
                 loadingMessage,
                 0,
                 n,
-                true,
                 true);
 
         bamProjectLoadingFrame.updateProgress(loadingMessage, 0);
