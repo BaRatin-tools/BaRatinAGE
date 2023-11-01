@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.function.Consumer;
 
 import javax.swing.JButton;
-import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.SwingWorker;
 
@@ -31,8 +30,6 @@ import org.baratinage.jbam.utils.Monitoring;
 import org.baratinage.translation.T;
 import org.baratinage.ui.AppConfig;
 import org.baratinage.ui.commons.DefaultStructuralErrorModels;
-import org.baratinage.ui.component.ProgressFrame;
-import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.utils.ConsoleLogger;
 import org.baratinage.utils.Misc;
 
@@ -433,9 +430,26 @@ public class RunBam {
         }
     }
 
-    public void runAsync(Runnable onDone) {
+    public void runAsync(Runnable onDone, Runnable onError) {
+        runAsync(
+                s -> {
+                },
+                p -> {
+                },
+                onDone, onError);
+    }
+
+    public void runAsync(Consumer<Float> onProgress, Runnable onDone, Runnable onError) {
+        runAsync(
+                s -> {
+                },
+                onProgress, onDone, onError);
+    }
+
+    public void runAsync(Consumer<String> onLog, Consumer<Float> onProgress, Runnable onDone, Runnable onError) {
 
         if (!canRun()) {
+            onError.run();
             return;
         }
 
@@ -446,8 +460,6 @@ public class RunBam {
         Misc.createDir(workspacePath.toString());
 
         Monitoring monitoring = new Monitoring(bam, workspacePath.toString());
-
-        ProgressFrame progressFrame = new ProgressFrame();
 
         SwingWorker<Void, String> runningWorker = new SwingWorker<>() {
 
@@ -463,6 +475,7 @@ public class RunBam {
                 } catch (IOException e) {
                     ConsoleLogger.stackTrace(e);
                     cancel(true);
+                    onError.run();
                 }
                 ConsoleLogger.log(finalMessage.equals("") ? "BaM ran successfully!"
                         : "BaM finished with errors!\n" + finalMessage);
@@ -471,17 +484,17 @@ public class RunBam {
 
             @Override
             protected void process(List<String> logs) {
-                // for (String s : logs) {
-                // logger.accept(s);
-                // }
+                for (String s : logs) {
+                    onLog.accept(s);
+                }
             }
 
             @Override
             protected void done() {
                 RunConfigAndRes res = RunConfigAndRes.buildFromWorkspace(id, workspacePath);
                 runOnDoneActions(res);
-                progressFrame.done();
                 onDone.run();
+                ConsoleLogger.log("BaM done...");
             }
 
         };
@@ -496,32 +509,17 @@ public class RunBam {
 
         };
 
-        RowColPanel panel = new RowColPanel();
-        panel.setPadding(10, 5, 10, 5);
-        panel.appendChild(new JLabel(description == null ? T.text("bam_running") : description));
-
-        int nSteps = monitoring.getNumberOfSteps();
-        int nProgressMax = nSteps * 100;
-
         monitoring.addMonitoringConsumer((monitoringStep) -> {
-            double stepProgress = (double) monitoringStep.progress / (double) monitoringStep.total;
-            int n = monitoringStep.currenStep * 100 + (int) (stepProgress * 100);
-            progressFrame.updateProgress(
-                    String.format("%d/%d - %s",
-                            monitoringStep.currenStep,
-                            monitoringStep.totalSteps,
-                            T.text(monitoringStep.getStepId())),
-                    n);
-        });
 
-        progressFrame.openProgressFrame(
-                AppConfig.AC.APP_MAIN_FRAME,
-                panel,
-                T.text("bam_running"),
-                0,
-                nProgressMax,
-                true,
-                true);
+            float stepSize = 1f / (float) monitoringStep.totalSteps;
+
+            float stepProgress = (float) monitoringStep.progress / (float) monitoringStep.total;
+            float overallProgress = (float) (monitoringStep.currenStep - 1) / (float) monitoringStep.totalSteps;
+
+            float progress = overallProgress + stepProgress * stepSize;
+
+            onProgress.accept(progress);
+        });
 
         runningWorker.execute();
         monitoringWorker.execute();
