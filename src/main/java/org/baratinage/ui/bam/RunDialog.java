@@ -158,9 +158,15 @@ public class RunDialog extends JDialog {
 
             @Override
             protected Void doInBackground() throws Exception {
-                new Monitoring(bam, workspacePath.toString(), (m) -> {
+                Monitoring monitoring = new Monitoring(bam, workspacePath.toString());
+                monitoring.addMonitoringConsumer((m) -> {
                     progressBar.update(m.id, m.progress, m.total, m.currenStep, m.totalSteps);
                 });
+                try {
+                    monitoring.startMonitoring();
+                } catch (InterruptedException e) {
+                    ConsoleLogger.error("BaM monitoring interrupted!");
+                }
                 return null;
             }
 
