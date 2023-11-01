@@ -7,6 +7,7 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.KeyStroke;
 
+import org.baratinage.project_importer.BaratinageV2Importer;
 import org.baratinage.translation.T;
 import org.baratinage.ui.bam.BamProject;
 import org.baratinage.ui.baratin.BaratinProject;
@@ -96,6 +97,25 @@ public class MainFrame extends JFrame {
             saveProject(false);
         });
         fileMenu.add(saveProjectMenuItem);
+
+        fileMenu.addSeparator();
+        JMenuItem importBaratinageV2projectMenuItem = new JMenuItem();
+        T.t(this, importBaratinageV2projectMenuItem, false, "import_baratinage_v2_project");
+        importBaratinageV2projectMenuItem.addActionListener((e) -> {
+            File f = CommonDialog.openFileDialog(T.text("import_baratinage_v2_project"),
+                    T.text("bar_zip_file_format"), "bar.zip", "BAR.ZIP");
+            if (f != null) {
+                BaratinageV2Importer projConver = new BaratinageV2Importer();
+                projConver.importProject(
+                        f.getAbsolutePath(),
+                        (project) -> {
+                            ConsoleLogger.log(project);
+                            setCurrentProject(project);
+                        });
+
+            }
+        });
+        fileMenu.add(importBaratinageV2projectMenuItem);
 
         fileMenu.addSeparator();
 
