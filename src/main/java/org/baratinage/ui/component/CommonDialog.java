@@ -5,7 +5,7 @@ import java.io.File;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
-import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.filechooser.FileFilter;
 
 import org.baratinage.translation.T;
 import org.baratinage.ui.AppConfig;
@@ -56,6 +56,17 @@ public class CommonDialog {
             defaultSaveTitle = T.text("save");
             defaultApproveButtonToolTipText = T.text("ok");
         });
+    }
+
+    public static void errorDialog(String message) {
+        JOptionPane.showOptionDialog(AppConfig.AC.APP_MAIN_FRAME,
+                message,
+                T.text("error"),
+                JOptionPane.OK_OPTION,
+                JOptionPane.ERROR_MESSAGE,
+                null,
+                new String[] { T.text("ok") },
+                "");
     }
 
     public static File saveFileDialog(String title, String formatName, String... extensions) {
@@ -116,10 +127,41 @@ public class CommonDialog {
         fileChooser.setDialogTitle(title);
         fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
         fileChooser.setApproveButtonToolTipText(defaultApproveButtonToolTipText);
-        fileChooser.setFileFilter(new FileNameExtensionFilter(
-                formatName + " (." + String.join(", .", extensions) + ")",
+        fileChooser.setFileFilter(new CustomFileFilter(
+                formatName,
                 extensions));
         fileChooser.setAcceptAllFileFilterUsed(false);
         return fileChooser;
+    }
+
+    private static class CustomFileFilter extends FileFilter {
+
+        private String description;
+        private String[] extensions;
+
+        public CustomFileFilter(String description, String... extensions) {
+            this.description = description + " (." + String.join(", .", extensions);
+            this.extensions = extensions;
+        }
+
+        @Override
+        public boolean accept(File f) {
+            if (f.isDirectory()) {
+                return true;
+            }
+            String fName = f.getName();
+            for (String ext : extensions) {
+                if (fName.endsWith("." + ext)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        @Override
+        public String getDescription() {
+            return description;
+        }
+
     }
 }
