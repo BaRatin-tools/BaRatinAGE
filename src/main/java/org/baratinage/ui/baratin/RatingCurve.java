@@ -32,7 +32,7 @@ import org.baratinage.ui.bam.IPredictionExperiment;
 import org.baratinage.ui.bam.IPredictionMaster;
 import org.baratinage.ui.bam.PredictionExperiment;
 import org.baratinage.ui.bam.RunConfigAndRes;
-import org.baratinage.ui.bam.RunPanel;
+import org.baratinage.ui.bam.RunBam;
 import org.baratinage.ui.baratin.rating_curve.RatingCurveResults;
 import org.baratinage.ui.baratin.rating_curve.RatingCurveStageGrid;
 import org.baratinage.ui.commons.MsgPanel;
@@ -52,7 +52,7 @@ public class RatingCurve extends BamItem implements IPredictionMaster, ICalibrat
     private BamItemParent structErrorParent;
 
     private RatingCurveStageGrid ratingCurveStageGrid;
-    private RunPanel runPanel;
+    public RunBam runBam;
     private RatingCurveResults resultsPanel;
     private RunConfigAndRes bamRunConfigAndRes;
 
@@ -82,8 +82,8 @@ public class RatingCurve extends BamItem implements IPredictionMaster, ICalibrat
         });
         hydrauConfParent.addChangeListener((e) -> {
             HydraulicConfiguration bamItem = (HydraulicConfiguration) hydrauConfParent.getCurrentBamItem();
-            runPanel.setModelDefintion(bamItem);
-            runPanel.setPriors(bamItem);
+            runBam.setModelDefintion(bamItem);
+            runBam.setPriors(bamItem);
 
             TimedActions.throttle(ID, AppConfig.AC.THROTTLED_DELAY_MS, this::checkSync);
         });
@@ -100,7 +100,7 @@ public class RatingCurve extends BamItem implements IPredictionMaster, ICalibrat
         });
         gaugingsParent.addChangeListener((e) -> {
             Gaugings bamItem = (Gaugings) gaugingsParent.getCurrentBamItem();
-            runPanel.setCalibrationData(bamItem);
+            runBam.setCalibrationData(bamItem);
 
             TimedActions.throttle(ID, AppConfig.AC.THROTTLED_DELAY_MS, this::checkSync);
         });
@@ -116,7 +116,7 @@ public class RatingCurve extends BamItem implements IPredictionMaster, ICalibrat
         });
         structErrorParent.addChangeListener((e) -> {
             StructuralErrorModelBamItem bamItem = (StructuralErrorModelBamItem) structErrorParent.getCurrentBamItem();
-            runPanel.setStructuralErrorModel(bamItem);
+            runBam.setStructuralErrorModel(bamItem);
 
             TimedActions.throttle(ID, AppConfig.AC.THROTTLED_DELAY_MS, this::checkSync);
         });
@@ -143,9 +143,9 @@ public class RatingCurve extends BamItem implements IPredictionMaster, ICalibrat
         mainConfigPanel.appendChild(new JSeparator(JSeparator.VERTICAL), 0);
         mainConfigPanel.appendChild(ratingCurveStageGrid, 1);
 
-        runPanel = new RunPanel(true, false, true);
-        runPanel.setPredictionExperiments(this);
-        runPanel.addRunSuccessListerner((RunConfigAndRes res) -> {
+        runBam = new RunBam(true, false, true);
+        runBam.setPredictionExperiments(this);
+        runBam.addOnDoneAction((RunConfigAndRes res) -> {
             backup = save(true);
             bamRunConfigAndRes = res;
             updateResults();
@@ -164,7 +164,7 @@ public class RatingCurve extends BamItem implements IPredictionMaster, ICalibrat
         outdatedPanel.setColWeight(0, 1);
 
         mainContentPanel.appendChild(outdatedPanel, 0);
-        mainContentPanel.appendChild(runPanel, 0);
+        mainContentPanel.appendChild(runBam.runButton, 0);
         mainContentPanel.appendChild(resultsPanel, 1);
 
         content.appendChild(mainConfigPanel, 0);
@@ -177,11 +177,11 @@ public class RatingCurve extends BamItem implements IPredictionMaster, ICalibrat
         T.updateHierarchy(this, gaugingsParent);
         T.updateHierarchy(this, structErrorParent);
         T.updateHierarchy(this, ratingCurveStageGrid);
-        T.updateHierarchy(this, runPanel);
+        T.updateHierarchy(this, runBam);
         T.updateHierarchy(this, resultsPanel);
         T.updateHierarchy(this, outdatedPanel);
 
-        T.t(runPanel, runPanel.runButton, true, "compute_posterior_rc");
+        T.t(runBam, runBam.runButton, true, "compute_posterior_rc");
     }
 
     @Override
@@ -294,13 +294,13 @@ public class RatingCurve extends BamItem implements IPredictionMaster, ICalibrat
         }
         // --------------------------------------------------------------------
         // update run bam button
-        T.clear(runPanel);
+        T.clear(runBam);
         if (isStageGridOutOfSync || needBamRerun) {
-            T.t(runPanel, runPanel.runButton, true, "recompute_posterior_rc");
-            runPanel.runButton.setForeground(AppConfig.AC.INVALID_COLOR_FG);
+            T.t(runBam, runBam.runButton, true, "recompute_posterior_rc");
+            runBam.runButton.setForeground(AppConfig.AC.INVALID_COLOR_FG);
         } else {
-            T.t(runPanel, runPanel.runButton, true, "compute_posterior_rc");
-            runPanel.runButton.setForeground(new JButton().getForeground());
+            T.t(runBam, runBam.runButton, true, "compute_posterior_rc");
+            runBam.runButton.setForeground(new JButton().getForeground());
         }
 
         // since text within warnings changes, it is necessary to

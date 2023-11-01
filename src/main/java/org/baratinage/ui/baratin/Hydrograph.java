@@ -19,7 +19,7 @@ import org.baratinage.ui.bam.IPredictionExperiment;
 import org.baratinage.ui.bam.IPredictionMaster;
 import org.baratinage.ui.bam.PredictionExperiment;
 import org.baratinage.ui.bam.RunConfigAndRes;
-import org.baratinage.ui.bam.RunPanel;
+import org.baratinage.ui.bam.RunBam;
 import org.baratinage.ui.commons.MsgPanel;
 import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.ui.container.RowColPanel.AXIS;
@@ -32,7 +32,7 @@ import org.json.JSONObject;
 
 public class Hydrograph extends BamItem implements IPredictionMaster {
 
-    private final RunPanel runPanel;
+    public final RunBam runBam;
     private final HydrographPlot plotPanel;
     private final RowColPanel outdatedPanel;
 
@@ -48,8 +48,8 @@ public class Hydrograph extends BamItem implements IPredictionMaster {
     public Hydrograph(String uuid, BaratinProject project) {
         super(BamItemType.HYDROGRAPH, uuid, project);
 
-        runPanel = new RunPanel(false, false, true);
-        runPanel.setPredictionExperiments(this);
+        runBam = new RunBam(false, false, true);
+        runBam.setPredictionExperiments(this);
 
         ratingCurveParent = new BamItemParent(this, BamItemType.RATING_CURVE);
         ratingCurveParent.setComparisonJSONfilter((JSONObject json) -> {
@@ -58,7 +58,7 @@ public class Hydrograph extends BamItem implements IPredictionMaster {
         ratingCurveParent.addChangeListener((chEvt) -> {
             RatingCurve rc = (RatingCurve) ratingCurveParent.getCurrentBamItem();
             currentRatingCurve = rc;
-            runPanel.setCalibratedModel(rc);
+            runBam.setCalibratedModel(rc);
             TimedActions.throttle(ID, AppConfig.AC.THROTTLED_DELAY_MS, this::checkSync);
         });
 
@@ -73,7 +73,7 @@ public class Hydrograph extends BamItem implements IPredictionMaster {
             TimedActions.throttle(ID, AppConfig.AC.THROTTLED_DELAY_MS, this::checkSync);
         });
 
-        runPanel.addRunSuccessListerner((RunConfigAndRes res) -> {
+        runBam.addOnDoneAction((RunConfigAndRes res) -> {
             backup = save(true);
             currentConfigAndRes = res;
             buildPlot();
@@ -101,14 +101,14 @@ public class Hydrograph extends BamItem implements IPredictionMaster {
         content.appendChild(parentItemPanel, 0);
         content.appendChild(new JSeparator(JSeparator.HORIZONTAL), 0);
         content.appendChild(outdatedPanel, 0);
-        content.appendChild(runPanel, 0);
+        content.appendChild(runBam.runButton, 0);
         content.appendChild(plotPanel, 1);
         setContent(content);
 
-        T.updateHierarchy(this, runPanel);
+        T.updateHierarchy(this, runBam);
         T.updateHierarchy(this, plotPanel);
         T.updateHierarchy(this, outdatedPanel);
-        T.t(runPanel, runPanel.runButton, false, "compute_qt");
+        T.t(runBam, runBam.runButton, false, "compute_qt");
     }
 
     private void checkSync() {
@@ -129,13 +129,13 @@ public class Hydrograph extends BamItem implements IPredictionMaster {
         }
         // --------------------------------------------------------------------
         // update run bam button
-        T.clear(runPanel);
+        T.clear(runBam);
         if (needBamRerun) {
-            T.t(runPanel, runPanel.runButton, false, "recompute_qt");
-            runPanel.runButton.setForeground(AppConfig.AC.INVALID_COLOR_FG);
+            T.t(runBam, runBam.runButton, false, "recompute_qt");
+            runBam.runButton.setForeground(AppConfig.AC.INVALID_COLOR_FG);
         } else {
-            T.t(runPanel, runPanel.runButton, false, "compute_qt");
-            runPanel.runButton.setForeground(new JButton().getForeground());
+            T.t(runBam, runBam.runButton, false, "compute_qt");
+            runBam.runButton.setForeground(new JButton().getForeground());
         }
 
         // FIXME: check if message below is still relevant

@@ -23,7 +23,7 @@ import org.baratinage.ui.bam.IPredictionMaster;
 import org.baratinage.ui.bam.IPriors;
 import org.baratinage.ui.bam.PriorPredictionExperiment;
 import org.baratinage.ui.bam.RunConfigAndRes;
-import org.baratinage.ui.bam.RunPanel;
+import org.baratinage.ui.bam.RunBam;
 import org.baratinage.ui.baratin.hydraulic_control.ControlMatrix;
 import org.baratinage.ui.baratin.hydraulic_control.HydraulicControlPanels;
 import org.baratinage.ui.baratin.rating_curve.PriorRatingCurvePlot;
@@ -48,7 +48,7 @@ public class HydraulicConfiguration
 
     private RowColPanel outOufSyncPanel;
 
-    private RunPanel runPanel;
+    public RunBam runBam;
     private PriorRatingCurvePlot plotPanel;
     private RunConfigAndRes bamRunConfigAndRes;
 
@@ -91,11 +91,11 @@ public class HydraulicConfiguration
         controlMatrix.setMinimumSize(dimMin);
         plotPanel.setMinimumSize(dimMin);
 
-        runPanel = new RunPanel(false, true, false);
-        runPanel.setModelDefintion(this);
-        runPanel.setPriors(this);
-        runPanel.setPredictionExperiments(this);
-        runPanel.addRunSuccessListerner((RunConfigAndRes res) -> {
+        runBam = new RunBam(false, true, false);
+        runBam.setModelDefintion(this);
+        runBam.setPriors(this);
+        runBam.setPredictionExperiments(this);
+        runBam.addOnDoneAction((RunConfigAndRes res) -> {
             bamRunConfigAndRes = res;
             backup = save(true);
             buildPlot();
@@ -110,7 +110,7 @@ public class HydraulicConfiguration
         priorRatingCurvePanel.appendChild(priorRatingCurveStageGrid, 0);
         priorRatingCurvePanel.appendChild(new JSeparator(), 0);
         priorRatingCurvePanel.appendChild(outOufSyncPanel, 0);
-        priorRatingCurvePanel.appendChild(runPanel, 0);
+        priorRatingCurvePanel.appendChild(runBam.runButton, 0);
         priorRatingCurvePanel.appendChild(plotPanel, 1);
 
         // **********************************************************************
@@ -168,7 +168,7 @@ public class HydraulicConfiguration
         T.updateHierarchy(this, hydraulicControls);
         T.updateHierarchy(this, priorRatingCurveStageGrid);
         T.updateHierarchy(this, plotPanel);
-        T.updateHierarchy(this, runPanel);
+        T.updateHierarchy(this, runBam);
         T.updateHierarchy(this, outOufSyncPanel);
         T.t(this, () -> {
             controlMatrixTitle.setText(T.html("control_matrix"));
@@ -180,12 +180,12 @@ public class HydraulicConfiguration
 
     private void checkPriorRatingCurveSync() {
         T.clear(outOufSyncPanel);
-        T.clear(runPanel);
+        T.clear(runBam);
         outOufSyncPanel.clear();
         if (backup == null) {
             // T.t(runPanel.runButton, true, "compute_prior_rc");
-            T.t(runPanel, runPanel.runButton, true, "compute_prior_rc");
-            runPanel.runButton.setForeground(new JButton().getForeground());
+            T.t(runBam, runBam.runButton, true, "compute_prior_rc");
+            runBam.runButton.setForeground(new JButton().getForeground());
             updateUI();
             return;
         }
@@ -266,11 +266,11 @@ public class HydraulicConfiguration
             outOufSyncPanel.appendChild(mp);
         }
         if (outOfSyncMessages.size() > 0) {
-            T.t(runPanel, runPanel.runButton, true, "recompute_prior_rc");
-            runPanel.runButton.setForeground(AppConfig.AC.INVALID_COLOR_FG);
+            T.t(runBam, runBam.runButton, true, "recompute_prior_rc");
+            runBam.runButton.setForeground(AppConfig.AC.INVALID_COLOR_FG);
         } else {
-            T.t(runPanel, runPanel.runButton, true, "compute_prior_rc");
-            runPanel.runButton.setForeground(new JButton().getForeground());
+            T.t(runBam, runBam.runButton, true, "compute_prior_rc");
+            runBam.runButton.setForeground(new JButton().getForeground());
         }
         updateUI();
 
