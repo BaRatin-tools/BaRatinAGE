@@ -252,7 +252,7 @@ public class BamItemParent extends RowColPanel {
                 messages.add(syncIssueMsg);
 
                 T.t(errorMessagesKey, () -> {
-                    String typeText = T.text(TYPE.id);
+                    String typeText = T.text(TYPE.id).toLowerCase();
                     String backupItemName = getBackupItemName();
                     String currentItemName = getCurrentItemName();
                     syncIssueMsg.message.setText(
