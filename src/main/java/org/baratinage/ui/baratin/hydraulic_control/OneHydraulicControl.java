@@ -92,6 +92,7 @@ public class OneHydraulicControl extends JScrollPane {
         setViewportView(mainPanel);
 
         kacControlPanel = new KAC();
+        kacControlPanel.setPadding(5);
         kacControlPanel.addChangeListener((chEvt) -> {
             fireChangeListeners();
         });
@@ -138,6 +139,7 @@ public class OneHydraulicControl extends JScrollPane {
         this.controlNumber = controlNumber;
 
         physicalParametersPanel = new RowColPanel(RowColPanel.AXIS.COL);
+        physicalParametersPanel.setPadding(5);
 
         GridPanel physicalControlParametersLabelsPanel = new GridPanel();
         int gapAndPadding = 10;
