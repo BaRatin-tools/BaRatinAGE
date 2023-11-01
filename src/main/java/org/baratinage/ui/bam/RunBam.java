@@ -520,6 +520,7 @@ public class RunBam {
                 T.text("bam_running"),
                 0,
                 nProgressMax,
+                true,
                 true);
 
         runningWorker.execute();
