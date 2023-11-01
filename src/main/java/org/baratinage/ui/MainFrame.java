@@ -58,8 +58,8 @@ public class MainFrame extends JFrame {
 
         mainMenuBar = new JMenuBar();
 
-        DebugMenu debugMenu = new DebugMenu();
-        mainMenuBar.add(debugMenu);
+        // DebugMenu debugMenu = new DebugMenu();
+        // mainMenuBar.add(debugMenu);
 
         JMenu fileMenu = new JMenu();
         T.t(this, fileMenu, false, "files");
