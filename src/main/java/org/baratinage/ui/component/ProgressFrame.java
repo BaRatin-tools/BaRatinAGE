@@ -12,11 +12,11 @@ import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JProgressBar;
-import javax.swing.WindowConstants;
 
 import org.baratinage.translation.T;
 import org.baratinage.ui.AppConfig;
 import org.baratinage.ui.container.RowColPanel;
+import org.baratinage.utils.ConsoleLogger;
 
 public class ProgressFrame extends JDialog {
 
@@ -57,6 +57,7 @@ public class ProgressFrame extends JDialog {
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
+                ConsoleLogger.log("CLOSING");
                 cancelOrClose();
             }
         });
@@ -70,16 +71,7 @@ public class ProgressFrame extends JDialog {
             String titleString,
             int progressMin,
             int progressMax,
-            boolean autoClose,
-            boolean cancelable) {
-
-        if (cancelable) {
-            cancelCloseButton.setEnabled(true);
-            setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-        } else {
-            cancelCloseButton.setEnabled(false);
-            setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
-        }
+            boolean autoClose) {
 
         progressBar.setMinimum(progressMin);
         progressBar.setMaximum(progressMax);
