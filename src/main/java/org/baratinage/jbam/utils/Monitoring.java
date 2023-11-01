@@ -5,6 +5,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 import org.baratinage.jbam.BaM;
 import org.baratinage.jbam.PredictionConfig;
@@ -15,17 +16,12 @@ public class Monitoring {
     private final static String MONITOR_FILE_SUFFIX = ".monitor";
 
     private List<MonitoringStep> monitoringSteps;
-    private MonitoringFollower monitoringFollower;
 
-    @FunctionalInterface
-    public interface MonitoringFollower {
-        public void onUpdate(MonitoringStep monitoringStep);
-    }
+    private List<Consumer<MonitoringStep>> monitoringConsumers = new ArrayList<>();
 
-    public Monitoring(BaM bam, String workspace, MonitoringFollower monitoringFollower) {
+    public Monitoring(BaM bam, String workspace) {
 
         monitoringSteps = new ArrayList<>();
-        this.monitoringFollower = monitoringFollower;
 
         int mcmcSamples = bam.getCalibrationConfig().mcmcConfig.numberOfMcmcSamples();
         if (bam.getRunOptions().doMcmc) {
@@ -55,16 +51,27 @@ public class Monitoring {
 
             }
         }
-
-        try {
-            startMonitoring();
-        } catch (InterruptedException e) {
-            ConsoleLogger.error("BaM monitoring interrupted!");
-        }
-
     }
 
-    private void startMonitoring() throws InterruptedException {
+    public int getNumberOfSteps() {
+        return monitoringSteps.size();
+    }
+
+    public void addMonitoringConsumer(Consumer<MonitoringStep> mc) {
+        monitoringConsumers.add(mc);
+    }
+
+    public void removeMonitoringConsumer(Consumer<MonitoringStep> mc) {
+        monitoringConsumers.remove(mc);
+    }
+
+    private void publishToMonitoringConsumers(MonitoringStep ms) {
+        for (Consumer<MonitoringStep> mc : monitoringConsumers) {
+            mc.accept(ms);
+        }
+    }
+
+    public void startMonitoring() throws InterruptedException {
 
         final int CHECK_INTERVAL = 10;
         final int MAX_DURATION = 24 * 60 * 60 * 1000; // 24h!
@@ -86,10 +93,14 @@ public class Monitoring {
                         if (res.size() == 2 && res.get(0).length == 1) {
                             ms.progress = (int) res.get(0)[0];
                             ms.total = (int) res.get(1)[0];
+                            if (ms.progress > ms.total) {
+                                // FIXME: this happens for prediction with a single sample
+                                ms.progress = ms.total;
+                            }
                         }
                         ms.currenStep = currentStep;
                         ms.totalSteps = this.monitoringSteps.size();
-                        monitoringFollower.onUpdate(ms);
+                        publishToMonitoringConsumers(ms);
                         if (ms.progress >= ms.total) {
                             k = N_MAX;
                         }
