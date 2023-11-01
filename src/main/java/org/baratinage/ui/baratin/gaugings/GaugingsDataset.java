@@ -65,6 +65,36 @@ public class GaugingsDataset extends AbstractDataset {
         }
     }
 
+    public double[] getActiveStageValues() {
+        return filter(getStageValues(), getActiveStateAsBoolean());
+    }
+
+    public double[] getActiveDischargeValues() {
+        return filter(getDischargeValues(), getActiveStateAsBoolean());
+    }
+
+    public double[] getActiveDischargeStdUncertainty() {
+        return filter(getDischargeStdUncertainty(), getActiveStateAsBoolean());
+    }
+
+    private double[] filter(double[] values, boolean[] active) {
+        int n = 0;
+        for (boolean b : active) {
+            if (b) {
+                n++;
+            }
+        }
+        double[] filtered = new double[n];
+        int index = 0;
+        for (int k = 0; k < values.length; k++) {
+            if (active[k]) {
+                filtered[index] = values[k];
+                index++;
+            }
+        }
+        return filtered;
+    }
+
     /**
      * Compute and return the 95% uncertainty interval of each gaugings
      * 

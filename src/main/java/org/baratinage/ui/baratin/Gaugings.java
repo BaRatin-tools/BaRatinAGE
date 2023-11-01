@@ -151,7 +151,7 @@ public class Gaugings extends BamItem implements ICalibrationData {
             return null;
         }
         UncertainData[] inputs = new UncertainData[1];
-        inputs[0] = new UncertainData("stage", gaugingDataset.getStageValues());
+        inputs[0] = new UncertainData("stage", gaugingDataset.getActiveStageValues());
         return inputs;
     }
 
@@ -160,8 +160,8 @@ public class Gaugings extends BamItem implements ICalibrationData {
         if (gaugingDataset == null) {
             return null;
         }
-        double[] q = gaugingDataset.getDischargeValues();
-        double[] uq = gaugingDataset.getDischargeStdUncertainty();
+        double[] q = gaugingDataset.getActiveDischargeValues();
+        double[] uq = gaugingDataset.getActiveDischargeStdUncertainty();
         UncertainData[] outputs = new UncertainData[1];
         outputs[0] = new UncertainData("discharge", q, uq);
         return outputs;
