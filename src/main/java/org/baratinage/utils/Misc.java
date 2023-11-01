@@ -3,8 +3,6 @@ package org.baratinage.utils;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
@@ -101,29 +99,22 @@ public class Misc {
         }
     }
 
-    public static void deleteDir(String dirPath) {
-        File dirFile = new File(dirPath);
-        if (!dirFile.exists()) {
-            ConsoleLogger.error("Cannot delete directory '" + dirPath + "' because it doesn't exist! ");
-            return;
-        }
-        for (File f : dirFile.listFiles()) {
-            if (f.isDirectory()) {
-                deleteDir(f.toString());
-            } else {
-                boolean success = true;
-                try {
-                    Files.delete(f.toPath());
-                } catch (IOException e) {
-                    ConsoleLogger.stackTrace(e);
-                    success = false;
-                }
-                ConsoleLogger.log("Deleting file '" + f + "'... " + (success ? "SUCCESS" : "FAIL"));
-
+    public static boolean deleteDir(File dirPath) {
+        File[] allContents = dirPath.listFiles();
+        if (allContents != null) {
+            for (File file : allContents) {
+                deleteDir(file);
             }
         }
-        boolean success = dirFile.delete();
-        ConsoleLogger.log("Deleting directory '" + dirPath + "'... " + (success ? "SUCCESS" : "FAILED"));
+        boolean success = dirPath.delete();
+        if (!success) {
+            ConsoleLogger.error("Failed to delete '" + dirPath + "'!");
+        }
+        return success;
+    }
+
+    public static boolean deleteDir(String dirPath) {
+        return deleteDir(new File(dirPath));
     }
 
     public static Path parsePathFromUnknownOSorigin(String rawPath) {
