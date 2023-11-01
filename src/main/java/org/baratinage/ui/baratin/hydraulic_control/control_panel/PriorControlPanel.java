@@ -83,7 +83,7 @@ public abstract class PriorControlPanel extends GridPanel implements ChangeListe
         private final List<AbstractParameterPriorDist> parameters = new ArrayList<>();
 
         public PriorControlPanel(int nColumns, String equation) {
-                setPadding(5);
+                setPadding(0);
                 setGap(5);
 
                 for (int k = 0; k < nColumns; k++) {
