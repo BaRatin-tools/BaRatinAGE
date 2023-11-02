@@ -54,7 +54,7 @@ public class PredictionExperiment implements IPredictionExperiment {
                 predOutputs,
                 new PredictionOutput[] {},
                 propageteParametricUncertainty,
-                true,
+                false,
                 -1);
         return predConfig;
     }
