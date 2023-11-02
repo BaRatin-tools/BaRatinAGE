@@ -485,6 +485,7 @@ public class RunBam {
             @Override
             protected void process(List<String> logs) {
                 for (String s : logs) {
+                    ConsoleLogger.log(s);
                     onLog.accept(s);
                 }
             }
