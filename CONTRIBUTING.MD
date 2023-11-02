@@ -154,9 +154,10 @@ To summarise, delete any existing `target-packaged\BaRatinAGE` directory and the
 
 ```sh
 mvn clean package
-jpackage --type app-image --app-version 3.0.0  --name "BaRatinAGE" --dest "target-packaged" --input "target" --main-jar "BaRatinAGE-3.0.0.jar" --icon "resources\icons\icon.ico"
-xcopy ".\exe" ".\target-packaged\BaRatinAGE\exe" /S /I
-xcopy ".\resources" ".\target-packaged\BaRatinAGE\resources" /S /I
+jpackage --type app-image --app-version 3.0.0  --name "BaRatinAGE-v3.0.0-alpha1" --dest "target-packaged" --input "target" --main-jar "BaRatinAGE-3.0.0-alpha1.jar" --icon "resources\icons\icon.ico" --win-console
+xcopy ".\log" ".\target-packaged\BaRatinAGE-v3.0.0-alpha1\log" /S /I
+xcopy ".\exe" ".\target-packaged\BaRatinAGE-v3.0.0-alpha1\exe" /S /I
+xcopy ".\resources" ".\target-packaged\BaRatinAGE-v3.0.0-alpha1\resources" /S /I
 target-packaged\BaRatinAGE\BaRatinAGE.exe
 
 ```
