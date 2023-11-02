@@ -7,16 +7,21 @@ import java.awt.Font;
 import java.util.Set;
 
 import org.baratinage.ui.MainFrame;
+import org.baratinage.utils.ConsoleLogger;
 
 public class App {
 
     public static void main(String[] args) {
+
+        ConsoleLogger.init();
+        ConsoleLogger.log("Starting app...");
+
         try {
             String sysLookAndFeel = UIManager.getSystemLookAndFeelClassName();
             UIManager.setLookAndFeel(sysLookAndFeel);
             setDefaultSize(14);
         } catch (Exception e) {
-            e.printStackTrace();
+            ConsoleLogger.stackTrace(e);
         }
         EventQueue.invokeLater(new Runnable() {
             public void run() {
@@ -24,12 +29,17 @@ public class App {
                     MainFrame mainFrame = new MainFrame();
                     if (args.length > 0) {
                         mainFrame.loadProject(args[0]);
+                    } else {
+                        // mainFrame.loadProject("C:\\Users\\Ivan\\Documents\\test_48.bam");
+                        // mainFrame.newProject();
                     }
+
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    ConsoleLogger.stackTrace(e);
                 }
             }
         });
+
     }
 
     public static void setDefaultSize(int size) {
