@@ -221,8 +221,7 @@ public class RatingCurveResults extends TabContainer {
             postMaxpost[k] = p.getMaxpost();
             postLow[k] = post95[0];
             postHigh[k] = post95[1];
-            consistencyCheck[k] = getParameterConsistencyCheckString(
-                    p.getValidityCheckEstimate(), 0.01f);
+            consistencyCheck[k] = "";
             k++;
 
             controlIndex++;
@@ -252,7 +251,7 @@ public class RatingCurveResults extends TabContainer {
         paramSummaryTable.setHeader(3, "Posterior_maxpost");
         paramSummaryTable.setHeader(4, "Posterior_low");
         paramSummaryTable.setHeader(5, "Posterior_high");
-        paramSummaryTable.setHeader(5, "consistency");
+        paramSummaryTable.setHeader(6, "consistency");
 
         paramSummaryTable.setHeaderWidth(100);
 
