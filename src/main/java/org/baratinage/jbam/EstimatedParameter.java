@@ -27,6 +27,25 @@ public class EstimatedParameter {
         this.parameterConfig = parameter;
     }
 
+    public float getValidityCheckEstimate() {
+        // 0.5 = valid
+        // 0 = underestimated,
+        // 1 = overestimated
+        if (parameterConfig == null) {
+            return 0;
+        }
+        int n = mcmc.length;
+        double[] priorSamples = parameterConfig.distribution.getRandomValues(n);
+        int belowCount = 0;
+        for (int k = 0; k < n; k++) {
+            if (mcmc[k] < priorSamples[k]) {
+                belowCount++;
+            }
+        }
+        float belowFreq = ((float) belowCount / (float) n);
+        return 1f - belowFreq;
+    }
+
     public List<double[]> getPriorDensity() {
         if (parameterConfig != null) {
             return parameterConfig.distribution.getDensity();

@@ -117,25 +117,42 @@ public class RatingCurveResults extends TabContainer {
         rcGridTable.addColumn(totalU.get(0));
         rcGridTable.addColumn(totalU.get(1));
         rcGridTable.updateData();
-        T.t(this, () -> {
-            rcGridTable.setHeader(0, T.text("stage_level"));
-            rcGridTable.setHeader(1, T.text("discharge"));
-            rcGridTable.setHeader(2,
-                    T.text("parametric_uncertainty") +
-                            " - " + T.text("percentile_0025"));
-            rcGridTable.setHeader(3,
-                    T.text("parametric_uncertainty") +
-                            " - " + T.text("percentile_0975"));
-            rcGridTable.setHeader(4,
-                    T.text("parametric_structural_uncertainty") +
-                            " - " + T.text("percentile_0025"));
-            rcGridTable.setHeader(5,
-                    T.text("parametric_structural_uncertainty") +
-                            " - " + T.text("percentile_0975"));
-            rcGridTable.setHeaderWidth(100);
-            rcGridTable.updateHeader();
-        });
 
+        rcGridTable.setHeaderWidth(200);
+        rcGridTable.setHeader(0, "h [m]");
+        rcGridTable.setHeader(1, "Q_maxpost [m3.s-1]");
+        rcGridTable.setHeader(2, "Q_param_low [m3.s-1]");
+        rcGridTable.setHeader(3, "Q_param_high [m3.s-1]");
+        rcGridTable.setHeader(4, "Q_total_low [m3.s-1]");
+        rcGridTable.setHeader(5, "Q_total_high [m3.s-1]");
+        rcGridTable.updateHeader();
+
+        // T.t(this, () -> {
+        // rcGridTable.setHeader(0, T.text("stage_level"));
+        // rcGridTable.setHeader(1, T.text("discharge"));
+        // rcGridTable.setHeader(2,
+        // T.text("parametric_uncertainty") +
+        // " - " + T.text("percentile_0025"));
+        // rcGridTable.setHeader(3,
+        // T.text("parametric_uncertainty") +
+        // " - " + T.text("percentile_0975"));
+        // rcGridTable.setHeader(4,
+        // T.text("parametric_structural_uncertainty") +
+        // " - " + T.text("percentile_0025"));
+        // rcGridTable.setHeader(5,
+        // T.text("parametric_structural_uncertainty") +
+        // " - " + T.text("percentile_0975"));
+        // rcGridTable.setHeaderWidth(100);
+        // rcGridTable.updateHeader();
+        // });
+
+    }
+
+    private static String getParameterConsistencyCheckString(float value, float thresholdOffset) {
+        if (value < (0f + thresholdOffset) || value > (1f - thresholdOffset)) {
+            return "POSSIBLE_INCONSISTENCY";
+        }
+        return "OK";
     }
 
     private void updateParameterSummaryTabel(RatingCurveEstimatedParameters parameters) {
@@ -147,6 +164,7 @@ public class RatingCurveResults extends TabContainer {
         double[] postMaxpost = new double[n];
         double[] postLow = new double[n];
         double[] postHigh = new double[n];
+        String[] consistencyCheck = new String[n];
 
         int controlIndex = 1;
         int k = 0;
@@ -164,6 +182,8 @@ public class RatingCurveResults extends TabContainer {
             postMaxpost[k] = p.getMaxpost();
             postLow[k] = post95[0];
             postHigh[k] = post95[1];
+            consistencyCheck[k] = getParameterConsistencyCheckString(
+                    p.getValidityCheckEstimate(), 0.01f);
             k++;
 
             p = control.a();
@@ -175,6 +195,8 @@ public class RatingCurveResults extends TabContainer {
             postMaxpost[k] = p.getMaxpost();
             postLow[k] = post95[0];
             postHigh[k] = post95[1];
+            consistencyCheck[k] = getParameterConsistencyCheckString(
+                    p.getValidityCheckEstimate(), 0.01f);
             k++;
 
             p = control.c();
@@ -186,6 +208,8 @@ public class RatingCurveResults extends TabContainer {
             postMaxpost[k] = p.getMaxpost();
             postLow[k] = post95[0];
             postHigh[k] = post95[1];
+            consistencyCheck[k] = getParameterConsistencyCheckString(
+                    p.getValidityCheckEstimate(), 0.01f);
             k++;
 
             p = control.b();
@@ -197,6 +221,8 @@ public class RatingCurveResults extends TabContainer {
             postMaxpost[k] = p.getMaxpost();
             postLow[k] = post95[0];
             postHigh[k] = post95[1];
+            consistencyCheck[k] = getParameterConsistencyCheckString(
+                    p.getValidityCheckEstimate(), 0.01f);
             k++;
 
             controlIndex++;
@@ -210,15 +236,23 @@ public class RatingCurveResults extends TabContainer {
         paramSummaryTable.addColumn(postMaxpost);
         paramSummaryTable.addColumn(postLow);
         paramSummaryTable.addColumn(postHigh);
+        paramSummaryTable.addColumn(consistencyCheck);
 
         paramSummaryTable.updateData();
 
+        // paramSummaryTable.setHeader(0, "Name");
+        // paramSummaryTable.setHeader(1, "Prior Low (2.5%)");
+        // paramSummaryTable.setHeader(2, "Prior High (97.5%)");
+        // paramSummaryTable.setHeader(3, "Posterior Maxpost ");
+        // paramSummaryTable.setHeader(4, "Posterior Low (2.5%)");
+        // paramSummaryTable.setHeader(5, "Posterior High (97.5%)");
         paramSummaryTable.setHeader(0, "Name");
-        paramSummaryTable.setHeader(1, "Prior Low (2.5%)");
-        paramSummaryTable.setHeader(2, "Prior High (97.5%)");
-        paramSummaryTable.setHeader(3, "Posterior Maxpost ");
-        paramSummaryTable.setHeader(4, "Posterior Low (2.5%)");
-        paramSummaryTable.setHeader(5, "Posterior High (97.5%)");
+        paramSummaryTable.setHeader(1, "Prior_low");
+        paramSummaryTable.setHeader(2, "Prior_high");
+        paramSummaryTable.setHeader(3, "Posterior_maxpost");
+        paramSummaryTable.setHeader(4, "Posterior_low");
+        paramSummaryTable.setHeader(5, "Posterior_high");
+        paramSummaryTable.setHeader(5, "consistency");
 
         paramSummaryTable.setHeaderWidth(100);
 
