@@ -44,6 +44,9 @@ public class ReadWriteZip {
                     Files.createDirectories(resolvedPath);
                 } else {
                     Files.createDirectories(resolvedPath.getParent());
+                    if (Files.exists(resolvedPath)) {
+                        Files.delete(resolvedPath);
+                    }
                     Files.copy(zipIn, resolvedPath);
                 }
             }
