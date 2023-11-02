@@ -118,9 +118,7 @@ public class TimedActions {
             public void run() {
                 SwingUtilities.invokeLater(
                         () -> {
-                            ConsoleLogger.log("Running interval action... (" + id + ")");
                             action.run();
-
                         });
             }
 
