@@ -94,9 +94,24 @@ public class Misc {
     public static void createDir(String dirPath) {
         File dirFile = new File(dirPath);
         if (!dirFile.exists()) {
-            boolean success = dirFile.mkdirs();
-            ConsoleLogger.log("Creating directory '" + dirPath + "'... " + (success ? "SUCCESS" : "FAIL"));
+            ConsoleLogger.log("Creating directory '" + dirPath + "'... ");
+            dirFile.mkdirs();
         }
+    }
+
+    public static boolean deleteDirContent(String dirPath) {
+        return deleteDirContent(new File(dirPath));
+    }
+
+    public static boolean deleteDirContent(File dirPath) {
+        File[] allContents = dirPath.listFiles();
+        boolean success = true;
+        if (allContents != null) {
+            for (File file : allContents) {
+                success = success && deleteDir(file);
+            }
+        }
+        return success;
     }
 
     public static boolean deleteDir(File dirPath) {
