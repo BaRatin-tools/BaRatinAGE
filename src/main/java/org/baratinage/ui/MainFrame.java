@@ -224,6 +224,14 @@ public class MainFrame extends JFrame {
         }
     }
 
+    public void checkIfUnsavedChanges() {
+        if (currentProject != null) {
+            if (currentProject.checkUnsavedChange()) {
+                updateFrameTitle();
+            }
+        }
+    }
+
     public void setCurrentProject(BamProject project) {
         if (currentProject != null) {
             // currentProject.BAM_ITEMS.forEach(item -> {
@@ -245,7 +253,8 @@ public class MainFrame extends JFrame {
             String projectPath = currentProject.getProjectPath();
             if (projectPath != null) {
                 String projectName = Path.of(projectPath).getFileName().toString();
-                setTitle(AppConfig.AC.APP_NAME + " - " + projectName + " - " + projectPath);
+                String unsavedString = currentProject.hasUnsavedChange() ? "*" : "";
+                setTitle(AppConfig.AC.APP_NAME + " - " + projectName + " - " + projectPath + unsavedString);
             }
         }
     }
@@ -276,7 +285,10 @@ public class MainFrame extends JFrame {
             BamProject.loadProject(projectFilePath, (bamProject) -> {
                 bamProject.setProjectPath(projectFilePath);
                 setCurrentProject(bamProject);
-            });
+            },
+                    () -> {
+                        CommonDialog.errorDialog(T.text("error_opening_project"));
+                    });
         }
     }
 

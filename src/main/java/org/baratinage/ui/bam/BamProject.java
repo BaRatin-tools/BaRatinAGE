@@ -32,9 +32,13 @@ import org.baratinage.ui.component.ProgressFrame;
 import org.baratinage.ui.component.SvgIcon;
 import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.utils.ConsoleLogger;
+import org.baratinage.utils.Misc;
 import org.baratinage.utils.ReadFile;
 import org.baratinage.utils.ReadWriteZip;
 import org.baratinage.utils.WriteFile;
+import org.baratinage.utils.json.JSONCompare;
+import org.baratinage.utils.json.JSONCompareResult;
+import org.baratinage.utils.json.JSONFilter;
 import org.baratinage.utils.perf.Performance;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -45,6 +49,7 @@ public abstract class BamProject extends RowColPanel {
         BARATIN
     }
 
+    public final String ID;
     public final BamProjectType PROJECT_TYPE;
     public final BamItemList BAM_ITEMS;
     public final List<ExplorerItem> EXPLORER_ITEMS;
@@ -58,12 +63,18 @@ public abstract class BamProject extends RowColPanel {
 
     protected JMenu projectMenu;
 
+    private BamConfigRecord lastSavedConfigRecord;
+    private boolean unsavedChanges = false;
+
     public BamProject(BamProjectType projectType) {
         super(AXIS.COL);
 
+        ID = Misc.getTimeStampedId();
         PROJECT_TYPE = projectType;
         BAM_ITEMS = new BamItemList();
         EXPLORER_ITEMS = new ArrayList<>();
+
+        lastSavedConfigRecord = null;
 
         toolBar = new JToolBar();
         toolBar.setFloatable(false);
@@ -87,6 +98,32 @@ public abstract class BamProject extends RowColPanel {
         content.setRightComponent(currentPanel);
         content.setResizeWeight(0);
 
+    }
+
+    public boolean checkUnsavedChange() {
+        BamConfigRecord currentConfigRecord = save(false);
+        JSONObject curr = JSONFilter.filter(
+                BamConfigRecord.toJSON(currentConfigRecord),
+                true, true,
+                "selectedItemId");
+        JSONObject saved = JSONFilter.filter(
+                BamConfigRecord.toJSON(lastSavedConfigRecord),
+                true, true,
+                "selectedItemId");
+        JSONCompareResult compareRes = JSONCompare.compare(curr, saved);
+        if (!compareRes.matching() != unsavedChanges) {
+            unsavedChanges = !compareRes.matching();
+            return true;
+        }
+        return false;
+    }
+
+    public boolean hasUnsavedChange() {
+        return unsavedChanges;
+    }
+
+    private void createProjectBackupConfigRecord() {
+        lastSavedConfigRecord = save(false);
     }
 
     private void setupExplorer() {
@@ -250,6 +287,10 @@ public abstract class BamProject extends RowColPanel {
     }
 
     private BamConfigRecord save() {
+        return save(true);
+    }
+
+    private BamConfigRecord save(boolean writeToFile) {
         JSONObject json = new JSONObject();
         List<String> files = new ArrayList<>();
         JSONArray bamItemsJson = new JSONArray();
@@ -257,7 +298,7 @@ public abstract class BamProject extends RowColPanel {
         int n = bamItemList.size();
         for (int k = 0; k < n; k++) {
             BamItem item = bamItemList.get(k);
-            BamConfigRecord itemConfig = item.save(true);
+            BamConfigRecord itemConfig = item.save(writeToFile);
             JSONObject bamItemJson = new JSONObject();
             bamItemJson.put("id", item.ID);
             bamItemJson.put("type", item.TYPE.toString());
@@ -313,6 +354,7 @@ public abstract class BamProject extends RowColPanel {
             ConsoleLogger.error("an error occured while saving project!");
         }
 
+        createProjectBackupConfigRecord();
     }
 
     public void setProjectPath(String projectPath) {
@@ -437,6 +479,7 @@ public abstract class BamProject extends RowColPanel {
                 onLoaded.accept(bamProject);
             }
 
+            bamProject.createProjectBackupConfigRecord();
             Performance.endTimeMonitoring(bamProjectLoadingFrame);
         };
 
@@ -478,7 +521,7 @@ public abstract class BamProject extends RowColPanel {
         SwingUtilities.invokeLater(BamProject::loadNextBamItem);
     }
 
-    static public void loadProject(String projectFilePath, Consumer<BamProject> onLoaded) {
+    static public void loadProject(String projectFilePath, Consumer<BamProject> onLoaded, Runnable onError) {
 
         AppConfig.AC.clearTempDirectory();
 
@@ -486,10 +529,16 @@ public abstract class BamProject extends RowColPanel {
         if (!projectFile.exists()) {
             ConsoleLogger.error("Project file doesn't exist! (" +
                     projectFilePath + ")");
+            onError.run();
             return;
         }
-
-        ReadWriteZip.unzip(projectFilePath, AppConfig.AC.APP_TEMP_DIR);
+        try {
+            ReadWriteZip.unzip(projectFilePath, AppConfig.AC.APP_TEMP_DIR);
+        } catch (Exception e) {
+            ConsoleLogger.error(e);
+            onError.run();
+            return;
+        }
 
         try {
             BufferedReader bufReader = ReadFile
@@ -505,7 +554,9 @@ public abstract class BamProject extends RowColPanel {
 
             load(json, projectFile, onLoaded);
         } catch (IOException e) {
-            ConsoleLogger.stackTrace(e);
+            ConsoleLogger.error(e);
+            onError.run();
+            return;
         }
         return;
     }
