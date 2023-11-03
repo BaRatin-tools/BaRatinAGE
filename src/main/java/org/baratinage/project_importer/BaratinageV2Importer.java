@@ -303,10 +303,10 @@ public class BaratinageV2Importer implements IProjectImporter {
                 limnigraph.get(5));
         double[] stage = limnigraph.get(6);
         double[] nonSysErrStd = limnigraph.get(7);
-        double[] sysErrStd = limnigraph.get(8);
+        double[] sysErrStd = limnigraph.get(9);
         int[] sysErrInd = new int[stage.length];
         for (int k = 0; k < stage.length; k++) {
-            sysErrInd[k] = (int) limnigraph.get(9)[k];
+            sysErrInd[k] = (int) limnigraph.get(8)[k];
         }
         LimnigraphDataset ld = new LimnigraphDataset(dataFileSourceName, dateTime, stage, nonSysErrStd,
                 sysErrStd, sysErrInd);
@@ -438,6 +438,7 @@ public class BaratinageV2Importer implements IProjectImporter {
         BaratinageV2Builders.setBamItemNameAndDescription(bamItem, properties);
 
         String sourceFileName = properties[2];
+        sourceFileName = Path.of(sourceFileName).getFileName().toString();
 
         // ***********************
         // gaugingDataset
