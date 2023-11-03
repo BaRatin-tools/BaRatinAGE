@@ -16,7 +16,8 @@ public class RunConfigAndRes extends BaM {
     public static RunConfigAndRes buildFromWorkspace(String id, Path workspacePath) {
 
         File mainConfigFile = Path.of(workspacePath.toString(), BamFilesHelpers.CONFIG_BAM).toFile();
-        mainConfigFile.renameTo(Path.of(BamFilesHelpers.EXE_DIR, BamFilesHelpers.CONFIG_BAM).toFile());
+        // mainConfigFile.renameTo(Path.of(BamFilesHelpers.EXE_DIR,
+        // BamFilesHelpers.CONFIG_BAM).toFile());
 
         BaM bam = BaM.buildFromWorkspace(mainConfigFile.getAbsolutePath(), workspacePath.toString());
 

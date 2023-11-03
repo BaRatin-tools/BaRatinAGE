@@ -19,8 +19,8 @@ public class BaM {
 
     static public BaM buildFromWorkspace(String mainConfigFilePath, String workspacePath) {
         ConsoleLogger.log("building BaM object from workspace...");
-        ConsoleLogger.log("config file " + mainConfigFilePath);
-        ConsoleLogger.log("workspace   = " + workspacePath);
+        ConsoleLogger.log("config file is '" + mainConfigFilePath + "'");
+        ConsoleLogger.log("workspace is '" + workspacePath + "'");
 
         ConfigFile configFile = ConfigFile.readConfigFile(mainConfigFilePath);
         // String workspacePath = configFile.getString(0);
@@ -242,6 +242,7 @@ public class BaM {
             while ((currentLine = bufferReader.readLine()) != null) {
                 consoleLines.add(currentLine);
                 consoleOutputFollower.accept(currentLine);
+                ConsoleLogger.log(currentLine);
             }
         } catch (IOException e) {
             ConsoleLogger.stackTrace(e);
