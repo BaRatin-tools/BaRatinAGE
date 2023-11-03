@@ -73,7 +73,10 @@ public class CommonDialog {
 
         JFileChooser fileChooser = buildFileChooser(title == null ? defaultSaveTitle : title, formatName, extensions);
 
-        fileChooser.showSaveDialog(AppConfig.AC.APP_MAIN_FRAME);
+        int result = fileChooser.showSaveDialog(AppConfig.AC.APP_MAIN_FRAME);
+        if (result != JFileChooser.APPROVE_OPTION) {
+            return null;
+        }
         File file = fileChooser.getSelectedFile();
         if (file == null)
             return null;
@@ -118,12 +121,19 @@ public class CommonDialog {
 
     public static File openFileDialog(String title, String formatName, String... extensions) {
         JFileChooser fileChooser = buildFileChooser(title == null ? defaultOpenTitle : title, formatName, extensions);
-        fileChooser.showOpenDialog(AppConfig.AC.APP_MAIN_FRAME);
+        int result = fileChooser.showOpenDialog(AppConfig.AC.APP_MAIN_FRAME);
+        if (result != JFileChooser.APPROVE_OPTION) {
+            return null;
+        }
         return fileChooser.getSelectedFile(); // can be null
     }
 
+    private static JFileChooser fileChooser;
+
     private static JFileChooser buildFileChooser(String title, String formatName, String... extensions) {
-        JFileChooser fileChooser = new JFileChooser();
+        if (fileChooser == null) {
+            fileChooser = new JFileChooser();
+        }
         fileChooser.setDialogTitle(title);
         fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
         fileChooser.setApproveButtonToolTipText(defaultApproveButtonToolTipText);
