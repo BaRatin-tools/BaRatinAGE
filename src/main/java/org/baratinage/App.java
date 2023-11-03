@@ -9,6 +9,8 @@ import java.util.Set;
 import org.baratinage.ui.MainFrame;
 import org.baratinage.utils.ConsoleLogger;
 
+import com.formdev.flatlaf.FlatLightLaf;
+
 public class App {
 
     public static void main(String[] args) {
@@ -17,12 +19,19 @@ public class App {
         ConsoleLogger.log("Starting app...");
 
         try {
-            String sysLookAndFeel = UIManager.getSystemLookAndFeelClassName();
-            UIManager.setLookAndFeel(sysLookAndFeel);
-            setDefaultSize(14);
-        } catch (Exception e) {
-            ConsoleLogger.stackTrace(e);
+            try {
+                UIManager.setLookAndFeel(new FlatLightLaf());
+            } catch (Exception e1) {
+                ConsoleLogger.error(e1);
+                String sysLookAndFeel = UIManager.getSystemLookAndFeelClassName();
+                UIManager.setLookAndFeel(sysLookAndFeel);
+
+                System.err.println("Failed to initialize LaF");
+            }
+        } catch (Exception e2) {
+            ConsoleLogger.error(e2);
         }
+        setDefaultSize(14);
         EventQueue.invokeLater(new Runnable() {
             public void run() {
                 try {
@@ -34,8 +43,8 @@ public class App {
                         // mainFrame.newProject();
                     }
 
-                } catch (Exception e) {
-                    ConsoleLogger.stackTrace(e);
+                } catch (Exception e3) {
+                    ConsoleLogger.error(e3);
                 }
             }
         });
