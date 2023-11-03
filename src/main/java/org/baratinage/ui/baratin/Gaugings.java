@@ -2,10 +2,8 @@ package org.baratinage.ui.baratin;
 
 import java.util.List;
 
-import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JLabel;
-import javax.swing.JSplitPane;
 
 import org.baratinage.jbam.CalibrationData;
 import org.baratinage.jbam.UncertainData;
@@ -19,6 +17,7 @@ import org.baratinage.ui.baratin.gaugings.GaugingsImporter;
 import org.baratinage.ui.commons.DatasetConfig;
 import org.baratinage.ui.component.DataTable;
 import org.baratinage.ui.container.RowColPanel;
+import org.baratinage.ui.container.SplitContainer;
 import org.baratinage.translation.T;
 import org.baratinage.ui.plot.Plot;
 import org.baratinage.ui.plot.PlotContainer;
@@ -38,15 +37,16 @@ public class Gaugings extends BamItem implements ICalibrationData {
     public Gaugings(String uuid, BaratinProject project) {
         super(BamItemType.GAUGINGS, uuid, project);
 
-        JSplitPane content = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
-        content.setBorder(BorderFactory.createEmptyBorder());
-
         RowColPanel importGaugingsPanel = new RowColPanel(RowColPanel.AXIS.COL);
         importGaugingsPanel.setPadding(5);
         importGaugingsPanel.setGap(5);
-        content.setLeftComponent(importGaugingsPanel);
+
         plotPanel = new RowColPanel();
-        content.setRightComponent(plotPanel);
+
+        SplitContainer content = new SplitContainer(
+                importGaugingsPanel,
+                plotPanel,
+                true);
 
         importedDataSetSourceLabel = new JLabel();
 

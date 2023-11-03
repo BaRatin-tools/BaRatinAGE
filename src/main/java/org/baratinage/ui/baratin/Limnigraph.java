@@ -7,7 +7,6 @@ import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
-import javax.swing.JSplitPane;
 
 import org.baratinage.jbam.PredictionInput;
 import org.baratinage.ui.bam.BamItem;
@@ -21,6 +20,7 @@ import org.baratinage.ui.baratin.limnigraph.LimnigraphImporter;
 import org.baratinage.ui.commons.DatasetConfig;
 import org.baratinage.ui.component.DataTable;
 import org.baratinage.ui.container.RowColPanel;
+import org.baratinage.ui.container.SplitContainer;
 import org.baratinage.ui.container.TabContainer;
 import org.baratinage.translation.T;
 import org.baratinage.ui.plot.Plot;
@@ -83,11 +83,11 @@ public class Limnigraph extends BamItem implements IPredictionData {
         limniTablesAndPlots.addTab("Plot", chartIcon, plotPanel);
         limniTablesAndPlots.addTab("Limnigraph errors", errorIcon, limniErrors);
 
-        JSplitPane content = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
+        SplitContainer content = new SplitContainer(
+                importLimnigraphPanel,
+                limniTablesAndPlots,
+                true);
         content.setBorder(BorderFactory.createEmptyBorder());
-
-        content.setLeftComponent(importLimnigraphPanel);
-        content.setRightComponent(limniTablesAndPlots);
 
         setContent(content);
 

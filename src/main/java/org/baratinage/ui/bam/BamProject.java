@@ -11,14 +11,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
-import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JSeparator;
-import javax.swing.JSplitPane;
 import javax.swing.JToolBar;
 import javax.swing.SwingUtilities;
 
@@ -31,6 +29,7 @@ import org.baratinage.ui.commons.ExplorerItem;
 import org.baratinage.ui.component.ProgressFrame;
 import org.baratinage.ui.component.SvgIcon;
 import org.baratinage.ui.container.RowColPanel;
+import org.baratinage.ui.container.SplitContainer;
 import org.baratinage.utils.ConsoleLogger;
 import org.baratinage.utils.Misc;
 import org.baratinage.utils.ReadFile;
@@ -56,7 +55,7 @@ public abstract class BamProject extends RowColPanel {
 
     private String projectPath = null;
 
-    protected JSplitPane content;
+    protected SplitContainer content;
     protected JToolBar toolBar;
     protected Explorer explorer;
     protected RowColPanel currentPanel;
@@ -81,10 +80,6 @@ public abstract class BamProject extends RowColPanel {
         appendChild(toolBar, 0);
         appendChild(new JSeparator(), 0);
 
-        content = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
-        content.setBorder(BorderFactory.createEmptyBorder());
-        appendChild(content, 1);
-
         explorer = new Explorer();
         explorer.headerLabel.setIcon(AppConfig.AC.ICONS.LIST_ICON);
         T.t(this, explorer.headerLabel, false, "explorer");
@@ -93,6 +88,9 @@ public abstract class BamProject extends RowColPanel {
 
         currentPanel = new RowColPanel(AXIS.COL);
         currentPanel.setGap(5);
+
+        content = new SplitContainer(explorer, currentPanel, true);
+        appendChild(content, 1);
 
         content.setLeftComponent(explorer);
         content.setRightComponent(currentPanel);
