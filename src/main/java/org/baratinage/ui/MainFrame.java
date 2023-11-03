@@ -18,7 +18,6 @@ import org.baratinage.utils.ConsoleLogger;
 import org.baratinage.utils.Misc;
 
 import java.awt.Dimension;
-import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
@@ -140,13 +139,11 @@ public class MainFrame extends JFrame {
 
         addComponentListener(new ComponentAdapter() {
             public void componentResized(ComponentEvent e) {
-                Dimension dim = MainFrame.this.getSize();
-                ConsoleLogger.log(String.format("Resized: %d x %d", dim.width, dim.height));
+                // Dimension dim = MainFrame.this.getSize();
             }
 
             public void componentMoved(ComponentEvent e) {
-                Point loc = MainFrame.this.getLocation();
-                ConsoleLogger.log(String.format("Relocated: %d, %d", loc.x, loc.y));
+                // Point loc = MainFrame.this.getLocation();
             }
         });
 
