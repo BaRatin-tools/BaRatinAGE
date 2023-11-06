@@ -25,9 +25,9 @@ _Note: contrairement aux anciennes versions de BaRatinAGE, les nouvelles version
 Pour lancer **BaRatinAGE**: 
 - sur Windows, à la racine du dossier contenant BaRatinAGE que vous venez de décompresser, il vous suffit de double-cliquer sur l'exécutable nommé **BaRatinAGE.exe** qui s'y trouve.
 - sur Linux, dans le sous-dossier `bin\` du dossier contenant BaRatinAGE que vous venez de décompresser, il vous suffit de double-cliquer sur l'exécutable nommé **BaRatinAGE** qui s'y trouve (ou de le lancer en ligne de commande : `./BaRatinAGE`).
-    - il est fréquent de devoir changer les droits d'exécution de l'exécutable. En ligne de commande : `sudo chmod a=rx BaRatinAGE`.
+    - il est fréquent de devoir changer les droits d'exécution de l'exécutable. En ligne de commande : `chmod a=rx BaRatinAGE`.
     - la même manipulation est parfois nécessaire avec l'exécutable de **BaRatin** qui se trouve dans le répertoire `bin\exe\`
-    - si vous n'avez pas les droits d'écriture dans ce sous-dossier: `sudo chmod -R 755`
+    - si vous n'avez pas les droits d'écriture dans ce sous-dossier: `chmod -R 755`
 
 ## Aide
 
@@ -82,9 +82,9 @@ _Note: unlike previous versions of BaRatinAGE, new versions do not require insta
 To run **BaRatinAGE**:
 - on Windows, at the root of the folder which contains **BaRatinAGE** (that you've just uncompressed), double-click on the executable file named **BaRatinAGE.exe**.
 - on Linux: in the subfolder `bin\` of the folder containing the unzipped **BaRatinAGE**,  double-click on the executable file named **BaRatinAGE** (or using the terminal, run `./BaRatinAGE`).
-    - it is common to have to modify execute access of the file **BaRatinAGE**. Using the terminal, run `sudo chmod a=rx BaRatinAGE`.
+    - it is common to have to modify execute access of the file **BaRatinAGE**. Using the terminal, run `chmod a=rx BaRatinAGE`.
     - the same action is sometimes required for the **BaRatin** executable file in the folder `bin\exe\`.
-    - if you do not have write access in this subfolder: `sudo chmod -R 755`
+    - if you do not have write access in this subfolder: `chmod -R 755`
 
 ## Help
 
