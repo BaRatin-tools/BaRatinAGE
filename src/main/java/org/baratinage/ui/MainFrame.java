@@ -39,7 +39,10 @@ public class MainFrame extends JFrame {
     public JMenuBar mainMenuBar;
     public JMenu baratinMenu;
 
+    public JMenuItem saveProjectAsMenuItem;
+    public JMenuItem saveProjectMenuItem;
     public JMenuItem closeProjectMenuItem;
+
     public MainFrame() {
 
         new AppConfig(this);
@@ -81,7 +84,7 @@ public class MainFrame extends JFrame {
         });
         fileMenu.add(openProjectMenuItem);
 
-        JMenuItem saveProjectAsMenuItem = new JMenuItem();
+        saveProjectAsMenuItem = new JMenuItem();
         T.t(this, saveProjectAsMenuItem, false, "save_project_as");
         saveProjectAsMenuItem
                 .setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, ActionEvent.CTRL_MASK + ActionEvent.ALT_MASK));
@@ -90,7 +93,7 @@ public class MainFrame extends JFrame {
         });
         fileMenu.add(saveProjectAsMenuItem);
 
-        JMenuItem saveProjectMenuItem = new JMenuItem();
+        saveProjectMenuItem = new JMenuItem();
         T.t(this, saveProjectMenuItem, false, "save_project");
         saveProjectMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_DOWN_MASK));
         saveProjectMenuItem.addActionListener((e) -> {
@@ -182,6 +185,7 @@ public class MainFrame extends JFrame {
         });
 
         setVisible(true);
+        setCurrentProject(null);
     }
 
     Map<String, JCheckBoxMenuItem> translationMenuItems = new HashMap<>();
@@ -249,6 +253,8 @@ public class MainFrame extends JFrame {
         if (!projectIsNull) {
             projectPanel.appendChild(project);
         }
+        saveProjectAsMenuItem.setEnabled(!projectIsNull);
+        saveProjectMenuItem.setEnabled(!projectIsNull);
         closeProjectMenuItem.setEnabled(!projectIsNull);
 
         updateFrameTitle();
