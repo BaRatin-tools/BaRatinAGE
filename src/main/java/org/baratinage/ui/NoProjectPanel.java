@@ -1,12 +1,7 @@
 package org.baratinage.ui;
 
-import java.awt.Color;
-import java.awt.event.KeyEvent;
-
 import javax.swing.JButton;
 import javax.swing.JLabel;
-import javax.swing.JMenuItem;
-import javax.swing.KeyStroke;
 
 import org.baratinage.translation.T;
 import org.baratinage.ui.container.GridPanel;
