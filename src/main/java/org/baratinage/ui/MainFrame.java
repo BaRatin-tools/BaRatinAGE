@@ -39,6 +39,7 @@ public class MainFrame extends JFrame {
     public JMenuBar mainMenuBar;
     public JMenu baratinMenu;
 
+    public JMenuItem closeProjectMenuItem;
     public MainFrame() {
 
         new AppConfig(this);
@@ -96,6 +97,14 @@ public class MainFrame extends JFrame {
             saveProject(false);
         });
         fileMenu.add(saveProjectMenuItem);
+
+        closeProjectMenuItem = new JMenuItem();
+        T.t(this, closeProjectMenuItem, false, "close_project");
+        closeProjectMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_W, KeyEvent.CTRL_DOWN_MASK));
+        closeProjectMenuItem.addActionListener((e) -> {
+            closeProject();
+        });
+        fileMenu.add(closeProjectMenuItem);
 
         fileMenu.addSeparator();
         JMenuItem importBaratinageV2projectMenuItem = new JMenuItem();
@@ -231,17 +240,40 @@ public class MainFrame extends JFrame {
 
     public void setCurrentProject(BamProject project) {
         if (currentProject != null) {
-            // currentProject.BAM_ITEMS.forEach(item -> {
-            // T.clear(item);
-            // });
             T.clear(currentProject);
         }
         currentProject = project;
         projectPanel.clear();
-        projectPanel.appendChild(project);
+
+        boolean projectIsNull = project == null;
+        if (!projectIsNull) {
+            projectPanel.appendChild(project);
+        }
+        closeProjectMenuItem.setEnabled(!projectIsNull);
+
         updateFrameTitle();
-        // Lg.printInfo();
         T.updateTranslations();
+        projectPanel.updateUI();
+    }
+
+    public boolean confirmLoosingUnsavedChanges() {
+        if (currentProject != null) {
+            currentProject.checkUnsavedChange();
+            if (currentProject.hasUnsavedChange()) {
+                return CommonDialog.confirmDialog(
+                        T.text("unsaved_changes_will_be_lost") + "\n" +
+                                T.text("proceed_question"),
+                        T.text("are_you_sure"));
+
+            }
+        }
+        return true;
+    }
+
+    public void closeProject() {
+        if (confirmLoosingUnsavedChanges()) {
+            setCurrentProject(null);
+        }
     }
 
     public void updateFrameTitle() {
