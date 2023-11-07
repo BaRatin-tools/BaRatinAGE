@@ -27,9 +27,21 @@ public class Distribution {
 
     public Distribution(DistributionType type, double... parameterValues) {
         int n = type.parameterNames.length;
-        if (n != parameterValues.length) {
-            throw new IllegalArgumentException(
-                    "Length of parameterValues must match the length of expected parameters of DISTRIB!");
+        int m = parameterValues.length;
+        if (n != m) {
+            if (m < n) {
+                throw new IllegalArgumentException(
+                        "Length of parameterValues must match the length of expected parameters of DISTRIB!");
+            } else {
+                ConsoleLogger.error("Too many parameter values for '" +
+                        type + "'... Only using first " + n + " (out of " + m + ") parameter values.");
+                double[] truncatedParameterValues = new double[n];
+                for (int k = 0; k < n; k++) {
+                    truncatedParameterValues[k] = parameterValues[k];
+                }
+                parameterValues = truncatedParameterValues;
+            }
+
         }
         this.type = type;
         this.parameterValues = parameterValues;
