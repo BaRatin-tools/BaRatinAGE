@@ -204,6 +204,9 @@ public class HydraulicConfiguration
                 filteredCurrentJson);
 
         if (comparison.matching()) {
+            // FIXME: refactoring needed
+            T.t(runBam, runBam.runButton, true, "compute_prior_rc");
+            runBam.runButton.setForeground(new JButton().getForeground());
             return;
         }
 
@@ -272,6 +275,7 @@ public class HydraulicConfiguration
             T.t(runBam, runBam.runButton, true, "compute_prior_rc");
             runBam.runButton.setForeground(new JButton().getForeground());
         }
+
         updateUI();
 
     }
