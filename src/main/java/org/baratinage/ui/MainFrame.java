@@ -317,6 +317,7 @@ public class MainFrame extends JFrame {
 
     public void saveProject(String projectFilePath) {
         currentProject.saveProject(projectFilePath);
+        currentProject.setProjectPath(projectFilePath);
         updateFrameTitle();
     }
 
