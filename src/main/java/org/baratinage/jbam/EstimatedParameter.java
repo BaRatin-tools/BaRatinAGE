@@ -58,7 +58,7 @@ public class EstimatedParameter {
             return density;
         }
         double[] sorted = Calc.sort(mcmc);
-        density = Calc.density(sorted, 50);
+        density = Calc.density(sorted, 20);
         return density;
     }
 
