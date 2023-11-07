@@ -14,7 +14,7 @@ public class WeirRect extends PriorControlPanel {
     public WeirRect() {
         super(
                 2,
-                "C<sub>r</sub>B<sub>w</sub>(2g)<sup>1/2</sup>(h-b)<sup>c</sup>&nbsp;(h>k)");
+                "Q=C<sub>r</sub>B<sub>w</sub>(2g)<sup>1/2</sup>(h-b)<sup>c</sup>&nbsp;(h>k)");
 
         activationHeight = new ParameterPriorDistSimplified();
         activationHeight.setIcon(activationHeightIcon);

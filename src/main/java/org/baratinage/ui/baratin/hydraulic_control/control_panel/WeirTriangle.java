@@ -14,7 +14,7 @@ public class WeirTriangle extends PriorControlPanel {
     public WeirTriangle() {
         super(
                 2,
-                "C<sub>t</sub>tan(v/2)(2g)<sup>1/2</sup>(h-b)<sup>c</sup>&nbsp;(h>k)");
+                "Q=C<sub>t</sub>tan(v/2)(2g)<sup>1/2</sup>(h-b)<sup>c</sup>&nbsp;(h>k)");
 
         activationHeight = new ParameterPriorDistSimplified();
         activationHeight.setIcon(activationHeightIcon);

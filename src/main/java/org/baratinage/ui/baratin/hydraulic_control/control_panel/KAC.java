@@ -12,7 +12,7 @@ public class KAC extends PriorControlPanel {
 
     public KAC() {
         super(
-                3, "a(h-b)<sup>c</sup> (h>k)");
+                3, "Q=a(h-b)<sup>c</sup> (h>k)");
 
         k = new ParameterPriorDist("k");
         k.setIcon(activationHeightIcon);

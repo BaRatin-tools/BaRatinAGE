@@ -14,7 +14,7 @@ public class WeirOrifice extends PriorControlPanel {
     public WeirOrifice() {
         super(
                 2,
-                "C<sub>o</sub>A<sub>o</sub>(2g)<sup>1/2</sup>(h-b)<sup>c</sup>&nbsp;(h>k)");
+                "Q=C<sub>o</sub>A<sub>o</sub>(2g)<sup>1/2</sup>(h-b)<sup>c</sup>&nbsp;(h>k)");
 
         activationHeight = new ParameterPriorDistSimplified();
         activationHeight.setIcon(activationHeightIcon);

@@ -13,7 +13,7 @@ public class ChannelTriangle extends PriorControlPanel {
     private final ParameterPriorDistSimplified exponent;
 
     public ChannelTriangle() {
-        super(2, "K<sub>s</sub>tan(v/2)(0.5sin(v/2)<sup>2/3</sup>S<sup>1/2</sup>(h-b)<sup>c</sup>&nbsp;(h>k)");
+        super(2, "Q=K<sub>s</sub>tan(v/2)(0.5sin(v/2)<sup>2/3</sup>S<sup>1/2</sup>(h-b)<sup>c</sup>&nbsp;(h>k)");
 
         activationHeight = new ParameterPriorDistSimplified();
         activationHeight.setIcon(activationHeightIcon);

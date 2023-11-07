@@ -13,7 +13,7 @@ public class ChannelRect extends PriorControlPanel {
     private final ParameterPriorDistSimplified exponent;
 
     public ChannelRect() {
-        super(2, "K<sub>s</sub>B<sub>w</sub>S<sup>1/2</sup>(h-b)<sup>c</sup>&nbsp;(h>k)");
+        super(2, "Q=K<sub>s</sub>B<sub>w</sub>S<sup>1/2</sup>(h-b)<sup>c</sup>&nbsp;(h>k)");
 
         activationHeight = new ParameterPriorDistSimplified();
         activationHeight.setIcon(activationHeightIcon);

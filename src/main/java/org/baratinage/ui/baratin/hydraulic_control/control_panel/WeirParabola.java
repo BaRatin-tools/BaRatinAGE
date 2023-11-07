@@ -15,7 +15,7 @@ public class WeirParabola extends PriorControlPanel {
     public WeirParabola() {
         super(
                 2,
-                "C<sub>p</sub>B<sub>p</sub>H<sub>p</sub><sup>-1/2</sup>(2g)<sup>1/2</sup>(h-b)<sup>c</sup>&nbsp;(h>k)");
+                "Q=C<sub>p</sub>B<sub>p</sub>H<sub>p</sub><sup>-1/2</sup>(2g)<sup>1/2</sup>(h-b)<sup>c</sup>&nbsp;(h>k)");
 
         activationHeight = new ParameterPriorDistSimplified();
         activationHeight.setIcon(activationHeightIcon);
