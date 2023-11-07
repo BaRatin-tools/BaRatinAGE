@@ -5,9 +5,9 @@ public enum DistributionType {
     LOG_NORMAL("LogNormal", new String[] { "log_mean", "log_std" }),
     UNIFORM("Uniform", new String[] { "lower_bound", "upper_bound" }),
     EXPONENTIAL("Exponential", new String[] { "location", "scale" }),
-    FIXED("Fixed", new String[] {});
     // GEV("GEV", new String[] { "location", "scale", "shape" }),
     TRANGLE("Triangle", new String[] { "peak", "lower_bound", "upper_bound" }),
+    FIXED("FIX", new String[] {});
 
     public final String bamName;
     public final String[] parameterNames;
