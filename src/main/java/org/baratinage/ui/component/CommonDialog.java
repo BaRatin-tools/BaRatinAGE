@@ -147,6 +147,7 @@ public class CommonDialog {
                 formatName,
                 extensions));
         fileChooser.setAcceptAllFileFilterUsed(false);
+        fileChooser.setCurrentDirectory(new File(AppConfig.AC.APP_ROOT_DIR));
         return fileChooser;
     }
 
