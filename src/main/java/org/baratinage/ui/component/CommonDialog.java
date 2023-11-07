@@ -69,6 +69,20 @@ public class CommonDialog {
                 "");
     }
 
+    public static boolean confirmDialog(String message, String title) {
+        String[] yesNoOptions = new String[] {
+                T.text("ok"),
+                T.text("cancel")
+        };
+        int response = JOptionPane.showOptionDialog(AppConfig.AC.APP_MAIN_FRAME,
+                message,
+                title,
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.WARNING_MESSAGE,
+                null, yesNoOptions, yesNoOptions[1]);
+        return response == JOptionPane.YES_OPTION;
+    }
+
     public static File saveFileDialog(String title, String formatName, String... extensions) {
 
         JFileChooser fileChooser = buildFileChooser(title == null ? defaultSaveTitle : title, formatName, extensions);
@@ -81,17 +95,8 @@ public class CommonDialog {
         if (file == null)
             return null;
         if (file.exists()) {
-            String[] yesNoOptions = new String[] {
-                    T.text("ok"),
-                    T.text("cancel")
-            };
-            int response = JOptionPane.showOptionDialog(AppConfig.AC.APP_MAIN_FRAME,
-                    T.text("file_already_exists_overwrite"),
-                    T.text("overwrite_file"),
-                    JOptionPane.YES_NO_OPTION,
-                    JOptionPane.WARNING_MESSAGE,
-                    null, yesNoOptions, yesNoOptions[1]);
-            if (response != JOptionPane.YES_OPTION) {
+            if (!confirmDialog(T.text("file_already_exists_overwrite"),
+                    T.text("overwrite_file"))) {
                 return null;
             }
         }
