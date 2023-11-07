@@ -22,6 +22,10 @@ public class JSONFilter {
             return json;
         }
 
+        if (JSONObject.getNames(json) == null) {
+            return json;
+        }
+
         JSONObject filteredJSON = null;
         if (excludeKeys) {
             // create shallow copy (see: https://stackoverflow.com/a/12809884)
