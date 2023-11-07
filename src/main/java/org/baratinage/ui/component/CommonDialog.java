@@ -82,7 +82,8 @@ public class CommonDialog {
             return null;
         if (file.exists()) {
             String[] yesNoOptions = new String[] {
-                    T.text("ok", "cancel")
+                    T.text("ok"),
+                    T.text("cancel")
             };
             int response = JOptionPane.showOptionDialog(AppConfig.AC.APP_MAIN_FRAME,
                     T.text("file_already_exists_overwrite"),
