@@ -95,10 +95,13 @@ public abstract class BamProject extends RowColPanel {
         content.setLeftComponent(explorer);
         content.setRightComponent(currentPanel);
         content.setResizeWeight(0);
-
     }
 
     public boolean checkUnsavedChange() {
+        if (lastSavedConfigRecord == null) {
+            unsavedChanges = true;
+            return true;
+        }
         BamConfigRecord currentConfigRecord = save(false);
         JSONObject curr = JSONFilter.filter(
                 BamConfigRecord.toJSON(currentConfigRecord),
