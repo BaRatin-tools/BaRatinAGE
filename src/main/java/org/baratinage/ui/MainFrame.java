@@ -295,24 +295,28 @@ public class MainFrame extends JFrame {
     }
 
     public void newProject() {
-        AppConfig.AC.clearTempDirectory();
-        BaratinProject newProject = new BaratinProject();
-        newProject.addDefaultBamItems();
-        setCurrentProject(newProject);
+        if (confirmLoosingUnsavedChanges()) {
+            AppConfig.AC.clearTempDirectory();
+            BaratinProject newProject = new BaratinProject();
+            newProject.addDefaultBamItems();
+            setCurrentProject(newProject);
+        }
     }
 
     public void loadProject() {
-        File f = CommonDialog.openFileDialog(
-                null,
-                T.text("baratinage_file"),
-                "bam", "BAM");
+        if (confirmLoosingUnsavedChanges()) {
+            File f = CommonDialog.openFileDialog(
+                    null,
+                    T.text("baratinage_file"),
+                    "bam", "BAM");
 
-        if (f == null) {
-            ConsoleLogger.error("loading project failed! Selected file is null.");
-            return;
+            if (f == null) {
+                ConsoleLogger.error("loading project failed! Selected file is null.");
+                return;
+            }
+            String fullFilePath = f.getAbsolutePath();
+            loadProject(fullFilePath);
         }
-        String fullFilePath = f.getAbsolutePath();
-        loadProject(fullFilePath);
     }
 
     public void loadProject(String projectFilePath) {
@@ -324,6 +328,7 @@ public class MainFrame extends JFrame {
                     () -> {
                         CommonDialog.errorDialog(T.text("error_opening_project"));
                     });
+
         }
     }
 
