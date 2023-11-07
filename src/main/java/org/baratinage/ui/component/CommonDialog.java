@@ -151,7 +151,7 @@ public class CommonDialog {
         private String[] extensions;
 
         public CustomFileFilter(String description, String... extensions) {
-            this.description = description + " (." + String.join(", .", extensions);
+            this.description = description + " (." + String.join(", .", extensions) + ")";
             this.extensions = extensions;
         }
 
