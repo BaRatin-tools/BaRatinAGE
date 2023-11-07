@@ -2,6 +2,7 @@ package org.baratinage;
 
 import javax.swing.UIManager;
 
+import java.awt.Color;
 import java.awt.EventQueue;
 import java.awt.Font;
 import java.util.Set;
@@ -21,11 +22,13 @@ public class App {
         try {
             try {
                 UIManager.setLookAndFeel(new FlatLightLaf());
+                UIManager.put("SplitPane.background", new Color(247, 247, 247));
+                UIManager.put("SplitPaneDivider.gripColor", new Color(211, 211, 211));
+
             } catch (Exception e1) {
                 ConsoleLogger.error(e1);
                 String sysLookAndFeel = UIManager.getSystemLookAndFeelClassName();
                 UIManager.setLookAndFeel(sysLookAndFeel);
-
                 System.err.println("Failed to initialize LaF");
             }
         } catch (Exception e2) {
