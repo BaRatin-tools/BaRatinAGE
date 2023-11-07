@@ -164,7 +164,7 @@ public class RatingCurve extends BamItem implements IPredictionMaster, ICalibrat
         outdatedPanel.setColWeight(0, 1);
 
         mainContentPanel.appendChild(outdatedPanel, 0);
-        mainContentPanel.appendChild(runBam.runButton, 0);
+        mainContentPanel.appendChild(runBam.runButton, 0, 5);
         mainContentPanel.appendChild(resultsPanel, 1);
 
         content.appendChild(mainConfigPanel, 0);

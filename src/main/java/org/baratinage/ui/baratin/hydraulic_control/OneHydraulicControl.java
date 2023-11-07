@@ -202,6 +202,7 @@ public class OneHydraulicControl extends JScrollPane {
         });
 
         RowColPanel buttonsPanel = new RowColPanel();
+        buttonsPanel.setPadding(5);
         buttonsPanel.appendChild(switchModeButton);
 
         mainPanel.appendChild(physicalParametersPanel, 0);

@@ -60,6 +60,7 @@ public class DataTable extends RowColPanel {
         JScrollPane scrollpane = new JScrollPane(table);
 
         RowColPanel actionPanel = new RowColPanel();
+        actionPanel.setGap(5);
         actionPanel.setMainAxisAlign(ALIGN.START);
         JButton exportButton = new JButton();
         exportButton.addActionListener((e) -> {

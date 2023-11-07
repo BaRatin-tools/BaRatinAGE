@@ -19,16 +19,18 @@ import org.json.JSONObject;
 
 public class ControlMatrix extends RowColPanel implements ChangeListener {
 
-    private List<ControlMatrixColumn> controls;
-    private GridPanel controlCheckBoxPanel;
-    private JButton addControlButton;
-    private JButton removeControlButton;
-    private JCheckBox reversedOrderCheckBox;
+    private final List<ControlMatrixColumn> controls;
+    private final GridPanel controlCheckBoxPanel;
+    private final JButton addControlButton;
+    private final JButton removeControlButton;
+    private final JCheckBox reversedOrderCheckBox;
 
     public ControlMatrix() {
         super(AXIS.COL);
 
         RowColPanel buttonsPanel = new RowColPanel(AXIS.COL, ALIGN.STRETCH);
+        buttonsPanel.setPadding(5);
+        buttonsPanel.setGap(5);
 
         addControlButton = new JButton(" > Ajouter un contrôle");
         addControlButton.addActionListener((e) -> {

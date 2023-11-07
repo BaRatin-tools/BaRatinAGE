@@ -110,7 +110,7 @@ public class HydraulicConfiguration
         priorRatingCurvePanel.appendChild(priorRatingCurveStageGrid, 0);
         priorRatingCurvePanel.appendChild(new JSeparator(), 0);
         priorRatingCurvePanel.appendChild(outOufSyncPanel, 0);
-        priorRatingCurvePanel.appendChild(runBam.runButton, 0);
+        priorRatingCurvePanel.appendChild(runBam.runButton, 0, 5);
         priorRatingCurvePanel.appendChild(plotPanel, 1);
 
         // **********************************************************************

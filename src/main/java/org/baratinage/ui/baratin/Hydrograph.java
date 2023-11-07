@@ -109,7 +109,7 @@ public class Hydrograph extends BamItem implements IPredictionMaster {
         content.appendChild(parentItemPanel, 0);
         content.appendChild(new JSeparator(JSeparator.HORIZONTAL), 0);
         content.appendChild(outdatedPanel, 0);
-        content.appendChild(runBam.runButton, 0);
+        content.appendChild(runBam.runButton, 0, 5);
         content.appendChild(tabs, 1);
         setContent(content);
 
