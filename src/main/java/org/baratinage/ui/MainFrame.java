@@ -43,6 +43,8 @@ public class MainFrame extends JFrame {
     public JMenuItem saveProjectMenuItem;
     public JMenuItem closeProjectMenuItem;
 
+    public NoProjectPanel noProjectPanel;
+
     public MainFrame() {
 
         new AppConfig(this);
@@ -184,6 +186,8 @@ public class MainFrame extends JFrame {
             }
         });
 
+        noProjectPanel = new NoProjectPanel();
+
         setVisible(true);
         setCurrentProject(null);
     }
@@ -252,6 +256,8 @@ public class MainFrame extends JFrame {
         boolean projectIsNull = project == null;
         if (!projectIsNull) {
             projectPanel.appendChild(project);
+        } else {
+            projectPanel.appendChild(noProjectPanel);
         }
         saveProjectAsMenuItem.setEnabled(!projectIsNull);
         saveProjectMenuItem.setEnabled(!projectIsNull);
