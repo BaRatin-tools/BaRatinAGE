@@ -13,6 +13,7 @@ import org.baratinage.ui.plot.Legend;
 import org.baratinage.ui.plot.FixedTextAnnotation;
 import org.baratinage.ui.plot.Plot;
 import org.baratinage.ui.plot.PlotBand;
+import org.baratinage.ui.plot.PlotBar;
 import org.baratinage.ui.plot.PlotContainer;
 import org.baratinage.ui.plot.PlotInfiniteLine;
 import org.baratinage.ui.plot.PlotLine;
@@ -86,13 +87,17 @@ public class DensityPlotGrid extends RowColPanel {
                     AppConfig.AC.POSTERIOR_LINE_COLOR,
                     new BasicStroke(2f));
 
-            List<double[]> postDensityData = estimParam.getPostDensity();
-            double[] zeroes = Calc.zeroes(postDensityData.get(0).length);
-            PlotBand postDensity = new PlotBand(
+            // List<double[]> postDensityData = estimParam.getPostDensity();
+            // PlotBar postDensity = new PlotBar(
+            // "",
+            // postDensityData.get(0),
+            // postDensityData.get(1),
+            // AppConfig.AC.POSTERIOR_ENVELOP_COLOR,
+            // 0.7f);
+            PlotBar postDensity = new PlotBar(
                     "",
-                    postDensityData.get(0),
-                    postDensityData.get(1),
-                    zeroes,
+                    estimParam.mcmc,
+                    20,
                     AppConfig.AC.POSTERIOR_ENVELOP_COLOR,
                     0.7f);
 
