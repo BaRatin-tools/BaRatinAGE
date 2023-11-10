@@ -110,7 +110,7 @@ public class CommonDialog {
         String lowerCasePath = path.toLowerCase();
         boolean hasExt = false;
         for (String ext : extensions) {
-            if (lowerCasePath.endsWith(ext.toLowerCase())) {
+            if (lowerCasePath.endsWith("." + ext.toLowerCase())) {
                 hasExt = true;
                 break;
             }
