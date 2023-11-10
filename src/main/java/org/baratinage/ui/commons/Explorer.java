@@ -3,6 +3,8 @@ package org.baratinage.ui.commons;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
@@ -20,40 +22,59 @@ public class Explorer extends RowColPanel {
 
     public final JLabel headerLabel = new JLabel();
 
-    private JTree explorerTree;
-    private ExplorerItem rootNode;
-    private DefaultTreeModel explorerTreeModel;
+    private final JTree explorerTree;
+    private final ExplorerItem rootNode;
+    private final DefaultTreeModel explorerTreeModel;
 
     public Explorer() {
 
         super(AXIS.COL, ALIGN.STRETCH, ALIGN.STRETCH);
 
-        this.setGap(5);
+        setGap(5);
 
         setMinimumSize(new Dimension(200, 100));
 
-        this.appendChild(headerLabel, 0);
+        appendChild(headerLabel, 0);
 
         headerLabel.setBorder(new EmptyBorder(5, 5, 5, 5));
 
-        this.explorerTree = new JTree();
-        this.explorerTree.setBorder(BorderFactory.createEmptyBorder());
+        explorerTree = new JTree();
+        explorerTree.setBorder(BorderFactory.createEmptyBorder());
 
-        this.explorerTree.setRootVisible(false);
-        this.explorerTree.setShowsRootHandles(true);
+        explorerTree.setRootVisible(false);
+        explorerTree.setShowsRootHandles(true);
 
         JScrollPane treeViewScrollableArea = new JScrollPane(explorerTree);
         treeViewScrollableArea.setBorder(BorderFactory.createEmptyBorder());
 
-        this.appendChild(treeViewScrollableArea);
+        appendChild(treeViewScrollableArea);
 
-        this.rootNode = new ExplorerItem("root", "Root");
-        this.explorerTreeModel = new DefaultTreeModel(rootNode);
-        this.explorerTree.setModel(this.explorerTreeModel);
+        rootNode = new ExplorerItem("root", "Root");
+        explorerTreeModel = new DefaultTreeModel(rootNode);
+        explorerTree.setModel(explorerTreeModel);
 
-        this.explorerTree.setCellRenderer(new CustomRenderer());
-        this.explorerTree.setRowHeight(35);
+        explorerTree.setCellRenderer(new CustomRenderer());
+        explorerTree.setRowHeight(35);
 
+        explorerTree.addMouseListener(new MouseAdapter() {
+            public void mousePressed(MouseEvent e) {
+                int x = e.getX();
+                int y = e.getY();
+                int selRow = explorerTree.getRowForLocation(x, y);
+                if (selRow != -1) {
+                    if (e.getButton() == MouseEvent.BUTTON3) {
+                        // enable right click
+                        explorerTree.setSelectionRow(selRow);
+                        TreePath selPath = explorerTree.getPathForLocation(x, y);
+                        Object o = selPath.getLastPathComponent();
+                        if (o instanceof ExplorerItem) {
+                            ExplorerItem item = (ExplorerItem) o;
+                            item.contextMenu.show(explorerTree, x, y);
+                        }
+                    }
+                }
+            }
+        });
     }
 
     public void appendItem(ExplorerItem item) {
@@ -61,22 +82,20 @@ public class Explorer extends RowColPanel {
         if (item.parentItem != null) {
             root = item.parentItem;
         }
-        this.explorerTreeModel.insertNodeInto(item, root, root.getChildCount());
-        this.explorerTreeModel.nodeStructureChanged(root);
+        explorerTreeModel.insertNodeInto(item, root, root.getChildCount());
+        explorerTreeModel.nodeStructureChanged(root);
     }
 
     public void updateItemView(ExplorerItem item) {
-        this.explorerTreeModel.nodeChanged(item);
+        explorerTreeModel.nodeChanged(item);
     }
 
-    // FIXME: given the following methods, I think I sould find a way to make
-    // this class herit from JTree!
     public void addTreeSelectionListener(TreeSelectionListener listener) {
-        this.explorerTree.addTreeSelectionListener(listener);
+        explorerTree.addTreeSelectionListener(listener);
     }
 
     public ExplorerItem getLastSelectedPathComponent() {
-        return (ExplorerItem) this.explorerTree.getLastSelectedPathComponent();
+        return (ExplorerItem) explorerTree.getLastSelectedPathComponent();
     }
 
     public void expandItem(ExplorerItem item) {
@@ -86,19 +105,19 @@ public class Explorer extends RowColPanel {
     public void selectItem(ExplorerItem item) {
         // FIXME: needed?
         if (item == null) {
-            this.explorerTree.setSelectionPath(null);
+            explorerTree.setSelectionPath(null);
             return;
         }
-        this.explorerTree.setSelectionPath(new TreePath(item.getPath()));
+        explorerTree.setSelectionPath(new TreePath(item.getPath()));
     }
 
     public void removeItem(ExplorerItem item) {
-        ExplorerItem root = this.rootNode;
+        ExplorerItem root = rootNode;
         if (item.parentItem != null) {
             root = item.parentItem;
         }
-        this.explorerTreeModel.removeNodeFromParent(item);
-        this.explorerTreeModel.nodeStructureChanged(root);
+        explorerTreeModel.removeNodeFromParent(item);
+        explorerTreeModel.nodeStructureChanged(root);
     }
 
     private ExplorerItem searchItem(String id, ExplorerItem parentItem) {

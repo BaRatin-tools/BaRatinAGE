@@ -129,7 +129,7 @@ public abstract class BamProject extends RowColPanel {
 
     private void setupExplorer() {
 
-        this.explorer.addTreeSelectionListener(e -> {
+        explorer.addTreeSelectionListener(e -> {
             ExplorerItem explorerItem = explorer.getLastSelectedPathComponent();
             if (explorerItem != null) {
                 BamItem bamItem = getBamItem(explorerItem.id);
@@ -181,6 +181,8 @@ public abstract class BamProject extends RowColPanel {
                 T.text(tKey),
                 itemType.getIcon());
         this.explorer.appendItem(explorerItem);
+
+        explorerItem.contextMenu.add(menuButton);
 
         T.t(this, menuButton, false, tCreateKey);
         T.t(this, () -> toolbarButton.setToolTipText(T.text(tCreateKey)));
@@ -250,6 +252,21 @@ public abstract class BamProject extends RowColPanel {
                 deleteBamItem(bamItem, explorerItem);
             }
         });
+
+        JMenuItem addBamItemMenu = new JMenuItem();
+        T.t(bamItem, addBamItemMenu, false, "create_" + bamItem.TYPE.id);
+        addBamItemMenu.setIcon(bamItem.TYPE.getAddIcon());
+        explorerItem.contextMenu.add(addBamItemMenu);
+
+        JMenuItem cloneMenuItem = new JMenuItem();
+        T.t(bamItem, cloneMenuItem, false, "duplicate");
+        cloneMenuItem.setIcon(AppConfig.AC.ICONS.COPY_ICON);
+        explorerItem.contextMenu.add(cloneMenuItem);
+
+        JMenuItem deleteMenuItem = new JMenuItem();
+        T.t(bamItem, deleteMenuItem, false, "delete");
+        deleteMenuItem.setIcon(AppConfig.AC.ICONS.TRASH_ICON);
+        explorerItem.contextMenu.add(deleteMenuItem);
 
         this.explorer.appendItem(explorerItem);
         this.explorer.selectItem(explorerItem);
