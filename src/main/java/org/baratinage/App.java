@@ -21,10 +21,14 @@ public class App {
 
         try {
             try {
+                // FIXME: cannot use dark themes because of some custom colors
+                // such as invalid background color... see AppConfig class
+                // UIManager.setLookAndFeel(new FlatDarkLaf());
+                // UIManager.setLookAndFeel(new FlatIntelliJLaf());
+                // UIManager.setLookAndFeel(new FlatMacLightLaf());
                 UIManager.setLookAndFeel(new FlatLightLaf());
                 UIManager.put("SplitPane.background", new Color(247, 247, 247));
                 UIManager.put("SplitPaneDivider.gripColor", new Color(211, 211, 211));
-
             } catch (Exception e1) {
                 ConsoleLogger.error(e1);
                 String sysLookAndFeel = UIManager.getSystemLookAndFeelClassName();
@@ -42,7 +46,7 @@ public class App {
                     if (args.length > 0) {
                         mainFrame.loadProject(args[0]);
                     } else {
-                        // mainFrame.loadProject("C:\\Users\\Ivan\\Documents\\test_48.bam");
+                        mainFrame.loadProject("D:\\Programming\\java\\V3\\BaRatinAGE\\test\\test_bam.bam");
                         // mainFrame.newProject();
                     }
 

@@ -43,7 +43,7 @@ public class SimpleTextField extends JTextField {
     public SimpleTextField() {
         super();
 
-        int H = 32;
+        int H = 38;
 
         Dimension prefDim = this.getPreferredSize();
         prefDim.width = 100;
@@ -62,7 +62,7 @@ public class SimpleTextField extends JTextField {
         placeholderFont = getFont();
         placeholderColor = new Color(180, 180, 200);
 
-        innerLabelFont = getFont().deriveFont(13f);
+        innerLabelFont = getFont().deriveFont(12f);
         innerLabelColor = new Color(180, 180, 200);
 
         getDocument().addDocumentListener(new DocumentListener() {
@@ -117,12 +117,12 @@ public class SimpleTextField extends JTextField {
         if (hasInnerLabel) {
             g2D.setColor(innerLabelColor);
             g2D.setFont(innerLabelFont);
-            setBorder(new CompoundBorder(defaultBorder, new EmptyBorder(12, 0, 0, 0)));
+            setBorder(new CompoundBorder(defaultBorder, new EmptyBorder(10, 0, 0, 0)));
 
             float maxCharHeight = g2D.getFontMetrics().getMaxAscent();
 
-            float x = insets.left;
-            float y = maxCharHeight;
+            float x = insets.left - 1;
+            float y = maxCharHeight + 1;
 
             g2D.drawString(innerLabel, x, y);
         } else {
