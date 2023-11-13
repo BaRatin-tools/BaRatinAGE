@@ -1,5 +1,6 @@
 package org.baratinage.ui.component;
 
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -8,24 +9,32 @@ import java.awt.image.BufferedImage;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.ByteArrayInputStream;
+import java.util.HashMap;
 import java.io.File;
 
 import javax.swing.ImageIcon;
+
+import org.apache.batik.anim.dom.SAXSVGDocumentFactory;
 import org.apache.batik.transcoder.TranscoderException;
 import org.apache.batik.transcoder.TranscoderInput;
 import org.apache.batik.transcoder.TranscoderOutput;
 import org.apache.batik.transcoder.image.ImageTranscoder;
 import org.apache.batik.transcoder.image.PNGTranscoder;
+import org.apache.batik.util.XMLResourceDescriptor;
 import org.baratinage.ui.AppConfig;
 import org.baratinage.utils.ConsoleLogger;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 public class SvgIcon extends ImageIcon {
 
     private final float width;
     private final float height;
 
-    private final byte[] svgBytes;
+    private final Document svgDocument;
+
     private final String sourcePath;
 
     private static Scales lastUsedScales;
@@ -50,19 +59,80 @@ public class SvgIcon extends ImageIcon {
         this.width = width;
         this.height = height;
 
-        byte[] b = new byte[0];
+        Document doc = null;
         try {
-            InputStream inputStream = new FileInputStream(new File(sourcePath));
-            b = inputStream.readAllBytes();
-        } catch (IOException e) {
-            ConsoleLogger.error("Error while retrieving SVG file");
-            ConsoleLogger.stackTrace(e);
+            String parser = XMLResourceDescriptor.getXMLParserClassName();
+            SAXSVGDocumentFactory f = new SAXSVGDocumentFactory(parser);
+            File file = new File(sourcePath);
+            InputStream inputStream = new FileInputStream(file);
+            doc = f.createDocument(file.getName(), inputStream);
+        } catch (IOException ex) {
+            ConsoleLogger.error(ex);
         }
 
-        this.svgBytes = b;
+        svgDocument = doc;
 
         buildIcon();
     };
+
+    public void setSvgTagAttribute(String attrName, Color attrValue) {
+        int r = attrValue.getRed();
+        int g = attrValue.getGreen();
+        int b = attrValue.getBlue();
+        String value = String.format("rgb(%d,%d,%d)", r, g, b);
+        System.out.println("value = " + value);
+        setSvgTagAttribute(attrName, value);
+    }
+
+    public void setSvgTagAttribute(String attrName, String attrValue) {
+        NodeList nodes = svgDocument.getChildNodes();
+        int n = nodes.getLength();
+        for (int k = 0; k < n; k++) {
+            Node node = nodes.item(k);
+            if (node instanceof Element) {
+                Element element = (Element) node;
+                if (element.getTagName().equals("svg")) {
+                    element.setAttribute(attrName, attrValue);
+                }
+            }
+        }
+    }
+
+    public void setAttribute(Element element, String attrName, String attrValue) {
+        String attr = element.getAttribute(attrName);
+        if (attr != null) {
+            // if (attr.equals("#000") || attr.equals("#000ff") || attr.equals("black")) {
+            System.out
+                    .println("Found attr '" + attrName + "' set to '" + attr + "' for element " + element.getTagName());
+            if (!attr.equals("none") && !attr.equals("")) {
+                element.setAttribute(attrName, attrValue);
+            }
+        }
+    }
+
+    public static HashMap<String, String> getCssValues(Element element) {
+        HashMap<String, String> cssValues = new HashMap<>();
+        String strStyle = element.getAttribute("style");
+        if (strStyle == null) {
+            return cssValues;
+        }
+        String[] strStyleArray = strStyle.split(";");
+        for (String s : strStyleArray) {
+            String[] keyValuePair = s.split(":");
+            if (keyValuePair.length == 2) {
+                cssValues.put(keyValuePair[0], keyValuePair[1]);
+            }
+        }
+        return cssValues;
+    }
+
+    public static void setCssValues(Element element, HashMap<String, String> cssValues) {
+        String strStyle = "";
+        for (String key : cssValues.keySet()) {
+            strStyle += key + ":" + cssValues.get(key) + ";";
+        }
+        element.setAttribute("style", strStyle);
+    }
 
     public void rebuildIcon() {
         buildIcon();
@@ -84,8 +154,7 @@ public class SvgIcon extends ImageIcon {
         imgTranscoder.addTranscodingHint(PNGTranscoder.KEY_HEIGHT, h);
 
         try {
-            InputStream inputStream = new ByteArrayInputStream(svgBytes);
-            TranscoderInput transcoderInput = new TranscoderInput(inputStream);
+            TranscoderInput transcoderInput = new TranscoderInput(svgDocument);
             imgTranscoder.transcode(transcoderInput, null);
         } catch (TranscoderException e) {
             ConsoleLogger.error("error while build raster image from SVG.");
