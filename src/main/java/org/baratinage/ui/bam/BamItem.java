@@ -3,30 +3,35 @@ package org.baratinage.ui.bam;
 import java.util.ArrayList;
 import java.util.List;
 import java.awt.Component;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 
 import javax.swing.JButton;
+import javax.swing.JOptionPane;
 import javax.swing.JSeparator;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import org.baratinage.translation.T;
-import org.baratinage.translation.Translatable;
+import org.baratinage.ui.AppConfig;
+import org.baratinage.ui.commons.ExplorerItem;
 import org.baratinage.ui.component.SimpleTextField;
 import org.baratinage.ui.component.Title;
 import org.baratinage.ui.container.GridPanel;
 import org.baratinage.ui.container.RowColPanel;
 
-abstract public class BamItem extends GridPanel implements Translatable {
+abstract public class BamItem extends GridPanel {
 
     public final BamItemType TYPE;
     public final String ID;
     public final BamProject PROJECT;
 
-    public final Title bamItemTypeLabel = new Title();
-    public final SimpleTextField bamItemNameField = new SimpleTextField();
-    public final SimpleTextField bamItemDescriptionField = new SimpleTextField();
-    public final JButton cloneButton = new JButton();
-    public final JButton deleteButton = new JButton();
+    public final SimpleTextField bamItemNameField;
+    public final SimpleTextField bamItemDescriptionField;
+
+    private final Title bamItemTypeLabel;
+    private final JButton cloneButton;
+    private final JButton deleteButton;
 
     private GridPanel headerPanel;
     private RowColPanel contentPanel;
@@ -36,20 +41,19 @@ abstract public class BamItem extends GridPanel implements Translatable {
         ID = uuid;
         PROJECT = project;
 
+        bamItemTypeLabel = new Title();
+        bamItemNameField = new SimpleTextField();
+        bamItemDescriptionField = new SimpleTextField();
+
+        cloneButton = new JButton();
+        deleteButton = new JButton();
+
         headerPanel = new GridPanel();
         headerPanel.setGap(5);
         headerPanel.setPadding(5);
         headerPanel.setColWeight(1, 1);
         headerPanel.setColWeight(2, 5);
 
-        bamItemTypeLabel.setText("BamItem");
-        bamItemNameField.setText("Unnamed");
-
-        // headerPanel.insertChild(bamItemTypeLabel, 0, 0);
-        // headerPanel.insertChild(bamItemNameField, 1, 0, ANCHOR.C, FILL.H);
-        // headerPanel.insertChild(cloneButton, 2, 0, ANCHOR.C, FILL.BOTH);
-        // headerPanel.insertChild(deleteButton, 3, 0, ANCHOR.C, FILL.BOTH);
-        // headerPanel.insertChild(bamItemDescriptionField, 0, 1, 4, 1);
         headerPanel.insertChild(bamItemTypeLabel, 0, 0);
         headerPanel.insertChild(bamItemNameField, 1, 0);
         headerPanel.insertChild(bamItemDescriptionField, 2, 0);
@@ -65,13 +69,58 @@ abstract public class BamItem extends GridPanel implements Translatable {
         setColWeight(0, 1);
         setRowWeight(2, 1);
 
-        T.t(this, this);
-    }
+        bamItemNameField.addChangeListener((e) -> {
+            String newName = bamItemNameField.getText();
+            ExplorerItem explorerItem = PROJECT.EXPLORER.getItem(ID);
+            if (explorerItem != null) {
+                explorerItem.label = newName;
+                PROJECT.EXPLORER.updateItemView(explorerItem);
+            }
 
-    @Override
-    public void translate() {
-        bamItemNameField.setPlaceholder(T.text("name"));
-        bamItemDescriptionField.setPlaceholder(T.text("description"));
+        });
+        bamItemNameField.addFocusListener(new FocusListener() {
+            @Override
+            public void focusGained(FocusEvent e) {
+            }
+
+            @Override
+            public void focusLost(FocusEvent e) {
+                if (bamItemNameField.getText().equals("")) {
+                    bamItemNameField.setText(T.text("untitled"));
+                }
+            }
+        });
+
+        cloneButton.addActionListener((e) -> {
+            BamItem clonedBamItem = TYPE.buildBamItem();
+            clonedBamItem.load(save(false));
+            clonedBamItem.bamItemNameField.setText(bamItemNameField.getText());
+            clonedBamItem.bamItemDescriptionField.setText(bamItemDescriptionField.getText());
+            clonedBamItem.setCopyName();
+            PROJECT.addBamItem(clonedBamItem);
+        });
+
+        deleteButton.addActionListener((e) -> {
+            int response = JOptionPane.showConfirmDialog(this,
+                    T.html("delete_component_question", bamItemNameField.getText()),
+                    T.text("warning"),
+                    JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+            if (response == JOptionPane.YES_OPTION) {
+                PROJECT.deleteBamItem(this);
+            }
+        });
+
+        T.t(this, cloneButton, false, "duplicate");
+
+        cloneButton.setIcon(AppConfig.AC.ICONS.COPY_ICON);
+        deleteButton.setIcon(AppConfig.AC.ICONS.TRASH_ICON);
+
+        bamItemTypeLabel.setIcon(TYPE.getIcon());
+        T.t(this, bamItemTypeLabel, false, TYPE.id);
+        T.t(this, () -> {
+            bamItemNameField.setPlaceholder(T.text("name"));
+            bamItemDescriptionField.setPlaceholder(T.text("description"));
+        });
     }
 
     public void setContent(Component component) {

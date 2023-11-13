@@ -1,8 +1,5 @@
 package org.baratinage.ui.bam;
 
-import java.awt.event.ActionListener;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -11,13 +8,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
-import javax.swing.JButton;
 import javax.swing.JLabel;
-import javax.swing.JMenu;
 import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-import javax.swing.JSeparator;
-import javax.swing.JToolBar;
+
 import javax.swing.SwingUtilities;
 
 import org.baratinage.translation.T;
@@ -44,23 +37,16 @@ import org.json.JSONObject;
 
 public abstract class BamProject extends RowColPanel {
 
-    protected enum BamProjectType {
-        BARATIN
-    }
-
     public final String ID;
     public final BamProjectType PROJECT_TYPE;
     public final BamItemList BAM_ITEMS;
-    public final List<ExplorerItem> EXPLORER_ITEMS;
+
+    protected final Explorer EXPLORER;
 
     private String projectPath = null;
 
-    protected SplitContainer content;
-    protected JToolBar toolBar;
-    protected Explorer explorer;
-    protected RowColPanel currentPanel;
-
-    protected JMenu projectMenu;
+    protected final SplitContainer content;
+    protected final RowColPanel currentPanel;
 
     private BamConfigRecord lastSavedConfigRecord;
     private boolean unsavedChanges = false;
@@ -71,28 +57,22 @@ public abstract class BamProject extends RowColPanel {
         ID = Misc.getTimeStampedId();
         PROJECT_TYPE = projectType;
         BAM_ITEMS = new BamItemList();
-        EXPLORER_ITEMS = new ArrayList<>();
 
         lastSavedConfigRecord = null;
 
-        toolBar = new JToolBar();
-        toolBar.setFloatable(false);
-        appendChild(toolBar, 0);
-        appendChild(new JSeparator(), 0);
-
-        explorer = new Explorer();
-        explorer.headerLabel.setIcon(AppConfig.AC.ICONS.LIST_ICON);
-        T.t(this, explorer.headerLabel, false, "explorer");
+        EXPLORER = new Explorer();
+        EXPLORER.headerLabel.setIcon(AppConfig.AC.ICONS.LIST_ICON);
+        T.t(this, EXPLORER.headerLabel, false, "explorer");
 
         setupExplorer();
 
         currentPanel = new RowColPanel(AXIS.COL);
         currentPanel.setGap(5);
 
-        content = new SplitContainer(explorer, currentPanel, true);
+        content = new SplitContainer(EXPLORER, currentPanel, true);
         appendChild(content, 1);
 
-        content.setLeftComponent(explorer);
+        content.setLeftComponent(EXPLORER);
         content.setRightComponent(currentPanel);
         content.setResizeWeight(0);
     }
@@ -129,28 +109,27 @@ public abstract class BamProject extends RowColPanel {
 
     private void setupExplorer() {
 
-        explorer.addTreeSelectionListener(e -> {
-            ExplorerItem explorerItem = explorer.getLastSelectedPathComponent();
+        EXPLORER.addTreeSelectionListener(e -> {
+            ExplorerItem explorerItem = EXPLORER.getLastSelectedPathComponent();
             if (explorerItem != null) {
                 BamItem bamItem = getBamItem(explorerItem.id);
                 if (bamItem != null) {
-                    this.currentPanel.clear();
-                    this.currentPanel.appendChild(bamItem, 1);
-
+                    currentPanel.clear();
+                    currentPanel.appendChild(bamItem, 1);
                 } else {
                     ConsoleLogger.log("selected BamItem is null");
-                    this.currentPanel.clear();
+                    currentPanel.clear();
                 }
-                this.updateUI();
+                updateUI();
             }
         });
 
     }
 
     public void setCurrentBamItem(BamItem bamItem) {
-        ExplorerItem item = explorer.getItem(bamItem.ID);
+        ExplorerItem item = EXPLORER.getItem(bamItem.ID);
         if (item != null) {
-            explorer.selectItem(item);
+            EXPLORER.selectItem(item);
         }
     }
 
@@ -158,37 +137,23 @@ public abstract class BamProject extends RowColPanel {
             BamItemType itemType,
             BamItemBuilderFunction builder) {
 
-        itemType.setBuilderFunction(builder);
-
-        ActionListener onAdd = (e) -> {
+        itemType.setBamItemBuilderFunction(builder);
+        itemType.setAddBamItemAction((e) -> {
             addBamItem(itemType);
-        };
-
-        String tKey = itemType.id;
-        String tCreateKey = "create_" + itemType.id;
-
-        JMenuItem menuButton = new JMenuItem();
-        menuButton.setIcon(itemType.getAddIcon());
-        menuButton.addActionListener(onAdd);
-        projectMenu.add(menuButton);
-
-        JButton toolbarButton = new JButton(itemType.getAddIcon());
-        toolbarButton.addActionListener(onAdd);
-        toolBar.add(toolbarButton);
+        });
 
         ExplorerItem explorerItem = new ExplorerItem(
                 itemType.id,
-                T.text(tKey),
+                T.text(itemType.id),
                 itemType.getIcon());
-        this.explorer.appendItem(explorerItem);
 
-        explorerItem.contextMenu.add(menuButton);
+        EXPLORER.appendItem(explorerItem);
 
-        T.t(this, menuButton, false, tCreateKey);
-        T.t(this, () -> toolbarButton.setToolTipText(T.text(tCreateKey)));
+        explorerItem.contextMenu.add(itemType.getAddMenuItem());
+
         T.t(this, () -> {
-            explorerItem.label = T.text(tKey);
-            explorer.updateItemView(explorerItem);
+            explorerItem.label = T.text(itemType.id);
+            EXPLORER.updateItemView(explorerItem);
         });
 
     }
@@ -199,59 +164,11 @@ public abstract class BamProject extends RowColPanel {
                 bamItem.ID,
                 bamItem.bamItemNameField.getText(),
                 bamItem.TYPE.getIcon(),
-                explorer.getItem(bamItem.TYPE.id));
+                EXPLORER.getItem(bamItem.TYPE.id));
 
-        T.t(bamItem, bamItem.bamItemTypeLabel, false, bamItem.TYPE.id);
-
-        bamItem.bamItemTypeLabel.setIcon(bamItem.TYPE.getIcon());
-        bamItem.cloneButton.addActionListener((e) -> {
-            BamItem clonedBamItem = bamItem.TYPE.buildBamItem();
-            clonedBamItem.load(bamItem.save(false));
-            clonedBamItem.bamItemNameField.setText(bamItem.bamItemNameField.getText());
-            clonedBamItem.bamItemDescriptionField.setText(bamItem.bamItemDescriptionField.getText());
-            clonedBamItem.setCopyName();
-            addBamItem(clonedBamItem);
-        });
-
-        bamItem.cloneButton.setIcon(AppConfig.AC.ICONS.COPY_ICON);
-        bamItem.deleteButton.setIcon(AppConfig.AC.ICONS.TRASH_ICON);
-
-        T.t(bamItem, bamItem.cloneButton, false, "duplicate");
-        T.t(bamItem, bamItem.deleteButton, false, "delete");
         T.updateHierarchy(this, bamItem);
 
         BAM_ITEMS.add(bamItem);
-        EXPLORER_ITEMS.add(explorerItem);
-
-        bamItem.bamItemNameField.addChangeListener((e) -> {
-            String newName = bamItem.bamItemNameField.getText();
-            explorerItem.label = newName;
-            explorer.updateItemView(explorerItem);
-        });
-        bamItem.bamItemNameField.addFocusListener(new FocusListener() {
-
-            @Override
-            public void focusGained(FocusEvent e) {
-            }
-
-            @Override
-            public void focusLost(FocusEvent e) {
-                if (bamItem.bamItemNameField.getText().equals("")) {
-                    bamItem.bamItemNameField.setText(T.text("untitled"));
-                }
-            }
-
-        });
-
-        bamItem.deleteButton.addActionListener((e) -> {
-            int response = JOptionPane.showConfirmDialog(this,
-                    T.html("delete_component_question", bamItem.bamItemNameField.getText()),
-                    T.text("warning"),
-                    JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
-            if (response == JOptionPane.YES_OPTION) {
-                deleteBamItem(bamItem, explorerItem);
-            }
-        });
 
         JMenuItem addBamItemMenu = new JMenuItem();
         T.t(bamItem, addBamItemMenu, false, "create_" + bamItem.TYPE.id);
@@ -268,8 +185,8 @@ public abstract class BamProject extends RowColPanel {
         deleteMenuItem.setIcon(AppConfig.AC.ICONS.TRASH_ICON);
         explorerItem.contextMenu.add(deleteMenuItem);
 
-        this.explorer.appendItem(explorerItem);
-        this.explorer.selectItem(explorerItem);
+        EXPLORER.appendItem(explorerItem);
+        EXPLORER.selectItem(explorerItem);
 
         return bamItem;
 
@@ -287,11 +204,11 @@ public abstract class BamProject extends RowColPanel {
         return addBamItem(bamItem);
     }
 
-    protected void deleteBamItem(BamItem bamItem, ExplorerItem explorerItem) {
+    protected void deleteBamItem(BamItem bamItem) {
+        ExplorerItem explorerItem = EXPLORER.getItem(bamItem.ID);
         BAM_ITEMS.remove(bamItem);
-        EXPLORER_ITEMS.remove(explorerItem);
-        this.explorer.removeItem(explorerItem);
-        this.explorer.selectItem(explorerItem.parentItem);
+        EXPLORER.removeItem(explorerItem);
+        EXPLORER.selectItem(explorerItem.parentItem);
         T.clear(bamItem);
     }
 
@@ -331,7 +248,7 @@ public abstract class BamProject extends RowColPanel {
         json.put("fileVersion", 0);
         json.put("bamProjectType", PROJECT_TYPE.toString());
         json.put("bamItems", bamItemsJson);
-        ExplorerItem exItem = explorer.getLastSelectedPathComponent();
+        ExplorerItem exItem = EXPLORER.getLastSelectedPathComponent();
         if (exItem != null) {
             json.put("selectedItemId", exItem.id);
         }
@@ -471,7 +388,7 @@ public abstract class BamProject extends RowColPanel {
 
         // sets the last step
         doAfterBamItemsLoaded = () -> {
-            ExplorerItem exItem = bamProject.explorer.getLastSelectedPathComponent();
+            ExplorerItem exItem = bamProject.EXPLORER.getLastSelectedPathComponent();
             if (exItem != null) {
                 json.put("selectedItem", exItem.id);
             }

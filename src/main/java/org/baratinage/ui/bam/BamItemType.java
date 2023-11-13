@@ -1,13 +1,20 @@
 package org.baratinage.ui.bam;
 
-import javax.swing.ImageIcon;
+import java.awt.event.ActionListener;
 
+import javax.swing.AbstractButton;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JMenuItem;
+
+import org.baratinage.translation.T;
 import org.baratinage.ui.AppConfig;
+import org.baratinage.utils.ConsoleLogger;
 import org.baratinage.utils.Misc;
 
 public enum BamItemType {
     /**
-     * **Important note:**
+     * **Important notes:**
      * 
      * ids are used as translation keys:
      * - id = name of the item type
@@ -17,6 +24,7 @@ public enum BamItemType {
      * - id + ".svg" = main item type icon
      * - id + "_add.svg" = create item of that type icon
      * 
+     * setBuilderFunction and setAddItemAction should be called at least once
      */
 
     EMPTY_ITEM("empty_item"),
@@ -28,11 +36,14 @@ public enum BamItemType {
     STRUCTURAL_ERROR("structural_error_model"),
     IMPORTED_DATASET("imported_dataset");
 
-    public String id;
+    public final String id;
 
-    private BamItemBuilderFunction builder;
+    private BamItemBuilderFunction builBamItemFunction;
     private ImageIcon icon;
     private ImageIcon addIcon;
+    private ActionListener addBamItemAction;
+    private JMenuItem addBamItemMenuItem;
+    private JButton addBamItemToolbarButton;
 
     @FunctionalInterface
     public interface BamItemBuilderFunction {
@@ -41,24 +52,35 @@ public enum BamItemType {
 
     private BamItemType(String id) {
         this.id = id;
+        addBamItemAction = (e) -> {
+            ConsoleLogger.error("No addItem action set.");
+        };
+        builBamItemFunction = (i) -> {
+            ConsoleLogger.error("No builder function set.");
+            return null;
+        };
     }
 
-    public void setBuilderFunction(BamItemBuilderFunction builder) {
-        this.builder = builder;
+    public void setBamItemBuilderFunction(BamItemBuilderFunction builder) {
+        this.builBamItemFunction = builder;
+    }
+
+    public void setAddBamItemAction(ActionListener addBamItemAction) {
+        this.addBamItemAction = addBamItemAction;
     }
 
     public BamItem buildBamItem(String uuid) {
-        if (builder == null) {
+        if (builBamItemFunction == null) {
             return null;
         }
-        return builder.build(uuid);
+        return builBamItemFunction.build(uuid);
     }
 
     public BamItem buildBamItem() {
-        if (builder == null) {
+        if (builBamItemFunction == null) {
             return null;
         }
-        return builder.build(Misc.getTimeStampedId());
+        return builBamItemFunction.build(Misc.getTimeStampedId());
     }
 
     public ImageIcon getIcon() {
@@ -73,6 +95,33 @@ public enum BamItemType {
             addIcon = AppConfig.AC.ICONS.getCustomAppImageIcon(id + "_add.svg");
         }
         return addIcon;
+    }
+
+    private <A extends AbstractButton> A configureAddAbstractButton(A aBtn) {
+        aBtn.setIcon(getAddIcon());
+        aBtn.addActionListener(addBamItemAction);
+        return aBtn;
+    }
+
+    public JMenuItem getAddMenuItem() {
+        if (addBamItemMenuItem == null) {
+            addBamItemMenuItem = configureAddAbstractButton(new JMenuItem());
+            String tCreateKey = "create_" + id;
+            T.t(this, addBamItemMenuItem, false, tCreateKey);
+        }
+
+        return addBamItemMenuItem;
+    }
+
+    public JButton getAddToolbarButton() {
+        if (addBamItemToolbarButton == null) {
+            addBamItemToolbarButton = configureAddAbstractButton(new JButton());
+            String tCreateKey = "create_" + id;
+            T.t(this, () -> {
+                addBamItemMenuItem.setToolTipText(T.text(tCreateKey));
+            });
+        }
+        return addBamItemToolbarButton;
     }
 
     public boolean matchOneOf(BamItemType... itemTypesToMatch) {

@@ -3,11 +3,8 @@ package org.baratinage.ui;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import javax.swing.KeyStroke;
+import javax.swing.JToolBar;
 
-import org.baratinage.project_importer.BaratinageV2Importer;
 import org.baratinage.translation.T;
 import org.baratinage.ui.bam.BamProject;
 import org.baratinage.ui.baratin.BaratinProject;
@@ -18,10 +15,8 @@ import org.baratinage.utils.ConsoleLogger;
 import org.baratinage.utils.Misc;
 
 import java.awt.Dimension;
-import java.awt.event.ActionEvent;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
-import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
@@ -33,17 +28,15 @@ import java.util.Map;
 
 public class MainFrame extends JFrame {
 
-    private RowColPanel projectPanel;
+    private final RowColPanel projectPanel;
     private BamProject currentProject;
 
-    public JMenuBar mainMenuBar;
-    public JMenu baratinMenu;
+    public final MainMenuBar mainMenuBar;
 
-    public JMenuItem saveProjectAsMenuItem;
-    public JMenuItem saveProjectMenuItem;
-    public JMenuItem closeProjectMenuItem;
+    public final RowColPanel topPanel;
+    public final JToolBar projectToolbar;
 
-    public NoProjectPanel noProjectPanel;
+    public final NoProjectPanel noProjectPanel;
 
     public MainFrame() {
 
@@ -61,95 +54,22 @@ public class MainFrame extends JFrame {
 
         Misc.showOnScreen(0, this);
 
-        mainMenuBar = new JMenuBar();
-
-        // DebugMenu debugMenu = new DebugMenu();
-        // mainMenuBar.add(debugMenu);
-
-        JMenu fileMenu = new JMenu();
-        T.t(this, fileMenu, false, "files");
-        mainMenuBar.add(fileMenu);
-
-        JMenuItem newProjectMenuItem = new JMenuItem();
-        T.t(this, newProjectMenuItem, false, "create_baratin_project");
-        newProjectMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, KeyEvent.CTRL_DOWN_MASK));
-        newProjectMenuItem.addActionListener((e) -> {
-            newProject();
-        });
-        fileMenu.add(newProjectMenuItem);
-
-        JMenuItem openProjectMenuItem = new JMenuItem();
-        T.t(this, openProjectMenuItem, false, "open_project");
-        openProjectMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, KeyEvent.CTRL_DOWN_MASK));
-        openProjectMenuItem.addActionListener((e) -> {
-            loadProject();
-        });
-        fileMenu.add(openProjectMenuItem);
-
-        saveProjectAsMenuItem = new JMenuItem();
-        T.t(this, saveProjectAsMenuItem, false, "save_project_as");
-        saveProjectAsMenuItem
-                .setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, ActionEvent.CTRL_MASK + ActionEvent.ALT_MASK));
-        saveProjectAsMenuItem.addActionListener((e) -> {
-            saveProject(true);
-        });
-        fileMenu.add(saveProjectAsMenuItem);
-
-        saveProjectMenuItem = new JMenuItem();
-        T.t(this, saveProjectMenuItem, false, "save_project");
-        saveProjectMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_DOWN_MASK));
-        saveProjectMenuItem.addActionListener((e) -> {
-            saveProject(false);
-        });
-        fileMenu.add(saveProjectMenuItem);
-
-        closeProjectMenuItem = new JMenuItem();
-        T.t(this, closeProjectMenuItem, false, "close_project");
-        closeProjectMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_W, KeyEvent.CTRL_DOWN_MASK));
-        closeProjectMenuItem.addActionListener((e) -> {
-            closeProject();
-        });
-        fileMenu.add(closeProjectMenuItem);
-
-        fileMenu.addSeparator();
-        JMenuItem importBaratinageV2projectMenuItem = new JMenuItem();
-        T.t(this, importBaratinageV2projectMenuItem, false, "import_baratinage_v2_project");
-        importBaratinageV2projectMenuItem.addActionListener((e) -> {
-            File f = CommonDialog.openFileDialog(T.text("import_baratinage_v2_project"),
-                    T.text("bar_zip_file_format"), "bar.zip", "BAR.ZIP");
-            if (f != null) {
-                BaratinageV2Importer projConver = new BaratinageV2Importer();
-                projConver.importProject(
-                        f.getAbsolutePath(),
-                        (project) -> {
-                            ConsoleLogger.log(project);
-                            setCurrentProject(project);
-                        });
-
-            }
-        });
-        fileMenu.add(importBaratinageV2projectMenuItem);
-
-        fileMenu.addSeparator();
-
-        JMenuItem closeMenuItem = new JMenuItem();
-        T.t(this, closeMenuItem, false, "exit");
-        closeMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q, KeyEvent.CTRL_DOWN_MASK));
-        closeMenuItem.addActionListener((e) -> {
-            close();
-        });
-        fileMenu.add(closeMenuItem);
-
-        JMenu optionMenu = new JMenu("Options");
-        mainMenuBar.add(optionMenu);
-
-        JMenu lgSwitcherMenu = createLanguageSwitcherMenu();
-        optionMenu.add(lgSwitcherMenu);
-
+        mainMenuBar = new MainMenuBar();
         setJMenuBar(mainMenuBar);
 
-        projectPanel = new RowColPanel(RowColPanel.AXIS.COL);
-        add(projectPanel);
+        projectPanel = new RowColPanel();
+
+        topPanel = new RowColPanel();
+
+        projectToolbar = new JToolBar();
+        projectToolbar.setFloatable(false);
+        topPanel.appendChild(projectToolbar);
+
+        RowColPanel framePanel = new RowColPanel(RowColPanel.AXIS.COL);
+        framePanel.setGap(5);
+        framePanel.appendChild(topPanel, 0);
+        framePanel.appendChild(projectPanel, 1);
+        add(framePanel);
 
         addComponentListener(new ComponentAdapter() {
             public void componentResized(ComponentEvent e) {
@@ -190,6 +110,10 @@ public class MainFrame extends JFrame {
 
         setVisible(true);
         setCurrentProject(null);
+
+        T.updateHierarchy(this, AppConfig.AC);
+        T.updateHierarchy(this, mainMenuBar);
+        T.updateHierarchy(this, noProjectPanel);
     }
 
     Map<String, JCheckBoxMenuItem> translationMenuItems = new HashMap<>();
@@ -258,10 +182,12 @@ public class MainFrame extends JFrame {
             projectPanel.appendChild(project);
         } else {
             projectPanel.appendChild(noProjectPanel);
+            projectToolbar.removeAll();
+            mainMenuBar.componentMenu.removeAll();
         }
-        saveProjectAsMenuItem.setEnabled(!projectIsNull);
-        saveProjectMenuItem.setEnabled(!projectIsNull);
-        closeProjectMenuItem.setEnabled(!projectIsNull);
+        mainMenuBar.saveProjectAsMenuItem.setEnabled(!projectIsNull);
+        mainMenuBar.saveProjectMenuItem.setEnabled(!projectIsNull);
+        mainMenuBar.closeProjectMenuItem.setEnabled(!projectIsNull);
 
         updateFrameTitle();
         T.updateTranslations();
@@ -276,7 +202,6 @@ public class MainFrame extends JFrame {
                         T.text("unsaved_changes_will_be_lost") + "\n" +
                                 T.text("proceed_question"),
                         T.text("are_you_sure"));
-
             }
         }
         return true;
@@ -370,7 +295,7 @@ public class MainFrame extends JFrame {
         updateFrameTitle();
     }
 
-    private void close() {
+    public void close() {
         AppConfig.AC.cleanup();
         System.exit(0);
     }
