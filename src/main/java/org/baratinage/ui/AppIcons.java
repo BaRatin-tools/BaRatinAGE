@@ -41,7 +41,8 @@ public class AppIcons {
                 64, 64));
 
         ICON_SIZE = 28;
-        FEATHER_ICON_SIZE = 20;
+        // FEATHER_ICON_SIZE = 20;
+        FEATHER_ICON_SIZE = ICON_SIZE;
 
         BARATINAGE_ICON = addIcon(new SvgIcon(
                 Path.of(AppConfig.AC.ICONS_RESOURCES_DIR, "icon.svg").toString(),
