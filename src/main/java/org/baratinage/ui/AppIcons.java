@@ -25,6 +25,8 @@ public class AppIcons {
     public final SvgIcon SAVE_ICON;
     public final SvgIcon EXTERNAL_ICON;
     public final SvgIcon LIST_ICON;
+    public final SvgIcon CHEVRON_DOWN_ICON;
+
     public final SvgIcon LEFT_DOWN_ARROW_ICON;
     public final SvgIcon RIGHT_DOWN_ARROW_ICON;
     public final SvgIcon LEFT_UP_ARROW_ICON;
@@ -47,16 +49,19 @@ public class AppIcons {
 
         COPY_ICON = addIcon(buildFeatherAppImageIcon("copy.svg", FEATHER_ICON_SIZE));
         TRASH_ICON = addIcon(buildFeatherAppImageIcon("trash.svg", FEATHER_ICON_SIZE));
+        TRASH_ICON.setSvgTagAttribute("stroke", AppConfig.AC.DANGER_COLOR);
         LOCK_ICON = addIcon(buildFeatherAppImageIcon("lock.svg", FEATHER_ICON_SIZE));
         SAVE_ICON = addIcon(buildFeatherAppImageIcon("save.svg", FEATHER_ICON_SIZE));
         EXTERNAL_ICON = addIcon(buildFeatherAppImageIcon("external-link.svg", FEATHER_ICON_SIZE));
         LIST_ICON = addIcon(buildFeatherAppImageIcon("list.svg", FEATHER_ICON_SIZE));
+        CHEVRON_DOWN_ICON = addIcon(buildFeatherAppImageIcon("chevron-down.svg", FEATHER_ICON_SIZE));
 
         LEFT_DOWN_ARROW_ICON = addIcon(buildFeatherAppImageIcon("corner-left-down.svg", FEATHER_ICON_SIZE));
         RIGHT_DOWN_ARROW_ICON = addIcon(buildFeatherAppImageIcon("corner-right-down.svg", FEATHER_ICON_SIZE));
         LEFT_UP_ARROW_ICON = addIcon(buildFeatherAppImageIcon("corner-left-up.svg", FEATHER_ICON_SIZE));
         RIGHT_UP_ARROW_ICON = addIcon(buildFeatherAppImageIcon("corner-right-up.svg", FEATHER_ICON_SIZE));
 
+        // FIXME: not an ideal solution.
         // every 10 seconds, check if scales have change, and rebuild icons if necessary
         TimedActions.interval(
                 "app_icons_rebuild_if_necessary",
@@ -88,9 +93,11 @@ public class AppIcons {
     }
 
     static private SvgIcon buildFeatherAppImageIcon(String name, float size) {
-        return new SvgIcon(
+        SvgIcon svgIcon = new SvgIcon(
                 Path.of(AppConfig.AC.ICONS_RESOURCES_DIR, "feather", name).toString(),
                 size, size);
+        svgIcon.setSvgTagAttribute("stroke-width", "1");
+        return svgIcon;
     }
 
     public void updateAllIcons() {

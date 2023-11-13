@@ -27,6 +27,7 @@ public class AppConfig {
     public Color INVALID_DISABLED_COLOR_BG = new Color(245, 230, 230);
     public Color INVALID_COLOR_BG = new Color(245, 210, 210);
     public Color INVALID_COLOR_FG = new Color(200, 50, 40);
+    public Color DANGER_COLOR = INVALID_COLOR_FG;
     public Color WARNING_COLOR = new Color(230, 149, 0);
     public Color INFO_COLOR = new Color(0, 63, 179);
 
