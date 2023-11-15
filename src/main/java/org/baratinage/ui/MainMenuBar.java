@@ -186,8 +186,8 @@ public class MainMenuBar extends JMenuBar {
         T.t(this, helpMenuItem, false, "help");
         helpMenuItem.addActionListener((e) -> {
             if (CommonDialog.confirmDialog(
-                    "No help is available for BaRatinAGE v3 yet. Do you wan't to open BaRatinAGE v2.2 help instead?",
-                    "No Help for BaRatinAGE v3 yet")) {
+                    String.format("%s. %s", T.text("no_help_availabel"), T.text("open_v2_help_question")),
+                    T.text("no_help_availabel"))) {
                 String localKey = T.getLocaleKey();
                 File f = new File("resources/help/v2/" + localKey + "/index.html");
                 if (!f.exists()) {
