@@ -2,8 +2,6 @@ $NAME = "BaRatinAGE"
 
 $VERSION = "3.0.0-alpha5";
 
-$JPACKAGE_VERSION = "3"
-
 $CONSOLE = $True
 
 $ICON_PATH = "resources/icons/icon.ico"
@@ -16,6 +14,7 @@ $DIRS_TO_COPY = @(
     "resources", "example"
 )
 
+# no extension!
 $EXE_TO_COPY = @(
     "exe/BaM", "exe/distribution"
 )
@@ -23,11 +22,16 @@ $EXE_TO_COPY = @(
 
 #####################################################################
 # Script start
+
+""
 "*********************************************************************"
+""
 
 #  setting up variables
 $IS_WINDOWS = [System.Environment]::OSVersion.Platform -eq "Win32NT"
 $IS_UNIX = [System.Environment]::OSVersion.Platform -eq "Unix"
+
+$JPACKAGE_VERSION = $VERSION.Split(".")[0];
 
 $NAME_VERSION = "$($NAME)-$($VERSION)"
 $TARGER_DIR = "target"
@@ -38,7 +42,6 @@ if ($IS_UNIX) {
     $RESOURCES_DIR = "$($TARGET_PACKAGE_DIR_FULL)/bin"
 }
 if ($IS_WINDOWS) {
-    "Adding exe..."
     for ($i = 0; $i -lt $EXE_TO_COPY.Length; ++$i) {
         $EXE_TO_COPY[$i] = "$($EXE_TO_COPY[$i]).exe"
     }
@@ -60,13 +63,26 @@ if (Test-Path $TARGET_PACKAGE_DIR_FULL -PathType Container) {
     Remove-Item -Path "$($TARGET_PACKAGE_DIR_FULL)" -Recurse  -Force
 }
 
+
+""
+"*********************************************************************"
+""
+
 # updating pom.xml version
 "Updading app version in pom.xml..."
 mvn versions:set -DnewVersion="$($VERSION)"
 
+""
+"*********************************************************************"
+""
+
 # creating compiled/packaged jar file
 "Creating jar file..."
 mvn clean package
+
+""
+"*********************************************************************"
+""
 
 # creating packaged app
 "Creating packaged app..."
@@ -88,6 +104,10 @@ $JPACKAGE_CMD
 
 Invoke-Expression $JPACKAGE_CMD 
 
+""
+"*********************************************************************"
+""
+
 # creating necessary forlder
 foreach ( $DIR in $DIRS_TO_CREATE ) {
     if (-Not (Test-Path "$($RESOURCES_DIR)/$($DIR)" -PathType Container)) {
@@ -108,3 +128,6 @@ foreach ( $EXE in $EXE_TO_COPY ) {
     Copy-item -Force $EXE -Destination "$($RESOURCES_DIR)/$($EXE)"
 }
 
+""
+"*********************************************************************"
+""
