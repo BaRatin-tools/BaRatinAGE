@@ -41,19 +41,7 @@ public class BamFilesHelpers {
 
     public static final String BAM_MISSING_VALUE_CODE = "-0.666666E+03";
 
-    private static List<String> parseString(String template, String stringToParse) {
-        String regex = template.replaceAll("%s", "(\\\\w*)");
-        Matcher m = Pattern.compile(regex).matcher(stringToParse);
-        List<String> output = new ArrayList<>();
-        while (m.find()) {
-            for (int k = 0; k < m.groupCount(); k++) {
-                output.add(m.group(k + 1));
-            }
-        }
-        return output;
-    }
-
-    static public String findDataFilePath(String rawFilePath, String workspacePath) {
+    public static String findDataFilePath(String rawFilePath, String workspacePath) {
         // using default Path.of approach (which fail if string was build in another OS)
         String dataFilePath = findDataFilePath(Path.of(rawFilePath), workspacePath);
         // if not null, it means the file was found (it exists in file system)
@@ -73,7 +61,7 @@ public class BamFilesHelpers {
         return null;
     }
 
-    static private String findDataFilePath(Path path, String workspacePath) {
+    private static String findDataFilePath(Path path, String workspacePath) {
         if (path.toFile().exists()) { // assume it is absolute (or relative to baratinage instance)
             return path.toAbsolutePath().toString();
         }
@@ -85,9 +73,21 @@ public class BamFilesHelpers {
         return null;
     }
 
-    static public String getNameFromFileName(String template, String fileName) {
+    public static String getNameFromFileName(String template, String fileName) {
         List<String> parsed = parseString(template, fileName);
         return parsed.get(0);
+    }
+
+    private static List<String> parseString(String template, String stringToParse) {
+        String regex = template.replaceAll("%s", "(\\\\w*)");
+        Matcher m = Pattern.compile(regex).matcher(stringToParse);
+        List<String> output = new ArrayList<>();
+        while (m.find()) {
+            for (int k = 0; k < m.groupCount(); k++) {
+                output.add(m.group(k + 1));
+            }
+        }
+        return output;
     }
 
 }
