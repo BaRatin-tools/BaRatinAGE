@@ -41,7 +41,7 @@ public class BamFilesHelpers {
 
     public static final String BAM_MISSING_VALUE_CODE = "-0.666666E+03";
 
-    public static List<String> parseString(String template, String stringToParse) {
+    private static List<String> parseString(String template, String stringToParse) {
         String regex = template.replaceAll("%s", "(\\\\w*)");
         Matcher m = Pattern.compile(regex).matcher(stringToParse);
         List<String> output = new ArrayList<>();
@@ -54,10 +54,13 @@ public class BamFilesHelpers {
     }
 
     static public String findDataFilePath(String rawFilePath, String workspacePath) {
+        // using default Path.of approach (which fail if string was build in another OS)
         String dataFilePath = findDataFilePath(Path.of(rawFilePath), workspacePath);
+        // if not null, it means the file was found (it exists in file system)
         if (dataFilePath != null) {
             return dataFilePath;
         }
+        // trying to build the file path manually using different path separator
         String[] osSplitChars = new String[] { "\\\\", "/" };
         for (String osSplitChar : osSplitChars) {
             String[] splitPath = rawFilePath.split(osSplitChar);
