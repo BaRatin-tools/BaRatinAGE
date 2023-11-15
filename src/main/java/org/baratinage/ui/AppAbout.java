@@ -7,9 +7,14 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
+import java.net.JarURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.jar.Attributes;
+import java.util.jar.Manifest;
 
 import javax.swing.JDialog;
 import javax.swing.JLabel;
@@ -51,15 +56,50 @@ public class AppAbout extends JDialog {
     private final List<String> creditsDescTexts;
     private final List<JLabel> creditsDescLabels;
 
+    private Attributes getMyManifestAttributes() {
+        String className = getClass().getSimpleName() + ".class";
+        String classPath = getClass().getResource(className).toString();
+        if (!classPath.startsWith("jar")) {
+            ConsoleLogger.error("Not in a jar file.");
+            return null;
+        }
+        try {
+            URL url = new URL(classPath);
+            JarURLConnection jarConnection = (JarURLConnection) url.openConnection();
+            Manifest manifest = jarConnection.getManifest();
+            return manifest.getMainAttributes();
+        } catch (MalformedURLException e) {
+            ConsoleLogger.error(e);
+        } catch (IOException e) {
+            ConsoleLogger.error(e);
+        }
+        return null;
+    }
+
     public AppAbout() {
         super(AppConfig.AC.APP_MAIN_FRAME, true);
         RowColPanel contentPanel = new RowColPanel(RowColPanel.AXIS.COL);
 
-        String version = "v3.0.0-alpha4";
+        String version = "";
+
+        String buildInfo = "";
+
+        Attributes manifestAttributes = getMyManifestAttributes();
+        if (manifestAttributes != null) {
+            version = manifestAttributes.getValue("Project-Version");
+            String buildJdk = manifestAttributes.getValue("Build-Jdk");
+            String buildOS = manifestAttributes.getValue("Build-OS");
+            String buildTimestamp = manifestAttributes.getValue("Build-Timestamp");
+            // "jdk: " + ;
+            buildInfo = String.format(
+                    "<html><code>JDK: %s</code><br><code>OS: %s</code><br><code>Timestamp: %s</code></html>",
+                    buildJdk, buildOS, buildTimestamp);
+        }
 
         setTitle(T.text("about"));
 
         JLabel title = new JLabel();
+
         title.setText(String.format("<html><h1>BaRatinAGE <code>%s</code></h1></html>", version));
 
         JLabel description = new JLabel();
@@ -103,6 +143,7 @@ public class AppAbout extends JDialog {
         contentPanel.appendChild(new JSeparator(), 0);
         contentPanel.appendChild(credits, 0);
         contentPanel.appendChild(creditsScrollPane, 1);
+        contentPanel.appendChild(new JLabel(buildInfo), 0);
 
         // JScrollPane scrollPane = new JScrollPane(contentPanel);
 
