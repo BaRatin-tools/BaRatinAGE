@@ -94,7 +94,8 @@ public class Calc {
         return (value & 1) == 0;
     }
 
-    public static double[] smooth(double[] toSmooth, int windowSize) {
+    // FIXME: this method could be refactored
+    public static double[] smooth(double[] toSmooth, int windowSize, boolean computeEdgeValues) {
         if (windowSize < 2) {
             return toSmooth;
         }
@@ -114,7 +115,20 @@ public class Calc {
                 }
                 smoothed[k] = s / windowSize;
             } else {
-                smoothed[k] = Double.NaN;
+                if (computeEdgeValues) {
+                    double s = 0;
+                    int m = 0;
+                    for (int i = 0; i < windowSize; i++) {
+                        int index = k - halfWindowSize + i;
+                        if (index >= 0 && index < n) {
+                            s += toSmooth[index];
+                            m++;
+                        }
+                    }
+                    smoothed[k] = s / m;
+                } else {
+                    smoothed[k] = Double.NaN;
+                }
             }
 
         }
