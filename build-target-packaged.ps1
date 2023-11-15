@@ -16,7 +16,7 @@ $DIRS_TO_COPY = @(
     "resources", "example"
 )
 
-$FILES_TO_COPY = @(
+$EXE_TO_COPY = @(
     "exe/BaM", "exe/distribution"
 )
 
@@ -26,13 +26,22 @@ $FILES_TO_COPY = @(
 "*********************************************************************"
 
 #  setting up variables
+$IS_WINDOWS = [System.Environment]::OSVersion.Platform -eq "Win32NT"
+$IS_UNIX = [System.Environment]::OSVersion.Platform -eq "Unix"
+
 $NAME_VERSION = "$($NAME)-$($VERSION)"
 $TARGER_DIR = "target"
 $TARGET_PACKAGE_DIR = "target-packaged"
 $TARGET_PACKAGE_DIR_FULL = "$($TARGET_PACKAGE_DIR)/$($NAME_VERSION)"
-$RESOURCES_DIR =  $TARGET_PACKAGE_DIR_FULL
-if ($IsLinux) {
+$RESOURCES_DIR = $TARGET_PACKAGE_DIR_FULL
+if ($IS_UNIX) {
     $RESOURCES_DIR = "$($TARGET_PACKAGE_DIR_FULL)/bin"
+}
+if ($IS_WINDOWS) {
+    "Adding exe..."
+    for ($i = 0; $i -lt $EXE_TO_COPY.Length; ++$i) {
+        $EXE_TO_COPY[$i] = "$($EXE_TO_COPY[$i]).exe"
+    }
 }
 
 # cleaning up targer dir
@@ -45,6 +54,7 @@ if (Test-Path "$($TARGER_DIR)"  -PathType Container) {
 if (-Not(Test-Path $TARGET_PACKAGE_DIR -PathType Container)) {
     New-Item -ItemType "directory" -Path "$($TARGET_PACKAGE_DIR)" | Out-Null
 }
+
 if (Test-Path $TARGET_PACKAGE_DIR_FULL -PathType Container) {
     "Removing existing packaged app target directory '$($TARGET_PACKAGE_DIR_FULL)'..."
     Remove-Item -Path "$($TARGET_PACKAGE_DIR_FULL)" -Recurse  -Force
@@ -70,7 +80,7 @@ $JPACKAGE_CMD = "$($JPACKAGE_CMD) --input $($TARGER_DIR)"
 $JPACKAGE_CMD = "$($JPACKAGE_CMD) --main-jar $($NAME_VERSION).jar"
 $JPACKAGE_CMD = "$($JPACKAGE_CMD) --icon $($ICON_PATH)"
     
-if ($CONSOLE -And $IsWindows) {
+if ($CONSOLE -And $IS_WINDOWS) {
     $JPACKAGE_CMD = "$($JPACKAGE_CMD) --win-console"
 } 
 
@@ -87,14 +97,14 @@ foreach ( $DIR in $DIRS_TO_CREATE ) {
 }
 
 # copying necessary folder
-foreach ( $DIR in $DIRS_TO_COPY )
-{
+foreach ( $DIR in $DIRS_TO_COPY ) {
     "Copying folder '$($DIR)'..."
     Copy-item -Force -Recurse  $DIR -Destination "$($RESOURCES_DIR)/$($DIR)"
 }
 
-# copying necessary files
-foreach ( $FILE in $FILES_TO_COPY ) {
-    "Copying file '$($FILE)'..."
-    Copy-item -Force $FILE -Destination "$($RESOURCES_DIR)/$($FILE)"
+# copying necessary exe
+foreach ( $EXE in $EXE_TO_COPY ) {
+    "Copying file '$($EXE)'..."
+    Copy-item -Force $EXE -Destination "$($RESOURCES_DIR)/$($EXE)"
 }
+
