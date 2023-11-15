@@ -80,7 +80,6 @@ public class SvgIcon extends ImageIcon {
         int g = attrValue.getGreen();
         int b = attrValue.getBlue();
         String value = String.format("rgb(%d,%d,%d)", r, g, b);
-        System.out.println("value = " + value);
         setSvgTagAttribute(attrName, value);
     }
 
