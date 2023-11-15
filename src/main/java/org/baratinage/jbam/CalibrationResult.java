@@ -9,8 +9,9 @@ import java.util.stream.Stream;
 
 import org.baratinage.jbam.utils.BamFilesHelpers;
 import org.baratinage.jbam.utils.Read;
-import org.baratinage.jbam.utils.Write;
+
 import org.baratinage.utils.ConsoleLogger;
+import org.baratinage.utils.fs.WriteFile;
 
 public class CalibrationResult {
 
@@ -190,7 +191,7 @@ public class CalibrationResult {
         if (mcmcValues != null) {
             Path filePath = Path.of(workspace, calibrationConfig.mcmcCookingConfig.outputFileName);
             try {
-                Write.writeMatrix(
+                WriteFile.writeMatrix(
                         filePath.toString(),
                         mcmcValues,
                         " ",

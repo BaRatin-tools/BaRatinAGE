@@ -7,8 +7,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.baratinage.jbam.utils.ConfigFile;
-import org.baratinage.jbam.utils.Write;
+
 import org.baratinage.utils.ConsoleLogger;
+import org.baratinage.utils.fs.WriteFile;
 
 public class Model {
     public final String fileName;
@@ -54,7 +55,7 @@ public class Model {
         configFile.writeToFile(workspace, fileName);
 
         try {
-            Write.writeLines(Path.of(workspace, xTraFileName),
+            WriteFile.writeLines(Path.of(workspace, xTraFileName),
                     new String[] { xTra });
         } catch (IOException e) {
             ConsoleLogger.stackTrace(e);

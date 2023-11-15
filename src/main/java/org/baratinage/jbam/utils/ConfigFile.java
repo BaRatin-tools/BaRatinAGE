@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.baratinage.utils.ConsoleLogger;
+import org.baratinage.utils.fs.WriteFile;
 
 public class ConfigFile {
 
@@ -65,7 +66,7 @@ public class ConfigFile {
     public void writeToFile(Path filePath) {
         String[] lines = this.createFileLines();
         try {
-            Write.writeLines(filePath, lines);
+            WriteFile.writeLines(filePath, lines);
         } catch (IOException e) {
             ConsoleLogger.error(
                     String.format("ConfigFile Error: Failed to write configuration \n '%s'...", filePath.toString()));

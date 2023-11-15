@@ -7,8 +7,9 @@ import java.util.List;
 
 import org.baratinage.jbam.utils.BamFilesHelpers;
 import org.baratinage.jbam.utils.Read;
-import org.baratinage.jbam.utils.Write;
+
 import org.baratinage.utils.ConsoleLogger;
+import org.baratinage.utils.fs.WriteFile;
 
 public class PredictionInput {
     public final String name;
@@ -55,7 +56,7 @@ public class PredictionInput {
     public String toDataFile(String workspace) {
         String dataFilePath = Path.of(workspace, fileName).toAbsolutePath().toString();
         try {
-            Write.writeMatrix(
+            WriteFile.writeMatrix(
                     dataFilePath,
                     dataColumns,
                     " ",
@@ -67,7 +68,7 @@ public class PredictionInput {
         if (extraData != null) {
             String additionalDataFilePath = Path.of(workspace, extFileName).toAbsolutePath().toString();
             try {
-                Write.writeMatrix(
+                WriteFile.writeMatrix(
                         additionalDataFilePath,
                         extraData,
                         " ",

@@ -8,8 +8,9 @@ import java.util.List;
 import org.baratinage.jbam.utils.BamFilesHelpers;
 import org.baratinage.jbam.utils.ConfigFile;
 import org.baratinage.jbam.utils.Read;
-import org.baratinage.jbam.utils.Write;
+
 import org.baratinage.utils.ConsoleLogger;
+import org.baratinage.utils.fs.WriteFile;
 
 public class CalibrationData {
     public final String name;
@@ -116,7 +117,7 @@ public class CalibrationData {
         }
 
         try {
-            Write.writeMatrix(
+            WriteFile.writeMatrix(
                     dataFilePath,
                     dataColumns,
                     " ",
