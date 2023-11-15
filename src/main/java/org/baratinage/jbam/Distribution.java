@@ -1,7 +1,7 @@
 package org.baratinage.jbam;
 
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.List;
@@ -69,8 +69,7 @@ public class Distribution {
                     0, Integer.MAX_VALUE,
                     BamFilesHelpers.BAM_MISSING_VALUE_CODE,
                     false, true);
-            File f = new File(filePath);
-            f.delete();
+            Files.delete(Path.of(filePath));
             return result;
         } catch (IOException e) {
             ConsoleLogger.stackTrace(e);
