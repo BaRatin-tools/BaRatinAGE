@@ -130,6 +130,21 @@ public class ReadFile {
     }
 
     /**
+     * Remove heading/trailing spaces from each element of a string array
+     * 
+     * @param str string array to trim
+     * @return trimmed string array
+     */
+    static public String[] trimStringArray(String[] str) {
+        int n = str.length;
+        String[] trimmedStr = new String[n];
+        for (int k = 0; k < n; k++) {
+            trimmedStr[k] = str[k].trim();
+        }
+        return trimmedStr;
+    }
+
+    /**
      * Converts a String array into a double array optionnally shortening it by its
      * start by ignoring a certain number of elements
      * 
