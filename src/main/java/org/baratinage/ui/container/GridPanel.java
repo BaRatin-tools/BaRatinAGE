@@ -154,7 +154,7 @@ public class GridPanel extends JPanel {
     }
 
     private static final int EXTENSOR_INDEX_MIN = 0;
-    private static final int EXTENSOR_INDEX_MAX = 10000;
+    private static final int EXTENSOR_INDEX_MAX = 999;
     private static final double EXTENSOR_STRENGTH = 10000;
     private List<Component> extensors = new ArrayList<>();
 
