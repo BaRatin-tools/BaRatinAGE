@@ -20,7 +20,6 @@ import org.baratinage.ui.baratin.BaratinProject;
 import org.baratinage.ui.commons.Explorer;
 import org.baratinage.ui.commons.ExplorerItem;
 import org.baratinage.ui.component.ProgressFrame;
-import org.baratinage.ui.component.SvgIcon;
 import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.ui.container.SplitContainer;
 import org.baratinage.utils.ConsoleLogger;
@@ -319,22 +318,15 @@ public abstract class BamProject extends RowColPanel {
         // Initalize loading monitoring frame
         RowColPanel p = new RowColPanel(RowColPanel.AXIS.COL);
         p.setGap(5);
-        JLabel lMain = new JLabel();
-        JLabel lSecondary = new JLabel();
+        JLabel lMessage = new JLabel();
         String loadingMessage = T.text("loading_project");
 
-        lSecondary.setText("<html>" +
+        lMessage.setText("<html>" +
                 "<b>" + sourceFile.getName() + "</b>" + "&nbsp;&nbsp;" +
                 "<code>" + sourceFile.getAbsolutePath() + "</code>" +
                 "</html>");
 
-        lMain.setText(loadingMessage);
-        lMain.setIcon(new SvgIcon(Path.of(
-                AppConfig.AC.ICONS_RESOURCES_DIR,
-                "icon.svg").toString(), 32, 32));
-
-        p.appendChild(lMain);
-        p.appendChild(lSecondary);
+        p.appendChild(lMessage);
 
         bamProjectLoadingFrame.openProgressFrame(
                 AppConfig.AC.APP_MAIN_FRAME,
