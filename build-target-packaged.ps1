@@ -37,12 +37,12 @@ $TARGET_PACKAGE_DIR_FULL = "$($TARGET_PACKAGE_DIR)/$($NAME_VERSION)"
 rm "$($TARGER_DIR)/*" -R -FORCE
 
 # preparing package app dir
-if (-Not (Test-Path $TARGET_PACKAGE_DIR -PathType Container)) {
+if (-Not (Test-Path $TARGET_PACKAGE_DIR_FULL -PathType Container)) {
     "Creating packaged app target directory..."
-    mkdir $TARGET_PACKAGE_DIR | Out-Null
+    mkdir $TARGET_PACKAGE_DIR_FULL | Out-Null
 } else {
     "Emptying packaged app target directory..."
-    rm "$($TARGET_PACKAGE_DIR)/*" -R -FORCE
+    rm "$($TARGET_PACKAGE_DIR_FULL)/*" -R -FORCE
 }
 
 # updating pom.xml version
