@@ -1,9 +1,16 @@
 package org.baratinage.ui;
 
+import java.awt.Desktop;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.io.File;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
+import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
@@ -25,6 +32,8 @@ public class MainMenuBar extends JMenuBar {
     public final JMenuItem saveProjectMenuItem;
     public final JMenuItem closeProjectMenuItem;
 
+    public final Map<String, JCheckBoxMenuItem> translationMenuItems;
+
     public MainMenuBar() {
 
         fileMenu = new JMenu();
@@ -44,14 +53,21 @@ public class MainMenuBar extends JMenuBar {
         saveProjectMenuItem = new JMenuItem();
         closeProjectMenuItem = new JMenuItem();
 
+        translationMenuItems = new HashMap<>();
+
         initFileMenu();
         initOptionMenu();
+        initHelpMenu();
 
         T.t(this, fileMenu, false, "files");
         T.t(this, componentMenu, false, "components");
         T.t(this, optionMenu, false, "options");
         T.t(this, helpMenu, false, "help");
 
+    }
+
+    public void updateMenuEnableStates() {
+        componentMenu.setEnabled(componentMenu.getMenuComponentCount() != 0);
     }
 
     private void initFileMenu() {
@@ -124,9 +140,75 @@ public class MainMenuBar extends JMenuBar {
         fileMenu.add(closeMenuItem);
     }
 
+    public JMenu createLanguageSwitcherMenu() {
+
+        JMenu switchLanguageMenuItem = new JMenu();
+        T.t(this, switchLanguageMenuItem, false, "change_language");
+
+        List<String> tKeys = T.getAvailableLocales();
+        for (String tKey : tKeys) {
+            JCheckBoxMenuItem item = new JCheckBoxMenuItem();
+            translationMenuItems.put(tKey, item);
+            T.t(this, () -> {
+                Locale currentLocale = T.getLocale();
+                Locale targetLocale = Locale.forLanguageTag(tKey);
+                String currentLocaleText = targetLocale.getDisplayName(targetLocale);
+                String targetLocaleText = targetLocale.getDisplayName(currentLocale);
+                item.setText(currentLocaleText + " - " + targetLocaleText);
+            });
+
+            item.addActionListener((e) -> {
+                ConsoleLogger.log("swtiching language to '" + tKey + "'");
+                T.setLocale(tKey);
+                updateLanguageSwitcherMenu();
+                // FIXME: how to recursively update the whole Frame?
+            });
+            switchLanguageMenuItem.add(item);
+        }
+        updateLanguageSwitcherMenu();
+        return switchLanguageMenuItem;
+    }
+
+    public void updateLanguageSwitcherMenu() {
+        String currentLocalKey = T.getLocaleKey();
+        for (String key : translationMenuItems.keySet()) {
+            translationMenuItems.get(key).setSelected(key.equals(currentLocalKey));
+        }
+    }
+
     private void initOptionMenu() {
-        JMenu lgSwitcherMenu = AppConfig.AC.APP_MAIN_FRAME.createLanguageSwitcherMenu();
+        JMenu lgSwitcherMenu = createLanguageSwitcherMenu();
         optionMenu.add(lgSwitcherMenu);
+    }
+
+    private void initHelpMenu() {
+        JMenuItem helpMenuItem = new JMenuItem();
+        T.t(this, helpMenuItem, false, "help");
+        helpMenuItem.addActionListener((e) -> {
+            if (CommonDialog.confirmDialog(
+                    "No help is available for BaRatinAGE v3 yet. Do you wan't to open BaRatinAGE v2.2 help instead?",
+                    "No Help for BaRatinAGE v3 yet")) {
+                String localKey = T.getLocaleKey();
+                File f = new File("resources/help/v2/" + localKey + "/index.html");
+                if (!f.exists()) {
+                    localKey = "en";
+                    f = new File("resources/help/v2" + localKey + "/index.html");
+                }
+                try {
+                    Desktop.getDesktop().browse(f.toURI());
+                } catch (IOException ex) {
+                    ConsoleLogger.error(ex);
+                }
+            }
+        });
+        helpMenu.add(helpMenuItem);
+
+        JMenuItem aboutMenuItem = new JMenuItem();
+        T.t(this, aboutMenuItem, false, "about");
+        aboutMenuItem.addActionListener((e) -> {
+            new AppAbout().showAboutDialog();
+        });
+        helpMenu.add(aboutMenuItem);
     }
 
 }

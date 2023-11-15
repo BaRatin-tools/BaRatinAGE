@@ -1,8 +1,6 @@
 package org.baratinage.ui;
 
-import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JFrame;
-import javax.swing.JMenu;
 import javax.swing.JToolBar;
 
 import org.baratinage.translation.T;
@@ -21,10 +19,6 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.nio.file.Path;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
 
 public class MainFrame extends JFrame {
 
@@ -116,50 +110,12 @@ public class MainFrame extends JFrame {
         T.updateHierarchy(this, noProjectPanel);
     }
 
-    Map<String, JCheckBoxMenuItem> translationMenuItems = new HashMap<>();
-
-    public JMenu createLanguageSwitcherMenu() {
-
-        JMenu switchLanguageMenuItem = new JMenu();
-        T.t(this, switchLanguageMenuItem, false, "change_language");
-
-        List<String> tKeys = T.getAvailableLocales();
-        for (String tKey : tKeys) {
-            JCheckBoxMenuItem item = new JCheckBoxMenuItem();
-            translationMenuItems.put(tKey, item);
-            T.t(this, () -> {
-                Locale currentLocale = T.getLocale();
-                Locale targetLocale = Locale.forLanguageTag(tKey);
-                String currentLocaleText = targetLocale.getDisplayName(targetLocale);
-                String targetLocaleText = targetLocale.getDisplayName(currentLocale);
-                item.setText(currentLocaleText + " - " + targetLocaleText);
-            });
-
-            item.addActionListener((e) -> {
-                ConsoleLogger.log("swtiching language to '" + tKey + "'");
-                T.setLocale(tKey);
-                updateLanguageSwitcherMenu();
-                // FIXME: how to recursively update the whole Frame?
-            });
-            switchLanguageMenuItem.add(item);
-        }
-        updateLanguageSwitcherMenu();
-        return switchLanguageMenuItem;
-    }
-
     public void updateUI() {
         projectPanel.updateUI();
         if (currentProject != null) {
             currentProject.updateUI();
         }
         mainMenuBar.updateUI();
-    }
-
-    public void updateLanguageSwitcherMenu() {
-        String currentLocalKey = T.getLocaleKey();
-        for (String key : translationMenuItems.keySet()) {
-            translationMenuItems.get(key).setSelected(key.equals(currentLocalKey));
-        }
     }
 
     public void checkIfUnsavedChanges() {
@@ -188,6 +144,7 @@ public class MainFrame extends JFrame {
         mainMenuBar.saveProjectAsMenuItem.setEnabled(!projectIsNull);
         mainMenuBar.saveProjectMenuItem.setEnabled(!projectIsNull);
         mainMenuBar.closeProjectMenuItem.setEnabled(!projectIsNull);
+        mainMenuBar.updateMenuEnableStates();
 
         updateFrameTitle();
         T.updateTranslations();
