@@ -304,6 +304,7 @@ public class ReadFile {
             line = reader.readLine();
             k++;
         }
+        reader.close();
 
         return columns;
     }
