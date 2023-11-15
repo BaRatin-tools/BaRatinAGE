@@ -10,8 +10,9 @@ import java.util.UUID;
 
 import org.baratinage.jbam.utils.BamFilesHelpers;
 import org.baratinage.jbam.utils.ExeRun;
-import org.baratinage.jbam.utils.Read;
+
 import org.baratinage.utils.ConsoleLogger;
+import org.baratinage.utils.fs.ReadFile;
 
 public class Distribution {
 
@@ -62,7 +63,12 @@ public class Distribution {
 
     private static List<double[]> getExeRunResult(String filePath) {
         try {
-            List<double[]> result = Read.readMatrix(filePath, "\\s+", 0, 0);
+            List<double[]> result = ReadFile.readMatrix(
+                    filePath,
+                    BamFilesHelpers.BAM_COLUMN_SEPARATOR,
+                    0, Integer.MAX_VALUE,
+                    BamFilesHelpers.BAM_MISSING_VALUE_CODE,
+                    false, true);
             File f = new File(filePath);
             f.delete();
             return result;

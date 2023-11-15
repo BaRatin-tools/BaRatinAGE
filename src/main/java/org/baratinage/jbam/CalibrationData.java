@@ -7,9 +7,9 @@ import java.util.List;
 
 import org.baratinage.jbam.utils.BamFilesHelpers;
 import org.baratinage.jbam.utils.ConfigFile;
-import org.baratinage.jbam.utils.Read;
 
 import org.baratinage.utils.ConsoleLogger;
+import org.baratinage.utils.fs.ReadFile;
 import org.baratinage.utils.fs.WriteFile;
 
 public class CalibrationData {
@@ -207,9 +207,19 @@ public class CalibrationData {
         List<double[]> rawData;
         String[] headers;
         try {
-            rawData = Read.readMatrix(
-                    dataFilePath, nHeaderRows);
-            headers = Read.readHeaders(dataFilePath);
+            rawData = ReadFile.readMatrix(
+                    dataFilePath,
+                    BamFilesHelpers.BAM_COLUMN_SEPARATOR,
+                    nHeaderRows,
+                    Integer.MAX_VALUE,
+                    BamFilesHelpers.BAM_MISSING_VALUE_CODE,
+                    false,
+                    true);
+            headers = ReadFile.getHeaderRow(dataFilePath,
+                    BamFilesHelpers.BAM_COLUMN_SEPARATOR,
+                    nHeaderRows - 1,
+                    false,
+                    true);
 
         } catch (IOException e) {
             ConsoleLogger.error("CalibrationData Error: Failed to read data file '" + dataFilePath + "'!");

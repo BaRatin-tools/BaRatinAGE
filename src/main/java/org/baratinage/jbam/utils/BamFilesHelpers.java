@@ -40,6 +40,7 @@ public class BamFilesHelpers {
     public static final String RESULTS_STATE_ENV = "state_%s_%s.env";
 
     public static final String BAM_MISSING_VALUE_CODE = "-0.666666E+03";
+    public static final String BAM_COLUMN_SEPARATOR = "\\s+";
 
     public static String findDataFilePath(String rawFilePath, String workspacePath) {
         // using default Path.of approach (which fail if string was build in another OS)

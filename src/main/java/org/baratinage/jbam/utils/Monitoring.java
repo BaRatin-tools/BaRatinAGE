@@ -9,7 +9,9 @@ import java.util.function.Consumer;
 
 import org.baratinage.jbam.BaM;
 import org.baratinage.jbam.PredictionConfig;
+
 import org.baratinage.utils.ConsoleLogger;
+import org.baratinage.utils.fs.ReadFile;
 
 public class Monitoring {
 
@@ -89,7 +91,12 @@ public class Monitoring {
 
                     try {
                         // FIXME: should use a more low level function for this task...
-                        List<double[]> res = Read.readMatrix(ms.monitorFilePath.toString(), "/", 0, 0);
+                        List<double[]> res = ReadFile.readMatrix(
+                                ms.monitorFilePath.toString(),
+                                "/",
+                                0, Integer.MAX_VALUE,
+                                BamFilesHelpers.BAM_MISSING_VALUE_CODE,
+                                false, true);
                         if (res.size() == 2 && res.get(0).length == 1) {
                             ms.progress = (int) res.get(0)[0];
                             ms.total = (int) res.get(1)[0];

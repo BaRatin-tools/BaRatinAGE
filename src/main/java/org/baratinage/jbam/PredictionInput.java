@@ -6,9 +6,9 @@ import java.nio.file.Path;
 import java.util.List;
 
 import org.baratinage.jbam.utils.BamFilesHelpers;
-import org.baratinage.jbam.utils.Read;
 
 import org.baratinage.utils.ConsoleLogger;
+import org.baratinage.utils.fs.ReadFile;
 import org.baratinage.utils.fs.WriteFile;
 
 public class PredictionInput {
@@ -96,7 +96,12 @@ public class PredictionInput {
         String dataFilePath = Path.of(workspace, fileName).toString();
         List<double[]> data;
         try {
-            data = Read.readMatrix(dataFilePath, 0);
+            data = ReadFile.readMatrix(
+                    dataFilePath,
+                    BamFilesHelpers.BAM_COLUMN_SEPARATOR,
+                    0, Integer.MAX_VALUE,
+                    BamFilesHelpers.BAM_MISSING_VALUE_CODE,
+                    false, true);
         } catch (IOException e) {
             ConsoleLogger.error(
                     "PredictionInput Error: Failed to read input data file '" +
@@ -107,7 +112,12 @@ public class PredictionInput {
         List<double[]> extraData = null;
         if (extraDataFile.exists()) {
             try {
-                extraData = Read.readMatrix(extraDataFile.getAbsolutePath().toString(), 0);
+                extraData = ReadFile.readMatrix(
+                        extraDataFile.getAbsolutePath().toString(),
+                        BamFilesHelpers.BAM_COLUMN_SEPARATOR,
+                        0, Integer.MAX_VALUE,
+                        BamFilesHelpers.BAM_MISSING_VALUE_CODE,
+                        false, true);
             } catch (IOException e) {
                 ConsoleLogger.error(
                         "PredictionInput Error: Failed to read input extra data file '" +

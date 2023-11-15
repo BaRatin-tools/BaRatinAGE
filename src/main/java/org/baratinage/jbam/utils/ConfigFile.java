@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.baratinage.utils.ConsoleLogger;
+import org.baratinage.utils.fs.ReadFile;
 import org.baratinage.utils.fs.WriteFile;
 
 public class ConfigFile {
@@ -113,7 +114,7 @@ public class ConfigFile {
         String configFilePath = Path.of(filePathFirst, filePathMore).toString();
         List<String> lines = new ArrayList<>();
         try {
-            BufferedReader reader = Read.createBufferedReader(configFilePath, false);
+            BufferedReader reader = ReadFile.createBufferedReader(configFilePath, false);
             String line = reader.readLine();
             while (line != null) {
                 lines.add(line);

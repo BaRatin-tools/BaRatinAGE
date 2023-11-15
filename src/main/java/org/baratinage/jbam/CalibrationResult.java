@@ -8,9 +8,9 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import org.baratinage.jbam.utils.BamFilesHelpers;
-import org.baratinage.jbam.utils.Read;
 
 import org.baratinage.utils.ConsoleLogger;
+import org.baratinage.utils.fs.ReadFile;
 import org.baratinage.utils.fs.WriteFile;
 
 public class CalibrationResult {
@@ -81,8 +81,10 @@ public class CalibrationResult {
     private String[] readMcmcHeaders(Path filePath) {
         String[] headers = new String[] {};
         try {
-            headers = Read.readHeaders(filePath.toString());
-
+            headers = ReadFile.getHeaderRow(
+                    filePath.toString(),
+                    BamFilesHelpers.BAM_COLUMN_SEPARATOR,
+                    0, false, true);
         } catch (IOException e) {
             ConsoleLogger.error("CalibrationResult Error: Failed to read MCMC headers from file '" +
                     filePath.getFileName() + "'");
@@ -95,7 +97,13 @@ public class CalibrationResult {
     private List<double[]> readMcmcValues(Path filePath) {
         List<double[]> mcmc = new ArrayList<>();
         try {
-            mcmc = Read.readMatrix(filePath.toString(), 1);
+            mcmc = ReadFile.readMatrix(
+                    filePath.toString(),
+                    BamFilesHelpers.BAM_COLUMN_SEPARATOR,
+                    1,
+                    Integer.MAX_VALUE,
+                    BamFilesHelpers.BAM_MISSING_VALUE_CODE,
+                    false, true);
 
         } catch (IOException e) {
             ConsoleLogger.error("CalibrationResult Error: Failed to read MCMC values from file '" +
@@ -109,8 +117,14 @@ public class CalibrationResult {
     private List<double[]> readMcmcSummaryValues(Path filePath) {
         List<double[]> mcmc = null;
         try {
-            mcmc = Read.readMatrix(filePath.toString(), "\\s+", 1, 1);
-
+            List<double[]> allColumns = ReadFile.readMatrix(
+                    filePath.toString(),
+                    BamFilesHelpers.BAM_COLUMN_SEPARATOR,
+                    1,
+                    Integer.MAX_VALUE,
+                    BamFilesHelpers.BAM_MISSING_VALUE_CODE,
+                    false, true);
+            mcmc = allColumns.subList(1, allColumns.size());
         } catch (IOException e) {
             ConsoleLogger.error("CalibrationResult Error: Failed to read MCMC summary values from file '" +
                     filePath.getFileName() + "'");
@@ -170,8 +184,12 @@ public class CalibrationResult {
         CalibrationDataResiduals calDataResiduals = null;
 
         try {
-
-            List<double[]> residualMatrix = Read.readMatrix(filePath.toString(), 1);
+            List<double[]> residualMatrix = ReadFile.readMatrix(
+                    filePath.toString(),
+                    BamFilesHelpers.BAM_COLUMN_SEPARATOR,
+                    1, Integer.MAX_VALUE,
+                    BamFilesHelpers.BAM_MISSING_VALUE_CODE,
+                    false, true);
 
             calDataResiduals = new CalibrationDataResiduals(
                     residualMatrix,

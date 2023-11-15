@@ -5,8 +5,9 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.baratinage.jbam.utils.Read;
+import org.baratinage.jbam.utils.BamFilesHelpers;
 import org.baratinage.utils.ConsoleLogger;
+import org.baratinage.utils.fs.ReadFile;
 
 public class PredictionResult {
 
@@ -53,13 +54,24 @@ public class PredictionResult {
             List<double[]> env = null;
             List<double[]> spag = null;
             try {
-                env = Read.readMatrix(Path.of(workspace, envFileName).toString(), 1);
+                // env = Read.readMatrix( Path.of(workspace, envFileName).toString(), 1);
+                env = ReadFile.readMatrix(
+                        Path.of(workspace, envFileName).toString(),
+                        BamFilesHelpers.BAM_COLUMN_SEPARATOR,
+                        1, Integer.MAX_VALUE,
+                        BamFilesHelpers.BAM_MISSING_VALUE_CODE,
+                        false, true);
             } catch (IOException e) {
                 ConsoleLogger.error("Failed to read envelop file '" + envFileName + "'");
             }
 
             try {
-                spag = Read.readMatrix(Path.of(workspace, spagFileName).toString(), 0);
+                spag = ReadFile.readMatrix(
+                        Path.of(workspace, spagFileName).toString(),
+                        BamFilesHelpers.BAM_COLUMN_SEPARATOR,
+                        0, Integer.MAX_VALUE,
+                        BamFilesHelpers.BAM_MISSING_VALUE_CODE,
+                        false, true);
             } catch (IOException e) {
                 ConsoleLogger.error("Failed to read spaghetti file '" + spagFileName + "'");
             }
