@@ -50,7 +50,7 @@ public class Distribution {
     }
 
     private static final String EXE_DIR = BamFilesHelpers.EXE_DIR;
-    private static final String EXE_NAME = "Distribution";
+    private static final String EXE_NAME = "distribution";
     private static final int DENSITY_SAMPLES = 100;
     private static final double DENSITY_RANGE_EDGE = 1e-5;
     private static final double[] DENSITY_RANGE = new double[] {
