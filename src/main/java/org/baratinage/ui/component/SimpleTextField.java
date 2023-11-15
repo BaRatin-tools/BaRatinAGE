@@ -122,7 +122,7 @@ public class SimpleTextField extends JTextField {
             float maxCharHeight = g2D.getFontMetrics().getMaxAscent();
 
             float x = insets.left - 1;
-            float y = maxCharHeight + 1;
+            float y = maxCharHeight + 3;
 
             g2D.drawString(innerLabel, x, y);
         } else {
