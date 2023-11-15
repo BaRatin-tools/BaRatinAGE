@@ -67,6 +67,8 @@ public enum BamItemType {
 
     public void setAddBamItemAction(ActionListener addBamItemAction) {
         this.addBamItemAction = addBamItemAction;
+        addBamItemMenuItem = null;
+        addBamItemToolbarButton = null;
     }
 
     public BamItem buildBamItem(String uuid) {
