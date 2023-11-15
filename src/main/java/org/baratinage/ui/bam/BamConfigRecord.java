@@ -5,6 +5,10 @@ import org.json.JSONObject;
 
 public record BamConfigRecord(JSONObject jsonObject, String... filePaths) {
 
+    public BamConfigRecord(JSONObject jsonObject) {
+        this(jsonObject, new String[]{});
+    }
+
     public BamConfigRecord addPaths(String... filePathsToAdd) {
         String[] oldFilePaths = filePaths();
         int nOld = oldFilePaths.length;
