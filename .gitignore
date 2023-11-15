@@ -21,6 +21,7 @@
 /log/*.log
 *.jar
 *.bar.zip
+/resources/help/*
 /resources/icons/feather/*
 !/resources/icons/feather/trash.svg
 !/resources/icons/feather/copy.svg
