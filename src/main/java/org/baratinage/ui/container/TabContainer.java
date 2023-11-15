@@ -65,6 +65,12 @@ public class TabContainer extends JTabbedPane {
     }
 
     @Override
+    public void removeAll() {
+        tabItems.clear();
+        super.removeAll();
+    }
+
+    @Override
     public void setTitleAt(int index, String text) {
         if (index >= 0 && index < tabItems.size()) {
             TabItem item = tabItems.get(index);
