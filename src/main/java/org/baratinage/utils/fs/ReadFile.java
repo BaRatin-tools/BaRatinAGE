@@ -24,7 +24,7 @@ public class ReadFile {
      * @return BufferedReader object that can be used to read through the text file
      * @throws IOException
      */
-    public static BufferedReader createBufferedReader(String filePath, boolean detectEncoding) throws IOException {
+    static public BufferedReader createBufferedReader(String filePath, boolean detectEncoding) throws IOException {
         if (detectEncoding) {
             File file = new File(filePath);
             return new BufferedReader(ReaderFactory.createBufferedReader(file));
@@ -44,7 +44,7 @@ public class ReadFile {
      * @return total number of rows in file
      * @throws IOException
      */
-    static public int getLinesCount(String filePath, boolean detectCharset) throws IOException {
+    private static int getLinesCount(String filePath, boolean detectCharset) throws IOException {
         BufferedReader reader = createBufferedReader(filePath, detectCharset);
         int n = 0;
         while (reader.readLine() != null)
@@ -64,7 +64,7 @@ public class ReadFile {
      * @return String array containing the rows of text of the file
      * @throws IOException
      */
-    static public String[] getLines(String filePath, int maxLines, boolean detectCharset) throws IOException {
+    public static String[] getLines(String filePath, int maxLines, boolean detectCharset) throws IOException {
         int nLines = getLinesCount(filePath, detectCharset);
         String[] lines = new String[nLines];
         BufferedReader reader = createBufferedReader(filePath, detectCharset);
@@ -95,7 +95,7 @@ public class ReadFile {
      * @return the number of columns in the text file
      * @throws IOException
      */
-    static public int getColumnCount(String filePath, boolean detectCharset, String sep, boolean trim, int refRowIndex)
+    private static int getColumnCount(String filePath, boolean detectCharset, String sep, boolean trim, int refRowIndex)
             throws IOException {
         BufferedReader reader = createBufferedReader(filePath, detectCharset);
         int n = 0;
@@ -122,7 +122,7 @@ public class ReadFile {
      * @param trim trim heading/trailing spaces
      * @return String array resulting from the split operation
      */
-    static public String[] parseString(String str, String sep, boolean trim) {
+    public static String[] parseString(String str, String sep, boolean trim) {
         if (trim) {
             return str.trim().split(sep);
         } else {
@@ -136,42 +136,13 @@ public class ReadFile {
      * @param str string array to trim
      * @return trimmed string array
      */
-    static public String[] trimStringArray(String[] str) {
+    public static String[] trimStringArray(String[] str) {
         int n = str.length;
         String[] trimmedStr = new String[n];
         for (int k = 0; k < n; k++) {
             trimmedStr[k] = str[k].trim();
         }
         return trimmedStr;
-    }
-
-    /**
-     * Converts a String array into a double array optionnally shortening it by its
-     * start by ignoring a certain number of elements
-     * 
-     * @param str                string array to convert
-     * @param missingValueString string to use as a missing value code (Double.NaN
-     *                           is used to indicate missing values)
-     * @param nElemSkip          number of columns to skip
-     * @return double array resulting from the conversion
-     */
-    static public double[] arrayStringToDouble(String[] str, String missingValueString, int nElemSkip) {
-        double[] result = new double[str.length - nElemSkip];
-        for (int k = nElemSkip; k < str.length; k++) {
-            if (str[k].equals(missingValueString)) {
-                result[k - nElemSkip] = Double.NaN;
-            } else {
-                try {
-                    result[k - nElemSkip] = Double.parseDouble(str[k]);
-                } catch (NumberFormatException e) {
-                    // NOTE: this try/catch is necessary because BaM sometimes gives
-                    // very low/high values that can't be parsed (e.g. -0.179769+309)
-                    ConsoleLogger.error(e);
-                    result[k - nElemSkip] = Double.NaN;
-                }
-            }
-        }
-        return result;
     }
 
     /**
@@ -182,7 +153,7 @@ public class ReadFile {
      *                         used to indicate missing values)
      * @return double value resulting from the conversion.
      */
-    static public double toDouble(String str, String missingValueCode) {
+    private static double toDouble(String str, String missingValueCode) {
         if (str.equals(missingValueCode)) {
             return Double.NaN;
         }
@@ -206,7 +177,7 @@ public class ReadFile {
      * @param trim     wether heading/trailing spaces should be removed
      * @return String Matrix (List of String arrays)
      */
-    static public List<String[]> linesToStringMatrix(String[] lines, String sep, int nRowSkip, int nRowMax,
+    public static List<String[]> linesToStringMatrix(String[] lines, String sep, int nRowSkip, int nRowMax,
             boolean trim) {
         int nLines = lines.length;
         if (nRowSkip >= nLines) {
@@ -238,60 +209,13 @@ public class ReadFile {
     }
 
     /**
-     * Extract rows from a String Matrix (List of String arrays) given a start and
-     * end index.
-     * 
-     * @param columns String Matrix
-     * @param from    start index
-     * @param to      end index
-     * @return sub String Matrix (List of String arrays)
-     */
-    static public List<String[]> getSubStringMatrix(List<String[]> columns, int from, int to) {
-        if (from >= to)
-            return columns;
-        if (columns.size() == 0)
-            return columns;
-
-        int nCol = columns.size();
-        int nRow = columns.get(0).length;
-        if (nRow <= from)
-            return columns;
-
-        nRow = Math.min(nRow - from, to - from);
-
-        List<String[]> subData = new ArrayList<>();
-        for (int k = 0; k < nCol; k++) {
-            subData.add(new String[nRow]);
-        }
-        for (int i = 0; i < nRow; i++) {
-            for (int j = 0; j < nCol; j++) {
-                subData.get(j)[i] = columns.get(j)[i + from];
-            }
-        }
-
-        return subData;
-    }
-
-    /**
-     * Extract rows from a String Matrix (List of String arrays) given a start
-     * index. All the rows after the start index are extracted.
-     * 
-     * @param columns String Matrix (List of String arrays)
-     * @param from    start index
-     * @return sub String Matrix (List of String arrays)
-     */
-    static public List<String[]> getSubStringMatrix(List<String[]> columns, int from) {
-        return getSubStringMatrix(columns, from, Integer.MAX_VALUE);
-    }
-
-    /**
      * Return one specific rows from a String Matrix (List of String arrays)
      * 
      * @param columns String Matrix (List of String arrays)
      * @param index   rows to extract
      * @return String array of the extracted row
      */
-    static public String[] getStringRow(List<String[]> columns, int index) {
+    public static String[] getStringRow(List<String[]> columns, int index) {
         int nCol = columns.size();
         String[] row = new String[nCol];
         for (int k = 0; k < nCol; k++) {
