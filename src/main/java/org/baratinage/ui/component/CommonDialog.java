@@ -139,15 +139,18 @@ public class CommonDialog {
     private static JFileChooser buildFileChooser(String title, String formatName, String... extensions) {
         if (fileChooser == null) {
             fileChooser = new JFileChooser();
+            fileChooser.setCurrentDirectory(new File(AppConfig.AC.APP_ROOT_DIR));
+            fileChooser.setAcceptAllFileFilterUsed(false);
+            fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+            fileChooser.setApproveButtonToolTipText(defaultApproveButtonToolTipText);
         }
+        fileChooser.setSelectedFile(new File(""));
         fileChooser.setDialogTitle(title);
-        fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-        fileChooser.setApproveButtonToolTipText(defaultApproveButtonToolTipText);
-        fileChooser.setFileFilter(new CustomFileFilter(
+        fileChooser.resetChoosableFileFilters();
+        fileChooser.addChoosableFileFilter(new CustomFileFilter(
                 formatName,
                 extensions));
-        fileChooser.setAcceptAllFileFilterUsed(false);
-        fileChooser.setCurrentDirectory(new File(AppConfig.AC.APP_ROOT_DIR));
+
         return fileChooser;
     }
 
