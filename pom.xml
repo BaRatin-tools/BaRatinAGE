@@ -6,7 +6,7 @@
 
   <groupId>org.baratinage</groupId>
   <artifactId>BaRatinAGE</artifactId>
-  <version>3.0.0-alpha4</version>
+  <version>3.0.0-alpha5</version>
 
   <name>BaRatinAGE</name>
   <description>A simple BaRatinAGE.</description>
