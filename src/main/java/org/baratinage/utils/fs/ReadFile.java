@@ -301,6 +301,31 @@ public class ReadFile {
     }
 
     /**
+     * Get a single row as a string array
+     * 
+     * @param textFilePath  text file path
+     * @param sep           column separator
+     * @param nRowSkip      number of rows to skip
+     * @param detectCharset wether file encoding should be infered from the file
+     * @param trim          wether heading/trailing spaces should be discared
+     * @return a string array of the header row
+     * @throws IOException
+     */
+    public static String[] getHeaderRow(String textFilePath,
+            String sep,
+            int nRowSkip,
+            boolean detectCharset,
+            boolean trim) throws IOException {
+        String[] lines = getLines(textFilePath, nRowSkip + 1, detectCharset);
+        if (lines.length <= nRowSkip) {
+            ConsoleLogger.error("Not enough rows in file to extract header row given the number of rows to skip!");
+            return null;
+        }
+        String[] headerRow = parseString(lines[nRowSkip], sep, trim);
+        return headerRow;
+    }
+
+    /**
      * Read a text file containg data and return a double Matrix (List of double
      * arrays).
      * 
