@@ -38,6 +38,7 @@ import org.baratinage.ui.baratin.rating_curve.RatingCurveStageGrid;
 import org.baratinage.ui.commons.MsgPanel;
 import org.baratinage.ui.commons.StructuralErrorModelBamItem;
 import org.baratinage.ui.container.RowColPanel;
+import org.baratinage.utils.Calc;
 import org.baratinage.utils.ConsoleLogger;
 import org.baratinage.utils.json.JSONCompare;
 import org.baratinage.utils.json.JSONCompareResult;
@@ -439,7 +440,13 @@ public class RatingCurve extends BamItem implements IPredictionMaster, ICalibrat
         double[] dischargeMaxpost = predResults[0].outputResults.get(0).spag().get(0);
 
         List<double[]> paramU = predResults[1].outputResults.get(0).env().subList(1, 3);
-        List<double[]> totalU = predResults[2].outputResults.get(0).env().subList(1, 3);
+        List<double[]> totalUraw = predResults[2].outputResults.get(0).env().subList(1, 3);
+
+        int smoothing = Double.valueOf((double) totalUraw.get(0).length * 0.05).intValue();
+        ConsoleLogger.log("Smoothing total envelop using moving average of a '" + smoothing + "' window...");
+        List<double[]> totalU = new ArrayList<>();
+        totalU.add(Calc.smooth(totalUraw.get(0), smoothing, false));
+        totalU.add(Calc.smooth(totalUraw.get(1), smoothing, false));
 
         CalibrationData calData = bamRunConfigAndRes.getCalibrationConfig().calibrationData;
 
