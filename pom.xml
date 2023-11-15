@@ -6,8 +6,7 @@
 
   <groupId>org.baratinage</groupId>
   <artifactId>BaRatinAGE</artifactId>
-  <version>3.0.0-alpha1</version>
-  <!-- <packaging>jar</packaging> -->
+  <version>3.0.0-alpha4</version>
 
   <name>BaRatinAGE</name>
   <description>A simple BaRatinAGE.</description>
@@ -90,6 +89,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jar-plugin</artifactId>
+        <version>3.3.0</version>
         <configuration>
           <archive>
             <manifest>
@@ -97,9 +97,14 @@
               <classpathPrefix>lib/</classpathPrefix>
               <mainClass>org.baratinage.App</mainClass>
             </manifest>
+            <manifestEntries>
+              <Build-Jdk>${java.version} (${java.vendor} ${java.vm.version})</Build-Jdk>
+              <Build-OS>${os.name} ${os.arch} ${os.version}</Build-OS>
+              <Build-Timestamp>${maven.build.timestamp}</Build-Timestamp>
+              <Project-Version>${project.version}</Project-Version>
+            </manifestEntries>
           </archive>
         </configuration>
-        <version>3.3.0</version>
       </plugin>
 
     </plugins>
