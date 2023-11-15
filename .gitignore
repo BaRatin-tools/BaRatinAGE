@@ -2,6 +2,7 @@
 /dist
 /target
 /target-packaged
+pom.xml.versionsBackup
 
 # BaM exe folder and workspace folder
 /exe/*
