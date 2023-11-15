@@ -25,7 +25,6 @@ public class AppIcons {
     public final SvgIcon SAVE_ICON;
     public final SvgIcon EXTERNAL_ICON;
     public final SvgIcon LIST_ICON;
-    public final SvgIcon CHEVRON_DOWN_ICON;
 
     public final SvgIcon LEFT_DOWN_ARROW_ICON;
     public final SvgIcon RIGHT_DOWN_ARROW_ICON;
@@ -55,7 +54,6 @@ public class AppIcons {
         SAVE_ICON = addIcon(buildFeatherAppImageIcon("save.svg", FEATHER_ICON_SIZE));
         EXTERNAL_ICON = addIcon(buildFeatherAppImageIcon("external-link.svg", FEATHER_ICON_SIZE));
         LIST_ICON = addIcon(buildFeatherAppImageIcon("list.svg", FEATHER_ICON_SIZE));
-        CHEVRON_DOWN_ICON = addIcon(buildFeatherAppImageIcon("chevron-down.svg", FEATHER_ICON_SIZE));
 
         LEFT_DOWN_ARROW_ICON = addIcon(buildFeatherAppImageIcon("corner-left-down.svg", FEATHER_ICON_SIZE));
         RIGHT_DOWN_ARROW_ICON = addIcon(buildFeatherAppImageIcon("corner-right-down.svg", FEATHER_ICON_SIZE));
