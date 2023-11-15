@@ -46,7 +46,7 @@ public class App {
                     if (args.length > 0) {
                         mainFrame.loadProject(args[0]);
                     } else {
-                        mainFrame.loadProject("D:\\Programming\\java\\V3\\BaRatinAGE\\test\\test_bam.bam");
+                        // mainFrame.loadProject("D:\\Programming\\java\\V3\\BaRatinAGE\\test\\test_bam.bam");
                         // mainFrame.newProject();
                     }
 
