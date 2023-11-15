@@ -6,7 +6,7 @@ import java.nio.file.Path;
 import org.baratinage.jbam.BaM;
 import org.baratinage.jbam.utils.BamFilesHelpers;
 import org.baratinage.ui.AppConfig;
-import org.baratinage.utils.ReadWriteZip;
+import org.baratinage.utils.fs.ReadWriteZip;
 
 public class RunConfigAndRes extends BaM {
 

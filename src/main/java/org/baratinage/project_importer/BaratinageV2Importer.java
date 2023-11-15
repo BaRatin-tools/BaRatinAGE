@@ -30,7 +30,7 @@ import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.utils.ConsoleLogger;
 import org.baratinage.utils.DateTime;
 import org.baratinage.utils.Misc;
-import org.baratinage.utils.ReadWriteZip;
+import org.baratinage.utils.fs.ReadWriteZip;
 import org.json.JSONArray;
 import org.json.JSONObject;
 

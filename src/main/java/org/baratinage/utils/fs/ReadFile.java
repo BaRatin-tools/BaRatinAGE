@@ -1,4 +1,4 @@
-package org.baratinage.utils;
+package org.baratinage.utils.fs;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -8,6 +8,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.baratinage.utils.ConsoleLogger;
 import org.mozilla.universalchardet.ReaderFactory;
 
 public class ReadFile {

@@ -12,8 +12,8 @@ import java.util.List;
 
 import org.baratinage.ui.AppConfig;
 import org.baratinage.utils.ConsoleLogger;
-import org.baratinage.utils.ReadFile;
-import org.baratinage.utils.WriteFile;
+import org.baratinage.utils.fs.ReadFile;
+import org.baratinage.utils.fs.WriteFile;
 
 public class AbstractDataset {
 

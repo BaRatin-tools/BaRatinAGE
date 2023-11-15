@@ -16,7 +16,7 @@ import org.baratinage.ui.commons.TracePlotGrid;
 import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.ui.container.TabContainer;
 import org.baratinage.utils.ConsoleLogger;
-import org.baratinage.utils.WriteFile;
+import org.baratinage.utils.fs.WriteFile;
 import org.baratinage.ui.component.CommonDialog;
 import org.baratinage.ui.component.DataTable;
 import org.baratinage.translation.T;

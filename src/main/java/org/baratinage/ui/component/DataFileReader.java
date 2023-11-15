@@ -18,7 +18,7 @@ import org.baratinage.ui.container.GridPanel;
 import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.translation.T;
 import org.baratinage.utils.ConsoleLogger;
-import org.baratinage.utils.ReadFile;
+import org.baratinage.utils.fs.ReadFile;
 
 public class DataFileReader extends RowColPanel {
     public String filePath = null;

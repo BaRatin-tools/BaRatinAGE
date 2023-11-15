@@ -1,4 +1,4 @@
-package org.baratinage.utils;
+package org.baratinage.utils.fs;
 
 import org.baratinage.jbam.utils.Write;
 

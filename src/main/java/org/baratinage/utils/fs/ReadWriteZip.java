@@ -1,4 +1,4 @@
-package org.baratinage.utils;
+package org.baratinage.utils.fs;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -11,6 +11,8 @@ import java.nio.file.Path;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
+
+import org.baratinage.utils.ConsoleLogger;
 
 public class ReadWriteZip {
 
