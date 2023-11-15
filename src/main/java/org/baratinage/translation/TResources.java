@@ -47,10 +47,10 @@ public class TResources {
             }
         }
         translations = new HashMap<>();
-        for (String localKey : localKeys) {
+        for (String localeKey : localKeys) {
             Map<String, ResourceBundle> fileTranslations = new HashMap<>();
             for (String fileKey : filekeys) {
-                String resourceName = String.format("%s_%s.properties", fileKey, localKey);
+                String resourceName = String.format("%s_%s.properties", fileKey, localeKey);
                 Path resourcePath = Path.of(AppConfig.AC.I18N_RESOURCES_DIR, resourceName);
                 try {
                     ResourceBundle resourceBundle = new PropertyResourceBundle(
@@ -59,48 +59,63 @@ public class TResources {
                     fileTranslations.put(fileKey, resourceBundle);
                 } catch (IOException e) {
                     ConsoleLogger.error(
-                            "TResources Error: Failed to read expected resource bundle '" + resourceName + "'!");
+                            "Failed to read expected resource bundle '" + resourceName + "'!");
                 }
             }
-            translations.put(localKey, fileTranslations);
+            translations.put(localeKey, fileTranslations);
         }
     }
 
-    public String getTranslation(String localKey, String fileKey, String itemKey) {
-        Map<String, ResourceBundle> fileTranslations = translations.get(localKey);
+    public String getTranslation(String localeKey, String itemKey) {
+        // get all translations files in given locale for
+        Map<String, ResourceBundle> fileTranslations = translations.get(localeKey);
         if (fileTranslations == null) {
-            if (localKey.equals(AppConfig.AC.DEFAULT_RESSOURCE_FILE_LOCALE_KEY)) {
+            if (localeKey.equals(AppConfig.AC.DEFAULT_LOCALE_KEY)) {
                 ConsoleLogger.error(
                         String.format(
-                                "TResources Error: no translation found for key '%s' and default locale '%s' in bundle '%s'!",
-                                itemKey, localKey, fileKey));
+                                "SHOULD NOT HAPPEN - no translation bundle file found! itemKey='%s', localeKey='%s'",
+                                itemKey, localeKey));
                 return "<no-translation-found>";
             } else {
                 ConsoleLogger.log(
-                        String.format("TResources: No locale '%s' found! Looking in default locale '%s' instead.",
-                                localKey, AppConfig.AC.DEFAULT_RESSOURCE_FILE_LOCALE_KEY));
-                return getTranslation(AppConfig.AC.DEFAULT_RESSOURCE_FILE_LOCALE_KEY, fileKey, itemKey);
+                        String.format(
+                                "No resource translation bundle file found for locale '%s' found. Looking with default locale '%s' instead.",
+                                localeKey, AppConfig.AC.DEFAULT_LOCALE_KEY));
+                return getTranslation(AppConfig.AC.DEFAULT_LOCALE_KEY, itemKey);
             }
         }
-        ResourceBundle resourceBundle = fileTranslations.get(fileKey);
-        if (resourceBundle == null) {
-            ConsoleLogger.error(
-                    String.format("TResources Error: No bundle for locale '%s' named '%s' found!",
-                            localKey, fileKey));
-            return "<no-translation-found>";
+
+        ResourceBundle resourceBundle = fileTranslations.get(AppConfig.AC.DEFAULT_RESSOURCE_FILE_KEY);
+        String translation = getTranslation(resourceBundle, itemKey);
+        if (translation == null) {
+            for (String fileTranslationKeys : fileTranslations.keySet()) {
+                if (!fileTranslationKeys.equals(AppConfig.AC.DEFAULT_RESSOURCE_FILE_KEY)) {
+                    translation = getTranslation(fileTranslations.get(fileTranslationKeys), itemKey);
+                    if (translation != null) {
+                        return translation;
+                    }
+                }
+            }
+        } else {
+            return translation;
         }
-        if (!resourceBundle.containsKey(itemKey)) {
+        if (translation == null && localeKey.equals(AppConfig.AC.DEFAULT_LOCALE_KEY)) {
             ConsoleLogger.error(
                     String.format(
-                            "TResources Error: no item with key '%s' found for locale '%s' and bundle '%s'!",
-                            itemKey, localKey, fileKey));
+                            "No item with key '%s' found in all resource translation bundle files  for (default) locale '%s'!",
+                            itemKey, localeKey));
             return "<no-translation-found>";
+        } else {
+            ConsoleLogger.log(
+                    String.format(
+                            "No item with key '%s' found in resource translation bundle files for locale '%s'. Looking with default locale '%s' instead.",
+                            itemKey, localeKey, AppConfig.AC.DEFAULT_LOCALE_KEY));
+            return getTranslation(AppConfig.AC.DEFAULT_LOCALE_KEY, itemKey);
         }
-        return resourceBundle.getString(itemKey);
     }
 
-    public String getTranslation(String localKey, String itemKey) {
-        return getTranslation(localKey, AppConfig.AC.DEFAULT_RESSOURCE_FILE_KEY, itemKey);
+    private String getTranslation(ResourceBundle resourceBundle, String itemKey) {
+        return resourceBundle.containsKey(itemKey) ? resourceBundle.getString(itemKey) : null;
     }
 
     public List<String> getAvailableLocales() {
