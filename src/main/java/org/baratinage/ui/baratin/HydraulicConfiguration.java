@@ -1,6 +1,8 @@
 package org.baratinage.ui.baratin;
 
 import java.awt.Dimension;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,19 +34,28 @@ import org.baratinage.ui.commons.MsgPanel;
 import org.baratinage.ui.component.Title;
 import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.ui.container.SplitContainer;
+import org.baratinage.ui.container.TabContainer;
 import org.baratinage.utils.ConsoleLogger;
 import org.baratinage.utils.json.JSONCompare;
 import org.baratinage.utils.json.JSONCompareResult;
 import org.baratinage.utils.json.JSONFilter;
+import org.baratinage.utils.perf.TimedActions;
 import org.json.JSONObject;
 
 public class HydraulicConfiguration
         extends BamItem
         implements IModelDefinition, IPriors, IPredictionMaster {
 
-    private ControlMatrix controlMatrix;
-    private HydraulicControlPanels hydraulicControls;
-    private RatingCurveStageGrid priorRatingCurveStageGrid;
+    private final ControlMatrix controlMatrix;
+    private final HydraulicControlPanels hydraulicControls;
+    private final RatingCurveStageGrid priorRatingCurveStageGrid;
+
+    private boolean isTabView = false;
+    private final RowColPanel priorRatingCurvePanel;
+    private final Title controlMatrixTitle;
+    private final Title priorRCplotTitle;
+    private final Title priorSpecificationTitle;
+    private final TabContainer mainContainerTab;
 
     private RowColPanel outOufSyncPanel;
 
@@ -102,7 +113,7 @@ public class HydraulicConfiguration
             checkPriorRatingCurveSync();
         });
 
-        RowColPanel priorRatingCurvePanel = new RowColPanel(RowColPanel.AXIS.COL);
+        priorRatingCurvePanel = new RowColPanel(RowColPanel.AXIS.COL);
 
         outOufSyncPanel = new RowColPanel(RowColPanel.AXIS.COL);
         outOufSyncPanel.setPadding(5);
@@ -114,52 +125,26 @@ public class HydraulicConfiguration
         priorRatingCurvePanel.appendChild(plotPanel, 1);
 
         // **********************************************************************
-        // SPLIT PANE APPROACH
+        // SPECIFIC TO SPLIT PANE / TAB SYSTEM APPROACHES
 
-        // Font LARGE_BOLD_FONT = new Font(Font.SANS_SERIF, Font.BOLD, 16);
+        controlMatrixTitle = new Title(controlMatrixIcon, "");
+        priorRCplotTitle = new Title(priorRatingCurveIcon, "");
+        priorSpecificationTitle = new Title(priorSpecificationIcon, "");
 
-        RowColPanel controlMatrixContainer = new RowColPanel(RowColPanel.AXIS.COL);
-        Title controlMatrixTitle = new Title(controlMatrixIcon, "");
+        mainContainerTab = new TabContainer();
 
-        controlMatrixContainer.appendChild(controlMatrixTitle, 0);
-        controlMatrixContainer.appendChild(controlMatrix, 1);
+        addComponentListener(new ComponentAdapter() {
+            public void componentResized(ComponentEvent e) {
+                TimedActions.throttle(
+                        "hydraulic_config_resize_action",
+                        250,
+                        HydraulicConfiguration.this::setPanelView);
+            }
+        });
 
-        RowColPanel priorRCplotPanel = new RowColPanel(RowColPanel.AXIS.COL);
-        Title priorRCplotTitle = new Title(priorRatingCurveIcon, "");
-
-        priorRCplotTitle.setIcon(priorRatingCurveIcon);
-        priorRCplotPanel.appendChild(priorRCplotTitle, 0);
-        priorRCplotPanel.appendChild(priorRatingCurvePanel, 1);
-
-        RowColPanel priorSepecificationPanel = new RowColPanel(RowColPanel.AXIS.COL);
-        Title priorSpecificationTitle = new Title(priorSpecificationIcon, "");
-
-        priorSpecificationTitle.setIcon(priorSpecificationIcon);
-        priorSepecificationPanel.appendChild(priorSpecificationTitle, 0);
-        priorSepecificationPanel.appendChild(hydraulicControls, 1);
-
-        SplitContainer mainContainer = SplitContainer.build2Left1RightSplitContainer(
-                controlMatrixContainer,
-                priorRCplotPanel,
-                priorSepecificationPanel);
+        setSplitPaneView();
 
         // **********************************************************************
-        // TAB SYSTEM APPROACH
-        // TabContainer mainContainerTab = new TabContainer();
-        // mainContainerTab.addTab("control_matrix", controlMatrixIcon, controlMatrix);
-        // mainContainerTab.addTab("prior_parameter_specification",
-        // priorSpecificationIcon,
-        // hydraulicControls);
-        // mainContainerTab.addTab("prior_rating_curve", priorRatingCurveIcon,
-        // priorRatingCurvePanel);
-        // T.t(mainContainerTab, (mc) -> {
-        // mc.setTitleTextAt(0, T.html("control_matrix"));
-        // mc.setTitleTextAt(1, T.html("prior_parameter_specification"));
-        // mc.setTitleTextAt(2, T.html("prior_rating_curve"));
-        // });
-        // setContent(mainContainerTab);
-
-        setContent(mainContainer);
 
         boolean[][] mat = controlMatrix.getControlMatrix();
         updateHydraulicControls(mat);
@@ -170,12 +155,81 @@ public class HydraulicConfiguration
         T.updateHierarchy(this, plotPanel);
         T.updateHierarchy(this, runBam);
         T.updateHierarchy(this, outOufSyncPanel);
+
         T.t(this, () -> {
             controlMatrixTitle.setText(T.html("control_matrix"));
-            priorSpecificationTitle.setText(T.html("prior_parameter_specification"));
             priorRCplotTitle.setText(T.html("prior_rating_curve"));
+            priorSpecificationTitle.setText(T.html("prior_parameter_specification"));
+            if (mainContainerTab.getTabCount() > 2) {
+                mainContainerTab.setTitleAt(0, T.html("control_matrix"));
+                mainContainerTab.setTitleAt(1, T.html("prior_parameter_specification"));
+                mainContainerTab.setTitleAt(2, T.html("prior_rating_curve"));
+            }
         });
 
+    }
+
+    private void setPanelView() {
+        int panelWidth = getWidth();
+        int panelHeight = getHeight();
+        ConsoleLogger.log("panel size is : " + panelWidth + " x " + panelHeight);
+        if (panelWidth == 0 || panelHeight == 0) {
+            return;
+        }
+        if (panelWidth < 1100 || panelHeight < 800) {
+            if (!isTabView) {
+                setTabView();
+            }
+            isTabView = true;
+        } else {
+            if (isTabView) {
+                setSplitPaneView();
+            }
+            isTabView = false;
+        }
+    }
+
+    private void setSplitPaneView() {
+
+        RowColPanel controlMatrixContainer = new RowColPanel(RowColPanel.AXIS.COL);
+
+        controlMatrixContainer.appendChild(controlMatrixTitle, 0);
+        controlMatrixContainer.appendChild(controlMatrix, 1);
+
+        RowColPanel priorRCplotPanel = new RowColPanel(RowColPanel.AXIS.COL);
+
+        priorRCplotTitle.setIcon(priorRatingCurveIcon);
+        priorRCplotPanel.appendChild(priorRCplotTitle, 0);
+        priorRCplotPanel.appendChild(priorRatingCurvePanel, 1);
+
+        RowColPanel priorSepecificationPanel = new RowColPanel(RowColPanel.AXIS.COL);
+
+        priorSpecificationTitle.setIcon(priorSpecificationIcon);
+        priorSepecificationPanel.appendChild(priorSpecificationTitle, 0);
+        priorSepecificationPanel.appendChild(hydraulicControls, 1);
+
+        SplitContainer mainContainer = SplitContainer.build2Left1RightSplitContainer(
+                controlMatrixContainer,
+                priorRCplotPanel,
+                priorSepecificationPanel);
+        setContent(mainContainer);
+        T.updateTranslation(this);
+        updateUI();
+    }
+
+    private void setTabView() {
+
+        mainContainerTab.removeAll();
+        mainContainerTab.addTab("control_matrix", controlMatrixIcon, controlMatrix);
+        mainContainerTab.addTab("prior_parameter_specification",
+                priorSpecificationIcon,
+                hydraulicControls);
+        mainContainerTab.addTab("prior_rating_curve", priorRatingCurveIcon,
+                priorRatingCurvePanel);
+
+        setContent(mainContainerTab);
+        T.updateTranslation(this);
+        updateUI();
     }
 
     private void checkPriorRatingCurveSync() {
