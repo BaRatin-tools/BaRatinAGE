@@ -22,7 +22,7 @@ public class AppConfig {
     public final int THROTTLED_DELAY_MS = 250;
 
     public final String DEFAULT_RESSOURCE_FILE_KEY = "ui";
-    public final String DEFAULT_RESSOURCE_FILE_LOCALE_KEY = "en";
+    public final String DEFAULT_LOCALE_KEY = "en";
 
     public Color INVALID_DISABLED_COLOR_BG = new Color(245, 230, 230);
     public Color INVALID_COLOR_BG = new Color(245, 210, 210);
