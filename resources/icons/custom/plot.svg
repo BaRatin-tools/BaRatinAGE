@@ -1,54 +1,9 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<svg
-   width="24"
-   height="24"
-   viewBox="0 0 24 24"
-   fill="none"
-   stroke="currentColor"
-   stroke-width="1.5"
-   stroke-linecap="round"
-   stroke-linejoin="round"
-   class="feather feather-table"
-   version="1.1"
-   id="svg4"
-   sodipodi:docname="plot.svg"
-   inkscape:version="1.2.1 (9c6d41e410, 2022-07-14)"
-   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
-   xmlns="http://www.w3.org/2000/svg"
-   xmlns:svg="http://www.w3.org/2000/svg">
-  <defs
-     id="defs8" />
-  <sodipodi:namedview
-     id="namedview6"
-     pagecolor="#505050"
-     bordercolor="#ffffff"
-     borderopacity="1"
-     inkscape:showpageshadow="0"
-     inkscape:pageopacity="0"
-     inkscape:pagecheckerboard="1"
-     inkscape:deskcolor="#505050"
-     showgrid="false"
-     inkscape:zoom="27.812867"
-     inkscape:cx="16.718881"
-     inkscape:cy="13.087468"
-     inkscape:window-width="2520"
-     inkscape:window-height="1574"
-     inkscape:window-x="-11"
-     inkscape:window-y="-11"
-     inkscape:window-maximized="1"
-     inkscape:current-layer="svg4" />
-  <path
-     d="m 10.177363,20.141053 h 10.386991 m -10.386991,0 H 6.0225663 c -2.0062732,0 -2.0773982,-0.257882 -2.0773982,-2.077602 V 4.2019284 M 6.7087715,13.165842 10.952456,2.7079427 c 0,0 0.968374,5.7026995 2.350177,8.1304273 1.444044,-0.697194 1.882603,-1.1327176 2.800948,-2.2409789 0.858958,2.7638739 2.950335,6.0506429 5.6019,7.3952299"
-     id="path2"
-     sodipodi:nodetypes="cccccsscccc"
-     style="stroke-width:1.5" />
-  <path
-     d="M 5.8603,5.2167005 3.9770102,2.9961341 2.0555606,5.3094013"
-     id="path623"
-     style="stroke-width:1.5" />
-  <path
-     d="m 19.818558,21.960097 2.184501,-1.857861 -2.275695,-1.895507"
-     id="path623-9"
-     style="stroke-width:1.5" />
+<?xml version="1.0" encoding="UTF-8"?>
+<svg class="feather feather-table" width="24" height="24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" version="1.1" viewBox="0 0 24 24"
+  xmlns="http://www.w3.org/2000/svg">
+  <g stroke-width="1.5">
+    <path d="m10.177 20.141h10.387m-10.387 0h-4.1548c-2.0063 0-2.0774-0.25788-2.0774-2.0776v-13.862m2.7636 8.9639 4.2437-10.458s0.96837 5.7027 2.3502 8.1304c1.444-0.69719 1.8826-1.1327 2.8009-2.241 0.85896 2.7639 2.9503 6.0506 5.6019 7.3952"/>
+    <path d="m5.8603 5.2167-1.8833-2.2206-1.9214 2.3133"/>
+    <path d="m19.819 21.96 2.1845-1.8579-2.2757-1.8955"/>
+  </g>
 </svg>
