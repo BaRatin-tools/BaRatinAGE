@@ -92,7 +92,7 @@ public class AppAbout extends JDialog {
             String buildTimestamp = manifestAttributes.getValue("Build-Timestamp");
             // "jdk: " + ;
             buildInfo = String.format(
-                    "<html><code>JDK: %s</code><br><code>OS: %s</code><br><code>Timestamp: %s</code></html>",
+                    "<html><b>Build info:</b><br><code>JDK: %s</code><br><code>OS: %s</code><br><code>Timestamp: %s</code></html>",
                     buildJdk, buildOS, buildTimestamp);
         }
 
