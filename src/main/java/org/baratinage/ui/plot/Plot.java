@@ -19,6 +19,10 @@ import org.jfree.data.xy.XYDataset;
 
 public class Plot implements LegendItemSource {
 
+    // FIXME: useBounds never set to false
+    private static record PlotItemConfig(PlotItem item, boolean visibleInLegend, boolean useBounds) {
+    };
+
     public final XYPlot plot;
     public final JFreeChart chart;
 
@@ -32,18 +36,10 @@ public class Plot implements LegendItemSource {
     private double bufferPercentageLeft = 0.01;
     private double bufferPercentageRight = 0.01;
 
+    private final boolean includeLegend;
+    private final boolean timeseries;
+
     private String dateTimeFormat = "yyyy-MM-dd HH:mm:ss";
-
-    public void setBufferPercentage(double top, double bottom, double left, double right) {
-        bufferPercentageTop = top;
-        bufferPercentageBottom = bottom;
-        bufferPercentageLeft = left;
-        bufferPercentageRight = right;
-    }
-
-    // FIXME: useBounds never set to false
-    private record PlotItemConfig(PlotItem item, boolean visibleInLegend, boolean useBounds) {
-    };
 
     public final List<PlotItemConfig> items = new ArrayList<>();
 
@@ -56,6 +52,9 @@ public class Plot implements LegendItemSource {
     }
 
     public Plot(boolean includeLegend, boolean timeseries) {
+
+        this.includeLegend = includeLegend;
+        this.timeseries = timeseries;
 
         axisX = new NumberAxis();
         axisX.setAutoRangeIncludesZero(false);
@@ -174,4 +173,20 @@ public class Plot implements LegendItemSource {
     public void update() {
         chart.fireChartChanged();
     }
+
+    public void setBufferPercentage(double top, double bottom, double left, double right) {
+        bufferPercentageTop = top;
+        bufferPercentageBottom = bottom;
+        bufferPercentageLeft = left;
+        bufferPercentageRight = right;
+    }
+
+    public Plot getCopy() {
+        Plot plotCopy = new Plot(includeLegend, timeseries);
+        for (PlotItemConfig item : items) {
+            plotCopy.addXYItem(item.item(), item.visibleInLegend());
+        }
+        return plotCopy;
+    }
+
 }

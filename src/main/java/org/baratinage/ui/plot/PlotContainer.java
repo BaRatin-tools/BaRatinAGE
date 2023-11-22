@@ -272,7 +272,7 @@ public class PlotContainer extends RowColPanel {
 
     public void windowPlot() {
         JFrame f = new JFrame();
-        PlotContainer p = new PlotContainer(plot);
+        PlotContainer p = new PlotContainer(plot.getCopy());
 
         f.addWindowListener(new WindowAdapter() {
             @Override
@@ -286,7 +286,6 @@ public class PlotContainer extends RowColPanel {
         f.add(p);
         f.pack();
         f.setVisible(true);
-
     }
 
 }
