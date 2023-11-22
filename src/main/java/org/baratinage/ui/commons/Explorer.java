@@ -58,23 +58,39 @@ public class Explorer extends RowColPanel {
 
         explorerTree.addMouseListener(new MouseAdapter() {
             public void mousePressed(MouseEvent e) {
+                if (e.getButton() != MouseEvent.BUTTON3) {
+                    return;
+                }
                 int x = e.getX();
                 int y = e.getY();
-                int selRow = explorerTree.getRowForLocation(x, y);
-                if (selRow != -1) {
-                    if (e.getButton() == MouseEvent.BUTTON3) {
-                        // enable right click
-                        explorerTree.setSelectionRow(selRow);
-                        TreePath selPath = explorerTree.getPathForLocation(x, y);
-                        Object o = selPath.getLastPathComponent();
-                        if (o instanceof ExplorerItem) {
-                            ExplorerItem item = (ExplorerItem) o;
-                            item.contextMenu.show(explorerTree, x, y);
-                        }
-                    }
+                ExplorerItem clickedItem = getClickedExplorerItem(y);
+                if (clickedItem != null) {
+                    selectItem(clickedItem);
+                    clickedItem.contextMenu.show(explorerTree, x, y);
                 }
             }
         });
+    }
+
+    private ExplorerItem getClickedExplorerItem(int y) {
+        int step = 10;
+        TreePath clickedTreePath = null;
+        for (int k = 0; k < explorerTree.getWidth(); k = k + step) {
+            clickedTreePath = explorerTree.getPathForLocation(k, y);
+            if (clickedTreePath != null) {
+                break;
+            }
+        }
+        if (clickedTreePath != null) {
+            Object o = clickedTreePath.getLastPathComponent();
+            if (o != null) {
+                if (o instanceof ExplorerItem) {
+                    ExplorerItem item = (ExplorerItem) o;
+                    return item;
+                }
+            }
+        }
+        return null;
     }
 
     public void appendItem(ExplorerItem item) {
