@@ -1,9 +1,16 @@
+param (
+    [string]$version = "http://defaultserver",
+    [switch]$archive = $false,
+    [switch]$quiet = $false
+ )
 
-$VERSION = "3.0.0-alpha5";
+$ErrorActionPreference = "Stop"
 
-$VERBOSE = $False
+$VERSION = $version
 
-$CREATE_ARCHIVE = $False
+$VERBOSE = !$quiet 
+
+$CREATE_ARCHIVE = $archive
 
 #####################################################################
 
@@ -25,13 +32,8 @@ $EXE_TO_COPY = @(
 )
 
 #####################################################################
-# Script start
 
-""
-"*********************************************************************"
-""
-$ErrorActionPreference = "Stop"
-
+#  setting up variables
 
 $VERSTION_SPLIT = $VERSION.Split("-");
 
@@ -40,7 +42,6 @@ if ($VERSTION_SPLIT.Length -eq 2) {
     $CONSOLE = $True
 }
 
-#  setting up variables
 $IS_WINDOWS = [System.Environment]::OSVersion.Platform -eq "Win32NT"
 $IS_UNIX = [System.Environment]::OSVersion.Platform -eq "Unix"
 
@@ -69,8 +70,13 @@ if ($IS_WINDOWS) {
     }
 }
 
+""
+"*********************************************************************"
+""
 
 ####################################################################
+
+
 # cleaning up targer dir
 if (Test-Path "$($TARGER_DIR)"  -PathType Container) {
     "Removing folder '$($TARGER_DIR)'..."
