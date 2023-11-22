@@ -1,13 +1,7 @@
 package org.baratinage.ui.bam;
 
-import java.awt.event.ActionListener;
-
-import javax.swing.AbstractButton;
 import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JMenuItem;
 
-import org.baratinage.translation.T;
 import org.baratinage.ui.AppConfig;
 import org.baratinage.utils.ConsoleLogger;
 import org.baratinage.utils.Misc;
@@ -39,11 +33,9 @@ public enum BamItemType {
     public final String id;
 
     private BamItemBuilderFunction builBamItemFunction;
+
     private ImageIcon icon;
     private ImageIcon addIcon;
-    private ActionListener addBamItemAction;
-    private JMenuItem addBamItemMenuItem;
-    private JButton addBamItemToolbarButton;
 
     @FunctionalInterface
     public interface BamItemBuilderFunction {
@@ -52,9 +44,6 @@ public enum BamItemType {
 
     private BamItemType(String id) {
         this.id = id;
-        addBamItemAction = (e) -> {
-            ConsoleLogger.error("No addItem action set.");
-        };
         builBamItemFunction = (i) -> {
             ConsoleLogger.error("No builder function set.");
             return null;
@@ -63,12 +52,6 @@ public enum BamItemType {
 
     public void setBamItemBuilderFunction(BamItemBuilderFunction builder) {
         this.builBamItemFunction = builder;
-    }
-
-    public void setAddBamItemAction(ActionListener addBamItemAction) {
-        this.addBamItemAction = addBamItemAction;
-        addBamItemMenuItem = null;
-        addBamItemToolbarButton = null;
     }
 
     public BamItem buildBamItem(String uuid) {
@@ -97,33 +80,6 @@ public enum BamItemType {
             addIcon = AppConfig.AC.ICONS.getCustomAppImageIcon(id + "_add.svg");
         }
         return addIcon;
-    }
-
-    private <A extends AbstractButton> A configureAddAbstractButton(A aBtn) {
-        aBtn.setIcon(getAddIcon());
-        aBtn.addActionListener(addBamItemAction);
-        return aBtn;
-    }
-
-    public JMenuItem getAddMenuItem() {
-        if (addBamItemMenuItem == null) {
-            addBamItemMenuItem = configureAddAbstractButton(new JMenuItem());
-            String tCreateKey = "create_" + id;
-            T.t(this, addBamItemMenuItem, false, tCreateKey);
-        }
-
-        return addBamItemMenuItem;
-    }
-
-    public JButton getAddToolbarButton() {
-        if (addBamItemToolbarButton == null) {
-            addBamItemToolbarButton = configureAddAbstractButton(new JButton());
-            String tCreateKey = "create_" + id;
-            T.t(this, () -> {
-                addBamItemMenuItem.setToolTipText(T.text(tCreateKey));
-            });
-        }
-        return addBamItemToolbarButton;
     }
 
     public boolean matchOneOf(BamItemType... itemTypesToMatch) {

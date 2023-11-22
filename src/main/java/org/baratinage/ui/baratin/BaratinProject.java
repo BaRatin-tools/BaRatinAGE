@@ -1,9 +1,5 @@
 package org.baratinage.ui.baratin;
 
-import javax.swing.JMenu;
-import javax.swing.JToolBar;
-
-import org.baratinage.ui.AppConfig;
 import org.baratinage.ui.bam.BamItem;
 import org.baratinage.ui.bam.BamItemList;
 import org.baratinage.ui.bam.BamItemType;
@@ -58,27 +54,6 @@ public class BaratinProject extends BamProject {
                 (String uuid) -> {
                     return new Hydrograph(uuid, this);
                 });
-
-        JMenu componentMenu = AppConfig.AC.APP_MAIN_FRAME.mainMenuBar.componentMenu;
-        componentMenu.removeAll();
-        componentMenu.add(BamItemType.HYDRAULIC_CONFIG.getAddMenuItem());
-        componentMenu.add(BamItemType.GAUGINGS.getAddMenuItem());
-        componentMenu.add(BamItemType.STRUCTURAL_ERROR.getAddMenuItem());
-        componentMenu.add(BamItemType.RATING_CURVE.getAddMenuItem());
-        componentMenu.add(BamItemType.LIMNIGRAPH.getAddMenuItem());
-        componentMenu.add(BamItemType.HYDROGRAPH.getAddMenuItem());
-        componentMenu.updateUI();
-
-        JToolBar projectToolbar = AppConfig.AC.APP_MAIN_FRAME.projectToolbar;
-        projectToolbar.removeAll();
-        projectToolbar.add(BamItemType.HYDRAULIC_CONFIG.getAddToolbarButton());
-        projectToolbar.add(BamItemType.GAUGINGS.getAddToolbarButton());
-        projectToolbar.add(BamItemType.STRUCTURAL_ERROR.getAddToolbarButton());
-        projectToolbar.add(BamItemType.RATING_CURVE.getAddToolbarButton());
-        projectToolbar.add(BamItemType.LIMNIGRAPH.getAddToolbarButton());
-        projectToolbar.add(BamItemType.HYDROGRAPH.getAddToolbarButton());
-        projectToolbar.updateUI();
-
         T.t(this, () -> {
             BamItemList strucErrBamItems = BAM_ITEMS.filterByType(BamItemType.STRUCTURAL_ERROR);
             for (BamItem item : strucErrBamItems) {

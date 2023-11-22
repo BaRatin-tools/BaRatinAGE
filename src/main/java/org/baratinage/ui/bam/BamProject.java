@@ -1,5 +1,6 @@
 package org.baratinage.ui.bam;
 
+import java.awt.event.ActionListener;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -8,9 +9,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
+import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JMenu;
 import javax.swing.JMenuItem;
-
+import javax.swing.JToolBar;
 import javax.swing.SwingUtilities;
 
 import org.baratinage.translation.T;
@@ -42,6 +45,9 @@ public abstract class BamProject extends RowColPanel {
 
     protected final Explorer EXPLORER;
 
+    private final JMenu componentMenu;
+    private final JToolBar projectToolbar;
+
     private String projectPath = null;
 
     protected final SplitContainer content;
@@ -53,27 +59,37 @@ public abstract class BamProject extends RowColPanel {
     public BamProject(BamProjectType projectType) {
         super(AXIS.COL);
 
+        // main instance public object
         ID = Misc.getTimeStampedId();
         PROJECT_TYPE = projectType;
         BAM_ITEMS = new BamItemList();
 
-        lastSavedConfigRecord = null;
-
+        // setting explorer
         EXPLORER = new Explorer();
         EXPLORER.headerLabel.setIcon(AppConfig.AC.ICONS.LIST_ICON);
         T.t(this, EXPLORER.headerLabel, false, "explorer");
 
         setupExplorer();
 
+        // resetting toolbar and component menu (where "add bam item" buttons are)
+        componentMenu = AppConfig.AC.APP_MAIN_FRAME.mainMenuBar.componentMenu;
+        componentMenu.removeAll();
+        projectToolbar = AppConfig.AC.APP_MAIN_FRAME.projectToolbar;
+        projectToolbar.removeAll();
+
+        // inialialize current panel, place holder for bam item panels
         currentPanel = new RowColPanel(AXIS.COL);
         currentPanel.setGap(5);
 
+        // final layout
         content = new SplitContainer(EXPLORER, currentPanel, true);
         appendChild(content, 1);
-
         content.setLeftComponent(EXPLORER);
         content.setRightComponent(currentPanel);
         content.setResizeWeight(0);
+
+        // inialialize last save record
+        lastSavedConfigRecord = null;
     }
 
     public boolean checkUnsavedChange() {
@@ -137,9 +153,6 @@ public abstract class BamProject extends RowColPanel {
             BamItemBuilderFunction builder) {
 
         itemType.setBamItemBuilderFunction(builder);
-        itemType.setAddBamItemAction((e) -> {
-            addBamItem(itemType);
-        });
 
         ExplorerItem explorerItem = new ExplorerItem(
                 itemType.id,
@@ -148,11 +161,32 @@ public abstract class BamProject extends RowColPanel {
 
         EXPLORER.appendItem(explorerItem);
 
-        explorerItem.contextMenu.add(itemType.getAddMenuItem());
+        ActionListener addBamItemAction = (e) -> {
+            addBamItem(itemType);
+        };
+
+        JButton addBamItemToolbarButton = new JButton();
+        addBamItemToolbarButton.addActionListener(addBamItemAction);
+        addBamItemToolbarButton.setIcon(itemType.getAddIcon());
+        projectToolbar.add(addBamItemToolbarButton);
+
+        JMenuItem addBamItemMenuBarItem = new JMenuItem();
+        addBamItemMenuBarItem.addActionListener(addBamItemAction);
+        addBamItemMenuBarItem.setIcon(itemType.getAddIcon());
+        componentMenu.add(addBamItemMenuBarItem);
+
+        JMenuItem addBamItemContextMenuItem = new JMenuItem();
+        addBamItemContextMenuItem.addActionListener(addBamItemAction);
+        addBamItemContextMenuItem.setIcon(itemType.getAddIcon());
+        explorerItem.contextMenu.add(addBamItemContextMenuItem);
 
         T.t(this, () -> {
             explorerItem.label = T.text(itemType.id);
             EXPLORER.updateItemView(explorerItem);
+            String tCreateKey = "create_" + itemType.id;
+            addBamItemMenuBarItem.setText(T.text(tCreateKey));
+            addBamItemToolbarButton.setToolTipText(T.text(tCreateKey));
+            addBamItemContextMenuItem.setText(T.text(tCreateKey));
         });
 
     }
@@ -322,7 +356,7 @@ public abstract class BamProject extends RowColPanel {
         String loadingMessage = T.text("loading_project");
 
         lMessage.setText("<html>" +
-                "<b>" + sourceFile.getName() + "</b>" + "&nbsp;&nbsp;" +
+                "<b>" + sourceFile.getName() + "</b>" + "<br>" +
                 "<code>" + sourceFile.getAbsolutePath() + "</code>" +
                 "</html>");
 
