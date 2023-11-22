@@ -132,27 +132,41 @@ public class T {
     }
 
     static public void printStats(boolean printList) {
-        ConsoleLogger.log("-------------------------------------------------");
-        ConsoleLogger.log("There are " + translatables.size() + " translatables owners.");
+        printTranslatableStats(printList);
+        printHierachyStats(printList);
+    }
+
+    static public void printTranslatableStats(boolean printList) {
+        int nChildren = 0;
+        for (Object o : translatables.keySet()) {
+            nChildren += translatables.get(o).size();
+        }
+        ConsoleLogger.log("There are " + translatables.size() + " translatables owners (" + nChildren + ").");
         if (printList) {
             for (Object o : translatables.keySet()) {
                 String oStr = o.toString();
-                oStr = oStr.substring(0, Math.min(oStr.length(), 40));
+                oStr = oStr.substring(0, Math.min(oStr.length(), 70));
                 int n = translatables.get(o).size();
                 ConsoleLogger.log("> " + oStr + "  >  " + n + " translatable(s).");
             }
         }
-        ConsoleLogger.log("-------------------------------------------------");
-        ConsoleLogger.log("There are " + hierarchy.size() + " owners with children.");
+    }
+
+    static public void printHierachyStats(boolean printList) {
+        int nChildren = 0;
+        for (Object o : hierarchy.keySet()) {
+            nChildren += hierarchy.get(o).size();
+        }
+        ConsoleLogger.log(
+                "There are " + hierarchy.size() + " translatable owners with children owners (" + nChildren + ").");
         if (printList) {
             for (Object o : hierarchy.keySet()) {
                 String oStr = o.toString();
-                oStr = oStr.substring(0, Math.min(oStr.length(), 40));
+                oStr = oStr.substring(0, Math.min(oStr.length(), 70));
                 int n = hierarchy.get(o).size();
                 ConsoleLogger.log("> " + oStr + "  >  " + (n < 2 ? n + " child." : n + " children."));
             }
         }
-        ConsoleLogger.log("-------------------------------------------------");
     }
 
     static private Map<Object, List<WeakReference<Object>>> hierarchy;
