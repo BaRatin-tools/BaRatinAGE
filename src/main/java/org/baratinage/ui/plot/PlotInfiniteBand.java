@@ -31,10 +31,8 @@ public class PlotInfiniteBand extends PlotItem {
     private String label;
     private Paint fillPaint;
 
-    public PlotInfiniteBand(String label, double xLow, double yHigh, Paint fillPaint) {
-        this(label, 0, xLow, yHigh, fillPaint);
-        isVerticalBand = true;
-        n = 2;
+    public PlotInfiniteBand(String label, double xLow, double xHigh, Paint fillPaint) {
+        this(label, Double.POSITIVE_INFINITY, xLow, xHigh, fillPaint);
     }
 
     public PlotInfiniteBand(String label, double coeffDir, double offsetLow, double offsetHigh, Paint fillPaint) {
@@ -45,6 +43,11 @@ public class PlotInfiniteBand extends PlotItem {
         a = coeffDir;
         bLow = offsetLow;
         bHigh = offsetHigh;
+
+        if (Double.isInfinite(coeffDir)) {
+            isVerticalBand = true;
+            n = 2;
+        }
 
         renderer = new DeviationRenderer();
         renderer.setSeriesStroke(0, buildEmptyStroke());
