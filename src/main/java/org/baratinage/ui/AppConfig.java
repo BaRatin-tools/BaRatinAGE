@@ -10,6 +10,7 @@ import org.baratinage.utils.Misc;
 public class AppConfig {
     public static AppConfig AC;
 
+    public final boolean DEBUG_MODE;
     public final String APP_NAME;
     public final String APP_ROOT_DIR;
     public final String APP_INSTANCE_ID;
@@ -59,7 +60,8 @@ public class AppConfig {
         APP_NAME = "BaRatinAGE";
 
         String exePath = System.getProperty("jpackage.app-path");
-        if (exePath == null) {
+        DEBUG_MODE = exePath == null;
+        if (DEBUG_MODE) {
             APP_ROOT_DIR = Paths.get("").toAbsolutePath().toString();
         } else {
             APP_ROOT_DIR = Path.of(exePath).getParent().toString();
