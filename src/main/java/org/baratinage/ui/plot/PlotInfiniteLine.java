@@ -36,9 +36,7 @@ public class PlotInfiniteLine extends PlotItem {
     }
 
     public PlotInfiniteLine(String label, double x, Paint paint, Stroke stroke) {
-        this(label, 0, x, paint, stroke);
-        isVerticalLine = true;
-        n = 2;
+        this(label, Double.POSITIVE_INFINITY, x, paint, stroke);
     }
 
     public PlotInfiniteLine(String label, double coeffDir, double offset, Paint paint, int lineWidth) {
@@ -53,6 +51,11 @@ public class PlotInfiniteLine extends PlotItem {
 
         a = coeffDir;
         b = offset;
+
+        if (Double.isInfinite(coeffDir)) {
+            isVerticalLine = true;
+            n = 2;
+        }
 
         renderer = new DefaultXYItemRenderer();
 
