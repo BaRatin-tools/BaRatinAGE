@@ -209,14 +209,15 @@ public class MainFrame extends JFrame {
 
     public void loadProject(String projectFilePath) {
         if (projectFilePath != null) {
-            BamProject.loadProject(projectFilePath, (bamProject) -> {
-                bamProject.setProjectPath(projectFilePath);
-                setCurrentProject(bamProject);
-            },
+            BamProject.loadProject(
+                    projectFilePath,
+                    (bamProject) -> {
+                        bamProject.setProjectPath(projectFilePath);
+                        setCurrentProject(bamProject);
+                    },
                     () -> {
                         CommonDialog.errorDialog(T.text("error_opening_project"));
                     });
-
         }
     }
 
