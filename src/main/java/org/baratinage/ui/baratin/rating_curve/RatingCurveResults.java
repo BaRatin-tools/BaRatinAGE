@@ -23,7 +23,7 @@ import org.baratinage.translation.T;
 
 public class RatingCurveResults extends TabContainer {
 
-    private final PosteriorRatingCurvePlot ratingCurvePlot;
+    private final RatingCurvePlot ratingCurvePlot;
     private final DensityPlotGrid paramDensityPlots;
     private final TracePlotGrid paramTracePlots;
     private final DataTable rcGridTable;
@@ -41,7 +41,7 @@ public class RatingCurveResults extends TabContainer {
 
     public RatingCurveResults() {
 
-        ratingCurvePlot = new PosteriorRatingCurvePlot();
+        ratingCurvePlot = new RatingCurvePlot();
 
         paramDensityPlots = new DensityPlotGrid();
 
@@ -274,7 +274,7 @@ public class RatingCurveResults extends TabContainer {
             transitionStages.add(new double[] { mp, u95[0], u95[1] });
         }
 
-        ratingCurvePlot.updatePlot(
+        ratingCurvePlot.setPosteriorPlot(
                 stage,
                 dischargeMaxpost,
                 paramU,

@@ -28,7 +28,7 @@ import org.baratinage.ui.bam.RunConfigAndRes;
 import org.baratinage.ui.bam.RunBam;
 import org.baratinage.ui.baratin.hydraulic_control.ControlMatrix;
 import org.baratinage.ui.baratin.hydraulic_control.HydraulicControlPanels;
-import org.baratinage.ui.baratin.rating_curve.PriorRatingCurvePlot;
+import org.baratinage.ui.baratin.rating_curve.RatingCurvePlot;
 import org.baratinage.ui.baratin.rating_curve.RatingCurveStageGrid;
 import org.baratinage.ui.commons.MsgPanel;
 import org.baratinage.ui.component.Title;
@@ -60,7 +60,7 @@ public class HydraulicConfiguration
     private RowColPanel outOufSyncPanel;
 
     public RunBam runBam;
-    private PriorRatingCurvePlot plotPanel;
+    private RatingCurvePlot plotPanel;
     private RunConfigAndRes bamRunConfigAndRes;
 
     private BamConfigRecord backup;
@@ -93,7 +93,7 @@ public class HydraulicConfiguration
             checkPriorRatingCurveSync();
         });
 
-        plotPanel = new PriorRatingCurvePlot();
+        plotPanel = new RatingCurvePlot();
 
         Dimension dimPref = new Dimension(500, 300);
         controlMatrix.setPreferredSize(dimPref);
@@ -519,7 +519,6 @@ public class HydraulicConfiguration
             }
         }
 
-        plotPanel.updatePlot(
-                stage, dischargeMaxpost, dischargeParamU, transitionStages);
+        plotPanel.setPriorPlot(stage, dischargeMaxpost, dischargeParamU, transitionStages);
     }
 }
