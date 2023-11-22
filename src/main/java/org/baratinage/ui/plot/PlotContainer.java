@@ -32,46 +32,31 @@ public class PlotContainer extends RowColPanel {
 
     private Plot plot;
     private JFreeChart chart;
+    private RowColPanel chartPanelContainer;
     private ChartPanel chartPanel;
     private boolean logYaxis;
     private Color backgroundColor = Color.WHITE;
     private JButton toggleYaxisLogButton;
+
+    private final JPopupMenu popupMenu;
+    private final RowColPanel toolsPanel;
+    private final RowColPanel actionPanel;
+
+    public PlotContainer() {
+        this(true);
+    }
 
     public PlotContainer(Plot plot) {
         this(plot, true);
     }
 
     public PlotContainer(Plot plot, boolean toolbar) {
+        this(toolbar);
+        setPlot(plot);
+    }
+
+    public PlotContainer(boolean toolbar) {
         super(AXIS.COL);
-
-        this.plot = plot;
-        chart = plot.getChart();
-
-        // modified restoreAutoBounds methods to ignore
-        // dataset marked to be ignored in Plot.
-        chartPanel = new ChartPanel(chart) {
-            @Override
-            public void restoreAutoBounds() {
-                super.restoreAutoDomainBounds();
-                super.restoreAutoRangeBounds();
-                Range domainBounds = plot.getDomainBounds();
-                Range rangeBounds = plot.getRangeBounds();
-                if (domainBounds != null) {
-                    plot.plot.getDomainAxis().setRange(domainBounds);
-                }
-                if (domainBounds != null) {
-                    plot.plot.getRangeAxis().setRange(rangeBounds);
-
-                }
-            }
-        };
-        chartPanel.restoreAutoBounds();
-
-        chartPanel.setMinimumDrawWidth(100);
-        chartPanel.setMinimumDrawHeight(100);
-
-        chartPanel.setMaximumDrawWidth(10000);
-        chartPanel.setMaximumDrawHeight(10000);
 
         RowColPanel topPanel = new RowColPanel();
 
@@ -79,10 +64,11 @@ public class PlotContainer extends RowColPanel {
             appendChild(topPanel, 0);
         }
 
-        appendChild(chartPanel, 1);
+        chartPanelContainer = new RowColPanel();
+        appendChild(chartPanelContainer, 1);
 
-        RowColPanel toolsPanel = new RowColPanel(AXIS.ROW, ALIGN.START);
-        RowColPanel actionPanel = new RowColPanel(AXIS.ROW, ALIGN.END);
+        toolsPanel = new RowColPanel(AXIS.ROW, ALIGN.START);
+        actionPanel = new RowColPanel(AXIS.ROW, ALIGN.END);
 
         topPanel.appendChild(toolsPanel, 1);
         topPanel.appendChild(actionPanel, 1);
@@ -92,17 +78,8 @@ public class PlotContainer extends RowColPanel {
 
         toolsPanel.appendChild(toggleYaxisLogButton, 0);
         toggleYaxisLogButton.addActionListener((e) -> {
-            logYaxis = !logYaxis;
-            plot.setAxisLogY(logYaxis);
-            chartPanel.restoreAutoBounds();
-            // T.updateRegisteredObject(this);
-            T.updateTranslation(this);
+            toggleYLogAxis();
         });
-
-        // ImageIcon saveIcon = AppConfig.AC.ICONS.SAVE_ICON;
-        // ImageIcon copyIcon = SvgIcon.buildFeatherAppImageIcon("copy.svg");
-        // ImageIcon windowPlotIcon =
-        // SvgIcon.buildFeatherAppImageIcon("external-link.svg");
 
         JButton btnWindowPlot = new JButton();
 
@@ -136,7 +113,7 @@ public class PlotContainer extends RowColPanel {
         actionPanel.appendChild(btnSaveAsPng);
         actionPanel.appendChild(btnCopyToClipboard);
 
-        JPopupMenu popupMenu = new JPopupMenu();
+        popupMenu = new JPopupMenu();
         JMenuItem menuWindowPlot = new JMenuItem();
         menuWindowPlot.addActionListener((e) -> {
             windowPlot();
@@ -159,8 +136,6 @@ public class PlotContainer extends RowColPanel {
             copyToClipboard();
         });
         popupMenu.add(menuCopyClipboard);
-
-        this.chartPanel.setPopupMenu(popupMenu);
 
         setBackground(backgroundColor);
         topPanel.setBackground(backgroundColor);
@@ -190,7 +165,55 @@ public class PlotContainer extends RowColPanel {
 
     }
 
+    public void setPlot(Plot plot) {
+        this.plot = plot;
+        chart = plot.getChart();
+
+        // modified restoreAutoBounds methods to ignore
+        // dataset marked to be ignored in Plot.
+        chartPanel = new ChartPanel(chart) {
+            @Override
+            public void restoreAutoBounds() {
+                super.restoreAutoDomainBounds();
+                super.restoreAutoRangeBounds();
+                Range domainBounds = plot.getDomainBounds();
+                Range rangeBounds = plot.getRangeBounds();
+                if (domainBounds != null) {
+                    plot.plot.getDomainAxis().setRange(domainBounds);
+                }
+                if (domainBounds != null) {
+                    plot.plot.getRangeAxis().setRange(rangeBounds);
+
+                }
+            }
+        };
+        chartPanel.restoreAutoBounds();
+
+        chartPanel.setMinimumDrawWidth(100);
+        chartPanel.setMinimumDrawHeight(100);
+
+        chartPanel.setMaximumDrawWidth(10000);
+        chartPanel.setMaximumDrawHeight(10000);
+
+        chartPanel.setPopupMenu(popupMenu);
+
+        chartPanelContainer.clear();
+        chartPanelContainer.appendChild(chartPanel, 1);
+    }
+
+    private void toggleYLogAxis() {
+        logYaxis = !logYaxis;
+        if (plot != null) {
+            plot.setAxisLogY(logYaxis);
+            chartPanel.restoreAutoBounds();
+            T.updateTranslation(this);
+        }
+    }
+
     private String getSvgXML() {
+        if (chart == null) {
+            return "";
+        }
         Dimension dim = getSize();
         SVGGraphics2D svg2d = new SVGGraphics2D(dim.width, dim.height);
         chart.draw(svg2d, new Rectangle2D.Double(0, 0, dim.width, dim.height));
@@ -199,6 +222,9 @@ public class PlotContainer extends RowColPanel {
     }
 
     private byte[] getImageBytes() {
+        if (chart == null) {
+            return new byte[0];
+        }
         Dimension dim = getSize();
         ByteArrayOutputStream bout = new ByteArrayOutputStream();
         int scale = 3; // chart will be rendered at thrice the resolution.
@@ -228,7 +254,6 @@ public class PlotContainer extends RowColPanel {
     }
 
     public void saveAsPng() {
-
         if (chart == null)
             return;
         File f = CommonDialog.saveFileDialog(
@@ -240,9 +265,7 @@ public class PlotContainer extends RowColPanel {
             ConsoleLogger.error("cannot save to PNG, selected file is null.");
             return;
         }
-
         saveToPng(f.getAbsolutePath());
-
     }
 
     public void saveToSvg(String filePath) {
