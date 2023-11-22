@@ -36,6 +36,10 @@ public class MainMenuBar extends JMenuBar {
 
     public MainMenuBar() {
 
+        if (AppConfig.AC.DEBUG_MODE) {
+            add(new DebugMenu());
+        }
+
         fileMenu = new JMenu();
 
         add(fileMenu);
