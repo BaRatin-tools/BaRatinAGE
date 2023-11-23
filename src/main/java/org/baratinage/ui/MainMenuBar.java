@@ -63,7 +63,7 @@ public class MainMenuBar extends JMenuBar {
         initOptionMenu();
         initHelpMenu();
 
-        T.t(this, fileMenu, false, "files");
+        T.t(this, fileMenu, false, "file");
         T.t(this, componentMenu, false, "components");
         T.t(this, optionMenu, false, "options");
         T.t(this, helpMenu, false, "help");

@@ -69,8 +69,6 @@ public class RunBam {
                         "");
             }
         });
-
-        runButton.setText(T.text("launch_bam"));
         runButton.setFont(runButton.getFont().deriveFont(Font.BOLD));
     }
 

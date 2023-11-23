@@ -38,7 +38,7 @@ public class RatingCurvePlot extends RowColPanel {
 
         JCheckBox switchAxisCheckbox = new JCheckBox();
         switchAxisCheckbox.setSelected(false);
-        switchAxisCheckbox.setText("Switch X Y axis");
+        switchAxisCheckbox.setText("swap_xy_axis");
         switchAxisCheckbox.addActionListener((e) -> {
             updatePlot(
                     stage,
@@ -57,7 +57,7 @@ public class RatingCurvePlot extends RowColPanel {
 
         T.updateHierarchy(this, plotContainer);
 
-        T.t(this, switchAxisCheckbox, false, "inverted_rc_plot_axis");
+        T.t(this, switchAxisCheckbox, false, "swap_xy_axis");
     }
 
     public void setPriorPlot(double[] stage,
