@@ -98,14 +98,9 @@ public abstract class BamProject extends RowColPanel {
             return true;
         }
         BamConfigRecord currentConfigRecord = save(false);
-        JSONObject curr = JSONFilter.filter(
-                BamConfigRecord.toJSON(currentConfigRecord),
-                true, true,
-                "selectedItemId");
-        JSONObject saved = JSONFilter.filter(
-                BamConfigRecord.toJSON(lastSavedConfigRecord),
-                true, true,
-                "selectedItemId");
+        JSONFilter filter = new JSONFilter(true, true, "selectedItemId");
+        JSONObject curr = filter.apply(BamConfigRecord.toJSON(currentConfigRecord));
+        JSONObject saved = filter.apply(BamConfigRecord.toJSON(lastSavedConfigRecord));
         JSONCompareResult compareRes = JSONCompare.compare(curr, saved);
         if (!compareRes.matching() != unsavedChanges) {
             unsavedChanges = !compareRes.matching();

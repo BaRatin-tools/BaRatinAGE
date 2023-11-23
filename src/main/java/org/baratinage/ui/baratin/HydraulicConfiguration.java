@@ -248,10 +248,10 @@ public class HydraulicConfiguration
 
         JSONObject backupJson = backup.jsonObject();
 
-        JSONObject filteredCurrentJson = JSONFilter.filter(currentJson, true, true,
+        JSONFilter filter = new JSONFilter(true, true,
                 "backup", "allControlOptions", "controlTypeIndex", "isKACmode", "isLocked");
-        JSONObject filteredBackupJson = JSONFilter.filter(backupJson, true, true,
-                "backup", "allControlOptions", "controlTypeIndex", "isKACmode", "isLocked");
+        JSONObject filteredCurrentJson = filter.apply(currentJson);
+        JSONObject filteredBackupJson = filter.apply(backupJson);
 
         JSONCompareResult comparison = JSONCompare.compare(
                 filteredBackupJson,

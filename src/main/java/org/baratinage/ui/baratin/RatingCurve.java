@@ -70,17 +70,15 @@ public class RatingCurve extends BamItem implements IPredictionMaster, ICalibrat
         hydrauConfParent = new BamItemParent(
                 this,
                 BamItemType.HYDRAULIC_CONFIG);
-        hydrauConfParent.setComparisonJSONfilter((JSONObject json) -> {
-            return JSONFilter.filter(json, true, true,
-                    "ui",
-                    "bamRunId",
-                    "jsonStringBackup",
-                    "stageGridConfig",
-                    "allControlOptions",
-                    "controlTypeIndex",
-                    "isKACmode",
-                    "isLocked");
-        });
+        hydrauConfParent.setComparisonJSONfilter(new JSONFilter(true, true,
+                "ui",
+                "bamRunId",
+                "jsonStringBackup",
+                "stageGridConfig",
+                "allControlOptions",
+                "controlTypeIndex",
+                "isKACmode",
+                "isLocked"));
         hydrauConfParent.addChangeListener((e) -> {
             HydraulicConfiguration bamItem = (HydraulicConfiguration) hydrauConfParent.getCurrentBamItem();
             runBam.setModelDefintion(bamItem);
@@ -95,10 +93,8 @@ public class RatingCurve extends BamItem implements IPredictionMaster, ICalibrat
         gaugingsParent = new BamItemParent(
                 this,
                 BamItemType.GAUGINGS);
-        gaugingsParent.setComparisonJSONfilter((JSONObject json) -> {
-            return JSONFilter.filter(json, true, true,
-                    "name", "headers", "filePath", "nested");
-        });
+        gaugingsParent.setComparisonJSONfilter(new JSONFilter(true, true,
+                "name", "headers", "filePath", "nested"));
         gaugingsParent.addChangeListener((e) -> {
             Gaugings bamItem = (Gaugings) gaugingsParent.getCurrentBamItem();
             runBam.setCalibrationData(bamItem);
@@ -112,9 +108,7 @@ public class RatingCurve extends BamItem implements IPredictionMaster, ICalibrat
         structErrorParent = new BamItemParent(
                 this,
                 BamItemType.STRUCTURAL_ERROR);
-        structErrorParent.setComparisonJSONfilter((JSONObject json) -> {
-            return JSONFilter.filter(json, true, true, "isLocked");
-        });
+        structErrorParent.setComparisonJSONfilter(new JSONFilter(true, true, "isLocked"));
         structErrorParent.addChangeListener((e) -> {
             StructuralErrorModelBamItem bamItem = (StructuralErrorModelBamItem) structErrorParent.getCurrentBamItem();
             runBam.setStructuralErrorModel(bamItem);

@@ -55,9 +55,8 @@ public class Hydrograph extends BamItem implements IPredictionMaster {
         runBam.setPredictionExperiments(this);
 
         ratingCurveParent = new BamItemParent(this, BamItemType.RATING_CURVE);
-        ratingCurveParent.setComparisonJSONfilter((JSONObject json) -> {
-            return JSONFilter.filter(json, false, false, "bamRunId");
-        });
+        ratingCurveParent.setComparisonJSONfilter(new JSONFilter(false, false,
+                "bamRunId"));
         ratingCurveParent.addChangeListener((chEvt) -> {
             RatingCurve rc = (RatingCurve) ratingCurveParent.getCurrentBamItem();
             currentRatingCurve = rc;
@@ -66,10 +65,8 @@ public class Hydrograph extends BamItem implements IPredictionMaster {
         });
 
         limnigraphParent = new BamItemParent(this, BamItemType.LIMNIGRAPH);
-        limnigraphParent.setComparisonJSONfilter((JSONObject json) -> {
-            return JSONFilter.filter(json, true, true,
-                    "name", "headers", "filePath", "nested");
-        });
+        limnigraphParent.setComparisonJSONfilter(new JSONFilter(true, true,
+                "name", "headers", "filePath", "nested"));
         limnigraphParent.addChangeListener((chEvt) -> {
             Limnigraph l = (Limnigraph) limnigraphParent.getCurrentBamItem();
             currentLimnigraph = l;

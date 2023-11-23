@@ -2,7 +2,6 @@ package org.baratinage.ui.bam;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Function;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -18,6 +17,7 @@ import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.utils.Misc;
 import org.baratinage.utils.json.JSONCompare;
 import org.baratinage.utils.json.JSONCompareResult;
+import org.baratinage.utils.json.JSONFilter;
 import org.json.JSONObject;
 
 public class BamItemParent extends RowColPanel {
@@ -102,9 +102,9 @@ public class BamItemParent extends RowColPanel {
 
     }
 
-    private Function<JSONObject, JSONObject> filter;
+    private JSONFilter filter;
 
-    public void setComparisonJSONfilter(Function<JSONObject, JSONObject> filter) {
+    public void setComparisonJSONfilter(JSONFilter filter) {
         this.filter = filter;
     }
 
