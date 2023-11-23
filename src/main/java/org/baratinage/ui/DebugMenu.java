@@ -1,12 +1,5 @@
 package org.baratinage.ui;
 
-import java.awt.Point;
-import java.awt.image.DataBuffer;
-import java.awt.image.Raster;
-import java.awt.image.WritableRaster;
-import java.util.ArrayList;
-import java.util.List;
-
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.SwingUtilities;
@@ -15,10 +8,15 @@ import org.baratinage.translation.T;
 
 public class DebugMenu extends JMenu {
 
-    private List<WritableRaster> rasters = new ArrayList<>();
-
     public DebugMenu() {
         super("DEBUG / DEV");
+
+        JMenuItem clearConsoleBtn = new JMenuItem("Clear console");
+        add(clearConsoleBtn);
+        clearConsoleBtn.addActionListener((e) -> {
+            System.out.print("\033[H\033[2J");
+            System.out.flush();
+        });
 
         JMenuItem gcBtn = new JMenuItem("Garbage collection");
         add(gcBtn);
@@ -26,13 +24,13 @@ public class DebugMenu extends JMenu {
             System.gc();
         });
 
-        JMenuItem tPrintStateBtn = new JMenuItem("T print state");
+        JMenuItem tPrintStateBtn = new JMenuItem("Print Translatables stats");
         add(tPrintStateBtn);
         tPrintStateBtn.addActionListener((e) -> {
             T.printStats(false);
         });
 
-        JMenuItem tPrintStateAllBtn = new JMenuItem("T print state complete");
+        JMenuItem tPrintStateAllBtn = new JMenuItem("Print Translatables stats details");
         add(tPrintStateAllBtn);
         tPrintStateAllBtn.addActionListener((e) -> {
             T.printStats(true);
@@ -44,7 +42,7 @@ public class DebugMenu extends JMenu {
             // T.cleanup();
         });
 
-        JMenuItem remTranslatorsBtn = new JMenuItem("Remove all registered translators");
+        JMenuItem remTranslatorsBtn = new JMenuItem("Remove all registered Translatables");
         add(remTranslatorsBtn);
         remTranslatorsBtn.addActionListener((e) -> {
             T.reset();
@@ -56,30 +54,17 @@ public class DebugMenu extends JMenu {
             T.reloadResources();
         });
 
-        JMenuItem modifyAllIconsBtn = new JMenuItem("modify all icons");
+        JMenuItem modifyAllIconsBtn = new JMenuItem("Update all icons");
         add(modifyAllIconsBtn);
         modifyAllIconsBtn.addActionListener((e) -> {
             AppConfig.AC.ICONS.updateAllIcons();
         });
 
-        JMenuItem updateCompTreeBtn = new JMenuItem("update component tree UI");
+        JMenuItem updateCompTreeBtn = new JMenuItem("Update component tree UI");
         add(updateCompTreeBtn);
         updateCompTreeBtn.addActionListener((e) -> {
             SwingUtilities.updateComponentTreeUI(AppConfig.AC.APP_MAIN_FRAME);
         });
 
-        JMenuItem allocateHugeRasterBtn = new JMenuItem("Allocate huge Raster");
-        add(allocateHugeRasterBtn);
-        allocateHugeRasterBtn.addActionListener((e) -> {
-            int size = 10000;
-            WritableRaster raster = Raster.createBandedRaster(DataBuffer.TYPE_INT, size, size, 3, new Point(0, 0));
-            rasters.add(raster);
-        });
-
-        JMenuItem clearRasters = new JMenuItem("Clear Rasters");
-        add(clearRasters);
-        clearRasters.addActionListener((e) -> {
-            rasters.clear();
-        });
     }
 }
