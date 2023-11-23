@@ -115,7 +115,11 @@ public class TResources {
     }
 
     private String getTranslation(ResourceBundle resourceBundle, String itemKey) {
-        return resourceBundle.containsKey(itemKey) ? resourceBundle.getString(itemKey) : null;
+        if (!resourceBundle.containsKey(itemKey)) {
+            return null;
+        }
+        String text = resourceBundle.getString(itemKey);
+        return text.equals("") ? null : text;
     }
 
     public List<String> getAvailableLocales() {
