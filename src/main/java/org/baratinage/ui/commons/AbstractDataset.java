@@ -179,6 +179,12 @@ public class AbstractDataset {
         return hashString;
     }
 
+    protected void writeDataFile() {
+        String hashString = computeHashString();
+        String dataFilePath = buildDataFilePath(name, hashString).toString();
+        writeDataFile(dataFilePath);
+    }
+
     private void writeDataFile(String dataFilePath) {
         if (dataFilePath == null) {
             ConsoleLogger.error("cannot write data file because dataFilePath is null");

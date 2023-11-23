@@ -63,6 +63,7 @@ public class GaugingsDataset extends AbstractDataset {
         for (int k = 0; k < getNumberOfRows(); k++) {
             d[k] = newValues[k] ? 1d : 0d;
         }
+        writeDataFile();
     }
 
     public double[] getActiveStageValues() {
