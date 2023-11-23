@@ -41,6 +41,10 @@ public class RunConfigAndRes extends BaM {
         return buildFromZipArchive(id, zipPath);
     }
 
+    public RunConfigAndRes createCopy(String id) {
+        return new RunConfigAndRes(id, this.workspace, this);
+    }
+
     private RunConfigAndRes(String id, Path workspace, BaM bam) {
         super(
                 bam.getCalibrationConfig(),
