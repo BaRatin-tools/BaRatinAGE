@@ -30,6 +30,9 @@ public class SimpleComboBox extends RowColPanel {
         return label;
     }
 
+    private final Color INVALID_BG_COLOR;
+    private final Color REGULAR_BG_COLOR;
+
     private final CustomListCellRenderer renderer;
     private final DefaultComboBoxModel<JLabel> model;
     private final JComboBox<JLabel> comboBox;
@@ -67,6 +70,9 @@ public class SimpleComboBox extends RowColPanel {
             }
             // fireValidators();
         });
+
+        INVALID_BG_COLOR = AppConfig.AC.INVALID_COLOR_BG;
+        REGULAR_BG_COLOR = comboBox.getBackground();
         appendChild(comboBox);
     }
 
@@ -176,7 +182,8 @@ public class SimpleComboBox extends RowColPanel {
     }
 
     public void setValidityView(boolean isValid) {
-        renderer.isValid = isValid;
+        // renderer.isValid = isValid;
+        comboBox.setBackground(isValid ? REGULAR_BG_COLOR : INVALID_BG_COLOR);
         repaint();
     }
 
@@ -198,11 +205,6 @@ public class SimpleComboBox extends RowColPanel {
 
     private static class CustomListCellRenderer extends DefaultListCellRenderer {
 
-        private static Color REGULAR_BG = null;
-        private static Color INVALID_BG = AppConfig.AC.INVALID_COLOR_BG;
-        private Color currentColor = null;
-        public boolean isValid = true;
-
         @Override
         public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected,
                 boolean cellHasFocus) {
@@ -214,17 +216,7 @@ public class SimpleComboBox extends RowColPanel {
                 label.setIcon(originalLabel.getIcon());
                 label.setBorder(originalLabel.getBorder());
             }
-            if (index == -1) {
-                currentColor = isValid ? REGULAR_BG : INVALID_BG;
-            } else {
-                currentColor = null;
-            }
             return label;
-        }
-
-        @Override
-        public Color getBackground() {
-            return currentColor == null ? super.getBackground() : currentColor;
         }
 
     }
