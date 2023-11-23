@@ -1,9 +1,28 @@
 package org.baratinage.utils.json;
 
+import java.util.function.Function;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-public class JSONFilter {
+public class JSONFilter implements Function<JSONObject, JSONObject> {
+
+    private final boolean recursive;
+    private final boolean excludeKeys;
+    private final String[] keys;;
+
+    public JSONFilter(boolean recursive,
+            boolean excludeKeys,
+            String... keys) {
+        this.recursive = recursive;
+        this.excludeKeys = excludeKeys;
+        this.keys = keys;
+    }
+
+    @Override
+    public JSONObject apply(JSONObject json) {
+        return filter(json, recursive, excludeKeys, keys);
+    }
 
     public static JSONObject filter(JSONObject json,
             boolean recursive,
