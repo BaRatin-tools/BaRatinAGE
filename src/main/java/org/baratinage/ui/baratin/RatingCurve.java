@@ -48,21 +48,46 @@ import org.json.JSONObject;
 
 public class RatingCurve extends BamItem implements IPredictionMaster, ICalibratedModel, IMcmc {
 
-    private BamItemParent hydrauConfParent;
-    private BamItemParent gaugingsParent;
-    private BamItemParent structErrorParent;
+    private static class RatingCurveSyncStatus {
+        public boolean hydrauConf = false;
+        public boolean gaugings = false;
+        public boolean structError = false;
+        public boolean ratingCurveStageGrid = false;
 
-    private RatingCurveStageGrid ratingCurveStageGrid;
-    public RunBam runBam;
-    private RatingCurveResults resultsPanel;
+        public boolean isCalibrationInSync() {
+            return hydrauConf && gaugings && structError;
+        }
+
+        public boolean isPredictionInSync() {
+            return ratingCurveStageGrid;
+        }
+
+        public boolean isBamRunInSync() {
+            return isCalibrationInSync() && isPredictionInSync();
+        }
+    }
+
+    private final RatingCurveSyncStatus syncStatus;
+
+    private final BamItemParent hydrauConfParent;
+    private final BamItemParent gaugingsParent;
+    private final BamItemParent structErrorParent;
+
+    private final RatingCurveStageGrid ratingCurveStageGrid;
+    public final RunBam runBam;
+    private final RatingCurveResults resultsPanel;
+    private final RowColPanel outdatedPanel;
+
     private RunConfigAndRes bamRunConfigAndRes;
-
-    private RowColPanel outdatedPanel;
 
     private BamConfigRecord backup;
 
     public RatingCurve(String uuid, BaratinProject project) {
         super(BamItemType.RATING_CURVE, uuid, project);
+
+        syncStatus = new RatingCurveSyncStatus();
+
+        runBam = new RunBam(true, false, true);
 
         // **********************************************************
         // Hydraulic configuration
@@ -138,9 +163,17 @@ public class RatingCurve extends BamItem implements IPredictionMaster, ICalibrat
         mainConfigPanel.appendChild(new JSeparator(JSeparator.VERTICAL), 0);
         mainConfigPanel.appendChild(ratingCurveStageGrid, 1);
 
-        runBam = new RunBam(true, false, true);
         runBam.setPredictionExperiments(this);
         runBam.addOnDoneAction((RunConfigAndRes res) -> {
+
+            if (syncStatus.isCalibrationInSync()) {
+                ConsoleLogger.log("################################################");
+                ConsoleLogger.log("Calibration configuration has not changed.");
+                // in this case we make the new result use the previous result id
+                // FIXME: this isn't ideal... There should be two different id
+                res = res.createCopy(bamRunConfigAndRes.id);
+            }
+
             backup = save(true);
             bamRunConfigAndRes = res;
             updateResults();
@@ -253,16 +286,27 @@ public class RatingCurve extends BamItem implements IPredictionMaster, ICalibrat
         outdatedPanel.clear();
         T.clear(outdatedPanel);
 
+        hydrauConfParent.updateSyncStatus();
+        gaugingsParent.updateSyncStatus();
+        structErrorParent.updateSyncStatus();
+
+        syncStatus.hydrauConf = hydrauConfParent.getSyncStatus();
+        syncStatus.gaugings = gaugingsParent.getSyncStatus();
+        syncStatus.structError = structErrorParent.getSyncStatus();
+        syncStatus.ratingCurveStageGrid = isRatingCurveStageGridInSync();
+
         List<MsgPanel> warnings = new ArrayList<>();
-        warnings.addAll(hydrauConfParent.getMessages());
-        warnings.addAll(gaugingsParent.getMessages());
-        warnings.addAll(structErrorParent.getMessages());
+        if (!syncStatus.hydrauConf) {
+            warnings.add(hydrauConfParent.getOutOfSyncMessage());
+        }
+        if (!syncStatus.gaugings) {
+            warnings.add(gaugingsParent.getOutOfSyncMessage());
+        }
+        if (!syncStatus.structError) {
+            warnings.add(structErrorParent.getOutOfSyncMessage());
+        }
 
-        boolean isStageGridOutOfSync = !isRatingCurveStageGridInSync();
-
-        boolean needBamRerun = warnings.size() > 0 || isStageGridOutOfSync;
-
-        if (isStageGridOutOfSync) {
+        if (!syncStatus.ratingCurveStageGrid) {
 
             // FIXME: errorMsg should be a final instance variable to limit memory leak
             MsgPanel errorMsg = new MsgPanel(MsgPanel.TYPE.ERROR, true);
@@ -277,20 +321,20 @@ public class RatingCurve extends BamItem implements IPredictionMaster, ICalibrat
             errorMsg.addButton(cancelChangeButton);
             T.t(outdatedPanel, cancelChangeButton, false, "cancel_changes");
             T.t(outdatedPanel, errorMsg.message, false, "oos_stage_grid");
-            warnings.add(errorMsg);
 
+            warnings.add(errorMsg);
         }
 
         // --------------------------------------------------------------------
         // update message panel
-
         for (MsgPanel w : warnings) {
             outdatedPanel.appendChild(w);
         }
+
         // --------------------------------------------------------------------
         // update run bam button
         T.clear(runBam);
-        if (isStageGridOutOfSync || needBamRerun) {
+        if (!syncStatus.isBamRunInSync()) {
             T.t(runBam, runBam.runButton, true, "recompute_posterior_rc");
             runBam.runButton.setForeground(AppConfig.AC.INVALID_COLOR_FG);
         } else {
@@ -298,14 +342,7 @@ public class RatingCurve extends BamItem implements IPredictionMaster, ICalibrat
             runBam.runButton.setForeground(new JButton().getForeground());
         }
 
-        // since text within warnings changes, it is necessary to
-        // call Lg.updateRegisteredComponents() so changes are accounted for.
-        // T.updateTranslations();
-        // disabled because throws IllegalStateException
-        // with SimpleNumberField class
-
         fireChangeListeners();
-
     }
 
     @Override
