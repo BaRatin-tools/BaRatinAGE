@@ -83,30 +83,5 @@ public class TracePlotGrid extends RowColPanel {
                 r++;
             }
         }
-
-        // Legend legend = new Legend();
-
-        // PlotContainer pc = new PlotContainer(legend.getLegendPlot(), false);
-        // T.updateHierarchy(this, pc);
-
-        // gridPanel.insertChild(pc, c, r);
-
-        // T.t(this, () -> {
-        // legend.clearLegend();
-
-        // legend.addLegendItem(PlotBand.buildLegendItem(
-        // T.text("prior_density"),
-        // AppConfig.AC.PRIOR_ENVELOP_COLOR));
-        // legend.addLegendItem(PlotBand.buildLegendItem(
-        // T.text("posterior_density"),
-        // AppConfig.AC.POSTERIOR_ENVELOP_COLOR));
-        // legend.addLegendItem(PlotLine.buildLegendItem(
-        // T.text("maxpost"),
-        // AppConfig.AC.POSTERIOR_LINE_COLOR,
-        // new BasicStroke(3f)));
-
-        // legend.getLegendPlot().update();
-        // });
-
     }
 }
