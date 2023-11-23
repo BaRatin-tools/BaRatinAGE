@@ -123,8 +123,15 @@ public class Hydrograph extends BamItem implements IPredictionMaster {
     private void checkSync() {
 
         List<MsgPanel> warnings = new ArrayList<>();
-        warnings.addAll(ratingCurveParent.getMessages());
-        warnings.addAll(limnigraphParent.getMessages());
+
+        ratingCurveParent.updateSyncStatus();
+        limnigraphParent.updateSyncStatus();
+        if (!ratingCurveParent.getSyncStatus()) {
+            warnings.add(ratingCurveParent.getOutOfSyncMessage());
+        }
+        if (!limnigraphParent.getSyncStatus()) {
+            warnings.add(limnigraphParent.getOutOfSyncMessage());
+        }
 
         boolean needBamRerun = warnings.size() > 0;
 
