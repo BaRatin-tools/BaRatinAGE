@@ -4,8 +4,6 @@ import org.baratinage.jbam.DistributionType;
 import org.baratinage.jbam.Parameter;
 import org.baratinage.jbam.StructuralErrorModel;
 
-import java.awt.Font;
-
 import javax.swing.JLabel;
 import javax.swing.JSeparator;
 
@@ -27,9 +25,6 @@ public class StructuralErrorModelBamItem extends BamItem implements IStructuralE
     private NameSymbolUnit[] nameSymbolUnits;
     private final StructuralErrorModelPanel[] strucErrModelPanels;
 
-    private static final Font MONOSPACE_FONT = new Font(Font.MONOSPACED, Font.PLAIN, 14);
-    private static final Font LARGE_BOLD_FONT = new Font(Font.SANS_SERIF, Font.BOLD, 18);
-
     private final JLabel parameterNameLabels[];
 
     public StructuralErrorModelBamItem(String uuid, BamProject project, NameSymbolUnit... nameSymbolUnits) {
@@ -49,17 +44,12 @@ public class StructuralErrorModelBamItem extends BamItem implements IStructuralE
         for (int k = 0; k < nOutputs; k++) {
 
             parameterNameLabels[k] = new JLabel();
-            parameterNameLabels[k].setFont(LARGE_BOLD_FONT);
-            parameterNameLabels[k]
-                    .setText(String.format("%s, %s",
-                            nameSymbolUnits[k].name(),
-                            nameSymbolUnits[k].symbol()));
+            parameterNameLabels[k].setText(buildNameSymbolString(nameSymbolUnits[k]));
 
             JLabel infoLabel = new JLabel();
-            infoLabel.setFont(MONOSPACE_FONT);
             infoLabel.setText(
                     String.format(
-                            "<html>N&sim;(&gamma;<sub>1</sub> + &gamma;<sub>2</sub>%s)</html>",
+                            "<html><code>N&sim;(&gamma;<sub>1</sub> + &gamma;<sub>2</sub>%s)</code></html>",
                             nameSymbolUnits[k].symbol()));
 
             // support only linear model, but with fixed gamma2 set to 0, it is equivalent
@@ -90,6 +80,10 @@ public class StructuralErrorModelBamItem extends BamItem implements IStructuralE
 
     }
 
+    private static String buildNameSymbolString(NameSymbolUnit nsu) {
+        return "<html>" + nsu.name() + " (" + nsu.symbol() + ") </html>";
+    }
+
     public void updateOutputNames(String... outputNames) {
         if (outputNames.length != nOutputs) {
             throw new IllegalArgumentException(nOutputs + " output names are expected!");
@@ -99,10 +93,8 @@ public class StructuralErrorModelBamItem extends BamItem implements IStructuralE
                     outputNames[k],
                     nameSymbolUnits[k].symbol(),
                     nameSymbolUnits[k].unit());
-            parameterNameLabels[k]
-                    .setText(String.format("%s, %s",
-                            nameSymbolUnits[k].name(),
-                            nameSymbolUnits[k].symbol()));
+            parameterNameLabels[k].setText(buildNameSymbolString(nameSymbolUnits[k]));
+
         }
     }
 
