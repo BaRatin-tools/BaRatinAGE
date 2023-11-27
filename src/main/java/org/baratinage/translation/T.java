@@ -58,6 +58,7 @@ public class T {
     }
 
     static public String text(String itemKey) {
+        // return resourcesOLD.getTranslation(currentLocale.getLanguage(), itemKey);
         return resources.getTranslation(currentLocale.getLanguage(), itemKey);
     }
 
@@ -77,11 +78,10 @@ public class T {
 
     static public String html(String itemKey, Object... args) {
         return "<html>" + text(itemKey, args) + "</html>";
-        // return "<html><nobr>" + text(itemKey, args) + "</nobr></html>";
     }
 
-    static public List<String> getAvailableLocales() {
-        return resources.getAvailableLocales();
+    static public Locale[] getAvailableLocales() {
+        return resources.getAllLocales();
     }
 
     static public void t(Object owner, Translatable translatable) {
