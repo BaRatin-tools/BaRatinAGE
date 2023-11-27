@@ -43,19 +43,19 @@ public class InitialTranslationProcessing {
         Path finalDictionnaryPath = Path.of("./resources/i18n/translations.csv");
 
         // read dico.txt
-        List<Dictionnary> v2Dictionnaries = readDictionnaries(dicoPath);
+        List<TDictionary> v2Dictionnaries = readDictionnaries(dicoPath);
 
         // read english translations
-        Dictionnary enTranslations = readResourceBundleDictionnary("en", englishTranslationPath);
+        TDictionary enTranslations = readResourceBundleDictionnary("en", englishTranslationPath);
 
         // read french translations
-        Dictionnary frTranslations = readResourceBundleDictionnary("fr", frenchTranslationPath);
+        TDictionary frTranslations = readResourceBundleDictionnary("fr", frenchTranslationPath);
 
         // read mapping file
         HashMap<String, KeyMap> mapping = readKeyMapping(mappingPath);
 
         // read all google translated files
-        HashMap<String, Dictionnary> googleTranslateTranslations = new HashMap<>();
+        HashMap<String, TDictionary> googleTranslateTranslations = new HashMap<>();
         for (int k = 0; k < v2Dictionnaries.size(); k++) {
             String lgKey = v2Dictionnaries.get(k).lgKey;
             Path path = Path.of(allTranslationFolderPath.toString(), String.format("ui_%s.properties", lgKey));
@@ -100,9 +100,9 @@ public class InitialTranslationProcessing {
         finalDico.add(comments);
         finalDicoHeaders.add("comment");
         for (int k = 0; k < v2Dictionnaries.size(); k++) {
-            Dictionnary v2Dictionnary = v2Dictionnaries.get(k);
+            TDictionary v2Dictionnary = v2Dictionnaries.get(k);
             String lgKey = v2Dictionnary.lgKey;
-            Dictionnary gtDictionnary = googleTranslateTranslations.get(lgKey);
+            TDictionary gtDictionnary = googleTranslateTranslations.get(lgKey);
             if (lgKey.equals("en")) {
                 finalDico.add(buildTranslationArray(translationKeys, enTranslations));
             } else if (lgKey.equals("fr")) {
@@ -142,7 +142,7 @@ public class InitialTranslationProcessing {
     private static record KeyMap(String keyV3, String keyV2, String comment) {
     };
 
-    private static List<Dictionnary> readDictionnaries(Path path) {
+    private static List<TDictionary> readDictionnaries(Path path) {
         try {
             List<String[]> rawDico = ReadFile.readStringMatrix(
                     path.toString(),
@@ -151,11 +151,11 @@ public class InitialTranslationProcessing {
                     true,
                     true);
             System.out.println(rawDico);
-            List<Dictionnary> dictionnaries = new ArrayList<>();
+            List<TDictionary> dictionnaries = new ArrayList<>();
             String[] keys = rawDico.get(0);
             for (int k = 1; k < rawDico.size(); k++) {
                 String[] translations = rawDico.get(k);
-                dictionnaries.add(new Dictionnary(translations[0], keys, translations));
+                dictionnaries.add(new TDictionary(translations[0], keys, translations));
             }
             return dictionnaries;
         } catch (IOException e) {
@@ -164,7 +164,7 @@ public class InitialTranslationProcessing {
         return null;
     }
 
-    private static Dictionnary readResourceBundleDictionnary(String lgKey, Path path) {
+    private static TDictionary readResourceBundleDictionnary(String lgKey, Path path) {
         try {
             String[] lines = ReadFile.getLines(path.toString(), Integer.MAX_VALUE, true);
             List<String> keys = new ArrayList<>();
@@ -181,7 +181,7 @@ public class InitialTranslationProcessing {
                 }
             }
             int n = keys.size();
-            return new Dictionnary(lgKey, keys.toArray(new String[n]), translations.toArray(new String[n]));
+            return new TDictionary(lgKey, keys.toArray(new String[n]), translations.toArray(new String[n]));
         } catch (IOException e) {
             ConsoleLogger.error(e);
         }
@@ -215,7 +215,7 @@ public class InitialTranslationProcessing {
         return null;
     }
 
-    private static String[] buildTranslationArray(String[] translationKeys, Dictionnary dictionnary) {
+    private static String[] buildTranslationArray(String[] translationKeys, TDictionary dictionnary) {
         int n = translationKeys.length;
         String[] translations = new String[n];
         for (int k = 0; k < n; k++) {
