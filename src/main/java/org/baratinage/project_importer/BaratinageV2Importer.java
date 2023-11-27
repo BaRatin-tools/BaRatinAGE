@@ -30,6 +30,7 @@ import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.utils.ConsoleLogger;
 import org.baratinage.utils.DateTime;
 import org.baratinage.utils.Misc;
+import org.baratinage.utils.fs.DirUtils;
 import org.baratinage.utils.fs.ReadWriteZip;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -205,7 +206,7 @@ public class BaratinageV2Importer implements IProjectImporter {
 
     private void cleanup() {
         taskList = null;
-        Misc.deleteDir(TEMP_DIR.toFile());
+        DirUtils.deleteDir(TEMP_DIR.toFile());
     }
 
     private void addHydrograph(File folder, Consumer<Float> onProgress, Runnable onDone, Runnable onError) {
@@ -290,7 +291,7 @@ public class BaratinageV2Importer implements IProjectImporter {
 
         String dataFileSourceName = "";
         if (!properties[2].equals("")) {
-            Path dataFileSourcePath = Misc.parsePathFromUnknownOSorigin(properties[2]);
+            Path dataFileSourcePath = DirUtils.parsePathFromUnknownOSorigin(properties[2]);
             dataFileSourceName = dataFileSourcePath.getFileName().toString();
         }
 

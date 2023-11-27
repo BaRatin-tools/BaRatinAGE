@@ -91,6 +91,7 @@ public class Misc {
         return defaultName + " (?)";
     }
 
+    @Deprecated
     public static void createDir(String dirPath) {
         File dirFile = new File(dirPath);
         if (!dirFile.exists()) {
@@ -99,10 +100,12 @@ public class Misc {
         }
     }
 
+    @Deprecated
     public static boolean deleteDirContent(String dirPath) {
         return deleteDirContent(new File(dirPath));
     }
 
+    @Deprecated
     public static boolean deleteDirContent(File dirPath) {
         File[] allContents = dirPath.listFiles();
         boolean success = true;
@@ -114,6 +117,7 @@ public class Misc {
         return success;
     }
 
+    @Deprecated
     public static boolean deleteDir(File dirPath) {
         File[] allContents = dirPath.listFiles();
         if (allContents != null) {
@@ -128,10 +132,12 @@ public class Misc {
         return success;
     }
 
+    @Deprecated
     public static boolean deleteDir(String dirPath) {
         return deleteDir(new File(dirPath));
     }
 
+    @Deprecated
     public static Path parsePathFromUnknownOSorigin(String rawPath) {
         String[] osSplitChars = new String[] { "\\\\", "/" };
         int maxNumberOfItems = -1;

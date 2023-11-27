@@ -5,7 +5,9 @@ import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import org.baratinage.AppIcons;
 import org.baratinage.utils.Misc;
+import org.baratinage.utils.fs.DirUtils;
 
 public class AppConfig {
     public static AppConfig AC;
@@ -18,6 +20,7 @@ public class AppConfig {
     public final String BAM_WORKSPACE_ROOT;
     public final String I18N_RESOURCES_DIR;
     public final String ICONS_RESOURCES_DIR;
+    public final String FONTS_RESOURCES_DIR;
     public final MainFrame APP_MAIN_FRAME;
 
     public final int THROTTLED_DELAY_MS = 250;
@@ -53,6 +56,7 @@ public class AppConfig {
 
     public final AppIcons ICONS;
 
+    // @Deprecated
     public AppConfig(MainFrame mainFrame) {
 
         AC = this;
@@ -75,6 +79,7 @@ public class AppConfig {
 
         I18N_RESOURCES_DIR = Path.of(APP_ROOT_DIR, "resources", "i18n").toString();
         ICONS_RESOURCES_DIR = Path.of(APP_ROOT_DIR, "resources", "icons").toString();
+        FONTS_RESOURCES_DIR = Path.of(APP_ROOT_DIR, "resources", "fonts").toString();
 
         APP_MAIN_FRAME = mainFrame;
 
@@ -84,8 +89,8 @@ public class AppConfig {
     }
 
     public void init() {
-        Misc.createDir(APP_TEMP_DIR);
-        Misc.createDir(BAM_WORKSPACE_ROOT);
+        DirUtils.createDir(APP_TEMP_DIR);
+        DirUtils.createDir(BAM_WORKSPACE_ROOT);
 
         lastUsedDir = System.getProperty("user.home");
     }
@@ -99,7 +104,7 @@ public class AppConfig {
     }
 
     public void cleanup() {
-        Misc.deleteDir(BAM_WORKSPACE_ROOT);
-        Misc.deleteDir(APP_TEMP_DIR);
+        DirUtils.deleteDir(BAM_WORKSPACE_ROOT);
+        DirUtils.deleteDir(APP_TEMP_DIR);
     }
 }

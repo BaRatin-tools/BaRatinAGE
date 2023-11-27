@@ -32,6 +32,7 @@ import org.baratinage.ui.AppConfig;
 import org.baratinage.ui.commons.DefaultStructuralErrorModels;
 import org.baratinage.utils.ConsoleLogger;
 import org.baratinage.utils.Misc;
+import org.baratinage.utils.fs.DirUtils;
 
 public class RunBam {
 
@@ -455,7 +456,7 @@ public class RunBam {
         BaM bam = getBaM(id);
         Path workspacePath = Path.of(AppConfig.AC.BAM_WORKSPACE_ROOT, id);
 
-        Misc.createDir(workspacePath.toString());
+        DirUtils.createDir(workspacePath.toString());
 
         Monitoring monitoring = new Monitoring(bam, workspacePath.toString());
 
