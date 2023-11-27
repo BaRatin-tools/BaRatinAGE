@@ -3,11 +3,11 @@ package org.baratinage.ui;
 import javax.swing.JFrame;
 import javax.swing.JToolBar;
 
+import org.baratinage.AppSetup;
 import org.baratinage.translation.T;
 import org.baratinage.ui.bam.BamProject;
 import org.baratinage.ui.baratin.BaratinProject;
 import org.baratinage.ui.component.CommonDialog;
-import org.baratinage.ui.component.SimpleNumberField;
 import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.utils.ConsoleLogger;
 import org.baratinage.utils.Misc;
@@ -34,15 +34,8 @@ public class MainFrame extends JFrame {
     public final NoProjectPanel noProjectPanel;
 
     public MainFrame() {
-
-        new AppConfig(this);
-
-        T.init();
-        SimpleNumberField.init();
-        CommonDialog.init();
-
-        setIconImage(AppConfig.AC.ICONS.BARATINAGE_ICON_LARGE.getImage());
-        setTitle(AppConfig.AC.APP_NAME);
+        setIconImage(AppSetup.ICONS.BARATINAGE_LARGE.getImage());
+        setTitle(AppSetup.APP_NAME);
 
         setMinimumSize(new Dimension(900, 600));
         setExtendedState(JFrame.MAXIMIZED_BOTH);
@@ -90,7 +83,7 @@ public class MainFrame extends JFrame {
                 TimedActions.debounce(
                         "rebuild_icons_if_needed",
                         250,
-                        AppConfig.AC.ICONS::updateAllIcons);
+                        AppSetup.ICONS::updateAllIcons);
             }
         });
 
@@ -115,7 +108,6 @@ public class MainFrame extends JFrame {
         setVisible(true);
         setCurrentProject(null);
 
-        T.updateHierarchy(this, AppConfig.AC);
         T.updateHierarchy(this, mainMenuBar);
         T.updateHierarchy(this, noProjectPanel);
     }
@@ -181,20 +173,20 @@ public class MainFrame extends JFrame {
     }
 
     public void updateFrameTitle() {
-        setTitle(AppConfig.AC.APP_NAME);
+        setTitle(AppSetup.APP_NAME);
         if (currentProject != null) {
             String projectPath = currentProject.getProjectPath();
             if (projectPath != null) {
                 String projectName = Path.of(projectPath).getFileName().toString();
                 String unsavedString = currentProject.hasUnsavedChange() ? "*" : "";
-                setTitle(AppConfig.AC.APP_NAME + " - " + projectName + " - " + projectPath + unsavedString);
+                setTitle(AppSetup.APP_NAME + " - " + projectName + " - " + projectPath + unsavedString);
             }
         }
     }
 
     public void newProject() {
         if (confirmLoosingUnsavedChanges()) {
-            AppConfig.AC.clearTempDirectory();
+            AppSetup.clearTempDir();
             BaratinProject newProject = new BaratinProject();
             newProject.addDefaultBamItems();
             setCurrentProject(newProject);
@@ -264,7 +256,7 @@ public class MainFrame extends JFrame {
     }
 
     public void close() {
-        AppConfig.AC.cleanup();
+        AppSetup.cleanup();
         System.exit(0);
     }
 }

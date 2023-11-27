@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.baratinage.ui.AppConfig;
+import org.baratinage.AppSetup;
 import org.baratinage.utils.ConsoleLogger;
 import org.baratinage.utils.fs.ReadFile;
 import org.baratinage.utils.fs.WriteFile;
@@ -240,7 +240,7 @@ public class AbstractDataset {
     }
 
     private static Path buildDataFilePath(String name, String hashString) {
-        return Path.of(AppConfig.AC.APP_TEMP_DIR,
+        return Path.of(AppSetup.PATH_APP_TEMP_DIR,
                 buildDataFileName(name, hashString));
     }
 

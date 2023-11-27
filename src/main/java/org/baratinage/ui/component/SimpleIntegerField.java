@@ -7,12 +7,12 @@ import javax.swing.JSpinner;
 import javax.swing.JTextField;
 import javax.swing.SpinnerNumberModel;
 
-import org.baratinage.ui.AppConfig;
+import org.baratinage.AppSetup;
 
 public class SimpleIntegerField extends JSpinner {
 
     private static Color REGULAR_BG = new JTextField().getBackground();
-    private static Color INVALID_BG = AppConfig.AC.INVALID_COLOR_BG;
+    private static Color INVALID_BG = AppSetup.COLORS.INVALID_BG;
 
     private SpinnerNumberModel model;
 

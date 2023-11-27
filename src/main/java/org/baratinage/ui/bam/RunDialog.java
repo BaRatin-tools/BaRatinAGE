@@ -12,10 +12,10 @@ import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.SwingWorker;
 
+import org.baratinage.AppSetup;
 import org.baratinage.jbam.BaM;
 import org.baratinage.jbam.utils.Monitoring;
 import org.baratinage.translation.T;
-import org.baratinage.ui.AppConfig;
 import org.baratinage.ui.component.ProgressBar;
 import org.baratinage.ui.component.SimpleLogger;
 import org.baratinage.ui.container.RowColPanel;
@@ -36,11 +36,11 @@ public class RunDialog extends JDialog {
     private SwingWorker<Void, Void> monitoringWorker;
 
     public RunDialog(String id, BaM bam) {
-        super(AppConfig.AC.APP_MAIN_FRAME, true);
+        super(AppSetup.MAIN_FRAME, true);
         this.id = id;
         this.bam = bam;
 
-        workspacePath = Path.of(AppConfig.AC.BAM_WORKSPACE_ROOT, id);
+        workspacePath = Path.of(AppSetup.PATH_BAM_WORKSPACE_DIR, id);
 
         if (!workspacePath.toFile().exists()) {
             workspacePath.toFile().mkdir();
@@ -176,7 +176,7 @@ public class RunDialog extends JDialog {
         monitoringWorker.execute();
 
         pack();
-        setLocationRelativeTo(AppConfig.AC.APP_MAIN_FRAME);
+        setLocationRelativeTo(AppSetup.MAIN_FRAME);
         setVisible(true);
 
     }

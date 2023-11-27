@@ -4,6 +4,7 @@ import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.SwingUtilities;
 
+import org.baratinage.AppSetup;
 import org.baratinage.translation.T;
 
 public class DebugMenu extends JMenu {
@@ -57,13 +58,13 @@ public class DebugMenu extends JMenu {
         JMenuItem modifyAllIconsBtn = new JMenuItem("Update all icons");
         add(modifyAllIconsBtn);
         modifyAllIconsBtn.addActionListener((e) -> {
-            AppConfig.AC.ICONS.updateAllIcons();
+            AppSetup.ICONS.updateAllIcons();
         });
 
         JMenuItem updateCompTreeBtn = new JMenuItem("Update component tree UI");
         add(updateCompTreeBtn);
         updateCompTreeBtn.addActionListener((e) -> {
-            SwingUtilities.updateComponentTreeUI(AppConfig.AC.APP_MAIN_FRAME);
+            SwingUtilities.updateComponentTreeUI(AppSetup.MAIN_FRAME);
         });
 
     }

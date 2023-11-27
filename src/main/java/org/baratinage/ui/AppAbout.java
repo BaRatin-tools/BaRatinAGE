@@ -24,6 +24,7 @@ import javax.swing.SwingConstants;
 
 import org.baratinage.utils.ConsoleLogger;
 import org.baratinage.utils.fs.ReadFile;
+import org.baratinage.AppSetup;
 import org.baratinage.translation.T;
 import org.baratinage.ui.container.GridPanel;
 import org.baratinage.ui.container.RowColPanel;
@@ -77,7 +78,7 @@ public class AppAbout extends JDialog {
     }
 
     public AppAbout() {
-        super(AppConfig.AC.APP_MAIN_FRAME, true);
+        super(AppSetup.MAIN_FRAME, true);
         RowColPanel contentPanel = new RowColPanel(RowColPanel.AXIS.COL);
 
         String version = "";
@@ -234,7 +235,7 @@ public class AppAbout extends JDialog {
         }
 
         pack();
-        setLocationRelativeTo(AppConfig.AC.APP_MAIN_FRAME);
+        setLocationRelativeTo(AppSetup.MAIN_FRAME);
         setVisible(true);
     }
 

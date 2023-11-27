@@ -5,8 +5,8 @@ import java.awt.Font;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.baratinage.AppSetup;
 import org.baratinage.jbam.EstimatedParameter;
-import org.baratinage.ui.AppConfig;
 import org.baratinage.ui.container.GridPanel;
 import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.ui.plot.Legend;
@@ -74,7 +74,7 @@ public class DensityPlotGrid extends RowColPanel {
                         priorDensityData.get(0),
                         priorDensityData.get(1),
                         Calc.zeroes(nData),
-                        AppConfig.AC.PRIOR_ENVELOP_COLOR,
+                        AppSetup.COLORS.PRIOR_ENVELOP,
                         0.9f);
                 plot.addXYItem(priorDensity);
 
@@ -84,7 +84,7 @@ public class DensityPlotGrid extends RowColPanel {
             PlotInfiniteLine maxpostLine = new PlotInfiniteLine(
                     "",
                     maxpost,
-                    AppConfig.AC.POSTERIOR_LINE_COLOR,
+                    AppSetup.COLORS.POSTERIOR_LINE,
                     new BasicStroke(2f));
 
             // List<double[]> postDensityData = estimParam.getPostDensity();
@@ -92,13 +92,13 @@ public class DensityPlotGrid extends RowColPanel {
             // "",
             // postDensityData.get(0),
             // postDensityData.get(1),
-            // AppConfig.AC.POSTERIOR_ENVELOP_COLOR,
+            // AppSetup.COLORS.POSTERIOR_ENVELOP_COLOR,
             // 0.7f);
             PlotBar postDensity = new PlotBar(
                     "",
                     estimParam.mcmc,
                     20,
-                    AppConfig.AC.POSTERIOR_ENVELOP_COLOR,
+                    AppSetup.COLORS.POSTERIOR_ENVELOP,
                     0.7f);
 
             plot.addXYItem(postDensity);
@@ -127,13 +127,13 @@ public class DensityPlotGrid extends RowColPanel {
 
             legend.addLegendItem(PlotBand.buildLegendItem(
                     T.text("prior_density"),
-                    AppConfig.AC.PRIOR_ENVELOP_COLOR));
+                    AppSetup.COLORS.PRIOR_ENVELOP));
             legend.addLegendItem(PlotBand.buildLegendItem(
                     T.text("posterior_density"),
-                    AppConfig.AC.POSTERIOR_ENVELOP_COLOR));
+                    AppSetup.COLORS.POSTERIOR_ENVELOP));
             legend.addLegendItem(PlotLine.buildLegendItem(
                     T.text("maxpost"),
-                    AppConfig.AC.POSTERIOR_LINE_COLOR,
+                    AppSetup.COLORS.POSTERIOR_LINE,
                     new BasicStroke(3f)));
 
             legend.getLegendPlot().update();

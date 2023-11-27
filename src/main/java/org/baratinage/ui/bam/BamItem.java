@@ -12,8 +12,8 @@ import javax.swing.JSeparator;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import org.baratinage.AppSetup;
 import org.baratinage.translation.T;
-import org.baratinage.ui.AppConfig;
 import org.baratinage.ui.commons.ExplorerItem;
 import org.baratinage.ui.component.SimpleTextField;
 import org.baratinage.ui.component.Title;
@@ -112,8 +112,8 @@ abstract public class BamItem extends GridPanel {
 
         T.t(this, cloneButton, false, "duplicate");
 
-        cloneButton.setIcon(AppConfig.AC.ICONS.COPY_ICON);
-        deleteButton.setIcon(AppConfig.AC.ICONS.TRASH_ICON);
+        cloneButton.setIcon(AppSetup.ICONS.COPY);
+        deleteButton.setIcon(AppSetup.ICONS.TRASH);
 
         bamItemTypeLabel.setIcon(TYPE.getIcon());
         T.t(this, bamItemTypeLabel, false, TYPE.id);

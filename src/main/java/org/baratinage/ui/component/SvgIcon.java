@@ -21,7 +21,7 @@ import org.apache.batik.transcoder.TranscoderOutput;
 import org.apache.batik.transcoder.image.ImageTranscoder;
 import org.apache.batik.transcoder.image.PNGTranscoder;
 import org.apache.batik.util.XMLResourceDescriptor;
-import org.baratinage.ui.AppConfig;
+import org.baratinage.AppSetup;
 import org.baratinage.utils.ConsoleLogger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -217,7 +217,10 @@ public class SvgIcon extends ImageIcon {
     }
 
     private static Scales getScales() {
-        Graphics g = AppConfig.AC.APP_MAIN_FRAME.getGraphics();
+        if (AppSetup.MAIN_FRAME == null) {
+            return new Scales(1, 1);
+        }
+        Graphics g = AppSetup.MAIN_FRAME.getGraphics();
         if (g == null) {
             return new Scales(1, 1);
         }

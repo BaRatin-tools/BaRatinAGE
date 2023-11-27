@@ -3,7 +3,7 @@ package org.baratinage.ui.baratin.gaugings;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.baratinage.ui.AppConfig;
+import org.baratinage.AppSetup;
 import org.baratinage.ui.commons.AbstractDataset;
 import org.baratinage.ui.plot.PlotPoints;
 import org.baratinage.utils.ConsoleLogger;
@@ -203,7 +203,7 @@ public class GaugingsDataset extends AbstractDataset {
                 splitData.get(0).get(1),
                 splitData.get(0).get(2),
                 splitData.get(0).get(3),
-                AppConfig.AC.GAUGING_COLOR);
+                AppSetup.COLORS.GAUGING);
 
         PlotPoints inactiveGaugingsPoints = new PlotPoints(
                 "inactive gaugings",
@@ -213,7 +213,7 @@ public class GaugingsDataset extends AbstractDataset {
                 splitData.get(1).get(1),
                 splitData.get(1).get(2),
                 splitData.get(1).get(3),
-                AppConfig.AC.DISCARDED_GAUGING_COLOR);
+                AppSetup.COLORS.DISCARDED_GAUGING);
 
         List<PlotPoints> results = new ArrayList<>();
         results.add(activeGaugingsPoints);

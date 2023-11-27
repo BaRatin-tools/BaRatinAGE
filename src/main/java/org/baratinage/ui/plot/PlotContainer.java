@@ -22,10 +22,10 @@ import org.jfree.chart.ChartUtils;
 import org.jfree.chart.JFreeChart;
 import org.jfree.data.Range;
 import org.jfree.svg.SVGGraphics2D;
-import org.baratinage.ui.AppConfig;
 import org.baratinage.ui.component.CommonDialog;
 import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.utils.ConsoleLogger;
+import org.baratinage.AppSetup;
 import org.baratinage.translation.T;
 
 public class PlotContainer extends RowColPanel {
@@ -83,27 +83,27 @@ public class PlotContainer extends RowColPanel {
 
         JButton btnWindowPlot = new JButton();
 
-        btnWindowPlot.setIcon(AppConfig.AC.ICONS.EXTERNAL_ICON);
+        btnWindowPlot.setIcon(AppSetup.ICONS.EXTERNAL);
         btnWindowPlot.addActionListener((e) -> {
             windowPlot();
         });
 
         JButton btnSaveAsSvg = new JButton();
-        btnSaveAsSvg.setIcon(AppConfig.AC.ICONS.SAVE_ICON);
+        btnSaveAsSvg.setIcon(AppSetup.ICONS.SAVE);
         btnSaveAsSvg.setText("SVG");
         btnSaveAsSvg.addActionListener((e) -> {
             saveAsSvg();
         });
 
         JButton btnSaveAsPng = new JButton();
-        btnSaveAsPng.setIcon(AppConfig.AC.ICONS.SAVE_ICON);
+        btnSaveAsPng.setIcon(AppSetup.ICONS.SAVE);
         btnSaveAsPng.setText("PNG");
         btnSaveAsPng.addActionListener((e) -> {
             saveAsPng();
         });
 
         JButton btnCopyToClipboard = new JButton();
-        btnCopyToClipboard.setIcon(AppConfig.AC.ICONS.COPY_ICON);
+        btnCopyToClipboard.setIcon(AppSetup.ICONS.COPY);
         btnCopyToClipboard.addActionListener((e) -> {
             copyToClipboard();
         });
@@ -307,7 +307,7 @@ public class PlotContainer extends RowColPanel {
         });
 
         f.setPreferredSize(new Dimension(1000, 500));
-        f.setIconImage(AppConfig.AC.APP_MAIN_FRAME.getIconImage());
+        f.setIconImage(AppSetup.MAIN_FRAME.getIconImage());
         f.add(p);
         f.pack();
         f.setVisible(true);

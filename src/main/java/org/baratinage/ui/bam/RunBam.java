@@ -11,6 +11,7 @@ import javax.swing.JButton;
 import javax.swing.JOptionPane;
 import javax.swing.SwingWorker;
 
+import org.baratinage.AppSetup;
 import org.baratinage.jbam.BaM;
 import org.baratinage.jbam.CalDataResidualConfig;
 import org.baratinage.jbam.CalibrationConfig;
@@ -28,7 +29,6 @@ import org.baratinage.jbam.UncertainData;
 import org.baratinage.jbam.utils.BamFilesHelpers;
 import org.baratinage.jbam.utils.Monitoring;
 import org.baratinage.translation.T;
-import org.baratinage.ui.AppConfig;
 import org.baratinage.ui.commons.DefaultStructuralErrorModels;
 import org.baratinage.utils.ConsoleLogger;
 import org.baratinage.utils.Misc;
@@ -60,7 +60,7 @@ public class RunBam {
             if (canRun()) {
                 run();
             } else {
-                JOptionPane.showOptionDialog(AppConfig.AC.APP_MAIN_FRAME,
+                JOptionPane.showOptionDialog(AppSetup.MAIN_FRAME,
                         T.text("cannot_run_invalid_configuration"),
                         T.text("error"),
                         JOptionPane.OK_OPTION,
@@ -290,7 +290,7 @@ public class RunBam {
         // --------------------------------------------------------------------
         // 1) model
 
-        String xTra = bamModelDef.getXtra(Path.of(AppConfig.AC.BAM_WORKSPACE_ROOT, id).toString());
+        String xTra = bamModelDef.getXtra(Path.of(AppSetup.PATH_BAM_WORKSPACE_DIR, id).toString());
 
         Parameter[] parameters = bamPriors.getParameters();
 
@@ -454,7 +454,7 @@ public class RunBam {
 
         String id = Misc.getTimeStampedId();
         BaM bam = getBaM(id);
-        Path workspacePath = Path.of(AppConfig.AC.BAM_WORKSPACE_ROOT, id);
+        Path workspacePath = Path.of(AppSetup.PATH_BAM_WORKSPACE_DIR, id);
 
         DirUtils.createDir(workspacePath.toString());
 

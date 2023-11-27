@@ -13,8 +13,8 @@ import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JProgressBar;
 
+import org.baratinage.AppSetup;
 import org.baratinage.translation.T;
-import org.baratinage.ui.AppConfig;
 import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.utils.ConsoleLogger;
 
@@ -34,7 +34,7 @@ public class ProgressFrame extends JDialog {
     private boolean autoClose = false;
 
     public ProgressFrame() {
-        super(AppConfig.AC.APP_MAIN_FRAME, false);
+        super(AppSetup.MAIN_FRAME, false);
         RowColPanel contentPanel = new RowColPanel(RowColPanel.AXIS.COL);
 
         contentPanel.setGap(5);

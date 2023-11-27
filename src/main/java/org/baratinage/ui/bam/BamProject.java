@@ -16,8 +16,8 @@ import javax.swing.JMenuItem;
 import javax.swing.JToolBar;
 import javax.swing.SwingUtilities;
 
+import org.baratinage.AppSetup;
 import org.baratinage.translation.T;
-import org.baratinage.ui.AppConfig;
 import org.baratinage.ui.bam.BamItemType.BamItemBuilderFunction;
 import org.baratinage.ui.baratin.BaratinProject;
 import org.baratinage.ui.commons.Explorer;
@@ -66,15 +66,15 @@ public abstract class BamProject extends RowColPanel {
 
         // setting explorer
         EXPLORER = new Explorer();
-        EXPLORER.headerLabel.setIcon(AppConfig.AC.ICONS.LIST_ICON);
+        EXPLORER.headerLabel.setIcon(AppSetup.ICONS.LIST);
         T.t(this, EXPLORER.headerLabel, false, "explorer");
 
         setupExplorer();
 
         // resetting toolbar and component menu (where "add bam item" buttons are)
-        componentMenu = AppConfig.AC.APP_MAIN_FRAME.mainMenuBar.componentMenu;
+        componentMenu = AppSetup.MAIN_FRAME.mainMenuBar.componentMenu;
         componentMenu.removeAll();
-        projectToolbar = AppConfig.AC.APP_MAIN_FRAME.projectToolbar;
+        projectToolbar = AppSetup.MAIN_FRAME.projectToolbar;
         projectToolbar.removeAll();
 
         // inialialize current panel, place holder for bam item panels
@@ -205,12 +205,12 @@ public abstract class BamProject extends RowColPanel {
 
         JMenuItem cloneMenuItem = new JMenuItem();
         T.t(bamItem, cloneMenuItem, false, "duplicate");
-        cloneMenuItem.setIcon(AppConfig.AC.ICONS.COPY_ICON);
+        cloneMenuItem.setIcon(AppSetup.ICONS.COPY);
         explorerItem.contextMenu.add(cloneMenuItem);
 
         JMenuItem deleteMenuItem = new JMenuItem();
         T.t(bamItem, deleteMenuItem, false, "delete");
-        deleteMenuItem.setIcon(AppConfig.AC.ICONS.TRASH_ICON);
+        deleteMenuItem.setIcon(AppSetup.ICONS.TRASH);
         explorerItem.contextMenu.add(deleteMenuItem);
 
         EXPLORER.appendItem(explorerItem);
@@ -290,7 +290,7 @@ public abstract class BamProject extends RowColPanel {
     public void saveProject(String saveFilePath) {
 
         ConsoleLogger.log("saving project...");
-        String mainConfigFilePath = Path.of(AppConfig.AC.APP_TEMP_DIR,
+        String mainConfigFilePath = Path.of(AppSetup.PATH_APP_TEMP_DIR,
                 "main_config.json").toString();
 
         BamConfigRecord bamConfig = save().addPaths(mainConfigFilePath);
@@ -358,7 +358,7 @@ public abstract class BamProject extends RowColPanel {
         p.appendChild(lMessage);
 
         bamProjectLoadingFrame.openProgressFrame(
-                AppConfig.AC.APP_MAIN_FRAME,
+                AppSetup.MAIN_FRAME,
                 p,
                 loadingMessage,
                 0,
@@ -479,7 +479,7 @@ public abstract class BamProject extends RowColPanel {
 
     static public void loadProject(String projectFilePath, Consumer<BamProject> onLoaded, Runnable onError) {
 
-        AppConfig.AC.clearTempDirectory();
+        AppSetup.clearTempDir();
 
         File projectFile = new File(projectFilePath);
         if (!projectFile.exists()) {
@@ -489,7 +489,7 @@ public abstract class BamProject extends RowColPanel {
             return;
         }
         try {
-            ReadWriteZip.unzip(projectFilePath, AppConfig.AC.APP_TEMP_DIR);
+            ReadWriteZip.unzip(projectFilePath, AppSetup.PATH_APP_TEMP_DIR);
         } catch (Exception e) {
             ConsoleLogger.error(e);
             onError.run();
@@ -498,7 +498,7 @@ public abstract class BamProject extends RowColPanel {
 
         try {
             BufferedReader bufReader = ReadFile
-                    .createBufferedReader(Path.of(AppConfig.AC.APP_TEMP_DIR,
+                    .createBufferedReader(Path.of(AppSetup.PATH_APP_TEMP_DIR,
                             "main_config.json").toString(),
                             true);
             String jsonString = "";

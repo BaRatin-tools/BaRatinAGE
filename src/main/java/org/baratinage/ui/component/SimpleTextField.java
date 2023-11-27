@@ -20,14 +20,14 @@ import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
-import org.baratinage.ui.AppConfig;
+import org.baratinage.AppSetup;
 
 public class SimpleTextField extends JTextField {
 
     private static Color REGULAR_BG = new JTextField().getBackground();
     private boolean isViewValid = true;
-    private static Color INVALID_BG = AppConfig.AC.INVALID_COLOR_BG;
-    private static Color INVALID_DISABLED_BG = AppConfig.AC.INVALID_DISABLED_COLOR_BG;
+    private static Color INVALID_BG = AppSetup.COLORS.INVALID_BG;
+    private static Color INVALID_DISABLED_BG = AppSetup.COLORS.INVALID_DISABLED_BG;
 
     private String placeholder;
     private String innerLabel;

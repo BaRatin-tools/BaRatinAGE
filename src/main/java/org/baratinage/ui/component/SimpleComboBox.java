@@ -16,7 +16,7 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.Icon;
 
-import org.baratinage.ui.AppConfig;
+import org.baratinage.AppSetup;
 import org.baratinage.ui.container.RowColPanel;
 
 public class SimpleComboBox extends RowColPanel {
@@ -71,7 +71,7 @@ public class SimpleComboBox extends RowColPanel {
             // fireValidators();
         });
 
-        INVALID_BG_COLOR = AppConfig.AC.INVALID_COLOR_BG;
+        INVALID_BG_COLOR = AppSetup.COLORS.INVALID_BG;
         REGULAR_BG_COLOR = comboBox.getBackground();
         appendChild(comboBox);
     }

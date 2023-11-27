@@ -5,8 +5,8 @@ import java.awt.Color;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import org.baratinage.ui.AppConfig;
 import org.baratinage.ui.container.RowColPanel;
+import org.baratinage.AppSetup;
 import org.baratinage.translation.T;
 import org.baratinage.ui.plot.Plot;
 import org.baratinage.ui.plot.PlotContainer;
@@ -33,7 +33,7 @@ public class HydrographPlot extends RowColPanel {
                                 "Maxpost",
                                 time,
                                 dischargeMaxpost,
-                                AppConfig.AC.PLOT_LINE_COLOR,
+                                AppSetup.COLORS.PLOT_LINE,
                                 new BasicStroke(2));
 
                 PlotTimeSeriesBand paramBand = new PlotTimeSeriesBand(
@@ -41,7 +41,7 @@ public class HydrographPlot extends RowColPanel {
                                 time,
                                 dischargeParamU.get(0),
                                 dischargeParamU.get(1),
-                                AppConfig.AC.RATING_CURVE_PARAM_UNCERTAINTY_COLOR);
+                                AppSetup.COLORS.RATING_CURVE_PARAM_UNCERTAINTY);
 
                 PlotTimeSeriesBand limniBand = new PlotTimeSeriesBand(
                                 "Limnigraph uncertainty",
@@ -55,7 +55,7 @@ public class HydrographPlot extends RowColPanel {
                                 time,
                                 dischargeTotalU.get(0),
                                 dischargeTotalU.get(1),
-                                AppConfig.AC.RATING_CURVE_TOTAL_UNCERTAINTY_COLOR);
+                                AppSetup.COLORS.RATING_CURVE_TOTAL_UNCERTAINTY);
 
                 plot.addXYItem(totalBand);
                 plot.addXYItem(paramBand);

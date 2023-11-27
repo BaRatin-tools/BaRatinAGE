@@ -7,8 +7,8 @@ import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 import javax.swing.filechooser.FileFilter;
 
+import org.baratinage.AppSetup;
 import org.baratinage.translation.T;
-import org.baratinage.ui.AppConfig;
 
 public class CommonDialog {
     private static String defaultOpenTitle = "Open";
@@ -55,6 +55,8 @@ public class CommonDialog {
             defaultOpenTitle = T.text("open");
             defaultSaveTitle = T.text("save");
             defaultApproveButtonToolTipText = T.text("ok");
+
+            resetFileChooser();
         });
     }
 
@@ -63,7 +65,7 @@ public class CommonDialog {
     }
 
     public static void errorDialog(String message, String title) {
-        JOptionPane.showOptionDialog(AppConfig.AC.APP_MAIN_FRAME,
+        JOptionPane.showOptionDialog(AppSetup.MAIN_FRAME,
                 message,
                 title == null ? T.text("error") : title,
                 JOptionPane.OK_OPTION,
@@ -81,7 +83,7 @@ public class CommonDialog {
         String[] okOption = new String[] {
                 T.text("ok")
         };
-        JOptionPane.showOptionDialog(AppConfig.AC.APP_MAIN_FRAME,
+        JOptionPane.showOptionDialog(AppSetup.MAIN_FRAME,
                 message,
                 title == null ? T.text("info") : title,
                 JOptionPane.OK_OPTION,
@@ -98,7 +100,7 @@ public class CommonDialog {
                 T.text("ok"),
                 T.text("cancel")
         };
-        int response = JOptionPane.showOptionDialog(AppConfig.AC.APP_MAIN_FRAME,
+        int response = JOptionPane.showOptionDialog(AppSetup.MAIN_FRAME,
                 message,
                 title == null ? T.text("warning") : title,
                 JOptionPane.YES_NO_OPTION,
@@ -109,9 +111,10 @@ public class CommonDialog {
 
     public static File saveFileDialog(String title, String formatName, String... extensions) {
 
-        JFileChooser fileChooser = buildFileChooser(title == null ? defaultSaveTitle : title, formatName, extensions);
+        JFileChooser fileChooser = configureFileChooser(title == null ? defaultSaveTitle : title, formatName,
+                extensions);
 
-        int result = fileChooser.showSaveDialog(AppConfig.AC.APP_MAIN_FRAME);
+        int result = fileChooser.showSaveDialog(AppSetup.MAIN_FRAME);
         if (result != JFileChooser.APPROVE_OPTION) {
             return null;
         }
@@ -150,8 +153,9 @@ public class CommonDialog {
     }
 
     public static File openFileDialog(String title, String formatName, String... extensions) {
-        JFileChooser fileChooser = buildFileChooser(title == null ? defaultOpenTitle : title, formatName, extensions);
-        int result = fileChooser.showOpenDialog(AppConfig.AC.APP_MAIN_FRAME);
+        JFileChooser fileChooser = configureFileChooser(title == null ? defaultOpenTitle : title, formatName,
+                extensions);
+        int result = fileChooser.showOpenDialog(AppSetup.MAIN_FRAME);
         if (result != JFileChooser.APPROVE_OPTION) {
             return null;
         }
@@ -160,13 +164,17 @@ public class CommonDialog {
 
     private static JFileChooser fileChooser;
 
-    private static JFileChooser buildFileChooser(String title, String formatName, String... extensions) {
+    private static void resetFileChooser() {
+        fileChooser = new JFileChooser();
+        fileChooser.setCurrentDirectory(new File(AppSetup.PATH_APP_ROOT_DIR));
+        fileChooser.setAcceptAllFileFilterUsed(false);
+        fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        fileChooser.setApproveButtonToolTipText(defaultApproveButtonToolTipText);
+    }
+
+    private static JFileChooser configureFileChooser(String title, String formatName, String... extensions) {
         if (fileChooser == null) {
-            fileChooser = new JFileChooser();
-            fileChooser.setCurrentDirectory(new File(AppConfig.AC.APP_ROOT_DIR));
-            fileChooser.setAcceptAllFileFilterUsed(false);
-            fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-            fileChooser.setApproveButtonToolTipText(defaultApproveButtonToolTipText);
+            resetFileChooser();
         }
         fileChooser.setSelectedFile(new File(""));
         fileChooser.setDialogTitle(title);

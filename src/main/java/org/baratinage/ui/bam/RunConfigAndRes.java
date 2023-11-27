@@ -3,9 +3,9 @@ package org.baratinage.ui.bam;
 import java.io.File;
 import java.nio.file.Path;
 
+import org.baratinage.AppSetup;
 import org.baratinage.jbam.BaM;
 import org.baratinage.jbam.utils.BamFilesHelpers;
-import org.baratinage.ui.AppConfig;
 import org.baratinage.utils.fs.ReadWriteZip;
 
 public class RunConfigAndRes extends BaM {
@@ -26,9 +26,9 @@ public class RunConfigAndRes extends BaM {
 
     public static RunConfigAndRes buildFromZipArchive(String id, Path zipPath) {
 
-        Path workspacePath = Path.of(AppConfig.AC.BAM_WORKSPACE_ROOT, id);
+        Path workspacePath = Path.of(AppSetup.PATH_BAM_WORKSPACE_DIR, id);
         String zipName = id + ".zip";
-        zipPath = Path.of(AppConfig.AC.APP_TEMP_DIR, zipName);
+        zipPath = Path.of(AppSetup.PATH_APP_TEMP_DIR, zipName);
 
         ReadWriteZip.unzip(zipPath.toString(), workspacePath.toString());
 
@@ -37,7 +37,7 @@ public class RunConfigAndRes extends BaM {
 
     public static RunConfigAndRes buildFromTempZipArchive(String id) {
         String zipName = id + ".zip";
-        Path zipPath = Path.of(AppConfig.AC.APP_TEMP_DIR, zipName);
+        Path zipPath = Path.of(AppSetup.PATH_APP_TEMP_DIR, zipName);
         return buildFromZipArchive(id, zipPath);
     }
 
@@ -61,7 +61,7 @@ public class RunConfigAndRes extends BaM {
             toFiles(workspace.toString());
         }
         String zipName = id + ".zip";
-        Path zipPath = Path.of(AppConfig.AC.APP_TEMP_DIR, zipName);
+        Path zipPath = Path.of(AppSetup.PATH_APP_TEMP_DIR, zipName);
         if (!zipPath.toFile().exists() && writeToFile) {
             // each run being unique, if the zip file exist, there is no need
             // to recreate it; no modification could have occured

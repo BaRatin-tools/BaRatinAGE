@@ -82,6 +82,11 @@ public class ReadFile {
         return lines;
     }
 
+    public static String getStringContent(String filePath, boolean detectCharset) throws IOException {
+        String[] lines = getLines(filePath, Integer.MAX_VALUE, detectCharset);
+        return String.join("\n", lines);
+    }
+
     /**
      * Get the number of column in a text file given a column separator and a
      * reference row index to use to retrieve the number of columns.
@@ -124,7 +129,7 @@ public class ReadFile {
      */
     public static String[] parseString(String str, String sep, boolean trim) {
         if (trim) {
-            return str.trim().split(sep);
+            return trimStringArray(str.trim().split(sep));
         } else {
             return str.split(sep);
         }
@@ -293,11 +298,83 @@ public class ReadFile {
             if (k >= nRowSkip) {
                 String[] row = parseString(line, sep, trim);
                 if (row.length != nCol) {
-                    ConsoleLogger.error("Inconsistent number of columns (row " + k + ")");
-                    continue;
+                    ConsoleLogger.error(
+                            String.format("Row %d has %d columns but %d columns were expected. Row skipped.",
+                                    k, row.length, nCol));
+                    for (int j = 0; j < nCol; j++) {
+                        columns.get(j)[i] = Double.NaN;
+                    }
+                } else {
+                    for (int j = 0; j < nCol; j++) {
+                        columns.get(j)[i] = toDouble(row[j], missingValueCode);
+                    }
                 }
-                for (int j = 0; j < nCol; j++) {
-                    columns.get(j)[i] = toDouble(row[j], missingValueCode);
+                i++;
+            }
+            line = reader.readLine();
+            k++;
+        }
+        reader.close();
+
+        return columns;
+    }
+
+    /**
+     * Read a text file containg data and return a double Matrix (List of double
+     * arrays).
+     * 
+     * @param textFilePath  text file path
+     * @param sep           column separator
+     * @param nRowSkip      number of rows to skip
+     * @param detectCharset wether file encoding should be infered from the file
+     * @param trim          wether heading/trailing spaces should be discared
+     * @return a double Matrix (List of double arrays)
+     * @throws IOException
+     */
+    static public List<String[]> readStringMatrix(
+            String textFilePath,
+            String sep,
+            int nRowSkip,
+            boolean detectCharset,
+            boolean trim) throws IOException {
+
+        int nLines = getLinesCount(textFilePath, detectCharset);
+        int nRow = nLines - nRowSkip;
+        int nCol = getColumnCount(textFilePath, detectCharset, sep, trim, nRowSkip);
+
+        List<String[]> columns = new ArrayList<>();
+        for (int i = 0; i < nCol; i++) {
+            String[] column = new String[nRow];
+            columns.add(column);
+        }
+
+        BufferedReader reader = new BufferedReader(createBufferedReader(textFilePath,
+                detectCharset));
+        int k = 0;
+        int i = 0;
+        String line = reader.readLine();
+        while (line != null) {
+            if (i >= nRow)
+                break;
+            if (k >= nRowSkip) {
+                String[] row = line.split(sep, -1);
+                if (row.length != nCol) {
+                    ConsoleLogger.error(
+                            String.format("Row %d has %d columns but %d columns were expected. Row skipped.",
+                                    k, row.length, nCol));
+                    for (int j = 0; j < nCol; j++) {
+                        columns.get(j)[i] = null;
+                    }
+                } else {
+                    if (trim) {
+                        for (int j = 0; j < nCol; j++) {
+                            columns.get(j)[i] = row[j].trim();
+                        }
+                    } else {
+                        for (int j = 0; j < nCol; j++) {
+                            columns.get(j)[i] = row[j];
+                        }
+                    }
                 }
                 i++;
             }

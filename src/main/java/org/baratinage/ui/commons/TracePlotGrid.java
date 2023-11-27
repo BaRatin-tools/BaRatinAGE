@@ -4,9 +4,9 @@ import java.awt.Font;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.baratinage.AppSetup;
 import org.baratinage.jbam.EstimatedParameter;
 import org.baratinage.translation.T;
-import org.baratinage.ui.AppConfig;
 import org.baratinage.ui.container.GridPanel;
 import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.ui.plot.FixedTextAnnotation;
@@ -64,10 +64,10 @@ public class TracePlotGrid extends RowColPanel {
             plot.setBufferPercentage(0.1, 0, 0.05, 0.05);
 
             PlotLine trace = new PlotLine("", x, estimParam.mcmc,
-                    AppConfig.AC.PLOT_LINE_COLOR, 1);
+                    AppSetup.COLORS.PLOT_LINE, 1);
             PlotInfiniteLine mp = new PlotInfiniteLine("",
                     estimParam.maxpostIndex,
-                    AppConfig.AC.POSTERIOR_LINE_COLOR,
+                    AppSetup.COLORS.POSTERIOR_LINE,
                     2);
 
             plot.addXYItem(mp);

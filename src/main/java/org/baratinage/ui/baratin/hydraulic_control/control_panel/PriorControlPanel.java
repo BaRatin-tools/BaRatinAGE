@@ -9,9 +9,9 @@ import javax.swing.JSeparator;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import org.baratinage.AppSetup;
 import org.baratinage.jbam.Parameter;
 import org.baratinage.translation.T;
-import org.baratinage.ui.AppConfig;
 import org.baratinage.ui.commons.AbstractParameterPriorDist;
 import org.baratinage.ui.commons.ParameterPriorDist;
 import org.baratinage.ui.commons.ParameterPriorDistSimplified;
@@ -32,49 +32,49 @@ public abstract class PriorControlPanel extends GridPanel implements ChangeListe
 
         private static final Font MONOSPACE_FONT = new Font(Font.MONOSPACED, Font.PLAIN, 14);
 
-        public static final SvgIcon activationHeightIcon = AppConfig.AC.ICONS
+        public static final SvgIcon activationHeightIcon = AppSetup.ICONS
                         .getCustomAppImageIcon("activation_height.svg");
 
-        public static final SvgIcon slopeIcon = AppConfig.AC.ICONS
+        public static final SvgIcon slopeIcon = AppSetup.ICONS
                         .getCustomAppImageIcon("slope.svg");
 
-        public static final SvgIcon weirCoefRIcon = AppConfig.AC.ICONS
+        public static final SvgIcon weirCoefRIcon = AppSetup.ICONS
                         .getCustomAppImageIcon("weir_coef_r.svg");
 
-        public static final SvgIcon weirCoefOIcon = AppConfig.AC.ICONS
+        public static final SvgIcon weirCoefOIcon = AppSetup.ICONS
                         .getCustomAppImageIcon("weir_coef_o.svg");
 
-        public static final SvgIcon weirCoefTIcon = AppConfig.AC.ICONS
+        public static final SvgIcon weirCoefTIcon = AppSetup.ICONS
                         .getCustomAppImageIcon("weir_coef_t.svg");
 
-        public static final SvgIcon weirCoefPIcon = AppConfig.AC.ICONS
+        public static final SvgIcon weirCoefPIcon = AppSetup.ICONS
                         .getCustomAppImageIcon("weir_coef_p.svg");
 
-        public static final SvgIcon stricklerCoefIcon = AppConfig.AC.ICONS
+        public static final SvgIcon stricklerCoefIcon = AppSetup.ICONS
                         .getCustomAppImageIcon("strickler_coef.svg");
 
-        public static final SvgIcon angleIcon = AppConfig.AC.ICONS
+        public static final SvgIcon angleIcon = AppSetup.ICONS
                         .getCustomAppImageIcon("angle.svg");
 
-        public static final SvgIcon widthIcon = AppConfig.AC.ICONS
+        public static final SvgIcon widthIcon = AppSetup.ICONS
                         .getCustomAppImageIcon("width.svg");
 
-        public static final SvgIcon parabolaWidthIcon = AppConfig.AC.ICONS
+        public static final SvgIcon parabolaWidthIcon = AppSetup.ICONS
                         .getCustomAppImageIcon("parabola_width.svg");
 
-        public static final SvgIcon parabolaHeightIcon = AppConfig.AC.ICONS
+        public static final SvgIcon parabolaHeightIcon = AppSetup.ICONS
                         .getCustomAppImageIcon("parabola_height.svg");
 
-        public static final SvgIcon areaIcon = AppConfig.AC.ICONS
+        public static final SvgIcon areaIcon = AppSetup.ICONS
                         .getCustomAppImageIcon("orifice_area.svg");
 
-        public static final SvgIcon gravityIcon = AppConfig.AC.ICONS
+        public static final SvgIcon gravityIcon = AppSetup.ICONS
                         .getCustomAppImageIcon("gravity.svg");
 
-        public static final SvgIcon exponentIcon = AppConfig.AC.ICONS
+        public static final SvgIcon exponentIcon = AppSetup.ICONS
                         .getCustomAppImageIcon("exponent.svg");
 
-        public static final SvgIcon coefficientIcon = AppConfig.AC.ICONS
+        public static final SvgIcon coefficientIcon = AppSetup.ICONS
                         .getCustomAppImageIcon("coefficient.svg");
 
         private final JLabel equationLabel;
@@ -100,7 +100,7 @@ public abstract class PriorControlPanel extends GridPanel implements ChangeListe
                 insertChild(iconNamSymbolUnitSep, 0, 1, 3, 1);
 
                 JLabel lockLabel = new JLabel();
-                lockLabel.setIcon(AppConfig.AC.ICONS.LOCK_ICON);
+                lockLabel.setIcon(AppSetup.ICONS.LOCK);
                 insertLabel(lockLabel, 3 + nColumns, 0);
                 JSeparator lockSeparator = new JSeparator(JSeparator.HORIZONTAL);
                 insertChild(lockSeparator, 3 + nColumns, 1);

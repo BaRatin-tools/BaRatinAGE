@@ -6,6 +6,7 @@ import java.util.List;
 import javax.swing.JButton;
 import javax.swing.JSeparator;
 
+import org.baratinage.AppSetup;
 import org.baratinage.jbam.CalDataResidualConfig;
 import org.baratinage.jbam.CalibrationConfig;
 import org.baratinage.jbam.CalibrationData;
@@ -21,7 +22,6 @@ import org.baratinage.jbam.PredictionResult;
 import org.baratinage.jbam.StructuralErrorModel;
 import org.baratinage.jbam.utils.BamFilesHelpers;
 import org.baratinage.translation.T;
-import org.baratinage.ui.AppConfig;
 import org.baratinage.ui.bam.BamItem;
 import org.baratinage.ui.bam.BamConfigRecord;
 import org.baratinage.ui.bam.BamItemType;
@@ -109,7 +109,7 @@ public class RatingCurve extends BamItem implements IPredictionMaster, ICalibrat
             runBam.setModelDefintion(bamItem);
             runBam.setPriors(bamItem);
 
-            TimedActions.throttle(ID, AppConfig.AC.THROTTLED_DELAY_MS, this::checkSync);
+            TimedActions.throttle(ID, AppSetup.CONFIG.THROTTLED_DELAY_MS, this::checkSync);
         });
 
         // **********************************************************
@@ -124,7 +124,7 @@ public class RatingCurve extends BamItem implements IPredictionMaster, ICalibrat
             Gaugings bamItem = (Gaugings) gaugingsParent.getCurrentBamItem();
             runBam.setCalibrationData(bamItem);
 
-            TimedActions.throttle(ID, AppConfig.AC.THROTTLED_DELAY_MS, this::checkSync);
+            TimedActions.throttle(ID, AppSetup.CONFIG.THROTTLED_DELAY_MS, this::checkSync);
         });
 
         // **********************************************************
@@ -138,7 +138,7 @@ public class RatingCurve extends BamItem implements IPredictionMaster, ICalibrat
             StructuralErrorModelBamItem bamItem = (StructuralErrorModelBamItem) structErrorParent.getCurrentBamItem();
             runBam.setStructuralErrorModel(bamItem);
 
-            TimedActions.throttle(ID, AppConfig.AC.THROTTLED_DELAY_MS, this::checkSync);
+            TimedActions.throttle(ID, AppSetup.CONFIG.THROTTLED_DELAY_MS, this::checkSync);
         });
 
         // **********************************************************
@@ -152,7 +152,7 @@ public class RatingCurve extends BamItem implements IPredictionMaster, ICalibrat
 
         ratingCurveStageGrid = new RatingCurveStageGrid();
         ratingCurveStageGrid.addChangeListener((e) -> {
-            TimedActions.throttle(ID, AppConfig.AC.THROTTLED_DELAY_MS, this::checkSync);
+            TimedActions.throttle(ID, AppSetup.CONFIG.THROTTLED_DELAY_MS, this::checkSync);
         });
 
         mainConfigPanel.appendChild(hydrauConfParent, 1);
@@ -181,7 +181,7 @@ public class RatingCurve extends BamItem implements IPredictionMaster, ICalibrat
             gaugingsParent.updateBackup();
             structErrorParent.updateBackup();
 
-            TimedActions.throttle(ID, AppConfig.AC.THROTTLED_DELAY_MS, this::checkSync);
+            TimedActions.throttle(ID, AppSetup.CONFIG.THROTTLED_DELAY_MS, this::checkSync);
         });
 
         resultsPanel = new RatingCurveResults();
@@ -237,7 +237,7 @@ public class RatingCurve extends BamItem implements IPredictionMaster, ICalibrat
                 hc.getInputNames().length,
                 hc.getOutputNames().length,
                 hc.getParameters(),
-                hc.getXtra(AppConfig.AC.BAM_WORKSPACE_ROOT),
+                hc.getXtra(AppSetup.PATH_BAM_WORKSPACE_DIR),
                 BamFilesHelpers.CONFIG_XTRA);
 
         String[] outputNames = hc.getOutputNames();
@@ -316,7 +316,7 @@ public class RatingCurve extends BamItem implements IPredictionMaster, ICalibrat
                 JSONObject stageGridJson = json.getJSONObject("stageGridConfig");
                 ratingCurveStageGrid.fromJSON(stageGridJson);
 
-                TimedActions.throttle(ID, AppConfig.AC.THROTTLED_DELAY_MS, this::checkSync);
+                TimedActions.throttle(ID, AppSetup.CONFIG.THROTTLED_DELAY_MS, this::checkSync);
             });
             errorMsg.addButton(cancelChangeButton);
             T.t(outdatedPanel, cancelChangeButton, false, "cancel_changes");
@@ -336,7 +336,7 @@ public class RatingCurve extends BamItem implements IPredictionMaster, ICalibrat
         T.clear(runBam);
         if (!syncStatus.isBamRunInSync()) {
             T.t(runBam, runBam.runButton, true, "recompute_posterior_rc");
-            runBam.runButton.setForeground(AppConfig.AC.INVALID_COLOR_FG);
+            runBam.runButton.setForeground(AppSetup.COLORS.INVALID_FG);
         } else {
             T.t(runBam, runBam.runButton, true, "compute_posterior_rc");
             runBam.runButton.setForeground(new JButton().getForeground());
@@ -426,7 +426,7 @@ public class RatingCurve extends BamItem implements IPredictionMaster, ICalibrat
             ConsoleLogger.log("missing 'backup'");
         }
 
-        TimedActions.throttle(ID, AppConfig.AC.THROTTLED_DELAY_MS, this::checkSync);
+        TimedActions.throttle(ID, AppSetup.CONFIG.THROTTLED_DELAY_MS, this::checkSync);
     }
 
     @Override

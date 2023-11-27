@@ -8,8 +8,8 @@ import java.util.List;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 
+import org.baratinage.AppSetup;
 import org.baratinage.jbam.EstimatedParameter;
-import org.baratinage.ui.AppConfig;
 import org.baratinage.ui.baratin.EstimatedControlParameters;
 import org.baratinage.ui.commons.DensityPlotGrid;
 import org.baratinage.ui.commons.TracePlotGrid;
@@ -32,12 +32,12 @@ public class RatingCurveResults extends TabContainer {
     // private final RowColPanel otherPanel;
     private final DataTable paramSummaryTable;
 
-    private static ImageIcon rcIcon = AppConfig.AC.ICONS.getCustomAppImageIcon("rating_curve.svg");
-    private static ImageIcon traceIcon = AppConfig.AC.ICONS.getCustomAppImageIcon("trace.svg");
-    private static ImageIcon tableIcon = AppConfig.AC.ICONS.getCustomAppImageIcon("table.svg");
-    private static ImageIcon dpIcon = AppConfig.AC.ICONS.getCustomAppImageIcon("densities.svg");
-    private static ImageIcon rcTblIcon = AppConfig.AC.ICONS.getCustomAppImageIcon("rating_curve_table.svg");
-    private static ImageIcon rcEqIcon = AppConfig.AC.ICONS.getCustomAppImageIcon("rating_curve_equation.svg");
+    private static ImageIcon rcIcon = AppSetup.ICONS.getCustomAppImageIcon("rating_curve.svg");
+    private static ImageIcon traceIcon = AppSetup.ICONS.getCustomAppImageIcon("trace.svg");
+    private static ImageIcon tableIcon = AppSetup.ICONS.getCustomAppImageIcon("table.svg");
+    private static ImageIcon dpIcon = AppSetup.ICONS.getCustomAppImageIcon("densities.svg");
+    private static ImageIcon rcTblIcon = AppSetup.ICONS.getCustomAppImageIcon("rating_curve_table.svg");
+    private static ImageIcon rcEqIcon = AppSetup.ICONS.getCustomAppImageIcon("rating_curve_equation.svg");
 
     public RatingCurveResults() {
 
@@ -331,7 +331,7 @@ public class RatingCurveResults extends TabContainer {
         // if (Math.abs(u) > 2.33d) { // 2.33 corresponds to a 1% probability for a
         // N(0,1)
 
-        mcmcToCsvButton.setIcon(AppConfig.AC.ICONS.SAVE_ICON);
+        mcmcToCsvButton.setIcon(AppSetup.ICONS.SAVE);
         T.t(mcmcResultPanel, () -> {
             mcmcToCsvButton.setText(T.text("export_mcmc"));
             mcmcToCsvButton.setToolTipText(T.text("export_mcmc"));

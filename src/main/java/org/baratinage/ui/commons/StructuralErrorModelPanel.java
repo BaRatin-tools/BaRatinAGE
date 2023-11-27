@@ -8,9 +8,9 @@ import javax.swing.JSeparator;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import org.baratinage.AppSetup;
 import org.baratinage.jbam.DistributionType;
 import org.baratinage.jbam.Parameter;
-import org.baratinage.ui.AppConfig;
 import org.baratinage.ui.container.GridPanel;
 import org.baratinage.utils.ConsoleLogger;
 import org.baratinage.translation.T;
@@ -36,7 +36,7 @@ public class StructuralErrorModelPanel extends GridPanel implements ChangeListen
         distributionParametersLabel.setText("Paramètres de la distribution");
 
         JLabel lockLabel = new JLabel();
-        lockLabel.setIcon(AppConfig.AC.ICONS.LOCK_ICON);
+        lockLabel.setIcon(AppSetup.ICONS.LOCK);
 
         JSeparator initialGuessSep = new JSeparator(JSeparator.HORIZONTAL);
         JSeparator distributionSep = new JSeparator(JSeparator.HORIZONTAL);

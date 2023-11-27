@@ -9,7 +9,7 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
 
-import org.baratinage.ui.AppConfig;
+import org.baratinage.AppSetup;
 import org.baratinage.ui.container.RowColPanel;
 
 public class MsgPanel extends RowColPanel {
@@ -53,11 +53,11 @@ public class MsgPanel extends RowColPanel {
     }
 
     private Color getColor() {
-        Color clr = AppConfig.AC.INFO_COLOR;
+        Color clr = AppSetup.COLORS.INFO;
         if (msgType == TYPE.WARNING) {
-            clr = AppConfig.AC.WARNING_COLOR;
+            clr = AppSetup.COLORS.WARNING;
         } else if (msgType == TYPE.ERROR) {
-            clr = AppConfig.AC.INVALID_COLOR_FG;
+            clr = AppSetup.COLORS.ERROR;
         }
         return clr;
     }
@@ -69,7 +69,7 @@ public class MsgPanel extends RowColPanel {
         // setBorder(BorderFactory.createLineBorder(clr, 2));
         setBorder(BorderFactory.createMatteBorder(0, 2, 0, 0, clr));
         if (msgType == TYPE.ERROR) {
-            setBackground(AppConfig.AC.INVALID_COLOR_BG);
+            setBackground(AppSetup.COLORS.INVALID_BG);
         }
     }
 

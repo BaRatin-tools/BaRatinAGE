@@ -12,8 +12,6 @@ import javax.swing.JLabel;
 import javax.swing.JSeparator;
 import javax.swing.event.ChangeListener;
 
-import org.baratinage.ui.AppConfig;
-
 import org.baratinage.ui.component.DataFileReader;
 import org.baratinage.ui.component.DataParser;
 import org.baratinage.ui.component.SimpleComboBox;
@@ -22,6 +20,7 @@ import org.baratinage.ui.container.GridPanel;
 import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.utils.Misc;
 import org.baratinage.utils.perf.TimedActions;
+import org.baratinage.AppSetup;
 import org.baratinage.translation.T;
 
 public class LimnigraphImporter extends RowColPanel {
@@ -230,7 +229,7 @@ public class LimnigraphImporter extends RowColPanel {
         // react to change in user inputs (preview table and import button)
 
         ChangeListener cbChangeListener = (chEvt) -> {
-            TimedActions.throttle(ID, AppConfig.AC.THROTTLED_DELAY_MS, this::updateValidityStatus);
+            TimedActions.throttle(ID, AppSetup.CONFIG.THROTTLED_DELAY_MS, this::updateValidityStatus);
         };
 
         timeColComboBox.addChangeListener(cbChangeListener);
@@ -311,7 +310,7 @@ public class LimnigraphImporter extends RowColPanel {
 
     public void showDialog() {
 
-        dialog = new JDialog(AppConfig.AC.APP_MAIN_FRAME, true);
+        dialog = new JDialog(AppSetup.MAIN_FRAME, true);
         dialog.setContentPane(this);
 
         dialog.setTitle(T.text("import_limnigraph"));
@@ -319,7 +318,7 @@ public class LimnigraphImporter extends RowColPanel {
         dialog.setPreferredSize(new Dimension(900, 800));
 
         dialog.pack();
-        dialog.setLocationRelativeTo(AppConfig.AC.APP_MAIN_FRAME);
+        dialog.setLocationRelativeTo(AppSetup.MAIN_FRAME);
         dialog.setVisible(true);
         dialog.dispose();
     }

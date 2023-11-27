@@ -8,9 +8,9 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 
+import org.baratinage.AppSetup;
 import org.baratinage.jbam.PredictionInput;
 import org.baratinage.ui.bam.BamItem;
-import org.baratinage.ui.AppConfig;
 import org.baratinage.ui.bam.BamConfigRecord;
 import org.baratinage.ui.bam.BamItemType;
 import org.baratinage.ui.bam.IPredictionData;
@@ -31,8 +31,8 @@ import org.json.JSONObject;
 
 public class Limnigraph extends BamItem implements IPredictionData {
 
-    private ImageIcon chartIcon = AppConfig.AC.ICONS.getCustomAppImageIcon("limnigraph.svg");
-    private ImageIcon errorIcon = AppConfig.AC.ICONS.getCustomAppImageIcon("errors.svg");
+    private ImageIcon chartIcon = AppSetup.ICONS.getCustomAppImageIcon("limnigraph.svg");
+    private ImageIcon errorIcon = AppSetup.ICONS.getCustomAppImageIcon("errors.svg");
 
     private LimnigraphErrors limniErrors;
 

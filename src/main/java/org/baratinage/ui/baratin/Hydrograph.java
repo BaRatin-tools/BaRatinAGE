@@ -7,10 +7,10 @@ import java.util.List;
 import javax.swing.JButton;
 import javax.swing.JSeparator;
 
+import org.baratinage.AppSetup;
 import org.baratinage.jbam.CalibrationConfig;
 import org.baratinage.jbam.PredictionInput;
 import org.baratinage.jbam.PredictionResult;
-import org.baratinage.ui.AppConfig;
 import org.baratinage.ui.bam.BamItem;
 import org.baratinage.ui.bam.BamConfigRecord;
 import org.baratinage.ui.bam.BamItemParent;
@@ -61,7 +61,7 @@ public class Hydrograph extends BamItem implements IPredictionMaster {
             RatingCurve rc = (RatingCurve) ratingCurveParent.getCurrentBamItem();
             currentRatingCurve = rc;
             runBam.setCalibratedModel(rc);
-            TimedActions.throttle(ID, AppConfig.AC.THROTTLED_DELAY_MS, this::checkSync);
+            TimedActions.throttle(ID, AppSetup.CONFIG.THROTTLED_DELAY_MS, this::checkSync);
         });
 
         limnigraphParent = new BamItemParent(this, BamItemType.LIMNIGRAPH);
@@ -70,7 +70,7 @@ public class Hydrograph extends BamItem implements IPredictionMaster {
         limnigraphParent.addChangeListener((chEvt) -> {
             Limnigraph l = (Limnigraph) limnigraphParent.getCurrentBamItem();
             currentLimnigraph = l;
-            TimedActions.throttle(ID, AppConfig.AC.THROTTLED_DELAY_MS, this::checkSync);
+            TimedActions.throttle(ID, AppSetup.CONFIG.THROTTLED_DELAY_MS, this::checkSync);
         });
 
         runBam.addOnDoneAction((RunConfigAndRes res) -> {
@@ -79,7 +79,7 @@ public class Hydrograph extends BamItem implements IPredictionMaster {
             buildPlot();
             ratingCurveParent.updateBackup();
             limnigraphParent.updateBackup();
-            TimedActions.throttle(ID, AppConfig.AC.THROTTLED_DELAY_MS, this::checkSync);
+            TimedActions.throttle(ID, AppSetup.CONFIG.THROTTLED_DELAY_MS, this::checkSync);
         });
 
         RowColPanel parentItemPanel = new RowColPanel();
@@ -96,7 +96,7 @@ public class Hydrograph extends BamItem implements IPredictionMaster {
 
         TabContainer tabs = new TabContainer();
         tabs.addTab("plot", TYPE.getIcon(), plotPanel);
-        tabs.addTab("chart", AppConfig.AC.ICONS.getCustomAppImageIcon("table.svg"), tablePanel);
+        tabs.addTab("chart", AppSetup.ICONS.getCustomAppImageIcon("table.svg"), tablePanel);
 
         outdatedPanel = new RowColPanel(AXIS.COL);
         outdatedPanel.setPadding(2);
@@ -148,7 +148,7 @@ public class Hydrograph extends BamItem implements IPredictionMaster {
         T.clear(runBam);
         if (needBamRerun) {
             T.t(runBam, runBam.runButton, false, "recompute_qt");
-            runBam.runButton.setForeground(AppConfig.AC.INVALID_COLOR_FG);
+            runBam.runButton.setForeground(AppSetup.COLORS.INVALID_FG);
         } else {
             T.t(runBam, runBam.runButton, false, "compute_qt");
             runBam.runButton.setForeground(new JButton().getForeground());
@@ -213,7 +213,7 @@ public class Hydrograph extends BamItem implements IPredictionMaster {
         } else {
             ConsoleLogger.log("missing 'backup'");
         }
-        TimedActions.throttle(ID, AppConfig.AC.THROTTLED_DELAY_MS, this::checkSync);
+        TimedActions.throttle(ID, AppSetup.CONFIG.THROTTLED_DELAY_MS, this::checkSync);
     }
 
     @Override

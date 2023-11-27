@@ -3,6 +3,7 @@ package org.baratinage.ui;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 
+import org.baratinage.AppSetup;
 import org.baratinage.translation.T;
 import org.baratinage.ui.container.GridPanel;
 import org.baratinage.ui.container.RowColPanel;
@@ -15,27 +16,26 @@ public class NoProjectPanel extends GridPanel {
     public final RowColPanel buttonsPanel;
 
     public NoProjectPanel() {
-        // super(AXIS.COL, ALIGN.START);
         setPadding(5, 5, 50, 5);
         setGap(10);
 
         mainLabel = new JLabel();
-        mainLabel.setIcon(AppConfig.AC.ICONS.BARATINAGE_ICON_LARGE);
+        mainLabel.setIcon(AppSetup.ICONS.BARATINAGE_LARGE);
 
         welcomeLabel = new JLabel();
-        T.t(AppConfig.AC.APP_MAIN_FRAME, welcomeLabel, true, "welcome_to_baratinage");
+        T.t(AppSetup.MAIN_FRAME, welcomeLabel, true, "welcome_to_baratinage");
         welcomeLabel.setFont(welcomeLabel.getFont().deriveFont(32f));
 
         createProjectButton = new JButton();
-        T.t(AppConfig.AC.APP_MAIN_FRAME, createProjectButton, false, "create_baratin_project");
+        T.t(AppSetup.MAIN_FRAME, createProjectButton, false, "create_baratin_project");
         createProjectButton.addActionListener((e) -> {
-            AppConfig.AC.APP_MAIN_FRAME.newProject();
+            AppSetup.MAIN_FRAME.newProject();
         });
 
         openProjectButton = new JButton();
-        T.t(AppConfig.AC.APP_MAIN_FRAME, openProjectButton, false, "open_project");
+        T.t(AppSetup.MAIN_FRAME, openProjectButton, false, "open_project");
         openProjectButton.addActionListener((e) -> {
-            AppConfig.AC.APP_MAIN_FRAME.loadProject();
+            AppSetup.MAIN_FRAME.loadProject();
         });
 
         buttonsPanel = new RowColPanel(RowColPanel.AXIS.COL);

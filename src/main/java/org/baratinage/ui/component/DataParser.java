@@ -22,7 +22,7 @@ import javax.swing.table.JTableHeader;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 
-import org.baratinage.ui.AppConfig;
+import org.baratinage.AppSetup;
 import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.utils.ConsoleLogger;
 
@@ -317,12 +317,12 @@ public class DataParser extends RowColPanel {
             }
 
             if (valStr.equals(missingValueCode)) {
-                setForeground(AppConfig.AC.INVALID_COLOR_FG);
+                setForeground(AppSetup.COLORS.INVALID_FG);
                 setFont(getFont().deriveFont(Font.PLAIN).deriveFont(Font.ITALIC));
             } else {
                 setFont(getFont().deriveFont(Font.BOLD));
                 if (!validator.test(valStr)) {
-                    setForeground(AppConfig.AC.INVALID_COLOR_FG);
+                    setForeground(AppSetup.COLORS.INVALID_FG);
                     setFont(getFont().deriveFont(Font.ITALIC).deriveFont(Font.BOLD));
                 } else {
                     setForeground(isSelected ? table.getSelectionForeground() : table.getForeground());

@@ -19,7 +19,7 @@ public class TResources {
         for (TDictionary d : dictionnariesList) {
             dictionnariesMap.put(d.lgKey, d);
         }
-        defaultDictionnary = dictionnariesMap.get(AppSetup.TRANSLATIONS_DEFAULT_KEY);
+        defaultDictionnary = dictionnariesMap.get(AppSetup.CONFIG.FALLBACK_LANGUAGE_KEY);
     }
 
     public Locale[] getAllLocales() {

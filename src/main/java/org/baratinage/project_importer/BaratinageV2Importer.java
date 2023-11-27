@@ -10,11 +10,11 @@ import java.util.function.Consumer;
 
 import javax.swing.JLabel;
 
+import org.baratinage.AppSetup;
 import org.baratinage.jbam.Distribution;
 import org.baratinage.jbam.DistributionType;
 import org.baratinage.jbam.Parameter;
 import org.baratinage.translation.T;
-import org.baratinage.ui.AppConfig;
 import org.baratinage.ui.bam.BamConfigRecord;
 import org.baratinage.ui.bam.BamItem;
 import org.baratinage.ui.bam.BamItemType;
@@ -151,7 +151,7 @@ public class BaratinageV2Importer implements IProjectImporter {
 
         RowColPanel progressPanel = new RowColPanel(RowColPanel.AXIS.COL);
         progressPanel.setGap(10);
-        mainProgressLabel.setIcon(AppConfig.AC.ICONS.BARATINAGE_ICON);
+        mainProgressLabel.setIcon(AppSetup.ICONS.BARATINAGE);
         mainProgressLabel.setText("");
 
         JLabel mainLabel = new JLabel();
@@ -162,7 +162,7 @@ public class BaratinageV2Importer implements IProjectImporter {
         progressPanel.appendChild(mainLabel, 0);
         progressPanel.appendChild(mainProgressLabel, 0);
         mainProgressFrame.openProgressFrame(
-                AppConfig.AC.APP_MAIN_FRAME,
+                AppSetup.MAIN_FRAME,
                 progressPanel,
                 T.text("importing"),
                 0,

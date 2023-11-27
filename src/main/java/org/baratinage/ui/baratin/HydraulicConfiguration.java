@@ -10,12 +10,12 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JSeparator;
 
+import org.baratinage.AppSetup;
 import org.baratinage.jbam.Distribution;
 import org.baratinage.jbam.DistributionType;
 import org.baratinage.jbam.Parameter;
 import org.baratinage.jbam.PredictionResult;
 import org.baratinage.translation.T;
-import org.baratinage.ui.AppConfig;
 import org.baratinage.ui.bam.BamItem;
 import org.baratinage.ui.bam.BamConfigRecord;
 import org.baratinage.ui.bam.BamItemType;
@@ -65,10 +65,10 @@ public class HydraulicConfiguration
 
     private BamConfigRecord backup;
 
-    public static final ImageIcon controlMatrixIcon = AppConfig.AC.ICONS.getCustomAppImageIcon("control_matrix.svg");
-    public static final ImageIcon priorSpecificationIcon = AppConfig.AC.ICONS
+    public static final ImageIcon controlMatrixIcon = AppSetup.ICONS.getCustomAppImageIcon("control_matrix.svg");
+    public static final ImageIcon priorSpecificationIcon = AppSetup.ICONS
             .getCustomAppImageIcon("prior_densities.svg");
-    public static final ImageIcon priorRatingCurveIcon = AppConfig.AC.ICONS
+    public static final ImageIcon priorRatingCurveIcon = AppSetup.ICONS
             .getCustomAppImageIcon("prior_rating_curve.svg");
 
     public HydraulicConfiguration(String uuid, BaratinProject project) {
@@ -324,7 +324,7 @@ public class HydraulicConfiguration
         }
         if (outOfSyncMessages.size() > 0) {
             T.t(runBam, runBam.runButton, true, "recompute_prior_rc");
-            runBam.runButton.setForeground(AppConfig.AC.INVALID_COLOR_FG);
+            runBam.runButton.setForeground(AppSetup.COLORS.INVALID_FG);
         } else {
             T.t(runBam, runBam.runButton, true, "compute_prior_rc");
             runBam.runButton.setForeground(new JButton().getForeground());
