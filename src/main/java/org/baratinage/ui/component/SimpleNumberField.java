@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
 
-import org.baratinage.ui.AppConfig;
 import org.baratinage.translation.T;
 
 public class SimpleNumberField extends SimpleTextField {
@@ -21,7 +20,7 @@ public class SimpleNumberField extends SimpleTextField {
     private boolean integer = false;
 
     public static void init() {
-        T.t(AppConfig.AC.APP_MAIN_FRAME, () -> {
+        T.permanent(() -> {
             DOUBLE_FORMATTER = NumberFormat.getNumberInstance(T.getLocale());
             INTEGER_FORMATTER = NumberFormat.getIntegerInstance(T.getLocale());
             DOUBLE_FORMATTER.setGroupingUsed(false);

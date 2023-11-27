@@ -16,7 +16,7 @@ public class CommonDialog {
     private static String defaultApproveButtonToolTipText = "Ok";
 
     public static void init() {
-        T.t(AppConfig.AC.APP_MAIN_FRAME, () -> {
+        T.permanent(() -> {
             UIManager.put("FileChooser.openButtonText", T.text("open"));
             UIManager.put("FileChooser.lookInLabelText", T.text("look_in"));
 
