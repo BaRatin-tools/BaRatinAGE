@@ -117,12 +117,12 @@ public class SimpleTextField extends JTextField {
         if (hasInnerLabel) {
             g2D.setColor(innerLabelColor);
             g2D.setFont(innerLabelFont);
-            setBorder(new CompoundBorder(defaultBorder, new EmptyBorder(10, 0, 0, 0)));
+            setBorder(new CompoundBorder(defaultBorder, new EmptyBorder(12, 0, 0, 0)));
 
             float maxCharHeight = g2D.getFontMetrics().getMaxAscent();
 
             float x = insets.left - 1;
-            float y = maxCharHeight + 3;
+            float y = maxCharHeight + 2;
 
             g2D.drawString(innerLabel, x, y);
         } else {
