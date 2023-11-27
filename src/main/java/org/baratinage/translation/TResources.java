@@ -9,14 +9,14 @@ import org.baratinage.utils.ConsoleLogger;
 
 public class TResources {
 
-    private final List<Dictionnary> dictionnariesList;
-    private final HashMap<String, Dictionnary> dictionnariesMap;
-    private final Dictionnary defaultDictionnary;
+    private final List<TDictionary> dictionnariesList;
+    private final HashMap<String, TDictionary> dictionnariesMap;
+    private final TDictionary defaultDictionnary;
 
     public TResources() {
-        dictionnariesList = Dictionnary.readDictionnariesFromCSV(AppSetup.TRANSLATIONS_FILE_PATH);
+        dictionnariesList = TDictionary.readDictionnariesFromCSV(AppSetup.PATH_TRANSLATIONS_FILE);
         dictionnariesMap = new HashMap<>();
-        for (Dictionnary d : dictionnariesList) {
+        for (TDictionary d : dictionnariesList) {
             dictionnariesMap.put(d.lgKey, d);
         }
         defaultDictionnary = dictionnariesMap.get(AppSetup.TRANSLATIONS_DEFAULT_KEY);
@@ -36,7 +36,7 @@ public class TResources {
             ConsoleLogger.error("No dictionnary found for language tag '" + lgKey + "'");
             return getDefaultTranslation(key);
         }
-        Dictionnary dictionnary = dictionnariesMap.get(lgKey);
+        TDictionary dictionnary = dictionnariesMap.get(lgKey);
         String translation = dictionnary.getTranslation(key);
         if (translation == null) {
             ConsoleLogger.error("No translation found for key '" + key + "' and language tag '" + lgKey + "'.");
