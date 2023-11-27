@@ -122,17 +122,20 @@ public class AppAbout extends JDialog {
         creditsScrollPane.setPreferredSize(new Dimension(700, 400));
 
         try {
-            String[] lines = ReadFile.getLines("resources/credits.txt", Integer.MAX_VALUE, true);
-            for (int k = 1; k < lines.length; k++) {
-                String[] parsedLine = ReadFile.trimStringArray(ReadFile.parseString(lines[k], ";", true));
-                if (parsedLine.length == 4) {
-                    creditEntries.add(
-                            new CreditEntry(
-                                    parsedLine[0],
-                                    parsedLine[1],
-                                    parsedLine[2],
-                                    ReadFile.trimStringArray(parsedLine[3].split(","))));
-                }
+            List<String[]> creditsMatrix = ReadFile.readStringMatrix(
+                    "resources/credits.csv",
+                    ";",
+                    1,
+                    true,
+                    true);
+            int nEntry = creditsMatrix.get(0).length;
+            for (int k = 0; k < nEntry; k++) {
+                creditEntries.add(
+                        new CreditEntry(
+                                creditsMatrix.get(0)[k],
+                                creditsMatrix.get(1)[k],
+                                creditsMatrix.get(2)[k],
+                                ReadFile.parseString(creditsMatrix.get(3)[k], ",", true)));
             }
         } catch (IOException e) {
             ConsoleLogger.error(e);
@@ -212,7 +215,7 @@ public class AppAbout extends JDialog {
                 if (contributionKey.startsWith("translation")) {
                     String localeKey = contributionKey.split("_")[1];
                     String localeText = Locale.forLanguageTag(localeKey).getDisplayName(T.getLocale());
-                    descString = T.text("translation", localeText);
+                    descString = T.text("translation_in", localeText);
                 } else {
                     descString = T.text(contributionKey);
                 }
