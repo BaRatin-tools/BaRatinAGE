@@ -4,6 +4,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.List;
 
@@ -56,7 +57,7 @@ public class WriteFile {
         if (!file.exists()) {
             file.createNewFile();
         }
-        FileWriter fileWriter = new FileWriter(file);
+        FileWriter fileWriter = new FileWriter(file, StandardCharsets.UTF_8);
         BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
         for (int k = 0; k < lines.length; k++) {
             bufferedWriter.write(lines[k]);
@@ -67,81 +68,133 @@ public class WriteFile {
     }
 
     /**
-     * Build a string from an array of string by contatenating each element using
-     * sep
-     * as a seperator.
+     * Converts a double value into a string using a missing value code for NaN and
+     * Infinite values
      * 
-     * @param row array of Strings
-     * @param sep separator Sring
-     * @return concatenated string.
+     * @param d                  double value to convert
+     * @param missingValueString string to use for NaN and infinite values
+     * @return string representation of the double
      */
-    public static String processMatrixRow(String[] row, String sep) {
-        String line = "";
-        for (int k = 0; k < row.length; k++) {
-            String currentSep = k == 0 ? "" : sep;
-            line = line + currentSep + row[k];
+    private static String toString(double d, String missingValueString) {
+        if (Double.isNaN(d) || Double.isInfinite(d)) {
+            return missingValueString;
         }
-        return line;
+        return Double.toString(d);
     }
 
-    private static String processMatrixRow(double[] row, String sep, String missingValueString) {
-        String[] stringRow = new String[row.length];
-        for (int k = 0; k < row.length; k++) {
-            if (Double.isNaN(row[k])) {
-                stringRow[k] = missingValueString;
-            } else {
-                stringRow[k] = Double.toString(row[k]);
+    /**
+     * write a matrix of string to file
+     * 
+     * @param textFilePath     path to the text file
+     * @param matrixColumnWise data as a List of String arrays with all arrays being
+     *                         of equal length
+     * @param sep              column separator to use
+     * @param headers          String arrays for the header (or null); must match
+     *                         the number of column (size of matrixColumnWise)
+     * @throws IOException
+     * @throws IllegalArgumentException
+     */
+    static public void writeMatrix(
+            String textFilePath,
+            List<String[]> matrixColumnWise,
+            String sep,
+            String[] headers) throws IOException, IllegalArgumentException {
+
+        int nCol = matrixColumnWise.size();
+        int nRow = nCol <= 0 ? 0 : matrixColumnWise.get(0).length;
+
+        if (headers != null && headers.length != nCol) {
+            throw new IllegalArgumentException(String.format(
+                    "Mismatch between number of columns (%d) and headers length (%d)!",
+                    nCol, headers.length));
+        }
+
+        File file = new File(textFilePath);
+        if (!file.exists()) {
+            file.createNewFile();
+        }
+        FileWriter fileWriter = new FileWriter(file, StandardCharsets.UTF_8);
+        BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
+        if (headers != null) {
+            bufferedWriter.write(String.join(sep, headers));
+            bufferedWriter.newLine();
+        }
+        for (int i = 0; i < nRow; i++) {
+            String row = "";
+            for (int j = 0; j < nCol; j++) {
+                String element = matrixColumnWise.get(j)[i];
+                if (element.contains(sep)) {
+                    ConsoleLogger.error(
+                            String.format(
+                                    "In row %d and column %d, the string contains the column separator: '%s'",
+                                    i, j, element));
+                }
+                row = row + element;
+                if (j != nCol - 1) {
+                    row = row + sep;
+                }
             }
-
+            bufferedWriter.write(row);
+            bufferedWriter.newLine();
         }
-        return processMatrixRow(stringRow, sep);
+
+        bufferedWriter.close();
+        fileWriter.close();
     }
 
+    /**
+     * write a matrix of string to file
+     * 
+     * @param textFilePath       path to the text file
+     * @param matrixColumnWise   data as a List of double arrays with all arrays
+     *                           being of equal length
+     * @param sep                column separator to use
+     * @param missingValueString string to use for NaN and Infinite double values
+     * @param headers            String arrays for the header (or null); must match
+     *                           the number of column (size of matrixColumnWise)
+     * @throws IOException
+     * @throws IllegalArgumentException
+     */
     static public void writeMatrix(
             String textFilePath,
             List<double[]> matrixColumnWise,
             String sep,
             String missingValueString,
-            String[] headers) throws IOException {
+            String[] headers) throws IOException, IllegalArgumentException {
 
         int nCol = matrixColumnWise.size();
-        if (nCol <= 0) {
-            ConsoleLogger.error("Cannot write an empty matrix.");
-            return;
+        int nRow = nCol <= 0 ? 0 : matrixColumnWise.get(0).length;
+
+        if (headers != null && headers.length != nCol) {
+            throw new IllegalArgumentException(String.format(
+                    "Mismatch between number of columns (%d) and headers length (%d)!",
+                    nCol, headers.length));
         }
-        int nRow = matrixColumnWise.get(0).length;
-        if (nRow <= 0) {
-            // FIXME: this condition could be skiped if BaM allowed input data with 0 rows!
-            // At least for calibration data, Config_Data.txt with nobs = 0 throws an error
-            // FIXME: this error should be handled in CalibrationData class!
-            ConsoleLogger.error("Cannot write an empty matrix.");
-            // String[] emptyMatrix = new String[nCol];
-            // for (int k = 0; k < nCol; k++) {
-            // emptyMatrix[k] = "";
-            // }
-            // writeLines(textFilePath, new String[] { processMatrixRow(emptyMatrix, sep)
-            // });
-            return;
+
+        File file = new File(textFilePath);
+        if (!file.exists()) {
+            file.createNewFile();
         }
-        int headerOffset = headers == null ? 0 : 1;
-        String[] lines = new String[nRow + headerOffset];
+        FileWriter fileWriter = new FileWriter(file, StandardCharsets.UTF_8);
+        BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
         if (headers != null) {
-            if (headers.length != nCol) {
-                System.err.printf(
-                        "Mismatch between number of columns (%d) and headers length (%d)!\n",
-                        headers.length, nCol);
-                return;
-            }
-            lines[0] = processMatrixRow(headers, sep);
-            headerOffset = 1;
+            bufferedWriter.write(String.join(sep, headers));
+            bufferedWriter.newLine();
         }
         for (int i = 0; i < nRow; i++) {
-            double[] row = new double[nCol];
+            String row = "";
             for (int j = 0; j < nCol; j++) {
-                row[j] = matrixColumnWise.get(j)[i];
+                String element = toString(matrixColumnWise.get(j)[i], missingValueString);
+                row = row + element;
+                if (j != nCol - 1) {
+                    row = row + sep;
+                }
             }
-            lines[i + headerOffset] = processMatrixRow(row, sep, missingValueString);
+            bufferedWriter.write(row);
+            bufferedWriter.newLine();
         }
-        writeLines(textFilePath, lines);
+
+        bufferedWriter.close();
+        fileWriter.close();
     }
 }
