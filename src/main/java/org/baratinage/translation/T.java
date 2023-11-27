@@ -22,6 +22,7 @@ public class T {
     static private Map<Object, TranslatableList> translatables;
     static private TResources resources;
     static private Locale currentLocale;
+    static private final String NO_OWNER = "NO_OWNER";
 
     static public void init() {
         resources = new TResources();
@@ -82,6 +83,10 @@ public class T {
 
     static public Locale[] getAvailableLocales() {
         return resources.getAllLocales();
+    }
+
+    static public void permanent(Translatable translatable) {
+        t(NO_OWNER, translatable);
     }
 
     static public void t(Object owner, Translatable translatable) {
