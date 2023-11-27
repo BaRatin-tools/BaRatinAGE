@@ -11,6 +11,7 @@ import org.baratinage.ui.component.SimpleNumberField;
 import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.utils.ConsoleLogger;
 import org.baratinage.utils.Misc;
+import org.baratinage.utils.perf.TimedActions;
 
 import java.awt.Dimension;
 import java.awt.event.ComponentAdapter;
@@ -81,6 +82,15 @@ public class MainFrame extends JFrame {
             @Override
             public void windowClosing(WindowEvent e) {
                 MainFrame.this.close();
+            }
+        });
+
+        addComponentListener(new ComponentAdapter() {
+            public void componentResized(ComponentEvent e) {
+                TimedActions.debounce(
+                        "rebuild_icons_if_needed",
+                        250,
+                        AppConfig.AC.ICONS::updateAllIcons);
             }
         });
 
