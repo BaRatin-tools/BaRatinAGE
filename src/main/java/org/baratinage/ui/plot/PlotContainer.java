@@ -294,6 +294,8 @@ public class PlotContainer extends RowColPanel {
     }
 
     public void windowPlot() {
+        if (chart == null)
+            return;
         JFrame f = new JFrame();
         PlotContainer p = new PlotContainer(plot.getCopy());
 
