@@ -179,13 +179,19 @@ public class T {
     }
 
     static public void clear(Object owner) {
+        clearOwnerRecursively(owner);
+        // remove owners from children list of other owners
+        clearOwnerFromOthersChildrenList(owner);
+    }
+
+    static private void clearOwnerRecursively(Object owner) {
         // remove owner and all its children (recursively)
         if (hierarchy.containsKey(owner)) {
             List<WeakReference<Object>> children = hierarchy.get(owner);
             for (WeakReference<Object> childRef : children) {
                 Object child = childRef.get();
                 if (child != null) {
-                    clear(child);
+                    clearOwnerRecursively(child);
                 }
             }
             hierarchy.remove(owner);
@@ -194,7 +200,9 @@ public class T {
         if (translatables.containsKey(owner)) {
             translatables.remove(owner);
         }
-        // remove owners from children list of other owners
+    }
+
+    static private void clearOwnerFromOthersChildrenList(Object owner) {
         for (Object o : hierarchy.keySet()) {
             List<WeakReference<Object>> children = hierarchy.get(o);
             children.removeIf(weakRef -> {
