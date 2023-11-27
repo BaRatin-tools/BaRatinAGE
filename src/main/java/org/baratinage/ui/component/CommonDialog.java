@@ -59,14 +59,38 @@ public class CommonDialog {
     }
 
     public static void errorDialog(String message) {
+        errorDialog(message, null);
+    }
+
+    public static void errorDialog(String message, String title) {
         JOptionPane.showOptionDialog(AppConfig.AC.APP_MAIN_FRAME,
                 message,
-                T.text("error"),
+                title == null ? T.text("error") : title,
                 JOptionPane.OK_OPTION,
                 JOptionPane.ERROR_MESSAGE,
                 null,
                 new String[] { T.text("ok") },
                 "");
+    }
+
+    public static void infoDialog(String message) {
+        infoDialog(message, null);
+    }
+
+    public static void infoDialog(String message, String title) {
+        String[] okOption = new String[] {
+                T.text("ok")
+        };
+        JOptionPane.showOptionDialog(AppConfig.AC.APP_MAIN_FRAME,
+                message,
+                title == null ? T.text("info") : title,
+                JOptionPane.OK_OPTION,
+                JOptionPane.INFORMATION_MESSAGE,
+                null, okOption, okOption[0]);
+    }
+
+    public static boolean confirmDialog(String message) {
+        return confirmDialog(message, null);
     }
 
     public static boolean confirmDialog(String message, String title) {
@@ -76,7 +100,7 @@ public class CommonDialog {
         };
         int response = JOptionPane.showOptionDialog(AppConfig.AC.APP_MAIN_FRAME,
                 message,
-                title,
+                title == null ? T.text("warning") : title,
                 JOptionPane.YES_NO_OPTION,
                 JOptionPane.WARNING_MESSAGE,
                 null, yesNoOptions, yesNoOptions[1]);
