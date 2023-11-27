@@ -8,7 +8,6 @@ import java.util.List;
 import javax.swing.SwingUtilities;
 
 import org.baratinage.ui.component.SvgIcon;
-import org.baratinage.utils.perf.TimedActions;
 
 public class AppIcons {
 
@@ -59,13 +58,6 @@ public class AppIcons {
         RIGHT_DOWN_ARROW_ICON = addIcon(buildFeatherAppImageIcon("corner-right-down.svg", FEATHER_ICON_SIZE));
         LEFT_UP_ARROW_ICON = addIcon(buildFeatherAppImageIcon("corner-left-up.svg", FEATHER_ICON_SIZE));
         RIGHT_UP_ARROW_ICON = addIcon(buildFeatherAppImageIcon("corner-right-up.svg", FEATHER_ICON_SIZE));
-
-        // FIXME: not an ideal solution.
-        // every 10 seconds, check if scales have change, and rebuild icons if necessary
-        TimedActions.interval(
-                "app_icons_rebuild_if_necessary",
-                10000,
-                this::updateAllIcons);
 
     }
 
