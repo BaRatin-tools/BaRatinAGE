@@ -9,20 +9,20 @@ import java.util.Locale;
 import org.baratinage.utils.ConsoleLogger;
 import org.baratinage.utils.fs.ReadFile;
 
-public class Dictionnary {
+public class TDictionary {
     public final Locale locale;
     public final String lgKey;
     private final HashMap<String, String> translations;
     private final List<String> keys;
 
-    public Dictionnary(String lgKey) {
+    public TDictionary(String lgKey) {
         this.locale = Locale.forLanguageTag(lgKey);
         this.lgKey = lgKey;
         this.translations = new HashMap<>();
         this.keys = new ArrayList<>();
     }
 
-    public Dictionnary(String lgKey, String[] keys, String[] translations) {
+    public TDictionary(String lgKey, String[] keys, String[] translations) {
         this(lgKey);
         if (keys.length != translations.length) {
             throw new IllegalArgumentException("the length of 'keys' and 'translations' must match");
@@ -41,20 +41,22 @@ public class Dictionnary {
         return keys.toArray(new String[keys.size()]);
     }
 
-    public static List<Dictionnary> readDictionnariesFromCSV(String csvFilePath) {
+    static public List<String[]> rawDictionnaries;
+
+    public static List<TDictionary> readDictionnariesFromCSV(String csvFilePath) {
         try {
-            List<String[]> rawDictionnaries = ReadFile.readStringMatrix(
+            rawDictionnaries = ReadFile.readStringMatrix(
                     csvFilePath,
                     "\\t",
                     0,
                     true,
                     false);
-            List<Dictionnary> dictionnaries = new ArrayList<>();
+            List<TDictionary> dictionnaries = new ArrayList<>();
             String[] keys = rawDictionnaries.get(0);
             // skipping first two columns (key, comment)
             for (int k = 2; k < rawDictionnaries.size(); k++) {
                 String[] translations = rawDictionnaries.get(k);
-                dictionnaries.add(new Dictionnary(translations[0], keys, translations));
+                dictionnaries.add(new TDictionary(translations[0], keys, translations));
             }
             return dictionnaries;
         } catch (IOException e) {
