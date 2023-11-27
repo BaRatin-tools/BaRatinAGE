@@ -69,7 +69,10 @@ public class ControlMatrix extends RowColPanel implements ChangeListener {
         updateControlMatrixView();
 
         T.t(this, reversedOrderCheckBox, false, "invert_control_matrix");
-        T.t(this, this::updateLabelsAndButtons);
+        T.t(this, () -> {
+            updateLabelsAndButtons();
+            updateControlMatrixView();
+        });
     }
 
     private void updateLabelsAndButtons() {
@@ -182,6 +185,7 @@ public class ControlMatrix extends RowColPanel implements ChangeListener {
         setControlMatrix(newMatrixControl);
     }
 
+    // FIXME: need to be internalionalized (english only currently)
     private void updateControlMatrixView() {
         controlCheckBoxPanel.clear();
         int nCtrl = controls.size();
@@ -191,16 +195,16 @@ public class ControlMatrix extends RowColPanel implements ChangeListener {
             if (k == 0 && k == nCtrl - 1) {
                 labelPostfix = "";
             } else if (k == 0) {
-                labelPostfix = " (bas)";
+                labelPostfix = " (top)";
             } else if (k == nCtrl - 1) {
-                labelPostfix = " (haut)";
+                labelPostfix = " (bottom)";
             }
             int index = reversedOrderCheckBox.isSelected() ? k + 1 : nCtrl - k;
             JLabel lbl = new JLabel("Segment #" + (k + 1) + labelPostfix);
             controlCheckBoxPanel.insertChild(lbl, 0, index);
         }
         for (int k = 0; k < nCtrl; k++) {
-            JLabel lbl = new JLabel("Contrôle #" + (k + 1));
+            JLabel lbl = new JLabel("Control #" + (k + 1));
             controlCheckBoxPanel.insertChild(lbl, k + 1, 0, GridPanel.ANCHOR.C, GridPanel.FILL.NONE);
         }
 
