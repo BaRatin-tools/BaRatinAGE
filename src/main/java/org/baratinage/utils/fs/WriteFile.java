@@ -22,6 +22,21 @@ public class WriteFile {
      * @throws IOException Errors may occur when creating the file or when trying to
      *                     write to the files
      */
+    static public void writeStringContent(String textFilePath, String content) throws IOException {
+        File file = new File(textFilePath);
+        writeLines(file, new String[] { content });
+    }
+
+    /**
+     * Given lines of texts in an array and file path, write the lines of text to
+     * the file.
+     * If the file doesn't exist, it is created.
+     * 
+     * @param textFilePath text file path as a Path object
+     * @param lines        array of strings containing the lines of text to write
+     * @throws IOException Errors may occur when creating the file or when trying to
+     *                     write to the files
+     */
     static public void writeLines(Path textFilePath, String[] lines) throws IOException {
         File file = textFilePath.toFile();
         writeLines(file, lines);
