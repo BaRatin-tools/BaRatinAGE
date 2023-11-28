@@ -11,6 +11,7 @@ import java.util.WeakHashMap;
 import javax.swing.AbstractButton;
 import javax.swing.JLabel;
 
+import org.baratinage.AppSetup;
 import org.baratinage.utils.ConsoleLogger;
 
 public class T {
@@ -47,6 +48,7 @@ public class T {
     static public void setLocale(Locale locale) {
         currentLocale = locale;
         Locale.setDefault(locale);
+        AppSetup.CONFIG.LANGUAGE_KEY.set(locale.getLanguage());
         updateTranslations();
     }
 

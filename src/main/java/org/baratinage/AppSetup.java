@@ -75,10 +75,10 @@ public class AppSetup {
 
         setupLookAndFeel();
 
-        if (CONFIG.LANGUAGE_KEY.equals("ko")) {
-            setDefaultFont(KO_FONT, CONFIG.FONT_SIZE);
+        if (CONFIG.LANGUAGE_KEY.get().equals("ko")) {
+            setDefaultFont(KO_FONT, CONFIG.FONT_SIZE.get());
         } else {
-            setDefaultFont(CONFIG.FONT_SIZE);
+            setDefaultFont(CONFIG.FONT_SIZE.get());
         }
 
         T.init();
@@ -91,6 +91,7 @@ public class AppSetup {
     }
 
     public static void cleanup() {
+        CONFIG.saveConfiguration();
         DirUtils.deleteDir(PATH_APP_TEMP_DIR);
         DirUtils.deleteDir(PATH_BAM_WORKSPACE_DIR);
     }
