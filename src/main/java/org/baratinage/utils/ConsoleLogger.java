@@ -105,6 +105,21 @@ public class ConsoleLogger {
         addLogToLogFile(parsedMessage);
     }
 
+    public static void warn(String error) {
+        String callerClassName = getCallerClassName();
+        String parsedMessage = parseMessage(callerClassName, "WARNING", error);
+        System.out.println(parsedMessage);
+        addLogToLogFile(parsedMessage);
+    }
+
+    public static void warn(Exception exception) {
+        String callerClassName = getCallerClassName();
+        String parsedMessage = parseMessage(callerClassName, "WARNING", "");
+        System.out.println(parsedMessage);
+        System.out.println(exception);
+        addLogToLogFile(parsedMessage + exception.toString());
+    }
+
     public static void error(String error) {
         String callerClassName = getCallerClassName();
         String parsedMessage = parseMessage(callerClassName, "ERROR", error);
