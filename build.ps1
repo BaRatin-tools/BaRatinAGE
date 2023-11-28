@@ -1,8 +1,8 @@
 param (
-    [string]$version = "http://defaultserver",
+    [parameter(Mandatory = $true)][string]$version,
     [switch]$archive = $false,
     [switch]$quiet = $false
- )
+)
 
 $ErrorActionPreference = "Stop"
 
