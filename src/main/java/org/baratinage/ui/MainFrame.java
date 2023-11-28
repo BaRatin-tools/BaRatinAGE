@@ -256,7 +256,6 @@ public class MainFrame extends JFrame {
     }
 
     public void close() {
-        AppSetup.cleanup();
         System.exit(0);
     }
 }
