@@ -102,14 +102,22 @@ public class DirUtils {
 
     public static boolean deleteDir(File dirPath) {
         File[] allContents = dirPath.listFiles();
+        boolean success = true;
         if (allContents != null) {
             for (File file : allContents) {
-                deleteDir(file);
+                if (!deleteDir(file)) {
+                    success = false;
+                }
             }
         }
-        boolean success = dirPath.delete();
-        if (!success) {
-            ConsoleLogger.error("Failed to delete '" + dirPath + "'!");
+        if (success) {
+            try {
+                Files.delete(dirPath.toPath());
+            } catch (IOException e) {
+                ConsoleLogger.error(e);
+                success = false;
+                ConsoleLogger.error("Failed to delete '" + dirPath + "'!");
+            }
         }
         return success;
     }
