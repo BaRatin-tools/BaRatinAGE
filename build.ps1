@@ -23,7 +23,10 @@ $DIRS_TO_CREATE = @(
 )
 
 $DIRS_TO_COPY = @(
-    "resources", "example"
+    "resources/fonts", "resources/help", "resources/i18n", "resources/icons", "example"
+)
+$FILES_TO_COPY = @(
+    "resources/credits.csv"
 )
 
 # no extension!
@@ -175,6 +178,12 @@ foreach ( $DIR in $DIRS_TO_CREATE ) {
 foreach ( $DIR in $DIRS_TO_COPY ) {
     "Copying folder '$($DIR)'..."
     Copy-item -Force -Recurse  $DIR -Destination "$($RESOURCES_DIR)/$($DIR)"
+}
+
+# copying necessary folder
+foreach ( $FILE in $FILES_TO_COPY ) {
+    "Copying file '$($FILE)'..."
+    Copy-item -Force $FILE -Destination "$($RESOURCES_DIR)/$($FILE)"
 }
 
 # copying necessary exe
