@@ -474,7 +474,7 @@ public class RatingCurve extends BamItem implements IPredictionMaster, ICalibrat
         List<double[]> totalUraw = predResults[2].outputResults.get(0).env().subList(1, 3);
 
         int smoothing = Double.valueOf((double) totalUraw.get(0).length * 0.05).intValue();
-        ConsoleLogger.log("Smoothing total envelop using moving average of a '" + smoothing + "' window...");
+        ConsoleLogger.log("Smoothing total envelop using moving average (window of size " + smoothing + ") ...");
         List<double[]> totalU = new ArrayList<>();
         totalU.add(Calc.smooth(totalUraw.get(0), smoothing, false));
         totalU.add(Calc.smooth(totalUraw.get(1), smoothing, false));
