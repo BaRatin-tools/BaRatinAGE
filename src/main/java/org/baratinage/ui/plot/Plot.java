@@ -28,6 +28,7 @@ public class Plot implements LegendItemSource {
 
     public final NumberAxis axisX;
     public final NumberAxis axisY;
+    public final LogAxis axisXlog;
     public final LogAxis axisYlog;
     public final DateAxis axisXdate;
 
@@ -58,13 +59,20 @@ public class Plot implements LegendItemSource {
 
         axisX = new NumberAxis();
         axisX.setAutoRangeIncludesZero(false);
+
+        axisXlog = new LogAxis();
+        axisXlog.setAutoRangeIncludesZero(false);
+        axisXlog.setAutoRange(true);
+        axisXlog.setAllowNegativesFlag(true);
+
         axisY = new NumberAxis();
         axisY.setAutoRangeIncludesZero(false);
+
         axisYlog = new LogAxis();
         axisYlog.setAutoRangeIncludesZero(false);
         axisYlog.setAutoRange(true);
-        axisYlog.setAutoRangeIncludesZero(false);
         axisYlog.setAllowNegativesFlag(true);
+
         axisXdate = new DateAxis();
         axisXdate.setDateFormatOverride(new SimpleDateFormat(dateTimeFormat));
 
@@ -99,13 +107,13 @@ public class Plot implements LegendItemSource {
 
     }
 
-    public void setAxisLogY(boolean log) {
-        if (log) {
-            plot.setRangeAxis(axisYlog);
-        } else {
-            plot.setRangeAxis(axisY);
-        }
-    }
+    // public void setAxisLogY(boolean log) {
+    // if (log) {
+    // plot.setRangeAxis(axisYlog);
+    // } else {
+    // plot.setRangeAxis(axisY);
+    // }
+    // }
 
     public JFreeChart getChart() {
         return this.chart;

@@ -34,9 +34,9 @@ public class PlotContainer extends RowColPanel {
     private JFreeChart chart;
     private RowColPanel chartPanelContainer;
     private ChartPanel chartPanel;
-    private boolean logYaxis;
+    // private boolean logYaxis;
     private Color backgroundColor = Color.WHITE;
-    private JButton toggleYaxisLogButton;
+    // private JButton toggleYaxisLogButton;
 
     private final JPopupMenu popupMenu;
     private final RowColPanel toolsPanel;
@@ -73,13 +73,13 @@ public class PlotContainer extends RowColPanel {
         topPanel.appendChild(toolsPanel, 1);
         topPanel.appendChild(actionPanel, 1);
 
-        logYaxis = false;
-        toggleYaxisLogButton = new JButton();
+        // logYaxis = false;
+        // toggleYaxisLogButton = new JButton();
 
-        toolsPanel.appendChild(toggleYaxisLogButton, 0);
-        toggleYaxisLogButton.addActionListener((e) -> {
-            toggleYLogAxis();
-        });
+        // toolsPanel.appendChild(toggleYaxisLogButton, 0);
+        // toggleYaxisLogButton.addActionListener((e) -> {
+        // toggleYLogAxis();
+        // });
 
         JButton btnWindowPlot = new JButton();
 
@@ -159,8 +159,8 @@ public class PlotContainer extends RowColPanel {
             btnSaveAsPng.setToolTipText(T.text("to_png"));
             btnCopyToClipboard.setToolTipText(T.text("to_clipboard"));
 
-            toggleYaxisLogButton.setText(
-                    logYaxis ? T.text("linear_y_axis") : T.text("log_y_axis"));
+            // toggleYaxisLogButton.setText(
+            // logYaxis ? T.text("linear_y_axis") : T.text("log_y_axis"));
         });
 
     }
@@ -201,14 +201,14 @@ public class PlotContainer extends RowColPanel {
         chartPanelContainer.appendChild(chartPanel, 1);
     }
 
-    private void toggleYLogAxis() {
-        logYaxis = !logYaxis;
-        if (plot != null) {
-            plot.setAxisLogY(logYaxis);
-            chartPanel.restoreAutoBounds();
-            T.updateTranslation(this);
-        }
-    }
+    // private void toggleYLogAxis() {
+    // logYaxis = !logYaxis;
+    // if (plot != null) {
+    // plot.setAxisLogY(logYaxis);
+    // chartPanel.restoreAutoBounds();
+    // T.updateTranslation(this);
+    // }
+    // }
 
     private String getSvgXML() {
         if (chart == null) {
