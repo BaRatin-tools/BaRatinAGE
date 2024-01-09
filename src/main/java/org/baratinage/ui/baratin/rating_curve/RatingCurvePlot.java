@@ -221,8 +221,8 @@ public class RatingCurvePlot extends RowColPanel {
 
                 // dealing with axis translations
                 T.t(plot, () -> {
-                        String dischargeString = T.text("discharge");
-                        String stageString = T.text("stage_level");
+                        String dischargeString = T.text("discharge") + " [m3/s]";
+                        String stageString = T.text("stage_level") + " [m]";
                         if (axisFliped) {
                                 plot.axisX.setLabel(dischargeString);
                                 plot.axisXlog.setLabel(dischargeString);

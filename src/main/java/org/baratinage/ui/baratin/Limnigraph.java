@@ -161,8 +161,8 @@ public class Limnigraph extends BamItem implements IPredictionData {
         T.clear(plotPanel);
         T.t(plotPanel, () -> {
             plot.axisXdate.setLabel(T.text("time"));
-            plot.axisY.setLabel(T.text("stage_level"));
-            plot.axisYlog.setLabel(T.text("stage_level"));
+            plot.axisY.setLabel(T.text("stage_level") + " [m]");
+            plot.axisYlog.setLabel(T.text("stage_level") + " [m]");
         });
         PlotContainer plotContainer = new PlotContainer(plot);
         T.updateHierarchy(this, plotContainer);

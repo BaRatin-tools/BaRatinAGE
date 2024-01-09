@@ -73,8 +73,8 @@ public class HydrographPlot extends RowColPanel {
                                 limniBand.setLabel(T.text("lgd_discharge_limni_u"));
                         }
                         plot.axisXdate.setLabel(T.text("time"));
-                        plot.axisY.setLabel(T.text("discharge"));
-                        plot.axisYlog.setLabel(T.text("discharge"));
+                        plot.axisY.setLabel(T.text("discharge") + " [m3/s]");
+                        plot.axisYlog.setLabel(T.text("discharge" + " [m3/s]"));
                 });
 
                 PlotContainer plotContainer = new PlotContainer(plot);
