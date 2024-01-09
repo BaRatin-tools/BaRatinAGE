@@ -62,7 +62,7 @@ public class PredictionResult {
                         BamFilesHelpers.BAM_MISSING_VALUE_CODE,
                         false, true);
             } catch (IOException e) {
-                ConsoleLogger.error("Failed to read envelop file '" + envFileName + "'");
+                ConsoleLogger.warn("Failed to read envelop file '" + envFileName + "'");
             }
 
             try {
