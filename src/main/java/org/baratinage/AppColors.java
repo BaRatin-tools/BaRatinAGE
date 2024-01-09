@@ -21,6 +21,8 @@ public class AppColors {
     public final Color RATING_CURVE_PARAM_UNCERTAINTY = new Color(253, 195, 188);
     public final Color GAUGING = new Color(0, 128, 255);
     public final Color DISCARDED_GAUGING = new Color(255, 80, 83);
-    public final Color STAGE_TRANSITION_VALUE = new Color(4, 182, 0);
-    public final Color STAGE_TRANSITION_UNCERTAINTY = new Color(164, 255, 162);
+    public final Color PRIOR_STAGE_ACTIVATION_VALUE = new Color(155, 60, 155);
+    public final Color PRIOR_STAGE_ACTIVATION_UNCERTAINTY = new Color(231, 89, 231);
+    public final Color POSTERIOR_STAGE_ACTIVATION_VALUE = new Color(4, 182, 0);
+    public final Color POSTERIOR_STAGE_ACTIVATION_UNCERTAINTY = new Color(164, 255, 162);
 }

@@ -119,17 +119,21 @@ public class RatingCurvePlot extends RowColPanel {
                 int n = transitionStages.size();
                 String stageLegendText = isPriorPlot ? "lgd_prior_activation_stage"
                                 : "lgd_posterior_activation_stage";
+                Color stageActivationValueColor = isPriorPlot ? AppSetup.COLORS.PRIOR_STAGE_ACTIVATION_VALUE
+                                : AppSetup.COLORS.POSTERIOR_STAGE_ACTIVATION_VALUE;
+                Color stageActivationUncertaintyColor = isPriorPlot ? AppSetup.COLORS.PRIOR_STAGE_ACTIVATION_UNCERTAINTY
+                                : AppSetup.COLORS.POSTERIOR_STAGE_ACTIVATION_UNCERTAINTY;
                 for (int k = 0; k < n; k++) {
                         double[] transitionStage = transitionStages.get(k);
                         double coeffDir = flipAxis ? 0 : Double.POSITIVE_INFINITY;
                         addPlotItemToPlot(plot,
                                         new PlotInfiniteBand2("k", coeffDir,
                                                         transitionStage[1], transitionStage[2],
-                                                        AppSetup.COLORS.STAGE_TRANSITION_UNCERTAINTY, 0.9f),
+                                                        stageActivationUncertaintyColor, 0.9f),
                                         k == 0 ? stageLegendText : null);
                         addPlotItemToPlot(plot,
                                         new PlotInfiniteLine("transition_line", coeffDir, transitionStage[0],
-                                                        AppSetup.COLORS.STAGE_TRANSITION_VALUE, 2),
+                                                        stageActivationValueColor, 2),
                                         null);
                 }
 
