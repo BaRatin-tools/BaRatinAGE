@@ -13,7 +13,6 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
-import javax.swing.JToolBar;
 import javax.swing.SwingUtilities;
 
 import org.baratinage.AppSetup;
@@ -46,7 +45,6 @@ public abstract class BamProject extends RowColPanel {
     protected final Explorer EXPLORER;
 
     private final JMenu componentMenu;
-    private final JToolBar projectToolbar;
 
     private String projectPath = null;
 
@@ -74,8 +72,7 @@ public abstract class BamProject extends RowColPanel {
         // resetting toolbar and component menu (where "add bam item" buttons are)
         componentMenu = AppSetup.MAIN_FRAME.mainMenuBar.componentMenu;
         componentMenu.removeAll();
-        projectToolbar = AppSetup.MAIN_FRAME.projectToolbar;
-        projectToolbar.removeAll();
+        AppSetup.MAIN_FRAME.mainToolBars.clearBamItemTools();
 
         // inialialize current panel, place holder for bam item panels
         currentPanel = new RowColPanel(AXIS.COL);
@@ -163,7 +160,7 @@ public abstract class BamProject extends RowColPanel {
         JButton addBamItemToolbarButton = new JButton();
         addBamItemToolbarButton.addActionListener(addBamItemAction);
         addBamItemToolbarButton.setIcon(itemType.getAddIcon());
-        projectToolbar.add(addBamItemToolbarButton);
+        AppSetup.MAIN_FRAME.mainToolBars.addBamItemTool(addBamItemToolbarButton);
 
         JMenuItem addBamItemMenuBarItem = new JMenuItem();
         addBamItemMenuBarItem.addActionListener(addBamItemAction);

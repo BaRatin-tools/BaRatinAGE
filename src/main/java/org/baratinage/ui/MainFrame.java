@@ -1,7 +1,6 @@
 package org.baratinage.ui;
 
 import javax.swing.JFrame;
-import javax.swing.JToolBar;
 
 import org.baratinage.AppSetup;
 import org.baratinage.translation.T;
@@ -29,7 +28,8 @@ public class MainFrame extends JFrame {
     public final MainMenuBar mainMenuBar;
 
     public final RowColPanel topPanel;
-    public final JToolBar projectToolbar;
+
+    public final MainToolbars mainToolBars;
 
     public final NoProjectPanel noProjectPanel;
 
@@ -49,9 +49,8 @@ public class MainFrame extends JFrame {
 
         topPanel = new RowColPanel();
 
-        projectToolbar = new JToolBar();
-        projectToolbar.setFloatable(false);
-        topPanel.appendChild(projectToolbar);
+        mainToolBars = new MainToolbars();
+        topPanel.appendChild(mainToolBars);
 
         RowColPanel framePanel = new RowColPanel(RowColPanel.AXIS.COL);
         framePanel.setGap(5);
@@ -110,6 +109,7 @@ public class MainFrame extends JFrame {
 
         T.updateHierarchy(this, mainMenuBar);
         T.updateHierarchy(this, noProjectPanel);
+        T.updateHierarchy(this, mainToolBars);
     }
 
     public void updateUI() {
@@ -137,12 +137,15 @@ public class MainFrame extends JFrame {
         projectPanel.clear();
 
         boolean projectIsNull = project == null;
+
+        mainToolBars.updateFileTools(!projectIsNull);
+
         if (!projectIsNull) {
             projectPanel.appendChild(project);
         } else {
             projectPanel.appendChild(noProjectPanel);
-            projectToolbar.removeAll();
             mainMenuBar.componentMenu.removeAll();
+            mainToolBars.clearBamItemTools();
         }
         mainMenuBar.saveProjectAsMenuItem.setEnabled(!projectIsNull);
         mainMenuBar.saveProjectMenuItem.setEnabled(!projectIsNull);

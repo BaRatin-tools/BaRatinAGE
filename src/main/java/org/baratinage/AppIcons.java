@@ -24,6 +24,9 @@ public class AppIcons {
     public final SvgIcon SAVE;
     public final SvgIcon EXTERNAL;
     public final SvgIcon LIST;
+    public final SvgIcon FOLDER;
+    public final SvgIcon NEW_FILE;
+    public final SvgIcon CLOSE;
 
     public final SvgIcon LEFT_DOWN_ARROW;
     public final SvgIcon RIGHT_DOWN_ARROW;
@@ -53,6 +56,9 @@ public class AppIcons {
         SAVE = addIcon(buildFeatherAppImageIcon("save.svg", FEATHER_SIZE));
         EXTERNAL = addIcon(buildFeatherAppImageIcon("external-link.svg", FEATHER_SIZE));
         LIST = addIcon(buildFeatherAppImageIcon("list.svg", FEATHER_SIZE));
+        FOLDER = addIcon(buildFeatherAppImageIcon("folder.svg", FEATHER_SIZE));
+        NEW_FILE = addIcon(buildFeatherAppImageIcon("file-plus.svg", FEATHER_SIZE));
+        CLOSE = addIcon(buildFeatherAppImageIcon("x-square.svg", FEATHER_SIZE));
 
         LEFT_DOWN_ARROW = addIcon(buildFeatherAppImageIcon("corner-left-down.svg", FEATHER_SIZE));
         RIGHT_DOWN_ARROW = addIcon(buildFeatherAppImageIcon("corner-right-down.svg", FEATHER_SIZE));
