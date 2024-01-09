@@ -1,5 +1,4 @@
 name; affiliation; email; contribution_key_csv
-Benjamin Renard; Inrae; benjamin.renard@inrae.fr; benjamin_renard_inrae, baratinage_dev
-Ivan Horner; ihdev.fr; contact@ihdev.fr; ivan_horner_ihdev
-Jane Doe; ; janedoe@email.org; translation_fr, translation_en
-John Doe; unknown; ; translation_en
+Benjamin Renard; Inrae; baratin.dev@inrae.fr; benjamin_renard_inrae, baratinage_dev
+Jérôme Le Coz; Inrae; baratin.dev@inrae.fr; baratinage_dev, translation_fr, translation_en
+Ivan Horner; ihdev.fr; baratin.dev@inrae.fr; ivan_horner_ihdev
