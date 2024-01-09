@@ -201,9 +201,9 @@ public class CommonDialog {
             if (f.isDirectory()) {
                 return true;
             }
-            String fName = f.getName();
+            String fName = f.getName().toLowerCase();
             for (String ext : extensions) {
-                if (fName.endsWith("." + ext)) {
+                if (fName.endsWith("." + ext.toLowerCase())) {
                     return true;
                 }
             }
