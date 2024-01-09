@@ -122,7 +122,7 @@ public class CommonDialog {
         if (file == null)
             return null;
         if (file.exists()) {
-            if (!confirmDialog(T.text("file_already_exists_overwrite"),
+            if (!confirmDialog(T.html("file_already_exists_overwrite"),
                     T.text("overwrite_file"))) {
                 return null;
             }
