@@ -59,12 +59,7 @@ public class Misc {
 
     public static String getNextName(String defaultName, String[] allNames) {
         Set<Integer> usedInts = new HashSet<>();
-        boolean containsDefault = false;
         for (String name : allNames) {
-            if (name.equals(defaultName)) {
-                containsDefault = true;
-                continue;
-            }
             String regex = defaultName + " \\((\\d+)\\)$";
             Matcher m = Pattern.compile(regex).matcher(name);
             while (m.find()) {
@@ -79,9 +74,6 @@ public class Misc {
                     }
                 }
             }
-        }
-        if (!containsDefault) {
-            return defaultName;
         }
         for (int k = 1; k < 100; k++) {
             if (!usedInts.contains(k)) {
