@@ -26,6 +26,7 @@ import org.baratinage.ui.baratin.hydraulic_control.control_panel.ChannelParabola
 import org.baratinage.ui.baratin.hydraulic_control.control_panel.ChannelRect;
 import org.baratinage.ui.baratin.hydraulic_control.control_panel.ChannelTriangle;
 import org.baratinage.ui.component.SimpleComboBox;
+import org.baratinage.ui.component.SimpleTextField;
 import org.baratinage.ui.container.GridPanel;
 import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.translation.T;
@@ -82,6 +83,8 @@ public class OneHydraulicControl extends JScrollPane {
 
     private final List<HydraulicControlOption> allControlOptions;
     private int currentPriorControlPanelIndex = 0;
+
+    private final SimpleTextField descriptionField;
 
     public OneHydraulicControl(int controlNumber) {
         // super(AXIS.COL, ALIGN.START);
@@ -205,6 +208,12 @@ public class OneHydraulicControl extends JScrollPane {
         buttonsPanel.setPadding(5);
         buttonsPanel.appendChild(switchModeButton);
 
+        descriptionField = new SimpleTextField();
+        T.t(this, () -> {
+            descriptionField.setPlaceholder(T.text("description"));
+        });
+
+        mainPanel.appendChild(descriptionField, 0, 5, 5, 0, 5);
         mainPanel.appendChild(physicalParametersPanel, 0);
         mainPanel.appendChild(kacControlPanel, 0);
         mainPanel.appendChild(buttonsPanel, 0);
@@ -296,6 +305,10 @@ public class OneHydraulicControl extends JScrollPane {
 
         kacControlPanel.fromJSON(json.getJSONArray("kacControl"));
         kacMode = json.getBoolean("isKACmode");
+
+        if (json.has("description")) {
+            descriptionField.setText(json.getString("description"));
+        }
         updateMode();
 
     }
@@ -315,6 +328,8 @@ public class OneHydraulicControl extends JScrollPane {
         json.put("allControlOptions", allControlOptionsJSON);
 
         json.put("kacControl", kacControlPanel.toJSON());
+
+        json.put("description", descriptionField.getText());
 
         return json;
     }

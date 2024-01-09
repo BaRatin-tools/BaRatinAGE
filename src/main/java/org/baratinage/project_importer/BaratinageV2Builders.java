@@ -196,6 +196,9 @@ public class BaratinageV2Builders {
         // > isKACmode
         json.put("isKACmode", false);
 
+        // > description
+        json.put("description", controlConfigStrings[0]);
+
         return json;
     }
 
