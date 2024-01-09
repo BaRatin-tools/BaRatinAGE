@@ -133,7 +133,7 @@ public class DataParser extends RowColPanel {
 
         dataTableModel.setRawData(rawData);
 
-        int nCol = rawData.size();
+        int nCol = dataTableModel.getColumnCount();
         JTableHeader tableHeader = dataTable.getTableHeader();
         TableColumnModel tableColModel = tableHeader.getColumnModel();
         for (int k = 0; k < nCol; k++) {
@@ -147,7 +147,7 @@ public class DataParser extends RowColPanel {
 
     public void updateColumnTypes() {
 
-        int nCol = rawData.size();
+        int nCol = dataTableModel.getColumnCount();
         JTableHeader tableHeader = dataTable.getTableHeader();
         TableColumnModel tableColModel = tableHeader.getColumnModel();
 
@@ -338,13 +338,20 @@ public class DataParser extends RowColPanel {
         private List<String[]> rawData = new ArrayList<>();
 
         public boolean setRawData(List<String[]> rawData) {
+            if (rawData == null) {
+                ConsoleLogger.warn("Empty dataset is not supported!");
+                this.rawData = new ArrayList<>();
+                return true;
+            }
             int nCol = rawData.size();
             if (nCol == 0) {
+                ConsoleLogger.warn("Empty dataset is not supported!");
                 this.rawData = new ArrayList<>();
                 return true;
             }
             int nRow = rawData.get(0).length;
             if (nRow == 0) {
+                ConsoleLogger.warn("Empty dataset is not supported!");
                 this.rawData = new ArrayList<>();
                 return true;
             }
