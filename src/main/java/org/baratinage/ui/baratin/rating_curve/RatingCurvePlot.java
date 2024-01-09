@@ -117,6 +117,8 @@ public class RatingCurvePlot extends RowColPanel {
 
                 // stage transitions
                 int n = transitionStages.size();
+                String stageLegendText = isPriorPlot ? "lgd_prior_activation_stage"
+                                : "lgd_posterior_activation_stage";
                 for (int k = 0; k < n; k++) {
                         double[] transitionStage = transitionStages.get(k);
                         double coeffDir = flipAxis ? 0 : Double.POSITIVE_INFINITY;
@@ -124,7 +126,7 @@ public class RatingCurvePlot extends RowColPanel {
                                         new PlotInfiniteBand2("k", coeffDir,
                                                         transitionStage[1], transitionStage[2],
                                                         AppSetup.COLORS.STAGE_TRANSITION_UNCERTAINTY, 0.9f),
-                                        k == 0 ? "lgd_prior_transition_stage" : null);
+                                        k == 0 ? stageLegendText : null);
                         addPlotItemToPlot(plot,
                                         new PlotInfiniteLine("transition_line", coeffDir, transitionStage[0],
                                                         AppSetup.COLORS.STAGE_TRANSITION_VALUE, 2),
