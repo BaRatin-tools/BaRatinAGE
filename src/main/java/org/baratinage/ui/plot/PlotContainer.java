@@ -165,6 +165,18 @@ public class PlotContainer extends RowColPanel {
                 super.restoreAutoRangeBounds();
                 Range domainBounds = plot.getDomainBounds();
                 Range rangeBounds = plot.getRangeBounds();
+                // FIXME: this approach is not ideal but I don't have any clever idea to fixe
+                // the issue...
+                if (domainBounds.getLength() == 0) {
+                    double value = domainBounds.getCentralValue();
+                    double offset = Math.abs(value * 0.1);
+                    domainBounds = new Range(value - offset, value + offset);
+                }
+                if (rangeBounds.getLength() == 0) {
+                    double value = rangeBounds.getCentralValue();
+                    double offset = Math.abs(value * 0.1);
+                    rangeBounds = new Range(value - offset, value + offset);
+                }
                 if (domainBounds != null) {
                     plot.plot.getDomainAxis().setRange(domainBounds);
                 }
