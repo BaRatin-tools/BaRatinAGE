@@ -43,7 +43,7 @@ public class SimpleComboBox extends RowColPanel {
 
     public SimpleComboBox() {
 
-        int H = 32;
+        int H = 38;
 
         Dimension prefDim = this.getPreferredSize();
         prefDim.width = 100;
