@@ -37,7 +37,7 @@ public class PlotContainer extends RowColPanel {
     private Color backgroundColor = Color.WHITE;
 
     private final JPopupMenu popupMenu;
-    private final RowColPanel toolsPanel;
+    public final RowColPanel toolsPanel;
     private final RowColPanel actionPanel;
 
     public PlotContainer() {
