@@ -120,6 +120,7 @@ public class MainFrame extends JFrame {
         mainMenuBar.updateUI();
     }
 
+    // FIXME: disabled / currently unused
     public void checkIfUnsavedChanges() {
         if (currentProject != null) {
             if (currentProject.checkUnsavedChange()) {
