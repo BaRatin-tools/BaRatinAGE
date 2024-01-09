@@ -167,20 +167,20 @@ public class PlotContainer extends RowColPanel {
                 Range rangeBounds = plot.getRangeBounds();
                 // FIXME: this approach is not ideal but I don't have any clever idea to fixe
                 // the issue...
-                if (domainBounds.getLength() == 0) {
-                    double value = domainBounds.getCentralValue();
-                    double offset = Math.abs(value * 0.1);
-                    domainBounds = new Range(value - offset, value + offset);
-                }
-                if (rangeBounds.getLength() == 0) {
-                    double value = rangeBounds.getCentralValue();
-                    double offset = Math.abs(value * 0.1);
-                    rangeBounds = new Range(value - offset, value + offset);
-                }
                 if (domainBounds != null) {
+                    if (domainBounds.getLength() == 0) {
+                        double value = domainBounds.getCentralValue();
+                        double offset = Math.abs(value * 0.1);
+                        domainBounds = new Range(value - offset, value + offset);
+                    }
                     plot.plot.getDomainAxis().setRange(domainBounds);
                 }
-                if (domainBounds != null) {
+                if (rangeBounds != null) {
+                    if (rangeBounds.getLength() == 0) {
+                        double value = rangeBounds.getCentralValue();
+                        double offset = Math.abs(value * 0.1);
+                        rangeBounds = new Range(value - offset, value + offset);
+                    }
                     plot.plot.getRangeAxis().setRange(rangeBounds);
 
                 }
