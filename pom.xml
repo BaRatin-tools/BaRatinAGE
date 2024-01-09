@@ -6,10 +6,10 @@
 
   <groupId>org.baratinage</groupId>
   <artifactId>BaRatinAGE</artifactId>
-  <version>3.0.0-alpha5</version>
+  <version>3.0.0-alpha6</version>
 
   <name>BaRatinAGE</name>
-  <description>A simple BaRatinAGE.</description>
+  <description>A graphical user interface to BaM! focused on rating curve estimation</description>
   <url>https://github.com/BaRatin-tools/BaRatinAGE</url>
 
   <properties>
@@ -25,10 +25,10 @@
       <version>1.17</version>
       <exclusions>
         <exclusion>
-            <groupId>xml-apis</groupId>
-            <artifactId>xml-apis</artifactId>
+          <groupId>xml-apis</groupId>
+          <artifactId>xml-apis</artifactId>
         </exclusion>
-    </exclusions>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.json</groupId>
