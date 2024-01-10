@@ -74,7 +74,7 @@ public class HydrographPlot extends RowColPanel {
                         }
                         plot.axisXdate.setLabel(T.text("time"));
                         plot.axisY.setLabel(T.text("discharge") + " [m3/s]");
-                        plot.axisYlog.setLabel(T.text("discharge" + " [m3/s]"));
+                        plot.axisYlog.setLabel(T.text("discharge") + " [m3/s]");
                 });
 
                 PlotContainer plotContainer = new PlotContainer(plot);
