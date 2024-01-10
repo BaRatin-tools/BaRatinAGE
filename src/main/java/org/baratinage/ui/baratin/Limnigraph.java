@@ -25,6 +25,7 @@ import org.baratinage.ui.container.TabContainer;
 import org.baratinage.translation.T;
 import org.baratinage.ui.plot.Plot;
 import org.baratinage.ui.plot.PlotContainer;
+import org.baratinage.ui.plot.PlotItem;
 import org.baratinage.utils.Misc;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -151,18 +152,24 @@ public class Limnigraph extends BamItem implements IPredictionData {
     private void updatePlot() {
         // FIXME: shouldn't this be handled in a proper TimeSeriesPlot class?
 
-        Plot plot = new Plot(false, true);
+        Plot plot = new Plot(true, true);
 
-        if (limniDataset.hasStageErrMatrix()) {
-            plot.addXYItem(limniDataset.getPlotEnv());
+        PlotItem envelop = limniDataset.hasStageErrMatrix() ? limniDataset.getPlotEnv() : null;
+        if (envelop != null) {
+            plot.addXYItem(envelop);
         }
-        plot.addXYItem(limniDataset.getPlotLine());
+        PlotItem maxpost = limniDataset.getPlotLine();
+        plot.addXYItem(maxpost);
 
         T.clear(plotPanel);
         T.t(plotPanel, () -> {
             plot.axisXdate.setLabel(T.text("time"));
             plot.axisY.setLabel(T.text("stage_level") + " [m]");
             plot.axisYlog.setLabel(T.text("stage_level") + " [m]");
+            if (envelop != null) {
+                envelop.setLabel(T.text("stage_uncertainty"));
+            }
+            maxpost.setLabel(T.text("maxpost"));
         });
         PlotContainer plotContainer = new PlotContainer(plot);
         T.updateHierarchy(this, plotContainer);
