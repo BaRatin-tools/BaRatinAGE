@@ -10,6 +10,7 @@ import javax.swing.JButton;
 
 import org.baratinage.AppSetup;
 import org.baratinage.jbam.EstimatedParameter;
+import org.baratinage.ui.bam.BamProject;
 import org.baratinage.ui.baratin.EstimatedControlParameters;
 import org.baratinage.ui.commons.DensityPlotGrid;
 import org.baratinage.ui.commons.TracePlotGrid;
@@ -39,7 +40,11 @@ public class RatingCurveResults extends TabContainer {
     private static ImageIcon rcTblIcon = AppSetup.ICONS.getCustomAppImageIcon("rating_curve_table.svg");
     private static ImageIcon rcEqIcon = AppSetup.ICONS.getCustomAppImageIcon("rating_curve_equation.svg");
 
-    public RatingCurveResults() {
+    private BamProject project;
+
+    public RatingCurveResults(BamProject project) {
+
+        this.project = project;
 
         ratingCurvePlot = new RatingCurvePlot();
 
@@ -338,10 +343,8 @@ public class RatingCurveResults extends TabContainer {
         });
         mcmcToCsvButton.addActionListener((e) -> {
 
-            File f = CommonDialog.saveFileDialog(
-                    T.text("export_mcmc"),
-                    T.text("csv_format"),
-                    "csv");
+            File f = CommonDialog.saveFileDialog("MCMC_results_" + project.getProjectName(), T.text("export_mcmc"),
+                    new CommonDialog.CustomFileFilter(T.text("csv_format"), "csv", "CSV"));
 
             if (f != null) {
                 int m = parameters.controls().size();

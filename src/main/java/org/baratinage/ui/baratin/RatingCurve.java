@@ -184,7 +184,7 @@ public class RatingCurve extends BamItem implements IPredictionMaster, ICalibrat
             TimedActions.throttle(ID, AppSetup.CONFIG.THROTTLED_DELAY_MS, this::checkSync);
         });
 
-        resultsPanel = new RatingCurveResults();
+        resultsPanel = new RatingCurveResults(PROJECT);
 
         outdatedPanel = new RowColPanel(RowColPanel.AXIS.COL);
         outdatedPanel.setPadding(5);
