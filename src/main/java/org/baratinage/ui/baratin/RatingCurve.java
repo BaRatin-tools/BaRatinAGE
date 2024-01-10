@@ -210,6 +210,8 @@ public class RatingCurve extends BamItem implements IPredictionMaster, ICalibrat
         T.updateHierarchy(this, outdatedPanel);
 
         T.t(runBam, runBam.runButton, true, "compute_posterior_rc");
+
+        checkSync();
     }
 
     @Override

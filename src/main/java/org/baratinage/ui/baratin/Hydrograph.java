@@ -118,6 +118,8 @@ public class Hydrograph extends BamItem implements IPredictionMaster {
             tabs.setTitleAt(0, T.text("chart"));
             tabs.setTitleAt(1, T.text("table"));
         });
+
+        checkSync();
     }
 
     private void checkSync() {
