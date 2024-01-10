@@ -72,7 +72,7 @@ public class RatingCurveResults extends TabContainer {
 
         T.t(this, () -> {
             setTitleAt(0, T.html("posterior_rating_curve"));
-            setTitleAt(1, T.html("grid_table"));
+            setTitleAt(1, T.html("rating_table"));
             setTitleAt(2, T.html("equation"));
             setTitleAt(3, T.html("parameter_densities"));
             setTitleAt(4, T.html("parameter_summary_table"));
