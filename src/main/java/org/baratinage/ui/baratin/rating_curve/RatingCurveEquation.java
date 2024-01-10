@@ -60,10 +60,20 @@ public class RatingCurveEquation extends RowColPanel {
             Double c = parameters.get(k).c().getMaxpost();
 
             String start = kHigh == null ? "h > " + kLow : kLow + " < h < " + kHigh;
-            equationLines[k + 1] = start + ": Q = " + a + " * (h - " + b + ") ^ " + c + "";
+            // equationLines[k + 1] = start + ": Q = " + a + " * (h - " + b + ") ^ " + c +
+            // "";
+            equationLines[k + 1] = start + ": Q = " + a + " * (" + processSubstraction("h", b) + ") ^ " + c + "";
         }
 
         equationTextArea.setText(String.join("\n", equationLines));
+    }
+
+    private static String processSubstraction(String first, Double second) {
+        if (second < 0) {
+            return first + " + " + (second * -1);
+        } else {
+            return first + " - " + second;
+        }
     }
 
 }
