@@ -34,6 +34,9 @@ pom.xml.versionsBackup
 !/resources/icons/feather/corner-right-down.svg
 !/resources/icons/feather/corner-left-up.svg
 !/resources/icons/feather/corner-right-up.svg
+!/resources/icons/feather/folder.svg
+!/resources/icons/feather/file-plus.svg
+!/resources/icons/feather/x-square.svg
 
 # V2 related folder to ignore
 /externalLib
