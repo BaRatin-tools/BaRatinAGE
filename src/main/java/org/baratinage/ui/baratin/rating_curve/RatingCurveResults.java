@@ -120,11 +120,11 @@ public class RatingCurveResults extends TabContainer {
 
         rcGridTable.setHeaderWidth(200);
         rcGridTable.setHeader(0, "h [m]");
-        rcGridTable.setHeader(1, "Q_maxpost [m3.s-1]");
-        rcGridTable.setHeader(2, "Q_param_low [m3.s-1]");
-        rcGridTable.setHeader(3, "Q_param_high [m3.s-1]");
-        rcGridTable.setHeader(4, "Q_total_low [m3.s-1]");
-        rcGridTable.setHeader(5, "Q_total_high [m3.s-1]");
+        rcGridTable.setHeader(1, "Q_maxpost [m3/s]");
+        rcGridTable.setHeader(2, "Q_param_low [m3/s]");
+        rcGridTable.setHeader(3, "Q_param_high [m3/s]");
+        rcGridTable.setHeader(4, "Q_total_low [m3/s]");
+        rcGridTable.setHeader(5, "Q_total_high [m3/s]");
         rcGridTable.updateHeader();
 
         // T.t(this, () -> {

@@ -314,11 +314,11 @@ public class Hydrograph extends BamItem implements IPredictionMaster {
 
         tablePanel.setHeaderWidth(200);
         tablePanel.setHeader(0, "Time [yyyy-MM-dd hh:mm:ss]");
-        tablePanel.setHeader(1, "Q_maxpost [m3.s-1]");
-        tablePanel.setHeader(2, "Q_param_low [m3.s-1]");
-        tablePanel.setHeader(3, "Q_param_high [m3.s-1]");
-        tablePanel.setHeader(4, "Q_total_low [m3.s-1]");
-        tablePanel.setHeader(5, "Q_total_high [m3.s-1]");
+        tablePanel.setHeader(1, "Q_maxpost [m3/s]");
+        tablePanel.setHeader(2, "Q_param_low [[m3/s]");
+        tablePanel.setHeader(3, "Q_param_high [m3/s]");
+        tablePanel.setHeader(4, "Q_total_low [m3/s]");
+        tablePanel.setHeader(5, "Q_total_high [m3/s]");
         tablePanel.updateHeader();
     }
 
