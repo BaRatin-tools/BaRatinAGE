@@ -325,6 +325,18 @@ public abstract class BamProject extends RowColPanel {
         return projectPath;
     }
 
+    public String getProjectName() {
+        if (projectPath == null) {
+            return "";
+        }
+        String fileName = Path.of(projectPath).getFileName().toString();
+        int lastDotIndex = fileName.lastIndexOf(".");
+        if (lastDotIndex > 0) {
+            fileName = fileName.substring(0, lastDotIndex);
+        }
+        return fileName;
+    }
+
     static private boolean bamProjectLoadingCanceled;
     static private Runnable doAfterBamItemsLoaded = () -> {
     };
