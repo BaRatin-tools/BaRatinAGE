@@ -186,7 +186,7 @@ public class CommonDialog {
         return fileChooser;
     }
 
-    private static class CustomFileFilter extends FileFilter {
+    public static class CustomFileFilter extends FileFilter {
 
         private String description;
         private String[] extensions;
@@ -215,5 +215,50 @@ public class CommonDialog {
             return description;
         }
 
+        public String[] getExtensions() {
+            return extensions;
+        }
+
     }
+
+    // FIXME: still an experimental rewrite of saveFileDialog
+    public static File saveFileDialog(String defaultFileName, String dialogTitle, CustomFileFilter... fileFilters) {
+
+        if (fileChooser == null) {
+            resetFileChooser();
+        }
+
+        fileChooser.setSelectedFile(new File(defaultFileName == null ? "" : defaultFileName));
+        fileChooser.setDialogTitle(dialogTitle);
+        fileChooser.resetChoosableFileFilters();
+        for (CustomFileFilter ff : fileFilters) {
+            fileChooser.addChoosableFileFilter(ff);
+        }
+
+        int result = fileChooser.showSaveDialog(AppSetup.MAIN_FRAME);
+
+        if (result != JFileChooser.APPROVE_OPTION) {
+            return null;
+        }
+        File file = fileChooser.getSelectedFile();
+        if (file == null) {
+            return null;
+        }
+
+        CustomFileFilter cff = (CustomFileFilter) fileChooser.getFileFilter();
+        if (cff != null) {
+            String[] extensions = cff.getExtensions();
+            file = addExtension(file, extensions);
+        }
+
+        if (file.exists()) {
+            if (!confirmDialog(T.html("file_already_exists_overwrite"),
+                    T.text("overwrite_file"))) {
+                return null;
+            }
+        }
+
+        return file;
+    }
+
 }
