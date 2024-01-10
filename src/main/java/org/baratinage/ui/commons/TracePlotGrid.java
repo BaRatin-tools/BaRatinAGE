@@ -1,5 +1,6 @@
 package org.baratinage.ui.commons;
 
+import java.awt.BasicStroke;
 import java.awt.Font;
 import java.util.ArrayList;
 import java.util.List;
@@ -10,6 +11,7 @@ import org.baratinage.translation.T;
 import org.baratinage.ui.container.GridPanel;
 import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.ui.plot.FixedTextAnnotation;
+import org.baratinage.ui.plot.Legend;
 import org.baratinage.ui.plot.Plot;
 import org.baratinage.ui.plot.PlotContainer;
 import org.baratinage.ui.plot.PlotInfiniteLine;
@@ -83,5 +85,23 @@ public class TracePlotGrid extends RowColPanel {
                 r++;
             }
         }
+
+        Legend legend = new Legend();
+
+        PlotContainer pc = new PlotContainer(legend.getLegendPlot(), false);
+        T.updateHierarchy(this, pc);
+
+        gridPanel.insertChild(pc, c, r);
+
+        T.t(this, () -> {
+            legend.clearLegend();
+
+            legend.addLegendItem(PlotLine.buildLegendItem(
+                    T.text("maxpost"),
+                    AppSetup.COLORS.POSTERIOR_LINE,
+                    new BasicStroke(2f)));
+
+            legend.getLegendPlot().update();
+        });
     }
 }
