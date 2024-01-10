@@ -27,8 +27,8 @@ public class LimnigraphErrors extends RowColPanel {
         T.updateHierarchy(this, errMatrixTable);
 
         T.t(this, () -> {
-            tableTabs.setTitleAt(0, T.text("stage_error_config"));
-            tableTabs.setTitleAt(1, T.text("stage_matrix_with_errors"));
+            tableTabs.setTitleAt(0, T.text("stage_level_and_uncertainty"));
+            tableTabs.setTitleAt(1, T.text("stage_samples_width_errors"));
             errConfigTable.updateCellRenderer();
             errMatrixTable.updateCellRenderer();
         });
