@@ -186,14 +186,16 @@ public class BamItemParent extends RowColPanel {
     }
 
     public void updateSyncStatus() {
-        if (bamItemBackup == null) {
-            // no backup, irrelevant
-            setSyncStatus(false);
-            return;
-        }
+
         if (currentBamItem == null) {
             // content is different
             setSyncStatus(false);
+            return;
+        }
+
+        if (bamItemBackup == null) {
+            // no backup, irrelevant
+            setSyncStatus(true);
             return;
         }
 
