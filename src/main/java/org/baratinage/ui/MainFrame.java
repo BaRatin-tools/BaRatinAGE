@@ -260,6 +260,17 @@ public class MainFrame extends JFrame {
     }
 
     public void close() {
+        if (currentProject != null) {
+            currentProject.checkUnsavedChange();
+            if (currentProject.hasUnsavedChange()) {
+                String text = String.format("<html>%s<br>%s</html>",
+                        T.text("confirm_closing_app"),
+                        T.text("unsaved_changes_will_be_lost"));
+                if (!CommonDialog.confirmDialog(text, T.text("are_you_sure"))) {
+                    return;
+                }
+            }
+        }
         System.exit(0);
     }
 }
