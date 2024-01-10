@@ -70,4 +70,11 @@ public class CustomAreaRenderer extends AbstractXYItemRenderer {
         return convertedValues;
     }
 
+    @Override
+    public Object clone() {
+        CustomAreaRenderer cloned = new CustomAreaRenderer();
+        cloned.setAlpha(this.alpha);
+        return cloned;
+    }
+
 }
