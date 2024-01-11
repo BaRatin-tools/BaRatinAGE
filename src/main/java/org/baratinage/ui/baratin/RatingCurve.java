@@ -167,11 +167,14 @@ public class RatingCurve extends BamItem implements IPredictionMaster, ICalibrat
         runBam.addOnDoneAction((RunConfigAndRes res) -> {
 
             if (syncStatus.isCalibrationInSync()) {
-                ConsoleLogger.log("################################################");
-                ConsoleLogger.log("Calibration configuration has not changed.");
                 // in this case we make the new result use the previous result id
-                // FIXME: this isn't ideal... There should be two different id
-                res = res.createCopy(bamRunConfigAndRes.id);
+                // this fixes out of sync issues with child component (hydrographs)
+                // when a rating curve is re-computed without any relevant change in the
+                // configuration of rc e.g. if only the stage grid config has changed...
+                // FIXME: this isn't ideal... Different runs should not share ids
+                if (bamRunConfigAndRes != null) {
+                    res = res.createCopy(bamRunConfigAndRes.id);
+                }
             }
 
             backup = save(true);
