@@ -51,11 +51,17 @@ public class RatingCurvePlot extends RowColPanel {
                 switchAxisCheckbox.setText("swap_xy_axis");
 
                 switchDischargeAxisScale.addActionListener((e) -> {
+                        if (plot == null) {
+                                return;
+                        }
                         dischargeAxisInLog = switchDischargeAxisScale.isSelected();
                         updatePlot();
                 });
 
                 switchAxisCheckbox.addActionListener((e) -> {
+                        if (plot == null) {
+                                return;
+                        }
                         axisFliped = switchAxisCheckbox.isSelected();
                         updatePlot();
                 });
