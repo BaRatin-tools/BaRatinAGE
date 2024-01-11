@@ -77,8 +77,8 @@ public class ControlMatrix extends RowColPanel implements ChangeListener {
 
     private void updateLabelsAndButtons() {
         int nCtrl = controls.size();
-        String nextCtrlText = T.text("control_number", nCtrl + 1);
-        String currCtrlText = T.text("control_number", nCtrl);
+        String nextCtrlText = T.text("control_nbr", nCtrl + 1);
+        String currCtrlText = T.text("control_nbr", nCtrl);
         String addCtrlText = T.html("add_control", nextCtrlText);
         String delCtrlText = T.html("delete_last_control", currCtrlText);
         addControlButton.setText(addCtrlText);
@@ -185,27 +185,55 @@ public class ControlMatrix extends RowColPanel implements ChangeListener {
         setControlMatrix(newMatrixControl);
     }
 
-    // FIXME: need to be internalionalized (english only currently)
+    static private class CtrlMatPos {
+        public final int index;
+        public final boolean isStart;
+        public final boolean isEnd;
+
+        public CtrlMatPos(int index, int nCtrl) {
+            this.index = index;
+            isStart = nCtrl > 1 && index == 1;
+            isEnd = nCtrl > 1 && index == nCtrl;
+        }
+
+        public String getSegmentLabel() {
+            String postFix = "";
+            if (isStart) {
+                postFix = String.format(" (%s)", T.text("bottom"));
+            }
+            if (isEnd) {
+                postFix = String.format(" (%s)", T.text("top"));
+            }
+            return String.format("<html>%s%s</html>", T.text("segment_nbr", index), postFix);
+        }
+
+        public String getControlLabel() {
+            return T.html("control_nbr", index);
+        }
+    }
+
     private void updateControlMatrixView() {
         controlCheckBoxPanel.clear();
         int nCtrl = controls.size();
 
+        ArrayList<JLabel> segLabel = new ArrayList<>();
+        ArrayList<JLabel> ctrlLabel = new ArrayList<>();
+
         for (int k = 0; k < nCtrl; k++) {
-            String labelPostfix = "";
-            if (k == 0 && k == nCtrl - 1) {
-                labelPostfix = "";
-            } else if (k == 0) {
-                labelPostfix = " (top)";
-            } else if (k == nCtrl - 1) {
-                labelPostfix = " (bottom)";
-            }
             int index = reversedOrderCheckBox.isSelected() ? k + 1 : nCtrl - k;
-            JLabel lbl = new JLabel("Segment #" + (k + 1) + labelPostfix);
-            controlCheckBoxPanel.insertChild(lbl, 0, index);
+            JLabel segLbl = new JLabel("seg " + index);
+            controlCheckBoxPanel.insertChild(segLbl, 0, index);
+            segLabel.add(segLbl);
+
+            JLabel ctrlLbl = new JLabel("ctrl " + (k + 1));
+            controlCheckBoxPanel.insertChild(ctrlLbl, k + 1, 0, GridPanel.ANCHOR.C, GridPanel.FILL.NONE);
+            ctrlLabel.add(ctrlLbl);
         }
+
         for (int k = 0; k < nCtrl; k++) {
-            JLabel lbl = new JLabel("Control #" + (k + 1));
-            controlCheckBoxPanel.insertChild(lbl, k + 1, 0, GridPanel.ANCHOR.C, GridPanel.FILL.NONE);
+            CtrlMatPos ctrlMatPos = new CtrlMatPos(k + 1, nCtrl);
+            segLabel.get(k).setText(ctrlMatPos.getSegmentLabel());
+            ctrlLabel.get(k).setText(ctrlMatPos.getControlLabel());
         }
 
         for (int i = 0; i < nCtrl; i++) {
