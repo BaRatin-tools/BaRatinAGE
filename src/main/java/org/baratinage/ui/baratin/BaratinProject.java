@@ -63,12 +63,13 @@ public class BaratinProject extends BamProject {
     }
 
     public void addDefaultBamItems() {
-        addBamItem(BamItemType.STRUCTURAL_ERROR);
+        BamItem selectedItem = addBamItem(BamItemType.HYDRAULIC_CONFIG);
         addBamItem(BamItemType.GAUGINGS);
+        addBamItem(BamItemType.STRUCTURAL_ERROR);
         addBamItem(BamItemType.RATING_CURVE);
         addBamItem(BamItemType.LIMNIGRAPH);
         addBamItem(BamItemType.HYDROGRAPH);
-        addBamItem(BamItemType.HYDRAULIC_CONFIG);
+        setCurrentBamItem(selectedItem);
     }
 
     @Override
