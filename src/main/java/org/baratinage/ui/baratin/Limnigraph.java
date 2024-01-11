@@ -158,8 +158,8 @@ public class Limnigraph extends BamItem implements IPredictionData {
         if (envelop != null) {
             plot.addXYItem(envelop);
         }
-        PlotItem maxpost = limniDataset.getPlotLine();
-        plot.addXYItem(maxpost);
+        PlotItem limnigraph = limniDataset.getPlotLine();
+        plot.addXYItem(limnigraph);
 
         T.clear(plotPanel);
         T.t(plotPanel, () -> {
@@ -169,7 +169,7 @@ public class Limnigraph extends BamItem implements IPredictionData {
             if (envelop != null) {
                 envelop.setLabel(T.text("stage_uncertainty"));
             }
-            maxpost.setLabel(T.text("maxpost"));
+            limnigraph.setLabel(T.text("limnigraph"));
         });
         PlotContainer plotContainer = new PlotContainer(plot);
         T.updateHierarchy(this, plotContainer);
