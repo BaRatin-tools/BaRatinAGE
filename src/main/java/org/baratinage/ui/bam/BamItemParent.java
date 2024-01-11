@@ -157,6 +157,12 @@ public class BamItemParent extends RowColPanel {
         }
     }
 
+    public void selectDefaultBamItem() {
+        if (allItems.size() == 1) {
+            setCurrentBamItem(allItems.get(0));
+        }
+    }
+
     private void setCurrentBamItem(String bamItemId) {
         BamItem selectedItem = allItems.getBamItemWithId(bamItemId);
         setCurrentBamItem(selectedItem);
