@@ -18,8 +18,6 @@ import org.json.JSONObject;
 public class HydraulicControlPanels extends RowColPanel implements IPriors {
 
     private final List<OneHydraulicControl> controls;
-    private int nVisibleHydraulicControls = 0;
-
     private final TabContainer tabs;
 
     public HydraulicControlPanels() {
@@ -39,15 +37,16 @@ public class HydraulicControlPanels extends RowColPanel implements IPriors {
 
     private void updateTabs() {
         int nTabs = tabs.getTabCount();
-        if (nTabs > nVisibleHydraulicControls) {
-            for (int k = nTabs - 1; k >= nVisibleHydraulicControls; k--) {
+        int nCtrl = controls.size();
+        if (nTabs > nCtrl) {
+            for (int k = nTabs - 1; k >= nCtrl; k--) {
                 tabs.remove(k);
             }
-        } else if (nTabs < nVisibleHydraulicControls) {
-            for (int k = nTabs; k < nVisibleHydraulicControls; k++) {
+        } else if (nTabs < nCtrl) {
+            for (int k = nTabs; k < nCtrl; k++) {
                 OneHydraulicControl ohc = controls.get(k);
                 tabs.addTab(
-                        T.html("control_number", ohc.controlNumber),
+                        T.html("control_nbr", ohc.controlNumber),
                         BamItemType.HYDRAULIC_CONFIG.getIcon(),
                         ohc);
             }
@@ -62,7 +61,6 @@ public class HydraulicControlPanels extends RowColPanel implements IPriors {
             fireChangeListeners();
         });
         controls.add(ohc);
-        nVisibleHydraulicControls = controls.size();
         T.updateHierarchy(this, ohc);
     }
 
@@ -73,23 +71,27 @@ public class HydraulicControlPanels extends RowColPanel implements IPriors {
             for (int k = 0; k < n; k++) {
                 addHydraulicControl();
             }
-
+        } else if (nControls < controls.size()) {
+            for (int k = controls.size() - 1; k >= nControls; k--) {
+                OneHydraulicControl ohc = controls.remove(k);
+                T.clear(ohc);
+            }
         }
-        nVisibleHydraulicControls = nControls;
         updateTabs();
         fireChangeListeners();
 
     }
 
     public List<OneHydraulicControl> getHydraulicControls() {
-        return controls.subList(0, nVisibleHydraulicControls);
+        return controls;
     }
 
     @Override
     public Parameter[] getParameters() {
-        Parameter[] parameters = new Parameter[nVisibleHydraulicControls * 3];
+        int n = controls.size();
+        Parameter[] parameters = new Parameter[n * 3];
 
-        for (int k = 0; k < nVisibleHydraulicControls; k++) {
+        for (int k = 0; k < n; k++) {
             Parameter[] pars = controls.get(k).getParameters();
             if (pars == null) {
                 return null;
@@ -120,7 +122,8 @@ public class HydraulicControlPanels extends RowColPanel implements IPriors {
     public JSONObject toJSON() {
         JSONObject json = new JSONObject();
         JSONArray controlsJSON = new JSONArray();
-        for (int k = 0; k < nVisibleHydraulicControls; k++) {
+        int nCtrl = controls.size();
+        for (int k = 0; k < nCtrl; k++) {
             controlsJSON.put(k, controls.get(k).toJSON());
         }
         json.put("controls", controlsJSON);
