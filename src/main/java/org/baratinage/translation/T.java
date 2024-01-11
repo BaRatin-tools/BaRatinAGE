@@ -185,6 +185,9 @@ public class T {
         hierarchy.put(parent, children);
     }
 
+    // FIXME: there should be two distinct method
+    // - removeChildren() which remove children
+    // - removeOwnerAndChildren() which remove both children and owner
     static public void clear(Object owner) {
         clearOwnerRecursively(owner);
         // remove owners from children list of other owners
