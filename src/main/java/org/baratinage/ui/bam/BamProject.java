@@ -198,16 +198,21 @@ public abstract class BamProject extends RowColPanel {
         JMenuItem addBamItemMenu = new JMenuItem();
         T.t(bamItem, addBamItemMenu, false, "create_" + bamItem.TYPE.id);
         addBamItemMenu.setIcon(bamItem.TYPE.getAddIcon());
+        addBamItemMenu.addActionListener((e) -> {
+            addBamItem(bamItem.TYPE);
+        });
         explorerItem.contextMenu.add(addBamItemMenu);
 
         JMenuItem cloneMenuItem = new JMenuItem();
         T.t(bamItem, cloneMenuItem, false, "duplicate");
         cloneMenuItem.setIcon(AppSetup.ICONS.COPY);
+        cloneMenuItem.addActionListener(bamItem.cloneButton.getActionListeners()[0]);
         explorerItem.contextMenu.add(cloneMenuItem);
 
         JMenuItem deleteMenuItem = new JMenuItem();
         T.t(bamItem, deleteMenuItem, false, "delete");
         deleteMenuItem.setIcon(AppSetup.ICONS.TRASH);
+        deleteMenuItem.addActionListener(bamItem.deleteButton.getActionListeners()[0]);
         explorerItem.contextMenu.add(deleteMenuItem);
 
         EXPLORER.appendItem(explorerItem);

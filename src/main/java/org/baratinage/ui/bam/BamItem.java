@@ -30,8 +30,8 @@ abstract public class BamItem extends GridPanel {
     public final SimpleTextField bamItemDescriptionField;
 
     private final Title bamItemTypeLabel;
-    private final JButton cloneButton;
-    private final JButton deleteButton;
+    public final JButton cloneButton;
+    public final JButton deleteButton;
 
     private GridPanel headerPanel;
     private RowColPanel contentPanel;
