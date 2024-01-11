@@ -218,6 +218,16 @@ public class RatingCurve extends BamItem implements IPredictionMaster, ICalibrat
         hydrauConfParent.selectDefaultBamItem();
         gaugingsParent.selectDefaultBamItem();
         structErrorParent.selectDefaultBamItem();
+
+        HydraulicConfiguration currentHydraulicConfig = (HydraulicConfiguration) hydrauConfParent.getCurrentBamItem();
+
+        if (currentHydraulicConfig != null) {
+            BamConfigRecord record = currentHydraulicConfig.save(false);
+            if (record.jsonObject().has("stageGridConfig")) {
+                ratingCurveStageGrid.fromJSON(record.jsonObject().getJSONObject("stageGridConfig"));
+            }
+        }
+
         checkSync();
     }
 
