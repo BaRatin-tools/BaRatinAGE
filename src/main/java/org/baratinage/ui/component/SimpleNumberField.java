@@ -34,7 +34,9 @@ public class SimpleNumberField extends SimpleTextField {
         if (value == null) {
             return "";
         } else {
-            return DOUBLE_FORMATTER.format(value);
+            return value.toString(); // not using localized decimal symbol...
+            // return DOUBLE_FORMATTER.format(value); // doesn't handle small / large number
+            // by switching to scientific notation
         }
     }
 
@@ -57,7 +59,7 @@ public class SimpleNumberField extends SimpleTextField {
         if (value == null) {
             return "";
         } else {
-            return INTEGER_FORMATTER.format(value);
+            return value.toString();
         }
 
     }
