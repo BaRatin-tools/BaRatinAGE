@@ -119,6 +119,12 @@ public class Hydrograph extends BamItem implements IPredictionMaster {
             tabs.setTitleAt(1, T.text("table"));
         });
 
+        initializeBamItem();
+    }
+
+    private void initializeBamItem() {
+        ratingCurveParent.selectDefaultBamItem();
+        limnigraphParent.selectDefaultBamItem();
         checkSync();
     }
 

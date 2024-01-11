@@ -211,6 +211,13 @@ public class RatingCurve extends BamItem implements IPredictionMaster, ICalibrat
 
         T.t(runBam, runBam.runButton, true, "compute_posterior_rc");
 
+        initializeBamItem();
+    }
+
+    private void initializeBamItem() {
+        hydrauConfParent.selectDefaultBamItem();
+        gaugingsParent.selectDefaultBamItem();
+        structErrorParent.selectDefaultBamItem();
         checkSync();
     }
 
