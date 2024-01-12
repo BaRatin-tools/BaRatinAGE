@@ -11,6 +11,7 @@ import javax.swing.JScrollPane;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import org.baratinage.ui.component.CommonDialog;
 import org.baratinage.ui.container.GridPanel;
 import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.utils.ConsoleLogger;
@@ -173,6 +174,13 @@ public class ControlMatrix extends RowColPanel implements ChangeListener {
     private void removeControl() {
         int nCtrl = controls.size() - 1;
         if (nCtrl == 0) {
+            return;
+        }
+        String areYouSure = T.text("are_you_sure");
+        String ctrlConfigLoss = T.text("control_configuration_will_be_lost", nCtrl + 1);
+        if (!CommonDialog.confirmDialog(
+                String.format("<html>%s<br>%s</html>", areYouSure, ctrlConfigLoss),
+                areYouSure)) {
             return;
         }
         boolean[][] oldMatrixControl = getControlMatrix();
