@@ -102,6 +102,7 @@ public class RatingCurve extends BamItem implements IPredictionMaster, ICalibrat
         hydrauConfParent.setComparisonJSONfilter(new JSONFilter(true, true,
                 "ui",
                 "bamRunId",
+                "backup",
                 "jsonStringBackup",
                 "stageGridConfig",
                 "allControlOptions",
