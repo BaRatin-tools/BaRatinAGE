@@ -89,11 +89,6 @@ public class Calc {
         return percentiles;
     }
 
-    public static boolean isEven(int value) {
-        // source: https://stackoverflow.com/a/7342273
-        return (value & 1) == 0;
-    }
-
     public static double[] smoothArray(double[] toSmooth, int halfWindowSize) {
         if (halfWindowSize < 1) {
             return toSmooth;
