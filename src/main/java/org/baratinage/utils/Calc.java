@@ -94,46 +94,34 @@ public class Calc {
         return (value & 1) == 0;
     }
 
-    // FIXME: this method could be refactored
-    public static double[] smooth(double[] toSmooth, int windowSize, boolean computeEdgeValues) {
-        if (windowSize < 2) {
+    public static double[] smoothArray(double[] toSmooth, int halfWindowSize) {
+        if (halfWindowSize < 1) {
             return toSmooth;
-        }
-        if (isEven(windowSize)) {
-            // FIXME: good idea to enforce only odd window size?
-            windowSize++;
         }
         int n = toSmooth.length;
         double[] smoothed = new double[n];
-        int halfWindowSize = (int) (windowSize / 2d);
         for (int k = 0; k < n; k++) {
-            if (k >= halfWindowSize && k < n - halfWindowSize) {
-                double s = 0;
-                for (int i = 0; i < windowSize; i++) {
-                    int index = k - halfWindowSize + i;
-                    s += toSmooth[index];
-                }
-                smoothed[k] = s / windowSize;
-            } else {
-                if (computeEdgeValues) {
-                    double s = 0;
-                    int m = 0;
-                    for (int i = 0; i < windowSize; i++) {
-                        int index = k - halfWindowSize + i;
-                        if (index >= 0 && index < n) {
-                            s += toSmooth[index];
-                            m++;
-                        }
-                    }
-                    smoothed[k] = s / m;
-                } else {
-                    smoothed[k] = Double.NaN;
+            double sum = toSmooth[k];
+            int m = 1;
+            for (int w = 1; w <= halfWindowSize; w++) {
+                int belowIndex = k - w;
+                int aboveIndex = k + w;
+                if (belowIndex >= 0 && aboveIndex < n) { // enforce balance between left and right
+                    sum += toSmooth[belowIndex];
+                    sum += toSmooth[aboveIndex];
+                    m += 2;
                 }
             }
+            smoothed[k] = sum / (double) m;
+            // if (m != halfWindowSize * 2 + 1) {
+            // discard edges approach:
+            // smoothed[k] = Double.NaN;
+            // do not smooth edges approach
+            // smoothed[k] = toSmooth[k];
+            // }
 
         }
         return smoothed;
-
     }
 
     public static List<double[]> density(double[] sorted, int bins) {
