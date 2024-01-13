@@ -16,6 +16,8 @@ import org.baratinage.ui.plot.PlotInfiniteLine;
 import org.baratinage.ui.plot.PlotItem;
 import org.baratinage.ui.plot.PlotLine;
 import org.baratinage.ui.plot.PlotPoints;
+import org.baratinage.utils.Calc;
+import org.baratinage.utils.ConsoleLogger;
 
 public class RatingCurvePlot extends RowColPanel {
 
@@ -33,9 +35,12 @@ public class RatingCurvePlot extends RowColPanel {
 
         private boolean axisFliped = false;
         private boolean dischargeAxisInLog = false;
+        private boolean smoothTotalEnvelop = false;
 
+        private final RowColPanel toolsPanel;
         private final JCheckBox switchDischargeAxisScale;
         private final JCheckBox switchAxisCheckbox;
+        private final JCheckBox smoothTotalEnvelopCheckbox;
 
         public RatingCurvePlot() {
                 super(AXIS.COL);
@@ -49,6 +54,10 @@ public class RatingCurvePlot extends RowColPanel {
                 switchAxisCheckbox = new JCheckBox();
                 switchAxisCheckbox.setSelected(false);
                 switchAxisCheckbox.setText("swap_xy_axis");
+
+                smoothTotalEnvelopCheckbox = new JCheckBox();
+                smoothTotalEnvelopCheckbox.setSelected(false);
+                smoothTotalEnvelopCheckbox.setText("smooth_total_envelop");
 
                 switchDischargeAxisScale.addActionListener((e) -> {
                         if (plot == null) {
@@ -66,7 +75,15 @@ public class RatingCurvePlot extends RowColPanel {
                         updatePlot();
                 });
 
-                RowColPanel toolsPanel = new RowColPanel(AXIS.ROW, ALIGN.START);
+                smoothTotalEnvelopCheckbox.addActionListener((e) -> {
+                        if (plot == null) {
+                                return;
+                        }
+                        smoothTotalEnvelop = smoothTotalEnvelopCheckbox.isSelected();
+                        updatePlot();
+                });
+
+                toolsPanel = new RowColPanel(AXIS.ROW, ALIGN.START);
                 toolsPanel.setBackground(Color.WHITE);
                 toolsPanel.setGap(5);
                 // RowColPanel toolsPanel = plotContainer.toolsPanel;
@@ -81,6 +98,7 @@ public class RatingCurvePlot extends RowColPanel {
 
                 T.t(this, switchAxisCheckbox, false, "swap_xy_axis");
                 T.t(this, switchDischargeAxisScale, false, "log_scale_discharge_axis");
+                T.t(this, smoothTotalEnvelopCheckbox, false, "smooth_total_envelop");
         }
 
         public void setPriorPlot(double[] stage,
@@ -114,6 +132,7 @@ public class RatingCurvePlot extends RowColPanel {
                 this.transitionStages = transitionStages;
                 this.gaugings = gaugings;
 
+                toolsPanel.appendChild(smoothTotalEnvelopCheckbox, 0);
                 updatePlot();
         }
 
@@ -159,13 +178,23 @@ public class RatingCurvePlot extends RowColPanel {
 
                 // total uncertainty (only posterior rc)
                 if (!isPrior && dischargeTotalUncertainty != null) {
+                        double[] smoothedTotalQUlow = dischargeTotalUncertainty.get(0);
+                        double[] smoothedTotalQUhigh = dischargeTotalUncertainty.get(1);
+                        if (smoothTotalEnvelop) {
+                                int nSmooth = Double.valueOf((double) smoothedTotalQUlow.length * 0.01).intValue();
+                                nSmooth = Math.max(nSmooth, 1);
+                                ConsoleLogger.log("smoothing total envelop using a half window size of " + nSmooth
+                                                + "...");
+                                smoothedTotalQUlow = Calc.smoothArray(smoothedTotalQUlow, nSmooth);
+                                smoothedTotalQUhigh = Calc.smoothArray(smoothedTotalQUhigh, nSmooth);
+                        }
                         Color totalColor = isPrior ? null : AppSetup.COLORS.RATING_CURVE_TOTAL_UNCERTAINTY;
                         addPlotItemToPlot(
                                         plot,
                                         new PlotBand2("post_total_uncertainty",
                                                         stage,
-                                                        dischargeTotalUncertainty.get(0),
-                                                        dischargeTotalUncertainty.get(1),
+                                                        smoothedTotalQUlow,
+                                                        smoothedTotalQUhigh,
                                                         axisFliped,
                                                         totalColor),
                                         "lgd_posterior_parametric_structural_uncertainty");

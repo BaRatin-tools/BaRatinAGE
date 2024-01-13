@@ -7,6 +7,7 @@ import javax.swing.JButton;
 import javax.swing.JSeparator;
 
 import org.baratinage.AppSetup;
+
 import org.baratinage.jbam.CalDataResidualConfig;
 import org.baratinage.jbam.CalibrationConfig;
 import org.baratinage.jbam.CalibrationData;
@@ -21,7 +22,9 @@ import org.baratinage.jbam.PredictionInput;
 import org.baratinage.jbam.PredictionResult;
 import org.baratinage.jbam.StructuralErrorModel;
 import org.baratinage.jbam.utils.BamFilesHelpers;
+
 import org.baratinage.translation.T;
+
 import org.baratinage.ui.bam.BamItem;
 import org.baratinage.ui.bam.BamConfigRecord;
 import org.baratinage.ui.bam.BamItemType;
@@ -38,12 +41,13 @@ import org.baratinage.ui.baratin.rating_curve.RatingCurveStageGrid;
 import org.baratinage.ui.commons.MsgPanel;
 import org.baratinage.ui.commons.StructuralErrorModelBamItem;
 import org.baratinage.ui.container.RowColPanel;
-import org.baratinage.utils.Calc;
+
 import org.baratinage.utils.ConsoleLogger;
 import org.baratinage.utils.json.JSONCompare;
 import org.baratinage.utils.json.JSONCompareResult;
 import org.baratinage.utils.json.JSONFilter;
 import org.baratinage.utils.perf.TimedActions;
+
 import org.json.JSONObject;
 
 public class RatingCurve extends BamItem implements IPredictionMaster, ICalibratedModel, IMcmc {
@@ -493,13 +497,7 @@ public class RatingCurve extends BamItem implements IPredictionMaster, ICalibrat
         double[] dischargeMaxpost = predResults[0].outputResults.get(0).spag().get(0);
 
         List<double[]> paramU = predResults[1].outputResults.get(0).env().subList(1, 3);
-        List<double[]> totalUraw = predResults[2].outputResults.get(0).env().subList(1, 3);
-
-        int smoothing = Double.valueOf((double) totalUraw.get(0).length * 0.05).intValue();
-        ConsoleLogger.log("Smoothing total envelop using moving average (window of size " + smoothing + ") ...");
-        List<double[]> totalU = new ArrayList<>();
-        totalU.add(Calc.smooth(totalUraw.get(0), smoothing, false));
-        totalU.add(Calc.smooth(totalUraw.get(1), smoothing, false));
+        List<double[]> totalU = predResults[2].outputResults.get(0).env().subList(1, 3);
 
         CalibrationData calData = bamRunConfigAndRes.getCalibrationConfig().calibrationData;
 
