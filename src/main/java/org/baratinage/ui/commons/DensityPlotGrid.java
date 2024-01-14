@@ -77,7 +77,6 @@ public class DensityPlotGrid extends RowColPanel {
                         AppSetup.COLORS.PRIOR_ENVELOP,
                         0.9f);
                 plot.addXYItem(priorDensity);
-
             }
 
             double maxpost = estimParam.getMaxpost();
@@ -87,13 +86,6 @@ public class DensityPlotGrid extends RowColPanel {
                     AppSetup.COLORS.POSTERIOR_LINE,
                     new BasicStroke(2f));
 
-            // List<double[]> postDensityData = estimParam.getPostDensity();
-            // PlotBar postDensity = new PlotBar(
-            // "",
-            // postDensityData.get(0),
-            // postDensityData.get(1),
-            // AppSetup.COLORS.POSTERIOR_ENVELOP_COLOR,
-            // 0.7f);
             PlotBar postDensity = new PlotBar(
                     "",
                     estimParam.mcmc,
