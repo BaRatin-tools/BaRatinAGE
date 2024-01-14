@@ -12,6 +12,7 @@ import org.baratinage.AppSetup;
 import org.baratinage.jbam.EstimatedParameter;
 
 import org.baratinage.ui.bam.BamProject;
+import org.baratinage.ui.bam.BamProjectLoader;
 import org.baratinage.ui.baratin.EstimatedControlParameters;
 import org.baratinage.ui.commons.DensityPlotGrid;
 import org.baratinage.ui.commons.TracePlotGrid;
@@ -101,11 +102,13 @@ public class RatingCurveResults extends TabContainer {
 
         updateRatingCurveGridTable(stage, dischargeMaxpost, paramU, totalU);
 
-        updateParametersPlots(rcEstimParam); // bottleneck
+        // delay action when in load mode
+        BamProjectLoader.addDelayedAction(() -> {
+            updateParametersPlots(rcEstimParam); // bottleneck
+            updateParameterSummaryTable(rcEstimParam); // bottleneck
+        });
 
         updateMcmcResultPanel(rcEstimParam);
-
-        updateParameterSummaryTable(rcEstimParam); // bottleneck
 
         rcEquation.updateEquation(rcEstimParam.controls());
 
@@ -329,9 +332,9 @@ public class RatingCurveResults extends TabContainer {
 
         JButton mcmcToCsvButton = new JButton();
         mcmcResultPanel.clear();
-        RowColPanel actionPanel = new RowColPanel();
+        RowColPanel actionPanel = new RowColPanel(RowColPanel.AXIS.ROW, RowColPanel.ALIGN.START);
         actionPanel.appendChild(mcmcToCsvButton, 0);
-        mcmcResultPanel.appendChild(actionPanel, 0);
+        mcmcResultPanel.appendChild(actionPanel, 0, 5);
         mcmcResultPanel.appendChild(paramTracePlots, 1);
 
         // u = (maxpost - prior.getParval()[0]) / prior.getParval()[1]; // center-scale
