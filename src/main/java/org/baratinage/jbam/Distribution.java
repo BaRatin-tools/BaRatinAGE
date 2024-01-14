@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.function.Consumer;
 
 import org.baratinage.jbam.utils.BamFilesHelpers;
 import org.baratinage.jbam.utils.ExeRun;
@@ -155,6 +156,15 @@ public class Distribution {
         memoizedDensities.put(densityResultKey, densityRes);
 
         return densityRes;
+    }
+
+    public void getDensity(Consumer<List<double[]>> onDone) {
+        Thread thread = new Thread(
+                () -> {
+                    List<double[]> result = getDensity();
+                    onDone.accept(result);
+                });
+        thread.start();
     }
 
     public double[] getRandomValues(int n) {

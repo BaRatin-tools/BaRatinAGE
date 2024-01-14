@@ -1,6 +1,7 @@
 package org.baratinage.jbam;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 import org.baratinage.utils.Calc;
 
@@ -57,6 +58,12 @@ public class EstimatedParameter {
             return parameterConfig.distribution.getDensity();
         }
         return null;
+    }
+
+    public void getPriorDensity(Consumer<List<double[]>> onDone) {
+        if (parameterConfig != null) {
+            parameterConfig.distribution.getDensity(onDone);
+        }
     }
 
     public List<double[]> getPostDensity() {
