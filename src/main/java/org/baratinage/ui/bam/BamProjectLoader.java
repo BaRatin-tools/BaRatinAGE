@@ -171,10 +171,31 @@ public class BamProjectLoader {
         SwingUtilities.invokeLater(BamProjectLoader::loadNextBamItem);
     }
 
+    private static List<Runnable> delayedActions = new ArrayList<>();
+    private static boolean isInLoad = false;
+
+    private static void runDelayedActions() {
+
+        for (Runnable action : delayedActions) {
+            SwingUtilities.invokeLater(action);
+        }
+        delayedActions.clear();
+    }
+
+    public static void addDelayedAction(Runnable action) {
+        if (isInLoad) {
+            delayedActions.add(action);
+        } else {
+            action.run();
+        }
+    }
+
     static public void loadProject(String projectFilePath, Consumer<BamProject> onLoaded, Runnable onError) {
 
+        isInLoad = true;
         ConsoleLogger.addShowFilter("Performance");
         ConsoleLogger.addShowFilter("BamProjectLoader");
+        ConsoleLogger.addShowFilter("DensityPlotGrid");
 
         Performance.startTimeMonitoring("clearing temp directory");
 
@@ -216,6 +237,8 @@ public class BamProjectLoader {
 
             load(json, projectFile, (bamProject) -> {
                 ConsoleLogger.clearShowFilters();
+                isInLoad = false;
+                runDelayedActions();
                 onLoaded.accept(bamProject);
 
             });
