@@ -22,7 +22,6 @@ import org.baratinage.ui.component.DataTable;
 
 import org.baratinage.utils.ConsoleLogger;
 import org.baratinage.utils.fs.WriteFile;
-
 import org.baratinage.translation.T;
 
 public class RatingCurveResults extends TabContainer {
@@ -102,11 +101,11 @@ public class RatingCurveResults extends TabContainer {
 
         updateRatingCurveGridTable(stage, dischargeMaxpost, paramU, totalU);
 
-        updateParametersPlots(rcEstimParam);
+        updateParametersPlots(rcEstimParam); // bottleneck
 
         updateMcmcResultPanel(rcEstimParam);
 
-        updateParameterSummaryTabel(rcEstimParam);
+        updateParameterSummaryTable(rcEstimParam); // bottleneck
 
         rcEquation.updateEquation(rcEstimParam.controls());
 
@@ -163,7 +162,7 @@ public class RatingCurveResults extends TabContainer {
         return "OK";
     }
 
-    private void updateParameterSummaryTabel(RatingCurveEstimatedParameters parameters) {
+    private void updateParameterSummaryTable(RatingCurveEstimatedParameters parameters) {
 
         int n = parameters.controls().size() * 4;
         String[] parameterNames = new String[n];
