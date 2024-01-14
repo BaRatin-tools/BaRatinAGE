@@ -107,14 +107,6 @@ public class Plot implements LegendItemSource {
 
     }
 
-    // public void setAxisLogY(boolean log) {
-    // if (log) {
-    // plot.setRangeAxis(axisYlog);
-    // } else {
-    // plot.setRangeAxis(axisY);
-    // }
-    // }
-
     public JFreeChart getChart() {
         return this.chart;
     }
@@ -191,6 +183,12 @@ public class Plot implements LegendItemSource {
 
     public Plot getCopy() {
         Plot plotCopy = new Plot(includeLegend, timeseries);
+        if (plot.getDomainAxis() instanceof LogAxis) {
+            plotCopy.plot.setDomainAxis(plotCopy.axisXlog);
+        }
+        if (plot.getRangeAxis() instanceof LogAxis) {
+            plotCopy.plot.setRangeAxis(plotCopy.axisYlog);
+        }
         for (PlotItemConfig item : items) {
             plotCopy.addXYItem(item.item(), item.visibleInLegend());
         }
