@@ -183,11 +183,25 @@ public class Distribution {
         return randomValues.get(0);
     }
 
+    private static Map<String, double[]> memoizedPercentiles = new HashMap<>();
+
     public double[] getPercentiles(double low, double high, int nsteps) {
         String percentilesResultFileName = id + "_percentiles.txt";
 
         String probsArgs = doubleArrToStringArg(low, high) + "," + nsteps;
         String parametersArg = doubleArrToStringArg(parameterValues);
+
+        String percentilesResultKey = type.bamName + "_" + parametersArg;
+
+        // ----------------------------------------------------------
+        // using memoized data
+        if (memoizedPercentiles.containsKey(percentilesResultKey)) {
+            ConsoleLogger.log("using memoized percentiles data");
+            return memoizedPercentiles.get(percentilesResultKey);
+        }
+
+        // ----------------------------------------------------------
+        // computing percentiles
 
         ExeRun percentileRun = new ExeRun();
         percentileRun.setExeDir(EXE_DIR);
@@ -205,7 +219,10 @@ public class Distribution {
             ConsoleLogger.error("Distribution Error: error while reading quantiles result files! Aborting");
             return null;
         }
-        return rangeRes.get(1);
+
+        double[] results = rangeRes.get(1);
+        memoizedPercentiles.put(percentilesResultKey, results);
+        return results;
     }
 
     @Override
