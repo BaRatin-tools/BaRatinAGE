@@ -86,7 +86,6 @@ public class RatingCurvePlot extends RowColPanel {
                 toolsPanel = new RowColPanel(AXIS.ROW, ALIGN.START);
                 toolsPanel.setBackground(Color.WHITE);
                 toolsPanel.setGap(5);
-                // RowColPanel toolsPanel = plotContainer.toolsPanel;
                 toolsPanel.appendChild(switchDischargeAxisScale, 0);
                 toolsPanel.appendChild(switchAxisCheckbox, 0);
 
