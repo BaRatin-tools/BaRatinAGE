@@ -5,6 +5,8 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -384,6 +386,20 @@ public class ReadFile {
         reader.close();
 
         return columns;
+    }
+
+    /**
+     * Read an UTF8 encoded text file and return content as one String object
+     * 
+     * @param textFilePath text file path
+     * @return file content as a String
+     * @throws IOException
+     */
+    public static String readTextFile(String textFilePath) throws IOException {
+        String text = new String(
+                Files.readAllBytes(Path.of(textFilePath)),
+                StandardCharsets.UTF_8);
+        return text;
     }
 
 }
