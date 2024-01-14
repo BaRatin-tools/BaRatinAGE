@@ -1,38 +1,30 @@
 package org.baratinage.ui.bam;
 
 import java.awt.event.ActionListener;
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
 
 import javax.swing.JButton;
-import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
-import javax.swing.SwingUtilities;
 
 import org.baratinage.AppSetup;
 import org.baratinage.translation.T;
 import org.baratinage.ui.bam.BamItemType.BamItemBuilderFunction;
-import org.baratinage.ui.baratin.BaratinProject;
 import org.baratinage.ui.commons.Explorer;
 import org.baratinage.ui.commons.ExplorerItem;
-import org.baratinage.ui.component.ProgressFrame;
 import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.ui.container.SplitContainer;
 import org.baratinage.utils.ConsoleLogger;
 import org.baratinage.utils.Misc;
-import org.baratinage.utils.fs.ReadFile;
 import org.baratinage.utils.fs.ReadWriteZip;
 import org.baratinage.utils.fs.WriteFile;
 import org.baratinage.utils.json.JSONCompare;
 import org.baratinage.utils.json.JSONCompareResult;
 import org.baratinage.utils.json.JSONFilter;
-import org.baratinage.utils.perf.Performance;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -341,194 +333,4 @@ public abstract class BamProject extends RowColPanel {
         }
         return fileName;
     }
-
-    static private boolean bamProjectLoadingCanceled;
-    static private Runnable doAfterBamItemsLoaded = () -> {
-    };
-    static final private ProgressFrame bamProjectLoadingFrame = new ProgressFrame();
-    static final private List<BamItem> bamProjectBamItemsToLoad = new ArrayList<>();
-    static final private List<BamConfigRecord> bamProjectBamItemsToLoadConfig = new ArrayList<>();
-    static private int bamProjectLoadingProgress = -1;
-
-    private static void load(JSONObject json, File sourceFile, Consumer<BamProject> onLoaded) {
-
-        Performance.startTimeMonitoring(bamProjectLoadingFrame);
-
-        // get bam items configs
-        JSONArray bamItemsJson = json.getJSONArray("bamItems");
-        int n = bamItemsJson.length();
-
-        // Initalize loading monitoring frame
-        RowColPanel p = new RowColPanel(RowColPanel.AXIS.COL);
-        p.setGap(5);
-        JLabel lMessage = new JLabel();
-        String loadingMessage = T.text("loading_project");
-
-        lMessage.setText("<html>" +
-                "<b>" + sourceFile.getName() + "</b>" + "<br>" +
-                "<code>" + sourceFile.getAbsolutePath() + "</code>" +
-                "</html>");
-
-        p.appendChild(lMessage);
-
-        bamProjectLoadingFrame.openProgressFrame(
-                AppSetup.MAIN_FRAME,
-                p,
-                loadingMessage,
-                0,
-                n,
-                true);
-
-        bamProjectLoadingFrame.updateProgress(loadingMessage, 0);
-        bamProjectLoadingFrame.clearOnCancelActions();
-        bamProjectLoadingFrame.addOnCancelAction(
-                () -> {
-                    bamProjectLoadingCanceled = true;
-                });
-        bamProjectLoadingProgress = 0;
-        bamProjectLoadingCanceled = false;
-
-        // get project type and create appropriate project
-        BamProjectType projectType = BamProjectType.valueOf(json.getString("bamProjectType"));
-        BamProject bamProject;
-        if (projectType == BamProjectType.BARATIN) {
-            bamProject = new BaratinProject();
-        } else {
-            return;
-        }
-
-        SwingUtilities.invokeLater(() -> {
-            // create BamItems and prepare their configuration for actual loading
-            bamProjectBamItemsToLoad.clear();
-            bamProjectBamItemsToLoadConfig.clear();
-
-            for (int k = 0; k < n; k++) {
-
-                JSONObject bamItemJson = bamItemsJson.getJSONObject(k);
-
-                BamItemType itemType = BamItemType.valueOf(bamItemJson.getString("type"));
-                String id = bamItemJson.getString("id");
-                BamItem item = bamProject.addBamItem(itemType, id);
-
-                item.bamItemNameField.setText(bamItemJson.getString("name"));
-                item.bamItemDescriptionField.setText(bamItemJson.getString("description"));
-
-                bamProjectBamItemsToLoad.add(item);
-                bamProjectBamItemsToLoadConfig.add(new BamConfigRecord(bamItemJson.getJSONObject("config")));
-            }
-        });
-
-        // set loading of BamItems as next task to perform on EDT (eventDispatchThread)
-        SwingUtilities.invokeLater(BamProject::loadNextBamItem); // invokeLater loop
-
-        // sets the last step
-        doAfterBamItemsLoaded = () -> {
-            ExplorerItem exItem = bamProject.EXPLORER.getLastSelectedPathComponent();
-            if (exItem != null) {
-                json.put("selectedItem", exItem.id);
-            }
-            BamItem toSelectItem = null;
-            if (json.has("selectedItemId")) {
-                String id = json.getString("selectedItemId");
-                if (id != null) {
-                    toSelectItem = bamProject.getBamItem(id);
-
-                }
-            }
-            if (toSelectItem == null && bamProject.BAM_ITEMS.size() > 0) {
-                toSelectItem = bamProject.BAM_ITEMS.get(0);
-            }
-            if (toSelectItem != null) {
-                bamProject.setCurrentBamItem(toSelectItem);
-            }
-
-            bamProjectLoadingProgress = -1;
-            bamProjectLoadingFrame.done();
-
-            if (!bamProjectLoadingCanceled) {
-                onLoaded.accept(bamProject);
-            }
-
-            bamProject.createProjectBackupConfigRecord();
-            Performance.endTimeMonitoring(bamProjectLoadingFrame);
-        };
-
-        return;
-    }
-
-    static private void loadNextBamItem() {
-        if (bamProjectLoadingCanceled) {
-            ConsoleLogger.log("loading was canceled.");
-            return;
-        }
-        if (bamProjectLoadingProgress == -1) {
-            ConsoleLogger.log("no BamItem to load.");
-            return;
-        }
-        if (bamProjectLoadingProgress >= bamProjectBamItemsToLoad.size()) {
-            ConsoleLogger.log("all BamItem loaded.");
-            doAfterBamItemsLoaded.run();
-            return;
-        }
-
-        BamConfigRecord config = bamProjectBamItemsToLoadConfig.get(bamProjectLoadingProgress);
-        BamItem item = bamProjectBamItemsToLoad.get(bamProjectLoadingProgress);
-
-        ConsoleLogger.log("Loading item " + item);
-
-        String itemName = item.bamItemNameField.getText();
-        String progressMsg = T.html(
-                "loading_project_component",
-                T.text(item.TYPE.id), itemName);
-        bamProjectLoadingFrame.updateProgress(progressMsg, bamProjectLoadingProgress);
-
-        Performance.startTimeMonitoring(item);
-        item.load(config);
-        Performance.endTimeMonitoring(item);
-        bamProjectLoadingFrame.updateProgress(progressMsg, bamProjectLoadingProgress + 1);
-
-        bamProjectLoadingProgress++;
-        SwingUtilities.invokeLater(BamProject::loadNextBamItem);
-    }
-
-    static public void loadProject(String projectFilePath, Consumer<BamProject> onLoaded, Runnable onError) {
-
-        AppSetup.clearTempDir();
-
-        File projectFile = new File(projectFilePath);
-        if (!projectFile.exists()) {
-            ConsoleLogger.error("Project file doesn't exist! (" +
-                    projectFilePath + ")");
-            onError.run();
-            return;
-        }
-        try {
-            ReadWriteZip.unzip(projectFilePath, AppSetup.PATH_APP_TEMP_DIR);
-        } catch (Exception e) {
-            ConsoleLogger.error(e);
-            onError.run();
-            return;
-        }
-
-        try {
-            BufferedReader bufReader = ReadFile
-                    .createBufferedReader(Path.of(AppSetup.PATH_APP_TEMP_DIR,
-                            "main_config.json").toString(),
-                            true);
-            String jsonString = "";
-            String jsonLine;
-            while ((jsonLine = bufReader.readLine()) != null) {
-                jsonString += jsonLine;
-            }
-            JSONObject json = new JSONObject(jsonString);
-
-            load(json, projectFile, onLoaded);
-        } catch (IOException e) {
-            ConsoleLogger.error(e);
-            onError.run();
-            return;
-        }
-        return;
-    }
-
 }

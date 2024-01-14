@@ -5,6 +5,7 @@ import javax.swing.JFrame;
 import org.baratinage.AppSetup;
 import org.baratinage.translation.T;
 import org.baratinage.ui.bam.BamProject;
+import org.baratinage.ui.bam.BamProjectLoader;
 import org.baratinage.ui.baratin.BaratinProject;
 import org.baratinage.ui.component.CommonDialog;
 import org.baratinage.ui.container.RowColPanel;
@@ -215,7 +216,7 @@ public class MainFrame extends JFrame {
 
     public void loadProject(String projectFilePath) {
         if (projectFilePath != null) {
-            BamProject.loadProject(
+            BamProjectLoader.loadProject(
                     projectFilePath,
                     (bamProject) -> {
                         bamProject.setProjectPath(projectFilePath);
