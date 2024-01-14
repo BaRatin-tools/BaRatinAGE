@@ -1,6 +1,8 @@
 package org.baratinage.utils.perf;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import org.baratinage.utils.ConsoleLogger;
 
@@ -21,17 +23,31 @@ public class Performance {
 
     }
 
-    private static HashMap<String, Long> startedTimeMonitoring = new HashMap<>();
+    private static HashMap<String, List<Long>> startedTimeMonitoring = new HashMap<>();
 
     public static void startTimeMonitoring(String key) {
-        startedTimeMonitoring.put(key, System.currentTimeMillis());
+        ArrayList<Long> timeMonitoring = new ArrayList<>();
+        timeMonitoring.add(System.currentTimeMillis());
+        startedTimeMonitoring.put(key, timeMonitoring);
+    }
+
+    public static void checkTimeMonitoring(String key, String checkpoint) {
+        List<Long> monitoringTimes = startedTimeMonitoring.get(key);
+        if (monitoringTimes != null) {
+            Long endTime = System.currentTimeMillis();
+            Long duration = endTime - monitoringTimes.get(monitoringTimes.size() - 1);
+            monitoringTimes.add(endTime);
+            startedTimeMonitoring.put(key, monitoringTimes);
+            String message = String.format("Duration for '%s' at '%s' is %d ms", key, checkpoint, duration);
+            ConsoleLogger.log(message);
+        }
     }
 
     public static void endTimeMonitoring(String key) {
-        Long startTime = startedTimeMonitoring.get(key);
-        if (startTime != null) {
+        List<Long> monitoringTimes = startedTimeMonitoring.get(key);
+        if (monitoringTimes != null) {
             Long endTime = System.currentTimeMillis();
-            Long duration = endTime - startTime;
+            Long duration = endTime - monitoringTimes.get(0);
             String message = String.format("Duration for '%s' is %d ms", key, duration);
             ConsoleLogger.log(message);
             startedTimeMonitoring.remove(key);
