@@ -21,19 +21,19 @@ public class Performance {
 
     }
 
-    private static HashMap<Object, Long> startedTimeMonitoring = new HashMap<>();
+    private static HashMap<String, Long> startedTimeMonitoring = new HashMap<>();
 
-    public static void startTimeMonitoring(Object key) {
+    public static void startTimeMonitoring(String key) {
         startedTimeMonitoring.put(key, System.currentTimeMillis());
     }
 
-    public static void endTimeMonitoring(Object key) {
+    public static void endTimeMonitoring(String key) {
         Long startTime = startedTimeMonitoring.get(key);
         if (startTime != null) {
             Long endTime = System.currentTimeMillis();
             Long duration = endTime - startTime;
-            ConsoleLogger.log("Time elapsed in milliseconds (seconds): " +
-                    duration + "ms (" + duration / 1000.0 + "s)");
+            String message = String.format("Duration for '%s' is %d ms", key, duration);
+            ConsoleLogger.log(message);
             startedTimeMonitoring.remove(key);
         }
     }
