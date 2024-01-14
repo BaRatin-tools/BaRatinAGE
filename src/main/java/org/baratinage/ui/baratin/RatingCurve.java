@@ -436,7 +436,7 @@ public class RatingCurve extends BamItem implements IPredictionMaster, ICalibrat
         }
 
         // **********************************************************
-        // prior rating curve BaM results
+        // rating curve BaM results
         if (json.has("bamRunId")) {
             String bamRunId = json.getString("bamRunId");
             bamRunConfigAndRes = RunConfigAndRes.buildFromTempZipArchive(bamRunId);
