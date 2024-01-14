@@ -10,16 +10,19 @@ import javax.swing.JButton;
 
 import org.baratinage.AppSetup;
 import org.baratinage.jbam.EstimatedParameter;
+
 import org.baratinage.ui.bam.BamProject;
 import org.baratinage.ui.baratin.EstimatedControlParameters;
 import org.baratinage.ui.commons.DensityPlotGrid;
 import org.baratinage.ui.commons.TracePlotGrid;
 import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.ui.container.TabContainer;
-import org.baratinage.utils.ConsoleLogger;
-import org.baratinage.utils.fs.WriteFile;
 import org.baratinage.ui.component.CommonDialog;
 import org.baratinage.ui.component.DataTable;
+
+import org.baratinage.utils.ConsoleLogger;
+import org.baratinage.utils.fs.WriteFile;
+
 import org.baratinage.translation.T;
 
 public class RatingCurveResults extends TabContainer {
