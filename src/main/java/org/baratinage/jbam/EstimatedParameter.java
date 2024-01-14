@@ -14,6 +14,8 @@ public class EstimatedParameter {
     private List<double[]> density;
     private double[] u95;
 
+    private Float validityCheckResult = null;
+
     final private static String[] SUMMARY_STATISTICS_NAMES = new String[] {
             "n", "min", "max", "range", "mean", "mediann", "q10", "q25",
             "q75", "q90", "std", "var", "cv", "skewness", "kurtosis", "maxpost"
@@ -34,6 +36,9 @@ public class EstimatedParameter {
         if (parameterConfig == null) {
             return 0;
         }
+        if (validityCheckResult != null) {
+            return validityCheckResult;
+        }
         int n = mcmc.length;
         double[] priorSamples = parameterConfig.distribution.getRandomValues(n);
         int belowCount = 0;
@@ -43,7 +48,8 @@ public class EstimatedParameter {
             }
         }
         float belowFreq = ((float) belowCount / (float) n);
-        return 1f - belowFreq;
+        validityCheckResult = 1f - belowFreq;
+        return validityCheckResult;
     }
 
     public List<double[]> getPriorDensity() {
