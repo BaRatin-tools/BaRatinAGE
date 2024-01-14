@@ -396,8 +396,19 @@ public class ReadFile {
      * @throws IOException
      */
     public static String readTextFile(String textFilePath) throws IOException {
+        return readTextFile(Path.of(textFilePath));
+    }
+
+    /**
+     * Read an UTF8 encoded text file and return content as one String object
+     * 
+     * @param textFilePath text file path
+     * @return file content as a String
+     * @throws IOException
+     */
+    public static String readTextFile(Path textFilePath) throws IOException {
         String text = new String(
-                Files.readAllBytes(Path.of(textFilePath)),
+                Files.readAllBytes(textFilePath),
                 StandardCharsets.UTF_8);
         return text;
     }
