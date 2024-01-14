@@ -35,7 +35,7 @@ public class RatingCurvePlot extends RowColPanel {
 
         private boolean axisFliped = false;
         private boolean dischargeAxisInLog = false;
-        private boolean smoothTotalEnvelop = false;
+        private boolean smoothTotalEnvelop = true;
 
         private final RowColPanel toolsPanel;
         private final JCheckBox switchDischargeAxisScale;
@@ -56,7 +56,7 @@ public class RatingCurvePlot extends RowColPanel {
                 switchAxisCheckbox.setText("swap_xy_axis");
 
                 smoothTotalEnvelopCheckbox = new JCheckBox();
-                smoothTotalEnvelopCheckbox.setSelected(false);
+                smoothTotalEnvelopCheckbox.setSelected(true);
                 smoothTotalEnvelopCheckbox.setText("smooth_total_envelop");
 
                 switchDischargeAxisScale.addActionListener((e) -> {
