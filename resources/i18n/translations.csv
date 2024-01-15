@@ -258,3 +258,4 @@ bottom	to be translated except for 'fr' and 'en'	Bas	Bottom
 segment_nbr	to be translated except for 'fr' and 'en'	Segment n°<b>{0}</b>	Segment #<b>{0}</b>																									
 control_configuration_will_be_lost	to be translated except for 'fr' and 'en'	La configuration du contrôle n°<b>{0}</b> sera perdu.	Configuration of control #<b>{0}</b> will be lost.																									
 smooth_total_envelop	to be translated except for 'fr' and 'en'	Lisser l'incertitude totale	Smooth total uncertainty																									
+project_saved	to be translated except for 'fr' and 'en'	Projet sauvegardé	Project saved																									

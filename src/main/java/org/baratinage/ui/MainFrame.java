@@ -7,6 +7,7 @@ import org.baratinage.translation.T;
 import org.baratinage.ui.bam.BamProject;
 import org.baratinage.ui.bam.BamProjectLoader;
 import org.baratinage.ui.baratin.BaratinProject;
+import org.baratinage.ui.commons.ToasterMessage;
 import org.baratinage.ui.component.CommonDialog;
 import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.utils.ConsoleLogger;
@@ -258,6 +259,7 @@ public class MainFrame extends JFrame {
         currentProject.saveProject(projectFilePath);
         currentProject.setProjectPath(projectFilePath);
         updateFrameTitle();
+        ToasterMessage.info(T.text("project_saved"));
     }
 
     public void close() {
