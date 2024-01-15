@@ -22,6 +22,7 @@ pom.xml.versionsBackup
 /log/*.log
 *.jar
 *.bar.zip
+*.bam
 /resources/help/*
 /resources/icons/feather/*
 !/resources/icons/feather/trash.svg
