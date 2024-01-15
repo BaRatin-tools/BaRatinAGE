@@ -101,23 +101,24 @@ public class GaugingsImporter extends RowColPanel {
         RowColPanel actionPanel = new RowColPanel();
         actionPanel.setPadding(5);
         actionPanel.setGap(5);
+
         JButton validateButton = new JButton(T.text("import"));
         validateButton.addActionListener((e) -> {
             String filePath = dataFileReader.getFilePath();
-            String fileName = Path.of(filePath).getFileName().toString();
+            if (filePath != null) { // FIXME: validateButton should be disabled if import is invalid
+                String fileName = Path.of(filePath).getFileName().toString();
+                // necessary to read all the data!
+                rawData = dataFileReader.getData();
+                dataParser.setRawData(rawData, headers, missingValueString);
 
-            // necessary to read all the data!
-            rawData = dataFileReader.getData();
-            dataParser.setRawData(rawData, headers, missingValueString);
-
-            dataset = new GaugingsDataset(fileName,
-                    dataParser.getDoubleCol(columnsMapping.hCol.getSelectedIndex()),
-                    dataParser.getDoubleCol(columnsMapping.qCol.getSelectedIndex()),
-                    dataParser.getDoubleCol(columnsMapping.uqCol.getSelectedIndex()));
-
+                dataset = new GaugingsDataset(fileName,
+                        dataParser.getDoubleCol(columnsMapping.hCol.getSelectedIndex()),
+                        dataParser.getDoubleCol(columnsMapping.qCol.getSelectedIndex()),
+                        dataParser.getDoubleCol(columnsMapping.uqCol.getSelectedIndex()));
+            }
             dialog.setVisible(false);
-
         });
+
         JButton cancelButton = new JButton(T.text("cancel"));
         cancelButton.addActionListener((e) -> {
             dialog.setVisible(false);
