@@ -58,6 +58,12 @@ public class KAC extends PriorControlPanel {
     }
 
     @Override
+    public void setGlobalLock(boolean lock) {
+        super.setGlobalLock(lock);
+        lockLabel.setVisible(!lock);
+    }
+
+    @Override
     public KACGaussianConfig toKACGaussianConfig() {
         // irrelevant
         return null;

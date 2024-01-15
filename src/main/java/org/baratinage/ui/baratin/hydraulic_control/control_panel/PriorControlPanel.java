@@ -78,6 +78,7 @@ public abstract class PriorControlPanel extends GridPanel implements ChangeListe
                         .getCustomAppImageIcon("coefficient.svg");
 
         private final JLabel equationLabel;
+        protected final JLabel lockLabel;
 
         private final List<JLabel> columnHeaders;
         private final List<AbstractParameterPriorDist> parameters = new ArrayList<>();
@@ -99,7 +100,7 @@ public abstract class PriorControlPanel extends GridPanel implements ChangeListe
                 JSeparator iconNamSymbolUnitSep = new JSeparator(JSeparator.HORIZONTAL);
                 insertChild(iconNamSymbolUnitSep, 0, 1, 3, 1);
 
-                JLabel lockLabel = new JLabel();
+                lockLabel = new JLabel();
                 lockLabel.setIcon(AppSetup.ICONS.LOCK);
                 insertLabel(lockLabel, 3 + nColumns, 0);
                 JSeparator lockSeparator = new JSeparator(JSeparator.HORIZONTAL);

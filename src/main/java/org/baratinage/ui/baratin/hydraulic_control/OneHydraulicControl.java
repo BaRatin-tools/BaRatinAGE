@@ -155,10 +155,12 @@ public class OneHydraulicControl extends JScrollPane {
         JLabel arrowRightDown = new JLabel(AppSetup.ICONS.RIGHT_DOWN_ARROW);
         JLabel controlParLabel = new JLabel();
         physicalControlParametersLabelsPanel.insertChild(arrowLeftUp, 0, 0);
-        physicalControlParametersLabelsPanel.insertChild(physicalParLabel, 1, 0);
+        physicalControlParametersLabelsPanel.insertChild(physicalParLabel, 1, 0, GridPanel.ANCHOR.C,
+                GridPanel.FILL.NONE);
         physicalControlParametersLabelsPanel.insertChild(arrowRightUp, 2, 0);
         physicalControlParametersLabelsPanel.insertChild(arrowLeftDown, 0, 1);
-        physicalControlParametersLabelsPanel.insertChild(controlParLabel, 1, 1);
+        physicalControlParametersLabelsPanel.insertChild(controlParLabel, 1, 1, GridPanel.ANCHOR.C,
+                GridPanel.FILL.NONE);
         physicalControlParametersLabelsPanel.insertChild(arrowRightDown, 2, 1);
 
         Font f = physicalParLabel.getFont().deriveFont(Font.BOLD);
@@ -225,7 +227,7 @@ public class OneHydraulicControl extends JScrollPane {
 
         T.updateHierarchy(this, kacControlPanel);
         T.t(this, physicalParLabel, false, "physical_parameters");
-        T.t(this, controlParLabel, false, "control_parameters");
+        T.t(this, controlParLabel, false, "resulting_control_parameters");
         T.t(this, () -> {
             setControlTypeCombobox();
             toKACmodeText = T.text("switch_to_kac_mode");
