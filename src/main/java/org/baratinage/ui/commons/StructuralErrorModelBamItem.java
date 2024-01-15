@@ -56,9 +56,9 @@ public class StructuralErrorModelBamItem extends BamItem implements IStructuralE
             // to the constant model
             StructuralErrorModelPanel strucErrModelPanel = new StructuralErrorModelPanel();
             strucErrModelPanel.addParameter("&gamma;<sub>1</sub>", nameSymbolUnits[k].unit(),
-                    DistributionType.UNIFORM, 1, 0, 1000);
+                    DistributionType.UNIFORM, 1, 0, 10000);
             strucErrModelPanel.addParameter("&gamma;<sub>2</sub>", "-",
-                    DistributionType.UNIFORM, 0.1, 0, 1000);
+                    DistributionType.UNIFORM, 0.1, 0, 1);
             strucErrModelPanels[k] = strucErrModelPanel;
 
             strucErrModelPanel.addChangeListener((chEvt) -> {
