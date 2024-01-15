@@ -21,8 +21,8 @@ public class App {
                 if (args.length > 0) {
                     mainFrame.loadProject(args[0]);
                 } else {
-                    mainFrame.loadProject(
-                            "D:\\Programming\\java\\V3\\BaRatinAGE\\example\\Aisne_Verrières_Example.bam");
+                    // mainFrame.loadProject(
+                    // "D:\\Programming\\java\\V3\\BaRatinAGE\\example\\Aisne_Verrières_Example.bam");
                     // mainFrame.newProject();
                 }
             } catch (Exception e) {
