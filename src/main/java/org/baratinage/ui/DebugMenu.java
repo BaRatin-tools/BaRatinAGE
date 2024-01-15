@@ -6,11 +6,18 @@ import javax.swing.SwingUtilities;
 
 import org.baratinage.AppSetup;
 import org.baratinage.translation.T;
+import org.baratinage.ui.commons.ToasterMessage;
 
 public class DebugMenu extends JMenu {
 
     public DebugMenu() {
         super("DEBUG / DEV");
+
+        JMenuItem testToasterBtn = new JMenuItem("Test toaster");
+        add(testToasterBtn);
+        testToasterBtn.addActionListener((e) -> {
+            ToasterMessage.info("Project saved!");
+        });
 
         JMenuItem clearConsoleBtn = new JMenuItem("Clear console");
         add(clearConsoleBtn);
