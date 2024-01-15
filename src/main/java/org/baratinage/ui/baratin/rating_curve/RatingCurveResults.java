@@ -12,7 +12,6 @@ import org.baratinage.AppSetup;
 import org.baratinage.jbam.EstimatedParameter;
 
 import org.baratinage.ui.bam.BamProject;
-import org.baratinage.ui.bam.BamProjectLoader;
 import org.baratinage.ui.baratin.EstimatedControlParameters;
 import org.baratinage.ui.commons.DensityPlotGrid;
 import org.baratinage.ui.commons.TracePlotGrid;
@@ -102,11 +101,9 @@ public class RatingCurveResults extends TabContainer {
 
         updateRatingCurveGridTable(stage, dischargeMaxpost, paramU, totalU);
 
-        // delay action when in load mode
-        BamProjectLoader.addDelayedAction(() -> {
-            updateParametersPlots(rcEstimParam); // bottleneck
-            updateParameterSummaryTable(rcEstimParam); // bottleneck
-        });
+        updateParametersPlots(rcEstimParam); // bottleneck
+
+        updateParameterSummaryTable(rcEstimParam); // bottleneck
 
         updateMcmcResultPanel(rcEstimParam);
 

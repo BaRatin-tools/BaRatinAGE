@@ -15,6 +15,7 @@ import org.baratinage.ui.bam.BamItem;
 import org.baratinage.ui.bam.BamConfigRecord;
 import org.baratinage.ui.bam.BamItemParent;
 import org.baratinage.ui.bam.BamItemType;
+import org.baratinage.ui.bam.BamProjectLoader;
 import org.baratinage.ui.bam.IPredictionExperiment;
 import org.baratinage.ui.bam.IPredictionMaster;
 import org.baratinage.ui.bam.PredictionExperiment;
@@ -206,10 +207,13 @@ public class Hydrograph extends BamItem implements IPredictionMaster {
         } else {
             ConsoleLogger.log("missing 'limnigraph'");
         }
+
         if (json.has("bamRunId")) {
             String bamRunId = json.getString("bamRunId");
             currentConfigAndRes = RunConfigAndRes.buildFromTempZipArchive(bamRunId);
-            buildPlot();
+            BamProjectLoader.addDelayedAction(() -> {
+                buildPlot();
+            });
         } else {
             ConsoleLogger.log("missing 'bamRunId'");
         }
@@ -221,6 +225,7 @@ public class Hydrograph extends BamItem implements IPredictionMaster {
         } else {
             ConsoleLogger.log("missing 'backup'");
         }
+
         TimedActions.throttle(ID, AppSetup.CONFIG.THROTTLED_DELAY_MS, this::checkSync);
     }
 

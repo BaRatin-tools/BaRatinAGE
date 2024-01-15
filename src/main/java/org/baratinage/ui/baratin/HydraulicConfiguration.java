@@ -19,6 +19,7 @@ import org.baratinage.translation.T;
 import org.baratinage.ui.bam.BamItem;
 import org.baratinage.ui.bam.BamConfigRecord;
 import org.baratinage.ui.bam.BamItemType;
+import org.baratinage.ui.bam.BamProjectLoader;
 import org.baratinage.ui.bam.IModelDefinition;
 import org.baratinage.ui.bam.IPredictionExperiment;
 import org.baratinage.ui.bam.IPredictionMaster;
@@ -467,7 +468,9 @@ public class HydraulicConfiguration
         if (json.has("bamRunId")) {
             String bamRunId = json.getString("bamRunId");
             bamRunConfigAndRes = RunConfigAndRes.buildFromTempZipArchive(bamRunId);
-            buildPlot();
+            BamProjectLoader.addDelayedAction(() -> {
+                buildPlot();
+            });
         } else {
             ConsoleLogger.log("missing 'bamRunZipFileName'");
         }

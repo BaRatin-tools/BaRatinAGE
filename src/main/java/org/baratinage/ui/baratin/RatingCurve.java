@@ -28,6 +28,7 @@ import org.baratinage.translation.T;
 import org.baratinage.ui.bam.BamItem;
 import org.baratinage.ui.bam.BamConfigRecord;
 import org.baratinage.ui.bam.BamItemType;
+import org.baratinage.ui.bam.BamProjectLoader;
 import org.baratinage.ui.bam.BamItemParent;
 import org.baratinage.ui.bam.ICalibratedModel;
 import org.baratinage.ui.bam.IMcmc;
@@ -440,7 +441,9 @@ public class RatingCurve extends BamItem implements IPredictionMaster, ICalibrat
         if (json.has("bamRunId")) {
             String bamRunId = json.getString("bamRunId");
             bamRunConfigAndRes = RunConfigAndRes.buildFromTempZipArchive(bamRunId);
-            updateResults();
+            BamProjectLoader.addDelayedAction(() -> {
+                updateResults();
+            });
         } else {
             ConsoleLogger.log("missing 'bamRunId'");
         }
