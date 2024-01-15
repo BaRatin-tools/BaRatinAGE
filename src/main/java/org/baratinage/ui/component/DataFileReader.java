@@ -25,7 +25,7 @@ public class DataFileReader extends RowColPanel {
     public String sep = "\t";
     public int nRowSkip = 0;
     public String missingValueString = "";
-    public boolean hasHeaderRow = true;
+    public boolean hasHeaderRow = false;
     public int nPreload = 15;
 
     private JLabel selectedFilePathLabel;
