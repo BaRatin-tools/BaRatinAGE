@@ -1,5 +1,6 @@
 package org.baratinage.ui.baratin.limnigraph;
 
+import java.util.Arrays;
 import java.util.List;
 import org.baratinage.translation.T;
 import org.baratinage.ui.component.DataTable;
@@ -48,11 +49,11 @@ public class LimnigraphErrors extends RowColPanel {
             errConfigTable.addColumn(dataset.getStage());
 
             if (dataset.hasNonSysErr()) {
-                errConfigTable.addColumn(dataset.getNonSysErrStd());
+                errConfigTable.addColumn(Arrays.stream(dataset.getNonSysErrStd()).map(u -> u * 2.0).toArray());
             }
 
             if (dataset.hasSysErr()) {
-                errConfigTable.addColumn(dataset.getSysErrStd());
+                errConfigTable.addColumn(Arrays.stream(dataset.getSysErrStd()).map(u -> u * 2.0).toArray());
                 errConfigTable.addColumn(dataset.getSysErrInd());
             }
 
@@ -64,12 +65,12 @@ public class LimnigraphErrors extends RowColPanel {
                 errConfigTable.setHeader(1, T.text("stage_level"));
                 int colIndex = 2;
                 if (dataset.hasNonSysErr()) {
-                    errConfigTable.setHeader(colIndex, T.text("stage_non_sys_error_std"));
+                    errConfigTable.setHeader(colIndex, T.text("stage_non_sys_error_uncertainty"));
 
                     colIndex++;
                 }
                 if (dataset.hasSysErr()) {
-                    errConfigTable.setHeader(colIndex, T.text("stage_sys_error_std"));
+                    errConfigTable.setHeader(colIndex, T.text("stage_sys_error_uncertainty"));
                     colIndex++;
                     errConfigTable.setHeader(colIndex, T.text("stage_sys_error_ind"));
                     colIndex++;

@@ -4,6 +4,7 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.swing.JButton;
@@ -38,8 +39,8 @@ public class LimnigraphImporter extends RowColPanel {
     private final SimpleTextField timeColFormatField;
     private final SimpleComboBox stageColComboBox;
 
-    private final SimpleComboBox nonSysStdComboBox;
-    private final SimpleComboBox sysStdComboBox;
+    private final SimpleComboBox nonSysUncertaintyComboBox;
+    private final SimpleComboBox sysUncertaintyComboBox;
     private final SimpleComboBox sysIndComboBox;
 
     private final JButton validateButton;
@@ -81,11 +82,11 @@ public class LimnigraphImporter extends RowColPanel {
         stageColComboBox = new SimpleComboBox();
         JLabel stageColLabel = new JLabel(T.text("stage_level"));
 
-        nonSysStdComboBox = new SimpleComboBox();
-        JLabel nonSysStdLabel = new JLabel(T.text("stage_non_sys_error_std"));
+        nonSysUncertaintyComboBox = new SimpleComboBox();
+        JLabel nonSysUncertaintyLabel = new JLabel(T.html("stage_non_sys_error_uncertainty"));
 
-        sysStdComboBox = new SimpleComboBox();
-        JLabel sysStdLabel = new JLabel(T.text("stage_sys_error_std"));
+        sysUncertaintyComboBox = new SimpleComboBox();
+        JLabel sysUncertaintyLabel = new JLabel(T.html("stage_sys_error_uncertainty"));
 
         sysIndComboBox = new SimpleComboBox();
         JLabel sysIndLabel = new JLabel(T.text("stage_sys_error_ind"));
@@ -115,12 +116,12 @@ public class LimnigraphImporter extends RowColPanel {
         columnMappingPanel.insertChild(stageColComboBox, 1, rowIndex);
         rowIndex++;
 
-        columnMappingPanel.insertChild(nonSysStdLabel, 0, rowIndex);
-        columnMappingPanel.insertChild(nonSysStdComboBox, 1, rowIndex);
+        columnMappingPanel.insertChild(nonSysUncertaintyLabel, 0, rowIndex);
+        columnMappingPanel.insertChild(nonSysUncertaintyComboBox, 1, rowIndex);
         rowIndex++;
 
-        columnMappingPanel.insertChild(sysStdLabel, 0, rowIndex);
-        columnMappingPanel.insertChild(sysStdComboBox, 1, rowIndex);
+        columnMappingPanel.insertChild(sysUncertaintyLabel, 0, rowIndex);
+        columnMappingPanel.insertChild(sysUncertaintyComboBox, 1, rowIndex);
         rowIndex++;
 
         columnMappingPanel.insertChild(sysIndLabel, 0, rowIndex);
@@ -150,21 +151,21 @@ public class LimnigraphImporter extends RowColPanel {
             int nItems = timeColComboBox.getItemCount();
             int timeIndex = timeColComboBox.getSelectedIndex();
             int stageIndex = stageColComboBox.getSelectedIndex();
-            int nonSysStdIndex = nonSysStdComboBox.getSelectedIndex();
-            int sysStdIndex = sysStdComboBox.getSelectedIndex();
+            int nonSysUncertaintyIndex = nonSysUncertaintyComboBox.getSelectedIndex();
+            int sysUncertaintyIndex = sysUncertaintyComboBox.getSelectedIndex();
             int sysIndIndex = sysIndComboBox.getSelectedIndex();
 
             timeColComboBox.setItems(headers);
             stageColComboBox.setItems(headers);
-            nonSysStdComboBox.setItems(headers);
-            sysStdComboBox.setItems(headers);
+            nonSysUncertaintyComboBox.setItems(headers);
+            sysUncertaintyComboBox.setItems(headers);
             sysIndComboBox.setItems(headers);
 
             if (nItems == headers.length) {
                 timeColComboBox.setSelectedItem(timeIndex);
                 stageColComboBox.setSelectedItem(stageIndex);
-                nonSysStdComboBox.setSelectedItem(nonSysStdIndex);
-                sysStdComboBox.setSelectedItem(sysStdIndex);
+                nonSysUncertaintyComboBox.setSelectedItem(nonSysUncertaintyIndex);
+                sysUncertaintyComboBox.setSelectedItem(sysUncertaintyIndex);
                 sysIndComboBox.setSelectedItem(sysIndIndex);
             }
         });
@@ -190,16 +191,18 @@ public class LimnigraphImporter extends RowColPanel {
             int stageColIndex = stageColComboBox.getSelectedIndex();
             double[] stage = dataParser.getDoubleCol(stageColIndex);
 
-            int nonSysInd = nonSysStdComboBox.getSelectedIndex();
-            int sysStdInd = sysStdComboBox.getSelectedIndex();
+            int nonSysUncertaintyInd = nonSysUncertaintyComboBox.getSelectedIndex();
+            int sysUncertaintyInd = sysUncertaintyComboBox.getSelectedIndex();
             int sysIndInd = sysIndComboBox.getSelectedIndex();
 
             dataset = new LimnigraphDataset(
                     fileName,
                     dateTimeVector,
                     stage,
-                    nonSysInd < 0 ? null : dataParser.getDoubleCol(nonSysInd),
-                    sysStdInd < 0 ? null : dataParser.getDoubleCol(sysStdInd),
+                    nonSysUncertaintyInd < 0 ? null
+                            : Arrays.stream(dataParser.getDoubleCol(nonSysUncertaintyInd)).map(u -> u / 2.0).toArray(),
+                    sysUncertaintyInd < 0 ? null
+                            : Arrays.stream(dataParser.getDoubleCol(sysUncertaintyInd)).map(u -> u / 2.0).toArray(),
                     sysIndInd < 0 ? null : dataParser.getIntCol(sysIndInd));
 
             dialog.setVisible(false);
@@ -235,8 +238,8 @@ public class LimnigraphImporter extends RowColPanel {
         timeColComboBox.addChangeListener(cbChangeListener);
         timeColFormatField.addChangeListener(cbChangeListener);
         stageColComboBox.addChangeListener(cbChangeListener);
-        nonSysStdComboBox.addChangeListener(cbChangeListener);
-        sysStdComboBox.addChangeListener(cbChangeListener);
+        nonSysUncertaintyComboBox.addChangeListener(cbChangeListener);
+        sysUncertaintyComboBox.addChangeListener(cbChangeListener);
         sysIndComboBox.addChangeListener(cbChangeListener);
 
     }
@@ -247,8 +250,8 @@ public class LimnigraphImporter extends RowColPanel {
             timeColComboBox.setValidityView(false);
             timeColFormatField.setValidityView(false);
             stageColComboBox.setValidityView(false);
-            nonSysStdComboBox.setValidityView(false);
-            sysStdComboBox.setValidityView(false);
+            nonSysUncertaintyComboBox.setValidityView(false);
+            sysUncertaintyComboBox.setValidityView(false);
             sysIndComboBox.setValidityView(false);
             validateButton.setEnabled(false);
             return;
@@ -272,24 +275,24 @@ public class LimnigraphImporter extends RowColPanel {
 
         // non-sys error
 
-        int nonSysStdInd = nonSysStdComboBox.getSelectedIndex();
+        int nonSysUncertaintyInd = nonSysUncertaintyComboBox.getSelectedIndex();
         boolean nonSysErrOk = true;
-        if (nonSysStdInd >= 0) {
-            dataParser.setAsDoubleCol(nonSysStdInd);
-            nonSysErrOk = dataParser.testColValidity(nonSysStdInd);
+        if (nonSysUncertaintyInd >= 0) {
+            dataParser.setAsDoubleCol(nonSysUncertaintyInd);
+            nonSysErrOk = dataParser.testColValidity(nonSysUncertaintyInd);
         }
 
         // sys err
 
-        int sysStdInd = sysStdComboBox.getSelectedIndex();
+        int sysUncertaintyInd = sysUncertaintyComboBox.getSelectedIndex();
         int sysIndInd = sysIndComboBox.getSelectedIndex();
 
-        boolean sysErrOk = ((sysStdInd >= 0 && sysIndInd >= 0) ||
-                (sysStdInd < 0 && sysIndInd < 0));
+        boolean sysErrOk = ((sysUncertaintyInd >= 0 && sysIndInd >= 0) ||
+                (sysUncertaintyInd < 0 && sysIndInd < 0));
 
-        if (sysStdInd >= 0) {
-            dataParser.setAsDoubleCol(sysStdInd);
-            sysErrOk = sysErrOk && dataParser.testColValidity(sysStdInd);
+        if (sysUncertaintyInd >= 0) {
+            dataParser.setAsDoubleCol(sysUncertaintyInd);
+            sysErrOk = sysErrOk && dataParser.testColValidity(sysUncertaintyInd);
         }
         if (sysIndInd >= 0) {
             dataParser.setAsIntCol(sysIndInd);
@@ -301,8 +304,8 @@ public class LimnigraphImporter extends RowColPanel {
         timeColComboBox.setValidityView(timeOk);
         timeColFormatField.setValidityView(timeFormatOk);
         stageColComboBox.setValidityView(stageOk);
-        nonSysStdComboBox.setValidityView(nonSysErrOk);
-        sysStdComboBox.setValidityView(sysErrOk);
+        nonSysUncertaintyComboBox.setValidityView(nonSysErrOk);
+        sysUncertaintyComboBox.setValidityView(sysErrOk);
         sysIndComboBox.setValidityView(sysErrOk);
         validateButton.setEnabled(timeOk && timeFormatOk && stageOk && nonSysErrOk && sysErrOk);
 
