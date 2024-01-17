@@ -259,3 +259,4 @@ segment_nbr	to be translated except for 'fr' and 'en'	Segment n°<b>{0}</b>	Segm
 control_configuration_will_be_lost	to be translated except for 'fr' and 'en'	La configuration du contrôle n°<b>{0}</b> sera perdu.	Configuration of control #<b>{0}</b> will be lost.																									
 smooth_total_envelop	to be translated except for 'fr' and 'en'	Lisser l'incertitude totale	Smooth total uncertainty																									
 project_saved	to be translated except for 'fr' and 'en'	Projet sauvegardé	Project saved																									
+large_file_size_warning	to be translated except for 'fr' and 'en'	Les tailles des fichiers générés à partir de ce jeu de données (fichier projet, fichiers résultat) peuvent être très grandes!	Sizes of files generated from this dataset (project files, result files) can be very large!																									

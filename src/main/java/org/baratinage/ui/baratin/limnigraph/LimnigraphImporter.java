@@ -13,12 +13,14 @@ import javax.swing.JLabel;
 import javax.swing.JSeparator;
 import javax.swing.event.ChangeListener;
 
+import org.baratinage.ui.component.CommonDialog;
 import org.baratinage.ui.component.DataFileReader;
 import org.baratinage.ui.component.DataParser;
 import org.baratinage.ui.component.SimpleComboBox;
 import org.baratinage.ui.component.SimpleTextField;
 import org.baratinage.ui.container.GridPanel;
 import org.baratinage.ui.container.RowColPanel;
+import org.baratinage.utils.ConsoleLogger;
 import org.baratinage.utils.Misc;
 import org.baratinage.utils.perf.TimedActions;
 import org.baratinage.AppSetup;
@@ -195,6 +197,21 @@ public class LimnigraphImporter extends RowColPanel {
             int sysUncertaintyInd = sysUncertaintyComboBox.getSelectedIndex();
             int sysIndInd = sysIndComboBox.getSelectedIndex();
 
+            int nCol = sysUncertaintyInd >= 0 || nonSysUncertaintyInd >= 0 ? AppSetup.CONFIG.N_SAMPLES.get() + 4 : 4;
+
+            double size = estimateDoubleMatrixTextFileSizeInKb(stage.length, nCol);
+            if (size > 50000) {
+                String areYouSure = T.text("are_you_sure");
+                String message = String.format("<html>%s<br>%s</html>",
+                        areYouSure, T.text("large_file_size_warning"));
+                if (!CommonDialog.confirmDialog(message, areYouSure)) {
+                    dataset = null;
+                    return;
+                }
+            }
+
+            ConsoleLogger.log("SIZE ===> " + size);
+
             dataset = new LimnigraphDataset(
                     fileName,
                     dateTimeVector,
@@ -242,6 +259,19 @@ public class LimnigraphImporter extends RowColPanel {
         sysUncertaintyComboBox.addChangeListener(cbChangeListener);
         sysIndComboBox.addChangeListener(cbChangeListener);
 
+    }
+
+    private static double estimateDoubleMatrixTextFileSizeInKb(int numRows, int numCols) {
+        int numSemicolons = (numRows - 1) * numCols; // Semicolons between values
+        int numNewlines = numRows - 1; // Newlines between rows
+
+        // Assuming average double length as 20 bytes
+        int estimatedSizeBytes = (numRows * numCols * 20) + numSemicolons + numNewlines;
+
+        // Convert bytes to KB
+        double estimatedSizeKB = (double) estimatedSizeBytes / 1024.0;
+
+        return estimatedSizeKB;
     }
 
     private void updateValidityStatus() {
