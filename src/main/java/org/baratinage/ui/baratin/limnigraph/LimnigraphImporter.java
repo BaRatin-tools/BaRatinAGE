@@ -20,7 +20,6 @@ import org.baratinage.ui.component.SimpleComboBox;
 import org.baratinage.ui.component.SimpleTextField;
 import org.baratinage.ui.container.GridPanel;
 import org.baratinage.ui.container.RowColPanel;
-import org.baratinage.utils.ConsoleLogger;
 import org.baratinage.utils.Misc;
 import org.baratinage.utils.perf.TimedActions;
 import org.baratinage.AppSetup;
@@ -209,8 +208,6 @@ public class LimnigraphImporter extends RowColPanel {
                     return;
                 }
             }
-
-            ConsoleLogger.log("SIZE ===> " + size);
 
             dataset = new LimnigraphDataset(
                     fileName,
