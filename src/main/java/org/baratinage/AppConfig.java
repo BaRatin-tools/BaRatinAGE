@@ -71,6 +71,7 @@ public class AppConfig {
     public final ConfigItem<String> THEME_KEY;
     public final ConfigItem<Integer> FONT_SIZE;
     public final ConfigItem<String> LANGUAGE_KEY;
+    public final ConfigItem<Integer> N_SAMPLES;
 
     public AppConfig() {
 
@@ -83,6 +84,7 @@ public class AppConfig {
         // "FlatDarkLaf");
         FONT_SIZE = buildAndRegisterConfigItem("font_size", Integer.class, 14);
         LANGUAGE_KEY = buildAndRegisterConfigItem("language_key", String.class, Locale.getDefault().getLanguage());
+        N_SAMPLES = buildAndRegisterConfigItem("n_samples", Integer.class, 200);
 
         loadConfiguration();
 

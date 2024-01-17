@@ -56,7 +56,7 @@ public class Limnigraph extends BamItem implements IPredictionData {
             LimnigraphDataset newLimniDataset = limniImporter.getDataset();
             if (newLimniDataset != null && newLimniDataset.getNumberOfColumns() >= 1) {
                 if (!newLimniDataset.hasStageErrMatrix()) {
-                    newLimniDataset.computeErroMatrix(200);
+                    newLimniDataset.computeErroMatrix(AppSetup.CONFIG.N_SAMPLES.get());
                 }
                 updateDataset(newLimniDataset);
             }

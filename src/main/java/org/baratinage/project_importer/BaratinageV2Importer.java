@@ -314,7 +314,7 @@ public class BaratinageV2Importer implements IProjectImporter {
 
         if (ld != null && ld.getNumberOfColumns() >= 1) {
             if (!ld.hasStageErrMatrix()) {
-                ld.computeErroMatrix(200);
+                ld.computeErroMatrix(AppSetup.CONFIG.N_SAMPLES.get());
             }
         }
 
