@@ -99,12 +99,12 @@ public class AppSetup {
     private static void setupLookAndFeel() {
         try {
             try {
-                if (CONFIG.THEME_KEY.equals("FlatMacLightLaf")) {
+                if (CONFIG.THEME_KEY.is("FlatMacLightLaf")) {
                     UIManager.setLookAndFeel(new FlatMacLightLaf());
-                } else if (CONFIG.THEME_KEY.equals("FlatDarkLaf")) {
+                } else if (CONFIG.THEME_KEY.is("FlatDarkLaf")) {
                     // FIXME: cannot use dark themes because of some custom colors and icons
                     UIManager.setLookAndFeel(new FlatDarkLaf());
-                } else if (CONFIG.THEME_KEY.equals("FlatIntelliJLaf")) {
+                } else if (CONFIG.THEME_KEY.is("FlatIntelliJLaf")) {
                     UIManager.setLookAndFeel(new FlatIntelliJLaf());
                 } else {
                     UIManager.setLookAndFeel(new FlatLightLaf());

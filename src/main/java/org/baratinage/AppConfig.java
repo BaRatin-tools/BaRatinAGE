@@ -44,6 +44,14 @@ public class AppConfig {
             return customValue != null;
         }
 
+        public boolean is(T value) {
+            if (isSet()) {
+                return customValue.equals(value);
+            } else {
+                return defaultValue.equals(value);
+            }
+        }
+
         private void castAndSet(Object o) {
             try {
                 customValue = c.cast(o);
@@ -71,6 +79,8 @@ public class AppConfig {
         allConfigItems = new ArrayList<>();
 
         THEME_KEY = buildAndRegisterConfigItem("theme_key", String.class, "FlatLightLaf");
+        // THEME_KEY = buildAndRegisterConfigItem("theme_key", String.class,
+        // "FlatDarkLaf");
         FONT_SIZE = buildAndRegisterConfigItem("font_size", Integer.class, 14);
         LANGUAGE_KEY = buildAndRegisterConfigItem("language_key", String.class, Locale.getDefault().getLanguage());
 
