@@ -33,6 +33,10 @@ import org.baratinage.utils.ConsoleLogger;
 
 public class DataTable extends RowColPanel {
 
+    // should create a specific action to export using specific formats
+    // (e.g. bareme rating curve format)
+    public final RowColPanel actionPanel;
+
     private final CustomTableModel model;
     private final JTable table;
     private CustomCellRenderer cellRenderer;
@@ -59,7 +63,7 @@ public class DataTable extends RowColPanel {
 
         JScrollPane scrollpane = new JScrollPane(table);
 
-        RowColPanel actionPanel = new RowColPanel();
+        actionPanel = new RowColPanel();
         actionPanel.setGap(5);
         actionPanel.setMainAxisAlign(ALIGN.START);
         JButton exportButton = new JButton();
