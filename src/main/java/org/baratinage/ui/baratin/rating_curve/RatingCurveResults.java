@@ -44,6 +44,8 @@ public class RatingCurveResults extends TabContainer {
 
     private BamProject project;
 
+    private final BaremExporter baremeExporter;
+
     public RatingCurveResults(BamProject project) {
 
         this.project = project;
@@ -53,6 +55,14 @@ public class RatingCurveResults extends TabContainer {
         paramDensityPlots = new DensityPlotGrid();
 
         rcGridTable = new DataTable();
+
+        baremeExporter = new BaremExporter();
+
+        JButton exportToBaremeButton = new JButton();
+        exportToBaremeButton.addActionListener((e) -> {
+            baremeExporter.exportRatingCurve();
+        });
+        rcGridTable.actionPanel.appendChild(exportToBaremeButton);
 
         rcEquation = new RatingCurveEquation();
 
@@ -78,6 +88,7 @@ public class RatingCurveResults extends TabContainer {
         T.updateHierarchy(this, mcmcResultPanel);
 
         T.t(this, () -> {
+            exportToBaremeButton.setText(T.text("export_to_bareme_format"));
             setTitleAt(0, T.html("posterior_rating_curve"));
             setTitleAt(1, T.html("rating_table"));
             setTitleAt(2, T.html("equation"));
@@ -108,6 +119,8 @@ public class RatingCurveResults extends TabContainer {
         updateMcmcResultPanel(rcEstimParam);
 
         rcEquation.updateEquation(rcEstimParam.controls());
+
+        baremeExporter.updateRatingCurveValues(stage, dischargeMaxpost, totalU.get(0), totalU.get(1));
 
     }
 

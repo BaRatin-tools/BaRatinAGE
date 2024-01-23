@@ -260,3 +260,9 @@ control_configuration_will_be_lost	to be translated except for 'fr' and 'en'	La 
 smooth_total_envelop	to be translated except for 'fr' and 'en'	Lisser l'incertitude totale	Smooth total uncertainty																									
 project_saved	to be translated except for 'fr' and 'en'	Projet sauvegardé	Project saved																									
 large_file_size_warning	to be translated except for 'fr' and 'en'	Les tailles des fichiers générés à partir de ce jeu de données (fichier projet, fichiers résultat) peuvent être très grandes!	Sizes of files generated from this dataset (project files, result files) can be very large!																									
+bareme_format	to be translated except for 'fr' and 'en'	Format Bareme	Bareme format																									
+export_to_bareme_format	to be translated except for 'fr' and 'en'	Export de la courbe de tarage au format Bareme	Export rating curve using the Bareme format																									
+export_to_bareme_max_value_warning	see key 'BaremeNmaxInfo'	Attention : le format Barême limite les courbes de tarage à 100 points. Seules les 100 premières valeurs seront exportées.	Warning: the Barême format restricts rating curves to 100 points. Only the 100 first values will be exported.																									
+validity_start	see key 'Validity_start'	Début de la période de validité	Start of validity period																									
+validity_end	see key 'Validity_end'	Fin de la période de validité	End of validity period																									
+hydro_code	see key 'HydroCode'	Code Banque HYDRO	HYDRO code																									
