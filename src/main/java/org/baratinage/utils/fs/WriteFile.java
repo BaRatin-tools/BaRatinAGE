@@ -98,7 +98,7 @@ public class WriteFile {
     }
 
     /**
-     * write a matrix of string to file
+     * write a matrix of strings to file
      * 
      * @param textFilePath     path to the text file
      * @param matrixColumnWise data as a List of String arrays with all arrays being
@@ -158,7 +158,7 @@ public class WriteFile {
     }
 
     /**
-     * write a matrix of string to file
+     * write a matrix of doubles to file
      * 
      * @param textFilePath       path to the text file
      * @param matrixColumnWise   data as a List of double arrays with all arrays
