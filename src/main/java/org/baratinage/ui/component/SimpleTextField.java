@@ -2,6 +2,7 @@ package org.baratinage.ui.component;
 
 import java.awt.Color;
 import java.awt.Dimension;
+// import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -43,21 +44,6 @@ public class SimpleTextField extends JTextField {
     public SimpleTextField() {
         super();
 
-        int H = 38;
-
-        Dimension prefDim = this.getPreferredSize();
-        prefDim.width = 100;
-        prefDim.height = H;
-        Dimension minDim = getMinimumSize();
-        minDim.width = 50;
-        minDim.height = H;
-        Dimension maxDim = getMaximumSize();
-        maxDim.height = H;
-
-        setPreferredSize(prefDim);
-        setMinimumSize(minDim);
-        setMinimumSize(maxDim);
-
         defaultBorder = getBorder();
         placeholderFont = getFont();
         placeholderColor = new Color(180, 180, 200);
@@ -85,12 +71,9 @@ public class SimpleTextField extends JTextField {
         });
     }
 
-    // Placeholder implementation comes from: https://stackoverflow.com/a/16229082
+    // Placeholder implementation comes from:https:// stackoverflow.com/a/16229082
     @Override
     protected void paintComponent(final Graphics g) {
-
-        boolean hasPlaceholder = placeholder != null && placeholder.length() > 0;
-        boolean hasInnerLabel = innerLabel != null && innerLabel.length() > 0;
 
         super.paintComponent(g);
 
@@ -102,7 +85,7 @@ public class SimpleTextField extends JTextField {
         Insets insets = getInsets();
         float fieldHeight = getHeight();
 
-        if (hasPlaceholder && getText().length() == 0) {
+        if (hasPlaceholder() && getText().length() == 0) {
 
             g2D.setColor(placeholderColor);
             g2D.setFont(placeholderFont);
@@ -110,25 +93,48 @@ public class SimpleTextField extends JTextField {
 
             float x = insets.left;
 
-            float y = maxCharHeight / 2 + fieldHeight / 2 - Math.round((float) insets.top / 2f);
+            float y = maxCharHeight / 2 + fieldHeight / 2 - Math.round((float) insets.top
+                    / 2f);
             g2D.drawString(placeholder, x, y);
 
         }
-        if (hasInnerLabel) {
+        if (hasInnerLabel()) {
             g2D.setColor(innerLabelColor);
             g2D.setFont(innerLabelFont);
             setBorder(new CompoundBorder(defaultBorder, new EmptyBorder(12, 0, 0, 0)));
 
             float maxCharHeight = g2D.getFontMetrics().getMaxAscent();
 
-            float x = insets.left - 1;
-            float y = maxCharHeight + 2;
+            float x = insets.left - 1 - 1;
+            float y = maxCharHeight + 2 - 2;
 
             g2D.drawString(innerLabel, x, y);
         } else {
             setBorder(defaultBorder);
         }
 
+    }
+
+    public boolean hasPlaceholder() {
+        return placeholder != null && placeholder.length() > 0;
+    }
+
+    public boolean hasInnerLabel() {
+        return innerLabel != null && innerLabel.length() > 0;
+    }
+
+    @Override
+    public int getHeight() {
+        return hasInnerLabel() ? 35 : super.getHeight();
+    }
+
+    @Override
+    public Dimension getPreferredSize() {
+        int h = getHeight();
+        if (h == 0) {
+            h = super.getPreferredSize().height;
+        }
+        return new Dimension(getWidth(), h);
     }
 
     public void setPlaceholder(final String s) {
@@ -151,7 +157,7 @@ public class SimpleTextField extends JTextField {
 
     protected void setTextWithoutFiringChangeListeners(String text) {
         doNotFireChange = true;
-        super.setText(text);
+        setText(text);
         doNotFireChange = false;
     }
 
