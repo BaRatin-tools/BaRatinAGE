@@ -1,7 +1,6 @@
 package org.baratinage.ui.component;
 
 import java.awt.Color;
-import java.awt.Dimension;
 
 import javax.swing.JSpinner;
 import javax.swing.JTextField;
@@ -11,10 +10,10 @@ import org.baratinage.AppSetup;
 
 public class SimpleIntegerField extends JSpinner {
 
+    private SpinnerNumberModel model;
+
     private static Color REGULAR_BG = new JTextField().getBackground();
     private static Color INVALID_BG = AppSetup.COLORS.INVALID_BG;
-
-    private SpinnerNumberModel model;
 
     public SimpleIntegerField() {
         this(0, Integer.MAX_VALUE, 1);
@@ -22,21 +21,6 @@ public class SimpleIntegerField extends JSpinner {
 
     public SimpleIntegerField(int min, int max, int step) {
         super();
-
-        int H = 32;
-
-        Dimension prefDim = this.getPreferredSize();
-        prefDim.width = 100;
-        prefDim.height = H;
-        Dimension minDim = getMinimumSize();
-        minDim.width = 50;
-        minDim.height = H;
-        Dimension maxDim = getMaximumSize();
-        maxDim.height = H;
-
-        setPreferredSize(prefDim);
-        setMinimumSize(minDim);
-        setMinimumSize(maxDim);
 
         model = new SpinnerNumberModel(min, min, max, step);
         setModel(model);

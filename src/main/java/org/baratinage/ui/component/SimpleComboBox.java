@@ -2,7 +2,6 @@ package org.baratinage.ui.component;
 
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,21 +41,6 @@ public class SimpleComboBox extends RowColPanel {
     private JLabel emptyLabel = defaultEmptyLabel;
 
     public SimpleComboBox() {
-
-        int H = 38;
-
-        Dimension prefDim = this.getPreferredSize();
-        prefDim.width = 100;
-        prefDim.height = H;
-        Dimension minDim = getMinimumSize();
-        minDim.width = 50;
-        minDim.height = H;
-        Dimension maxDim = getMaximumSize();
-        maxDim.height = H;
-
-        setPreferredSize(prefDim);
-        setMinimumSize(minDim);
-        setMinimumSize(maxDim);
 
         model = new DefaultComboBoxModel<>();
         comboBox = new JComboBox<>();
