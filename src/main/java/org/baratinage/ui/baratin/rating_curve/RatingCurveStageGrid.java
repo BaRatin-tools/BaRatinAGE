@@ -9,7 +9,6 @@ import javax.swing.event.ChangeListener;
 
 import org.baratinage.jbam.PredictionInput;
 import org.baratinage.ui.bam.IPredictionData;
-
 import org.baratinage.ui.component.SimpleNumberField;
 import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.utils.ConsoleLogger;
@@ -19,10 +18,10 @@ import org.json.JSONObject;
 // FIXME: should have a fromJSON / toJSON methods
 public class RatingCurveStageGrid extends RowColPanel implements IPredictionData {
 
-    private SimpleNumberField minStageField;
-    private SimpleNumberField maxStageField;
-    private SimpleNumberField nbrStepField;
-    private SimpleNumberField valStepField;
+    private final SimpleNumberField minStageField;
+    private final SimpleNumberField maxStageField;
+    private final SimpleNumberField nbrStepField;
+    private final SimpleNumberField valStepField;
 
     private StageGridConfig stageGridConfig;
 
@@ -53,7 +52,6 @@ public class RatingCurveStageGrid extends RowColPanel implements IPredictionData
         nbrStepField.addChangeListener((e) -> {
             updateStepVal();
             updateStageGridConfig();
-
         });
 
         valStepField = new SimpleNumberField();
