@@ -14,7 +14,7 @@ import javax.swing.event.ChangeListener;
 import org.baratinage.AppSetup;
 import org.baratinage.translation.T;
 import org.baratinage.utils.Misc;
-
+import org.baratinage.utils.perf.TimedActions;
 import org.baratinage.ui.component.DataFileReader;
 import org.baratinage.ui.component.DataParser;
 import org.baratinage.ui.component.SimpleComboBox;
@@ -54,12 +54,6 @@ public class GaugingsImporter extends RowColPanel {
             qCol.addChangeListener(l);
             uqCol.addChangeListener(l);
         }
-
-        public boolean areValid() {
-            return hCol.getSelectedIndex() != -1 &&
-                    qCol.getSelectedIndex() != -1 &&
-                    uqCol.getSelectedIndex() != -1;
-        }
     }
 
     private List<String[]> rawData;
@@ -70,17 +64,25 @@ public class GaugingsImporter extends RowColPanel {
     private RowColPanel dataPreviewPanel;
     private GaugingsDataset dataset;
 
+    private final DataParser dataParser;
+    private final ColsMapping columnsMapping;
+    private final JButton validateButton;
+
+    private final String ID;
+
     public GaugingsImporter() {
         super(AXIS.COL);
 
-        ColsMapping columnsMapping = new ColsMapping();
+        ID = Misc.getTimeStampedId();
+
+        columnsMapping = new ColsMapping();
 
         dataset = null;
 
         dataPreviewPanel = new RowColPanel();
 
         DataFileReader dataFileReader = new DataFileReader();
-        DataParser dataParser = new DataParser();
+        dataParser = new DataParser();
 
         dataPreviewPanel.appendChild(dataParser);
 
@@ -92,17 +94,32 @@ public class GaugingsImporter extends RowColPanel {
 
             dataParser.setRawData(rawData, headers, missingValueString);
 
+            int nItems = columnsMapping.hCol.getItemCount();
+            int hIndex = columnsMapping.hCol.getSelectedIndex();
+            int qIndex = columnsMapping.qCol.getSelectedIndex();
+            int uqIndex = columnsMapping.uqCol.getSelectedIndex();
+
             columnsMapping.resetHeaders(headers);
 
             columnsMapping.guessIndices();
-
+            if (nItems == headers.length) {
+                if (hIndex != -1) {
+                    columnsMapping.hCol.setSelectedItem(hIndex);
+                }
+                if (qIndex != -1) {
+                    columnsMapping.qCol.setSelectedItem(qIndex);
+                }
+                if (uqIndex != -1) {
+                    columnsMapping.uqCol.setSelectedItem(uqIndex);
+                }
+            }
         });
 
         RowColPanel actionPanel = new RowColPanel();
         actionPanel.setPadding(5);
         actionPanel.setGap(5);
 
-        JButton validateButton = new JButton(T.text("import"));
+        validateButton = new JButton(T.text("import"));
         validateButton.addActionListener((e) -> {
             String filePath = dataFileReader.getFilePath();
             if (filePath != null) { // FIXME: validateButton should be disabled if import is invalid
@@ -135,25 +152,12 @@ public class GaugingsImporter extends RowColPanel {
         columnMappingPanel.setColWeight(1, 1);
 
         ChangeListener cbChangeListener = (chEvt) -> {
-            dataParser.ignoreAll();
-
-            dataParser.setAsDoubleCol(columnsMapping.hCol.getSelectedIndex());
-            dataParser.setAsDoubleCol(columnsMapping.qCol.getSelectedIndex());
-            dataParser.setAsDoubleCol(columnsMapping.uqCol.getSelectedIndex());
-
-            dataParser.setRawData(rawData, headers, missingValueString);
-
-            validateButton.setEnabled(columnsMapping.areValid());
-
+            TimedActions.debounce(ID, AppSetup.CONFIG.DEBOUNCED_DELAY_MS, this::updateValidityStatus);
         };
 
         columnsMapping.setChangeListener(cbChangeListener);
 
         int rowIndex = 0;
-
-        // JLabel mappingLabel = new JLabel(T.text("columns_selection"));
-        // columnMappingPanel.insertChild(mappingLabel, 0, rowIndex, 2, 1);
-        // rowIndex++;
 
         JLabel hColMapLabel = new JLabel(T.text("stage_level"));
         columnMappingPanel.insertChild(hColMapLabel, 0, rowIndex);
@@ -177,6 +181,39 @@ public class GaugingsImporter extends RowColPanel {
         appendChild(new JSeparator(), 0);
         appendChild(actionPanel, 0);
 
+    }
+
+    private void updateValidityStatus() {
+        // if there's not data, not point checking validity
+        if (rawData == null) {
+            columnsMapping.hCol.setValidityView(false);
+            columnsMapping.qCol.setValidityView(false);
+            columnsMapping.uqCol.setValidityView(false);
+            return;
+        }
+        dataParser.ignoreAll();
+
+        // stage
+        int hColIndex = columnsMapping.hCol.getSelectedIndex();
+        dataParser.setAsDoubleCol(hColIndex);
+        boolean hColOk = hColIndex >= 0 && dataParser.testColValidity(hColIndex);
+
+        // discharge
+        int qColIndex = columnsMapping.qCol.getSelectedIndex();
+        dataParser.setAsDoubleCol(qColIndex);
+        boolean qColOk = qColIndex >= 0 && dataParser.testColValidity(qColIndex);
+
+        // discharge
+        int uqColIndex = columnsMapping.uqCol.getSelectedIndex();
+        dataParser.setAsDoubleCol(uqColIndex);
+        boolean uqColOk = uqColIndex >= 0 && dataParser.testColValidity(uqColIndex);
+
+        // update ui
+        dataParser.updateColumnTypes();
+        columnsMapping.hCol.setValidityView(hColOk);
+        columnsMapping.qCol.setValidityView(qColOk);
+        columnsMapping.uqCol.setValidityView(uqColOk);
+        validateButton.setEnabled(hColOk && qColOk && uqColOk);
     }
 
     public void showDialog() {
