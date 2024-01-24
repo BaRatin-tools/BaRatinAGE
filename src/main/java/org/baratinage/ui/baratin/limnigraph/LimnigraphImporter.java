@@ -183,7 +183,7 @@ public class LimnigraphImporter extends RowColPanel {
             String filePath = dataFileReader.getFilePath();
             String fileName = Path.of(filePath).getFileName().toString();
 
-            dataParser.setRawData(dataFileReader.getData(), headers, fileName);
+            dataParser.setRawData(dataFileReader.getData(), headers, missingValueString);
 
             int dateTimeColIndex = timeColComboBox.getSelectedIndex();
             LocalDateTime[] dateTimeVector = dataParser.getDateTimeCol(
