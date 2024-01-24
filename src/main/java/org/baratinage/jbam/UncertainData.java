@@ -8,6 +8,7 @@ public class UncertainData {
     public final double[] nonSysStd;
     public final double[] sysStd;
     public final int[] sysIndices;
+    private Boolean missingValueFound;
 
     public UncertainData(String name, double[] values, double[] nonSysStd, double[] sysStd, int[] sysIndices) {
         int n = values.length;
@@ -57,6 +58,30 @@ public class UncertainData {
 
     public boolean hasSysError() {
         return this.sysStd.length > 0 && this.sysIndices.length > 0;
+    }
+
+    public boolean hasMissingValues() {
+        if (missingValueFound != null) {
+            return missingValueFound;
+        }
+        missingValueFound = containsMissingValue(this.values);
+        if (!missingValueFound && hasNonSysError()) {
+            missingValueFound = containsMissingValue(this.nonSysStd);
+        }
+        if (!missingValueFound && hasSysError()) {
+            missingValueFound = containsMissingValue(this.sysStd);
+        }
+        return missingValueFound;
+    }
+
+    private static boolean containsMissingValue(double[] arr) {
+        int n = arr.length;
+        for (int k = 0; k < n; k++) {
+            if (arr[k] == Double.NaN) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public int length() {
