@@ -26,8 +26,8 @@ public class PredictionInput {
 
     public PredictionInput(String name, List<double[]> dataColumns, List<double[]> extraData) {
 
-        this.nSpag = dataColumns.size();
-        if (this.nSpag == 0) {
+        nSpag = dataColumns.size();
+        if (nSpag == 0) {
             throw new IllegalArgumentException("dataColumns must have at least one element!");
         }
         int n = dataColumns.get(0).length;
@@ -44,7 +44,8 @@ public class PredictionInput {
                 }
             }
         }
-        this.nObs = n;
+        nObs = n;
+
         this.name = name;
         this.dataColumns = dataColumns;
         this.extraData = extraData;
