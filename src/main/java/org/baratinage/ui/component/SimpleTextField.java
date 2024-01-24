@@ -1,8 +1,6 @@
 package org.baratinage.ui.component;
 
 import java.awt.Color;
-import java.awt.Dimension;
-// import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -121,20 +119,6 @@ public class SimpleTextField extends JTextField {
 
     public boolean hasInnerLabel() {
         return innerLabel != null && innerLabel.length() > 0;
-    }
-
-    @Override
-    public int getHeight() {
-        return hasInnerLabel() ? 35 : super.getHeight();
-    }
-
-    @Override
-    public Dimension getPreferredSize() {
-        int h = getHeight();
-        if (h == 0) {
-            h = super.getPreferredSize().height;
-        }
-        return new Dimension(getWidth(), h);
     }
 
     public void setPlaceholder(final String s) {
