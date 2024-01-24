@@ -9,6 +9,7 @@ import java.time.YearMonth;
 import javax.swing.JLabel;
 import javax.swing.event.ChangeListener;
 
+import org.baratinage.AppSetup;
 import org.baratinage.translation.T;
 import org.baratinage.ui.container.GridPanel;
 import org.baratinage.utils.ConsoleLogger;
@@ -23,13 +24,6 @@ public class SimpleDateTimeField extends GridPanel {
     private final SimpleIntegerField hourField;
     private final SimpleIntegerField minutField;
     private final SimpleIntegerField secondField;
-
-    // private final LabeledField yearLabField;
-    // private final LabeledField monthLabField;
-    // private final LabeledField dayLabField;
-    // private final LabeledField hourLabField;
-    // private final LabeledField minutLabField;
-    // private final LabeledField secondLabField;
 
     private final JLabel yearLabField;
     private final JLabel monthLabField;
@@ -71,8 +65,7 @@ public class SimpleDateTimeField extends GridPanel {
         secondField = new SimpleIntegerField(0, 59, 1);
 
         changeListener = (e) -> {
-            TimedActions.throttle(id, 500, () -> {
-                System.out.println("HAS CHANGED");
+            TimedActions.throttle(id, AppSetup.CONFIG.THROTTLED_DELAY_MS, () -> {
                 int nDays = getNumberOfDaysInMonth();
                 dayField.configure(1, nDays, 1);
                 if (dayField.getIntValue() > nDays) {
@@ -88,13 +81,6 @@ public class SimpleDateTimeField extends GridPanel {
         minutField.addChangeListener(changeListener);
         secondField.addChangeListener(changeListener);
 
-        // yearLabField = new LabeledField(yearField);
-        // monthLabField = new LabeledField(monthField);
-        // dayLabField = new LabeledField(dayField);
-        // hourLabField = new LabeledField(hourField);
-        // minutLabField = new LabeledField(minutField);
-        // secondLabField = new LabeledField(secondField);
-
         yearLabField = buildLabel();
         monthLabField = buildLabel();
         dayLabField = buildLabel();
@@ -106,12 +92,6 @@ public class SimpleDateTimeField extends GridPanel {
 
         T.updateHierarchy(owner, this);
         T.t(this, () -> {
-            // yearLabField.setLabel(T.text("year"));
-            // monthLabField.setLabel(T.text("month"));
-            // dayLabField.setLabel(T.text("day"));
-            // hourLabField.setLabel(T.text("hour"));
-            // minutLabField.setLabel(T.text("minute"));
-            // secondLabField.setLabel(T.text("second"));
             yearLabField.setText(T.text("year"));
             monthLabField.setText(T.text("month"));
             dayLabField.setText(T.text("day"));
