@@ -9,7 +9,7 @@ public class PredictionConfig {
     public final String predictionConfigFileName;
     public final PredictionInput[] inputs;
     public final PredictionOutput[] outputs;
-    public final PredictionOutput[] states; // FIXME: should state have its own class?
+    public final PredictionState[] states; // FIXME: should state have its own class?
     public final boolean propagateParametricUncertainty;
     public final boolean printProgress;
     public final int nPriorReplicates;
@@ -19,7 +19,7 @@ public class PredictionConfig {
             String predictionConfigFileName,
             PredictionInput[] inputs,
             PredictionOutput[] outputs,
-            PredictionOutput[] states,
+            PredictionState[] states,
             boolean propagateParametricUncertainty,
             boolean printProgress,
             int nPriorReplicates) {
@@ -181,7 +181,7 @@ public class PredictionConfig {
                     createEnvelops[k]);
         }
 
-        PredictionOutput[] predictionState = new PredictionOutput[] {};
+        PredictionState[] predictionState = new PredictionState[] {};
 
         boolean[] doStatePredictions = configFile.getBooleanArray(11);
         int nState = doStatePredictions.length;
@@ -201,10 +201,10 @@ public class PredictionConfig {
                 return null;
             }
 
-            predictionState = new PredictionOutput[nState];
+            predictionState = new PredictionState[nState];
             for (int k = 0; k < nState; k++) {
                 String stateName = "State_" + (k + 1);
-                predictionState[k] = new PredictionOutput(
+                predictionState[k] = new PredictionState(
                         stateName,
                         stateSpagFileNames[k],
                         stateEnvFileNames[k],
@@ -224,7 +224,7 @@ public class PredictionConfig {
                 predictionFileName,
                 inputs,
                 predictionOutputs,
-                predictionOutputs,
+                predictionState,
                 propagateParametricUncertainty,
                 printProgress,
                 nPriorReplicates);

@@ -4,6 +4,7 @@ import org.baratinage.jbam.PredictionConfig;
 import org.baratinage.jbam.PredictionInput;
 import org.baratinage.jbam.PredictionOutput;
 import org.baratinage.jbam.PredictionResult;
+import org.baratinage.jbam.PredictionState;
 import org.baratinage.jbam.utils.BamFilesHelpers;
 
 public class PriorPredictionExperiment implements IPredictionExperiment {
@@ -50,7 +51,7 @@ public class PriorPredictionExperiment implements IPredictionExperiment {
                 String.format(BamFilesHelpers.CONFIG_PREDICTION, name),
                 predInputs,
                 predOutputs,
-                new PredictionOutput[] {},
+                new PredictionState[] {},
                 propageteParametricUncertainty,
                 false,
                 nReplcates);
