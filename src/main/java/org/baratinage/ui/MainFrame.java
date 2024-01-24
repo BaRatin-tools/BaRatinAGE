@@ -83,7 +83,7 @@ public class MainFrame extends JFrame {
             public void componentResized(ComponentEvent e) {
                 TimedActions.debounce(
                         "rebuild_icons_if_needed",
-                        250,
+                        AppSetup.CONFIG.DEBOUNCED_DELAY_MS,
                         AppSetup.ICONS::updateAllIcons);
             }
         });
