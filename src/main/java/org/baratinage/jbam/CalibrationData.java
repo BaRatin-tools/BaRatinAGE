@@ -32,7 +32,10 @@ public class CalibrationData {
         // FIXME: elements/rows
         this.inputs = inputs;
         this.outputs = outputs;
-
+        // FIXME: should check that inputs don't contain any missing value
+        // FIXME: same for uncertainty (interpreted as 0 by BaM)
+        // both check are not mandatory though since BaM do not crash
+        // but the resulting behavior may not be straightforward
     }
 
     private class UncertainDataConfig {
