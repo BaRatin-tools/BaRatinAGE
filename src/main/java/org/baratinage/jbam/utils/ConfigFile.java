@@ -261,11 +261,12 @@ public class ConfigFile {
     }
 
     private static int toInt(String value) {
-        int intValue = -9999;
+        int intValue = -9999; // FIXME: should not have it hardcoded
         try {
             intValue = Integer.parseInt(value);
         } catch (Exception e) {
-            ConsoleLogger.error("Value cannot be parsed to integer! Returning -9999.");
+            ConsoleLogger.error(
+                    "Value cannot be parsed to integer! Returning '" + "-9999" + "'");
         }
         return intValue;
     }
@@ -307,11 +308,12 @@ public class ConfigFile {
     }
 
     private static double toDouble(String value) {
-        double doubleValue = -9999;
+        double doubleValue = Double.NaN;
         try {
             doubleValue = Double.parseDouble(value);
         } catch (Exception e) {
-            ConsoleLogger.error("Value cannot be parsed to double! Returning -9999.");
+            ConsoleLogger.error(
+                    "Value cannot be parsed to double! Returning '" + Double.NaN + "'");
         }
         return doubleValue;
     }
