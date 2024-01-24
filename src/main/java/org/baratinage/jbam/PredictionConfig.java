@@ -9,7 +9,7 @@ public class PredictionConfig {
     public final String predictionConfigFileName;
     public final PredictionInput[] inputs;
     public final PredictionOutput[] outputs;
-    public final PredictionState[] states; // FIXME: should state have its own class?
+    public final PredictionState[] states;
     public final boolean propagateParametricUncertainty;
     public final boolean printProgress;
     public final int nPriorReplicates;
