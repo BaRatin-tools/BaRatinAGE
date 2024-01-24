@@ -152,7 +152,7 @@ public class BaM {
             calibrationResult.toFiles(workspace);
         } else {
             if (!runOptions.doMcmc && runOptions.doPrediction) {
-                ConsoleLogger.error("BaM: cannot do prediction only if calibrationResult is null!");
+                ConsoleLogger.error("doing a prediction-only run is not possible if calibrationResult is null!");
             }
         }
 
