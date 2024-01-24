@@ -60,7 +60,7 @@ public class PredictionInput {
                     dataFilePath,
                     dataColumns,
                     " ",
-                    "-9999",
+                    "", // no missing values allowed
                     null);
         } catch (IOException e) {
             ConsoleLogger.stackTrace(e);
@@ -72,7 +72,7 @@ public class PredictionInput {
                         additionalDataFilePath,
                         extraData,
                         " ",
-                        "-9999",
+                        "",
                         null);
             } catch (IOException e) {
                 ConsoleLogger.stackTrace(e);
@@ -100,7 +100,7 @@ public class PredictionInput {
                     dataFilePath,
                     BamFilesHelpers.BAM_COLUMN_SEPARATOR,
                     0, Integer.MAX_VALUE,
-                    BamFilesHelpers.BAM_MISSING_VALUE_CODE,
+                    "", // no missing values allowed
                     false, true);
         } catch (IOException e) {
             ConsoleLogger.error(
@@ -116,7 +116,7 @@ public class PredictionInput {
                         extraDataFile.getAbsolutePath().toString(),
                         BamFilesHelpers.BAM_COLUMN_SEPARATOR,
                         0, Integer.MAX_VALUE,
-                        BamFilesHelpers.BAM_MISSING_VALUE_CODE,
+                        "",
                         false, true);
             } catch (IOException e) {
                 ConsoleLogger.error(
