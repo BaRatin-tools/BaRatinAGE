@@ -102,7 +102,7 @@ public class CalibrationResult {
                     BamFilesHelpers.BAM_COLUMN_SEPARATOR,
                     1,
                     Integer.MAX_VALUE,
-                    BamFilesHelpers.BAM_MISSING_VALUE_CODE,
+                    BamFilesHelpers.BAM_IMPOSSIBLE_SIMULATION_CODE,
                     false, true);
 
         } catch (IOException e) {
@@ -122,7 +122,7 @@ public class CalibrationResult {
                     BamFilesHelpers.BAM_COLUMN_SEPARATOR,
                     1,
                     Integer.MAX_VALUE,
-                    BamFilesHelpers.BAM_MISSING_VALUE_CODE,
+                    BamFilesHelpers.BAM_IMPOSSIBLE_SIMULATION_CODE,
                     false, true);
             mcmc = allColumns.subList(1, allColumns.size());
         } catch (IOException e) {
@@ -188,7 +188,7 @@ public class CalibrationResult {
                     filePath.toString(),
                     BamFilesHelpers.BAM_COLUMN_SEPARATOR,
                     1, Integer.MAX_VALUE,
-                    BamFilesHelpers.BAM_MISSING_VALUE_CODE,
+                    BamFilesHelpers.BAM_IMPOSSIBLE_SIMULATION_CODE,
                     false, true);
 
             calDataResiduals = new CalibrationDataResiduals(
@@ -213,7 +213,7 @@ public class CalibrationResult {
                         filePath.toString(),
                         mcmcValues,
                         " ",
-                        BamFilesHelpers.BAM_MISSING_VALUE_CODE,
+                        BamFilesHelpers.BAM_IMPOSSIBLE_SIMULATION_CODE,
                         mcmcHeaders);
             } catch (IOException e) {
                 ConsoleLogger.stackTrace(e);

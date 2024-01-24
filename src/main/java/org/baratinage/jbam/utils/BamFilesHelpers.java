@@ -39,7 +39,8 @@ public class BamFilesHelpers {
     public static final String RESULTS_STATE_SPAG = "state_%s_%s.spag";
     public static final String RESULTS_STATE_ENV = "state_%s_%s.env";
 
-    public static final String BAM_MISSING_VALUE_CODE = "-0.666666E+03";
+    public static final String BAM_IMPOSSIBLE_SIMULATION_CODE = "-0.666666E+03";
+    public static final String BAM_CAL_DATA_OUTPUT_MISSING_VALUE_CODE = "-9999";
     public static final String BAM_COLUMN_SEPARATOR = "\\s+";
 
     public static String findDataFilePath(String rawFilePath, String workspacePath) {

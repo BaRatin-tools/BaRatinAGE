@@ -95,7 +95,7 @@ public class Monitoring {
                                 ms.monitorFilePath.toString(),
                                 "/",
                                 0, Integer.MAX_VALUE,
-                                BamFilesHelpers.BAM_MISSING_VALUE_CODE,
+                                "",
                                 false, true);
                         if (res.size() == 2 && res.get(0).length == 1) {
                             ms.progress = (int) res.get(0)[0];

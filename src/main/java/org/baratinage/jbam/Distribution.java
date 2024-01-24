@@ -68,7 +68,7 @@ public class Distribution {
                     filePath,
                     BamFilesHelpers.BAM_COLUMN_SEPARATOR,
                     0, Integer.MAX_VALUE,
-                    BamFilesHelpers.BAM_MISSING_VALUE_CODE,
+                    BamFilesHelpers.BAM_IMPOSSIBLE_SIMULATION_CODE,
                     false, true);
             Files.delete(Path.of(filePath));
             return result;

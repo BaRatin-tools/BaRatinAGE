@@ -59,7 +59,7 @@ public class PredictionResult {
                         Path.of(workspace, envFileName).toString(),
                         BamFilesHelpers.BAM_COLUMN_SEPARATOR,
                         1, Integer.MAX_VALUE,
-                        BamFilesHelpers.BAM_MISSING_VALUE_CODE,
+                        BamFilesHelpers.BAM_IMPOSSIBLE_SIMULATION_CODE,
                         false, true);
             } catch (IOException e) {
                 ConsoleLogger.warn("Failed to read envelop file '" + envFileName + "'");
@@ -70,7 +70,7 @@ public class PredictionResult {
                         Path.of(workspace, spagFileName).toString(),
                         BamFilesHelpers.BAM_COLUMN_SEPARATOR,
                         0, Integer.MAX_VALUE,
-                        BamFilesHelpers.BAM_MISSING_VALUE_CODE,
+                        BamFilesHelpers.BAM_IMPOSSIBLE_SIMULATION_CODE,
                         false, true);
             } catch (IOException e) {
                 ConsoleLogger.error("Failed to read spaghetti file '" + spagFileName + "'");

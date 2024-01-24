@@ -124,7 +124,7 @@ public class CalibrationData {
                     dataFilePath,
                     dataColumns,
                     " ",
-                    "-9999",
+                    BamFilesHelpers.BAM_CAL_DATA_OUTPUT_MISSING_VALUE_CODE,
                     headers.toArray(new String[0]));
         } catch (IOException e) {
             ConsoleLogger.stackTrace(e);
@@ -215,7 +215,7 @@ public class CalibrationData {
                     BamFilesHelpers.BAM_COLUMN_SEPARATOR,
                     nHeaderRows,
                     Integer.MAX_VALUE,
-                    BamFilesHelpers.BAM_MISSING_VALUE_CODE,
+                    BamFilesHelpers.BAM_CAL_DATA_OUTPUT_MISSING_VALUE_CODE,
                     false,
                     true);
             headers = ReadFile.getHeaderRow(dataFilePath,
