@@ -103,16 +103,16 @@ public class CalibrationData {
 
         for (UncertainData o : this.outputs) {
             dataColumns.add(o.values);
-            headers.add("X_" + o.name);
+            headers.add("Y_" + o.name);
             if (o.hasNonSysError()) {
                 dataColumns.add(o.nonSysStd);
-                headers.add("Xu_" + o.name);
+                headers.add("Yu_" + o.name);
             }
             if (o.hasSysError()) {
                 dataColumns.add(o.sysStd);
-                headers.add("Xb_" + o.name);
+                headers.add("Yb_" + o.name);
                 dataColumns.add(o.getSysIndicesAsDouble());
-                headers.add("Xbi_" + o.name);
+                headers.add("Ybi_" + o.name);
             }
         }
 
