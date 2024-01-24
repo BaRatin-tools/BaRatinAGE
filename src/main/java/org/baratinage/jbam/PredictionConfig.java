@@ -5,7 +5,6 @@ import org.baratinage.jbam.utils.ConfigFile;
 import org.baratinage.utils.ConsoleLogger;
 
 public class PredictionConfig {
-    public final String name;
     public final String predictionConfigFileName;
     public final PredictionInput[] inputs;
     public final PredictionOutput[] outputs;
@@ -15,7 +14,6 @@ public class PredictionConfig {
     public final int nPriorReplicates;
 
     public PredictionConfig(
-            String name,
             String predictionConfigFileName,
             PredictionInput[] inputs,
             PredictionOutput[] outputs,
@@ -24,7 +22,6 @@ public class PredictionConfig {
             boolean printProgress,
             int nPriorReplicates) {
 
-        this.name = name;
         this.predictionConfigFileName = predictionConfigFileName;
         this.inputs = inputs; // FIXME: should check there is a matching number of obs
         this.outputs = outputs;
@@ -220,7 +217,6 @@ public class PredictionConfig {
         boolean printProgress = configFile.getBoolean(10);
 
         return new PredictionConfig(
-                predictionFileName,
                 predictionFileName,
                 inputs,
                 predictionOutputs,

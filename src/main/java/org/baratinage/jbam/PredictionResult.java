@@ -38,12 +38,10 @@ public class PredictionResult {
         }
     }
 
-    public final String name;
     public final List<PredictionOutputResult> outputResults;
     public final PredictionConfig predictionConfig;
 
     public PredictionResult(String workspace, PredictionConfig predictionConfig) {
-        this.name = predictionConfig.name;
         this.predictionConfig = predictionConfig;
         this.outputResults = new ArrayList<>();
         PredictionOutput[] outputConfigs = predictionConfig.outputs;
@@ -83,7 +81,7 @@ public class PredictionResult {
     @Override
     public String toString() {
         String str = String.format("PredictionResults '%s' :\n",
-                name);
+                predictionConfig.predictionConfigFileName);
         str += " Outputs: \n";
         for (PredictionOutputResult por : this.outputResults) {
             str += " > " + por.toString() + "\n";

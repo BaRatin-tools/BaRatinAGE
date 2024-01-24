@@ -47,7 +47,6 @@ public class PriorPredictionExperiment implements IPredictionExperiment {
         }
 
         PredictionConfig predExperimentConfig = new PredictionConfig(
-                name,
                 String.format(BamFilesHelpers.CONFIG_PREDICTION, name),
                 predInputs,
                 predOutputs,
