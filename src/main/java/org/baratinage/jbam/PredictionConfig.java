@@ -26,7 +26,7 @@ public class PredictionConfig {
 
         this.name = name;
         this.predictionConfigFileName = predictionConfigFileName;
-        this.inputs = inputs;
+        this.inputs = inputs; // FIXME: should check there is a matching number of obs
         this.outputs = outputs;
         this.states = states;
         this.propagateParametricUncertainty = propagateParametricUncertainty;
