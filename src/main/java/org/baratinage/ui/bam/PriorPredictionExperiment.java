@@ -38,7 +38,6 @@ public class PriorPredictionExperiment implements IPredictionExperiment {
         PredictionOutput[] predOutputs = new PredictionOutput[outputNames.length];
         for (int k = 0; k < outputNames.length; k++) {
             predOutputs[k] = new PredictionOutput(
-                    outputNames[k],
                     String.format(BamFilesHelpers.RESULTS_OUTPUT_SPAG, name, outputNames[k]),
                     String.format(BamFilesHelpers.RESULTS_OUTPUT_ENV, name, outputNames[k]),
                     false,

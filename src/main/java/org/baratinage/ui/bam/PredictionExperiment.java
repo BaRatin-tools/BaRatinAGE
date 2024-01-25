@@ -40,7 +40,6 @@ public class PredictionExperiment implements IPredictionExperiment {
         PredictionOutput[] predOutputs = new PredictionOutput[mo.length];
         for (int k = 0; k < mo.length; k++) {
             predOutputs[k] = new PredictionOutput(
-                    mo[k].name,
                     String.format(BamFilesHelpers.RESULTS_OUTPUT_SPAG, name, mo[k].name),
                     String.format(BamFilesHelpers.RESULTS_OUTPUT_ENV, name, mo[k].name),
                     propagateStructuralUncertainty,
