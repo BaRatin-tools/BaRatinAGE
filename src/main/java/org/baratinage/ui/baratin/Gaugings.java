@@ -79,15 +79,19 @@ public class Gaugings extends BamItem implements ICalibrationData {
         T.updateHierarchy(this, plotPanel);
         T.t(this, importDataButton, false, "import_gauging_set");
         T.t(this, () -> {
-            if (gaugingDataset == null) {
-                importedDataSetSourceLabel.setText(T.text("empty_gauging_set"));
-            } else {
-                importedDataSetSourceLabel.setText(
-                        T.html("gauging_set_imported_from",
-                                gaugingDataset.getName()));
-            }
+            updateImportedDatasetLabel();
         });
 
+    }
+
+    private void updateImportedDatasetLabel() {
+        if (gaugingDataset == null) {
+            importedDataSetSourceLabel.setText(T.text("empty_gauging_set"));
+        } else {
+            importedDataSetSourceLabel.setText(
+                    T.html("gauging_set_imported_from",
+                            gaugingDataset.getName()));
+        }
     }
 
     private void updateTable() {
@@ -107,6 +111,8 @@ public class Gaugings extends BamItem implements ICalibrationData {
             gaugingsTable.setHeader(3, T.text("active_gauging"));
             gaugingsTable.updateHeader();
         });
+
+        updateImportedDatasetLabel();
 
     }
 

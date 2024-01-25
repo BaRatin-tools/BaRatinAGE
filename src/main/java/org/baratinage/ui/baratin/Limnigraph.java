@@ -98,14 +98,18 @@ public class Limnigraph extends BamItem {
         T.t(this, () -> {
             limniTablesAndPlots.setTitleAt(0, T.text("chart"));
             limniTablesAndPlots.setTitleAt(1, T.text("stage_uncertainty"));
-            if (limniDataset == null) {
-                importedDataSetSourceLabel.setText(T.text("empty_limnigraph"));
-            } else {
-                importedDataSetSourceLabel.setText(
-                        T.html("limnigraph_imported_from",
-                                limniDataset.getName()));
-            }
+            updateImportedDatasetLabel();
         });
+    }
+
+    private void updateImportedDatasetLabel() {
+        if (limniDataset == null) {
+            importedDataSetSourceLabel.setText(T.text("empty_limnigraph"));
+        } else {
+            importedDataSetSourceLabel.setText(
+                    T.html("limnigraph_imported_from",
+                            limniDataset.getName()));
+        }
     }
 
     private void updateDataset(LimnigraphDataset newDataset) {
@@ -146,6 +150,7 @@ public class Limnigraph extends BamItem {
             limniTable.updateHeader();
         });
 
+        updateImportedDatasetLabel();
     }
 
     private void updatePlot() {
