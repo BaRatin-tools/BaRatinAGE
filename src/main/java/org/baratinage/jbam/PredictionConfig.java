@@ -13,14 +13,14 @@ public class PredictionConfig {
     public final boolean printProgress;
     public final int nPriorReplicates;
 
-    public PredictionConfig(
+    private PredictionConfig(
             String predictionConfigFileName,
             PredictionInput[] inputs,
             PredictionOutput[] outputs,
             PredictionState[] states,
             boolean propagateParametricUncertainty,
-            boolean printProgress,
-            int nPriorReplicates) {
+            int nPriorReplicates,
+            boolean printProgress) {
 
         this.predictionConfigFileName = predictionConfigFileName;
         this.inputs = inputs; // FIXME: should check there is a matching number of obs
@@ -29,6 +29,27 @@ public class PredictionConfig {
         this.propagateParametricUncertainty = propagateParametricUncertainty;
         this.printProgress = printProgress;
         this.nPriorReplicates = nPriorReplicates;
+    }
+
+    public static PredictionConfig buildPriorPrediction(String predictionConfigFileName,
+            PredictionInput[] inputs,
+            PredictionOutput[] outputs,
+            PredictionState[] states,
+            boolean propagateParametricUncertainty,
+            int nPriorReplicates,
+            boolean printProgress) {
+        return new PredictionConfig(predictionConfigFileName, inputs, outputs, states, propagateParametricUncertainty,
+                nPriorReplicates, printProgress);
+    }
+
+    public static PredictionConfig buildPosteriorPrediction(String predictionConfigFileName,
+            PredictionInput[] inputs,
+            PredictionOutput[] outputs,
+            PredictionState[] states,
+            boolean propagateParametricUncertainty,
+            boolean printProgress) {
+        return new PredictionConfig(predictionConfigFileName, inputs, outputs, states, propagateParametricUncertainty,
+                -1, printProgress);
     }
 
     public void toFiles(String workspace) {
@@ -168,9 +189,7 @@ public class PredictionConfig {
 
         PredictionOutput[] predictionOutputs = new PredictionOutput[nOutput];
         for (int k = 0; k < nOutput; k++) {
-            String outputName = "Output_" + (k + 1);
             predictionOutputs[k] = new PredictionOutput(
-                    outputName,
                     outSpagFileNames[k],
                     outEnvFileNames[k],
                     propagateStructuralErrors[k],
@@ -222,7 +241,7 @@ public class PredictionConfig {
                 predictionOutputs,
                 predictionState,
                 propagateParametricUncertainty,
-                printProgress,
-                nPriorReplicates);
+                nPriorReplicates,
+                printProgress);
     }
 }

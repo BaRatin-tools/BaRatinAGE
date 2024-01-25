@@ -14,17 +14,22 @@ import org.baratinage.AppSetup;
 import org.baratinage.jbam.Distribution;
 import org.baratinage.jbam.DistributionType;
 import org.baratinage.jbam.Parameter;
+import org.baratinage.jbam.PredictionConfig;
+import org.baratinage.jbam.PredictionInput;
+import org.baratinage.jbam.PredictionOutput;
 import org.baratinage.jbam.PredictionResult;
+import org.baratinage.jbam.PredictionState;
+import org.baratinage.jbam.utils.BamFilesHelpers;
 import org.baratinage.translation.T;
 import org.baratinage.ui.bam.BamItem;
 import org.baratinage.ui.bam.BamConfigRecord;
 import org.baratinage.ui.bam.BamItemType;
 import org.baratinage.ui.bam.BamProjectLoader;
 import org.baratinage.ui.bam.IModelDefinition;
-import org.baratinage.ui.bam.IPredictionExperiment;
 import org.baratinage.ui.bam.IPredictionMaster;
 import org.baratinage.ui.bam.IPriors;
-import org.baratinage.ui.bam.PriorPredictionExperiment;
+import org.baratinage.ui.bam.PredExp;
+import org.baratinage.ui.bam.PredExpSet;
 import org.baratinage.ui.bam.RunConfigAndRes;
 import org.baratinage.ui.bam.RunBam;
 import org.baratinage.ui.baratin.hydraulic_control.ControlMatrix;
@@ -479,22 +484,34 @@ public class HydraulicConfiguration
     }
 
     @Override
-    public IPredictionExperiment[] getPredictionExperiments() {
-        int nReplicates = 500;
-        PriorPredictionExperiment ppeMaxpost = new PriorPredictionExperiment("maxpost",
-                false, nReplicates,
-                this, priorRatingCurveStageGrid);
+    public PredExpSet getPredExps() {
 
-        PriorPredictionExperiment ppeParamUncertainty = new PriorPredictionExperiment(
-                "parametricUncertainty",
-                true, nReplicates,
-                this, priorRatingCurveStageGrid);
+        PredictionOutput maxpostOutput = PredictionOutput.buildPredictionOutput("maxpost", "Q", false);
+        PredictionOutput uParamOutput = PredictionOutput.buildPredictionOutput("uParam", "Q", false);
 
-        IPredictionExperiment[] predictionExperiments = new PriorPredictionExperiment[] {
-                ppeMaxpost,
-                ppeParamUncertainty
-        };
-        return predictionExperiments;
+        PredictionInput predInput = priorRatingCurveStageGrid.getPredictionInput();
+        if (predInput == null) {
+            ConsoleLogger.warn("No valid rating curve stage grid.");
+            return null;
+        }
+
+        return new PredExpSet(
+                new PredExp(PredictionConfig.buildPriorPrediction(
+                        String.format(BamFilesHelpers.CONFIG_PREDICTION, "maxpost"),
+                        new PredictionInput[] { predInput },
+                        new PredictionOutput[] { maxpostOutput },
+                        new PredictionState[] {},
+                        false,
+                        AppSetup.CONFIG.N_REPLICATES, false)),
+                new PredExp(PredictionConfig.buildPriorPrediction(
+                        String.format(BamFilesHelpers.CONFIG_PREDICTION, "u"),
+                        new PredictionInput[] { predInput },
+                        new PredictionOutput[] { uParamOutput },
+                        new PredictionState[] {},
+                        true,
+                        AppSetup.CONFIG.N_REPLICATES,
+                        false)));
+
     }
 
     private void buildPlot() {

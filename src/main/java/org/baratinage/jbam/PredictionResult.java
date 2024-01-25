@@ -15,7 +15,7 @@ public class PredictionResult {
             "Median", "q2.5", "q97.5", "q16", "q84", "Mean", "Stdev"
     };
 
-    public record PredictionOutputResult(String name, List<double[]> env, List<double[]> spag) {
+    public record PredictionOutputResult(List<double[]> env, List<double[]> spag) {
         @Override
         public String toString() {
             int nEnv = 0;
@@ -25,7 +25,7 @@ public class PredictionResult {
             if (spag != null && spag.size() > 0)
                 nSpag = spag.size();
             return "Output results '" +
-                    name +
+
                     "' (envelops + samples/replications) with " +
                     nEnv +
                     " rows and " +
@@ -46,7 +46,6 @@ public class PredictionResult {
         this.outputResults = new ArrayList<>();
         PredictionOutput[] outputConfigs = predictionConfig.outputs;
         for (PredictionOutput outConfig : outputConfigs) {
-            String outputName = outConfig.name;
             String envFileName = outConfig.envFileName;
             String spagFileName = outConfig.spagFileName;
             List<double[]> env = null;
@@ -74,7 +73,7 @@ public class PredictionResult {
                 ConsoleLogger.error("Failed to read spaghetti file '" + spagFileName + "'");
             }
 
-            this.outputResults.add(new PredictionOutputResult(outputName, env, spag));
+            this.outputResults.add(new PredictionOutputResult(env, spag));
         }
     }
 

@@ -18,8 +18,11 @@ import org.baratinage.jbam.McmcCookingConfig;
 import org.baratinage.jbam.McmcSummaryConfig;
 import org.baratinage.jbam.Model;
 import org.baratinage.jbam.ModelOutput;
+import org.baratinage.jbam.PredictionConfig;
 import org.baratinage.jbam.PredictionInput;
+import org.baratinage.jbam.PredictionOutput;
 import org.baratinage.jbam.PredictionResult;
+import org.baratinage.jbam.PredictionState;
 import org.baratinage.jbam.StructuralErrorModel;
 import org.baratinage.jbam.utils.BamFilesHelpers;
 
@@ -32,9 +35,9 @@ import org.baratinage.ui.bam.BamProjectLoader;
 import org.baratinage.ui.bam.BamItemParent;
 import org.baratinage.ui.bam.ICalibratedModel;
 import org.baratinage.ui.bam.IMcmc;
-import org.baratinage.ui.bam.IPredictionExperiment;
 import org.baratinage.ui.bam.IPredictionMaster;
-import org.baratinage.ui.bam.PredictionExperiment;
+import org.baratinage.ui.bam.PredExp;
+import org.baratinage.ui.bam.PredExpSet;
 import org.baratinage.ui.bam.RunConfigAndRes;
 import org.baratinage.ui.bam.RunBam;
 import org.baratinage.ui.baratin.rating_curve.RatingCurveResults;
@@ -460,31 +463,37 @@ public class RatingCurve extends BamItem implements IPredictionMaster, ICalibrat
     }
 
     @Override
-    public IPredictionExperiment[] getPredictionExperiments() {
-        PredictionExperiment[] predictionConfigs = new PredictionExperiment[3];
-        CalibrationConfig calibrationConfig = getCalibrationConfig();
-        PredictionInput[] predInputs = ratingCurveStageGrid.getPredictionInputs();
-        predictionConfigs[0] = new PredictionExperiment(
-                "maxpost",
-                false,
-                false,
-                calibrationConfig,
-                predInputs);
+    public PredExpSet getPredExps() {
 
-        predictionConfigs[1] = new PredictionExperiment(
-                "parametric_uncertainty",
-                true,
-                false,
-                calibrationConfig,
-                predInputs);
+        PredictionInput predInput = ratingCurveStageGrid.getPredictionInput();
+        if (predInput == null) {
+            ConsoleLogger.warn("No valid rating curve stage grid.");
+            return null;
+        }
 
-        predictionConfigs[2] = new PredictionExperiment(
-                "total_uncertainty",
-                true,
-                true,
-                calibrationConfig,
-                predInputs);
-        return predictionConfigs;
+        PredictionOutput maxpostOutput = PredictionOutput.buildPredictionOutput("maxpost", "Q", false);
+        PredictionOutput uParamOutput = PredictionOutput.buildPredictionOutput("uParam", "Q", false);
+        PredictionOutput uTotalOutput = PredictionOutput.buildPredictionOutput("uTotal", "Q", true);
+
+        return new PredExpSet(
+                new PredExp(PredictionConfig.buildPosteriorPrediction(
+                        String.format(BamFilesHelpers.CONFIG_PREDICTION, "maxpost"),
+                        new PredictionInput[] { predInput },
+                        new PredictionOutput[] { maxpostOutput },
+                        new PredictionState[] {},
+                        false, false)),
+                new PredExp(PredictionConfig.buildPosteriorPrediction(
+                        String.format(BamFilesHelpers.CONFIG_PREDICTION, "uParam"),
+                        new PredictionInput[] { predInput },
+                        new PredictionOutput[] { uParamOutput },
+                        new PredictionState[] {},
+                        true, false)),
+                new PredExp(PredictionConfig.buildPosteriorPrediction(
+                        String.format(BamFilesHelpers.CONFIG_PREDICTION, "uTotal"),
+                        new PredictionInput[] { predInput },
+                        new PredictionOutput[] { uTotalOutput },
+                        new PredictionState[] {},
+                        true, false)));
     }
 
     private void updateResults() {

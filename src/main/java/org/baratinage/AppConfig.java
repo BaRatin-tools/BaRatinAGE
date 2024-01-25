@@ -61,6 +61,7 @@ public class AppConfig {
         }
     }
 
+    public final int N_REPLICATES = 200;
     public final int THROTTLED_DELAY_MS = 250;
     public final int DEBOUNCED_DELAY_MS = 250;
     public final String FALLBACK_LANGUAGE_KEY;

@@ -1,5 +1,7 @@
 package org.baratinage.jbam;
 
+import org.baratinage.jbam.utils.BamFilesHelpers;
+
 public class PredictionOutput {
     public final String spagFileName;
     public final String envFileName;
@@ -18,6 +20,13 @@ public class PredictionOutput {
         this.structuralError = structuralError;
         this.transpose = transpose;
         this.createEnvelop = createEnvelop;
+    }
+
+    public static PredictionOutput buildPredictionOutput(String predictionName, String variableName,
+            boolean structuralError) {
+        String spagFileName = String.format(BamFilesHelpers.RESULTS_OUTPUT_SPAG, predictionName, variableName);
+        String envFileName = String.format(BamFilesHelpers.RESULTS_OUTPUT_ENV, predictionName, variableName);
+        return new PredictionOutput(spagFileName, envFileName, structuralError, true, true);
     }
 
     @Override

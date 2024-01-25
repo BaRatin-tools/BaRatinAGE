@@ -13,7 +13,6 @@ import org.baratinage.jbam.PredictionInput;
 import org.baratinage.ui.bam.BamItem;
 import org.baratinage.ui.bam.BamConfigRecord;
 import org.baratinage.ui.bam.BamItemType;
-import org.baratinage.ui.bam.IPredictionData;
 import org.baratinage.ui.baratin.limnigraph.LimnigraphDataset;
 import org.baratinage.ui.baratin.limnigraph.LimnigraphErrors;
 import org.baratinage.ui.baratin.limnigraph.LimnigraphImporter;
@@ -30,7 +29,7 @@ import org.baratinage.utils.Misc;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-public class Limnigraph extends BamItem implements IPredictionData {
+public class Limnigraph extends BamItem {
 
     private ImageIcon chartIcon = AppSetup.ICONS.getCustomAppImageIcon("limnigraph.svg");
     private ImageIcon errorIcon = AppSetup.ICONS.getCustomAppImageIcon("errors.svg");
@@ -178,8 +177,7 @@ public class Limnigraph extends BamItem implements IPredictionData {
         plotPanel.appendChild(plotContainer);
     }
 
-    @Override
-    public PredictionInput[] getPredictionInputs() {
+    public PredictionInput getErrorFreePredictionInput() {
         if (limniDataset == null) {
             return null;
         }
@@ -188,25 +186,34 @@ public class Limnigraph extends BamItem implements IPredictionData {
         List<double[]> stageVector = new ArrayList<>();
         stageVector.add(stage);
 
-        int nPred = limniDataset.hasStageErrMatrix() ? 2 : 1;
-
-        PredictionInput[] predInputs = new PredictionInput[nPred];
-
         List<double[]> dateTimeMatrix = new ArrayList<>();
         dateTimeMatrix.add(limniDataset.getDateTimeAsDouble());
-        predInputs[0] = new PredictionInput(
+
+        return new PredictionInput(
                 "limni_" + Misc.getTimeStampedId(),
                 stageVector,
                 dateTimeMatrix);
-        if (nPred > 1) {
-            List<double[]> stageMatrix = limniDataset.getStageErrMatrix();
-            predInputs[1] = new PredictionInput(
-                    "limni_errors_" + Misc.getTimeStampedId(),
-                    stageMatrix);
+    }
+
+    public PredictionInput getUncertainPredictionInput() {
+        if (limniDataset == null) {
+            return null;
         }
+        if (!limniDataset.hasStageErrMatrix()) {
+            return null;
+        }
+        return new PredictionInput(
+                "limni_errors_" + Misc.getTimeStampedId(),
+                limniDataset.getStageErrMatrix());
+    }
 
-        return predInputs;
-
+    public List<double[]> getDateTimeExtraData() {
+        if (limniDataset == null) {
+            return null;
+        }
+        List<double[]> dateTimeMatrix = new ArrayList<>();
+        dateTimeMatrix.add(limniDataset.getDateTimeAsDouble());
+        return dateTimeMatrix;
     }
 
     @Override

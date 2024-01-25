@@ -8,17 +8,20 @@ import javax.swing.JButton;
 import javax.swing.JSeparator;
 
 import org.baratinage.AppSetup;
-import org.baratinage.jbam.CalibrationConfig;
+import org.baratinage.jbam.PredictionConfig;
 import org.baratinage.jbam.PredictionInput;
+import org.baratinage.jbam.PredictionOutput;
 import org.baratinage.jbam.PredictionResult;
+import org.baratinage.jbam.PredictionState;
+import org.baratinage.jbam.utils.BamFilesHelpers;
 import org.baratinage.ui.bam.BamItem;
 import org.baratinage.ui.bam.BamConfigRecord;
 import org.baratinage.ui.bam.BamItemParent;
 import org.baratinage.ui.bam.BamItemType;
 import org.baratinage.ui.bam.BamProjectLoader;
-import org.baratinage.ui.bam.IPredictionExperiment;
 import org.baratinage.ui.bam.IPredictionMaster;
-import org.baratinage.ui.bam.PredictionExperiment;
+import org.baratinage.ui.bam.PredExp;
+import org.baratinage.ui.bam.PredExpSet;
 import org.baratinage.ui.bam.RunConfigAndRes;
 import org.baratinage.ui.bam.RunBam;
 import org.baratinage.ui.commons.MsgPanel;
@@ -43,7 +46,7 @@ public class Hydrograph extends BamItem implements IPredictionMaster {
     private final BamItemParent ratingCurveParent;
     private final BamItemParent limnigraphParent;
 
-    private RatingCurve currentRatingCurve;
+    // private RatingCurve currentRatingCurve;
     private Limnigraph currentLimnigraph;
     private RunConfigAndRes currentConfigAndRes;
 
@@ -60,7 +63,7 @@ public class Hydrograph extends BamItem implements IPredictionMaster {
                 "bamRunId"));
         ratingCurveParent.addChangeListener((chEvt) -> {
             RatingCurve rc = (RatingCurve) ratingCurveParent.getCurrentBamItem();
-            currentRatingCurve = rc;
+            // currentRatingCurve = rc;
             runBam.setCalibratedModel(rc);
             TimedActions.throttle(ID, AppSetup.CONFIG.THROTTLED_DELAY_MS, this::checkSync);
         });
@@ -230,64 +233,57 @@ public class Hydrograph extends BamItem implements IPredictionMaster {
     }
 
     @Override
-    public IPredictionExperiment[] getPredictionExperiments() {
-        if (currentLimnigraph == null || currentRatingCurve == null) {
+    public PredExpSet getPredExps() {
+
+        PredictionInput errorFreeStage = currentLimnigraph.getErrorFreePredictionInput();
+        if (errorFreeStage == null) {
+            ConsoleLogger.warn("No valid limnigraph.");
             return null;
         }
+        PredictionInput uncertainStage = currentLimnigraph.getUncertainPredictionInput();
 
-        CalibrationConfig calibrationConfig = currentRatingCurve.getCalibrationConfig();
-        PredictionInput[] predInputs = currentLimnigraph.getPredictionInputs();
+        List<double[]> extraData = currentLimnigraph.getDateTimeExtraData();
 
-        PredictionInput maxpostInput = new PredictionInput(
-                "maxpost_pred_input",
-                predInputs[0].dataColumns,
-                predInputs[0].extraData);
+        PredictionOutput maxpostOutput = PredictionOutput.buildPredictionOutput("maxpost", "Q", false);
+        PredictionOutput uParamLimniOutput = PredictionOutput.buildPredictionOutput("uParamLimni", "Q", false);
+        PredictionOutput uStructParamLimniOutput = PredictionOutput.buildPredictionOutput("uStructParamLimni", "Q",
+                true);
 
-        PredictionInput uncertainInput = maxpostInput;
-        PredictionExperiment limniU = null;
-        if (predInputs.length > 1) {
-            uncertainInput = new PredictionInput(
-                    "uncertain_pred_input",
-                    predInputs[1].dataColumns);
+        List<PredExp> experiments = new ArrayList<>();
+        experiments.add(new PredExp(PredictionConfig.buildPosteriorPrediction(
+                String.format(BamFilesHelpers.CONFIG_PREDICTION, "maxpost"),
+                new PredictionInput[] { errorFreeStage },
+                new PredictionOutput[] { maxpostOutput },
+                new PredictionState[] {},
+                false, false)));
 
-            limniU = new PredictionExperiment(
-                    "limniU",
-                    false,
-                    false,
-                    calibrationConfig,
-                    uncertainInput);
-        }
+        if (uncertainStage != null) {
+            PredictionOutput uLimniOutput = PredictionOutput.buildPredictionOutput("uLimni", "Q", false);
 
-        PredictionExperiment maxpost = new PredictionExperiment(
-                "maxpost",
-                false,
-                false,
-                calibrationConfig,
-                maxpostInput);
-
-        PredictionExperiment paramU = new PredictionExperiment(
-                "paramU",
-                true,
-                false,
-                calibrationConfig,
-                uncertainInput);
-        PredictionExperiment totalU = new PredictionExperiment(
-                "totalU",
-                true,
-                true,
-                calibrationConfig,
-                uncertainInput);
-
-        if (limniU == null) {
-            return new PredictionExperiment[] {
-                    maxpost, paramU, totalU
-            };
+            experiments.add(new PredExp(PredictionConfig.buildPosteriorPrediction(
+                    String.format(BamFilesHelpers.CONFIG_PREDICTION, "uLimni"),
+                    new PredictionInput[] { uncertainStage },
+                    new PredictionOutput[] { uLimniOutput },
+                    new PredictionState[] {},
+                    false, false)));
         } else {
-            return new PredictionExperiment[] {
-                    maxpost, limniU, paramU, totalU
-            };
+            uncertainStage = errorFreeStage;
         }
 
+        experiments.add(new PredExp(PredictionConfig.buildPosteriorPrediction(
+                String.format(BamFilesHelpers.CONFIG_PREDICTION, "uLimniParam"),
+                new PredictionInput[] { uncertainStage },
+                new PredictionOutput[] { uParamLimniOutput },
+                new PredictionState[] {},
+                true, false)));
+        experiments.add(new PredExp(PredictionConfig.buildPosteriorPrediction(
+                String.format(BamFilesHelpers.CONFIG_PREDICTION, "uTotal"),
+                new PredictionInput[] { uncertainStage },
+                new PredictionOutput[] { uStructParamLimniOutput },
+                new PredictionState[] {},
+                true, false)));
+
+        return new PredExpSet(extraData, experiments);
     }
 
     public void buildPlot() {

@@ -196,12 +196,11 @@ public class RunBam {
         if (bamPredictions == null) {
             return false;
         }
-        IPredictionExperiment[] experiments = bamPredictions.getPredictionExperiments();
+        PredExpSet experiments = bamPredictions.getPredExps();
         if (experiments == null) {
             return false;
         }
-        for (IPredictionExperiment exp : experiments) {
-            PredictionConfig predConf = exp.getPredictionConfig();
+        for (PredictionConfig predConf : experiments.getPredictionConfigs()) {
             if (predConf.inputs == null) {
                 return false;
             }
@@ -390,12 +389,11 @@ public class RunBam {
 
     public BaM getBaM(String runId) {
         BaM bam = null;
-
-        IPredictionExperiment[] predExperiments = bamPredictions.getPredictionExperiments();
-        PredictionConfig[] predConfigs = new PredictionConfig[predExperiments.length];
-        for (int k = 0; k < predExperiments.length; k++) {
-            predConfigs[k] = predExperiments[k].getPredictionConfig();
+        PredExpSet predictions = bamPredictions.getPredExps();
+        if (predictions == null) {
+            ConsoleLogger.warn("No valid prediction set");
         }
+        PredictionConfig[] predConfigs = predictions.getPredictionConfigs();
 
         if (calibRun || priorPredRun) {
             CalibrationConfig calibConfig = bamCalibratedModel == null
