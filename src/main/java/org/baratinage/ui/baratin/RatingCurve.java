@@ -477,19 +477,19 @@ public class RatingCurve extends BamItem implements IPredictionMaster, ICalibrat
 
         return new PredExpSet(
                 new PredExp(PredictionConfig.buildPosteriorPrediction(
-                        String.format(BamFilesHelpers.CONFIG_PREDICTION, "maxpost"),
+                        "maxpost",
                         new PredictionInput[] { predInput },
                         new PredictionOutput[] { maxpostOutput },
                         new PredictionState[] {},
                         false, false)),
                 new PredExp(PredictionConfig.buildPosteriorPrediction(
-                        String.format(BamFilesHelpers.CONFIG_PREDICTION, "uParam"),
+                        "uParam",
                         new PredictionInput[] { predInput },
                         new PredictionOutput[] { uParamOutput },
                         new PredictionState[] {},
                         true, false)),
                 new PredExp(PredictionConfig.buildPosteriorPrediction(
-                        String.format(BamFilesHelpers.CONFIG_PREDICTION, "uTotal"),
+                        "uTotal",
                         new PredictionInput[] { predInput },
                         new PredictionOutput[] { uTotalOutput },
                         new PredictionState[] {},

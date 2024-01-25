@@ -15,7 +15,7 @@ public class BamFilesHelpers {
 
     public static final String DATA_CALIBRATION = "Data_%s.txt";
     public static final String DATA_PREDICTION = "Data_%s.txt";
-    public static final String DATA_PREDICTION_EXTRA = "Data_%s_extra.txt";
+    public static final String DATA_PREDICTION_CONFIG_EXTRA_DATA = "%s_extra_data.txt";
 
     public static final String CONFIG_BAM = "Config_BaM.txt";
     public static final String CONFIG_CALIBRATION = "Config_Data.txt";
@@ -43,9 +43,9 @@ public class BamFilesHelpers {
     public static final String BAM_CAL_DATA_OUTPUT_MISSING_VALUE_CODE = "-9999";
     public static final String BAM_COLUMN_SEPARATOR = "\\s+";
 
-    public static String findDataFilePath(String rawFilePath, String workspacePath) {
+    public static Path findDataFilePath(String rawFilePath, String workspacePath) {
         // using default Path.of approach (which fail if string was build in another OS)
-        String dataFilePath = findDataFilePath(Path.of(rawFilePath), workspacePath);
+        Path dataFilePath = findDataFilePath(Path.of(rawFilePath), workspacePath);
         // if not null, it means the file was found (it exists in file system)
         if (dataFilePath != null) {
             return dataFilePath;
@@ -63,14 +63,14 @@ public class BamFilesHelpers {
         return null;
     }
 
-    private static String findDataFilePath(Path path, String workspacePath) {
+    private static Path findDataFilePath(Path path, String workspacePath) {
         if (path.toFile().exists()) { // assume it is absolute (or relative to baratinage instance)
-            return path.toAbsolutePath().toString();
+            return path.toAbsolutePath();
         }
         String fileName = path.getFileName().toString();
         path = Path.of(workspacePath, fileName);
         if (path.toFile().exists()) { // assume it is relative to workspace
-            return path.toAbsolutePath().toString();
+            return path.toAbsolutePath();
         }
         return null;
     }

@@ -1,5 +1,8 @@
 package org.baratinage.jbam;
 
+import java.nio.file.Path;
+import java.util.List;
+
 import org.baratinage.jbam.utils.BamFilesHelpers;
 import org.baratinage.jbam.utils.ConfigFile;
 import org.baratinage.utils.ConsoleLogger;
@@ -12,6 +15,8 @@ public class PredictionConfig {
     public final boolean propagateParametricUncertainty;
     public final boolean printProgress;
     public final int nPriorReplicates;
+
+    private List<double[]> extraData;
 
     private PredictionConfig(
             String predictionConfigFileName,
@@ -31,25 +36,37 @@ public class PredictionConfig {
         this.nPriorReplicates = nPriorReplicates;
     }
 
-    public static PredictionConfig buildPriorPrediction(String predictionConfigFileName,
+    public static PredictionConfig buildPriorPrediction(String name,
             PredictionInput[] inputs,
             PredictionOutput[] outputs,
             PredictionState[] states,
             boolean propagateParametricUncertainty,
             int nPriorReplicates,
             boolean printProgress) {
-        return new PredictionConfig(predictionConfigFileName, inputs, outputs, states, propagateParametricUncertainty,
+        String predictionConfigFileName = String.format(BamFilesHelpers.CONFIG_PREDICTION, name);
+        return new PredictionConfig(predictionConfigFileName, inputs, outputs, states,
+                propagateParametricUncertainty,
                 nPriorReplicates, printProgress);
     }
 
-    public static PredictionConfig buildPosteriorPrediction(String predictionConfigFileName,
+    public static PredictionConfig buildPosteriorPrediction(String name,
             PredictionInput[] inputs,
             PredictionOutput[] outputs,
             PredictionState[] states,
             boolean propagateParametricUncertainty,
             boolean printProgress) {
-        return new PredictionConfig(predictionConfigFileName, inputs, outputs, states, propagateParametricUncertainty,
+        String predictionConfigFileName = String.format(BamFilesHelpers.CONFIG_PREDICTION, name);
+        return new PredictionConfig(predictionConfigFileName, inputs, outputs, states,
+                propagateParametricUncertainty,
                 -1, printProgress);
+    }
+
+    public void setExtraData(List<double[]> extraData) {
+        this.extraData = extraData;
+    }
+
+    public List<double[]> getExtraData() {
+        return extraData;
     }
 
     public void toFiles(String workspace) {
@@ -74,6 +91,11 @@ public class PredictionConfig {
             nSpag[k] = inputs[k].nSpag;
 
         }
+
+        // writing extra data if any
+        String extraDataFilePath = String.format(BamFilesHelpers.DATA_PREDICTION_CONFIG_EXTRA_DATA,
+                predictionConfigFileName);
+        ExtraData.writeExtraData(extraDataFilePath, extraData);
 
         n = outputs.length;
         String[] spagOutputFileName = new String[n];
@@ -161,14 +183,16 @@ public class PredictionConfig {
 
         for (int k = 0; k < nInput; k++) {
             // FIXME: for simplicity sake, assuming that data file is in workspace folder!
-            String dataFilePath = BamFilesHelpers.findDataFilePath(inputFilePaths[k], workspace);
+            Path dataFilePath = BamFilesHelpers.findDataFilePath(inputFilePaths[k], workspace);
             if (dataFilePath == null) {
                 ConsoleLogger.error(
                         "PredictionConfig Error: Cannot find prediction data file '" + inputFilePaths[k] + "'!");
                 return null;
             }
-            String name = BamFilesHelpers.getNameFromFileName(BamFilesHelpers.DATA_PREDICTION, dataFilePath);
-            inputs[k] = PredictionInput.readPredictionInput(workspace, name);
+            // String name =
+            // BamFilesHelpers.getNameFromFileName(BamFilesHelpers.DATA_PREDICTION,
+            // dataFilePath);
+            inputs[k] = PredictionInput.readPredictionInput(workspace, dataFilePath.getFileName().toString());
         }
 
         boolean[] propagateStructuralErrors = configFile.getBooleanArray(4);
@@ -235,7 +259,7 @@ public class PredictionConfig {
         int nPriorReplicates = configFile.getInt(5);
         boolean printProgress = configFile.getBoolean(10);
 
-        return new PredictionConfig(
+        PredictionConfig predictionConfig = new PredictionConfig(
                 predictionFileName,
                 inputs,
                 predictionOutputs,
@@ -243,5 +267,13 @@ public class PredictionConfig {
                 propagateParametricUncertainty,
                 nPriorReplicates,
                 printProgress);
+
+        // reading extra data if any
+        String extraDataFilePath = String.format(BamFilesHelpers.DATA_PREDICTION_CONFIG_EXTRA_DATA,
+                predictionFileName);
+        List<double[]> extraData = ExtraData.readExtraData(extraDataFilePath);
+        predictionConfig.setExtraData(extraData);
+
+        return predictionConfig;
     }
 }

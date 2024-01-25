@@ -186,13 +186,9 @@ public class Limnigraph extends BamItem {
         List<double[]> stageVector = new ArrayList<>();
         stageVector.add(stage);
 
-        List<double[]> dateTimeMatrix = new ArrayList<>();
-        dateTimeMatrix.add(limniDataset.getDateTimeAsDouble());
-
         return new PredictionInput(
                 "limni_" + Misc.getTimeStampedId(),
-                stageVector,
-                dateTimeMatrix);
+                stageVector);
     }
 
     public PredictionInput getUncertainPredictionInput() {

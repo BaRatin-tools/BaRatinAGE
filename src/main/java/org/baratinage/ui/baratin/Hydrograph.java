@@ -13,7 +13,6 @@ import org.baratinage.jbam.PredictionInput;
 import org.baratinage.jbam.PredictionOutput;
 import org.baratinage.jbam.PredictionResult;
 import org.baratinage.jbam.PredictionState;
-import org.baratinage.jbam.utils.BamFilesHelpers;
 import org.baratinage.ui.bam.BamItem;
 import org.baratinage.ui.bam.BamConfigRecord;
 import org.baratinage.ui.bam.BamItemParent;
@@ -249,19 +248,22 @@ public class Hydrograph extends BamItem implements IPredictionMaster {
         PredictionOutput uStructParamLimniOutput = PredictionOutput.buildPredictionOutput("uStructParamLimni", "Q",
                 true);
 
-        List<PredExp> experiments = new ArrayList<>();
-        experiments.add(new PredExp(PredictionConfig.buildPosteriorPrediction(
-                String.format(BamFilesHelpers.CONFIG_PREDICTION, "maxpost"),
+        PredictionConfig maxpostPrediction = PredictionConfig.buildPosteriorPrediction(
+                "maxpost",
                 new PredictionInput[] { errorFreeStage },
                 new PredictionOutput[] { maxpostOutput },
                 new PredictionState[] {},
-                false, false)));
+                false, false);
+        maxpostPrediction.setExtraData(extraData);
+
+        List<PredExp> experiments = new ArrayList<>();
+        experiments.add(new PredExp(maxpostPrediction));
 
         if (uncertainStage != null) {
             PredictionOutput uLimniOutput = PredictionOutput.buildPredictionOutput("uLimni", "Q", false);
 
             experiments.add(new PredExp(PredictionConfig.buildPosteriorPrediction(
-                    String.format(BamFilesHelpers.CONFIG_PREDICTION, "uLimni"),
+                    "uLimni",
                     new PredictionInput[] { uncertainStage },
                     new PredictionOutput[] { uLimniOutput },
                     new PredictionState[] {},
@@ -271,13 +273,13 @@ public class Hydrograph extends BamItem implements IPredictionMaster {
         }
 
         experiments.add(new PredExp(PredictionConfig.buildPosteriorPrediction(
-                String.format(BamFilesHelpers.CONFIG_PREDICTION, "uLimniParam"),
+                "uLimniParam",
                 new PredictionInput[] { uncertainStage },
                 new PredictionOutput[] { uParamLimniOutput },
                 new PredictionState[] {},
                 true, false)));
         experiments.add(new PredExp(PredictionConfig.buildPosteriorPrediction(
-                String.format(BamFilesHelpers.CONFIG_PREDICTION, "uTotal"),
+                "uTotal",
                 new PredictionInput[] { uncertainStage },
                 new PredictionOutput[] { uStructParamLimniOutput },
                 new PredictionState[] {},
@@ -293,7 +295,9 @@ public class Hydrograph extends BamItem implements IPredictionMaster {
         }
         PredictionResult[] predResults = currentConfigAndRes.getPredictionResults();
 
-        double[] dateTimeVectorAsDouble = predResults[0].predictionConfig.inputs[0].extraData.get(0);
+        List<double[]> extraData = predResults[0].predictionConfig.getExtraData();
+        double[] dateTimeVectorAsDouble = extraData.get(0);
+
         LocalDateTime[] dateTimeVector = DateTime.doubleToDateTimeVector(dateTimeVectorAsDouble);
 
         double[] maxpost = predResults[0].outputResults.get(0).spag().get(0);

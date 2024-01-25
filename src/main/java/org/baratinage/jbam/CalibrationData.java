@@ -185,13 +185,13 @@ public class CalibrationData {
         String rawPathToDataFile = configFile.getString(0);
 
         // Can data file be found? Absolutelty or relatively to workspace
-        String dataFilePath = BamFilesHelpers.findDataFilePath(rawPathToDataFile, workspace);
+        Path dataFilePath = BamFilesHelpers.findDataFilePath(rawPathToDataFile, workspace);
         if (dataFilePath == null) {
             ConsoleLogger
                     .error("CalibrationData Error: Cannot find calibration data file '" + rawPathToDataFile + "'!");
             return null;
         }
-        String dataFileName = Path.of(dataFilePath).getFileName().toString();
+        String dataFileName = dataFilePath.getFileName().toString();
 
         int nHeaderRows = configFile.getInt(1);
         int nRow = configFile.getInt(2);
@@ -211,14 +211,15 @@ public class CalibrationData {
         String[] headers;
         try {
             rawData = ReadFile.readMatrix(
-                    dataFilePath,
+                    dataFilePath.toString(),
                     BamFilesHelpers.BAM_COLUMN_SEPARATOR,
                     nHeaderRows,
                     Integer.MAX_VALUE,
                     BamFilesHelpers.BAM_CAL_DATA_OUTPUT_MISSING_VALUE_CODE,
                     false,
                     true);
-            headers = ReadFile.getHeaderRow(dataFilePath,
+            headers = ReadFile.getHeaderRow(
+                    dataFilePath.toString(),
                     BamFilesHelpers.BAM_COLUMN_SEPARATOR,
                     nHeaderRows - 1,
                     false,

@@ -19,7 +19,6 @@ import org.baratinage.jbam.PredictionInput;
 import org.baratinage.jbam.PredictionOutput;
 import org.baratinage.jbam.PredictionResult;
 import org.baratinage.jbam.PredictionState;
-import org.baratinage.jbam.utils.BamFilesHelpers;
 import org.baratinage.translation.T;
 import org.baratinage.ui.bam.BamItem;
 import org.baratinage.ui.bam.BamConfigRecord;
@@ -497,14 +496,14 @@ public class HydraulicConfiguration
 
         return new PredExpSet(
                 new PredExp(PredictionConfig.buildPriorPrediction(
-                        String.format(BamFilesHelpers.CONFIG_PREDICTION, "maxpost"),
+                        "maxpost",
                         new PredictionInput[] { predInput },
                         new PredictionOutput[] { maxpostOutput },
                         new PredictionState[] {},
                         false,
                         AppSetup.CONFIG.N_REPLICATES, false)),
                 new PredExp(PredictionConfig.buildPriorPrediction(
-                        String.format(BamFilesHelpers.CONFIG_PREDICTION, "u"),
+                        "u",
                         new PredictionInput[] { predInput },
                         new PredictionOutput[] { uParamOutput },
                         new PredictionState[] {},
