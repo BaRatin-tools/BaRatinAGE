@@ -278,31 +278,32 @@ public class BaM {
         if (exitcode != 0) {
             switch (exitcode) {
                 case -1:
-                    ConsoleLogger.error("BaM Error: A FATAL ERROR has occured");
+                    ConsoleLogger.error("A FATAL ERROR has occured");
                     break;
                 case -2:
-                    ConsoleLogger.error("BaM Error: A FATAL ERROR has occured while opening the following file.");
+                    ConsoleLogger.error("A FATAL ERROR has occured while opening the following file.");
                     break;
                 case -3:
-                    ConsoleLogger.error("BaM Error: A FATAL ERROR has occured while reading a config file.");
+                    ConsoleLogger.error("A FATAL ERROR has occured while reading a config file.");
                     break;
                 case -4:
-                    ConsoleLogger.error("BaM Error: A FATAL ERROR has occured while generating the prior model.");
+                    ConsoleLogger.error("A FATAL ERROR has occured while generating the prior model.");
                     break;
                 case -5:
-                    ConsoleLogger.error("BaM Error: A FATAL ERROR has occured while fitting the model..");
+                    ConsoleLogger.error("A FATAL ERROR has occured while fitting the model..");
                     break;
                 case -6:
-                    ConsoleLogger.error("BaM Error: A FATAL ERROR has occured while post-processing MCMC samples.");
+                    ConsoleLogger.error("A FATAL ERROR has occured while post-processing MCMC samples.");
                     break;
                 case -7:
-                    ConsoleLogger.error("BaM Error: A FATAL ERROR has occured while propagating uncertainty.");
+                    ConsoleLogger.error("A FATAL ERROR has occured while propagating uncertainty.");
                     break;
                 case -8:
-                    ConsoleLogger.error("BaM Error: A FATAL ERROR has occured while writting to a file.");
+                    ConsoleLogger.error("A FATAL ERROR has occured while writting to a file.");
                     break;
                 default:
-                    System.err.printf("BaM Error: An unknown FATAL ERROR has occured. Exit Code=%d\n", exitcode);
+                    ConsoleLogger.error(
+                            String.format("BaM Error: An unknown FATAL ERROR has occured. Exit Code=%d\n", exitcode));
                     break;
             }
         }
