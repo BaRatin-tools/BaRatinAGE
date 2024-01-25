@@ -11,14 +11,14 @@ import org.baratinage.utils.fs.WriteFile;
 
 public class ExtraData {
 
-    public static void writeExtraData(String filePath, List<double[]> data) {
+    public static void writeExtraData(Path filePath, List<double[]> data) {
         if (data == null) {
             ConsoleLogger.log("No extra data to write.");
             return;
         }
         try {
             WriteFile.writeMatrix(
-                    filePath,
+                    filePath.toString(),
                     data,
                     ";",
                     "NA",
@@ -28,8 +28,8 @@ public class ExtraData {
         }
     }
 
-    public static List<double[]> readExtraData(String filePath) {
-        File extraDataFile = Path.of(filePath).toFile();
+    public static List<double[]> readExtraData(Path filePath) {
+        File extraDataFile = filePath.toFile();
         List<double[]> extraData = null;
         if (extraDataFile.exists()) {
             try {

@@ -95,7 +95,7 @@ public class PredictionConfig {
         // writing extra data if any
         String extraDataFilePath = String.format(BamFilesHelpers.DATA_PREDICTION_CONFIG_EXTRA_DATA,
                 predictionConfigFileName);
-        ExtraData.writeExtraData(extraDataFilePath, extraData);
+        ExtraData.writeExtraData(Path.of(workspace, extraDataFilePath), extraData);
 
         n = outputs.length;
         String[] spagOutputFileName = new String[n];
@@ -271,7 +271,7 @@ public class PredictionConfig {
         // reading extra data if any
         String extraDataFilePath = String.format(BamFilesHelpers.DATA_PREDICTION_CONFIG_EXTRA_DATA,
                 predictionFileName);
-        List<double[]> extraData = ExtraData.readExtraData(extraDataFilePath);
+        List<double[]> extraData = ExtraData.readExtraData(Path.of(workspace, extraDataFilePath));
         predictionConfig.setExtraData(extraData);
 
         return predictionConfig;
