@@ -109,6 +109,8 @@ public class RunDialog extends JDialog {
 
         runningWorker = new SwingWorker<>() {
 
+            boolean success = true;
+
             @Override
             protected Void doInBackground() throws Exception {
                 String finalMessage = "";
@@ -122,7 +124,8 @@ public class RunDialog extends JDialog {
                     ConsoleLogger.stackTrace(e);
                     cancel(true);
                 }
-                ConsoleLogger.log(finalMessage.equals("") ? "BaM ran successfully!"
+                success = finalMessage.equals("");
+                ConsoleLogger.log(success ? "BaM ran successfully!"
                         : "BaM finished with errors!\n" + finalMessage);
                 return null;
             }
@@ -141,9 +144,14 @@ public class RunDialog extends JDialog {
                 if (!isCancelled()) {
                     setTitle(T.text("bam_result_processing"));
                     progressBar.setString(T.text("bam_result_processing")); // FIXME: not updating for some reason...
-                    onSuccess.accept(RunConfigAndRes.buildFromWorkspace(id, workspacePath));
-                    setTitle(T.text("bam_done"));
-                    progressBar.setString(T.text("bam_done"));
+                    if (success) {
+                        onSuccess.accept(RunConfigAndRes.buildFromWorkspace(id, workspacePath));
+                        setTitle(T.text("bam_done"));
+                        progressBar.setString(T.text("bam_done"));
+                    } else {
+                        setTitle(T.text("bam_error"));
+                        progressBar.setString(T.text("bam_error"));
+                    }
                 } else {
                     setTitle(T.text("bam_canceled"));
                 }
