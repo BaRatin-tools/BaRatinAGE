@@ -387,7 +387,7 @@ public class RunBam {
 
     }
 
-    public BaM getBaM(String runId) {
+    private BaM getBaM(String runId) {
         BaM bam = null;
         PredExpSet predictions = bamPredictions.getPredExps();
         if (predictions == null) {
