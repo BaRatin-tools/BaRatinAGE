@@ -541,7 +541,7 @@ public class RatingCurveResults extends TabContainer {
         try {
             return Integer.parseInt(intStr);
         } catch (Exception e) {
-            return -9999;
+            return AppSetup.CONFIG.INT_MISSING_VALUE;
         }
     }
 

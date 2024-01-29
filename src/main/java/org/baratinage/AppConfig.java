@@ -61,6 +61,7 @@ public class AppConfig {
         }
     }
 
+    public final int INT_MISSING_VALUE = -999999999;
     public final int N_REPLICATES = 200;
     public final int THROTTLED_DELAY_MS = 250;
     public final int DEBOUNCED_DELAY_MS = 250;

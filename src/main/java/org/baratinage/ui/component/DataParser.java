@@ -66,9 +66,9 @@ public class DataParser extends RowColPanel {
     private static final Function<String, Integer> TO_INT = (String v) -> {
         try {
             Integer i = Integer.parseInt(v);
-            return i == null ? -9999 : i;
+            return i == null ? AppSetup.CONFIG.INT_MISSING_VALUE : i;
         } catch (Exception e) {
-            return -9999;
+            return AppSetup.CONFIG.INT_MISSING_VALUE;
         }
     };
 
@@ -211,12 +211,18 @@ public class DataParser extends RowColPanel {
             return true;
         } else if (cs.type == COL_TYPE.INT) {
             for (String v : rawData.get(colIndex)) {
+                if (v.equals(missingValueCode)) {
+                    continue;
+                }
                 if (!INT_VALIDATOR.test(v)) {
                     return false;
                 }
             }
         } else if (cs.type == COL_TYPE.DOUBLE) {
             for (String v : rawData.get(colIndex)) {
+                if (v.equals(missingValueCode)) {
+                    continue;
+                }
                 if (!DOUBLE_VALIDATOR.test(v)) {
                     return false;
                 }
@@ -235,7 +241,7 @@ public class DataParser extends RowColPanel {
     public int[] getIntCol(int colIndex) {
         Function<String, Integer> converter = (String v) -> {
             if (v.equals(missingValueCode)) {
-                return -9999;
+                return AppSetup.CONFIG.INT_MISSING_VALUE;
             } else {
                 return TO_INT.apply(v);
             }
