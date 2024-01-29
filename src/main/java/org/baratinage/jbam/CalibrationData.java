@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
 import org.baratinage.jbam.utils.BamFilesHelpers;
 import org.baratinage.jbam.utils.ConfigFile;
@@ -15,7 +16,7 @@ import org.baratinage.utils.fs.WriteFile;
 public class CalibrationData {
     public final String name;
     public final String fileName;
-    public final String dataFileName; // FIXME: should be dataFilePath instead?
+    public final String dataFileName;
     public final UncertainData[] inputs;
     public final UncertainData[] outputs;
 
@@ -28,14 +29,42 @@ public class CalibrationData {
         this.name = name;
         this.fileName = fileName;
         this.dataFileName = dataFileName;
-        // FIXME: should check that inputs and outputs have the same number of
-        // FIXME: elements/rows
+
+        if (inputs.length <= 0) {
+            throw new IllegalArgumentException("For calibration data, at least one input variable is expected.");
+        }
+
+        if (outputs.length <= 0) {
+            throw new IllegalArgumentException("For calibration data, at least one output variable is expected.");
+        }
+
+        int nObs = inputs[0].getNumberOfValues();
+        if (nObs == 0) {
+            throw new IllegalArgumentException("Calibration data must contain at least on element!");
+        }
+        if (nObs != outputs[0].getNumberOfValues()) {
+            throw new IllegalArgumentException(
+                    "In  calibration data, number of elements in inputs must match the number of elements in outputs");
+        }
+
+        if (Stream.of(inputs).map(i -> i.getNumberOfValues()).anyMatch(i -> i != nObs)) {
+            throw new IllegalArgumentException(
+                    "In  calibration data, all input variables must have the same number of elements.");
+        }
+        if (Stream.of(outputs).map(o -> o.getNumberOfValues()).anyMatch(i -> i != nObs)) {
+            throw new IllegalArgumentException(
+                    "In  calibration data, all output variables must have the same number of elements.");
+        }
+        if (Stream.of(inputs).map(i -> i.hasMissingValues()).anyMatch(mv -> mv)) {
+            throw new IllegalArgumentException("In  calibration data, input variables cannot contain missing value!");
+        }
+        if (Stream.of(outputs).map(o -> o.hasMissingValuesInUncertainty()).anyMatch(mv -> mv)) {
+            throw new IllegalArgumentException(
+                    "In  calibration data, output variables cannot contain missing value in their uncertainties!");
+        }
         this.inputs = inputs;
         this.outputs = outputs;
-        // FIXME: should check that inputs don't contain any missing value
-        // FIXME: same for uncertainty (interpreted as 0 by BaM)
-        // both check are not mandatory though since BaM do not crash
-        // but the resulting behavior may not be straightforward
+
     }
 
     private class UncertainDataConfig {
@@ -52,8 +81,7 @@ public class CalibrationData {
     private UncertainDataConfig getUncertainDataConfig(UncertainData[] data, int columnOffset) {
         UncertainDataConfig uDataConfig = new UncertainDataConfig();
         uDataConfig.nCol = 0;
-        uDataConfig.nRow = data[0].getNumberOfValues(); // FIXME should check data consistency
-        // FIXME: 0 length should be forbidden, makes BaM crash
+        uDataConfig.nRow = data[0].getNumberOfValues();
         uDataConfig.X = new int[data.length];
         uDataConfig.Xu = new int[data.length];
         uDataConfig.Xb = new int[data.length];
@@ -83,7 +111,6 @@ public class CalibrationData {
 
     public String toDataFile(String workspace) {
 
-        // FIXME: writing data to workspace
         String dataFilePath = Path.of(workspace, dataFileName).toAbsolutePath().toString();
 
         List<double[]> dataColumns = new ArrayList<>();
