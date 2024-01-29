@@ -34,6 +34,8 @@ public class Gaugings extends BamItem implements ICalibrationData {
     private final RowColPanel plotPanel;
     private final JLabel importedDataSetSourceLabel;
 
+    private final GaugingsImporter gaugingsImporter;
+
     public Gaugings(String uuid, BaratinProject project) {
         super(BamItemType.GAUGINGS, uuid, project);
 
@@ -50,10 +52,11 @@ public class Gaugings extends BamItem implements ICalibrationData {
 
         importedDataSetSourceLabel = new JLabel();
 
+        gaugingsImporter = new GaugingsImporter();
+
         JButton importDataButton = new JButton();
 
         importDataButton.addActionListener((e) -> {
-            GaugingsImporter gaugingsImporter = new GaugingsImporter();
             gaugingsImporter.showDialog();
             GaugingsDataset newGaugingDataset = gaugingsImporter.getDataset();
             if (newGaugingDataset != null && newGaugingDataset.getNumberOfColumns() == 4) {
