@@ -42,7 +42,6 @@ public class LimnigraphDataset extends AbstractDataset {
 
         this.dateTime = dateTime;
         this.sysErrInd = sysErrInd;
-
     }
 
     public LimnigraphDataset(String name, String hashString) {
@@ -137,11 +136,10 @@ public class LimnigraphDataset extends AbstractDataset {
     @Override
     public DatasetConfig save(boolean writeToFile) {
         DatasetConfig adcr = super.save(writeToFile);
-        if (!hasStageErrMatrix()) {
-            return adcr;
+        if (hasStageErrMatrix()) {
+            DatasetConfig errMatrixSaveRecord = errorMatrixDataset.save(writeToFile);
+            adcr.nested.add(errMatrixSaveRecord);
         }
-        DatasetConfig errMatrixSaveRecord = errorMatrixDataset.save(writeToFile);
-        adcr.nested.add(errMatrixSaveRecord);
         return adcr;
     }
 
@@ -159,7 +157,6 @@ public class LimnigraphDataset extends AbstractDataset {
                 // initialize with stage values
                 for (int j = 0; j < nRow; j++) {
                     column[j] = stage[j];
-                    // column[j] = 0;
                 }
                 matrix.add(column);
             }
@@ -263,6 +260,13 @@ public class LimnigraphDataset extends AbstractDataset {
                 zeros[k] = 0;
             }
             return zeros;
+        }
+        if (Double.isNaN(std)) {
+            double[] nans = new double[n];
+            for (int k = 0; k < n; k++) {
+                nans[k] = Double.NaN;
+            }
+            return nans;
         }
         Distribution distribution = new Distribution(
                 DistributionType.GAUSSIAN,
