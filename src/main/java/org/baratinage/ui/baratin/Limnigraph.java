@@ -62,6 +62,7 @@ public class Limnigraph extends BamItem {
                 }
                 updateDataset(newLimniDataset);
             }
+            fireChangeListeners();
         });
 
         plotPanel = new RowColPanel();
