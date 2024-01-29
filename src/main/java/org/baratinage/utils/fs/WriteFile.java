@@ -98,6 +98,23 @@ public class WriteFile {
     }
 
     /**
+     * Convert a double array into a string using a missing value code for NaN and
+     * Infinite values and a seperator to seperate values
+     * 
+     * @param d
+     * @param sep
+     * @param missingValueString
+     * @return a string containing all the double values
+     */
+    private static String toString(double[] d, String sep, String missingValueString) {
+        String[] dStr = new String[d.length];
+        for (int k = 0; k < d.length; k++) {
+            dStr[k] = toString(d[k], missingValueString);
+        }
+        return String.join(sep, dStr);
+    }
+
+    /**
      * write a matrix of strings to file
      * 
      * @param textFilePath     path to the text file
@@ -205,6 +222,44 @@ public class WriteFile {
                     row = row + sep;
                 }
             }
+            bufferedWriter.write(row);
+            bufferedWriter.newLine();
+        }
+
+        bufferedWriter.close();
+        fileWriter.close();
+    }
+
+    /**
+     * write a matrix of doubles to file
+     * 
+     * @param textFilePath       path to the text file
+     * @param matrix             data as a List of double arrays with all arrays
+     *                           being of equal length
+     * @param sep                column separator to use
+     * @param missingValueString string to use for NaN and Infinite double values
+     * 
+     * @throws IOException
+     * @throws IllegalArgumentException
+     */
+    static public void writeMatrixHorizontally(
+            String textFilePath,
+            List<double[]> matrix,
+            String sep,
+            String missingValueString) throws IOException {
+
+        int nRow = matrix.size();
+
+        File file = new File(textFilePath);
+        if (!file.exists()) {
+            file.createNewFile();
+        }
+
+        FileWriter fileWriter = new FileWriter(file, StandardCharsets.UTF_8);
+        BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
+
+        for (int i = 0; i < nRow; i++) {
+            String row = toString(matrix.get(i), sep, missingValueString);
             bufferedWriter.write(row);
             bufferedWriter.newLine();
         }

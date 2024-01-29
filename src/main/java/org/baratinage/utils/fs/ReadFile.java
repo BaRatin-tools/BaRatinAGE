@@ -325,6 +325,39 @@ public class ReadFile {
      * Read a text file containg data and return a double Matrix (List of double
      * arrays).
      * 
+     * @param textFilePath     text file path
+     * @param sep              column separator
+     * @param missingValueCode code to identify missing values
+     * @return a double Matrix (List of double arrays)
+     * @throws IOException
+     */
+    static public List<double[]> readMatrixHorizontally(
+            String textFilePath,
+            String sep,
+            String missingValueCode) throws IOException {
+
+        List<double[]> rows = new ArrayList<>();
+
+        BufferedReader reader = new BufferedReader(createBufferedReader(textFilePath, false));
+        String line = reader.readLine();
+        while (line != null) {
+            String[] row = line.equals("") ? new String[0] : line.split(sep);
+            double[] rowDbl = new double[row.length];
+            for (int i = 0; i < row.length; i++) {
+                rowDbl[i] = toDouble(row[i], missingValueCode);
+            }
+            rows.add(rowDbl);
+            line = reader.readLine();
+        }
+        reader.close();
+
+        return rows;
+    }
+
+    /**
+     * Read a text file containg data and return a double Matrix (List of double
+     * arrays).
+     * 
      * @param textFilePath  text file path
      * @param sep           column separator
      * @param nRowSkip      number of rows to skip
