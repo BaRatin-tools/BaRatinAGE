@@ -60,17 +60,21 @@ public class RunBam {
             if (canRun()) {
                 run();
             } else {
-                JOptionPane.showOptionDialog(AppSetup.MAIN_FRAME,
-                        T.text("cannot_run_invalid_configuration"),
-                        T.text("error"),
-                        JOptionPane.OK_OPTION,
-                        JOptionPane.ERROR_MESSAGE,
-                        null,
-                        new String[] { T.text("ok") },
-                        "");
+                popupInvalidConfigurationError();
             }
         });
         runButton.setFont(runButton.getFont().deriveFont(Font.BOLD));
+    }
+
+    private void popupInvalidConfigurationError() {
+        JOptionPane.showOptionDialog(AppSetup.MAIN_FRAME,
+                T.text("cannot_run_invalid_configuration"),
+                T.text("error"),
+                JOptionPane.OK_OPTION,
+                JOptionPane.ERROR_MESSAGE,
+                null,
+                new String[] { T.text("ok") },
+                "");
     }
 
     public void setModelDefintion(IModelDefinition modelDefinition) {
@@ -98,19 +102,23 @@ public class RunBam {
     }
 
     public boolean canRun() {
-        boolean calibOk = true;
-        if (calibRun) {
-            calibOk = canRunCalibration();
+        try {
+            boolean calibOk = true;
+            if (calibRun) {
+                calibOk = canRunCalibration();
+            }
+            boolean priorOk = true;
+            if (priorPredRun) {
+                priorOk = canRunPriorPrediction();
+            }
+            boolean postOk = true;
+            if (postPredRun) {
+                postOk = canRunPostPrediction();
+            }
+            return calibOk && priorOk && postOk;
+        } catch (IllegalArgumentException e) {
+            return false;
         }
-        boolean priorOk = true;
-        if (priorPredRun) {
-            priorOk = canRunPriorPrediction();
-        }
-        boolean postOk = true;
-        if (postPredRun) {
-            postOk = canRunPostPrediction();
-        }
-        return calibOk && priorOk && postOk;
     }
 
     private boolean isBamModelDefValid() {
@@ -383,30 +391,36 @@ public class RunBam {
             runDialog.executeBam((RunConfigAndRes runConfigAndRes) -> {
                 runOnDoneActions(runConfigAndRes);
             });
+        } else {
+            popupInvalidConfigurationError();
         }
 
     }
 
     private BaM getBaM(String runId) {
         BaM bam = null;
-        PredExpSet predictions = bamPredictions.getPredExps();
-        if (predictions == null) {
-            ConsoleLogger.warn("No valid prediction set");
-        }
-        PredictionConfig[] predConfigs = predictions.getPredictionConfigs();
-
-        if (calibRun || priorPredRun) {
-            CalibrationConfig calibConfig = bamCalibratedModel == null
-                    ? buildCalibrationConfig(runId)
-                    : bamCalibratedModel.getCalibrationConfig();
-            bam = BaM.buildBamForCalibration(calibConfig, predConfigs);
-        } else {
-            if (bamCalibratedModel == null) {
-                ConsoleLogger.error(
-                        "RunPanel: cannot run BaM for prediction only if no calibration results are provided!");
-                return bam;
+        try {
+            PredExpSet predictions = bamPredictions.getPredExps();
+            if (predictions == null) {
+                ConsoleLogger.warn("No valid prediction set");
             }
-            bam = BaM.buildBamForPredictions(bamCalibratedModel.getCalibrationResults(), predConfigs);
+            PredictionConfig[] predConfigs = predictions.getPredictionConfigs();
+
+            if (calibRun || priorPredRun) {
+                CalibrationConfig calibConfig = bamCalibratedModel == null
+                        ? buildCalibrationConfig(runId)
+                        : bamCalibratedModel.getCalibrationConfig();
+                bam = BaM.buildBamForCalibration(calibConfig, predConfigs);
+            } else {
+                if (bamCalibratedModel == null) {
+                    ConsoleLogger.error(
+                            "RunPanel: cannot run BaM for prediction only if no calibration results are provided!");
+                    return bam;
+                }
+                bam = BaM.buildBamForPredictions(bamCalibratedModel.getCalibrationResults(), predConfigs);
+            }
+        } catch (IllegalArgumentException e) {
+            ConsoleLogger.error(e);
         }
         return bam;
     }
@@ -452,6 +466,12 @@ public class RunBam {
 
         String id = Misc.getTimeStampedId();
         BaM bam = getBaM(id);
+
+        if (bam == null) {
+            popupInvalidConfigurationError();
+            onError.run();
+            return;
+        }
         Path workspacePath = Path.of(AppSetup.PATH_BAM_WORKSPACE_DIR, id);
 
         DirUtils.createDir(workspacePath.toString());
