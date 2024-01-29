@@ -43,14 +43,17 @@ public class Limnigraph extends BamItem {
 
     private RowColPanel plotPanel;
 
+    private LimnigraphImporter limniImporter;
+
     public Limnigraph(String uuid, BaratinProject project) {
         super(BamItemType.LIMNIGRAPH, uuid, project);
 
         importedDataSetSourceLabel = new JLabel();
 
+        limniImporter = new LimnigraphImporter();
+
         JButton importDataButton = new JButton();
         importDataButton.addActionListener((e) -> {
-            LimnigraphImporter limniImporter = new LimnigraphImporter();
             limniImporter.showDialog();
             LimnigraphDataset newLimniDataset = limniImporter.getDataset();
             if (newLimniDataset != null && newLimniDataset.getNumberOfColumns() >= 1) {
