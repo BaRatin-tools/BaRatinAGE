@@ -120,6 +120,7 @@ public class Limnigraph extends BamItem {
         limniErrors.updateDataset(newDataset);
         updateTables();
         updatePlot();
+        save(true);
     }
 
     private void updateTables() {
