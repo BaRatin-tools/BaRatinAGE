@@ -105,10 +105,10 @@ public class LimnigraphTable extends RowColPanel {
         @Override
         public Object getValueAt(int rowIndex, int columnIndex) {
             if (rowIndex >= limniDataset.getNumberOfRows()) {
-                return -9999;
+                return null;
             }
             if (columnIndex - 1 >= limniDataset.getNumberOfColumns()) {
-                return -9999;
+                return null;
             }
 
             if (columnIndex == 0)
