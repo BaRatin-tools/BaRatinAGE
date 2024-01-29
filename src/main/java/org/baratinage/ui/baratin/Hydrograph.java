@@ -3,6 +3,7 @@ package org.baratinage.ui.baratin;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.TreeSet;
 
 import javax.swing.JButton;
 import javax.swing.JSeparator;
@@ -23,6 +24,7 @@ import org.baratinage.ui.bam.PredExp;
 import org.baratinage.ui.bam.PredExpSet;
 import org.baratinage.ui.bam.RunConfigAndRes;
 import org.baratinage.ui.bam.RunBam;
+import org.baratinage.ui.commons.ExtraDataset;
 import org.baratinage.ui.commons.MsgPanel;
 import org.baratinage.ui.component.DataTable;
 import org.baratinage.ui.container.RowColPanel;
@@ -31,6 +33,7 @@ import org.baratinage.ui.container.RowColPanel.AXIS;
 import org.baratinage.translation.T;
 import org.baratinage.utils.ConsoleLogger;
 import org.baratinage.utils.DateTime;
+import org.baratinage.utils.Misc;
 import org.baratinage.utils.json.JSONFilter;
 import org.baratinage.utils.perf.TimedActions;
 import org.json.JSONObject;
@@ -50,6 +53,8 @@ public class Hydrograph extends BamItem implements IPredictionMaster {
     private RunConfigAndRes currentConfigAndRes;
 
     private BamConfigRecord backup;
+
+    private ExtraDataset extraData;
 
     public Hydrograph(String uuid, BaratinProject project) {
         super(BamItemType.HYDROGRAPH, uuid, project);
@@ -77,6 +82,9 @@ public class Hydrograph extends BamItem implements IPredictionMaster {
         });
 
         runBam.addOnDoneAction((RunConfigAndRes res) -> {
+            extraData = new ExtraDataset(
+                    currentLimnigraph.getDateTimeExtraData(),
+                    currentLimnigraph.getMissingValuesExtraData());
             backup = save(true);
             currentConfigAndRes = res;
             buildPlot();
@@ -186,11 +194,26 @@ public class Hydrograph extends BamItem implements IPredictionMaster {
             zipPath = currentConfigAndRes.zipRun(writeFiles);
         }
 
+        String extraDataPath = null;
+        if (extraData != null) {
+            json.put("extraDataId", extraData.id);
+            if (writeFiles) {
+                extraDataPath = extraData.writeData();
+            }
+        }
+
         if (backup != null) {
             json.put("backup", BamConfigRecord.toJSON(backup));
         }
 
-        return zipPath == null ? new BamConfigRecord(json) : new BamConfigRecord(json, zipPath);
+        BamConfigRecord rec = new BamConfigRecord(json);
+        if (zipPath != null) {
+            rec = rec.addPaths(zipPath);
+        }
+        if (extraDataPath != null) {
+            rec = rec.addPaths(extraDataPath);
+        }
+        return rec;
     }
 
     @Override
@@ -208,6 +231,13 @@ public class Hydrograph extends BamItem implements IPredictionMaster {
             limnigraphParent.fromJSON(json.getJSONObject("limnigraph"));
         } else {
             ConsoleLogger.log("missing 'limnigraph'");
+        }
+
+        if (json.has("extraDataId")) {
+            String extraDataId = json.getString("extraDataId");
+            extraData = new ExtraDataset(extraDataId);
+        } else {
+            ConsoleLogger.log("missing 'extraDataId'");
         }
 
         if (json.has("bamRunId")) {
@@ -241,8 +271,6 @@ public class Hydrograph extends BamItem implements IPredictionMaster {
         }
         PredictionInput uncertainStage = currentLimnigraph.getUncertainPredictionInput();
 
-        List<double[]> extraData = currentLimnigraph.getDateTimeExtraData();
-
         PredictionOutput maxpostOutput = PredictionOutput.buildPredictionOutput("maxpost", "Q", false);
         PredictionOutput uParamLimniOutput = PredictionOutput.buildPredictionOutput("uParamLimni", "Q", false);
         PredictionOutput uStructParamLimniOutput = PredictionOutput.buildPredictionOutput("uStructParamLimni", "Q",
@@ -254,7 +282,6 @@ public class Hydrograph extends BamItem implements IPredictionMaster {
                 new PredictionOutput[] { maxpostOutput },
                 new PredictionState[] {},
                 false, false);
-        maxpostPrediction.setExtraData(extraData);
 
         List<PredExp> experiments = new ArrayList<>();
         experiments.add(new PredExp(maxpostPrediction));
@@ -285,7 +312,7 @@ public class Hydrograph extends BamItem implements IPredictionMaster {
                 new PredictionState[] {},
                 true, false)));
 
-        return new PredExpSet(extraData, experiments);
+        return new PredExpSet(experiments);
     }
 
     public void buildPlot() {
@@ -295,10 +322,16 @@ public class Hydrograph extends BamItem implements IPredictionMaster {
         }
         PredictionResult[] predResults = currentConfigAndRes.getPredictionResults();
 
-        List<double[]> extraData = predResults[0].predictionConfig.getExtraData();
-        double[] dateTimeVectorAsDouble = extraData.get(0);
+        double[] dateTimeExtraData = extraData.data.get(0);
+        double[] missingValueExtraData = extraData.data.get(1);
+        TreeSet<Integer> mvIndices = new TreeSet<>();
+        for (double value : missingValueExtraData) {
+            mvIndices.add((int) value);
+        }
 
-        LocalDateTime[] dateTimeVector = DateTime.doubleToDateTimeVector(dateTimeVectorAsDouble);
+        LocalDateTime[] dateTimeVector = DateTime.doubleToDateTimeVector(dateTimeExtraData);
+
+        List<double[]> results = new ArrayList<>();
 
         double[] maxpost = predResults[0].outputResults.get(0).spag().get(0);
         int index = 1;
@@ -312,8 +345,19 @@ public class Hydrograph extends BamItem implements IPredictionMaster {
         index++;
         List<double[]> totalU = predResults[index].outputResults.get(0).get95UncertaintyInterval();
 
-        plotPanel.updatePlot(dateTimeVector, maxpost, limniU, paramU, totalU);
+        results.add(maxpost);
+        results.addAll(paramU);
+        results.addAll(totalU);
 
+        if (limniU != null) {
+            limniU = Misc.insertMissingValues(limniU, mvIndices);
+        }
+        results = Misc.insertMissingValues(results, mvIndices);
+        maxpost = results.get(0);
+        paramU = results.subList(1, 3);
+        totalU = results.subList(3, 5);
+
+        plotPanel.updatePlot(dateTimeVector, maxpost, limniU, paramU, totalU);
         tablePanel.clearColumns();
         tablePanel.addColumn(dateTimeVector);
         tablePanel.addColumn(maxpost);

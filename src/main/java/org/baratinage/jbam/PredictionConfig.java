@@ -1,7 +1,6 @@
 package org.baratinage.jbam;
 
 import java.nio.file.Path;
-import java.util.List;
 
 import org.baratinage.jbam.utils.BamFilesHelpers;
 import org.baratinage.jbam.utils.ConfigFile;
@@ -15,8 +14,6 @@ public class PredictionConfig {
     public final boolean propagateParametricUncertainty;
     public final boolean printProgress;
     public final int nPriorReplicates;
-
-    private List<double[]> extraData;
 
     private PredictionConfig(
             String predictionConfigFileName,
@@ -61,14 +58,6 @@ public class PredictionConfig {
                 -1, printProgress);
     }
 
-    public void setExtraData(List<double[]> extraData) {
-        this.extraData = extraData;
-    }
-
-    public List<double[]> getExtraData() {
-        return extraData;
-    }
-
     public void toFiles(String workspace) {
         int n = inputs.length;
         String[] inputFilePaths = new String[n];
@@ -91,11 +80,6 @@ public class PredictionConfig {
             nSpag[k] = inputs[k].nSpag;
 
         }
-
-        // writing extra data if any
-        String extraDataFilePath = String.format(BamFilesHelpers.DATA_PREDICTION_CONFIG_EXTRA_DATA,
-                predictionConfigFileName);
-        ExtraData.writeExtraData(Path.of(workspace, extraDataFilePath), extraData);
 
         n = outputs.length;
         String[] spagOutputFileName = new String[n];
@@ -267,12 +251,6 @@ public class PredictionConfig {
                 propagateParametricUncertainty,
                 nPriorReplicates,
                 printProgress);
-
-        // reading extra data if any
-        String extraDataFilePath = String.format(BamFilesHelpers.DATA_PREDICTION_CONFIG_EXTRA_DATA,
-                predictionFileName);
-        List<double[]> extraData = ExtraData.readExtraData(Path.of(workspace, extraDataFilePath));
-        predictionConfig.setExtraData(extraData);
 
         return predictionConfig;
     }

@@ -191,7 +191,7 @@ public class Limnigraph extends BamItem {
             return null;
         }
 
-        double[] stage = limniDataset.getStage();
+        double[] stage = limniDataset.getStage(true);
         List<double[]> stageVector = new ArrayList<>();
         stageVector.add(stage);
 
@@ -209,16 +209,15 @@ public class Limnigraph extends BamItem {
         }
         return new PredictionInput(
                 "limni_errors_" + Misc.getTimeStampedId(),
-                limniDataset.getStageErrMatrix());
+                limniDataset.getStageErrMatrix(true));
     }
 
-    public List<double[]> getDateTimeExtraData() {
-        if (limniDataset == null) {
-            return null;
-        }
-        List<double[]> dateTimeMatrix = new ArrayList<>();
-        dateTimeMatrix.add(limniDataset.getDateTimeAsDouble());
-        return dateTimeMatrix;
+    public double[] getMissingValuesExtraData() {
+        return limniDataset.getMissingValueIndicesAsDouble();
+    }
+
+    public double[] getDateTimeExtraData() {
+        return limniDataset.getDateTimeAsDouble();
     }
 
     @Override

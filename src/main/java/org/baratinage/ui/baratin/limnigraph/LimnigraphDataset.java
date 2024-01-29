@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeSet;
 
 import org.baratinage.jbam.Distribution;
 import org.baratinage.jbam.DistributionType;
@@ -18,6 +19,7 @@ import org.baratinage.ui.plot.PlotTimeSeriesBand;
 import org.baratinage.ui.plot.PlotTimeSeriesLine;
 import org.baratinage.utils.ConsoleLogger;
 import org.baratinage.utils.DateTime;
+import org.baratinage.utils.Misc;
 import org.jfree.data.time.Second;
 
 public class LimnigraphDataset extends AbstractDataset {
@@ -26,6 +28,8 @@ public class LimnigraphDataset extends AbstractDataset {
     private final int[] sysErrInd;
 
     private UncertaintyDataset errorMatrixDataset;
+
+    private final TreeSet<Integer> missingValueIndices;
 
     public LimnigraphDataset(String name,
             LocalDateTime[] dateTime,
@@ -42,6 +46,20 @@ public class LimnigraphDataset extends AbstractDataset {
 
         this.dateTime = dateTime;
         this.sysErrInd = sysErrInd;
+
+        missingValueIndices = Misc.getMissingValuesIndices(getColumn("stage"));
+        if (getColumn("stage") != null) {
+            missingValueIndices.addAll(Misc.getMissingValuesIndices(getColumn("stage")));
+        }
+        if (getColumn("nonSysErrStd") != null) {
+            missingValueIndices.addAll(Misc.getMissingValuesIndices(getColumn("nonSysErrStd")));
+        }
+        if (getColumn("sysErrStd") != null) {
+            missingValueIndices.addAll(Misc.getMissingValuesIndices(getColumn("sysErrStd")));
+        }
+        if (getColumn("sysErrInd") != null) {
+            missingValueIndices.addAll(Misc.getMissingValuesIndices(getColumn("sysErrInd")));
+        }
     }
 
     public LimnigraphDataset(String name, String hashString) {
@@ -62,6 +80,20 @@ public class LimnigraphDataset extends AbstractDataset {
         if (errMatrixName != null && errMatrixHashString != null && nCol > 0) {
             errorMatrixDataset = new UncertaintyDataset(errMatrixName, errMatrixHashString, nCol);
         }
+
+        missingValueIndices = Misc.getMissingValuesIndices(getColumn("stage"));
+        if (getColumn("stage") != null) {
+            missingValueIndices.addAll(Misc.getMissingValuesIndices(getColumn("stage")));
+        }
+        if (getColumn("nonSysErrStd") != null) {
+            missingValueIndices.addAll(Misc.getMissingValuesIndices(getColumn("nonSysErrStd")));
+        }
+        if (getColumn("sysErrStd") != null) {
+            missingValueIndices.addAll(Misc.getMissingValuesIndices(getColumn("sysErrStd")));
+        }
+        if (getColumn("sysErrInd") != null) {
+            missingValueIndices.addAll(Misc.getMissingValuesIndices(getColumn("sysErrInd")));
+        }
     }
 
     public double[] getDateTimeAsDouble() {
@@ -73,7 +105,18 @@ public class LimnigraphDataset extends AbstractDataset {
     }
 
     public double[] getStage() {
-        return getColumn("stage");
+        return getStage(false);
+    }
+
+    public double[] getStage(boolean removeMissingValues) {
+        double[] stageVector = getColumn("stage");
+        List<double[]> stage = new ArrayList<>();
+        stage.add(stageVector);
+        if (removeMissingValues) {
+            return Misc.removeMissingValues(stage, missingValueIndices).get(0);
+        } else {
+            return stageVector;
+        }
     }
 
     public double[] getNonSysErrStd() {
@@ -89,10 +132,28 @@ public class LimnigraphDataset extends AbstractDataset {
     }
 
     public List<double[]> getStageErrMatrix() {
+        return getStageErrMatrix(false);
+    }
+
+    public List<double[]> getStageErrMatrix(boolean removeMissingValues) {
         if (!hasStageErrMatrix()) {
             return null;
         }
-        return errorMatrixDataset.getMatrix();
+        if (removeMissingValues) {
+            return Misc.removeMissingValues(errorMatrixDataset.getMatrix(), missingValueIndices);
+        } else {
+            return errorMatrixDataset.getMatrix();
+        }
+    }
+
+    public double[] getMissingValueIndicesAsDouble() {
+        int n = missingValueIndices.size();
+        double[] mvIndicesAsDouble = new double[n];
+        int k = 0;
+        for (Integer i : missingValueIndices) {
+            mvIndicesAsDouble[k++] = i.doubleValue();
+        }
+        return mvIndicesAsDouble;
     }
 
     public List<double[]> getStageErrUncertaintyEnvelop() {
