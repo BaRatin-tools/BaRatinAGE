@@ -1,6 +1,5 @@
 package org.baratinage.jbam;
 
-// import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
@@ -8,6 +7,7 @@ import java.util.List;
 import org.baratinage.jbam.utils.BamFilesHelpers;
 
 import org.baratinage.utils.ConsoleLogger;
+import org.baratinage.utils.Misc;
 import org.baratinage.utils.fs.ReadFile;
 import org.baratinage.utils.fs.WriteFile;
 
@@ -19,18 +19,28 @@ public class PredictionInput {
     public final int nSpag;
 
     public PredictionInput(String fileName, List<double[]> dataColumns) {
+
         nSpag = dataColumns.size();
+
         if (nSpag == 0) {
-            throw new IllegalArgumentException("dataColumns must have at least one element!");
+            throw new IllegalArgumentException("In prediction input data, at least one vector/sample is expected");
         }
+
         int n = dataColumns.get(0).length;
         for (double[] col : dataColumns) {
             if (col.length != n) {
-                throw new IllegalArgumentException("All arrays of dataColumns must have the same length!");
+                throw new IllegalArgumentException(
+                        "In prediction input data, all vectors/samples must have the same length!");
             }
         }
 
         nObs = n;
+
+        for (int k = 0; k < nSpag; k++) {
+            if (Misc.containsMissingValue(dataColumns.get(k))) {
+                throw new IllegalArgumentException("In prediction input data, no mising values allowed.");
+            }
+        }
 
         this.dataColumns = dataColumns;
         this.fileName = fileName;
