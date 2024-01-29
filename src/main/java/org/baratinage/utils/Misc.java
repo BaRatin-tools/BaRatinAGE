@@ -8,9 +8,12 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.UUID;
 import java.util.function.Predicate;
 import java.util.regex.Matcher;
@@ -193,5 +196,90 @@ public class Misc {
             grid[k] = low + step * k;
         }
         return grid;
+    }
+
+    public static boolean containsMissingValue(double[] arr) {
+        int n = arr.length;
+        for (int k = 0; k < n; k++) {
+            if (Double.isNaN(arr[k])) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static TreeSet<Integer> getMissingValuesIndices(double[]... arrays) {
+        TreeSet<Integer> mvIndices = new TreeSet<>();
+        for (double[] arr : arrays) {
+            int n = arr.length;
+            for (int k = 0; k < n; k++) {
+                if (Double.isNaN(arr[k])) {
+                    mvIndices.add(k);
+                }
+            }
+        }
+        return mvIndices;
+    }
+
+    public static List<double[]> removeMissingValues(List<double[]> data, TreeSet<Integer> mvIndices) {
+        int nCol = data.size();
+        if (nCol == 0) {
+            ConsoleLogger.warn("Empty data array, cannot remove missing values. Returning original data.");
+            return data;
+        }
+        int nRow = data.get(0).length;
+        int nMv = mvIndices.size();
+        int nRowNoMv = nRow - nMv;
+        if (nRowNoMv <= 0) {
+            ConsoleLogger.warn("Too many missing values. Returning an empty List.");
+            return new ArrayList<>();
+        }
+        List<double[]> noMvData = new ArrayList<>();
+        for (int i = 0; i < nCol; i++) {
+            noMvData.add(new double[nRowNoMv]);
+        }
+        int k = 0;
+        for (int j = 0; j < nRow; j++) {
+            if (!mvIndices.contains(j)) {
+                for (int i = 0; i < nCol; i++) {
+                    noMvData.get(i)[k] = data.get(i)[j];
+                }
+                k++;
+            }
+        }
+        return noMvData;
+    }
+
+    public static List<double[]> insertMissingValues(List<double[]> data, TreeSet<Integer> mvIndices) {
+        int nMv = mvIndices.size();
+        if (nMv == 0) {
+            return data;
+        }
+        List<double[]> mvData = new ArrayList<>();
+        int nCol = data.size();
+        if (nCol == 0) {
+            ConsoleLogger.warn("Empty data array, cannot insert missing values. Returning original data.");
+            return data;
+        }
+        int nRow = data.get(0).length;
+        for (int k = 0; k < nCol; k++) {
+            double[] arr = new double[nRow + nMv];
+            mvData.add(arr);
+        }
+        int indexNoMv = 0;
+        for (int j = 0; j < nRow + nMv; j++) {
+            if (mvIndices.contains(j)) {
+                for (int i = 0; i < nCol; i++) {
+                    mvData.get(i)[j] = Double.NaN;
+                }
+            } else {
+                for (int i = 0; i < nCol; i++) {
+                    mvData.get(i)[j] = data.get(i)[indexNoMv];
+                }
+                indexNoMv++;
+            }
+
+        }
+        return mvData;
     }
 }
