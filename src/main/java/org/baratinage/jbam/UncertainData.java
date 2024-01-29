@@ -1,5 +1,6 @@
 package org.baratinage.jbam;
 
+import org.baratinage.utils.Misc;
 import org.baratinage.utils.ConsoleLogger;
 
 public class UncertainData {
@@ -8,7 +9,9 @@ public class UncertainData {
     public final double[] nonSysStd;
     public final double[] sysStd;
     public final int[] sysIndices;
-    private Boolean missingValueFound;
+
+    private Boolean valuesHasMissingValues;
+    private Boolean uncertaintyHasMissingValues;
 
     public UncertainData(String name, double[] values, double[] nonSysStd, double[] sysStd, int[] sysIndices) {
         int n = values.length;
@@ -61,27 +64,23 @@ public class UncertainData {
     }
 
     public boolean hasMissingValues() {
-        if (missingValueFound != null) {
-            return missingValueFound;
-        }
-        missingValueFound = containsMissingValue(this.values);
-        if (!missingValueFound && hasNonSysError()) {
-            missingValueFound = containsMissingValue(this.nonSysStd);
-        }
-        if (!missingValueFound && hasSysError()) {
-            missingValueFound = containsMissingValue(this.sysStd);
-        }
-        return missingValueFound;
+        return hasMissingValuesInValues() || hasMissingValuesInUncertainty();
     }
 
-    private static boolean containsMissingValue(double[] arr) {
-        int n = arr.length;
-        for (int k = 0; k < n; k++) {
-            if (arr[k] == Double.NaN) {
-                return true;
-            }
+    public boolean hasMissingValuesInValues() {
+        if (valuesHasMissingValues != null) {
+            return valuesHasMissingValues;
         }
-        return false;
+        valuesHasMissingValues = Misc.containsMissingValue(values);
+        return valuesHasMissingValues;
+    }
+
+    public boolean hasMissingValuesInUncertainty() {
+        if (uncertaintyHasMissingValues != null) {
+            return uncertaintyHasMissingValues;
+        }
+        uncertaintyHasMissingValues = Misc.containsMissingValue(nonSysStd) || Misc.containsMissingValue(sysStd);
+        return uncertaintyHasMissingValues;
     }
 
     public int length() {
