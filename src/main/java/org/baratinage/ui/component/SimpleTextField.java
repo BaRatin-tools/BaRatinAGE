@@ -99,7 +99,6 @@ public class SimpleTextField extends JTextField {
         if (hasInnerLabel()) {
             g2D.setColor(innerLabelColor);
             g2D.setFont(innerLabelFont);
-            setBorder(new CompoundBorder(defaultBorder, new EmptyBorder(12, 0, 0, 0)));
 
             float maxCharHeight = g2D.getFontMetrics().getMaxAscent();
 
@@ -107,10 +106,15 @@ public class SimpleTextField extends JTextField {
             float y = maxCharHeight + 2 - 2;
 
             g2D.drawString(innerLabel, x, y);
+        }
+    }
+
+    private void updateBorderToAccomodateInnerLabel() {
+        if (hasInnerLabel()) {
+            setBorder(new CompoundBorder(defaultBorder, new EmptyBorder(12, 0, 0, 0)));
         } else {
             setBorder(defaultBorder);
         }
-
     }
 
     public boolean hasPlaceholder() {
@@ -131,6 +135,7 @@ public class SimpleTextField extends JTextField {
 
     public void setInnerLabel(final String s) {
         innerLabel = s;
+        updateBorderToAccomodateInnerLabel();
     }
 
     public String getInnerLabel() {
