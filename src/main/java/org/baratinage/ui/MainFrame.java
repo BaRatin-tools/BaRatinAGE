@@ -184,7 +184,8 @@ public class MainFrame extends JFrame {
             String projectPath = currentProject.getProjectPath();
             if (projectPath != null) {
                 String projectName = Path.of(projectPath).getFileName().toString();
-                String unsavedString = currentProject.hasUnsavedChange() ? "*" : "";
+                // String unsavedString = currentProject.hasUnsavedChange() ? "*" : "";
+                String unsavedString = ""; // FIXME: disabled for now
                 setTitle(AppSetup.APP_NAME + " - " + projectName + " - " + projectPath + unsavedString);
             }
         }
@@ -258,6 +259,7 @@ public class MainFrame extends JFrame {
     public void saveProject(String projectFilePath) {
         currentProject.saveProject(projectFilePath);
         currentProject.setProjectPath(projectFilePath);
+        currentProject.checkUnsavedChange();
         updateFrameTitle();
         ToasterMessage.info(T.text("project_saved"));
     }
