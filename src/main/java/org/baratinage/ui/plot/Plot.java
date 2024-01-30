@@ -183,6 +183,10 @@ public class Plot implements LegendItemSource {
 
     public Plot getCopy() {
         Plot plotCopy = new Plot(includeLegend, timeseries);
+        plotCopy.axisX.setLabel(axisX.getLabel());
+        plotCopy.axisXlog.setLabel(axisXlog.getLabel());
+        plotCopy.axisY.setLabel(axisY.getLabel());
+        plotCopy.axisYlog.setLabel(axisYlog.getLabel());
         if (plot.getDomainAxis() instanceof LogAxis) {
             plotCopy.plot.setDomainAxis(plotCopy.axisXlog);
         }
