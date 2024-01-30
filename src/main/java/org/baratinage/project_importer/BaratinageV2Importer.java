@@ -397,7 +397,7 @@ public class BaratinageV2Importer implements IProjectImporter {
         Parameter gamma1 = new Parameter("gamma1", 1,
                 new Distribution(DistributionType.UNIFORM, 0, 10000));
         Parameter gamma2 = new Parameter("gamma2", 0.1,
-                new Distribution(DistributionType.UNIFORM, 0, 10000));
+                new Distribution(DistributionType.UNIFORM, 0, 1));
         String name = "Remnant_Linear";
 
         if (type.equals("Remnant_Proportional")) { // g2*Q
