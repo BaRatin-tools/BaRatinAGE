@@ -1,5 +1,6 @@
 package org.baratinage.ui.baratin.hydraulic_control.control_panel;
 
+import org.baratinage.ui.commons.CommonParameterDistSimplified;
 import org.baratinage.ui.commons.ParameterPriorDistSimplified;
 
 import org.baratinage.translation.T;
@@ -15,25 +16,11 @@ public class ChannelTriangle extends PriorControlPanel {
     public ChannelTriangle() {
         super(2, "Q=K<sub>s</sub>tan(v/2)(0.5sin(v/2)<sup>2/3</sup>S<sup>1/2</sup>(h-b)<sup>c</sup>&nbsp;(h>k)");
 
-        activationHeight = new ParameterPriorDistSimplified();
-        activationHeight.setIcon(activationHeightIcon);
-        activationHeight.setSymbolUnitLabels("k", "m");
-
-        stricklerCoef = new ParameterPriorDistSimplified();
-        stricklerCoef.setIcon(stricklerCoefIcon);
-        stricklerCoef.setSymbolUnitLabels("K<sub>s</sub>", "m<sup>1/3</sup>.s<sup>-1</sup>");
-
-        angle = new ParameterPriorDistSimplified();
-        angle.setIcon(angleIcon);
-        angle.setSymbolUnitLabels("v", "°");
-
-        slope = new ParameterPriorDistSimplified();
-        slope.setIcon(slopeIcon);
-        slope.setSymbolUnitLabels("S", "-");
-
-        exponent = new ParameterPriorDistSimplified();
-        exponent.setIcon(exponentIcon);
-        exponent.setSymbolUnitLabels("c", "-");
+        activationHeight = CommonParameterDistSimplified.getActivationHeight();
+        stricklerCoef = CommonParameterDistSimplified.getStricklerCoeff();
+        angle = CommonParameterDistSimplified.getAngle();
+        slope = CommonParameterDistSimplified.getSlope();
+        exponent = CommonParameterDistSimplified.getExponent();
         exponent.setDefaultValues(2.67, 0.05);
         exponent.setLocalLock(true);
 
@@ -55,7 +42,7 @@ public class ChannelTriangle extends PriorControlPanel {
         });
     }
 
-    public Double[] toAMeanAndStd() {
+    private Double[] toAMeanAndStd() {
 
         if (!stricklerCoef.meanValueField.isValueValid() ||
                 !angle.meanValueField.isValueValid() ||

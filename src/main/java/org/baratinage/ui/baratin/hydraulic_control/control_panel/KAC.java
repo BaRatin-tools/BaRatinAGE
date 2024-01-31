@@ -1,7 +1,9 @@
 package org.baratinage.ui.baratin.hydraulic_control.control_panel;
 
+import org.baratinage.AppSetup;
 import org.baratinage.jbam.DistributionType;
 import org.baratinage.ui.commons.ParameterPriorDist;
+import org.baratinage.ui.component.SvgIcon;
 import org.baratinage.translation.T;
 
 public class KAC extends PriorControlPanel {
@@ -9,6 +11,15 @@ public class KAC extends PriorControlPanel {
     public final ParameterPriorDist k;
     public final ParameterPriorDist a;
     public final ParameterPriorDist c;
+
+    private static final SvgIcon activationHeightIcon = AppSetup.ICONS
+            .getCustomAppImageIcon("activation_height.svg");
+
+    private static final SvgIcon exponentIcon = AppSetup.ICONS
+            .getCustomAppImageIcon("exponent.svg");
+
+    private static final SvgIcon coefficientIcon = AppSetup.ICONS
+            .getCustomAppImageIcon("coefficient.svg");
 
     public KAC() {
         super(

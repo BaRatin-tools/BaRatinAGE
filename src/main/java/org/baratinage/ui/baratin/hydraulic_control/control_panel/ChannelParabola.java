@@ -1,5 +1,6 @@
 package org.baratinage.ui.baratin.hydraulic_control.control_panel;
 
+import org.baratinage.ui.commons.CommonParameterDistSimplified;
 import org.baratinage.ui.commons.ParameterPriorDistSimplified;
 
 import org.baratinage.translation.T;
@@ -16,31 +17,14 @@ public class ChannelParabola extends PriorControlPanel {
     public ChannelParabola() {
         super(2, "Q=K<sub>s</sub>B<sub>p</sub>H<sub>p</sub><sup>-1/2</sup>(2/3)<sup>5/3</sup>S<sup>1/2</sup>(h-b)<sup>c</sup>&nbsp;(h>k)");
 
-        activationHeight = new ParameterPriorDistSimplified();
-        activationHeight.setIcon(activationHeightIcon);
-        activationHeight.setSymbolUnitLabels("k", "m");
-
-        stricklerCoef = new ParameterPriorDistSimplified();
-        stricklerCoef.setIcon(stricklerCoefIcon);
-        stricklerCoef.setSymbolUnitLabels("K<sub>s</sub>", "m<sup>1/3</sup>.s<sup>-1</sup>");
-
-        width = new ParameterPriorDistSimplified();
-        width.setIcon(parabolaWidthIcon);
-        width.setSymbolUnitLabels("B<sub>p</sub>", "m");
-
-        height = new ParameterPriorDistSimplified();
-        height.setIcon(parabolaHeightIcon);
-        height.setSymbolUnitLabels("H<sub>p</sub>", "m");
-
-        slope = new ParameterPriorDistSimplified();
-        slope.setIcon(slopeIcon);
-        slope.setSymbolUnitLabels("S", "-");
-
-        exponent = new ParameterPriorDistSimplified();
-        exponent.setIcon(exponentIcon);
-        exponent.setSymbolUnitLabels("c", "-");
-        exponent.setDefaultValues(2.17, 0.05);
+        activationHeight = CommonParameterDistSimplified.getActivationHeight();
+        stricklerCoef = CommonParameterDistSimplified.getStricklerCoeff();
+        width = CommonParameterDistSimplified.getParabolaWidth();
+        height = CommonParameterDistSimplified.getHeight("p");
+        slope = CommonParameterDistSimplified.getSlope();
+        exponent = CommonParameterDistSimplified.getActivationHeight();
         exponent.setLocalLock(true);
+        exponent.setDefaultValues(2.17, 0.05);
 
         addParameter(activationHeight);
         addParameter(stricklerCoef);
@@ -62,7 +46,7 @@ public class ChannelParabola extends PriorControlPanel {
         });
     }
 
-    public Double[] toAMeanAndStd() {
+    private Double[] toAMeanAndStd() {
 
         if (!stricklerCoef.meanValueField.isValueValid() ||
                 !width.meanValueField.isValueValid() ||

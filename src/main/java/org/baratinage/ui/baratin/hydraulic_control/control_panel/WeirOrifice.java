@@ -1,5 +1,6 @@
 package org.baratinage.ui.baratin.hydraulic_control.control_panel;
 
+import org.baratinage.ui.commons.CommonParameterDistSimplified;
 import org.baratinage.ui.commons.ParameterPriorDistSimplified;
 import org.baratinage.translation.T;
 
@@ -16,28 +17,12 @@ public class WeirOrifice extends PriorControlPanel {
                 2,
                 "Q=C<sub>o</sub>A<sub>o</sub>(2g)<sup>1/2</sup>(h-b)<sup>c</sup>&nbsp;(h>k)");
 
-        activationHeight = new ParameterPriorDistSimplified();
-        activationHeight.setIcon(activationHeightIcon);
-        activationHeight.setSymbolUnitLabels("k", "m");
-
-        weirCoef = new ParameterPriorDistSimplified();
-        weirCoef.setIcon(weirCoefOIcon);
-        weirCoef.setSymbolUnitLabels("C<sub>o</sub>", "-");
-        weirCoef.setDefaultValues(0.4, 0.05);
-
-        area = new ParameterPriorDistSimplified();
-        area.setIcon(areaIcon);
-        area.setSymbolUnitLabels("A<sub>o</sub>", "m<sup>2</sup>");
-
-        gravity = new ParameterPriorDistSimplified();
-        gravity.setIcon(gravityIcon);
-        gravity.setSymbolUnitLabels("g", "m.s<sup>-2</sup>");
-        gravity.setDefaultValues(9.81, 0.01);
+        activationHeight = CommonParameterDistSimplified.getActivationHeight();
+        weirCoef = CommonParameterDistSimplified.getWeirCoeff("o");
+        area = CommonParameterDistSimplified.getCircleArea();
+        gravity = CommonParameterDistSimplified.getGravity();
         gravity.setLocalLock(true);
-
-        exponent = new ParameterPriorDistSimplified();
-        exponent.setIcon(exponentIcon);
-        exponent.setSymbolUnitLabels("c", "-");
+        exponent = CommonParameterDistSimplified.getExponent();
         exponent.setDefaultValues(0.5, 0.05);
         exponent.setLocalLock(true);
 

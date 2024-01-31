@@ -16,7 +16,6 @@ import org.baratinage.ui.commons.AbstractParameterPriorDist;
 import org.baratinage.ui.commons.ParameterPriorDist;
 import org.baratinage.ui.commons.ParameterPriorDistSimplified;
 import org.baratinage.ui.component.SimpleNumberField;
-import org.baratinage.ui.component.SvgIcon;
 import org.baratinage.ui.container.GridPanel;
 import org.json.JSONArray;
 
@@ -31,51 +30,6 @@ public abstract class PriorControlPanel extends GridPanel implements ChangeListe
         private static String vAlignFixString = "<sup>&nbsp;</sup><sub>&nbsp;</sub>";
 
         private static final Font MONOSPACE_FONT = new Font(Font.MONOSPACED, Font.PLAIN, 14);
-
-        public static final SvgIcon activationHeightIcon = AppSetup.ICONS
-                        .getCustomAppImageIcon("activation_height.svg");
-
-        public static final SvgIcon slopeIcon = AppSetup.ICONS
-                        .getCustomAppImageIcon("slope.svg");
-
-        public static final SvgIcon weirCoefRIcon = AppSetup.ICONS
-                        .getCustomAppImageIcon("weir_coef_r.svg");
-
-        public static final SvgIcon weirCoefOIcon = AppSetup.ICONS
-                        .getCustomAppImageIcon("weir_coef_o.svg");
-
-        public static final SvgIcon weirCoefTIcon = AppSetup.ICONS
-                        .getCustomAppImageIcon("weir_coef_t.svg");
-
-        public static final SvgIcon weirCoefPIcon = AppSetup.ICONS
-                        .getCustomAppImageIcon("weir_coef_p.svg");
-
-        public static final SvgIcon stricklerCoefIcon = AppSetup.ICONS
-                        .getCustomAppImageIcon("strickler_coef.svg");
-
-        public static final SvgIcon angleIcon = AppSetup.ICONS
-                        .getCustomAppImageIcon("angle.svg");
-
-        public static final SvgIcon widthIcon = AppSetup.ICONS
-                        .getCustomAppImageIcon("width.svg");
-
-        public static final SvgIcon parabolaWidthIcon = AppSetup.ICONS
-                        .getCustomAppImageIcon("parabola_width.svg");
-
-        public static final SvgIcon parabolaHeightIcon = AppSetup.ICONS
-                        .getCustomAppImageIcon("parabola_height.svg");
-
-        public static final SvgIcon areaIcon = AppSetup.ICONS
-                        .getCustomAppImageIcon("orifice_area.svg");
-
-        public static final SvgIcon gravityIcon = AppSetup.ICONS
-                        .getCustomAppImageIcon("gravity.svg");
-
-        public static final SvgIcon exponentIcon = AppSetup.ICONS
-                        .getCustomAppImageIcon("exponent.svg");
-
-        public static final SvgIcon coefficientIcon = AppSetup.ICONS
-                        .getCustomAppImageIcon("coefficient.svg");
 
         private final JLabel equationLabel;
         protected final JLabel lockLabel;
