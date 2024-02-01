@@ -16,7 +16,7 @@ $CREATE_ARCHIVE = $archive
 
 $NAME = "BaRatinAGE"
 
-$ICON_PATH = "resources/icons/icon.ico"
+$ICON_PATH = "resources/icons/icon"
 
 $DIRS_TO_CREATE = @(
     "log", "exe/bam_workspace"
@@ -60,7 +60,7 @@ if ($IS_UNIX) {
     $PLATFORM = "Linux"
 }
 
-$ARCHIVE_FILE_PATH = "$($TARGET_PACKAGE_DIR)/$($NAME_VERSION)_$($PLATFORM).zip"
+
 
 $RESOURCES_DIR = $TARGET_PACKAGE_DIR_FULL
 if ($IS_UNIX) {
@@ -71,6 +71,15 @@ if ($IS_WINDOWS) {
     for ($i = 0; $i -lt $EXE_TO_COPY.Length; ++$i) {
         $EXE_TO_COPY[$i] = "$($EXE_TO_COPY[$i]).exe"
     }
+}
+
+if ($IS_WINDOWS) {
+    $ARCHIVE_FILE_PATH = "$($TARGET_PACKAGE_DIR)/$($NAME_VERSION)_$($PLATFORM).zip"
+    $ICON_PATH = "$($ICON_PATH).ico"
+}
+elseif ($IS_UNIX) {
+    $ARCHIVE_FILE_PATH = "$($TARGET_PACKAGE_DIR)/$($NAME_VERSION)_$($PLATFORM).tar.gz"
+    $ICON_PATH = "$($ICON_PATH).png"
 }
 
 ""
@@ -201,8 +210,28 @@ if ($CREATE_ARCHIVE) {
     if (Test-Path  $ARCHIVE_FILE_PATH -PathType Leaf) {
         Remove-Item $ARCHIVE_FILE_PATH -Force
     }
-    Compress-Archive -Path $TARGET_PACKAGE_DIR_FULL -DestinationPath $ARCHIVE_FILE_PATH
-    
+
+    if ($IS_WINDOWS) {
+        Compress-Archive -Path $TARGET_PACKAGE_DIR_FULL -DestinationPath $ARCHIVE_FILE_PATH
+    }
+    else {
+        # -c: Create a new archive.
+        # -z: Compress the archive using gzip.
+        # -v: Verbosely list the files processed.
+        # -f: Use archive file or device ARCHIVE.
+        if ($VERBOSE) {
+            $FLAGS = "-czvf"
+        }
+        else {
+            $FLAGS = "-czf"
+        }
+
+        $TAR_CMD = "tar $FLAGS $ARCHIVE_FILE_PATH $TARGET_PACKAGE_DIR_FULL"
+        $TAR_CMD 
+        
+        Invoke-Expression $TAR_CMD
+    }
+
     ""
     "*********************************************************************"
     ""
