@@ -29,6 +29,15 @@ public class ExplorerItem extends DefaultMutableTreeNode {
         this(id, label, icon, null);
     }
 
+    public ExplorerItem[] getChildrenExplorerItems() {
+        int n = getChildCount();
+        ExplorerItem[] children = new ExplorerItem[n];
+        for (int k = 0; k < n; k++) {
+            children[k] = (ExplorerItem) getChildAt(k);
+        }
+        return children;
+    }
+
     @Override
     public String toString() {
         return this.label;

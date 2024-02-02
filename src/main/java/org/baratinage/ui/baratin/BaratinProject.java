@@ -5,8 +5,15 @@ import org.baratinage.ui.bam.BamItemList;
 import org.baratinage.ui.bam.BamItemType;
 import org.baratinage.ui.bam.BamProject;
 import org.baratinage.ui.bam.BamProjectType;
+import org.baratinage.ui.baratin.baratin_bac.HydraulicConfigurationBAC;
+import org.baratinage.ui.commons.ExplorerItem;
 import org.baratinage.ui.commons.StructuralErrorModelBamItem;
 import org.baratinage.ui.component.NameSymbolUnit;
+
+import javax.swing.JButton;
+import javax.swing.JMenuItem;
+
+import org.baratinage.AppSetup;
 import org.baratinage.translation.T;
 
 public class BaratinProject extends BamProject {
@@ -16,18 +23,28 @@ public class BaratinProject extends BamProject {
 
         initBamItemType(
                 BamItemType.HYDRAULIC_CONFIG,
+                "hydraulic_config",
                 (String uuid) -> {
                     return new HydraulicConfiguration(uuid, this);
                 });
 
         initBamItemType(
+                BamItemType.HYDRAULIC_CONFIG_BAC,
+                "hydraulic_config",
+                (String uuid) -> {
+                    return new HydraulicConfigurationBAC(uuid, this);
+                });
+
+        initBamItemType(
                 BamItemType.GAUGINGS,
+                "gaugings",
                 (String uuid) -> {
                     return new Gaugings(uuid, this);
                 });
 
         initBamItemType(
                 BamItemType.STRUCTURAL_ERROR,
+                "structural_error_model",
                 (String uuid) -> {
 
                     return new StructuralErrorModelBamItem(
@@ -39,27 +56,62 @@ public class BaratinProject extends BamProject {
 
         initBamItemType(
                 BamItemType.RATING_CURVE,
+                "rating_curve",
                 (String uuid) -> {
                     return new RatingCurve(uuid, this);
                 });
 
         initBamItemType(
                 BamItemType.LIMNIGRAPH,
+                "limnigraph",
                 (String uuid) -> {
                     return new Limnigraph(uuid, this);
                 });
 
         initBamItemType(
                 BamItemType.HYDROGRAPH,
+                "hydrograph",
                 (String uuid) -> {
                     return new Hydrograph(uuid, this);
                 });
+
+        // resetting toolbar and component menu (where "add bam item" buttons are)
+        AppSetup.MAIN_FRAME.mainMenuBar.componentMenu.removeAll();
+        AppSetup.MAIN_FRAME.mainToolBars.clearBamItemTools();
+
+        addAddBamItemBtns(BamItemType.HYDRAULIC_CONFIG);
+        addAddBamItemBtns(BamItemType.HYDRAULIC_CONFIG_BAC);
+        addAddBamItemBtns(BamItemType.GAUGINGS);
+        addAddBamItemBtns(BamItemType.STRUCTURAL_ERROR);
+        addAddBamItemBtns(BamItemType.RATING_CURVE);
+        addAddBamItemBtns(BamItemType.LIMNIGRAPH);
+        addAddBamItemBtns(BamItemType.HYDROGRAPH);
+
         T.t(this, () -> {
             BamItemList strucErrBamItems = BAM_ITEMS.filterByType(BamItemType.STRUCTURAL_ERROR);
             for (BamItem item : strucErrBamItems) {
                 ((StructuralErrorModelBamItem) item).updateOutputNames(T.text("discharge"));
             }
         });
+    }
+
+    private void addAddBamItemBtns(BamItemType itemType) {
+        AppSetup.MAIN_FRAME.mainToolBars.addBamItemTool(
+                BamItem.getAddBamItemBtn(
+                        new JButton(), this,
+                        itemType,
+                        false, true));
+        AppSetup.MAIN_FRAME.mainMenuBar.componentMenu.add(BamItem.getAddBamItemBtn(
+                new JMenuItem(), this,
+                itemType,
+                true, true));
+
+        for (ExplorerItem explorerItem : EXPLORER.rootNode.getChildrenExplorerItems()) {
+            explorerItem.contextMenu.add(BamItem.getAddBamItemBtn(
+                    new JMenuItem(), this,
+                    itemType,
+                    true, true));
+        }
     }
 
     public void addDefaultBamItems() {

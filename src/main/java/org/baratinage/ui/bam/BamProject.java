@@ -1,19 +1,17 @@
 package org.baratinage.ui.bam;
 
-import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.function.Function;
 
-import javax.swing.JButton;
-import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 
 import org.baratinage.AppSetup;
 import org.baratinage.translation.T;
-import org.baratinage.ui.bam.BamItemType.BamItemBuilderFunction;
 import org.baratinage.ui.commons.Explorer;
 import org.baratinage.ui.commons.ExplorerItem;
 import org.baratinage.ui.container.RowColPanel;
@@ -35,8 +33,6 @@ public abstract class BamProject extends RowColPanel {
     public final BamItemList BAM_ITEMS;
 
     protected final Explorer EXPLORER;
-
-    private final JMenu componentMenu;
 
     private String projectPath = null;
 
@@ -60,11 +56,6 @@ public abstract class BamProject extends RowColPanel {
         T.t(this, EXPLORER.headerLabel, false, "explorer");
 
         setupExplorer();
-
-        // resetting toolbar and component menu (where "add bam item" buttons are)
-        componentMenu = AppSetup.MAIN_FRAME.mainMenuBar.componentMenu;
-        componentMenu.removeAll();
-        AppSetup.MAIN_FRAME.mainToolBars.clearBamItemTools();
 
         // inialialize current panel, place holder for bam item panels
         currentPanel = new RowColPanel(AXIS.COL);
@@ -132,80 +123,65 @@ public abstract class BamProject extends RowColPanel {
         }
     }
 
+    private record ProjectBamItem(BamItemType type, String categoryId, Function<String, BamItem> builder) {
+    };
+
+    private final HashMap<BamItemType, ProjectBamItem> projectBamItems = new HashMap<>();
+
     protected void initBamItemType(
             BamItemType itemType,
-            BamItemBuilderFunction builder) {
+            String categoryId,
+            Function<String, BamItem> bamItemBuilder) {
 
-        itemType.setBamItemBuilderFunction(builder);
+        ExplorerItem categoryItem = EXPLORER.getItem(categoryId);
+        if (categoryItem == null) {
+            ExplorerItem newCategoryItem = new ExplorerItem(
+                    categoryId,
+                    "",
+                    AppSetup.ICONS.getCustomAppImageIcon(categoryId + ".svg"));
+            T.t(this, () -> {
+                newCategoryItem.label = T.text(categoryId);
+                EXPLORER.updateItemView(newCategoryItem);
+            });
+            categoryItem = newCategoryItem;
+            EXPLORER.appendItem(categoryItem);
+        }
 
-        ExplorerItem explorerItem = new ExplorerItem(
-                itemType.id,
-                T.text(itemType.id),
-                itemType.getIcon());
-
-        EXPLORER.appendItem(explorerItem);
-
-        ActionListener addBamItemAction = (e) -> {
-            addBamItem(itemType);
-        };
-
-        JButton addBamItemToolbarButton = new JButton();
-        addBamItemToolbarButton.addActionListener(addBamItemAction);
-        addBamItemToolbarButton.setIcon(itemType.getAddIcon());
-        AppSetup.MAIN_FRAME.mainToolBars.addBamItemTool(addBamItemToolbarButton);
-
-        JMenuItem addBamItemMenuBarItem = new JMenuItem();
-        addBamItemMenuBarItem.addActionListener(addBamItemAction);
-        addBamItemMenuBarItem.setIcon(itemType.getAddIcon());
-        componentMenu.add(addBamItemMenuBarItem);
-
-        JMenuItem addBamItemContextMenuItem = new JMenuItem();
-        addBamItemContextMenuItem.addActionListener(addBamItemAction);
-        addBamItemContextMenuItem.setIcon(itemType.getAddIcon());
-        explorerItem.contextMenu.add(addBamItemContextMenuItem);
-
-        T.t(this, () -> {
-            explorerItem.label = T.text(itemType.id);
-            EXPLORER.updateItemView(explorerItem);
-            String tCreateKey = "create_" + itemType.id;
-            addBamItemMenuBarItem.setText(T.text(tCreateKey));
-            addBamItemToolbarButton.setToolTipText(T.text(tCreateKey));
-            addBamItemContextMenuItem.setText(T.text(tCreateKey));
-        });
+        projectBamItems.put(itemType, new ProjectBamItem(itemType, categoryId, bamItemBuilder));
 
     }
 
     protected BamItem addBamItem(BamItem bamItem) {
 
+        ProjectBamItem pBamItem = projectBamItems.get(bamItem.TYPE);
+        if (pBamItem == null) {
+            ConsoleLogger.error("Cannot find item type '" + bamItem.TYPE + "'!");
+            return null;
+        }
+
         ExplorerItem explorerItem = new ExplorerItem(
                 bamItem.ID,
                 bamItem.bamItemNameField.getText(),
                 bamItem.TYPE.getIcon(),
-                EXPLORER.getItem(bamItem.TYPE.id));
+                EXPLORER.getItem(pBamItem.categoryId));
 
         T.updateHierarchy(this, bamItem);
 
         BAM_ITEMS.add(bamItem);
 
-        JMenuItem addBamItemMenu = new JMenuItem();
-        T.t(bamItem, addBamItemMenu, false, "create_" + bamItem.TYPE.id);
-        addBamItemMenu.setIcon(bamItem.TYPE.getAddIcon());
-        addBamItemMenu.addActionListener((e) -> {
-            addBamItem(bamItem.TYPE);
-        });
-        explorerItem.contextMenu.add(addBamItemMenu);
+        explorerItem.contextMenu.add(
+                BamItem.getAddBamItemBtn(
+                        new JMenuItem(),
+                        this,
+                        bamItem.TYPE,
+                        true, true));
 
-        JMenuItem cloneMenuItem = new JMenuItem();
-        T.t(bamItem, cloneMenuItem, false, "duplicate");
-        cloneMenuItem.setIcon(AppSetup.ICONS.COPY);
-        cloneMenuItem.addActionListener(bamItem.cloneButton.getActionListeners()[0]);
-        explorerItem.contextMenu.add(cloneMenuItem);
-
-        JMenuItem deleteMenuItem = new JMenuItem();
-        T.t(bamItem, deleteMenuItem, false, "delete");
-        deleteMenuItem.setIcon(AppSetup.ICONS.TRASH);
-        deleteMenuItem.addActionListener(bamItem.deleteButton.getActionListeners()[0]);
-        explorerItem.contextMenu.add(deleteMenuItem);
+        explorerItem.contextMenu.add(bamItem.getCloneBamItemBtn(
+                new JMenuItem(),
+                true, true));
+        explorerItem.contextMenu.add(bamItem.getDeleteBamItemBtn(
+                new JMenuItem(),
+                true, true));
 
         EXPLORER.appendItem(explorerItem);
         EXPLORER.selectItem(explorerItem);
@@ -214,16 +190,19 @@ public abstract class BamProject extends RowColPanel {
 
     }
 
-    public BamItem addBamItem(BamItemType type, String uuid) {
-        BamItem bamItem = type.buildBamItem(uuid);
-        bamItem.bamItemNameField.setText(BAM_ITEMS.getDefaultName(type));
+    public BamItem addBamItem(BamItemType itemType, String uuid) {
+        ProjectBamItem pBamItem = projectBamItems.get(itemType);
+        if (pBamItem == null) {
+            ConsoleLogger.error("Cannot find item type '" + itemType + "'!");
+            return null;
+        }
+        BamItem bamItem = pBamItem.builder.apply(uuid);
+        bamItem.bamItemNameField.setText(BAM_ITEMS.getDefaultName(itemType));
         return addBamItem(bamItem);
     }
 
     public BamItem addBamItem(BamItemType type) {
-        BamItem bamItem = type.buildBamItem();
-        bamItem.bamItemNameField.setText(BAM_ITEMS.getDefaultName(type));
-        return addBamItem(bamItem);
+        return addBamItem(type, Misc.getTimeStampedId());
     }
 
     protected void deleteBamItem(BamItem bamItem) {

@@ -3,8 +3,6 @@ package org.baratinage.ui.bam;
 import javax.swing.ImageIcon;
 
 import org.baratinage.AppSetup;
-import org.baratinage.utils.ConsoleLogger;
-import org.baratinage.utils.Misc;
 
 public enum BamItemType {
     /**
@@ -23,6 +21,7 @@ public enum BamItemType {
 
     EMPTY_ITEM("empty_item"),
     HYDRAULIC_CONFIG("hydraulic_config"),
+    HYDRAULIC_CONFIG_BAC("hydraulic_config_bac"),
     GAUGINGS("gaugings"),
     HYDROGRAPH("hydrograph"),
     LIMNIGRAPH("limnigraph"),
@@ -32,40 +31,11 @@ public enum BamItemType {
 
     public final String id;
 
-    private BamItemBuilderFunction builBamItemFunction;
-
     private ImageIcon icon;
     private ImageIcon addIcon;
 
-    @FunctionalInterface
-    public interface BamItemBuilderFunction {
-        public BamItem build(String id);
-    }
-
     private BamItemType(String id) {
         this.id = id;
-        builBamItemFunction = (i) -> {
-            ConsoleLogger.error("No builder function set.");
-            return null;
-        };
-    }
-
-    public void setBamItemBuilderFunction(BamItemBuilderFunction builder) {
-        this.builBamItemFunction = builder;
-    }
-
-    public BamItem buildBamItem(String uuid) {
-        if (builBamItemFunction == null) {
-            return null;
-        }
-        return builBamItemFunction.build(uuid);
-    }
-
-    public BamItem buildBamItem() {
-        if (builBamItemFunction == null) {
-            return null;
-        }
-        return builBamItemFunction.build(Misc.getTimeStampedId());
     }
 
     public ImageIcon getIcon() {

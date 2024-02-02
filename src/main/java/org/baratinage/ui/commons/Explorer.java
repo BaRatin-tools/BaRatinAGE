@@ -23,7 +23,7 @@ public class Explorer extends RowColPanel {
     public final JLabel headerLabel = new JLabel();
 
     private final JTree explorerTree;
-    private final ExplorerItem rootNode;
+    public final ExplorerItem rootNode;
     private final DefaultTreeModel explorerTreeModel;
 
     public Explorer() {
