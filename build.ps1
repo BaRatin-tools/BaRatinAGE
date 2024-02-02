@@ -226,7 +226,7 @@ if ($CREATE_ARCHIVE) {
             $FLAGS = "-czf"
         }
 
-        $TAR_CMD = "tar $FLAGS $ARCHIVE_FILE_PATH $TARGET_PACKAGE_DIR_FULL"
+        $TAR_CMD = "tar $FLAGS $ARCHIVE_FILE_PATH -C $TARGET_PACKAGE_DIR $NAME_VERSION"
         $TAR_CMD 
         
         Invoke-Expression $TAR_CMD
