@@ -156,8 +156,7 @@ public class SvgIcon extends ImageIcon {
             TranscoderInput transcoderInput = new TranscoderInput(svgDocument);
             imgTranscoder.transcode(transcoderInput, null);
         } catch (TranscoderException e) {
-            ConsoleLogger.error("error while build raster image from SVG.");
-            ConsoleLogger.stackTrace(e);
+            ConsoleLogger.error("error while build raster image from SVG.\n" + e);
             return;
         }
         BufferedImage image = imgTranscoder.getBufferedImage();

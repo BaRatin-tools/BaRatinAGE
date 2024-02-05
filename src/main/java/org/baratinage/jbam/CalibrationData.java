@@ -154,7 +154,7 @@ public class CalibrationData {
                     BamFilesHelpers.BAM_CAL_DATA_OUTPUT_MISSING_VALUE_CODE,
                     headers.toArray(new String[0]));
         } catch (IOException e) {
-            ConsoleLogger.stackTrace(e);
+            ConsoleLogger.error(e);
         }
         return dataFilePath;
     }
@@ -253,8 +253,7 @@ public class CalibrationData {
                     true);
 
         } catch (IOException e) {
-            ConsoleLogger.error("CalibrationData Error: Failed to read data file '" + dataFilePath + "'!");
-            ConsoleLogger.stackTrace(e);
+            ConsoleLogger.error("CalibrationData Error: Failed to read data file '" + dataFilePath + "'!\n" + e);
             return null;
         }
 

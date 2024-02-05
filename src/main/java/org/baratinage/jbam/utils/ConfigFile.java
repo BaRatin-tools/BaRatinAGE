@@ -70,8 +70,8 @@ public class ConfigFile {
             WriteFile.writeLines(filePath, lines);
         } catch (IOException e) {
             ConsoleLogger.error(
-                    String.format("ConfigFile Error: Failed to write configuration \n '%s'...", filePath.toString()));
-            ConsoleLogger.stackTrace(e);
+                    String.format("ConfigFile Error: Failed to write configuration \n '%s'... \n%e",
+                            filePath.toString(), e.toString()));
         }
     }
 
@@ -123,7 +123,7 @@ public class ConfigFile {
 
             reader.close();
         } catch (IOException e) {
-            ConsoleLogger.stackTrace(e);
+            ConsoleLogger.error(e);
             return null;
         }
 

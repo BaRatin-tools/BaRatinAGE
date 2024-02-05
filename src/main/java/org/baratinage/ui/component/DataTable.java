@@ -136,8 +136,7 @@ public class DataTable extends RowColPanel {
             fileWriter.write(data);
             fileWriter.close();
         } catch (IOException e) {
-            ConsoleLogger.error("failed to write data to CSV file!");
-            ConsoleLogger.stackTrace(e);
+            ConsoleLogger.error("failed to write data to CSV file!\n" + e);
         }
     }
 

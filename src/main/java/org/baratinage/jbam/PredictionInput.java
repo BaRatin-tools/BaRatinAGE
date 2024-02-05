@@ -56,7 +56,7 @@ public class PredictionInput {
                     "", // no missing values allowed
                     null);
         } catch (IOException e) {
-            ConsoleLogger.stackTrace(e);
+            ConsoleLogger.error(e);
         }
         return dataFilePath;
     }

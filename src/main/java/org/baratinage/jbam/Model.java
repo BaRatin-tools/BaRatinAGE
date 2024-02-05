@@ -58,7 +58,7 @@ public class Model {
             WriteFile.writeLines(Path.of(workspace, xTraFileName),
                     new String[] { xTra });
         } catch (IOException e) {
-            ConsoleLogger.stackTrace(e);
+            ConsoleLogger.error(e);
         }
     }
 
@@ -106,8 +106,7 @@ public class Model {
             xTraString = Files.readString(Path.of(workspace, xTraFileName));
             xTraString = xTraString.trim();
         } catch (IOException e) {
-            ConsoleLogger.error("Model Error: An error occured while reading xTra file'" + xTraFileName + "'!");
-            ConsoleLogger.stackTrace(e);
+            ConsoleLogger.error("Model Error: An error occured while reading xTra file'" + xTraFileName + "'!\n" + e);
             return null;
         }
 

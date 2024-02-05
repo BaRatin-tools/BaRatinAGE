@@ -121,7 +121,7 @@ public class RunDialog extends JDialog {
                     });
 
                 } catch (IOException e) {
-                    ConsoleLogger.stackTrace(e);
+                    ConsoleLogger.error(e);
                     cancel(true);
                 }
                 success = finalMessage.equals("");

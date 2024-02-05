@@ -136,14 +136,6 @@ public class ConsoleLogger {
         addLogToLogFile(parsedMessage + exception.toString());
     }
 
-    public static void stackTrace(Exception exception) {
-        String callerClassName = getCallerClassName();
-        String parsedMessage = parseMessage(callerClassName, "ERROR", "");
-        out(callerClassName, parsedMessage);
-        exception.printStackTrace();
-        addLogToLogFile(parsedMessage + exception.toString());
-    }
-
     public static void debuggingStackTrace() {
         String callerClassName = getCallerClassName();
         String parsedMessage = parseMessage(callerClassName, "DEBUG", "");
