@@ -25,6 +25,7 @@ import org.baratinage.ui.baratin.Hydrograph;
 import org.baratinage.ui.baratin.RatingCurve;
 import org.baratinage.ui.baratin.gaugings.GaugingsDataset;
 import org.baratinage.ui.baratin.limnigraph.LimnigraphDataset;
+import org.baratinage.ui.component.CommonDialog;
 import org.baratinage.ui.component.ProgressFrame;
 import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.utils.ConsoleLogger;
@@ -82,12 +83,18 @@ public class BaratinageV2Importer implements IProjectImporter {
 
                 for (File f : folders) {
                     taskList.add(new Task(0, (onProgress, onDone, onError) -> {
-                        mainProgressLabel.setIcon(type.getIcon());
-                        mainProgressLabel.setText(
-                                String.format(messageTemplate,
-                                        T.text(type.id),
-                                        BaratinageV2Builders.getBamItemNameFromFolder(f)));
-                        onDone.run();
+                        try {
+                            mainProgressLabel.setIcon(type.getIcon());
+                            mainProgressLabel.setText(
+                                    String.format(messageTemplate,
+                                            T.text(type.id),
+                                            BaratinageV2Builders.getBamItemNameFromFolder(f)));
+                            onDone.run();
+                        } catch (Exception e) {
+                            ConsoleLogger.error("Error import item '" + type + "' from '" + f + "'...\n" + e);
+                            CommonDialog.errorDialog(T.text("import_v2_project_error"));
+                            mainProgressFrame.done();
+                        }
                     }));
 
                     taskList.add(new Task(100, (onProgress, onDone, onError) -> {

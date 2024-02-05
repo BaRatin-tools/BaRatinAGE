@@ -267,3 +267,4 @@ export_to_bareme_max_value_warning	see key 'BaremeNmaxInfo'	Attention : le forma
 validity_start	see key 'Validity_start'	Début de la période de validité	Start of validity period																									
 validity_end	see key 'Validity_end'	Fin de la période de validité	End of validity period																									
 hydro_code	see key 'HydroCode'	Code Banque HYDRO	HYDRO code																									
+import_v2_project_error	to be translated	Une erreur est survenue lors de l'import du projet	An error occured while importing the project																									

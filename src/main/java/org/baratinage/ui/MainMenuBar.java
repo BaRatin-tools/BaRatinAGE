@@ -122,13 +122,17 @@ public class MainMenuBar extends JMenuBar {
                     T.text("bar_zip_file_format"), "bar.zip", "BAR.ZIP");
             if (f != null) {
                 BaratinageV2Importer projConver = new BaratinageV2Importer();
-                projConver.importProject(
-                        f.getAbsolutePath(),
-                        (project) -> {
-                            ConsoleLogger.log(project);
-                            AppSetup.MAIN_FRAME.setCurrentProject(project);
-                        });
-
+                try {
+                    projConver.importProject(
+                            f.getAbsolutePath(),
+                            (project) -> {
+                                ConsoleLogger.log(project);
+                                AppSetup.MAIN_FRAME.setCurrentProject(project);
+                            });
+                } catch (Exception importError) {
+                    ConsoleLogger.error(importError);
+                    CommonDialog.errorDialog(T.text("import_v2_project_error"));
+                }
             }
         });
         fileMenu.add(importBaratinageV2projectMenuItem);
