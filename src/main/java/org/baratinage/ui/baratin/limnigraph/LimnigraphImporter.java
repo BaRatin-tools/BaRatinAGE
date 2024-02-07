@@ -189,6 +189,10 @@ public class LimnigraphImporter extends RowColPanel {
             LocalDateTime[] dateTimeVector = dataParser.getDateTimeCol(
                     dateTimeColIndex,
                     timeColFormatField.getText());
+            if (dateTimeVector == null) { // handle case where time vector is invalid
+                CommonDialog.errorDialog(T.text("import_limni_duplicated_timesteps_error"));
+                return;
+            }
             int stageColIndex = stageColComboBox.getSelectedIndex();
             double[] stage = dataParser.getDoubleCol(stageColIndex);
 
