@@ -228,8 +228,8 @@ public class DataParser extends RowColPanel {
                 }
             }
         } else if (cs.type == COL_TYPE.DATETIME) {
+            Predicate<String> dateTimeValidator = buildDateTimeValidator(cs.dateTimeFormat);
             for (String v : rawData.get(colIndex)) {
-                Predicate<String> dateTimeValidator = buildDateTimeValidator(cs.dateTimeFormat);
                 if (!dateTimeValidator.test(v)) {
                     return false;
                 }
