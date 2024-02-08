@@ -15,6 +15,8 @@ public class CommonDialog {
     private static String defaultSaveTitle = "Save";
     private static String defaultApproveButtonToolTipText = "Ok";
 
+    private static JFileChooser fileChooser;
+
     public static void init() {
         T.permanent(() -> {
             UIManager.put("FileChooser.openButtonText", T.text("open"));
@@ -56,7 +58,9 @@ public class CommonDialog {
             defaultSaveTitle = T.text("save");
             defaultApproveButtonToolTipText = T.text("ok");
 
-            resetFileChooser();
+            if (fileChooser == null) {
+                resetFileChooser();
+            }
         });
     }
 
@@ -161,8 +165,6 @@ public class CommonDialog {
         }
         return fileChooser.getSelectedFile(); // can be null
     }
-
-    private static JFileChooser fileChooser;
 
     private static void resetFileChooser() {
         fileChooser = new JFileChooser();
