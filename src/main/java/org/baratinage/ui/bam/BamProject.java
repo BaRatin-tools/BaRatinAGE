@@ -276,8 +276,7 @@ public abstract class BamProject extends RowColPanel {
         } catch (
 
         IOException saveError) {
-            ConsoleLogger.error("Failed to write main config JSON file!");
-            ConsoleLogger.stackTrace(saveError);
+            ConsoleLogger.error("Failed to write main config JSON file!\n" + saveError);
             return;
         }
 

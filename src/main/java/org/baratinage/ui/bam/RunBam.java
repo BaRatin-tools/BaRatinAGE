@@ -490,7 +490,7 @@ public class RunBam {
                     });
 
                 } catch (IOException e) {
-                    ConsoleLogger.stackTrace(e);
+                    ConsoleLogger.error(e);
                     cancel(true);
                     onError.run();
                 }

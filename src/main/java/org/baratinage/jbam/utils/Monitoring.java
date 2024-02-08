@@ -112,7 +112,7 @@ public class Monitoring {
                             k = N_MAX;
                         }
                     } catch (IOException e) {
-                        ConsoleLogger.stackTrace(e);
+                        ConsoleLogger.error(e);
                     }
                 }
 

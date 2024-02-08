@@ -62,8 +62,7 @@ public class ReadWriteZip {
         try {
             zipFileOutStream = new FileOutputStream(zipFile);
         } catch (FileNotFoundException e) {
-            ConsoleLogger.error("Cannot create output zipfile '" + zipFilePath + "'!");
-            ConsoleLogger.stackTrace(e);
+            ConsoleLogger.error("Cannot create output zipfile '" + zipFilePath + "'!\n" + e);
             return false;
         }
         ZipOutputStream zipOutStream = new ZipOutputStream(zipFileOutStream);
@@ -75,8 +74,7 @@ public class ReadWriteZip {
         try {
             zipOutStream.close();
         } catch (IOException e) {
-            ConsoleLogger.error("Cannot close output zipfile '" + zipFilePath + "'!");
-            ConsoleLogger.stackTrace(e);
+            ConsoleLogger.error("Cannot close output zipfile '" + zipFilePath + "'!\n" + e);
             return false;
         }
         return success;

@@ -136,8 +136,7 @@ public class DataTable extends RowColPanel {
             fileWriter.write(data);
             fileWriter.close();
         } catch (IOException e) {
-            ConsoleLogger.error("failed to write data to CSV file!");
-            ConsoleLogger.stackTrace(e);
+            ConsoleLogger.error("failed to write data to CSV file!\n" + e);
         }
     }
 
@@ -350,7 +349,14 @@ public class DataTable extends RowColPanel {
         public Object getValueAt(int rowIndex, int colIndex) {
             if (rowIndex >= 0 && rowIndex < getRowCount() && colIndex >= 0 && colIndex < getColumnCount()) {
                 Column c = columns.get(colIndex);
-                return c.values()[rowIndex];
+                Object value = c.values()[rowIndex];
+                if (c.getColumnClass().equals(Integer.class)) {
+                    Integer valueInt = (Integer) value;
+                    if (valueInt.equals(AppSetup.CONFIG.INT_MISSING_VALUE)) {
+                        return null;
+                    }
+                }
+                return value;
             }
             return null;
         }

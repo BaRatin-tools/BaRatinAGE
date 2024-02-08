@@ -216,7 +216,7 @@ public class CalibrationResult {
                         BamFilesHelpers.BAM_IMPOSSIBLE_SIMULATION_CODE,
                         mcmcHeaders);
             } catch (IOException e) {
-                ConsoleLogger.stackTrace(e);
+                ConsoleLogger.error(e);
             }
         }
 

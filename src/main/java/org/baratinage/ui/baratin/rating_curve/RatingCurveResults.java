@@ -392,8 +392,7 @@ public class RatingCurveResults extends TabContainer {
                             "-9999",
                             headers);
                 } catch (IOException ioe) {
-                    ConsoleLogger.error("error while exporting MCMC simulation");
-                    ConsoleLogger.stackTrace(ioe);
+                    ConsoleLogger.error("error while exporting MCMC simulation\n" + ioe);
                 }
             }
         });

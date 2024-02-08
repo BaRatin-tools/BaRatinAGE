@@ -60,7 +60,7 @@ public class BaratinageV2Builders {
                     Integer.MAX_VALUE, true);
             return results;
         } catch (IOException e) {
-            ConsoleLogger.stackTrace(e);
+            ConsoleLogger.error(e);
             return null;
         }
     }
@@ -73,7 +73,7 @@ public class BaratinageV2Builders {
                     true, true);
             return matrix;
         } catch (IOException e) {
-            ConsoleLogger.stackTrace(e);
+            ConsoleLogger.error(e);
             return null;
         }
 

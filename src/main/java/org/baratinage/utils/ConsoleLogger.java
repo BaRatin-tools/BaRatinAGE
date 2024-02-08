@@ -80,10 +80,10 @@ public class ConsoleLogger {
             return "";
         }
         for (int k = 1; k < trace.length; k++) {
-            String[] fullClassName = trace[k].getClassName().split("\\.");
-            String className = fullClassName[fullClassName.length - 1];
-            if (!className.equals("ConsoleLogger")) {
-                return className;
+            String className = trace[k].getClassName();
+            if (!className.equals("org.baratinage.utils.ConsoleLogger")) {
+                String[] splitClassName = trace[k].getClassName().split("\\.");
+                return splitClassName[splitClassName.length - 1] + "#" + trace[k].getLineNumber() + "";
             }
         }
         return "";
@@ -132,14 +132,7 @@ public class ConsoleLogger {
         String parsedMessage = parseMessage(callerClassName, "ERROR", "");
         System.err.println(parsedMessage);
         System.err.println(exception);
-        addLogToLogFile(parsedMessage + exception.toString());
-    }
 
-    public static void stackTrace(Exception exception) {
-        String callerClassName = getCallerClassName();
-        String parsedMessage = parseMessage(callerClassName, "ERROR", "");
-        out(callerClassName, parsedMessage);
-        exception.printStackTrace();
         addLogToLogFile(parsedMessage + exception.toString());
     }
 

@@ -73,7 +73,7 @@ public class Distribution {
             Files.delete(Path.of(filePath));
             return result;
         } catch (IOException e) {
-            ConsoleLogger.stackTrace(e);
+            ConsoleLogger.error(e);
             return null;
         }
     }

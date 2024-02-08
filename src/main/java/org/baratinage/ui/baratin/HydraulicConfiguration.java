@@ -242,7 +242,6 @@ public class HydraulicConfiguration
         T.clear(runBam);
         outOufSyncPanel.clear();
         if (backup == null) {
-            // T.t(runPanel.runButton, true, "compute_prior_rc");
             T.t(runBam, runBam.runButton, true, "compute_prior_rc");
             runBam.runButton.setForeground(new JButton().getForeground());
             updateUI();
@@ -254,7 +253,7 @@ public class HydraulicConfiguration
         JSONObject backupJson = backup.jsonObject();
 
         JSONFilter filter = new JSONFilter(true, true,
-                "backup", "allControlOptions", "controlTypeIndex", "isKACmode", "isLocked");
+                "backup", "allControlOptions", "controlTypeIndex", "isKACmode", "isLocked", "isReversed");
         JSONObject filteredCurrentJson = filter.apply(currentJson);
         JSONObject filteredBackupJson = filter.apply(backupJson);
 

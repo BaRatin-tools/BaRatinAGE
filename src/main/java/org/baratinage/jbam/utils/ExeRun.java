@@ -110,14 +110,14 @@ public class ExeRun implements Runnable {
                     publishConsolOutput(currentLine);
                 }
             } catch (IOException e) {
-                ConsoleLogger.stackTrace(e);
+                ConsoleLogger.error(e);
             }
 
             boolean hasFinished = true;
             try {
                 hasFinished = process.waitFor(250, TimeUnit.MILLISECONDS);
             } catch (InterruptedException e) {
-                ConsoleLogger.stackTrace(e);
+                ConsoleLogger.error(e);
                 return;
             }
 
@@ -125,12 +125,12 @@ public class ExeRun implements Runnable {
                 try {
                     exitValue = process.exitValue();
                 } catch (IllegalThreadStateException e) {
-                    ConsoleLogger.stackTrace(e);
+                    ConsoleLogger.error(e);
                     return;
                 }
             }
         } catch (IOException e) {
-            ConsoleLogger.stackTrace(e);
+            ConsoleLogger.error(e);
             return;
         }
     }

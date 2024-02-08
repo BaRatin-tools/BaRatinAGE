@@ -20,6 +20,7 @@ import org.baratinage.ui.component.SimpleComboBox;
 import org.baratinage.ui.component.SimpleTextField;
 import org.baratinage.ui.container.GridPanel;
 import org.baratinage.ui.container.RowColPanel;
+import org.baratinage.utils.ConsoleLogger;
 import org.baratinage.utils.Misc;
 import org.baratinage.utils.perf.TimedActions;
 import org.baratinage.AppSetup;
@@ -189,6 +190,10 @@ public class LimnigraphImporter extends RowColPanel {
             LocalDateTime[] dateTimeVector = dataParser.getDateTimeCol(
                     dateTimeColIndex,
                     timeColFormatField.getText());
+            if (dateTimeVector == null) { // handle case where time vector is invalid
+                CommonDialog.errorDialog(T.text("import_limni_duplicated_timesteps_error"));
+                return;
+            }
             int stageColIndex = stageColComboBox.getSelectedIndex();
             double[] stage = dataParser.getDoubleCol(stageColIndex);
 
@@ -198,11 +203,14 @@ public class LimnigraphImporter extends RowColPanel {
 
             int nCol = sysUncertaintyInd >= 0 || nonSysUncertaintyInd >= 0 ? AppSetup.CONFIG.N_SAMPLES.get() + 4 : 4;
 
-            double size = estimateDoubleMatrixTextFileSizeInKb(stage.length, nCol);
-            if (size > 50000) {
+            double size = estimateDoubleMatrixTextFileSizeInKb(stage.length, nCol) / 2; // I devide by 2 to estimate the
+                                                                                        // zip compression
+            if (size > 25000) {
+                String sizeString = formatSize(size);
+                ConsoleLogger.warn("Large error matrix file size : " + size + "Kb (" + sizeString + ")");
                 String areYouSure = T.text("are_you_sure");
                 String message = String.format("<html>%s<br>%s</html>",
-                        areYouSure, T.text("large_file_size_warning"));
+                        areYouSure, T.text("large_file_size_warning", sizeString));
                 if (!CommonDialog.confirmDialog(message, areYouSure)) {
                     dataset = null;
                     return;
@@ -256,6 +264,23 @@ public class LimnigraphImporter extends RowColPanel {
         sysUncertaintyComboBox.addChangeListener(cbChangeListener);
         sysIndComboBox.addChangeListener(cbChangeListener);
 
+    }
+
+    private static String formatSize(double sizeInKb) {
+        if (sizeInKb <= 0) {
+            return "0 B";
+        }
+
+        int sizeInBytes = (int) sizeInKb * 1024;
+
+        final String[] units = { "B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB" };
+        int digitGroups = (int) (Math.log10(sizeInBytes) / Math.log10(1024));
+
+        // int digitGroups2 = (int) (Math.log10(sizeInBytes) / Math.log10(1024));
+        // return String.format("%.1f %s", sizeInBytes / Math.pow(1024, digitGroups),
+        // units[digitGroups]);
+
+        return String.format("%.1f %s", sizeInBytes / Math.pow(1024, digitGroups), units[digitGroups]);
     }
 
     private static double estimateDoubleMatrixTextFileSizeInKb(int numRows, int numCols) {

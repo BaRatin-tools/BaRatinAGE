@@ -67,8 +67,7 @@ public class AbstractDataset {
                         false);
 
             } catch (IOException e) {
-                ConsoleLogger.error("Failed to read data file ...(" + dataFilePathString + ")");
-                ConsoleLogger.stackTrace(e);
+                ConsoleLogger.error("Failed to read data file ...(" + dataFilePathString + ")\n" + e);
             }
 
         } else {
@@ -217,8 +216,7 @@ public class AbstractDataset {
         } catch (IOException e) {
             ConsoleLogger.error("Failed to write data '" +
                     name + "' to file... (" +
-                    dataFilePath + ")");
-            ConsoleLogger.stackTrace(e);
+                    dataFilePath + ")\n" + e);
         }
     }
 

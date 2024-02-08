@@ -245,14 +245,14 @@ public class BaM {
                 ConsoleLogger.log(currentLine);
             }
         } catch (IOException e) {
-            ConsoleLogger.stackTrace(e);
+            ConsoleLogger.error(e);
         }
 
         boolean finished = false;
         try {
             finished = bamExecutionProcess.waitFor(250, TimeUnit.MILLISECONDS);
         } catch (InterruptedException e) {
-            ConsoleLogger.stackTrace(e);
+            ConsoleLogger.error(e);
         }
         int exitcode = 0;
         if (!finished) {

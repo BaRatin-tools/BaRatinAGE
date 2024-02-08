@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -228,8 +229,8 @@ public class DataParser extends RowColPanel {
                 }
             }
         } else if (cs.type == COL_TYPE.DATETIME) {
+            Predicate<String> dateTimeValidator = buildDateTimeValidator(cs.dateTimeFormat);
             for (String v : rawData.get(colIndex)) {
-                Predicate<String> dateTimeValidator = buildDateTimeValidator(cs.dateTimeFormat);
                 if (!dateTimeValidator.test(v)) {
                     return false;
                 }
@@ -282,7 +283,18 @@ public class DataParser extends RowColPanel {
             }
         };
         String[] rawCol = rawData.get(colIndex);
+        HashSet<String> rawColSet = new HashSet<>();
         int n = rawCol.length;
+        for (int k = 0; k < n; k++) {
+            boolean added = rawColSet.add(rawCol[k]);
+            if (!added) {
+                ConsoleLogger.warn("Duplicate found: " + rawCol[k]);
+            }
+        }
+        if (rawColSet.size() != rawCol.length) {
+            ConsoleLogger.error("Duplicated timestep are not permitted!");
+            return null;
+        }
         LocalDateTime[] col = new LocalDateTime[n];
         for (int k = 0; k < n; k++) {
             col[k] = converter.apply(rawCol[k]);
