@@ -51,21 +51,22 @@ public class HydraulicConfiguration
         extends BamItem
         implements IModelDefinition, IPriors, IPredictionMaster {
 
+    private final Title controlMatrixTitle;
+    private final Title priorRCplotTitle;
+    private final Title priorSpecificationTitle;
+
     private final ControlMatrix controlMatrix;
     private final HydraulicControlPanels hydraulicControls;
     private final RatingCurveStageGrid priorRatingCurveStageGrid;
 
-    private boolean isTabView = false;
     private final RowColPanel priorRatingCurvePanel;
-    private final Title controlMatrixTitle;
-    private final Title priorRCplotTitle;
-    private final Title priorSpecificationTitle;
+    private final RowColPanel outOufSyncPanel;
+    public final RunBam runBam;
+    private final RatingCurvePlot plotPanel;
+
     private final TabContainer mainContainerTab;
+    private boolean isTabView = false;
 
-    private RowColPanel outOufSyncPanel;
-
-    public RunBam runBam;
-    private RatingCurvePlot plotPanel;
     private RunConfigAndRes bamRunConfigAndRes;
 
     private BamConfigRecord backup;
@@ -94,7 +95,6 @@ public class HydraulicConfiguration
 
         priorRatingCurveStageGrid = new RatingCurveStageGrid();
         priorRatingCurveStageGrid.addChangeListener((e) -> {
-            // fireChangeListeners();
             checkPriorRatingCurveSync();
         });
 

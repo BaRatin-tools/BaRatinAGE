@@ -17,7 +17,6 @@ public class HydraulicConfigurationBAC extends BamItem
 
     public HydraulicConfigurationBAC(String uuid, BaratinProject project) {
         super(BamItemType.HYDRAULIC_CONFIG_BAC, uuid, project);
-
         setContent(new JLabel("HydraulicConfigurationBAC"));
     }
 
