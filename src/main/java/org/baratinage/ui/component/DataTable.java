@@ -428,7 +428,8 @@ public class DataTable extends RowColPanel {
                 Double d = (Double) value;
                 if (!d.isNaN()) {
                     Double absD = Math.abs(d);
-                    if (absD != 0 && (absD < 1e-4 || absD > 1e4)) {
+                    // if (absD != 0 && (absD < 1e-4 || absD > 1e4)) {
+                    if (absD != 0 && (absD < 1e-4)) {
                         value = scientificFormatter.format(d);
                     } else {
                         value = numberFormatter.format(d);
