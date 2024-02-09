@@ -3,53 +3,33 @@ package org.baratinage.ui.baratin;
 import java.awt.Dimension;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JSeparator;
 
 import org.baratinage.AppSetup;
-import org.baratinage.jbam.Distribution;
-import org.baratinage.jbam.DistributionType;
 import org.baratinage.jbam.Parameter;
-import org.baratinage.jbam.PredictionConfig;
-import org.baratinage.jbam.PredictionInput;
-import org.baratinage.jbam.PredictionOutput;
-import org.baratinage.jbam.PredictionResult;
-import org.baratinage.jbam.PredictionState;
 import org.baratinage.translation.T;
 import org.baratinage.ui.bam.BamItem;
+import org.baratinage.ui.bam.BamConfig;
 import org.baratinage.ui.bam.BamConfigRecord;
 import org.baratinage.ui.bam.BamItemType;
-import org.baratinage.ui.bam.BamProjectLoader;
 import org.baratinage.ui.bam.IModelDefinition;
-import org.baratinage.ui.bam.IPredictionMaster;
 import org.baratinage.ui.bam.IPriors;
-import org.baratinage.ui.bam.PredExp;
-import org.baratinage.ui.bam.PredExpSet;
-import org.baratinage.ui.bam.RunConfigAndRes;
 import org.baratinage.ui.bam.RunBam;
+import org.baratinage.ui.baratin.hydraulic_configuration.PriorRatingCurve;
 import org.baratinage.ui.baratin.hydraulic_control.ControlMatrix;
 import org.baratinage.ui.baratin.hydraulic_control.HydraulicControlPanels;
-import org.baratinage.ui.baratin.rating_curve.RatingCurvePlot;
-import org.baratinage.ui.baratin.rating_curve.RatingCurveStageGrid;
-import org.baratinage.ui.commons.MsgPanel;
 import org.baratinage.ui.component.Title;
 import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.ui.container.SplitContainer;
 import org.baratinage.ui.container.TabContainer;
 import org.baratinage.utils.ConsoleLogger;
-import org.baratinage.utils.json.JSONCompare;
-import org.baratinage.utils.json.JSONCompareResult;
-import org.baratinage.utils.json.JSONFilter;
 import org.baratinage.utils.perf.TimedActions;
 import org.json.JSONObject;
 
 public class HydraulicConfiguration
         extends BamItem
-        implements IModelDefinition, IPriors, IPredictionMaster {
+        implements IModelDefinition, IPriors {
 
     private final Title controlMatrixTitle;
     private final Title priorRCplotTitle;
@@ -57,19 +37,13 @@ public class HydraulicConfiguration
 
     private final ControlMatrix controlMatrix;
     private final HydraulicControlPanels hydraulicControls;
-    private final RatingCurveStageGrid priorRatingCurveStageGrid;
 
-    private final RowColPanel priorRatingCurvePanel;
-    private final RowColPanel outOufSyncPanel;
-    public final RunBam runBam;
-    private final RatingCurvePlot plotPanel;
+    private final PriorRatingCurve<HydraulicConfiguration> priorRatingCurve;
 
     private final TabContainer mainContainerTab;
     private boolean isTabView = false;
 
-    private RunConfigAndRes bamRunConfigAndRes;
-
-    private BamConfigRecord backup;
+    public final RunBam runBam;
 
     public static final ImageIcon controlMatrixIcon = AppSetup.ICONS.getCustomAppImageIcon("control_matrix.svg");
     public static final ImageIcon priorSpecificationIcon = AppSetup.ICONS
@@ -80,54 +54,32 @@ public class HydraulicConfiguration
     public HydraulicConfiguration(String uuid, BaratinProject project) {
         super(BamItemType.HYDRAULIC_CONFIG, uuid, project);
 
-        controlMatrix = new ControlMatrix();
-        controlMatrix.addChangeListener((e) -> {
-            fireChangeListeners();
-            updateHydraulicControls(controlMatrix.getControlMatrix());
-            checkPriorRatingCurveSync();
-        });
-
         hydraulicControls = new HydraulicControlPanels();
         hydraulicControls.addChangeListener((e) -> {
             fireChangeListeners();
-            checkPriorRatingCurveSync();
         });
 
-        priorRatingCurveStageGrid = new RatingCurveStageGrid();
-        priorRatingCurveStageGrid.addChangeListener((e) -> {
-            checkPriorRatingCurveSync();
+        controlMatrix = new ControlMatrix();
+        controlMatrix.addChangeListener((e) -> {
+            fireChangeListeners();
+            // updateHydraulicControls(controlMatrix.getControlMatrix());
+            hydraulicControls.setHydraulicControls(controlMatrix.getControlMatrix().length);
         });
 
-        plotPanel = new RatingCurvePlot();
+        priorRatingCurve = new PriorRatingCurve<>(this);
+        runBam = priorRatingCurve.runBam;
+
+        controlMatrix.addChangeListener((e) -> {
+            priorRatingCurve.checkSync();
+        });
+        hydraulicControls.addChangeListener((e) -> {
+            priorRatingCurve.checkSync();
+        });
 
         Dimension dimPref = new Dimension(500, 300);
         controlMatrix.setPreferredSize(dimPref);
-        plotPanel.setPreferredSize(dimPref);
         Dimension dimMin = new Dimension(250, 150);
         controlMatrix.setMinimumSize(dimMin);
-        plotPanel.setMinimumSize(dimMin);
-
-        runBam = new RunBam(false, true, false);
-        runBam.setModelDefintion(this);
-        runBam.setPriors(this);
-        runBam.setPredictionExperiments(this);
-        runBam.addOnDoneAction((RunConfigAndRes res) -> {
-            bamRunConfigAndRes = res;
-            backup = save(true);
-            buildPlot();
-            checkPriorRatingCurveSync();
-        });
-
-        priorRatingCurvePanel = new RowColPanel(RowColPanel.AXIS.COL);
-
-        outOufSyncPanel = new RowColPanel(RowColPanel.AXIS.COL);
-        outOufSyncPanel.setPadding(5);
-
-        priorRatingCurvePanel.appendChild(priorRatingCurveStageGrid, 0);
-        priorRatingCurvePanel.appendChild(new JSeparator(), 0);
-        priorRatingCurvePanel.appendChild(outOufSyncPanel, 0);
-        priorRatingCurvePanel.appendChild(runBam.runButton, 0, 5);
-        priorRatingCurvePanel.appendChild(plotPanel, 1);
 
         // **********************************************************************
         // SPECIFIC TO SPLIT PANE / TAB SYSTEM APPROACHES
@@ -152,14 +104,12 @@ public class HydraulicConfiguration
         // **********************************************************************
 
         boolean[][] mat = controlMatrix.getControlMatrix();
-        updateHydraulicControls(mat);
+        hydraulicControls.setHydraulicControls(mat.length);
+        // updateHydraulicControls(mat);
 
         T.updateHierarchy(this, controlMatrix);
         T.updateHierarchy(this, hydraulicControls);
-        T.updateHierarchy(this, priorRatingCurveStageGrid);
-        T.updateHierarchy(this, plotPanel);
-        T.updateHierarchy(this, runBam);
-        T.updateHierarchy(this, outOufSyncPanel);
+        T.updateHierarchy(this, priorRatingCurve);
 
         T.t(this, () -> {
             controlMatrixTitle.setText(T.html("control_matrix"));
@@ -205,7 +155,7 @@ public class HydraulicConfiguration
 
         priorRCplotTitle.setIcon(priorRatingCurveIcon);
         priorRCplotPanel.appendChild(priorRCplotTitle, 0);
-        priorRCplotPanel.appendChild(priorRatingCurvePanel, 1);
+        priorRCplotPanel.appendChild(priorRatingCurve, 1);
 
         RowColPanel priorSepecificationPanel = new RowColPanel(RowColPanel.AXIS.COL);
 
@@ -230,116 +180,11 @@ public class HydraulicConfiguration
                 priorSpecificationIcon,
                 hydraulicControls);
         mainContainerTab.addTab("prior_rating_curve", priorRatingCurveIcon,
-                priorRatingCurvePanel);
+                priorRatingCurve);
 
         setContent(mainContainerTab);
         T.updateTranslation(this);
         updateUI();
-    }
-
-    private void checkPriorRatingCurveSync() {
-        T.clear(outOufSyncPanel);
-        T.clear(runBam);
-        outOufSyncPanel.clear();
-        if (backup == null) {
-            T.t(runBam, runBam.runButton, true, "compute_prior_rc");
-            runBam.runButton.setForeground(new JButton().getForeground());
-            updateUI();
-            return;
-        }
-
-        JSONObject currentJson = save(false).jsonObject();
-
-        JSONObject backupJson = backup.jsonObject();
-
-        JSONFilter filter = new JSONFilter(true, true,
-                "backup", "allControlOptions", "controlTypeIndex", "isKACmode", "isLocked", "isReversed");
-        JSONObject filteredCurrentJson = filter.apply(currentJson);
-        JSONObject filteredBackupJson = filter.apply(backupJson);
-
-        JSONCompareResult comparison = JSONCompare.compare(
-                filteredBackupJson,
-                filteredCurrentJson);
-
-        if (comparison.matching()) {
-            // FIXME: refactoring needed
-            T.t(runBam, runBam.runButton, true, "compute_prior_rc");
-            runBam.runButton.setForeground(new JButton().getForeground());
-            return;
-        }
-
-        List<MsgPanel> outOfSyncMessages = new ArrayList<>();
-
-        JSONCompareResult stageGridComparison = comparison.children().get("stageGridConfig");
-
-        if (!stageGridComparison.matching()) {
-            MsgPanel msg = new MsgPanel(MsgPanel.TYPE.ERROR, true);
-            T.t(outOufSyncPanel, msg.message, true, "oos_stage_grid");
-            JButton revertBackBtn = new JButton();
-            T.t(outOufSyncPanel, revertBackBtn, true, "cancel_changes");
-            revertBackBtn.addActionListener((e) -> {
-                priorRatingCurveStageGrid.fromJSON(
-                        backupJson.getJSONObject("stageGridConfig"));
-                checkPriorRatingCurveSync();
-            });
-            msg.addButton(revertBackBtn);
-            outOfSyncMessages.add(msg);
-        }
-
-        JSONCompareResult controlMatrixComparison = comparison.children().get("controlMatrix");
-
-        if (!controlMatrixComparison.matching()) {
-            MsgPanel msg = new MsgPanel(MsgPanel.TYPE.ERROR);
-            T.t(outOufSyncPanel, msg.message, true, "oos_control_matrix");
-            JButton revertBackBtn = new JButton();
-            T.t(outOufSyncPanel, revertBackBtn, true, "cancel_changes");
-            revertBackBtn.addActionListener((e) -> {
-                controlMatrix.fromJSON(
-                        backupJson.getJSONObject("controlMatrix"));
-                checkPriorRatingCurveSync();
-                fireChangeListeners();
-            });
-            msg.addButton(revertBackBtn);
-            outOfSyncMessages.add(msg);
-        } else {
-
-            JSONCompareResult hydraulicControlsComparison = comparison.children().get("hydraulicControls");
-
-            if (!hydraulicControlsComparison.matching()) {
-                MsgPanel msg = new MsgPanel(MsgPanel.TYPE.ERROR);
-                T.t(outOufSyncPanel, msg.message, true, "oos_hydraulic_controls");
-                JButton revertBackBtn = new JButton();
-                T.t(outOufSyncPanel, revertBackBtn, true, "cancel_changes");
-                revertBackBtn.addActionListener((e) -> {
-                    hydraulicControls.fromJSON(
-                            backupJson.getJSONObject("hydraulicControls"));
-                    checkPriorRatingCurveSync();
-                    fireChangeListeners();
-                });
-                msg.addButton(revertBackBtn);
-                outOfSyncMessages.add(msg);
-
-            }
-
-        }
-
-        for (MsgPanel mp : outOfSyncMessages) {
-            outOufSyncPanel.appendChild(mp);
-        }
-        if (outOfSyncMessages.size() > 0) {
-            T.t(runBam, runBam.runButton, true, "recompute_prior_rc");
-            runBam.runButton.setForeground(AppSetup.COLORS.INVALID_FG);
-        } else {
-            T.t(runBam, runBam.runButton, true, "compute_prior_rc");
-            runBam.runButton.setForeground(new JButton().getForeground());
-        }
-
-        updateUI();
-
-    }
-
-    private void updateHydraulicControls(boolean[][] controlMatrix) {
-        hydraulicControls.setHydraulicControls(controlMatrix.length);
     }
 
     @Override
@@ -404,23 +249,14 @@ public class HydraulicConfiguration
         json.put("hydraulicControls", hydraulicControls.toJSON());
 
         // **********************************************************
-        // Stage grid configuration
-        JSONObject stageGridConfigJson = priorRatingCurveStageGrid.toJSON();
-
-        json.put("stageGridConfig", stageGridConfigJson);
-
-        // **********************************************************
-        String zipPath = null;
-        if (bamRunConfigAndRes != null) {
-            json.put("bamRunId", bamRunConfigAndRes.id);
-            zipPath = bamRunConfigAndRes.zipRun(writeFiles);
+        // prior rating curve configuration
+        BamConfig priorRatingCurveConfig = priorRatingCurve.saveConfig();
+        json.put("priorRatingCurve", priorRatingCurveConfig.JSON);
+        if (priorRatingCurveConfig.FILE_PATHS.size() > 0) {
+            String bamRunZipPath = priorRatingCurveConfig.FILE_PATHS.get(0);
+            return new BamConfigRecord(json, bamRunZipPath);
         }
-
-        if (backup != null) {
-            json.put("backup", BamConfigRecord.toJSON(backup));
-        }
-
-        return zipPath == null ? new BamConfigRecord(json) : new BamConfigRecord(json, zipPath);
+        return new BamConfigRecord(json);
     }
 
     @Override
@@ -439,104 +275,24 @@ public class HydraulicConfiguration
         // **********************************************************
         // Hydraulic controls
         if (json.has("hydraulicControls")) {
-
             hydraulicControls.fromJSON(json.getJSONObject("hydraulicControls"));
-
         } else {
             ConsoleLogger.log("missing 'hydraulicControls'");
         }
 
         // **********************************************************
-        // Stage grid configuration
-
-        if (json.has("stageGridConfig")) {
-
-            JSONObject stageGridJson = json.getJSONObject("stageGridConfig");
-            priorRatingCurveStageGrid.fromJSON(stageGridJson);
-
+        // prior rating curve configuration
+        if (json.has("priorRatingCurve")) {
+            priorRatingCurve.loadConfig(json.getJSONObject("priorRatingCurve"));
         } else {
-            ConsoleLogger.log("missing 'stageGridConfig'");
-        }
-
-        if (json.has("backup")) {
-            JSONObject backupJson = json.getJSONObject("backup");
-            backup = BamConfigRecord.fromJSON(backupJson);
-
-        } else {
-            ConsoleLogger.log("missing 'backup'");
-        }
-
-        // **********************************************************
-        // prior rating curve BaM results
-        if (json.has("bamRunId")) {
-            String bamRunId = json.getString("bamRunId");
-            bamRunConfigAndRes = RunConfigAndRes.buildFromTempZipArchive(bamRunId);
-            BamProjectLoader.addDelayedAction(() -> {
-                buildPlot();
+            ConsoleLogger.log("missing 'priorRatingCurve'");
+            priorRatingCurve.runBam.runAsync(() -> {
+                ConsoleLogger.log("Re-running prior prediction done");
+            }, () -> {
+                ConsoleLogger.log("Re-running prior prediction failed");
             });
-        } else {
-            ConsoleLogger.log("missing 'bamRunZipFileName'");
         }
-
-        checkPriorRatingCurveSync();
-    }
-
-    @Override
-    public PredExpSet getPredExps() {
-
-        PredictionOutput maxpostOutput = PredictionOutput.buildPredictionOutput("maxpost", "Q", false);
-        PredictionOutput uParamOutput = PredictionOutput.buildPredictionOutput("uParam", "Q", false);
-
-        PredictionInput predInput = priorRatingCurveStageGrid.getPredictionInput();
-        if (predInput == null) {
-            ConsoleLogger.warn("No valid rating curve stage grid.");
-            return null;
-        }
-
-        return new PredExpSet(
-                new PredExp(PredictionConfig.buildPriorPrediction(
-                        "maxpost",
-                        new PredictionInput[] { predInput },
-                        new PredictionOutput[] { maxpostOutput },
-                        new PredictionState[] {},
-                        false,
-                        AppSetup.CONFIG.N_REPLICATES, false)),
-                new PredExp(PredictionConfig.buildPriorPrediction(
-                        "u",
-                        new PredictionInput[] { predInput },
-                        new PredictionOutput[] { uParamOutput },
-                        new PredictionState[] {},
-                        true,
-                        AppSetup.CONFIG.N_REPLICATES,
-                        false)));
 
     }
 
-    private void buildPlot() {
-
-        PredictionResult[] predResults = bamRunConfigAndRes.getPredictionResults();
-        Parameter[] params = bamRunConfigAndRes.getCalibrationConfig().model.parameters;
-
-        double[] stage = predResults[0].predictionConfig.inputs[0].dataColumns.get(0);
-        double[] dischargeMaxpost = predResults[0].outputResults.get(0).spag().get(0);
-        List<double[]> dischargeParamU = predResults[1].outputResults.get(0).env().subList(1, 3);
-
-        List<double[]> transitionStages = new ArrayList<>();
-        for (Parameter p : params) {
-            if (p.name.startsWith("k_")) {
-                Distribution d = p.distribution;
-                if (d.type == DistributionType.GAUSSIAN) {
-                    double[] distParams = d.parameterValues;
-                    double mean = distParams[0];
-                    double std = distParams[1];
-                    transitionStages.add(new double[] {
-                            mean, mean - 2 * std, mean + 2 * std
-                    });
-                }
-
-            }
-        }
-
-        plotPanel.setPriorPlot(stage, dischargeMaxpost, dischargeParamU, transitionStages);
-    }
 }
