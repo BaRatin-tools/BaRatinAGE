@@ -47,7 +47,7 @@ abstract public class BamItem extends GridPanel {
         bamItemDescriptionField = new SimpleTextField();
 
         cloneButton = getCloneBamItemBtn(new JButton(), true, true);
-        deleteButton = getDeleteBamItemBtn(new JButton(), true, true);
+        deleteButton = getDeleteBamItemBtn(new JButton(), false, true);
 
         headerPanel = new GridPanel();
         headerPanel.setGap(5);
@@ -168,11 +168,11 @@ abstract public class BamItem extends GridPanel {
         });
         btn.setIcon(AppSetup.ICONS.TRASH);
         if (label) {
-            T.t(this, btn, false, "duplicate");
+            T.t(this, btn, false, "delete");
         }
         if (tooltip) {
             T.t(this, () -> {
-                btn.setToolTipText(T.text("duplicate"));
+                btn.setToolTipText(T.text("delete"));
             });
         }
         return btn;
