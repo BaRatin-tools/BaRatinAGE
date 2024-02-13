@@ -20,6 +20,7 @@ import org.json.JSONObject;
 public class BamItemParent extends RowColPanel {
 
     private final BamItemType TYPE;
+    private final BamItemType[] TYPES;
     private final BamItem CHILD;
 
     private final JLabel comboboxLabel;
@@ -44,13 +45,14 @@ public class BamItemParent extends RowColPanel {
 
     public BamItemParent(
             BamItem child,
-            BamItemType type) {
+            BamItemType... types) {
 
         super(AXIS.COL);
         setGap(5);
         setPadding(5);
 
-        TYPE = type;
+        TYPE = types[0];
+        TYPES = types;
         CHILD = child;
 
         CHILD.PROJECT.BAM_ITEMS.addChangeListener((chEvt) -> {
@@ -133,7 +135,7 @@ public class BamItemParent extends RowColPanel {
     public void updateCombobox() {
 
         BamItemList bamItemList = CHILD.PROJECT.BAM_ITEMS;
-        BamItemList filteredBamItemList = bamItemList.filterByType(TYPE);
+        BamItemList filteredBamItemList = bamItemList.filterByType(TYPES);
         allItems = filteredBamItemList;
         for (BamItem bamItem : allItems) {
             bamItem.bamItemNameField.removeChangeListener(onBamItemNameChange);

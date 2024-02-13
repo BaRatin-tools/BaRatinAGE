@@ -47,11 +47,17 @@ public class BamItemList extends ArrayList<BamItem> {
         return super.get(index);
     }
 
-    public BamItemList filterByType(BamItemType type) {
+    public BamItemList filterByType(BamItemType... types) {
         BamItemList filteredList = new BamItemList(
-                this
-                        .stream()
-                        .filter(item -> item.TYPE == type)
+                this.stream()
+                        .filter(item -> {
+                            for (BamItemType type : types) {
+                                if (item.TYPE == type) {
+                                    return true;
+                                }
+                            }
+                            return false;
+                        })
                         .toList());
         return filteredList;
     }
