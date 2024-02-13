@@ -35,7 +35,9 @@ import org.baratinage.ui.bam.BamProjectLoader;
 import org.baratinage.ui.bam.BamItemParent;
 import org.baratinage.ui.bam.ICalibratedModel;
 import org.baratinage.ui.bam.IMcmc;
+import org.baratinage.ui.bam.IModelDefinition;
 import org.baratinage.ui.bam.IPredictionMaster;
+import org.baratinage.ui.bam.IPriors;
 import org.baratinage.ui.bam.PredExp;
 import org.baratinage.ui.bam.PredExpSet;
 import org.baratinage.ui.bam.RunConfigAndRes;
@@ -102,7 +104,7 @@ public class RatingCurve extends BamItem implements IPredictionMaster, ICalibrat
         // **********************************************************
         hydrauConfParent = new BamItemParent(
                 this,
-                BamItemType.HYDRAULIC_CONFIG);
+                BamItemType.HYDRAULIC_CONFIG, BamItemType.HYDRAULIC_CONFIG_BAC);
         hydrauConfParent.setComparisonJSONfilter(new JSONFilter(true, true,
                 "ui",
                 "bamRunId",
@@ -115,9 +117,9 @@ public class RatingCurve extends BamItem implements IPredictionMaster, ICalibrat
                 "isLocked",
                 "isReversed"));
         hydrauConfParent.addChangeListener((e) -> {
-            HydraulicConfiguration bamItem = (HydraulicConfiguration) hydrauConfParent.getCurrentBamItem();
-            runBam.setModelDefintion(bamItem);
-            runBam.setPriors(bamItem);
+            BamItem bamItem = hydrauConfParent.getCurrentBamItem();
+            runBam.setModelDefintion((IModelDefinition) bamItem);
+            runBam.setPriors((IPriors) bamItem);
 
             TimedActions.throttle(ID, AppSetup.CONFIG.THROTTLED_DELAY_MS, this::checkSync);
         });
