@@ -23,6 +23,7 @@ import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.ui.container.SplitContainer;
 import org.baratinage.ui.container.TabContainer;
 import org.baratinage.utils.ConsoleLogger;
+import org.baratinage.utils.json.JSONFilter;
 import org.baratinage.utils.perf.TimedActions;
 import org.json.JSONObject;
 
@@ -260,6 +261,18 @@ public class HydraulicConfiguration
     @Override
     public void load(BamConfig config) {
 
+        if (config.VERSION == -1) {
+            JSONObject newJson = JSONFilter.filter(config.JSON,
+                    false, false,
+                    "controlMatrix", "hydraulicControls");
+            JSONObject priorRatingCurveJson = JSONFilter.filter(config.JSON, false, false,
+                    "stageGridConfig", "bamRunId", "backup");
+            newJson.put("priorRatingCurve", priorRatingCurveJson);
+            config = new BamConfig(0);
+            for (String key : newJson.keySet()) {
+                config.JSON.put(key, newJson.get(key));
+            }
+        }
         JSONObject json = config.JSON;
 
         // **********************************************************
@@ -284,11 +297,6 @@ public class HydraulicConfiguration
             priorRatingCurve.loadConfig(json.getJSONObject("priorRatingCurve"));
         } else {
             ConsoleLogger.log("missing 'priorRatingCurve'");
-            priorRatingCurve.runBam.runAsync(() -> {
-                ConsoleLogger.log("Re-running prior prediction done");
-            }, () -> {
-                ConsoleLogger.log("Re-running prior prediction failed");
-            });
         }
 
     }
