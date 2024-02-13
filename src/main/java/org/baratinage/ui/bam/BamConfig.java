@@ -19,6 +19,23 @@ public class BamConfig {
     public final List<String> FILE_PATHS;
     public final JSONObject JSON;
 
+    public BamConfig(JSONObject config, List<String> filePaths) {
+        this(config, filePaths.toArray(new String[filePaths.size()]));
+    }
+
+    public BamConfig(JSONObject config, String... filePaths) {
+        int version = -1;
+        if (config.has("_version")) {
+            version = config.getInt("_version");
+        }
+        VERSION = version;
+        FILE_PATHS = new ArrayList<>();
+        for (String fp : filePaths) {
+            FILE_PATHS.add(fp);
+        }
+        JSON = config;
+    }
+
     public BamConfig() {
         FILE_PATHS = new ArrayList<>();
         JSON = new JSONObject();
