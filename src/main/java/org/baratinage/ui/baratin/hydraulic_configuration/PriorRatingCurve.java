@@ -246,7 +246,7 @@ public class PriorRatingCurve<HCT extends IModelDefinition & IPriors> extends Ro
     }
 
     public BamConfig saveConfig() {
-        BamConfig config = new BamConfig();
+        BamConfig config = new BamConfig(0);
         config.JSON.put("stageGridConfig", priorRatingCurveStageGrid.toJSON());
         if (bamRunConfigAndRes != null) {
             config.JSON.put("bamRunId", bamRunConfigAndRes.id);

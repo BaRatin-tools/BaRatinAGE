@@ -223,18 +223,17 @@ public class Limnigraph extends BamItem {
 
     @Override
     public BamConfig save(boolean writeFiles) {
-
-        JSONObject json = new JSONObject();
-
-        String[] dataFilePaths = new String[0];
+        BamConfig config = new BamConfig(0);
         if (limniDataset != null) {
             DatasetConfig dc = limniDataset.save(writeFiles);
             JSONObject limniDatasetJson = dc.toJSON();
-            json.put("limniDataset", limniDatasetJson);
-            dataFilePaths = dc.getAllFilePaths();
+            config.JSON.put("limniDataset", limniDatasetJson);
+            String[] dataFilePaths = dc.getAllFilePaths();
+            for (String dfp : dataFilePaths) {
+                config.FILE_PATHS.add(dfp);
+            }
         }
-
-        return new BamConfig(json, dataFilePaths);
+        return config;
     }
 
     @Override

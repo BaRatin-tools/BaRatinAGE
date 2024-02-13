@@ -36,10 +36,10 @@ public class BamConfig {
         JSON = config;
     }
 
-    public BamConfig() {
+    public BamConfig(int version) {
         FILE_PATHS = new ArrayList<>();
         JSON = new JSONObject();
-        VERSION = 0;
+        VERSION = version;
     }
 
     private static <A> JSONArray toJSONArray(A[] objects, Function<A, JSONObject> transformer) {

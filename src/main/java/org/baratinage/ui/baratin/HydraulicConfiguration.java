@@ -236,26 +236,25 @@ public class HydraulicConfiguration
 
     @Override
     public BamConfig save(boolean writeFiles) {
-        JSONObject json = new JSONObject();
+        BamConfig config = new BamConfig(0);
 
         // **********************************************************
         // Control matrix
-        json.put("controlMatrix", controlMatrix.toJSON());
+        config.JSON.put("controlMatrix", controlMatrix.toJSON());
 
         // **********************************************************
         // Hydraulic controls
 
-        json.put("hydraulicControls", hydraulicControls.toJSON());
+        config.JSON.put("hydraulicControls", hydraulicControls.toJSON());
 
         // **********************************************************
         // prior rating curve configuration
         BamConfig priorRatingCurveConfig = priorRatingCurve.saveConfig();
-        json.put("priorRatingCurve", priorRatingCurveConfig.JSON);
+        config.JSON.put("priorRatingCurve", priorRatingCurveConfig.JSON);
         if (priorRatingCurveConfig.FILE_PATHS.size() > 0) {
-            String bamRunZipPath = priorRatingCurveConfig.FILE_PATHS.get(0);
-            return new BamConfig(json, bamRunZipPath);
+            config.FILE_PATHS.addAll(priorRatingCurveConfig.FILE_PATHS);
         }
-        return new BamConfig(json);
+        return config;
     }
 
     @Override

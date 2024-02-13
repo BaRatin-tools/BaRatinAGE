@@ -17,7 +17,6 @@ import org.baratinage.ui.bam.IStructuralErrorModels;
 import org.baratinage.ui.component.NameSymbolUnit;
 import org.baratinage.ui.container.RowColPanel;
 import org.json.JSONArray;
-import org.json.JSONObject;
 
 public class StructuralErrorModelBamItem extends BamItem implements IStructuralErrorModels {
 
@@ -112,13 +111,13 @@ public class StructuralErrorModelBamItem extends BamItem implements IStructuralE
 
     @Override
     public BamConfig save(boolean writeFiles) {
-        JSONObject json = new JSONObject();
+        BamConfig config = new BamConfig(0);
         JSONArray strucErrModelPanelsJSON = new JSONArray();
         for (int k = 0; k < nOutputs; k++) {
             strucErrModelPanelsJSON.put(k, strucErrModelPanels[k].toJSON());
         }
-        json.put("strucErrModelPanels", strucErrModelPanelsJSON);
-        return new BamConfig(json);
+        config.JSON.put("strucErrModelPanels", strucErrModelPanelsJSON);
+        return config;
     }
 
     @Override

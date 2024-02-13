@@ -183,36 +183,29 @@ public class Hydrograph extends BamItem implements IPredictionMaster {
     @Override
     public BamConfig save(boolean writeFiles) {
 
-        JSONObject json = new JSONObject();
+        BamConfig config = new BamConfig(0);
 
-        json.put("ratingCurve", ratingCurveParent.toJSON());
-        json.put("limnigraph", limnigraphParent.toJSON());
+        config.JSON.put("ratingCurve", ratingCurveParent.toJSON());
+        config.JSON.put("limnigraph", limnigraphParent.toJSON());
 
-        String zipPath = null;
         if (currentConfigAndRes != null) {
-            json.put("bamRunId", currentConfigAndRes.id);
-            zipPath = currentConfigAndRes.zipRun(writeFiles);
+            config.JSON.put("bamRunId", currentConfigAndRes.id);
+            String zipPath = currentConfigAndRes.zipRun(writeFiles);
+            config.FILE_PATHS.add(zipPath);
         }
 
-        String extraDataPath = null;
         if (extraData != null) {
-            json.put("extraDataId", extraData.id);
+            config.JSON.put("extraDataId", extraData.id);
             if (writeFiles) {
-                extraDataPath = extraData.writeData();
+                String extraDataPath = extraData.writeData();
+                config.FILE_PATHS.add(extraDataPath);
             }
         }
 
         if (backup != null) {
-            json.put("backup", backup.JSON); // FIXME: check
+            config.JSON.put("backup", backup.JSON); // FIXME: check
         }
 
-        BamConfig config = new BamConfig(json);
-        if (zipPath != null) {
-            config.FILE_PATHS.add(zipPath);
-        }
-        if (extraDataPath != null) {
-            config.FILE_PATHS.add(extraDataPath);
-        }
         return config;
     }
 

@@ -382,31 +382,31 @@ public class RatingCurve extends BamItem implements IPredictionMaster, ICalibrat
     @Override
     public BamConfig save(boolean writeFiles) {
 
-        JSONObject json = new JSONObject();
+        BamConfig config = new BamConfig(0);
 
-        json.put("hydrauConfig", hydrauConfParent.toJSON());
-        json.put("gaugings", gaugingsParent.toJSON());
-        json.put("structError", structErrorParent.toJSON());
+        config.JSON.put("hydrauConfig", hydrauConfParent.toJSON());
+        config.JSON.put("gaugings", gaugingsParent.toJSON());
+        config.JSON.put("structError", structErrorParent.toJSON());
 
         // **********************************************************
         // Stage grid configuration
 
         JSONObject stageGridConfigJson = ratingCurveStageGrid.toJSON();
-        json.put("stageGridConfig", stageGridConfigJson);
+        config.JSON.put("stageGridConfig", stageGridConfigJson);
 
         // **********************************************************
         // BaM run
-        String zipPath = null;
         if (bamRunConfigAndRes != null) {
-            json.put("bamRunId", bamRunConfigAndRes.id);
-            zipPath = bamRunConfigAndRes.zipRun(writeFiles);
+            config.JSON.put("bamRunId", bamRunConfigAndRes.id);
+            String zipPath = bamRunConfigAndRes.zipRun(writeFiles);
+            config.FILE_PATHS.add(zipPath);
         }
 
         if (backup != null) {
-            json.put("backup", backup.JSON);
+            config.JSON.put("backup", backup.JSON);
         }
 
-        return zipPath == null ? new BamConfig(json) : new BamConfig(json, zipPath);
+        return config;
     }
 
     @Override
