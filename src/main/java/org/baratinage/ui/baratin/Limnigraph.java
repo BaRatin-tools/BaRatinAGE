@@ -11,7 +11,7 @@ import javax.swing.JLabel;
 import org.baratinage.AppSetup;
 import org.baratinage.jbam.PredictionInput;
 import org.baratinage.ui.bam.BamItem;
-import org.baratinage.ui.bam.BamConfigRecord;
+import org.baratinage.ui.bam.BamConfig;
 import org.baratinage.ui.bam.BamItemType;
 import org.baratinage.ui.baratin.limnigraph.LimnigraphDataset;
 import org.baratinage.ui.baratin.limnigraph.LimnigraphErrors;
@@ -222,7 +222,7 @@ public class Limnigraph extends BamItem {
     }
 
     @Override
-    public BamConfigRecord save(boolean writeFiles) {
+    public BamConfig save(boolean writeFiles) {
 
         JSONObject json = new JSONObject();
 
@@ -234,13 +234,13 @@ public class Limnigraph extends BamItem {
             dataFilePaths = dc.getAllFilePaths();
         }
 
-        return new BamConfigRecord(json, dataFilePaths);
+        return new BamConfig(json, dataFilePaths);
     }
 
     @Override
-    public void load(BamConfigRecord bamItemBackup) {
+    public void load(BamConfig config) {
 
-        JSONObject json = bamItemBackup.jsonObject();
+        JSONObject json = config.JSON;
 
         if (json.has("limniDataset")) {
             JSONObject limniDatasetJson = json.getJSONObject("limniDataset");

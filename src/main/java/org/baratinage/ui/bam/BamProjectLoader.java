@@ -30,7 +30,7 @@ public class BamProjectLoader {
     };
     static final private ProgressFrame bamProjectLoadingFrame = new ProgressFrame();
     static final private List<BamItem> bamProjectBamItemsToLoad = new ArrayList<>();
-    static final private List<BamConfigRecord> bamProjectBamItemsToLoadConfig = new ArrayList<>();
+    static final private List<BamConfig> bamProjectBamItemsToLoadConfig = new ArrayList<>();
     static private int bamProjectLoadingProgress = -1;
 
     private static void load(JSONObject json, File sourceFile, Consumer<BamProject> onLoaded) {
@@ -95,7 +95,7 @@ public class BamProjectLoader {
                 item.bamItemDescriptionField.setText(bamItemJson.getString("description"));
 
                 bamProjectBamItemsToLoad.add(item);
-                bamProjectBamItemsToLoadConfig.add(new BamConfigRecord(bamItemJson.getJSONObject("config")));
+                bamProjectBamItemsToLoadConfig.add(new BamConfig(bamItemJson.getJSONObject("config")));
             }
         });
 
@@ -151,7 +151,7 @@ public class BamProjectLoader {
             return;
         }
 
-        BamConfigRecord config = bamProjectBamItemsToLoadConfig.get(bamProjectLoadingProgress);
+        BamConfig config = bamProjectBamItemsToLoadConfig.get(bamProjectLoadingProgress);
         BamItem item = bamProjectBamItemsToLoad.get(bamProjectLoadingProgress);
 
         ConsoleLogger.log("Loading item " + item);

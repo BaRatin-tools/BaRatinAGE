@@ -28,7 +28,7 @@ public class BamItemParent extends RowColPanel {
     // private final String errorMessagesKey = Misc.getTimeStampedId();
 
     private String bamItemBackupId = null;
-    private BamConfigRecord bamItemBackup = null;
+    private BamConfig bamItemBackup = null;
 
     private BamItemList allItems = new BamItemList();
     private BamItem currentBamItem = null;
@@ -207,9 +207,9 @@ public class BamItemParent extends RowColPanel {
             return;
         }
 
-        BamConfigRecord currentBamItemBackup = currentBamItem.save(false);
-        JSONObject backupFiltered = bamItemBackup.jsonObject();
-        JSONObject currentFiltered = currentBamItemBackup.jsonObject();
+        BamConfig currentBamItemBackup = currentBamItem.save(false);
+        JSONObject backupFiltered = bamItemBackup.JSON;
+        JSONObject currentFiltered = currentBamItemBackup.JSON;
         if (filter != null) {
             backupFiltered = filter.apply(backupFiltered);
             currentFiltered = filter.apply(currentFiltered);
@@ -236,7 +236,7 @@ public class BamItemParent extends RowColPanel {
             json.put("bamItemId", currentBamItem.ID);
         }
         if (bamItemBackup != null) {
-            json.put("bamItemBackup", BamConfigRecord.toJSON(bamItemBackup));
+            json.put("bamItemBackup", bamItemBackup.JSON);
             json.put("bamItemBackupId", bamItemBackupId);
         }
         return json;
@@ -248,7 +248,11 @@ public class BamItemParent extends RowColPanel {
             setCurrentBamItem(bamItemId);
         }
         if (json.has("bamItemBackup")) {
-            bamItemBackup = BamConfigRecord.fromJSON(json.getJSONObject("bamItemBackup"));
+            JSONObject backupJson = json.getJSONObject("bamItemBackup");
+            bamItemBackup = new BamConfig(backupJson);
+            if (bamItemBackup.VERSION < 0) {
+                bamItemBackup = new BamConfig(backupJson.getJSONObject("jsonObject"));
+            }
             bamItemBackupId = json.getString("bamItemBackupId");
         }
     }

@@ -11,7 +11,6 @@ import org.baratinage.jbam.Parameter;
 import org.baratinage.translation.T;
 import org.baratinage.ui.bam.BamItem;
 import org.baratinage.ui.bam.BamConfig;
-import org.baratinage.ui.bam.BamConfigRecord;
 import org.baratinage.ui.bam.BamItemType;
 import org.baratinage.ui.bam.IModelDefinition;
 import org.baratinage.ui.bam.IPriors;
@@ -236,7 +235,7 @@ public class HydraulicConfiguration
     }
 
     @Override
-    public BamConfigRecord save(boolean writeFiles) {
+    public BamConfig save(boolean writeFiles) {
         JSONObject json = new JSONObject();
 
         // **********************************************************
@@ -254,15 +253,15 @@ public class HydraulicConfiguration
         json.put("priorRatingCurve", priorRatingCurveConfig.JSON);
         if (priorRatingCurveConfig.FILE_PATHS.size() > 0) {
             String bamRunZipPath = priorRatingCurveConfig.FILE_PATHS.get(0);
-            return new BamConfigRecord(json, bamRunZipPath);
+            return new BamConfig(json, bamRunZipPath);
         }
-        return new BamConfigRecord(json);
+        return new BamConfig(json);
     }
 
     @Override
-    public void load(BamConfigRecord bamItemBackup) {
+    public void load(BamConfig config) {
 
-        JSONObject json = bamItemBackup.jsonObject();
+        JSONObject json = config.JSON;
 
         // **********************************************************
         // Control matrix

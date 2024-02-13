@@ -3,7 +3,7 @@ package org.baratinage.ui.baratin.baratin_bac;
 import javax.swing.JLabel;
 
 import org.baratinage.jbam.Parameter;
-import org.baratinage.ui.bam.BamConfigRecord;
+import org.baratinage.ui.bam.BamConfig;
 import org.baratinage.ui.bam.BamItem;
 import org.baratinage.ui.bam.BamItemType;
 import org.baratinage.ui.bam.IModelDefinition;
@@ -63,13 +63,13 @@ public class HydraulicConfigurationBAC extends BamItem
     }
 
     @Override
-    public BamConfigRecord save(boolean writeFiles) {
+    public BamConfig save(boolean writeFiles) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'save'");
     }
 
     @Override
-    public void load(BamConfigRecord bamItemBackup) {
+    public void load(BamConfig config) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'load'");
     }

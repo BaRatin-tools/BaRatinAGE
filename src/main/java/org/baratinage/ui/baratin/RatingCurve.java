@@ -29,7 +29,7 @@ import org.baratinage.jbam.utils.BamFilesHelpers;
 import org.baratinage.translation.T;
 
 import org.baratinage.ui.bam.BamItem;
-import org.baratinage.ui.bam.BamConfigRecord;
+import org.baratinage.ui.bam.BamConfig;
 import org.baratinage.ui.bam.BamItemType;
 import org.baratinage.ui.bam.BamProjectLoader;
 import org.baratinage.ui.bam.BamItemParent;
@@ -90,7 +90,7 @@ public class RatingCurve extends BamItem implements IPredictionMaster, ICalibrat
 
     private RunConfigAndRes bamRunConfigAndRes;
 
-    private BamConfigRecord backup;
+    private BamConfig backup;
 
     public RatingCurve(String uuid, BaratinProject project) {
         super(BamItemType.RATING_CURVE, uuid, project);
@@ -237,9 +237,9 @@ public class RatingCurve extends BamItem implements IPredictionMaster, ICalibrat
         HydraulicConfiguration currentHydraulicConfig = (HydraulicConfiguration) hydrauConfParent.getCurrentBamItem();
 
         if (currentHydraulicConfig != null) {
-            BamConfigRecord record = currentHydraulicConfig.save(false);
-            if (record.jsonObject().has("stageGridConfig")) {
-                ratingCurveStageGrid.fromJSON(record.jsonObject().getJSONObject("stageGridConfig"));
+            BamConfig config = currentHydraulicConfig.save(false);
+            if (config.JSON.has("stageGridConfig")) {
+                ratingCurveStageGrid.fromJSON(config.JSON.getJSONObject("stageGridConfig"));
             }
         }
 
@@ -306,7 +306,7 @@ public class RatingCurve extends BamItem implements IPredictionMaster, ICalibrat
         if (backup == null) {
             return true;
         }
-        JSONObject jsonBackup = backup.jsonObject();
+        JSONObject jsonBackup = backup.JSON;
         if (!jsonBackup.has("stageGridConfig")) {
             return false;
         }
@@ -346,7 +346,7 @@ public class RatingCurve extends BamItem implements IPredictionMaster, ICalibrat
             MsgPanel errorMsg = new MsgPanel(MsgPanel.TYPE.ERROR, true);
             JButton cancelChangeButton = new JButton();
             cancelChangeButton.addActionListener((e) -> {
-                JSONObject json = backup.jsonObject();
+                JSONObject json = backup.JSON;
                 JSONObject stageGridJson = json.getJSONObject("stageGridConfig");
                 ratingCurveStageGrid.fromJSON(stageGridJson);
 
@@ -380,7 +380,7 @@ public class RatingCurve extends BamItem implements IPredictionMaster, ICalibrat
     }
 
     @Override
-    public BamConfigRecord save(boolean writeFiles) {
+    public BamConfig save(boolean writeFiles) {
 
         JSONObject json = new JSONObject();
 
@@ -392,9 +392,6 @@ public class RatingCurve extends BamItem implements IPredictionMaster, ICalibrat
         // Stage grid configuration
 
         JSONObject stageGridConfigJson = ratingCurveStageGrid.toJSON();
-
-        json.put("stageGridConfig", stageGridConfigJson);
-
         json.put("stageGridConfig", stageGridConfigJson);
 
         // **********************************************************
@@ -406,16 +403,16 @@ public class RatingCurve extends BamItem implements IPredictionMaster, ICalibrat
         }
 
         if (backup != null) {
-            json.put("backup", BamConfigRecord.toJSON(backup));
+            json.put("backup", backup.JSON);
         }
 
-        return zipPath == null ? new BamConfigRecord(json) : new BamConfigRecord(json, zipPath);
+        return zipPath == null ? new BamConfig(json) : new BamConfig(json, zipPath);
     }
 
     @Override
-    public void load(BamConfigRecord bamItemBackup) {
+    public void load(BamConfig config) {
 
-        JSONObject json = bamItemBackup.jsonObject();
+        JSONObject json = config.JSON;
 
         if (json.has("hydrauConfig")) {
             hydrauConfParent.fromJSON(json.getJSONObject("hydrauConfig"));
@@ -456,7 +453,7 @@ public class RatingCurve extends BamItem implements IPredictionMaster, ICalibrat
 
         if (json.has("backup")) {
             JSONObject backupJson = json.getJSONObject("backup");
-            backup = BamConfigRecord.fromJSON(backupJson);
+            backup = new BamConfig(backupJson);
 
         } else {
             ConsoleLogger.log("missing 'backup'");

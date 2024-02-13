@@ -15,7 +15,7 @@ import org.baratinage.jbam.PredictionOutput;
 import org.baratinage.jbam.PredictionResult;
 import org.baratinage.jbam.PredictionState;
 import org.baratinage.ui.bam.BamItem;
-import org.baratinage.ui.bam.BamConfigRecord;
+import org.baratinage.ui.bam.BamConfig;
 import org.baratinage.ui.bam.BamItemParent;
 import org.baratinage.ui.bam.BamItemType;
 import org.baratinage.ui.bam.BamProjectLoader;
@@ -52,7 +52,7 @@ public class Hydrograph extends BamItem implements IPredictionMaster {
     private Limnigraph currentLimnigraph;
     private RunConfigAndRes currentConfigAndRes;
 
-    private BamConfigRecord backup;
+    private BamConfig backup;
 
     private ExtraDataset extraData;
 
@@ -181,7 +181,7 @@ public class Hydrograph extends BamItem implements IPredictionMaster {
     }
 
     @Override
-    public BamConfigRecord save(boolean writeFiles) {
+    public BamConfig save(boolean writeFiles) {
 
         JSONObject json = new JSONObject();
 
@@ -203,23 +203,23 @@ public class Hydrograph extends BamItem implements IPredictionMaster {
         }
 
         if (backup != null) {
-            json.put("backup", BamConfigRecord.toJSON(backup));
+            json.put("backup", backup.JSON); // FIXME: check
         }
 
-        BamConfigRecord rec = new BamConfigRecord(json);
+        BamConfig config = new BamConfig(json);
         if (zipPath != null) {
-            rec = rec.addPaths(zipPath);
+            config.FILE_PATHS.add(zipPath);
         }
         if (extraDataPath != null) {
-            rec = rec.addPaths(extraDataPath);
+            config.FILE_PATHS.add(extraDataPath);
         }
-        return rec;
+        return config;
     }
 
     @Override
-    public void load(BamConfigRecord bamItemBackup) {
+    public void load(BamConfig config) {
 
-        JSONObject json = bamItemBackup.jsonObject();
+        JSONObject json = config.JSON;
 
         if (json.has("ratingCurve")) {
             JSONObject o = json.getJSONObject("ratingCurve");
@@ -252,7 +252,7 @@ public class Hydrograph extends BamItem implements IPredictionMaster {
 
         if (json.has("backup")) {
             JSONObject backupJson = json.getJSONObject("backup");
-            backup = BamConfigRecord.fromJSON(backupJson);
+            backup = new BamConfig(backupJson);
 
         } else {
             ConsoleLogger.log("missing 'backup'");

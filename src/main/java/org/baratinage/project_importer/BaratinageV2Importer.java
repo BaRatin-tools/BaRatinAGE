@@ -15,7 +15,7 @@ import org.baratinage.jbam.Distribution;
 import org.baratinage.jbam.DistributionType;
 import org.baratinage.jbam.Parameter;
 import org.baratinage.translation.T;
-import org.baratinage.ui.bam.BamConfigRecord;
+import org.baratinage.ui.bam.BamConfig;
 import org.baratinage.ui.bam.BamItem;
 import org.baratinage.ui.bam.BamItemType;
 import org.baratinage.ui.bam.BamProject;
@@ -249,7 +249,7 @@ public class BaratinageV2Importer implements IProjectImporter {
         // > backup
         // *ignored*
 
-        bamItem.load(new BamConfigRecord(json));
+        bamItem.load(new BamConfig(json));
 
         Hydrograph h = (Hydrograph) bamItem;
         h.runBam.description = String.format("<html><b>%s</b> %s</html>",
@@ -329,7 +329,7 @@ public class BaratinageV2Importer implements IProjectImporter {
 
         json.put("limniDataset", limniDataset);
 
-        bamItem.load(new BamConfigRecord(json));
+        bamItem.load(new BamConfig(json));
 
         onDone.run();
     }
@@ -384,9 +384,9 @@ public class BaratinageV2Importer implements IProjectImporter {
         json.put("stageGridConfig", stageGridConfig);
 
         // > bamRunId && > backup
-        bamItem.load(new BamConfigRecord(json));
+        bamItem.load(new BamConfig(json));
 
-        bamItem.load(new BamConfigRecord(json));
+        bamItem.load(new BamConfig(json));
 
         RatingCurve rc = (RatingCurve) bamItem;
         rc.runBam.description = String.format("<html><b>%s</b> %s</html>",
@@ -423,7 +423,7 @@ public class BaratinageV2Importer implements IProjectImporter {
         json.put("strucErrModelPanels", strucErrModelPanels);
 
         bamItem.bamItemNameField.setText(name);
-        bamItem.load(new BamConfigRecord(json));
+        bamItem.load(new BamConfig(json));
         return bamItem.ID;
     }
 
@@ -479,7 +479,7 @@ public class BaratinageV2Importer implements IProjectImporter {
         JSONObject json = new JSONObject();
         json.put("gaugingDataset", gaugingDataset);
 
-        bamItem.load(new BamConfigRecord(json));
+        bamItem.load(new BamConfig(json));
 
         onDone.run();
     }
@@ -561,7 +561,7 @@ public class BaratinageV2Importer implements IProjectImporter {
         // *ignored*
 
         // bamRunId
-        bamItem.load(new BamConfigRecord(json));
+        bamItem.load(new BamConfig(json));
 
         HydraulicConfiguration hc = (HydraulicConfiguration) bamItem;
         hc.runBam.description = String.format("<html><b>%s</b> %s</html>",

@@ -39,7 +39,7 @@ public abstract class BamProject extends RowColPanel {
     protected final SplitContainer content;
     protected final RowColPanel currentPanel;
 
-    private BamConfigRecord lastSavedConfigRecord;
+    private BamConfig lastSavedConfig;
     private boolean unsavedChanges = false;
 
     public BamProject(BamProjectType projectType) {
@@ -69,18 +69,18 @@ public abstract class BamProject extends RowColPanel {
         content.setResizeWeight(0);
 
         // inialialize last save record
-        lastSavedConfigRecord = null;
+        lastSavedConfig = null;
     }
 
     public boolean checkUnsavedChange() {
-        if (lastSavedConfigRecord == null) {
+        if (lastSavedConfig == null) {
             unsavedChanges = true;
             return true;
         }
-        BamConfigRecord currentConfigRecord = save(false);
+        BamConfig currentConfig = save(false);
         JSONFilter filter = new JSONFilter(true, true, "selectedItemId");
-        JSONObject curr = filter.apply(BamConfigRecord.toJSON(currentConfigRecord));
-        JSONObject saved = filter.apply(BamConfigRecord.toJSON(lastSavedConfigRecord));
+        JSONObject curr = filter.apply(currentConfig.JSON);
+        JSONObject saved = filter.apply(lastSavedConfig.JSON);
         JSONCompareResult compareRes = JSONCompare.compare(curr, saved);
         if (!compareRes.matching() != unsavedChanges) {
             unsavedChanges = !compareRes.matching();
@@ -94,7 +94,7 @@ public abstract class BamProject extends RowColPanel {
     }
 
     private void createProjectBackupConfigRecord() {
-        lastSavedConfigRecord = save(false);
+        lastSavedConfig = save(false);
     }
 
     private void setupExplorer() {
@@ -222,11 +222,11 @@ public abstract class BamProject extends RowColPanel {
         return null;
     }
 
-    private BamConfigRecord save() {
+    private BamConfig save() {
         return save(true);
     }
 
-    private BamConfigRecord save(boolean writeToFile) {
+    private BamConfig save(boolean writeToFile) {
         JSONObject json = new JSONObject();
         List<String> files = new ArrayList<>();
         JSONArray bamItemsJson = new JSONArray();
@@ -234,15 +234,15 @@ public abstract class BamProject extends RowColPanel {
         int n = bamItemList.size();
         for (int k = 0; k < n; k++) {
             BamItem item = bamItemList.get(k);
-            BamConfigRecord itemConfig = item.save(writeToFile);
+            BamConfig itemConfig = item.save(writeToFile);
             JSONObject bamItemJson = new JSONObject();
             bamItemJson.put("id", item.ID);
             bamItemJson.put("type", item.TYPE.toString());
             bamItemJson.put("name", item.bamItemNameField.getText());
             bamItemJson.put("description", item.bamItemDescriptionField.getText());
-            bamItemJson.put("config", itemConfig.jsonObject());
+            bamItemJson.put("config", itemConfig.JSON);
             bamItemsJson.put(k, bamItemJson);
-            for (String file : itemConfig.filePaths()) {
+            for (String file : itemConfig.FILE_PATHS) {
                 files.add(file);
             }
         }
@@ -253,8 +253,8 @@ public abstract class BamProject extends RowColPanel {
         if (exItem != null) {
             json.put("selectedItemId", exItem.id);
         }
-
-        return new BamConfigRecord(json, files.toArray(new String[files.size()]));
+        BamConfig projectConfig = new BamConfig(json, files);
+        return projectConfig;
     }
 
     // needs to return the item in the order in wich they must be loaded
@@ -266,8 +266,9 @@ public abstract class BamProject extends RowColPanel {
         String mainConfigFilePath = Path.of(AppSetup.PATH_APP_TEMP_DIR,
                 "main_config.json").toString();
 
-        BamConfigRecord bamConfig = save().addPaths(mainConfigFilePath);
-        JSONObject json = bamConfig.jsonObject();
+        BamConfig bamConfig = save();
+        bamConfig.FILE_PATHS.add(mainConfigFilePath);
+        JSONObject json = bamConfig.JSON;
 
         String mainJsonString = json.toString(4);
         File mainConfigFile = new File(mainConfigFilePath);
@@ -280,9 +281,7 @@ public abstract class BamProject extends RowColPanel {
             return;
         }
 
-        String[] filePaths = bamConfig.filePaths();
-
-        boolean success = ReadWriteZip.flatZip(saveFilePath, filePaths);
+        boolean success = ReadWriteZip.flatZip(saveFilePath, bamConfig.FILE_PATHS);
         if (success) {
             ConsoleLogger.log("project saved!");
         } else {

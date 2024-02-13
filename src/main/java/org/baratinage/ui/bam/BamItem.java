@@ -105,9 +105,9 @@ abstract public class BamItem extends GridPanel {
         this.contentPanel.appendChild(component);
     }
 
-    public abstract BamConfigRecord save(boolean writeFiles);
+    public abstract BamConfig save(boolean writeFiles);
 
-    public abstract void load(BamConfigRecord bamItemBackup);
+    public abstract void load(BamConfig config);
 
     @Override
     public String toString() {
