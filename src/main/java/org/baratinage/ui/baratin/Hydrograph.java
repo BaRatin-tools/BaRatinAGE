@@ -48,11 +48,8 @@ public class Hydrograph extends BamItem implements IPredictionMaster {
     private final BamItemParent ratingCurveParent;
     private final BamItemParent limnigraphParent;
 
-    // private RatingCurve currentRatingCurve;
     private Limnigraph currentLimnigraph;
     private RunConfigAndRes currentConfigAndRes;
-
-    private BamConfig backup;
 
     private ExtraDataset extraData;
 
@@ -85,7 +82,6 @@ public class Hydrograph extends BamItem implements IPredictionMaster {
             extraData = new ExtraDataset(
                     currentLimnigraph.getDateTimeExtraData(),
                     currentLimnigraph.getMissingValuesExtraData());
-            backup = save(true);
             currentConfigAndRes = res;
             buildPlot();
             ratingCurveParent.updateBackup();
@@ -202,10 +198,6 @@ public class Hydrograph extends BamItem implements IPredictionMaster {
             }
         }
 
-        if (backup != null) {
-            config.JSON.put("backup", backup.JSON); // FIXME: check
-        }
-
         return config;
     }
 
@@ -241,14 +233,6 @@ public class Hydrograph extends BamItem implements IPredictionMaster {
             });
         } else {
             ConsoleLogger.log("missing 'bamRunId'");
-        }
-
-        if (json.has("backup")) {
-            JSONObject backupJson = json.getJSONObject("backup");
-            backup = new BamConfig(backupJson);
-
-        } else {
-            ConsoleLogger.log("missing 'backup'");
         }
 
         TimedActions.throttle(ID, AppSetup.CONFIG.THROTTLED_DELAY_MS, this::checkSync);
