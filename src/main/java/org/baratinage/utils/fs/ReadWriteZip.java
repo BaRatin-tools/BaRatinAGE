@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
@@ -53,6 +54,10 @@ public class ReadWriteZip {
                 }
             }
         }
+    }
+
+    static public boolean flatZip(String zipFilePath, List<String> sourceDirs) {
+        return flatZip(zipFilePath, sourceDirs.toArray(new String[sourceDirs.size()]));
     }
 
     static public boolean flatZip(String zipFilePath, String... sourceDirs) {
