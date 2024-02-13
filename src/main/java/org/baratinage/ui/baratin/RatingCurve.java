@@ -110,6 +110,7 @@ public class RatingCurve extends BamItem implements IPredictionMaster, ICalibrat
                 "bamRunId",
                 "backup",
                 "jsonStringBackup",
+                "priorRatingCurve",
                 "stageGridConfig",
                 "allControlOptions",
                 "controlTypeIndex",
@@ -454,7 +455,9 @@ public class RatingCurve extends BamItem implements IPredictionMaster, ICalibrat
         if (json.has("backup")) {
             JSONObject backupJson = json.getJSONObject("backup");
             backup = new BamConfig(backupJson);
-
+            if (backup.VERSION == -1) {
+                backup = new BamConfig(backupJson.getJSONObject("jsonObject"));
+            }
         } else {
             ConsoleLogger.log("missing 'backup'");
         }
