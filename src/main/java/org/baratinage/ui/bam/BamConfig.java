@@ -15,12 +15,14 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class BamConfig {
+    public final int VERSION;
     public final List<String> FILE_PATHS;
     public final JSONObject JSON;
 
     public BamConfig() {
         FILE_PATHS = new ArrayList<>();
         JSON = new JSONObject();
+        VERSION = 0;
     }
 
     private static <A> JSONArray toJSONArray(A[] objects, Function<A, JSONObject> transformer) {
