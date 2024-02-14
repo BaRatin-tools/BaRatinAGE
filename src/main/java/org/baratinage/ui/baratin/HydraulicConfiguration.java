@@ -1,29 +1,29 @@
 package org.baratinage.ui.baratin;
 
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
-
 import javax.swing.ImageIcon;
 
 import org.baratinage.AppSetup;
 import org.baratinage.jbam.Parameter;
 import org.baratinage.translation.T;
+
 import org.baratinage.ui.bam.BamItem;
 import org.baratinage.ui.bam.BamConfig;
 import org.baratinage.ui.bam.BamItemType;
 import org.baratinage.ui.bam.IModelDefinition;
 import org.baratinage.ui.bam.IPriors;
 import org.baratinage.ui.bam.RunBam;
+
 import org.baratinage.ui.baratin.hydraulic_configuration.PriorRatingCurve;
 import org.baratinage.ui.baratin.hydraulic_control.ControlMatrix;
 import org.baratinage.ui.baratin.hydraulic_control.HydraulicControlPanels;
-import org.baratinage.ui.container.SplitContainer;
-import org.baratinage.ui.container.TabContainer;
+
 import org.baratinage.ui.container.TitledPanel;
+import org.baratinage.ui.container.TitledPanelSplitTabContainer;
+
 import org.baratinage.utils.ConsoleLogger;
 import org.baratinage.utils.Misc;
 import org.baratinage.utils.json.JSONFilter;
-import org.baratinage.utils.perf.TimedActions;
+
 import org.json.JSONObject;
 
 public class HydraulicConfiguration
@@ -37,8 +37,6 @@ public class HydraulicConfiguration
     private final HydraulicControlPanels hydraulicControls;
 
     private final PriorRatingCurve<HydraulicConfiguration> priorRatingCurve;
-
-    private boolean isTabView = false;
 
     public final RunBam runBam;
 
@@ -84,18 +82,12 @@ public class HydraulicConfiguration
         priorRatingCurveTitledPanel = new TitledPanel(priorRatingCurve);
         priorRatingCurveTitledPanel.setIcon(priorRatingCurveIcon);
 
-        // mainContainerTab = new TabContainer();
-
-        addComponentListener(new ComponentAdapter() {
-            public void componentResized(ComponentEvent e) {
-                TimedActions.throttle(
-                        "hydraulic_config_resize_action",
-                        250,
-                        HydraulicConfiguration.this::setPanelView);
-            }
-        });
-
-        setSplitPaneView();
+        TitledPanelSplitTabContainer mainContainer = TitledPanelSplitTabContainer.build2Left1Right(this,
+                controlMatrixTitledPanel,
+                priorRatingCurveTitledPanel,
+                hydraulicControlsTitledPanel);
+        mainContainer.setBreakpoints(1100, 800);
+        setContent(mainContainer);
 
         boolean[][] mat = controlMatrix.getControlMatrix();
         hydraulicControls.setHydraulicControls(mat.length);
@@ -110,47 +102,6 @@ public class HydraulicConfiguration
             priorRatingCurveTitledPanel.setText(T.html("prior_rating_curve"));
         });
 
-    }
-
-    private void setPanelView() {
-        int panelWidth = getWidth();
-        int panelHeight = getHeight();
-        ConsoleLogger.log("panel size is : " + panelWidth + " x " + panelHeight);
-        if (panelWidth == 0 || panelHeight == 0) {
-            return;
-        }
-        if (panelWidth < 1100 || panelHeight < 800) {
-            if (!isTabView) {
-                setTabView();
-            }
-            isTabView = true;
-        } else {
-            if (isTabView) {
-                setSplitPaneView();
-            }
-            isTabView = false;
-        }
-    }
-
-    private void setSplitPaneView() {
-        SplitContainer mainContainer = SplitContainer.build2Left1RightSplitContainer(
-                controlMatrixTitledPanel.getTitledPanel(),
-                priorRatingCurveTitledPanel.getTitledPanel(),
-                hydraulicControlsTitledPanel.getTitledPanel());
-        setContent(mainContainer);
-        T.updateTranslation(this);
-        updateUI();
-    }
-
-    private void setTabView() {
-        TabContainer mainContainerTab = new TabContainer();
-        mainContainerTab.removeAll();
-        mainContainerTab.addTab(controlMatrixTitledPanel);
-        mainContainerTab.addTab(hydraulicControlsTitledPanel);
-        mainContainerTab.addTab(priorRatingCurveTitledPanel);
-        setContent(mainContainerTab);
-        T.updateTranslation(this);
-        updateUI();
     }
 
     @Override
