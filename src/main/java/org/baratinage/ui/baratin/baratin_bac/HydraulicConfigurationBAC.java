@@ -132,16 +132,9 @@ public class HydraulicConfigurationBAC extends BamItem
     }
 
     @Override
-    public String[] getParameterNames() {
-        Parameter[] parameters = getParameters();
-        if (parameters == null) {
-            return null;
-        }
-        String[] parameterNames = new String[parameters.length];
-        for (int k = 0; k < parameters.length; k++) {
-            parameterNames[k] = parameters[k].name;
-        }
-        return parameterNames;
+    public int getNumberOfParameters() {
+        int nCtrl = controlMatrix.getNumberOfControls();
+        return nCtrl * 3;
     }
 
     @Override

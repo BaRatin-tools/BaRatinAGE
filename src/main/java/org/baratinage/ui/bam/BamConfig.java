@@ -75,7 +75,7 @@ public class BamConfig {
         json.put("modelId", modelDefinition.getModelId());
         json.put("inputNames", toJSONArray(modelDefinition.getInputNames()));
         json.put("outputNames", toJSONArray(modelDefinition.getOutputNames()));
-        json.put("parameterNames", toJSONArray(modelDefinition.getParameterNames()));
+        json.put("nParameters", modelDefinition.getNumberOfParameters());
         json.put("xTra", modelDefinition.getXtra(""));
         return json;
     }

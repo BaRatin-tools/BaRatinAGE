@@ -125,8 +125,8 @@ public class RunBam {
         if (bamModelDef == null) {
             return false;
         }
-        String[] parNames = bamModelDef.getParameterNames();
-        if (parNames == null) {
+        int nPar = bamModelDef.getNumberOfParameters();
+        if (nPar < 0) {
             return false;
         }
         String[] outputNames = bamModelDef.getOutputNames();
@@ -149,8 +149,8 @@ public class RunBam {
         if (pars == null) {
             return false;
         }
-        String[] parNames = bamModelDef.getParameterNames();
-        if (parNames.length != pars.length) {
+        int nPar = bamModelDef.getNumberOfParameters();
+        if (nPar != pars.length) {
             ConsoleLogger.error(
                     "RunPanel Error: number of parameters of bamPriors doesn't match expected number of parameters");
             return false;
