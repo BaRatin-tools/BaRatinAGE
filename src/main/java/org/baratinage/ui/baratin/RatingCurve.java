@@ -259,7 +259,12 @@ public class RatingCurve extends BamItem implements IPredictionMaster, ICalibrat
 
     @Override
     public CalibrationConfig getCalibrationConfig() {
-        HydraulicConfiguration hc = (HydraulicConfiguration) hydrauConfParent.getCurrentBamItem();
+        BamItem hc = hydrauConfParent.getCurrentBamItem();
+        if (hc == null || !(hc instanceof IModelDefinition) || !(hc instanceof IPriors)) {
+            return null;
+        }
+        IModelDefinition modelDef = (IModelDefinition) hc;
+        IPriors priors = (IPriors) hc;
         Gaugings g = (Gaugings) gaugingsParent.getCurrentBamItem();
         StructuralErrorModelBamItem se = (StructuralErrorModelBamItem) structErrorParent.getCurrentBamItem();
         if (hc == null || g == null || se == null) {
@@ -268,14 +273,14 @@ public class RatingCurve extends BamItem implements IPredictionMaster, ICalibrat
 
         Model model = new Model(
                 BamFilesHelpers.CONFIG_MODEL,
-                hc.getModelId(),
-                hc.getInputNames().length,
-                hc.getOutputNames().length,
-                hc.getParameters(),
-                hc.getXtra(AppSetup.PATH_BAM_WORKSPACE_DIR),
+                modelDef.getModelId(),
+                modelDef.getInputNames().length,
+                modelDef.getOutputNames().length,
+                priors.getParameters(),
+                modelDef.getXtra(AppSetup.PATH_BAM_WORKSPACE_DIR),
                 BamFilesHelpers.CONFIG_XTRA);
 
-        String[] outputNames = hc.getOutputNames();
+        String[] outputNames = modelDef.getOutputNames();
         ModelOutput[] modelOutputs = new ModelOutput[outputNames.length];
         StructuralErrorModel[] structErrModels = se.getStructuralErrorModels();
         for (int k = 0; k < outputNames.length; k++) {
