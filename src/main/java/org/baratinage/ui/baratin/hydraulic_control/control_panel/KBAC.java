@@ -6,9 +6,9 @@ import org.baratinage.ui.commons.ParameterPriorDist;
 import org.baratinage.ui.component.SvgIcon;
 import org.baratinage.translation.T;
 
-public class KAC extends PriorControlPanel {
+public class KBAC extends PriorControlPanel {
 
-    public final ParameterPriorDist k;
+    public final ParameterPriorDist kb;
     public final ParameterPriorDist a;
     public final ParameterPriorDist c;
 
@@ -21,13 +21,13 @@ public class KAC extends PriorControlPanel {
     private static final SvgIcon coefficientIcon = AppSetup.ICONS
             .getCustomAppImageIcon("coefficient.svg");
 
-    public KAC() {
+    public KBAC(boolean kMode) {
         super(
                 3, "Q=a(h-b)<sup>c</sup> (h>k)");
 
-        k = new ParameterPriorDist("k");
-        k.setIcon(activationHeightIcon);
-        k.setSymbolUnitLabels("k", "m");
+        kb = new ParameterPriorDist("k");
+        kb.setIcon(activationHeightIcon);
+        kb.setSymbolUnitLabels(kMode ? "k" : "b", "m");
 
         a = new ParameterPriorDist("a");
         a.setIcon(coefficientIcon);
@@ -37,7 +37,7 @@ public class KAC extends PriorControlPanel {
         c.setIcon(exponentIcon);
         c.setSymbolUnitLabels("c", "-");
 
-        addParameter(k);
+        addParameter(kb);
         addParameter(a);
         addParameter(c);
 
@@ -54,16 +54,16 @@ public class KAC extends PriorControlPanel {
         a.distributionField.setParameters(mean, std);
     }
 
-    public void setFromKACGaussianConfig(KACGaussianConfig kacCongig) {
-        k.distributionField.setDistributionType(DistributionType.GAUSSIAN);
-        k.distributionField.setParameters(kacCongig.kMean(), kacCongig.kStd());
-        k.initialGuessField.setValue(kacCongig.kMean());
+    public void setFromKACGaussianConfig(KACGaussianConfig kbacCongig) { // FIXME: rename method and parameter
+        kb.distributionField.setDistributionType(DistributionType.GAUSSIAN);
+        kb.distributionField.setParameters(kbacCongig.kMean(), kbacCongig.kStd());
+        kb.initialGuessField.setValue(kbacCongig.kMean());
         a.distributionField.setDistributionType(DistributionType.GAUSSIAN);
-        a.distributionField.setParameters(kacCongig.aMean(), kacCongig.aStd());
-        a.initialGuessField.setValue(kacCongig.aMean());
+        a.distributionField.setParameters(kbacCongig.aMean(), kbacCongig.aStd());
+        a.initialGuessField.setValue(kbacCongig.aMean());
         c.distributionField.setDistributionType(DistributionType.GAUSSIAN);
-        c.distributionField.setParameters(kacCongig.cMean(), kacCongig.cStd());
-        c.initialGuessField.setValue(kacCongig.cMean());
+        c.distributionField.setParameters(kbacCongig.cMean(), kbacCongig.cStd());
+        c.initialGuessField.setValue(kbacCongig.cMean());
 
         fireChangeListeners();
     }

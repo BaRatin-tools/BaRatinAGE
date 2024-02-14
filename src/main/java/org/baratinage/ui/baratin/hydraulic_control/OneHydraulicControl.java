@@ -16,7 +16,7 @@ import javax.swing.event.ChangeListener;
 import org.baratinage.AppSetup;
 import org.baratinage.jbam.Parameter;
 
-import org.baratinage.ui.baratin.hydraulic_control.control_panel.KAC;
+import org.baratinage.ui.baratin.hydraulic_control.control_panel.KBAC;
 import org.baratinage.ui.baratin.hydraulic_control.control_panel.PriorControlPanel;
 import org.baratinage.ui.baratin.hydraulic_control.control_panel.WeirOrifice;
 import org.baratinage.ui.baratin.hydraulic_control.control_panel.WeirParabola;
@@ -68,7 +68,7 @@ public class OneHydraulicControl extends JScrollPane {
     private final RowColPanel hydraulicControlPanel;
     private final JButton switchModeButton;
     private final SimpleComboBox controlTypeComboBox;
-    private final KAC kacControlPanel;
+    private final KBAC kbacControlPanel;
 
     private boolean kacMode = false;
     private String toKACmodeText = "to kac";
@@ -87,6 +87,10 @@ public class OneHydraulicControl extends JScrollPane {
     private final SimpleTextField descriptionField;
 
     public OneHydraulicControl(int controlNumber) {
+        this(true, controlNumber);
+    }
+
+    public OneHydraulicControl(boolean kMode, int controlNumber) {
         // super(AXIS.COL, ALIGN.START);
         super();
 
@@ -94,9 +98,9 @@ public class OneHydraulicControl extends JScrollPane {
         RowColPanel mainPanel = new RowColPanel(RowColPanel.AXIS.COL, RowColPanel.ALIGN.START);
         setViewportView(mainPanel);
 
-        kacControlPanel = new KAC();
-        kacControlPanel.setPadding(5);
-        kacControlPanel.addChangeListener((chEvt) -> {
+        kbacControlPanel = new KBAC(kMode);
+        kbacControlPanel.setPadding(5);
+        kbacControlPanel.addChangeListener((chEvt) -> {
             fireChangeListeners();
         });
 
@@ -104,34 +108,40 @@ public class OneHydraulicControl extends JScrollPane {
         allControlOptions.add(
                 new HydraulicControlOption(
                         "rectangular_weir", rectWeirIcon,
-                        new WeirRect()));
-        allControlOptions.add(
-                new HydraulicControlOption(
-                        "triangular_weir", triangleWeirIcon,
-                        new WeirTriangle()));
-        allControlOptions.add(
-                new HydraulicControlOption(
-                        "parabola_weir", parabolaWeirIcon,
-                        new WeirParabola()));
-        allControlOptions.add(
-                new HydraulicControlOption(
-                        "orifice_weir", orificeWeirIcon,
-                        new WeirOrifice()));
+                        new WeirRect(kMode)));
+        if (kMode) {
+
+            allControlOptions.add(
+                    new HydraulicControlOption(
+                            "triangular_weir", triangleWeirIcon,
+                            new WeirTriangle()));
+            allControlOptions.add(
+                    new HydraulicControlOption(
+                            "parabola_weir", parabolaWeirIcon,
+                            new WeirParabola()));
+            allControlOptions.add(
+                    new HydraulicControlOption(
+                            "orifice_weir", orificeWeirIcon,
+                            new WeirOrifice()));
+        }
         allControlOptions.add(
                 new HydraulicControlOption(
                         "rectangular_channel",
                         rectChannelIcon,
-                        new ChannelRect()));
-        allControlOptions.add(
-                new HydraulicControlOption(
-                        "triangular_channel",
-                        triangleChannelIcon,
-                        new ChannelTriangle()));
-        allControlOptions.add(
-                new HydraulicControlOption(
-                        "parabola_channel",
-                        parabolaChannelIcon,
-                        new ChannelParabola()));
+                        new ChannelRect(kMode)));
+
+        if (kMode) {
+            allControlOptions.add(
+                    new HydraulicControlOption(
+                            "triangular_channel",
+                            triangleChannelIcon,
+                            new ChannelTriangle()));
+            allControlOptions.add(
+                    new HydraulicControlOption(
+                            "parabola_channel",
+                            parabolaChannelIcon,
+                            new ChannelParabola()));
+        }
         for (HydraulicControlOption hco : allControlOptions) {
             T.updateHierarchy(this, hco.panel);
             hco.panel.addChangeListener((ChangeEvent chEvt) -> {
@@ -217,7 +227,7 @@ public class OneHydraulicControl extends JScrollPane {
 
         mainPanel.appendChild(descriptionField, 0, 5, 5, 0, 5);
         mainPanel.appendChild(physicalParametersPanel, 0);
-        mainPanel.appendChild(kacControlPanel, 0);
+        mainPanel.appendChild(kbacControlPanel, 0);
         mainPanel.appendChild(buttonsPanel, 0);
 
         controlTypeComboBox.setSelectedItem(0);
@@ -225,7 +235,7 @@ public class OneHydraulicControl extends JScrollPane {
 
         updateMode();
 
-        T.updateHierarchy(this, kacControlPanel);
+        T.updateHierarchy(this, kbacControlPanel);
         T.t(this, physicalParLabel, false, "physical_parameters");
         T.t(this, controlParLabel, false, "resulting_control_parameters");
         T.t(this, () -> {
@@ -263,13 +273,13 @@ public class OneHydraulicControl extends JScrollPane {
 
     private void updateKACfromPhysicalControl() {
         PriorControlPanel panel = allControlOptions.get(currentPriorControlPanelIndex).panel;
-        kacControlPanel.setFromKACGaussianConfig(panel.toKACGaussianConfig());
+        kbacControlPanel.setFromKACGaussianConfig(panel.toKACGaussianConfig());
     }
 
     private void updateMode() {
         switchModeButton.setText(kacMode ? toPhysicalModeText : toKACmodeText);
         physicalParametersPanel.setVisible(!kacMode);
-        kacControlPanel.setGlobalLock(!kacMode);
+        kbacControlPanel.setGlobalLock(!kacMode);
         if (!kacMode) {
             updateKACfromPhysicalControl();
         }
@@ -293,7 +303,7 @@ public class OneHydraulicControl extends JScrollPane {
     }
 
     public Parameter[] getParameters() {
-        return kacControlPanel.getParameters();
+        return kbacControlPanel.getParameters();
     }
 
     public void fromJSON(JSONObject json) {
@@ -305,7 +315,7 @@ public class OneHydraulicControl extends JScrollPane {
             allControlOptions.get(k).panel.fromJSON(allControlOptionsJSON.getJSONArray(k));
         }
 
-        kacControlPanel.fromJSON(json.getJSONArray("kacControl"));
+        kbacControlPanel.fromJSON(json.getJSONArray("kacControl"));
         kacMode = json.getBoolean("isKACmode");
 
         if (json.has("description")) {
@@ -329,7 +339,7 @@ public class OneHydraulicControl extends JScrollPane {
 
         json.put("allControlOptions", allControlOptionsJSON);
 
-        json.put("kacControl", kacControlPanel.toJSON());
+        json.put("kacControl", kbacControlPanel.toJSON());
 
         json.put("description", descriptionField.getText());
 

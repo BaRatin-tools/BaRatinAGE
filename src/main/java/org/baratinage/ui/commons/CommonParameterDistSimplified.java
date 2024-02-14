@@ -45,6 +45,13 @@ public class CommonParameterDistSimplified {
                 return p;
         }
 
+        public static ParameterPriorDistSimplified getOffsetHeight() {
+                ParameterPriorDistSimplified p = new ParameterPriorDistSimplified();
+                p.setIcon(activationHeightIcon);
+                p.setSymbolUnitLabels("b", "m");
+                return p;
+        }
+
         public static ParameterPriorDistSimplified getExponent() {
                 ParameterPriorDistSimplified p = new ParameterPriorDistSimplified();
                 p.setIcon(exponentIcon);

@@ -25,7 +25,7 @@ public abstract class PriorControlPanel extends GridPanel implements ChangeListe
                         Double kMean, Double kStd,
                         Double aMean, Double aStd,
                         Double cMean, Double cStd) {
-        };
+        }; // FIXME: rename to KBACGaussianConfig, rename kMean and kStd
 
         private static String vAlignFixString = "<sup>&nbsp;</sup><sub>&nbsp;</sub>";
 

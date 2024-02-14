@@ -129,6 +129,7 @@ public class BaratinProject extends BamProject {
 
         return BAM_ITEMS.getOrderedCopy(
                 BamItemType.HYDRAULIC_CONFIG,
+                BamItemType.HYDRAULIC_CONFIG_BAC,
                 BamItemType.GAUGINGS,
                 BamItemType.STRUCTURAL_ERROR,
                 BamItemType.LIMNIGRAPH,

@@ -19,8 +19,14 @@ public class HydraulicControlPanels extends RowColPanel implements IPriors {
 
     private final List<OneHydraulicControl> controls;
     private final TabContainer tabs;
+    private final boolean kMode;
 
     public HydraulicControlPanels() {
+        this(true);
+    }
+
+    public HydraulicControlPanels(boolean kMode) {
+        this.kMode = kMode;
         controls = new ArrayList<>();
         tabs = new TabContainer(TabContainer.SIDE.TOP);
 
@@ -56,7 +62,7 @@ public class HydraulicControlPanels extends RowColPanel implements IPriors {
 
     private void addHydraulicControl() {
         int n = controls.size() + 1;
-        OneHydraulicControl ohc = new OneHydraulicControl(n);
+        OneHydraulicControl ohc = new OneHydraulicControl(kMode, n);
         ohc.addChangeListener((chEvt) -> {
             fireChangeListeners();
         });
@@ -96,7 +102,7 @@ public class HydraulicControlPanels extends RowColPanel implements IPriors {
             if (pars == null) {
                 return null;
             }
-            parameters[k * 3 + 0] = pars[0].getRenamedClone("k_" + k);
+            parameters[k * 3 + 0] = pars[0].getRenamedClone((kMode ? "k_" : "b_") + k);
             parameters[k * 3 + 1] = pars[1].getRenamedClone("a_" + k);
             parameters[k * 3 + 2] = pars[2].getRenamedClone("c_" + k);
         }

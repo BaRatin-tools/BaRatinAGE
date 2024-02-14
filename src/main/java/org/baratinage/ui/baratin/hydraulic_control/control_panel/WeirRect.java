@@ -8,7 +8,7 @@ import org.baratinage.translation.T;
 
 public class WeirRect extends PriorControlPanel {
 
-    private final ParameterPriorDistSimplified activationHeight;
+    private final ParameterPriorDistSimplified kb;
     private final ParameterPriorDistSimplified weirCoef;
     private final ParameterPriorDistSimplified width;
     private final ParameterPriorDistSimplified gravity;
@@ -18,11 +18,16 @@ public class WeirRect extends PriorControlPanel {
             .getCustomAppImageIcon("weir_coeff.svg");
 
     public WeirRect() {
+        this(true);
+    }
+
+    public WeirRect(boolean kMode) {
         super(
                 2,
                 "Q=C<sub>r</sub>B<sub>w</sub>(2g)<sup>1/2</sup>(h-b)<sup>c</sup>&nbsp;(h>k)");
 
-        activationHeight = CommonParameterDistSimplified.getActivationHeight();
+        kb = kMode ? CommonParameterDistSimplified.getActivationHeight()
+                : CommonParameterDistSimplified.getOffsetHeight();
         weirCoef = CommonParameterDistSimplified.getWeirCoeff("r");
         width = CommonParameterDistSimplified.getRectWidth();
         gravity = CommonParameterDistSimplified.getGravity();
@@ -31,7 +36,7 @@ public class WeirRect extends PriorControlPanel {
         exponent.setDefaultValues(1.5, 0.05);
         exponent.setLocalLock(true);
 
-        addParameter(activationHeight);
+        addParameter(kb);
         addParameter(weirCoef);
         addParameter(width);
         addParameter(gravity);
@@ -41,7 +46,7 @@ public class WeirRect extends PriorControlPanel {
             setHeaders(
                     T.html("mean_value"),
                     T.html("uncertainty_value"));
-            activationHeight.setNameLabel(T.html("activation_stage"));
+            kb.setNameLabel(kMode ? T.html("activation_stage") : "Offset"); // FIXME: i18n;
             weirCoef.setNameLabel(T.html("weir_coefficient"));
             width.setNameLabel(T.html("weir_width"));
             gravity.setNameLabel(T.html("gravity_acceleration"));
@@ -90,8 +95,8 @@ public class WeirRect extends PriorControlPanel {
 
         Double[] AGaussianConfig = toAMeanAndStd();
 
-        Double kMean = activationHeight.meanValueField.getDoubleValue();
-        Double kStd = activationHeight.uncertaintyValueField.getDoubleValue();
+        Double kMean = kb.meanValueField.getDoubleValue();
+        Double kStd = kb.uncertaintyValueField.getDoubleValue();
         Double cMean = exponent.meanValueField.getDoubleValue();
         Double cStd = exponent.uncertaintyValueField.getDoubleValue();
 

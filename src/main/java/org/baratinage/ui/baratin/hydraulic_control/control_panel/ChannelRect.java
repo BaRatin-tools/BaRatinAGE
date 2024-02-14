@@ -7,16 +7,21 @@ import org.baratinage.translation.T;
 
 public class ChannelRect extends PriorControlPanel {
 
-    private final ParameterPriorDistSimplified activationHeight;
+    private final ParameterPriorDistSimplified kb;
     private final ParameterPriorDistSimplified stricklerCoef;
     private final ParameterPriorDistSimplified width;
     private final ParameterPriorDistSimplified slope;
     private final ParameterPriorDistSimplified exponent;
 
     public ChannelRect() {
+        this(true);
+    }
+
+    public ChannelRect(boolean kMode) {
         super(2, "Q=K<sub>s</sub>B<sub>w</sub>S<sup>1/2</sup>(h-b)<sup>c</sup>&nbsp;(h>k)");
 
-        activationHeight = CommonParameterDistSimplified.getActivationHeight();
+        kb = kMode ? CommonParameterDistSimplified.getActivationHeight()
+                : CommonParameterDistSimplified.getOffsetHeight();
         stricklerCoef = CommonParameterDistSimplified.getStricklerCoeff();
         width = CommonParameterDistSimplified.getRectWidth();
         slope = CommonParameterDistSimplified.getSlope();
@@ -24,7 +29,7 @@ public class ChannelRect extends PriorControlPanel {
         exponent.setDefaultValues(1.67, 0.05);
         exponent.setLocalLock(true);
 
-        addParameter(activationHeight);
+        addParameter(kb);
         addParameter(stricklerCoef);
         addParameter(width);
         addParameter(slope);
@@ -34,7 +39,7 @@ public class ChannelRect extends PriorControlPanel {
             setHeaders(
                     T.html("mean_value"),
                     T.html("uncertainty_value"));
-            activationHeight.setNameLabel(T.html("activation_stage"));
+            kb.setNameLabel(kMode ? T.html("activation_stage") : "Offset");
             stricklerCoef.setNameLabel(T.html("strickler_coef"));
             width.setNameLabel(T.html("channel_width"));
             slope.setNameLabel(T.html("channel_slope"));
@@ -82,8 +87,8 @@ public class ChannelRect extends PriorControlPanel {
 
         Double[] AGaussianConfig = toAMeanAndStd();
 
-        Double kMean = activationHeight.meanValueField.getDoubleValue();
-        Double kStd = activationHeight.uncertaintyValueField.getDoubleValue();
+        Double kMean = kb.meanValueField.getDoubleValue();
+        Double kStd = kb.uncertaintyValueField.getDoubleValue();
         Double cMean = exponent.meanValueField.getDoubleValue();
         Double cStd = exponent.uncertaintyValueField.getDoubleValue();
 

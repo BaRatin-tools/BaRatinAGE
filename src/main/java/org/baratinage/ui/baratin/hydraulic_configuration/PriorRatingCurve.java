@@ -252,7 +252,7 @@ public class PriorRatingCurve<HCT extends IModelDefinition & IPriors> extends Ro
             config.JSON.put("bamRunId", bamRunConfigAndRes.id);
             config.FILE_PATHS.add(bamRunConfigAndRes.zipRun(true));
         }
-        if (jsonBackup == null) {
+        if (jsonBackup != null) {
             config.JSON.put("backup", jsonBackup);
         }
         return config;
