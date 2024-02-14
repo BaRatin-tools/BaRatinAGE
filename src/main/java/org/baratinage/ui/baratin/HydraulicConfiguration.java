@@ -182,7 +182,16 @@ public class HydraulicConfiguration
                     false, false,
                     "controlMatrix", "hydraulicControls");
             JSONObject priorRatingCurveJson = JSONFilter.filter(config.JSON, false, false,
-                    "stageGridConfig", "bamRunId", "backup");
+                    "stageGridConfig", "bamRunId");
+
+            JSONObject priorRatingCurveBackup = config.JSON.optJSONObject("backup");
+            if (priorRatingCurveBackup != null) {
+                // FIXME: for now, juste get rid of backup, too difficult to reconstruct
+                // The backup object to construct would need to have three components:
+                // modelDefinition, priors and stageGridConfig
+                // the first two are build from IModelDefinition and IPriors object of this
+                // FIXME: should send a warning to user, prior RC may need to be recomputed
+            }
             newJson.put("priorRatingCurve", priorRatingCurveJson);
             config = new BamConfig(0);
             for (String key : newJson.keySet()) {
