@@ -17,10 +17,9 @@ import org.baratinage.ui.bam.RunBam;
 import org.baratinage.ui.baratin.hydraulic_configuration.PriorRatingCurve;
 import org.baratinage.ui.baratin.hydraulic_control.ControlMatrix;
 import org.baratinage.ui.baratin.hydraulic_control.HydraulicControlPanels;
-import org.baratinage.ui.component.Title;
-import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.ui.container.SplitContainer;
 import org.baratinage.ui.container.TabContainer;
+import org.baratinage.ui.container.TitledPanel;
 import org.baratinage.utils.ConsoleLogger;
 import org.baratinage.utils.Misc;
 import org.baratinage.utils.json.JSONFilter;
@@ -30,17 +29,15 @@ import org.json.JSONObject;
 public class HydraulicConfiguration
         extends BamItem
         implements IModelDefinition, IPriors {
-
-    private final Title controlMatrixTitle;
-    private final Title priorRCplotTitle;
-    private final Title priorSpecificationTitle;
+    private final TitledPanel controlMatrixTitledPanel;
+    private final TitledPanel hydraulicControlsTitledPanel;
+    private final TitledPanel priorRatingCurveTitledPanel;
 
     private final ControlMatrix controlMatrix;
     private final HydraulicControlPanels hydraulicControls;
 
     private final PriorRatingCurve<HydraulicConfiguration> priorRatingCurve;
 
-    private final TabContainer mainContainerTab;
     private boolean isTabView = false;
 
     public final RunBam runBam;
@@ -62,7 +59,6 @@ public class HydraulicConfiguration
         controlMatrix = new ControlMatrix();
         controlMatrix.addChangeListener((e) -> {
             fireChangeListeners();
-            // updateHydraulicControls(controlMatrix.getControlMatrix());
             hydraulicControls.setHydraulicControls(controlMatrix.getControlMatrix().length);
         });
 
@@ -81,14 +77,14 @@ public class HydraulicConfiguration
                 250, 500,
                 150, 300);
 
-        // **********************************************************************
-        // SPECIFIC TO SPLIT PANE / TAB SYSTEM APPROACHES
+        controlMatrixTitledPanel = new TitledPanel(controlMatrix);
+        controlMatrixTitledPanel.setIcon(controlMatrixIcon);
+        hydraulicControlsTitledPanel = new TitledPanel(hydraulicControls);
+        hydraulicControlsTitledPanel.setIcon(priorSpecificationIcon);
+        priorRatingCurveTitledPanel = new TitledPanel(priorRatingCurve);
+        priorRatingCurveTitledPanel.setIcon(priorRatingCurveIcon);
 
-        controlMatrixTitle = new Title(controlMatrixIcon, "");
-        priorRCplotTitle = new Title(priorRatingCurveIcon, "");
-        priorSpecificationTitle = new Title(priorSpecificationIcon, "");
-
-        mainContainerTab = new TabContainer();
+        // mainContainerTab = new TabContainer();
 
         addComponentListener(new ComponentAdapter() {
             public void componentResized(ComponentEvent e) {
@@ -101,25 +97,17 @@ public class HydraulicConfiguration
 
         setSplitPaneView();
 
-        // **********************************************************************
-
         boolean[][] mat = controlMatrix.getControlMatrix();
         hydraulicControls.setHydraulicControls(mat.length);
-        // updateHydraulicControls(mat);
 
         T.updateHierarchy(this, controlMatrix);
         T.updateHierarchy(this, hydraulicControls);
         T.updateHierarchy(this, priorRatingCurve);
 
         T.t(this, () -> {
-            controlMatrixTitle.setText(T.html("control_matrix"));
-            priorRCplotTitle.setText(T.html("prior_rating_curve"));
-            priorSpecificationTitle.setText(T.html("prior_parameter_specification"));
-            if (mainContainerTab.getTabCount() > 2) {
-                mainContainerTab.setTitleAt(0, T.html("control_matrix"));
-                mainContainerTab.setTitleAt(1, T.html("prior_parameter_specification"));
-                mainContainerTab.setTitleAt(2, T.html("prior_rating_curve"));
-            }
+            controlMatrixTitledPanel.setText(T.html("control_matrix"));
+            hydraulicControlsTitledPanel.setText(T.html("prior_parameter_specification"));
+            priorRatingCurveTitledPanel.setText(T.html("prior_rating_curve"));
         });
 
     }
@@ -145,43 +133,21 @@ public class HydraulicConfiguration
     }
 
     private void setSplitPaneView() {
-
-        RowColPanel controlMatrixContainer = new RowColPanel(RowColPanel.AXIS.COL);
-
-        controlMatrixContainer.appendChild(controlMatrixTitle, 0);
-        controlMatrixContainer.appendChild(controlMatrix, 1);
-
-        RowColPanel priorRCplotPanel = new RowColPanel(RowColPanel.AXIS.COL);
-
-        priorRCplotTitle.setIcon(priorRatingCurveIcon);
-        priorRCplotPanel.appendChild(priorRCplotTitle, 0);
-        priorRCplotPanel.appendChild(priorRatingCurve, 1);
-
-        RowColPanel priorSepecificationPanel = new RowColPanel(RowColPanel.AXIS.COL);
-
-        priorSpecificationTitle.setIcon(priorSpecificationIcon);
-        priorSepecificationPanel.appendChild(priorSpecificationTitle, 0);
-        priorSepecificationPanel.appendChild(hydraulicControls, 1);
-
         SplitContainer mainContainer = SplitContainer.build2Left1RightSplitContainer(
-                controlMatrixContainer,
-                priorRCplotPanel,
-                priorSepecificationPanel);
+                controlMatrixTitledPanel.getTitledPanel(),
+                priorRatingCurveTitledPanel.getTitledPanel(),
+                hydraulicControlsTitledPanel.getTitledPanel());
         setContent(mainContainer);
         T.updateTranslation(this);
         updateUI();
     }
 
     private void setTabView() {
-
+        TabContainer mainContainerTab = new TabContainer();
         mainContainerTab.removeAll();
-        mainContainerTab.addTab("control_matrix", controlMatrixIcon, controlMatrix);
-        mainContainerTab.addTab("prior_parameter_specification",
-                priorSpecificationIcon,
-                hydraulicControls);
-        mainContainerTab.addTab("prior_rating_curve", priorRatingCurveIcon,
-                priorRatingCurve);
-
+        mainContainerTab.addTab(controlMatrixTitledPanel);
+        mainContainerTab.addTab(hydraulicControlsTitledPanel);
+        mainContainerTab.addTab(priorRatingCurveTitledPanel);
         setContent(mainContainerTab);
         T.updateTranslation(this);
         updateUI();
