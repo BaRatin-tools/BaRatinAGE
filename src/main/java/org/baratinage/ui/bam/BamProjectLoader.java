@@ -162,9 +162,10 @@ public class BamProjectLoader {
                 T.text(item.TYPE.id), itemName);
         bamProjectLoadingFrame.updateProgress(progressMsg, bamProjectLoadingProgress);
 
-        Performance.startTimeMonitoring(item.TYPE.toString());
+        String loadingString = String.format("loading %s", item.TYPE.toString());
+        Performance.startTimeMonitoring(loadingString);
         item.load(config);
-        Performance.endTimeMonitoring(item.TYPE.toString());
+        Performance.endTimeMonitoring(loadingString);
         bamProjectLoadingFrame.updateProgress(progressMsg, bamProjectLoadingProgress + 1);
 
         bamProjectLoadingProgress++;
@@ -193,9 +194,6 @@ public class BamProjectLoader {
     static public void loadProject(String projectFilePath, Consumer<BamProject> onLoaded, Runnable onError) {
 
         isInLoad = true;
-        ConsoleLogger.addShowFilter("Performance");
-        ConsoleLogger.addShowFilter("BamProjectLoader");
-        ConsoleLogger.addShowFilter("DensityPlotGrid");
 
         Performance.startTimeMonitoring("clearing temp directory");
 
@@ -236,7 +234,6 @@ public class BamProjectLoader {
             Performance.startTimeMonitoring("loading bam items");
 
             load(json, projectFile, (bamProject) -> {
-                ConsoleLogger.clearShowFilters();
                 isInLoad = false;
                 runDelayedActions();
                 onLoaded.accept(bamProject);

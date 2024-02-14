@@ -112,8 +112,6 @@ public class BaratinageV2Importer implements IProjectImporter {
     @Override
     public void importProject(String barZipFilePath, Consumer<BamProject> bamProjectConsumer) {
 
-        ConsoleLogger.addShowFilter("BaratinageV2Importer");
-
         this.barZipFilePath = barZipFilePath;
         taskList = new ArrayList<>();
         project = new BaratinProject();
