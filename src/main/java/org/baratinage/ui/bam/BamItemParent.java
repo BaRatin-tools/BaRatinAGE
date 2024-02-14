@@ -208,8 +208,8 @@ public class BamItemParent extends RowColPanel {
         }
 
         BamConfig currentBamItemBackup = currentBamItem.save(false);
-        JSONObject backupFiltered = bamItemBackup.JSON;
-        JSONObject currentFiltered = currentBamItemBackup.JSON;
+        JSONObject backupFiltered = JSONFilter.filter(bamItemBackup.JSON, true, true, "_version");
+        JSONObject currentFiltered = JSONFilter.filter(currentBamItemBackup.JSON, true, true, "_version");
         if (filter != null) {
             backupFiltered = filter.apply(backupFiltered);
             currentFiltered = filter.apply(currentFiltered);
