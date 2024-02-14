@@ -1,5 +1,6 @@
 package org.baratinage.utils;
 
+import java.awt.Dimension;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.io.File;
@@ -19,11 +20,22 @@ import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.swing.JComponent;
 import javax.swing.JFrame;
 
 import org.baratinage.translation.T;
 
 public class Misc {
+
+    public static void setCompSize(
+            JComponent component,
+            int minWidth, int prefWidth,
+            int minHeight, int prefHeight) {
+        Dimension dimPref = new Dimension(prefWidth, prefHeight);
+        Dimension dimMin = new Dimension(minWidth, minHeight);
+        component.setPreferredSize(dimPref);
+        component.setMinimumSize(dimMin);
+    }
 
     // source: https://stackoverflow.com/a/24692712
     public static String sanitizeName(String name) {

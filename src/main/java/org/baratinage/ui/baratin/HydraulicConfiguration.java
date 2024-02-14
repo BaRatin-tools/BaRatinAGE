@@ -1,6 +1,5 @@
 package org.baratinage.ui.baratin;
 
-import java.awt.Dimension;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 
@@ -23,6 +22,7 @@ import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.ui.container.SplitContainer;
 import org.baratinage.ui.container.TabContainer;
 import org.baratinage.utils.ConsoleLogger;
+import org.baratinage.utils.Misc;
 import org.baratinage.utils.json.JSONFilter;
 import org.baratinage.utils.perf.TimedActions;
 import org.json.JSONObject;
@@ -76,10 +76,10 @@ public class HydraulicConfiguration
             priorRatingCurve.checkSync();
         });
 
-        Dimension dimPref = new Dimension(500, 300);
-        controlMatrix.setPreferredSize(dimPref);
-        Dimension dimMin = new Dimension(250, 150);
-        controlMatrix.setMinimumSize(dimMin);
+        Misc.setCompSize(
+                controlMatrix,
+                250, 500,
+                150, 300);
 
         // **********************************************************************
         // SPECIFIC TO SPLIT PANE / TAB SYSTEM APPROACHES
