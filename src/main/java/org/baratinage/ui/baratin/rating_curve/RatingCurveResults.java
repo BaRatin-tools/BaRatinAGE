@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -168,7 +170,11 @@ public class RatingCurveResults extends TabContainer {
 
     }
 
-    private static String getParameterConsistencyCheckString(float value, float thresholdOffset) {
+    private static String getParameterConsistencyCheckString(EstimatedParameter parameter, float thresholdOffset) {
+        Float value = parameter.getValidityCheckEstimate();
+        if (value == null) {
+            return "";
+        }
         if (value < (0f + thresholdOffset) || value > (1f - thresholdOffset)) {
             return "POSSIBLE_INCONSISTENCY";
         }
@@ -188,13 +194,16 @@ public class RatingCurveResults extends TabContainer {
 
         int controlIndex = 1;
         int k = 0;
+
+        double[] noPrior = new double[] { Double.NaN, Double.NaN };
         for (EstimatedControlParameters control : parameters.controls()) {
             EstimatedParameter p;
             double[] prior95;
             double[] post95;
 
             p = control.k();
-            prior95 = p.parameterConfig.distribution.getPercentiles(0.025, 0.975, 2);
+            prior95 = p.parameterConfig == null ? noPrior
+                    : p.parameterConfig.distribution.getPercentiles(0.025, 0.975, 2);
             post95 = p.get95interval();
             parameterNames[k] = "k_" + controlIndex;
             priorLow[k] = prior95[0];
@@ -202,12 +211,12 @@ public class RatingCurveResults extends TabContainer {
             postMaxpost[k] = p.getMaxpost();
             postLow[k] = post95[0];
             postHigh[k] = post95[1];
-            consistencyCheck[k] = getParameterConsistencyCheckString(
-                    p.getValidityCheckEstimate(), 0.01f);
+            consistencyCheck[k] = getParameterConsistencyCheckString(p, 0.01f);
             k++;
 
             p = control.a();
-            prior95 = p.parameterConfig.distribution.getPercentiles(0.025, 0.975, 2);
+            prior95 = p.parameterConfig == null ? noPrior
+                    : p.parameterConfig.distribution.getPercentiles(0.025, 0.975, 2);
             post95 = p.get95interval();
             parameterNames[k] = "a_" + controlIndex;
             priorLow[k] = prior95[0];
@@ -215,12 +224,12 @@ public class RatingCurveResults extends TabContainer {
             postMaxpost[k] = p.getMaxpost();
             postLow[k] = post95[0];
             postHigh[k] = post95[1];
-            consistencyCheck[k] = getParameterConsistencyCheckString(
-                    p.getValidityCheckEstimate(), 0.01f);
+            consistencyCheck[k] = getParameterConsistencyCheckString(p, 0.01f);
             k++;
 
             p = control.c();
-            prior95 = p.parameterConfig.distribution.getPercentiles(0.025, 0.975, 2);
+            prior95 = p.parameterConfig == null ? noPrior
+                    : p.parameterConfig.distribution.getPercentiles(0.025, 0.975, 2);
             post95 = p.get95interval();
             parameterNames[k] = "c_" + controlIndex;
             priorLow[k] = prior95[0];
@@ -228,12 +237,12 @@ public class RatingCurveResults extends TabContainer {
             postMaxpost[k] = p.getMaxpost();
             postLow[k] = post95[0];
             postHigh[k] = post95[1];
-            consistencyCheck[k] = getParameterConsistencyCheckString(
-                    p.getValidityCheckEstimate(), 0.01f);
+            consistencyCheck[k] = getParameterConsistencyCheckString(p, 0.01f);
             k++;
 
             p = control.b();
-            prior95 = new double[] { Double.NaN, Double.NaN };
+            prior95 = p.parameterConfig == null ? noPrior
+                    : p.parameterConfig.distribution.getPercentiles(0.025, 0.975, 2);
             post95 = p.get95interval();
             parameterNames[k] = "b_" + controlIndex;
             priorLow[k] = prior95[0];
@@ -241,7 +250,7 @@ public class RatingCurveResults extends TabContainer {
             postMaxpost[k] = p.getMaxpost();
             postLow[k] = post95[0];
             postHigh[k] = post95[1];
-            consistencyCheck[k] = "";
+            consistencyCheck[k] = getParameterConsistencyCheckString(p, 0.01f);
             k++;
 
             controlIndex++;
@@ -412,7 +421,7 @@ public class RatingCurveResults extends TabContainer {
 
         int nControls = 0;
         for (EstimatedParameter p : parameters) {
-            ProcessedParameter pp = processParameter(p);
+            ProcessedParameter pp = ProcessedParameter.getProcessedParameter(p);
             if (pp.isControlParameter()) {
                 if (pp.index() > nControls) {
                     nControls = pp.index();
@@ -480,6 +489,7 @@ public class RatingCurveResults extends TabContainer {
             }
             return null;
         }
+
     }
 
     private record ProcessedParameter(
@@ -489,71 +499,94 @@ public class RatingCurveResults extends TabContainer {
             int index,
             EstimatedParameter parameter) {
 
-    }
-
-    private static ProcessedParameter processParameter(EstimatedParameter parameter) {
-        String rawName = parameter.name;
-        if (rawName.equals("LogPost")) {
-            return new ProcessedParameter(
-                    ParameterType.LOG_POST,
-                    false,
-                    "LogPost",
-                    -1,
-                    parameter);
-        } else if (rawName.startsWith("Y") && rawName.contains("gamma")) {
-            String[] s = rawName.split("gamma_");
-            int i = s.length == 2 ? parseInt(s[1]) : -1;
-            i++;
-            String niceName = String.format("<html>&gamma;<sub>%d</sub></html>", i);
-            return new ProcessedParameter(
-                    ParameterType.GAMMA,
-                    false,
-                    niceName,
-                    i,
-                    modifyEstimatedParameter(parameter, niceName, true));
-        } else if (rawName.startsWith("b")) {
-            String[] s = rawName.split("b");
-            int i = s.length == 2 ? parseInt(s[1]) : -1;
-            String niceName = String.format("<html>b<sub>%d</sub></html>", i);
-            return new ProcessedParameter(
-                    ParameterType.B,
-                    true,
-                    niceName,
-                    i,
-                    modifyEstimatedParameter(parameter, niceName, false));
-        } else {
-            String[] s = rawName.split("_");
-            String n = s[0];
-            int i = s.length == 2 ? parseInt(s[1]) : -1;
-            i++;
-            String niceName = String.format("<html>%s<sub>%d</sub></html>", n, i);
-            return new ProcessedParameter(
-                    ParameterType.getTypeFromString(n),
-                    true,
-                    niceName,
-                    i,
-                    modifyEstimatedParameter(parameter, niceName, false));
+        private static EstimatedParameter processEstimatedParameter(EstimatedParameter parameter,
+                String newName,
+                boolean includeConfig) {
+            return new EstimatedParameter(
+                    newName,
+                    parameter.mcmc,
+                    parameter.summary,
+                    parameter.maxpostIndex,
+                    includeConfig ? parameter.parameterConfig : null);
         }
-    }
 
-    private static int parseInt(String intStr) {
-        try {
-            return Integer.parseInt(intStr);
-        } catch (Exception e) {
-            return AppSetup.CONFIG.INT_MISSING_VALUE;
+        private static record NamesAndIndex(String name, int index, String niceName) {
+        };
+
+        private static Pattern gammaNamePattern = Pattern.compile("Y\\d+_gamma_(\\d+)");
+        private static Pattern compParNamePattern = Pattern.compile("([a-zA-Z]+)(\\d+)");
+        private static Pattern confParNamePattern = Pattern.compile("([a-zA-Z]+)_(\\d+)");
+
+        private static NamesAndIndex getNamesIndex(Pattern pattern, String rawName, String defaultName,
+                boolean incrementIndex) {
+            Matcher matcher = pattern.matcher(rawName);
+            if (matcher.matches()) {
+                String name = defaultName;
+                int index = -1;
+                try {
+                    if (matcher.groupCount() == 2) {
+                        name = matcher.group(1);
+                        index = Integer.parseInt(matcher.group(2));
+                    } else if (matcher.groupCount() == 1) {
+                        index = Integer.parseInt(matcher.group(1));
+                    }
+                } catch (Exception e) {
+                    ConsoleLogger.error(e);
+                }
+                if (incrementIndex && index >= 0) {
+                    index++;
+                }
+                return new NamesAndIndex(name, index, String.format("<html>%s<sub>%d</sub></html>", name, index));
+            } else {
+                return new NamesAndIndex("", -1, "");
+            }
         }
-    }
 
-    private static EstimatedParameter modifyEstimatedParameter(
-            EstimatedParameter p,
-            String name,
-            boolean noParameterConfig) {
-        return new EstimatedParameter(
-                name,
-                p.mcmc,
-                p.summary,
-                p.maxpostIndex,
-                noParameterConfig ? null : p.parameterConfig);
+        public static ProcessedParameter getProcessedParameter(EstimatedParameter parameter) {
+            if (parameter.name.equals("LogPost")) {
+                return new ProcessedParameter(
+                        ParameterType.LOG_POST,
+                        false,
+                        "LogPost",
+                        -1,
+                        parameter);
+            }
+            if (parameter.name.startsWith("Y") && parameter.name.contains("gamma")) {
+                NamesAndIndex namesAndIndex = getNamesIndex(gammaNamePattern, parameter.name, "&gamma;", true);
+                return new ProcessedParameter(
+                        ParameterType.GAMMA,
+                        false,
+                        namesAndIndex.niceName,
+                        namesAndIndex.index,
+                        processEstimatedParameter(
+                                parameter,
+                                namesAndIndex.niceName,
+                                false));
+            }
+            if (parameter.name.contains("_")) {
+                NamesAndIndex namesAndIndex = getNamesIndex(confParNamePattern, parameter.name, "", true);
+                return new ProcessedParameter(
+                        ParameterType.getTypeFromString(namesAndIndex.name),
+                        true,
+                        namesAndIndex.niceName,
+                        namesAndIndex.index,
+                        processEstimatedParameter(
+                                parameter,
+                                namesAndIndex.niceName,
+                                true));
+            } else {
+                NamesAndIndex namesAndIndex = getNamesIndex(compParNamePattern, parameter.name, "", false);
+                return new ProcessedParameter(
+                        ParameterType.getTypeFromString(namesAndIndex.name),
+                        true,
+                        namesAndIndex.niceName,
+                        namesAndIndex.index,
+                        processEstimatedParameter(
+                                parameter,
+                                namesAndIndex.niceName,
+                                false));
+            }
+        }
     }
 
 }

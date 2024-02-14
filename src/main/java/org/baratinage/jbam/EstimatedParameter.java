@@ -30,12 +30,12 @@ public class EstimatedParameter {
         this.parameterConfig = parameter;
     }
 
-    public float getValidityCheckEstimate() {
+    public Float getValidityCheckEstimate() {
         // 0.5 = valid
         // 0 = underestimated,
         // 1 = overestimated
         if (parameterConfig == null) {
-            return 0;
+            return null;
         }
         if (validityCheckResult != null) {
             return validityCheckResult;
