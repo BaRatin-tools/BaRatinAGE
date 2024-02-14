@@ -54,8 +54,10 @@ public class BamConfig {
 
     private static JSONArray toJSONArray(String[] strs) {
         JSONArray jsonArray = new JSONArray();
-        for (String s : strs) {
-            jsonArray.put(s);
+        if (strs != null) {
+            for (String s : strs) {
+                jsonArray.put(s);
+            }
         }
         return jsonArray;
     }
@@ -80,8 +82,11 @@ public class BamConfig {
 
     public static JSONObject getConfig(IPriors priors) {
         JSONArray jsonParameterArray = new JSONArray();
-        for (Parameter p : priors.getParameters()) {
-            jsonParameterArray.put(getConfig(p));
+        Parameter[] parameters = priors.getParameters();
+        if (parameters != null) {
+            for (Parameter p : parameters) {
+                jsonParameterArray.put(getConfig(p));
+            }
         }
         JSONObject json = new JSONObject();
         json.put("parameters", jsonParameterArray);
