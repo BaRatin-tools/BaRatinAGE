@@ -24,22 +24,24 @@ public class BamConfig {
     }
 
     public BamConfig(JSONObject config, String... filePaths) {
-        int version = -1;
-        if (config.has("_version")) {
-            version = config.getInt("_version");
-        }
-        VERSION = version;
         FILE_PATHS = new ArrayList<>();
         for (String fp : filePaths) {
             FILE_PATHS.add(fp);
         }
         JSON = config;
+        int version = -1;
+        if (config.has("_version")) {
+            version = config.getInt("_version");
+        }
+        VERSION = version;
+        JSON.put("_version", VERSION);
     }
 
     public BamConfig(int version) {
         FILE_PATHS = new ArrayList<>();
         JSON = new JSONObject();
         VERSION = version;
+        JSON.put("_version", VERSION);
     }
 
     private static <A> JSONArray toJSONArray(A[] objects, Function<A, JSONObject> transformer) {
