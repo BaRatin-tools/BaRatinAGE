@@ -29,18 +29,19 @@ import org.json.JSONObject;
 public class HydraulicConfiguration
         extends BamItem
         implements IModelDefinition, IPriors {
+
     private final TitledPanel controlMatrixTitledPanel;
     private final TitledPanel hydraulicControlsTitledPanel;
     private final TitledPanel priorRatingCurveTitledPanel;
 
     private final ControlMatrix controlMatrix;
     private final HydraulicControlPanels hydraulicControls;
-
     private final PriorRatingCurve<HydraulicConfiguration> priorRatingCurve;
 
     public final RunBam runBam;
 
-    public static final ImageIcon controlMatrixIcon = AppSetup.ICONS.getCustomAppImageIcon("control_matrix.svg");
+    public static final ImageIcon controlMatrixIcon = AppSetup.ICONS
+            .getCustomAppImageIcon("control_matrix.svg");
     public static final ImageIcon priorSpecificationIcon = AppSetup.ICONS
             .getCustomAppImageIcon("prior_densities.svg");
     public static final ImageIcon priorRatingCurveIcon = AppSetup.ICONS
@@ -82,10 +83,11 @@ public class HydraulicConfiguration
         priorRatingCurveTitledPanel = new TitledPanel(priorRatingCurve);
         priorRatingCurveTitledPanel.setIcon(priorRatingCurveIcon);
 
-        TitledPanelSplitTabContainer mainContainer = TitledPanelSplitTabContainer.build2Left1Right(this,
-                controlMatrixTitledPanel,
-                priorRatingCurveTitledPanel,
-                hydraulicControlsTitledPanel);
+        TitledPanelSplitTabContainer mainContainer = TitledPanelSplitTabContainer
+                .build2Left1Right(this,
+                        controlMatrixTitledPanel,
+                        priorRatingCurveTitledPanel,
+                        hydraulicControlsTitledPanel);
         mainContainer.setBreakpoints(1100, 800);
         setContent(mainContainer);
 
@@ -95,13 +97,11 @@ public class HydraulicConfiguration
         T.updateHierarchy(this, controlMatrix);
         T.updateHierarchy(this, hydraulicControls);
         T.updateHierarchy(this, priorRatingCurve);
-
         T.t(this, () -> {
             controlMatrixTitledPanel.setText(T.html("control_matrix"));
             hydraulicControlsTitledPanel.setText(T.html("prior_parameter_specification"));
             priorRatingCurveTitledPanel.setText(T.html("prior_rating_curve"));
         });
-
     }
 
     @Override
