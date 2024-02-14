@@ -235,7 +235,7 @@ public class RatingCurve extends BamItem implements IPredictionMaster, ICalibrat
         gaugingsParent.selectDefaultBamItem();
         structErrorParent.selectDefaultBamItem();
 
-        HydraulicConfiguration currentHydraulicConfig = (HydraulicConfiguration) hydrauConfParent.getCurrentBamItem();
+        BamItem currentHydraulicConfig = hydrauConfParent.getCurrentBamItem();
 
         if (currentHydraulicConfig != null) {
             BamConfig config = currentHydraulicConfig.save(false);
