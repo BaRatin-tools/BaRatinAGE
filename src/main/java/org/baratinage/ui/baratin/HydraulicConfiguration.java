@@ -111,13 +111,12 @@ public class HydraulicConfiguration
 
     @Override
     public String[] getParameterNames() {
-        Parameter[] parameters = getParameters();
-        if (parameters == null) {
-            return null;
-        }
-        String[] parameterNames = new String[parameters.length];
-        for (int k = 0; k < parameters.length; k++) {
-            parameterNames[k] = parameters[k].name;
+        int nCtrl = controlMatrix.getNumberOfControls();
+        String[] parameterNames = new String[nCtrl * 3];
+        for (int k = 0; k < nCtrl; k++) {
+            parameterNames[k * 3 + 0] = "k_" + (k + 1);
+            parameterNames[k * 3 + 1] = "a_" + (k + 1);
+            parameterNames[k * 3 + 2] = "c_" + (k + 1);
         }
         return parameterNames;
     }

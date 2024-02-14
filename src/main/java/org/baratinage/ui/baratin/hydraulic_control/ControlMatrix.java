@@ -110,6 +110,10 @@ public class ControlMatrix extends RowColPanel implements ChangeListener {
         return controlMatrix;
     }
 
+    public int getNumberOfControls() {
+        return controls.size();
+    }
+
     /**
      * 
      * @param controlMatrix each row is a stage range segment and
