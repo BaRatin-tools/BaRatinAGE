@@ -10,13 +10,11 @@ import javax.swing.JTextArea;
 
 import org.baratinage.AppSetup;
 import org.baratinage.translation.T;
-import org.baratinage.ui.baratin.EstimatedControlParameters;
+import org.baratinage.ui.commons.BamEstimatedParameter;
 import org.baratinage.ui.container.RowColPanel;
 
 public class RatingCurveEquation extends RowColPanel {
     private final JTextArea equationTextArea;
-
-    // private List<EstimatedControlParameters> parameters;
 
     RatingCurveEquation() {
         super(AXIS.COL, ALIGN.START, ALIGN.STRETCH);
@@ -41,28 +39,29 @@ public class RatingCurveEquation extends RowColPanel {
         });
     }
 
-    public void updateEquation(List<EstimatedControlParameters> parameters) {
-        // this.parameters = parameters;
+    public void updateKACBEquation(List<BamEstimatedParameter> parameters) {
+        // here we assume KACB order for each control
 
-        int nControls = parameters.size();
+        int nControls = parameters.size() / 4;
 
         String[] equationLines = new String[nControls + 1];
 
-        double k0 = parameters.get(0).k().getMaxpost();
+        double k0 = parameters.get(0).getMaxpost();
 
         equationLines[0] = "h < " + k0 + ": Q = 0";
 
         for (int k = 0; k < nControls; k++) {
-            Double kLow = parameters.get(k).k().getMaxpost();
-            Double kHigh = k < nControls - 1 ? parameters.get(k + 1).k().getMaxpost() : null;
-            Double a = parameters.get(k).a().getMaxpost();
-            Double b = parameters.get(k).b().getMaxpost();
-            Double c = parameters.get(k).c().getMaxpost();
+            Double kLow = parameters.get(k * 4 + 0).getMaxpost();
+            Double kHigh = k < nControls - 1 ? parameters.get((k + 1) * 4 + 0).getMaxpost() : null;
+            Double a = parameters.get(k * 4 + 0).getMaxpost();
+            Double b = parameters.get(k * 4 + 0).getMaxpost();
+            Double c = parameters.get(k * 4 + 0).getMaxpost();
 
             String start = kHigh == null ? "h > " + kLow : kLow + " < h < " + kHigh;
-            // equationLines[k + 1] = start + ": Q = " + a + " * (h - " + b + ") ^ " + c +
-            // "";
-            equationLines[k + 1] = start + ": Q = " + a + " * (" + processSubstraction("h", b) + ") ^ " + c + "";
+            equationLines[k + 1] = start +
+                    ": Q = " + a + " * (h - " + b + ") ^ " + c + "";
+            equationLines[k + 1] = start + ": Q = " + a + " * (" +
+                    processSubstraction("h", b) + ") ^ " + c + "";
         }
 
         equationTextArea.setText(String.join("\n", equationLines));

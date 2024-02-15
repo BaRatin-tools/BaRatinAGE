@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.baratinage.AppSetup;
-import org.baratinage.jbam.EstimatedParameter;
 import org.baratinage.translation.T;
 import org.baratinage.ui.container.GridPanel;
 import org.baratinage.ui.container.RowColPanel;
@@ -20,9 +19,9 @@ import org.baratinage.utils.Calc;
 
 public class TracePlotGrid extends RowColPanel {
     // FIXME: refactoring possible with DensityPlotGrid
-    private final List<EstimatedParameter> estimatedParameters = new ArrayList<>();
+    private final List<BamEstimatedParameter> estimatedParameters = new ArrayList<>();
 
-    public void addPlot(EstimatedParameter estimatedParameter) {
+    public void addPlot(BamEstimatedParameter estimatedParameter) {
         estimatedParameters.add(estimatedParameter);
     }
 
@@ -55,11 +54,11 @@ public class TracePlotGrid extends RowColPanel {
         double[] x = Calc.sequence(0, nMcmc, nMcmc);
         for (int k = 0; k < estimatedParameters.size(); k++) {
 
-            EstimatedParameter estimParam = estimatedParameters.get(k);
+            BamEstimatedParameter estimParam = estimatedParameters.get(k);
 
             Plot plot = new Plot(false, false);
 
-            FixedTextAnnotation title = new FixedTextAnnotation(estimParam.name, 5, 5);
+            FixedTextAnnotation title = new FixedTextAnnotation(estimParam.fullName, 5, 5);
             title.setFont(title.getFont().deriveFont(Font.BOLD, 16f));
             plot.plot.addAnnotation(title);
 

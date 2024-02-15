@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.baratinage.AppSetup;
-import org.baratinage.jbam.EstimatedParameter;
 import org.baratinage.ui.container.GridPanel;
 import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.ui.plot.Legend;
@@ -22,9 +21,9 @@ import org.baratinage.translation.T;
 
 public class DensityPlotGrid extends RowColPanel {
 
-    private final List<EstimatedParameter> estimatedParameters = new ArrayList<>();
+    private final List<BamEstimatedParameter> estimatedParameters = new ArrayList<>();
 
-    public void addPlot(EstimatedParameter estimatedParameter) {
+    public void addPlot(BamEstimatedParameter estimatedParameter) {
         estimatedParameters.add(estimatedParameter);
     }
 
@@ -55,19 +54,18 @@ public class DensityPlotGrid extends RowColPanel {
         int c = 0;
         for (int k = 0; k < estimatedParameters.size(); k++) {
 
-            EstimatedParameter estimParam = estimatedParameters.get(k);
+            BamEstimatedParameter estimParam = estimatedParameters.get(k);
 
             Plot plot = new Plot(false, false);
 
-            FixedTextAnnotation title = new FixedTextAnnotation(estimParam.name, 5, 5);
+            FixedTextAnnotation title = new FixedTextAnnotation(estimParam.fullName, 5, 5);
             title.setFont(title.getFont().deriveFont(Font.BOLD, 16f));
             plot.plot.addAnnotation(title);
 
             plot.setBufferPercentage(0.1, 0, 0.05, 0.05);
 
-            List<double[]> priorDensityData = estimParam.getPriorDensity();
-
-            if (priorDensityData != null) {
+            if (estimParam.isEstimatedParameter && !estimParam.isGammaParameter) {
+                List<double[]> priorDensityData = estimParam.getPriorDensity();
                 int nData = priorDensityData.get(0).length;
                 PlotBand priorDensity = new PlotBand(
                         "",
