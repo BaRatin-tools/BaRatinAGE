@@ -61,11 +61,18 @@ public class HydraulicConfigurationBAC extends BamItem
             hydraulicControls.setHydraulicControls(controlMatrix.getControlMatrix().length);
         });
 
+        priorRatingCurve = new PriorRatingCurve<>(this);
+        runBam = priorRatingCurve.runBam;
+
         // *******************************************
         // DIFFERENT
         JLabel maxStageLabel = new JLabel();
         maxStageLabel.setText("Maximum stage:"); // FIXME: i18n to do
         maxStageField = new SimpleNumberField();
+        maxStageField.addChangeListener((e) -> {
+            fireChangeListeners();
+            priorRatingCurve.checkSync();
+        });
         RowColPanel maxStagePanel = new RowColPanel();
         maxStagePanel.setGap(5);
         maxStagePanel.setPadding(5);
@@ -77,9 +84,6 @@ public class HydraulicConfigurationBAC extends BamItem
         modelDefPanel.appendChild(new JSeparator(), 0);
         modelDefPanel.appendChild(maxStagePanel, 0);
         // *******************************************
-
-        priorRatingCurve = new PriorRatingCurve<>(this);
-        runBam = priorRatingCurve.runBam;
 
         controlMatrix.addChangeListener((e) -> {
             priorRatingCurve.checkSync();
