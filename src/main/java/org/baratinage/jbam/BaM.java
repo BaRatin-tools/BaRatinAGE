@@ -99,11 +99,11 @@ public class BaM {
 
     private Process bamExecutionProcess;
 
-    private CalibrationConfig calibrationConfig;
-    private PredictionConfig[] predictionConfigs;
-    private RunOptions runOptions;
-    private CalibrationResult calibrationResult;
-    private PredictionResult[] predictionResults;
+    protected CalibrationConfig calibrationConfig;
+    protected PredictionConfig[] predictionConfigs;
+    protected RunOptions runOptions;
+    protected CalibrationResult calibrationResult;
+    protected PredictionResult[] predictionResults;
 
     protected BaM(CalibrationConfig calibrationConfig,
             PredictionConfig[] predictionConfigs,

@@ -2,9 +2,13 @@ package org.baratinage.ui.bam;
 
 import java.io.File;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.baratinage.AppSetup;
 import org.baratinage.jbam.BaM;
+import org.baratinage.jbam.PredictionResult;
+import org.baratinage.jbam.PredictionResult.PredictionOutputResult;
 import org.baratinage.jbam.utils.BamFilesHelpers;
 import org.baratinage.utils.fs.ReadWriteZip;
 
@@ -62,10 +66,32 @@ public class RunConfigAndRes extends BaM {
         }
         String zipName = id + ".zip";
         Path zipPath = Path.of(AppSetup.PATH_APP_TEMP_DIR, zipName);
-        if (!zipPath.toFile().exists() && writeToFile) {
+        if (writeToFile) {
             // each run being unique, if the zip file exist, there is no need
             // to recreate it; no modification could have occured
-            ReadWriteZip.flatZip(zipPath.toString(), workspace.toString());
+            List<String> filesToZip = new ArrayList<>();
+            for (File f : workspace.toFile().listFiles()) {
+                filesToZip.add(f.getName());
+            }
+            List<String> filesToIgnore = new ArrayList<>();
+            for (PredictionResult p : predictionResults) {
+                for (int k = 0; k < p.outputResults.size(); k++) {
+                    PredictionOutputResult r = p.outputResults.get(k);
+                    if (r.spag().size() > 1) {
+                        String s = p.predictionConfig.outputs[k].spagFileName;
+                        filesToIgnore.add(s);
+                        if (filesToZip.contains(s)) {
+                            filesToZip.remove(s);
+                        }
+                    }
+                }
+            }
+            String baseDir = workspace.toString();
+            String[] filesToZipFullPath = filesToZip
+                    .stream()
+                    .map(f -> Path.of(baseDir, f).toString())
+                    .toArray(String[]::new);
+            ReadWriteZip.flatZip(zipPath.toString(), filesToZipFullPath);
         }
         return zipPath.toString();
     }
