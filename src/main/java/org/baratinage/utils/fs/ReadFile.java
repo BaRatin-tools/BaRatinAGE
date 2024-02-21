@@ -200,15 +200,34 @@ public class ReadFile {
             columns.add(column);
         }
 
+        List<Integer> skippedIndex = new ArrayList<>();
         for (int i = 0; i < nRow; i++) {
             int k = nRowSkip + i;
             String[] row = parseString(lines[k], sep, trim);
             if (row.length != nCol) {
-                ConsoleLogger.error("Error while parsing line " + k + "...");
-                break;
+                skippedIndex.add(i);
+                continue;
             }
             for (int j = 0; j < nCol; j++) {
                 columns.get(j)[i] = row[j];
+            }
+        }
+
+        int nSkipped = skippedIndex.size();
+        if (nSkipped > 0) {
+            ConsoleLogger.warn(nSkipped + " row(s) skipped: "
+                    + "skipping caused by unexpected number of elements.");
+            for (int j = 0; j < nCol; j++) {
+                String[] oldCol = columns.get(j);
+                String[] newCol = new String[nRow - nSkipped];
+                int k = 0;
+                for (int i = 0; i < nRow; i++) {
+                    if (!skippedIndex.contains(i)) {
+                        newCol[k] = oldCol[i];
+                        k++;
+                    }
+                }
+                columns.set(j, newCol);
             }
         }
 
