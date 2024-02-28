@@ -22,10 +22,10 @@ import org.baratinage.utils.fs.ReadFile;
 
 public class DataFileReader extends RowColPanel {
     public String filePath = null;
-    public String sep = "\t";
+    public String sep = ";";
     public int nRowSkip = 0;
     public String missingValueString = "";
-    public boolean hasHeaderRow = false;
+    public boolean hasHeaderRow = true;
     public int nPreload = 15;
 
     private JLabel selectedFilePathLabel;
@@ -86,7 +86,7 @@ public class DataFileReader extends RowColPanel {
         JRadioButton commaOptBtn = sepRatioButtons.addOption("comma", T.text("sep_comma"), ",");
         JRadioButton spaceOptBtn = sepRatioButtons.addOption("space", T.text("sep_space"), " ");
 
-        sepRatioButtons.setSelected("tab");
+        sepRatioButtons.setSelected("semicolon");
 
         RowColPanel sepOptionButtons = new RowColPanel(AXIS.ROW, ALIGN.START);
         sepOptionButtons.setGap(5);
