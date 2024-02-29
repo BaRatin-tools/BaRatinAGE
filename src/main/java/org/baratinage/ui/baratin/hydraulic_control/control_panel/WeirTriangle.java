@@ -19,6 +19,7 @@ public class WeirTriangle extends PriorControlPanel {
 
         activationHeight = CommonParameterDistSimplified.getActivationHeight();
         weirCoef = CommonParameterDistSimplified.getWeirCoeff("t");
+        weirCoef.setDefaultValues(0.31, 0.05);
         angle = CommonParameterDistSimplified.getAngle();
         gravity = CommonParameterDistSimplified.getGravity();
         gravity.setLocalLock(true);

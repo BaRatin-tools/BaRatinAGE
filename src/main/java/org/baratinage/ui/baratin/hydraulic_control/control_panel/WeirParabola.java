@@ -20,6 +20,7 @@ public class WeirParabola extends PriorControlPanel {
 
         activationHeight = CommonParameterDistSimplified.getActivationHeight();
         weirCoef = CommonParameterDistSimplified.getWeirCoeff("p");
+        weirCoef.setDefaultValues(0.22, 0.05);
         width = CommonParameterDistSimplified.getParabolaWidth();
         height = CommonParameterDistSimplified.getHeight("p");
         gravity = CommonParameterDistSimplified.getGravity();

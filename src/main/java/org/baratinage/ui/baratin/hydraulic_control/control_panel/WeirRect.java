@@ -29,6 +29,7 @@ public class WeirRect extends PriorControlPanel {
         kb = kMode ? CommonParameterDistSimplified.getActivationHeight()
                 : CommonParameterDistSimplified.getOffsetHeight();
         weirCoef = CommonParameterDistSimplified.getWeirCoeff("r");
+        weirCoef.setDefaultValues(0.4, 0.05);
         width = CommonParameterDistSimplified.getRectWidth();
         gravity = CommonParameterDistSimplified.getGravity();
         gravity.setLocalLock(true);

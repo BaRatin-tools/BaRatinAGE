@@ -19,6 +19,7 @@ public class WeirOrifice extends PriorControlPanel {
 
         activationHeight = CommonParameterDistSimplified.getActivationHeight();
         weirCoef = CommonParameterDistSimplified.getWeirCoeff("o");
+        weirCoef.setDefaultValues(0.6, 0.05);
         area = CommonParameterDistSimplified.getCircleArea();
         gravity = CommonParameterDistSimplified.getGravity();
         gravity.setLocalLock(true);
