@@ -23,7 +23,7 @@ public class WeirOrifice extends PriorControlPanel {
         weirCoef = new ParameterPriorDistSimplified();
         weirCoef.setIcon(weirCoefOIcon);
         weirCoef.setSymbolUnitLabels("C<sub>o</sub>", "-");
-        weirCoef.setDefaultValues(0.4, 0.05);
+        weirCoef.setDefaultValues(0.6, 0.05);
 
         area = new ParameterPriorDistSimplified();
         area.setIcon(areaIcon);
