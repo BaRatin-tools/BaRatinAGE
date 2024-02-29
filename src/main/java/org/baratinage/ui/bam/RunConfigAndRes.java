@@ -77,7 +77,7 @@ public class RunConfigAndRes extends BaM {
             for (PredictionResult p : predictionResults) {
                 for (int k = 0; k < p.outputResults.size(); k++) {
                     PredictionOutputResult r = p.outputResults.get(k);
-                    if (r.spag().size() > 1) {
+                    if (r.spag() != null && r.spag().size() > 1) {
                         String s = p.predictionConfig.outputs[k].spagFileName;
                         filesToIgnore.add(s);
                         if (filesToZip.contains(s)) {
