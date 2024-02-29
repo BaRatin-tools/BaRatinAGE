@@ -460,7 +460,7 @@ public class RatingCurve extends BamItem implements IPredictionMaster, ICalibrat
         if (json.has("backup")) {
             JSONObject backupJson = json.getJSONObject("backup");
             backup = new BamConfig(backupJson);
-            if (backup.VERSION == -1) {
+            if (backup.VERSION == -1 && backupJson.has("jsonObject")) {
                 backup = new BamConfig(backupJson.getJSONObject("jsonObject"));
             }
         } else {

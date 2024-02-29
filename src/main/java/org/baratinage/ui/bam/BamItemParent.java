@@ -250,7 +250,7 @@ public class BamItemParent extends RowColPanel {
         if (json.has("bamItemBackup")) {
             JSONObject backupJson = json.getJSONObject("bamItemBackup");
             bamItemBackup = new BamConfig(backupJson);
-            if (bamItemBackup.VERSION < 0) {
+            if (bamItemBackup.VERSION < 0 && backupJson.has("jsonObject")) {
                 bamItemBackup = new BamConfig(backupJson.getJSONObject("jsonObject"));
             }
             bamItemBackupId = json.getString("bamItemBackupId");
