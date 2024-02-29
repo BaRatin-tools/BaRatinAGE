@@ -1,5 +1,6 @@
 package org.baratinage.ui;
 
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridBagLayout;
 import java.awt.event.ComponentAdapter;
@@ -20,6 +21,7 @@ import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
+import javax.swing.JTextPane;
 import javax.swing.SwingConstants;
 
 import org.baratinage.utils.ConsoleLogger;
@@ -95,6 +97,10 @@ public class AppAbout extends JDialog {
             buildInfo = String.format(
                     "<html><b>Build info:</b><br><code>JDK: %s</code><br><code>OS: %s</code><br><code>Timestamp: %s</code></html>",
                     buildJdk, buildOS, buildTimestamp);
+        } else {
+            buildInfo = String.format(
+                    "<html><b>Build info:</b><br><code>JDK: %s</code><br><code>OS: %s</code><br><code>Timestamp: %s</code></html>",
+                    "JDK", "Windows", "2024-02-29");
         }
 
         setTitle(T.text("about"));
@@ -105,6 +111,25 @@ public class AppAbout extends JDialog {
 
         JLabel description = new JLabel();
         T.t(this, description, true, "about_main_description");
+
+        JLabel howToCite = new JLabel();
+        T.t(this, howToCite, true, "about_how_to_cite");
+
+        JTextPane howToCiteReference = new JTextPane();
+        howToCiteReference.setContentType("text/html");
+        howToCiteReference.setEditable(false);
+        howToCiteReference.setBackground(Color.WHITE);
+        howToCiteReference.setText(
+                String.format(
+                        "<html> <div> %s (%s).  %s <i> %s,  %s </i>,  %s <a href='%s'> %s </i> <div> </html>",
+                        "Le Coz, J., Renard, B., Bonnifait, L., Branger, F., & Le Boursicaud, R.",
+                        "2014",
+                        "Combining hydraulic knowledge and uncertainty gaugings in the estimation of hydrometric rating curves: A Bayesian approach.",
+                        "Journal of Hydrology",
+                        "509",
+                        "573–587",
+                        "https://doi.org/10.1016/j.jhydrol.2013.11.016",
+                        "https://doi.org/10.1016/j.jhydrol.2013.11.016"));
 
         JLabel credits = new JLabel();
         credits.setFont(credits.getFont().deriveFont(18f));
@@ -120,7 +145,6 @@ public class AppAbout extends JDialog {
         creditsPanel.setGap(5);
         creditsPanel.setColWeight(1, 1);
         creditsScrollPane = new JScrollPane(creditsPanel);
-        creditsScrollPane.setPreferredSize(new Dimension(700, 400));
 
         try {
             List<String[]> creditsMatrix = ReadFile.readStringMatrix(
@@ -147,12 +171,18 @@ public class AppAbout extends JDialog {
         contentPanel.appendChild(new JSeparator(), 0);
         contentPanel.appendChild(credits, 0);
         contentPanel.appendChild(creditsScrollPane, 1);
+        contentPanel.appendChild(new JSeparator(), 0);
+        contentPanel.appendChild(howToCite, 0);
+        contentPanel.appendChild(howToCiteReference, 0);
+        contentPanel.appendChild(new JSeparator(), 0);
         contentPanel.appendChild(new JLabel(buildInfo), 0);
-
-        // JScrollPane scrollPane = new JScrollPane(contentPanel);
 
         contentPanel.setGap(5);
         contentPanel.setPadding(10);
+
+        Dimension dim = new Dimension(700, 600);
+        creditsScrollPane.setPreferredSize(dim);
+        contentPanel.setPreferredSize(dim);
 
         addWindowListener(new WindowAdapter() {
             @Override
