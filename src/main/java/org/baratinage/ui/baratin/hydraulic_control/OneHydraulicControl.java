@@ -70,8 +70,8 @@ public class OneHydraulicControl extends JScrollPane {
     private final SimpleComboBox controlTypeComboBox;
     private final KBAC kbacControlPanel;
 
-    private boolean kacMode = false;
-    private String toKACmodeText = "to kac";
+    private boolean bkacMode = false;
+    private String toBKACmodeText = "to bkac";
     private String toPhysicalModeText = "to physical mode";
 
     // FIXME: refactor?
@@ -192,13 +192,14 @@ public class OneHydraulicControl extends JScrollPane {
         physicalParametersPanel.appendChild(hydraulicControlPanel);
         physicalParametersPanel.appendChild(physicalControlParametersLabelsPanel);
 
-        switchModeButton = new JButton("Switch to KAC");
+        switchModeButton = new JButton("Switch to BKAC");
         switchModeButton.addActionListener((e) -> {
             boolean proceed = true;
-            if (kacMode) {
+            if (bkacMode) {
                 proceed = false;
                 int response = JOptionPane.showOptionDialog(this,
-                        T.text("kac_to_physical_parameters_warning") + "\n" +
+                        T.text(kMode ? "kac_to_physical_parameters_warning" : "bac_to_physical_parameters_warning")
+                                + "\n" +
                                 T.text("proceed_question"),
                         T.text("warning"),
                         JOptionPane.YES_NO_OPTION,
@@ -211,7 +212,7 @@ public class OneHydraulicControl extends JScrollPane {
                 }
             }
             if (proceed) {
-                kacMode = !kacMode;
+                bkacMode = !bkacMode;
                 updateMode();
             }
         });
@@ -240,9 +241,9 @@ public class OneHydraulicControl extends JScrollPane {
         T.t(this, controlParLabel, false, "resulting_control_parameters");
         T.t(this, () -> {
             setControlTypeCombobox();
-            toKACmodeText = T.text("switch_to_kac_mode");
+            toBKACmodeText = T.text(kMode ? "switch_to_kac_mode" : "switch_to_bac_mode");
             toPhysicalModeText = T.text("switch_to_physical_mode");
-            switchModeButton.setText(kacMode ? toPhysicalModeText : toKACmodeText);
+            switchModeButton.setText(bkacMode ? toPhysicalModeText : toBKACmodeText);
         });
     }
 
@@ -277,10 +278,10 @@ public class OneHydraulicControl extends JScrollPane {
     }
 
     private void updateMode() {
-        switchModeButton.setText(kacMode ? toPhysicalModeText : toKACmodeText);
-        physicalParametersPanel.setVisible(!kacMode);
-        kbacControlPanel.setGlobalLock(!kacMode);
-        if (!kacMode) {
+        switchModeButton.setText(bkacMode ? toPhysicalModeText : toBKACmodeText);
+        physicalParametersPanel.setVisible(!bkacMode);
+        kbacControlPanel.setGlobalLock(!bkacMode);
+        if (!bkacMode) {
             updateKACfromPhysicalControl();
         }
         updateUI();
@@ -316,7 +317,7 @@ public class OneHydraulicControl extends JScrollPane {
         }
 
         kbacControlPanel.fromJSON(json.getJSONArray("kacControl"));
-        kacMode = json.getBoolean("isKACmode");
+        bkacMode = json.getBoolean("isKACmode");
 
         if (json.has("description")) {
             descriptionField.setText(json.getString("description"));
@@ -328,7 +329,7 @@ public class OneHydraulicControl extends JScrollPane {
     public JSONObject toJSON() {
         JSONObject json = new JSONObject();
 
-        json.put("isKACmode", kacMode);
+        json.put("isKACmode", bkacMode);
         json.put("controlTypeIndex", controlTypeComboBox.getSelectedIndex());
 
         JSONArray allControlOptionsJSON = new JSONArray();
