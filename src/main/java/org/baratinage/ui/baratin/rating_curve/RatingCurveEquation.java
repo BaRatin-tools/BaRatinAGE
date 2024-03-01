@@ -53,9 +53,9 @@ public class RatingCurveEquation extends RowColPanel {
         for (int k = 0; k < nControls; k++) {
             Double kLow = parameters.get(k * 4 + 0).getMaxpost();
             Double kHigh = k < nControls - 1 ? parameters.get((k + 1) * 4 + 0).getMaxpost() : null;
-            Double a = parameters.get(k * 4 + 0).getMaxpost();
-            Double b = parameters.get(k * 4 + 0).getMaxpost();
-            Double c = parameters.get(k * 4 + 0).getMaxpost();
+            Double a = parameters.get(k * 4 + 1).getMaxpost();
+            Double b = parameters.get(k * 4 + 2).getMaxpost();
+            Double c = parameters.get(k * 4 + 3).getMaxpost();
 
             String start = kHigh == null ? "h > " + kLow : kLow + " < h < " + kHigh;
             equationLines[k + 1] = start +
