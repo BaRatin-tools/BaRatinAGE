@@ -28,12 +28,17 @@ public class BamProjectLoader {
     static private boolean bamProjectLoadingCanceled;
     static private Runnable doAfterBamItemsLoaded = () -> {
     };
+    static private Runnable doOnError = () -> {
+
+    };
     static final private ProgressFrame bamProjectLoadingFrame = new ProgressFrame();
     static final private List<BamItem> bamProjectBamItemsToLoad = new ArrayList<>();
     static final private List<BamConfig> bamProjectBamItemsToLoadConfig = new ArrayList<>();
     static private int bamProjectLoadingProgress = -1;
 
-    private static void load(JSONObject json, File sourceFile, Consumer<BamProject> onLoaded) {
+    private static void load(JSONObject json, File sourceFile, Consumer<BamProject> onLoaded, Runnable onError) {
+
+        doOnError = onError;
 
         // get bam items configs
         JSONArray bamItemsJson = json.getJSONArray("bamItems");
@@ -164,7 +169,14 @@ public class BamProjectLoader {
 
         String loadingString = String.format("loading %s", item.TYPE.toString());
         Performance.startTimeMonitoring(loadingString);
-        item.load(config);
+        try {
+            item.load(config);
+        } catch (Exception e) {
+            ConsoleLogger.error(e);
+            doOnError.run();
+            doOnError = () -> {
+            }; // no need to recall the method
+        }
         Performance.endTimeMonitoring(loadingString);
         bamProjectLoadingFrame.updateProgress(progressMsg, bamProjectLoadingProgress + 1);
 
@@ -238,7 +250,8 @@ public class BamProjectLoader {
                 runDelayedActions();
                 onLoaded.accept(bamProject);
 
-            });
+            },
+                    onError);
         } catch (IOException e) {
             ConsoleLogger.error(e);
             onError.run();
