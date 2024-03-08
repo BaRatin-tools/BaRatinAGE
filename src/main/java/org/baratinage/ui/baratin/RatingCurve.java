@@ -113,7 +113,8 @@ public class RatingCurve extends BamItem implements IPredictionMaster, ICalibrat
                 "controlTypeIndex",
                 "isKACmode",
                 "isLocked",
-                "isReversed"));
+                "isReversed",
+                "description"));
         hydrauConfParent.addChangeListener((e) -> {
             HydraulicConfiguration bamItem = (HydraulicConfiguration) hydrauConfParent.getCurrentBamItem();
             runBam.setModelDefintion(bamItem);
