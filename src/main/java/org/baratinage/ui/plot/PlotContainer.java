@@ -9,6 +9,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
@@ -260,7 +261,7 @@ public class PlotContainer extends RowColPanel {
 
     public void saveToSvg(String filePath) {
         try {
-            FileWriter fileWriter = new FileWriter(new File(filePath));
+            FileWriter fileWriter = new FileWriter(new File(filePath), StandardCharsets.UTF_8);
             String svg = getSvgXML();
             fileWriter.write(svg);
             fileWriter.close();
