@@ -205,9 +205,6 @@ public class BamProjectLoader {
     static public void loadProject(String projectFilePath, Consumer<BamProject> onLoaded, Runnable onError) {
 
         isInLoad = true;
-        ConsoleLogger.addShowFilter("Performance");
-        ConsoleLogger.addShowFilter("BamProjectLoader");
-        ConsoleLogger.addShowFilter("DensityPlotGrid");
 
         Performance.startTimeMonitoring("clearing temp directory");
 
@@ -248,7 +245,6 @@ public class BamProjectLoader {
             Performance.startTimeMonitoring("loading bam items");
 
             load(json, projectFile, (bamProject) -> {
-                ConsoleLogger.clearShowFilters();
                 isInLoad = false;
                 runDelayedActions();
                 onLoaded.accept(bamProject);
