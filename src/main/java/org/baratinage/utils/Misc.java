@@ -31,7 +31,7 @@ public class Misc {
             sanitizedName = "_";
         }
         sanitizedName = sanitizedName.trim();
-        return input;
+        return sanitizedName;
     }
 
     public static String getTimeStamp(String format) {
