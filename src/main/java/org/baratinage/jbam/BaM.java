@@ -8,7 +8,6 @@ import java.io.InputStreamReader;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 import org.baratinage.jbam.utils.BamFilesHelpers;
@@ -207,9 +206,15 @@ public class BaM {
         return this.bamExecutionProcess;
     }
 
+    public static class BamRunException extends Exception {
+        public BamRunException(String errMessage) {
+            super(errMessage);
+        }
+    }
+
     // FIXME: refactor to use ExeRun class?
-    public String run(String workspace, Consumer<String> consoleOutputFollower)
-            throws IOException {
+    public void run(String workspace, Consumer<String> consoleOutputFollower)
+            throws BamRunException, IOException, InterruptedException {
 
         // Delete workspace content
         File workspaceDirFile = new File(workspace);
@@ -232,33 +237,17 @@ public class BaM {
 
         File exeDirectory = new File(BamFilesHelpers.EXE_DIR);
         bamExecutionProcess = Runtime.getRuntime().exec(cmd, null, exeDirectory);
+
         InputStream inputStream = bamExecutionProcess.getInputStream();
         InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
         BufferedReader bufferReader = new BufferedReader(inputStreamReader);
         List<String> consoleLines = new ArrayList<String>();
         String currentLine = null;
 
-        try {
-            while ((currentLine = bufferReader.readLine()) != null) {
-                consoleLines.add(currentLine);
-                consoleOutputFollower.accept(currentLine);
-                ConsoleLogger.log(currentLine);
-            }
-        } catch (IOException e) {
-            ConsoleLogger.error(e);
-        }
-
-        boolean finished = false;
-        try {
-            finished = bamExecutionProcess.waitFor(250, TimeUnit.MILLISECONDS);
-        } catch (InterruptedException e) {
-            ConsoleLogger.error(e);
-        }
-        int exitcode = 0;
-        if (!finished) {
-            ConsoleLogger.error("BaM Error: BaM process has not finished and this is unexepected ");
-        } else {
-            exitcode = bamExecutionProcess.exitValue();
+        while ((currentLine = bufferReader.readLine()) != null) {
+            consoleLines.add(currentLine);
+            consoleOutputFollower.accept(currentLine);
+            ConsoleLogger.log(currentLine);
         }
 
         // FIXME: all cases except default have message that should be captured!
@@ -271,44 +260,11 @@ public class BaM {
             if (inErrMsg) {
                 errMsg.add(l);
             }
-            if (l.contains("Execution will stop")) {
-                inErrMsg = false;
-            }
         }
-        if (exitcode != 0) {
-            switch (exitcode) {
-                case -1:
-                    ConsoleLogger.error("A FATAL ERROR has occured");
-                    break;
-                case -2:
-                    ConsoleLogger.error("A FATAL ERROR has occured while opening the following file.");
-                    break;
-                case -3:
-                    ConsoleLogger.error("A FATAL ERROR has occured while reading a config file.");
-                    break;
-                case -4:
-                    ConsoleLogger.error("A FATAL ERROR has occured while generating the prior model.");
-                    break;
-                case -5:
-                    ConsoleLogger.error("A FATAL ERROR has occured while fitting the model..");
-                    break;
-                case -6:
-                    ConsoleLogger.error("A FATAL ERROR has occured while post-processing MCMC samples.");
-                    break;
-                case -7:
-                    ConsoleLogger.error("A FATAL ERROR has occured while propagating uncertainty.");
-                    break;
-                case -8:
-                    ConsoleLogger.error("A FATAL ERROR has occured while writting to a file.");
-                    break;
-                default:
-                    ConsoleLogger.error(
-                            String.format("BaM Error: An unknown FATAL ERROR has occured. Exit Code=%d\n", exitcode));
-                    break;
-            }
+        if (inErrMsg) {
+            throw new BamRunException(String.join("\n", errMsg));
         }
         bamExecutionProcess = null;
-        return String.join("\n", errMsg);
     }
 
     @Override
