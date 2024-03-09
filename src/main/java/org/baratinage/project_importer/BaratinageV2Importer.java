@@ -91,6 +91,7 @@ public class BaratinageV2Importer implements IProjectImporter {
                                             BaratinageV2Builders.getBamItemNameFromFolder(f)));
                             onDone.run();
                         } catch (Exception e) {
+                            // FIXME: probably a useless try catch
                             ConsoleLogger.error("Error import item '" + type + "' from '" + f + "'...\n" + e);
                             CommonDialog.errorDialog(T.text("import_v2_project_error"));
                             mainProgressFrame.done();
@@ -111,8 +112,6 @@ public class BaratinageV2Importer implements IProjectImporter {
 
     @Override
     public void importProject(String barZipFilePath, Consumer<BamProject> bamProjectConsumer) {
-
-        ConsoleLogger.addShowFilter("BaratinageV2Importer");
 
         this.barZipFilePath = barZipFilePath;
         taskList = new ArrayList<>();
@@ -201,6 +200,7 @@ public class BaratinageV2Importer implements IProjectImporter {
                     () -> {
                         mainProgressFrame.cancel();
                         ConsoleLogger.error("An error occured while running task.");
+                        CommonDialog.errorDialog(T.text("import_v2_project_error"));
                     });
 
         } else {
