@@ -49,6 +49,7 @@ public class TResources {
         String translation = defaultDictionnary.getTranslation(key);
         if (translation == null) {
             ConsoleLogger.error("No default translation found for key '" + key + "'");
+            return "<no translation found>";
         }
         return translation;
     }

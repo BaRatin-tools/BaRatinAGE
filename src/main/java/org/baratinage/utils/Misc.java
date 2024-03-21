@@ -37,18 +37,13 @@ public class Misc {
         component.setMinimumSize(dimMin);
     }
 
-    // source: https://stackoverflow.com/a/24692712
-    public static String sanitizeName(String name) {
-        if (null == name) {
-            return "";
+    public static String sanitizeName(String input) {
+        String sanitizedName = input.replaceAll("[^a-zA-Z0-9]", "_");
+        if (sanitizedName.isEmpty()) {
+            sanitizedName = "_";
         }
-
-        if (File.separatorChar == '/') {
-            name = name.replaceAll("[\u0000/]+", "").trim();
-        } else {
-            name = name.replaceAll("[\u0000-\u001f<>:\"/\\\\|?*\u007f]+", "").trim();
-        }
-        return name;
+        sanitizedName = sanitizedName.trim();
+        return sanitizedName;
     }
 
     public static String getTimeStamp(String format) {

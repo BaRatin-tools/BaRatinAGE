@@ -5,6 +5,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -199,22 +201,11 @@ public class MainMenuBar extends JMenuBar {
         JMenuItem helpMenuItem = new JMenuItem();
         T.t(this, helpMenuItem, false, "help");
         helpMenuItem.addActionListener((e) -> {
-            if (CommonDialog.confirmDialog(
-                    String.format("%s. %s",
-                            T.text("no_help_availabel"),
-                            T.text("open_v2_help_question")),
-                    T.text("no_help_availabel"))) {
-                String localKey = T.getLocaleKey();
-                File f = new File("resources/help/v2/" + localKey + "/index.html");
-                if (!f.exists()) {
-                    localKey = "en";
-                    f = new File("resources/help/v2" + localKey + "/index.html");
-                }
-                try {
-                    Desktop.getDesktop().browse(f.toURI());
-                } catch (IOException ex) {
-                    ConsoleLogger.error(ex);
-                }
+
+            try {
+                Desktop.getDesktop().browse(new URI("https://baratin-tools.github.io/"));
+            } catch (IOException | URISyntaxException err) {
+                ConsoleLogger.error(err);
             }
         });
         helpMenu.add(helpMenuItem);

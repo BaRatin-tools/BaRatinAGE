@@ -2,13 +2,22 @@ package org.baratinage.ui.plot;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Graphics2D;
+import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
+import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
@@ -211,21 +220,6 @@ public class PlotContainer extends RowColPanel {
         return svgElement;
     }
 
-    private byte[] getImageBytes() {
-        if (chart == null) {
-            return new byte[0];
-        }
-        Dimension dim = getSize();
-        ByteArrayOutputStream bout = new ByteArrayOutputStream();
-        int scale = 3; // chart will be rendered at thrice the resolution.
-        try {
-            ChartUtils.writeScaledChartAsPNG(bout, chart, dim.width, dim.height, scale, scale);
-        } catch (IOException e) {
-            ConsoleLogger.error(e);
-        }
-        return bout.toByteArray();
-    }
-
     // FIXME: refactorization needed!
     public void saveAsSvg() {
         if (chart == null)
@@ -260,7 +254,7 @@ public class PlotContainer extends RowColPanel {
 
     public void saveToSvg(String filePath) {
         try {
-            FileWriter fileWriter = new FileWriter(new File(filePath));
+            FileWriter fileWriter = new FileWriter(new File(filePath), StandardCharsets.UTF_8);
             String svg = getSvgXML();
             fileWriter.write(svg);
             fileWriter.close();
@@ -271,7 +265,15 @@ public class PlotContainer extends RowColPanel {
 
     public void saveToPng(String filePath) {
         try {
-            Files.write(Path.of(filePath), getImageBytes());
+            Dimension dim = getSize();
+            BufferedImage img = createBufferedImage(chart,
+                    dim.width, dim.height,
+                    2, 2);
+
+            ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+            bytes.write(ChartUtils.encodeAsPNG(img));
+
+            Files.write(Path.of(filePath), bytes.toByteArray());
         } catch (IOException e) {
             ConsoleLogger.error(e);
         }
@@ -280,7 +282,78 @@ public class PlotContainer extends RowColPanel {
     public void copyToClipboard() {
         if (chart == null)
             return;
-        chartPanel.doCopy();
+
+        Dimension dim = getSize();
+        BufferedImage img = createBufferedImage(chart,
+                dim.width, dim.height,
+                1, 1);
+        ImageTransferable chartTransferable = new ImageTransferable(img);
+
+        Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+        clipboard.setContents(chartTransferable, null);
+    }
+
+    private BufferedImage createBufferedImage(
+            JFreeChart chart, int width, int height, int widthScaleFactor,
+            int heightScaleFactor) {
+        double desiredWidth = width * widthScaleFactor;
+        double desiredHeight = height * heightScaleFactor;
+        double defaultWidth = width;
+        double defaultHeight = height;
+        boolean scale = false;
+
+        // get desired width and height from somewhere then...
+        if ((widthScaleFactor != 1) || (heightScaleFactor != 1)) {
+            scale = true;
+        }
+
+        double scaleX = desiredWidth / defaultWidth;
+        double scaleY = desiredHeight / defaultHeight;
+
+        BufferedImage image = new BufferedImage((int) desiredWidth,
+                (int) desiredHeight, BufferedImage.TYPE_INT_RGB);
+        Graphics2D g2 = image.createGraphics();
+
+        if (scale) {
+            AffineTransform saved = g2.getTransform();
+            g2.transform(AffineTransform.getScaleInstance(scaleX, scaleY));
+            chart.draw(g2, new Rectangle2D.Double(0, 0, defaultWidth,
+                    defaultHeight), null, null);
+            g2.setTransform(saved);
+            g2.dispose();
+        } else {
+            chart.draw(g2, new Rectangle2D.Double(0, 0, defaultWidth,
+                    defaultHeight), null, null);
+        }
+        return image;
+    }
+
+    private static class ImageTransferable implements Transferable {
+
+        private BufferedImage image;
+
+        public ImageTransferable(BufferedImage image) {
+            this.image = image;
+        }
+
+        @Override
+        public DataFlavor[] getTransferDataFlavors() {
+            return new DataFlavor[] { DataFlavor.imageFlavor };
+        }
+
+        @Override
+        public boolean isDataFlavorSupported(DataFlavor flavor) {
+            return DataFlavor.imageFlavor.equals(flavor);
+        }
+
+        @Override
+        public Object getTransferData(DataFlavor flavor) throws UnsupportedFlavorException {
+            if (isDataFlavorSupported(flavor)) {
+                return image;
+            } else {
+                throw new UnsupportedFlavorException(flavor);
+            }
+        }
     }
 
     public void windowPlot() {

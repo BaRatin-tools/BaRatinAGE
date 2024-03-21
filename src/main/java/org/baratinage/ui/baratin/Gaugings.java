@@ -78,6 +78,7 @@ public class Gaugings extends BamItem implements ICalibrationData {
 
         setContent(content);
 
+        T.updateHierarchy(this, gaugingsImporter);
         T.updateHierarchy(this, gaugingsTable);
         T.updateHierarchy(this, plotPanel);
         T.t(this, importDataButton, false, "import_gauging_set");
@@ -108,7 +109,7 @@ public class Gaugings extends BamItem implements ICalibrationData {
 
         T.clear(gaugingsTable);
         T.t(gaugingsTable, () -> {
-            gaugingsTable.setHeader(0, T.text("stage_level"));
+            gaugingsTable.setHeader(0, T.text("stage"));
             gaugingsTable.setHeader(1, T.text("discharge"));
             gaugingsTable.setHeader(2, T.text("uncertainty_percent"));
             gaugingsTable.setHeader(3, T.text("active_gauging"));
@@ -136,7 +137,7 @@ public class Gaugings extends BamItem implements ICalibrationData {
         T.t(plotPanel, () -> {
             points.get(0).setLabel(T.text("lgd_active_gaugings"));
             points.get(1).setLabel(T.text("lgd_inactive_gaugings"));
-            plot.axisX.setLabel(T.text("stage_level") + " [m]");
+            plot.axisX.setLabel(T.text("stage") + " [m]");
             plot.axisY.setLabel(T.text("discharge") + " [m3/s]");
             plot.axisYlog.setLabel(T.text("discharge") + " [m3/s]");
             plot.update();

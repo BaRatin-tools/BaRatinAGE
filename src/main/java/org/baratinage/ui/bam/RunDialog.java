@@ -14,6 +14,7 @@ import javax.swing.SwingWorker;
 
 import org.baratinage.AppSetup;
 import org.baratinage.jbam.BaM;
+import org.baratinage.jbam.BaM.BamRunException;
 import org.baratinage.jbam.utils.Monitoring;
 import org.baratinage.translation.T;
 import org.baratinage.ui.component.ProgressBar;
@@ -113,20 +114,28 @@ public class RunDialog extends JDialog {
 
             @Override
             protected Void doInBackground() throws Exception {
-                String finalMessage = "";
+                boolean success = false;
                 try {
                     ConsoleLogger.log("BaM starting...");
-                    finalMessage = bam.run(workspacePath.toString(), txt -> {
+                    bam.run(workspacePath.toString(), txt -> {
                         publish(txt);
                     });
-
+                    success = true;
                 } catch (IOException e) {
                     ConsoleLogger.error(e);
                     cancel(true);
+                } catch (InterruptedException e) {
+                    ConsoleLogger.error(e);
+                    cancel(true);
+                } catch (BamRunException e) {
+                    ConsoleLogger.error(e);
+                    cancel(true);
                 }
-                success = finalMessage.equals("");
-                ConsoleLogger.log(success ? "BaM ran successfully!"
-                        : "BaM finished with errors!\n" + finalMessage);
+                if (success) {
+                    ConsoleLogger.log("BaM ran successfully!");
+                } else {
+                    ConsoleLogger.error("BaM encountered an error!");
+                }
                 return null;
             }
 

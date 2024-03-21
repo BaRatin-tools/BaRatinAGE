@@ -23,7 +23,7 @@ $DIRS_TO_CREATE = @(
 )
 
 $DIRS_TO_COPY = @(
-    "resources/fonts", "resources/help", "resources/i18n", "resources/icons", "example"
+    "resources/fonts", "resources/i18n", "resources/icons", "example"
 )
 $FILES_TO_COPY = @(
     "resources/credits.csv"

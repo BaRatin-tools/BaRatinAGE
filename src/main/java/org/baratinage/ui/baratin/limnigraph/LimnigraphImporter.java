@@ -62,36 +62,26 @@ public class LimnigraphImporter extends RowColPanel {
         timeColComboBox = new SimpleComboBox();
         timeColFormatField = new SimpleTextField();
 
-        JLabel timeColMappingLabel = new JLabel(T.text("date_time"));
+        JLabel timeColMappingLabel = new JLabel("date_time");
 
-        JLabel timeColFormatLabel = new JLabel(T.text("date_time_format"));
+        JLabel timeColFormatLabel = new JLabel("date_time_format");
         timeColFormatField.setText("y/M/d H:m:s");
-        JLabel timeFormatDetails = new JLabel(
-                "<html><code>" +
-                        "y = " + T.text("year") + ", " +
-                        "M = " + T.text("month") + ", " +
-                        "d = " + T.text("day") + ", " +
-                        "H = " + T.text("hour") + " (0-23)" + ", " +
-                        "m = " + T.text("minute") + " (0-59)" + ", " +
-                        "s = " + T.text("second") + " (0-59)" +
-                        "<br>" +
-                        "yyyy-MM-dd HH:mm:ss = 2005-07-26 14:32:09" +
-                        "</code></html>");
+        JLabel timeFormatDetails = new JLabel();
 
         // ********************************************************
         // Stage related fields
 
         stageColComboBox = new SimpleComboBox();
-        JLabel stageColLabel = new JLabel(T.text("stage_level"));
+        JLabel stageColLabel = new JLabel("stage");
 
         nonSysUncertaintyComboBox = new SimpleComboBox();
-        JLabel nonSysUncertaintyLabel = new JLabel(T.html("stage_non_sys_error_uncertainty"));
+        JLabel nonSysUncertaintyLabel = new JLabel("stage_non_sys_error_uncertainty");
 
         sysUncertaintyComboBox = new SimpleComboBox();
-        JLabel sysUncertaintyLabel = new JLabel(T.html("stage_sys_error_uncertainty"));
+        JLabel sysUncertaintyLabel = new JLabel("stage_sys_error_uncertainty");
 
         sysIndComboBox = new SimpleComboBox();
-        JLabel sysIndLabel = new JLabel(T.text("stage_sys_error_ind"));
+        JLabel sysIndLabel = new JLabel("stage_sys_error_ind");
 
         // ********************************************************
         // Import configuration panel layout
@@ -178,7 +168,7 @@ public class LimnigraphImporter extends RowColPanel {
         RowColPanel actionPanel = new RowColPanel();
         actionPanel.setPadding(5);
         actionPanel.setGap(5);
-        validateButton = new JButton(T.text("import"));
+        validateButton = new JButton("import");
         validateButton.setEnabled(false);
         validateButton.addActionListener((e) -> {
             String filePath = dataFileReader.getFilePath();
@@ -230,7 +220,7 @@ public class LimnigraphImporter extends RowColPanel {
             dialog.setVisible(false);
 
         });
-        JButton cancelButton = new JButton(T.text("cancel"));
+        JButton cancelButton = new JButton("cancel");
         cancelButton.addActionListener((e) -> {
             dialog.setVisible(false);
         });
@@ -264,6 +254,28 @@ public class LimnigraphImporter extends RowColPanel {
         sysUncertaintyComboBox.addChangeListener(cbChangeListener);
         sysIndComboBox.addChangeListener(cbChangeListener);
 
+        T.t(this, timeColMappingLabel, false, "date_time");
+        T.t(this, timeColFormatLabel, false, "date_time_format");
+        T.t(this, () -> {
+            String timeFormatDetailsText = "<html><code>" +
+                    "y = " + T.text("year") + ", " +
+                    "M = " + T.text("month") + ", " +
+                    "d = " + T.text("day") + ", " +
+                    "H = " + T.text("hour") + " (0-23)" + ", " +
+                    "m = " + T.text("minute") + " (0-59)" + ", " +
+                    "s = " + T.text("second") + " (0-59)" +
+                    "<br>" +
+                    "yyyy-MM-dd HH:mm:ss = 2005-07-26 14:32:09" +
+                    "</code></html>";
+            timeFormatDetails.setText(timeFormatDetailsText);
+        });
+        T.t(this, stageColLabel, false, "stage");
+        T.t(this, nonSysUncertaintyLabel, true, "stage_non_sys_error_uncertainty");
+        T.t(this, sysUncertaintyLabel, true, "stage_sys_error_uncertainty");
+        T.t(this, sysIndLabel, false, "stage_sys_error_ind");
+        T.t(this, validateButton, false, "import");
+        T.t(this, cancelButton, false, "cancel");
+        T.updateHierarchy(this, dataFileReader);
     }
 
     private static String formatSize(double sizeInKb) {

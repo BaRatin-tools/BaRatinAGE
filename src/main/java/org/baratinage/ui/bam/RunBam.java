@@ -13,6 +13,7 @@ import javax.swing.SwingWorker;
 
 import org.baratinage.AppSetup;
 import org.baratinage.jbam.BaM;
+import org.baratinage.jbam.BaM.BamRunException;
 import org.baratinage.jbam.CalDataResidualConfig;
 import org.baratinage.jbam.CalibrationConfig;
 import org.baratinage.jbam.CalibrationData;
@@ -482,20 +483,31 @@ public class RunBam {
 
             @Override
             protected Void doInBackground() throws Exception {
-                String finalMessage = "";
+                boolean success = false;
                 try {
                     ConsoleLogger.log("BaM starting...");
-                    finalMessage = bam.run(workspacePath.toString(), txt -> {
+                    bam.run(workspacePath.toString(), txt -> {
                         publish(txt);
                     });
-
+                    success = true;
                 } catch (IOException e) {
                     ConsoleLogger.error(e);
                     cancel(true);
                     onError.run();
+                } catch (InterruptedException e) {
+                    ConsoleLogger.error(e);
+                    cancel(true);
+                    onError.run();
+                } catch (BamRunException e) {
+                    ConsoleLogger.error(e);
+                    cancel(true);
+                    onError.run();
                 }
-                ConsoleLogger.log(finalMessage.equals("") ? "BaM ran successfully!"
-                        : "BaM finished with errors!\n" + finalMessage);
+                if (success) {
+                    ConsoleLogger.log("BaM ran successfully!");
+                } else {
+                    ConsoleLogger.error("BaM encountered an error!");
+                }
                 return null;
             }
 
