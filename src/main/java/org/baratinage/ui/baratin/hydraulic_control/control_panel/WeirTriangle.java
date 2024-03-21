@@ -76,7 +76,7 @@ public class WeirTriangle extends PriorControlPanel {
 
         double sqrtOfTwoG = Math.sqrt(2 * G);
         double toRadFactorOverTwo = Math.PI / 180d * V / 2d;
-        double VOverTwoInRad = toRadFactorOverTwo * toRadFactorOverTwo;
+        double VOverTwoInRad = toRadFactorOverTwo;
         double tanOfVOverTwo = Math.tan(VOverTwoInRad);
 
         double A = C * tanOfVOverTwo * sqrtOfTwoG;
