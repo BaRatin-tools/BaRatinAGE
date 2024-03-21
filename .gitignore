@@ -34,3 +34,10 @@ archives/
 dist/
 build/
 exe/
+
+target/
+target-packaged/
+archive/
+*.bam
+resources/
+test/
