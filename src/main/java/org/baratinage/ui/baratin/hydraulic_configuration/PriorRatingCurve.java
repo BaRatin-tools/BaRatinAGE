@@ -3,14 +3,13 @@ package org.baratinage.ui.baratin.hydraulic_configuration;
 import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.swing.JButton;
 import javax.swing.JSeparator;
 
 import org.baratinage.AppSetup;
-import org.baratinage.jbam.Distribution;
-import org.baratinage.jbam.DistributionType;
-import org.baratinage.jbam.Parameter;
+import org.baratinage.jbam.CalibrationResult;
 import org.baratinage.jbam.PredictionConfig;
 import org.baratinage.jbam.PredictionInput;
 import org.baratinage.jbam.PredictionOutput;
@@ -26,6 +25,7 @@ import org.baratinage.ui.bam.PredExp;
 import org.baratinage.ui.bam.PredExpSet;
 import org.baratinage.ui.bam.RunBam;
 import org.baratinage.ui.bam.RunConfigAndRes;
+import org.baratinage.ui.baratin.rating_curve.RatingCurveParameters;
 import org.baratinage.ui.baratin.rating_curve.RatingCurvePlot;
 import org.baratinage.ui.baratin.rating_curve.RatingCurveStageGrid;
 import org.baratinage.ui.commons.MsgPanel;
@@ -190,29 +190,25 @@ public class PriorRatingCurve<HCT extends IModelDefinition & IPriors> extends Ro
     private void buildPlot() {
 
         PredictionResult[] predResults = bamRunConfigAndRes.getPredictionResults();
-        Parameter[] params = bamRunConfigAndRes.getCalibrationConfig().model.parameters;
+
+        CalibrationResult calResults = bamRunConfigAndRes.getCalibrationResults();
+        RatingCurveParameters rcParameters = new RatingCurveParameters(calResults.estimatedParameters);
+
+        List<double[]> activationStage = rcParameters.kacbParameters
+                .stream()
+                .filter(bep -> bep.shortName.startsWith("k"))
+                .map(bep -> {
+
+                    double[] u95 = bep.get95interval();
+                    double mp = bep.getMaxpost();
+                    return new double[] { mp, u95[0], u95[1] };
+                }).collect(Collectors.toList());
 
         double[] stage = predResults[0].predictionConfig.inputs[0].dataColumns.get(0);
         double[] dischargeMaxpost = predResults[0].outputResults.get(0).spag().get(0);
         List<double[]> dischargeParamU = predResults[1].outputResults.get(0).env().subList(1, 3);
 
-        List<double[]> transitionStages = new ArrayList<>();
-        for (Parameter p : params) {
-            if (p.name.startsWith("k_")) {
-                Distribution d = p.distribution;
-                if (d.type == DistributionType.GAUSSIAN) {
-                    double[] distParams = d.parameterValues;
-                    double mean = distParams[0];
-                    double std = distParams[1];
-                    transitionStages.add(new double[] {
-                            mean, mean - 2 * std, mean + 2 * std
-                    });
-                }
-
-            }
-        }
-
-        plotPanel.setPriorPlot(stage, dischargeMaxpost, dischargeParamU, transitionStages);
+        plotPanel.setPriorPlot(stage, dischargeMaxpost, dischargeParamU, activationStage);
     }
 
     @Override
