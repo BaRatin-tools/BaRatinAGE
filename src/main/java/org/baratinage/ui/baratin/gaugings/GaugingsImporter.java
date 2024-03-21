@@ -119,7 +119,7 @@ public class GaugingsImporter extends RowColPanel {
         actionPanel.setPadding(5);
         actionPanel.setGap(5);
 
-        validateButton = new JButton(T.text("import"));
+        validateButton = new JButton("import");
         validateButton.addActionListener((e) -> {
             String filePath = dataFileReader.getFilePath();
             if (filePath != null) { // FIXME: validateButton should be disabled if import is invalid
@@ -136,7 +136,7 @@ public class GaugingsImporter extends RowColPanel {
             dialog.setVisible(false);
         });
 
-        JButton cancelButton = new JButton(T.text("cancel"));
+        JButton cancelButton = new JButton("cancel");
         cancelButton.addActionListener((e) -> {
             dialog.setVisible(false);
         });
@@ -159,17 +159,17 @@ public class GaugingsImporter extends RowColPanel {
 
         int rowIndex = 0;
 
-        JLabel hColMapLabel = new JLabel(T.text("stage_level"));
+        JLabel hColMapLabel = new JLabel("stage_level");
         columnMappingPanel.insertChild(hColMapLabel, 0, rowIndex);
         columnMappingPanel.insertChild(columnsMapping.hCol, 1, rowIndex);
         rowIndex++;
 
-        JLabel qColMapLabel = new JLabel(T.text("discharge"));
+        JLabel qColMapLabel = new JLabel("discharge");
         columnMappingPanel.insertChild(qColMapLabel, 0, rowIndex);
         columnMappingPanel.insertChild(columnsMapping.qCol, 1, rowIndex);
         rowIndex++;
 
-        JLabel uqColMapLabel = new JLabel(T.text("discharge_uncertainty_percent"));
+        JLabel uqColMapLabel = new JLabel("discharge_uncertainty_percent");
         columnMappingPanel.insertChild(uqColMapLabel, 0, rowIndex);
         columnMappingPanel.insertChild(columnsMapping.uqCol, 1, rowIndex);
         // rowIndex++;
@@ -181,6 +181,11 @@ public class GaugingsImporter extends RowColPanel {
         appendChild(new JSeparator(), 0);
         appendChild(actionPanel, 0);
 
+        T.t(this, validateButton, false, "import");
+        T.t(this, cancelButton, false, "cancel");
+        T.t(this, hColMapLabel, false, "stage_level");
+        T.t(this, qColMapLabel, false, "discharge");
+        T.t(this, uqColMapLabel, false, "discharge_uncertainty_percent");
     }
 
     private void updateValidityStatus() {

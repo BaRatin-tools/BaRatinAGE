@@ -78,6 +78,7 @@ public class Gaugings extends BamItem implements ICalibrationData {
 
         setContent(content);
 
+        T.updateHierarchy(this, gaugingsImporter);
         T.updateHierarchy(this, gaugingsTable);
         T.updateHierarchy(this, plotPanel);
         T.t(this, importDataButton, false, "import_gauging_set");

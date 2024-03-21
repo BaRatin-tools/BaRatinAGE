@@ -44,13 +44,13 @@ public class DataFileReader extends RowColPanel {
         // importFilePanel.setRowWeight(2, 10000);
 
         JLabel explainLabel = new JLabel();
-        explainLabel.setText(T.text("select_file_to_import"));
+        explainLabel.setText("select_file_to_import");
 
         selectedFilePathLabel = new JLabel();
         selectedFilePathLabel.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 14));
 
         JButton browseFileSystemButon = new JButton();
-        browseFileSystemButon.setText(T.text("browse"));
+        browseFileSystemButon.setText("browse");
 
         browseFileSystemButon.addActionListener(e -> {
             File f = CommonDialog.openFileDialog(
@@ -73,7 +73,7 @@ public class DataFileReader extends RowColPanel {
         // **********************************************************
         // import settings section
 
-        JLabel separatorLabel = new JLabel(T.text("column_separator"));
+        JLabel separatorLabel = new JLabel("column_separator");
 
         SimpleRadioButtons<String> sepRatioButtons = new SimpleRadioButtons<>();
 
@@ -81,10 +81,10 @@ public class DataFileReader extends RowColPanel {
             sep = sepRatioButtons.getSelectedValue();
             fireChangeListeners();
         });
-        JRadioButton tabOptBtn = sepRatioButtons.addOption("tab", T.text("sep_tab"), "\t");
-        JRadioButton semicolOptBtn = sepRatioButtons.addOption("semicolon", T.text("sep_semicolon"), ";");
-        JRadioButton commaOptBtn = sepRatioButtons.addOption("comma", T.text("sep_comma"), ",");
-        JRadioButton spaceOptBtn = sepRatioButtons.addOption("space", T.text("sep_space"), " ");
+        JRadioButton tabOptBtn = sepRatioButtons.addOption("tab", "sep_tab", "\t");
+        JRadioButton semicolOptBtn = sepRatioButtons.addOption("semicolon", "sep_semicolon", ";");
+        JRadioButton commaOptBtn = sepRatioButtons.addOption("comma", "sep_comma", ",");
+        JRadioButton spaceOptBtn = sepRatioButtons.addOption("space", "sep_space", " ");
 
         sepRatioButtons.setSelected("semicolon");
 
@@ -95,14 +95,14 @@ public class DataFileReader extends RowColPanel {
         sepOptionButtons.appendChild(commaOptBtn);
         sepOptionButtons.appendChild(spaceOptBtn);
 
-        JCheckBox hasHeaderCheckBox = new JCheckBox(T.text("has_header_row"));
+        JCheckBox hasHeaderCheckBox = new JCheckBox("has_header_row");
         hasHeaderCheckBox.setSelected(hasHeaderRow);
         hasHeaderCheckBox.addActionListener((e) -> {
             hasHeaderRow = hasHeaderCheckBox.isSelected();
             fireChangeListeners();
         });
 
-        JLabel nSkipRowLabel = new JLabel(T.text("n_rows_to_skip"));
+        JLabel nSkipRowLabel = new JLabel("n_rows_to_skip");
         SimpleIntegerField nSkipRowField = new SimpleIntegerField(0, Integer.MAX_VALUE, 1);
         nSkipRowField.setValue(0);
         nSkipRowField.addChangeListener((e) -> {
@@ -110,7 +110,7 @@ public class DataFileReader extends RowColPanel {
             fireChangeListeners();
         });
 
-        JLabel missingValueCodeLabel = new JLabel(T.text("missing_value_code"));
+        JLabel missingValueCodeLabel = new JLabel("missing_value_code");
         SimpleTextField missingValueCodeField = new SimpleTextField();
         missingValueCodeField.setText(missingValueString);
         missingValueCodeField.addChangeListener((chEvt) -> {
@@ -118,7 +118,7 @@ public class DataFileReader extends RowColPanel {
             fireChangeListeners();
         });
 
-        JLabel nRowPreloadLabel = new JLabel(T.text("n_rows_to_preload"));
+        JLabel nRowPreloadLabel = new JLabel("n_rows_to_preload");
         SimpleIntegerField nRowPreloadField = new SimpleIntegerField(10, Integer.MAX_VALUE, 1);
         nRowPreloadField.setValue(nPreload);
         nRowPreloadField.addChangeListener((e) -> {
@@ -160,6 +160,18 @@ public class DataFileReader extends RowColPanel {
         appendChild(importFilePanel, 0);
         appendChild(new JSeparator(), 0);
         appendChild(importSettingsPanel, 0);
+
+        T.t(this, explainLabel, false, "select_file_to_import");
+        T.t(this, browseFileSystemButon, false, "browse");
+        T.t(this, separatorLabel, false, "column_separator");
+        T.t(this, tabOptBtn, false, "sep_tab");
+        T.t(this, semicolOptBtn, false, "sep_semicolon");
+        T.t(this, commaOptBtn, false, "sep_comma");
+        T.t(this, spaceOptBtn, false, "sep_space");
+        T.t(this, hasHeaderCheckBox, false, "has_header_row");
+        T.t(this, nSkipRowLabel, false, "n_rows_to_skip");
+        T.t(this, missingValueCodeLabel, false, "missing_value_code");
+        T.t(this, nRowPreloadLabel, false, "n_rows_to_preload");
 
     }
 

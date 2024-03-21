@@ -95,6 +95,7 @@ public class Limnigraph extends BamItem {
 
         setContent(content);
 
+        T.updateHierarchy(this, limniImporter);
         T.updateHierarchy(this, limniTable);
         T.updateHierarchy(this, limniErrors);
         T.updateHierarchy(this, plotPanel);
