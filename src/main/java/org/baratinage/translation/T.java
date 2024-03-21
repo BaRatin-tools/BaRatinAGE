@@ -61,7 +61,6 @@ public class T {
     }
 
     static public String text(String itemKey) {
-        // return resourcesOLD.getTranslation(currentLocale.getLanguage(), itemKey);
         return resources.getTranslation(currentLocale.getLanguage(), itemKey);
     }
 
