@@ -21,9 +21,9 @@
     <property name="final" value="${dist}/${nameversion}" />
 
     <!-- dependencies: external libraries to add to the build ______ -->
-    <property name="extlib.jfreechart" value="${root}/externalLib/jfreechart-1.5.3/target/jfreechart-1.5.3.jar" />
-    <property name="extlib.orsonpdf" value="${root}/externalLib/orsonpdf-1.9.1/target/orsonpdf-1.9.1.jar" />
-    <property name="extlib.opencsv" value="${root}/externalLib/opencsv-5.7.0.jar" />
+    <property name="extlib.jfreechart" value="${root}/externalLib/jfreechart-1.5.4.jar" />
+    <property name="extlib.orsonpdf" value="${root}/externalLib/orsonpdf-1.9.1.jar" />
+    <property name="extlib.opencsv" value="${root}/externalLib/opencsv-5.8.jar" />
     <property name="extlib.juniversalchardet" value="${root}/externalLib/juniversalchardet-2.4.0.jar" />
 
     <target name="all" depends="clean, init, build, jar, package" />
@@ -51,7 +51,7 @@ Create build directory containing all the java files to compile
         <!-- <echo message="Compilation: running javac to compile java files" /> -->
         <!-- <property name="jvm.source" value="11" />
         <property name="jvm.target" value="11" /> -->
-        <!-- <javac srcdir="${src}" destdir="${build}" source="${jvm.source}" target="${jvm.target}"  includeantruntime="false"> -->
+        <!-- <javac srcdir="${src}" destdir="${build}" source="${jvm.source}" target="${jvm.target}" includeantruntime="false"> -->
         <javac srcdir="${src}" destdir="${build}" includeantruntime="false">
             <classpath location="${extlib.jfreechart}" />
             <classpath location="${extlib.orsonpdf}" />
