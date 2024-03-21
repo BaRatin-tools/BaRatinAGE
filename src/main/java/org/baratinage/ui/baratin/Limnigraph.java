@@ -146,7 +146,7 @@ public class Limnigraph extends BamItem {
 
         T.t(limniTable, () -> {
             limniTable.setHeader(0, T.text("date_time"));
-            limniTable.setHeader(1, T.text("stage_level"));
+            limniTable.setHeader(1, T.text("stage"));
             if (limniDataset.hasStageErrMatrix()) {
                 limniTable.setHeader(2, T.text("percentile_0025"));
                 limniTable.setHeader(3, T.text("percentile_0975"));
@@ -174,8 +174,8 @@ public class Limnigraph extends BamItem {
         T.clear(plotPanel);
         T.t(plotPanel, () -> {
             plot.axisXdate.setLabel(T.text("time"));
-            plot.axisY.setLabel(T.text("stage_level") + " [m]");
-            plot.axisYlog.setLabel(T.text("stage_level") + " [m]");
+            plot.axisY.setLabel(T.text("stage") + " [m]");
+            plot.axisYlog.setLabel(T.text("stage") + " [m]");
             if (envelop != null) {
                 envelop.setLabel(T.text("stage_uncertainty"));
             }

@@ -72,7 +72,7 @@ public class LimnigraphImporter extends RowColPanel {
         // Stage related fields
 
         stageColComboBox = new SimpleComboBox();
-        JLabel stageColLabel = new JLabel("stage_level");
+        JLabel stageColLabel = new JLabel("stage");
 
         nonSysUncertaintyComboBox = new SimpleComboBox();
         JLabel nonSysUncertaintyLabel = new JLabel("stage_non_sys_error_uncertainty");
@@ -269,7 +269,7 @@ public class LimnigraphImporter extends RowColPanel {
                     "</code></html>";
             timeFormatDetails.setText(timeFormatDetailsText);
         });
-        T.t(this, stageColLabel, false, "stage_level");
+        T.t(this, stageColLabel, false, "stage");
         T.t(this, nonSysUncertaintyLabel, true, "stage_non_sys_error_uncertainty");
         T.t(this, sysUncertaintyLabel, true, "stage_sys_error_uncertainty");
         T.t(this, sysIndLabel, false, "stage_sys_error_ind");

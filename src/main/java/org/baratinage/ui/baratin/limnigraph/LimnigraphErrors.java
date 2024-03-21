@@ -28,7 +28,7 @@ public class LimnigraphErrors extends RowColPanel {
         T.updateHierarchy(this, errMatrixTable);
 
         T.t(this, () -> {
-            tableTabs.setTitleAt(0, T.text("stage_level_and_uncertainty"));
+            tableTabs.setTitleAt(0, T.text("stage_and_uncertainty"));
             tableTabs.setTitleAt(1, T.text("stage_samples_width_errors"));
             errConfigTable.updateCellRenderer();
             errMatrixTable.updateCellRenderer();
@@ -62,7 +62,7 @@ public class LimnigraphErrors extends RowColPanel {
             T.t(errConfigTable, () -> {
 
                 errConfigTable.setHeader(0, T.text("date_time"));
-                errConfigTable.setHeader(1, T.text("stage_level"));
+                errConfigTable.setHeader(1, T.text("stage"));
                 int colIndex = 2;
                 if (dataset.hasNonSysErr()) {
                     errConfigTable.setHeader(colIndex, T.text("stage_non_sys_error_uncertainty"));

@@ -148,7 +148,7 @@ public class RatingCurveResults extends TabContainer {
         rcGridTable.updateHeader();
 
         // T.t(this, () -> {
-        // rcGridTable.setHeader(0, T.text("stage_level"));
+        // rcGridTable.setHeader(0, T.text("stage"));
         // rcGridTable.setHeader(1, T.text("discharge"));
         // rcGridTable.setHeader(2,
         // T.text("parametric_uncertainty") +

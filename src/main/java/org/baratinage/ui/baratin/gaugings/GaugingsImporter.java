@@ -159,7 +159,7 @@ public class GaugingsImporter extends RowColPanel {
 
         int rowIndex = 0;
 
-        JLabel hColMapLabel = new JLabel("stage_level");
+        JLabel hColMapLabel = new JLabel("stage");
         columnMappingPanel.insertChild(hColMapLabel, 0, rowIndex);
         columnMappingPanel.insertChild(columnsMapping.hCol, 1, rowIndex);
         rowIndex++;
@@ -183,7 +183,7 @@ public class GaugingsImporter extends RowColPanel {
 
         T.t(this, validateButton, false, "import");
         T.t(this, cancelButton, false, "cancel");
-        T.t(this, hColMapLabel, false, "stage_level");
+        T.t(this, hColMapLabel, false, "stage");
         T.t(this, qColMapLabel, false, "discharge");
         T.t(this, uqColMapLabel, false, "discharge_uncertainty_percent");
     }
