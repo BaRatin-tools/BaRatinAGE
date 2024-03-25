@@ -1,10 +1,12 @@
-package org.baratinage.translation;
+package org.baratinage.translation.helpers;
 
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+
+import org.baratinage.translation.TDictionary;
 import org.baratinage.utils.ConsoleLogger;
 import org.baratinage.utils.fs.ReadFile;
 import org.baratinage.utils.fs.WriteFile;

@@ -1,13 +1,16 @@
 package org.baratinage.translation;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.PropertyResourceBundle;
+import java.util.ResourceBundle;
 
 import org.baratinage.utils.ConsoleLogger;
-import org.baratinage.utils.fs.ReadFile;
 
 public class TDictionary {
     public final Locale locale;
@@ -43,25 +46,45 @@ public class TDictionary {
 
     static public List<String[]> rawDictionnaries;
 
-    public static List<TDictionary> readDictionnariesFromCSV(String csvFilePath) {
-        try {
-            rawDictionnaries = ReadFile.readStringMatrix(
-                    csvFilePath,
-                    "\\t",
-                    0,
-                    true,
-                    false);
-            List<TDictionary> dictionnaries = new ArrayList<>();
-            String[] keys = rawDictionnaries.get(0);
-            // skipping first two columns (key, comment)
-            for (int k = 2; k < rawDictionnaries.size(); k++) {
-                String[] translations = rawDictionnaries.get(k);
-                dictionnaries.add(new TDictionary(translations[0], keys, translations));
-            }
-            return dictionnaries;
-        } catch (IOException e) {
-            ConsoleLogger.error(e);
+    public static List<TDictionary> loadResourceBundlesFromDir(String directoryPath) {
+        List<TDictionary> translations = new ArrayList<>();
+
+        File directory = new File(directoryPath);
+        if (!directory.exists() || !directory.isDirectory()) {
+            ConsoleLogger.error("Directory does not exist or is not a directory: " + directoryPath);
+            return translations;
         }
-        return null;
+
+        File[] files = directory.listFiles((dir, name) -> name.matches(".+_\\w{2,3}\\.properties"));
+        if (files == null || files.length == 0) {
+            ConsoleLogger.error("No matching files found in directory: " + directoryPath);
+            return translations;
+        }
+
+        for (File file : files) {
+            try {
+                String localeKey = file.getName().split("_")[1].split("\\.")[0];
+                Locale locale = Locale.forLanguageTag(localeKey);
+                try (FileInputStream fis = new FileInputStream(file)) {
+                    ResourceBundle bundle = new PropertyResourceBundle(fis);
+                    List<String> keys = new ArrayList<>();
+                    List<String> translationsList = new ArrayList<>();
+                    bundle.keySet().forEach(key -> {
+                        keys.add(key);
+                        translationsList.add(bundle.getString(key));
+                    });
+                    TDictionary tDict = new TDictionary(
+                            locale.toLanguageTag(),
+                            keys.toArray(new String[0]),
+                            translationsList.toArray(new String[0]));
+                    translations.add(tDict);
+                }
+            } catch (IOException e) {
+                ConsoleLogger.error("Error reading properties file: " + file.getAbsolutePath());
+            }
+        }
+
+        return translations;
     }
+
 }
