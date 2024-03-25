@@ -14,7 +14,7 @@ public class TResources {
     private final TDictionary defaultDictionnary;
 
     public TResources() {
-        dictionnariesList = TDictionary.readDictionnariesFromCSV(AppSetup.PATH_TRANSLATIONS_FILE);
+        dictionnariesList = TDictionary.loadResourceBundlesFromDir(AppSetup.PATH_TRANSLATIONS_DIR);
         dictionnariesMap = new HashMap<>();
         for (TDictionary d : dictionnariesList) {
             dictionnariesMap.put(d.lgKey, d);

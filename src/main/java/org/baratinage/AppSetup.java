@@ -55,8 +55,8 @@ public class AppSetup {
 
     public static final String PATH_CONFIGURATION_FILE = Path.of(PATH_APP_ROOT_DIR, "resources", "config.json")
             .toString();
-    public static final String PATH_TRANSLATIONS_FILE = Path
-            .of(PATH_APP_ROOT_DIR, "resources", "i18n", "translations.csv").toString();
+    public static final String PATH_TRANSLATIONS_DIR = Path
+            .of(PATH_APP_ROOT_DIR, "resources", "i18n").toString();
 
     // setting up colors and icons (order matters)
     public static final AppColors COLORS = new AppColors();
