@@ -151,7 +151,7 @@ public class SimpleTextField extends JTextField {
         doNotFireChange = false;
     }
 
-    public void delayedSetText(String text, Boolean fireChangeListeners) {
+    public void setTextDelayed(String text, Boolean fireChangeListeners) {
         TimedActions.delay(0, () -> {
             if (!fireChangeListeners) {
                 setTextWithoutFiringChangeListeners(text);
