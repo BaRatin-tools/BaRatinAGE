@@ -119,6 +119,19 @@ public class BaremExporter extends RowColPanel {
 
         // setting listeners
 
+        hydroCodeField.addChangeListener((e) -> {
+            String txt = hydroCodeField.getText();
+            if (txt.length() > 8) {
+                hydroCodeField.setTextDelayed(txt.substring(0, 8), false);
+            }
+        });
+        hyroNameField.addChangeListener((e) -> {
+            String txt = hydroCodeField.getText();
+            if (txt.length() > 6) {
+                hyroNameField.setTextDelayed(txt.substring(0, 6), false);
+            }
+        });
+
         canceled = true;
 
         okButton.addActionListener((e) -> {
