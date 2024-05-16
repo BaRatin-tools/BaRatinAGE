@@ -126,7 +126,7 @@ public class BaremExporter extends RowColPanel {
             }
         });
         hyroNameField.addChangeListener((e) -> {
-            String txt = hydroCodeField.getText();
+            String txt = hyroNameField.getText();
             if (txt.length() > 6) {
                 hyroNameField.setTextDelayed(txt.substring(0, 6), false);
             }
