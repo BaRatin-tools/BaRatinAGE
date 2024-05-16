@@ -95,6 +95,13 @@ public class SimpleRadioButtons<T> {
         return values;
     }
 
+    public void setEnabled(boolean isEnabled) {
+        for (String key : optBtns.keySet()) {
+            JRadioButton btn = optBtns.get(key);
+            btn.setEnabled(isEnabled);
+        }
+    }
+
     private final List<ChangeListener> changeListeners = new ArrayList<>();
 
     public void addChangeListener(ChangeListener l) {
