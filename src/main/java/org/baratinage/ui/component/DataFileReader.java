@@ -21,6 +21,7 @@ import org.baratinage.utils.ConsoleLogger;
 import org.baratinage.utils.fs.ReadFile;
 
 public class DataFileReader extends RowColPanel {
+    public File file = null;
     public String filePath = null;
     public String sep = ";";
     public int nRowSkip = 0;
@@ -31,7 +32,7 @@ public class DataFileReader extends RowColPanel {
     private JLabel selectedFilePathLabel;
     private String[] fileLines;
 
-    public DataFileReader() {
+    public DataFileReader(CommonDialog.CustomFileFilter... fileFilters) {
         super(AXIS.COL);
 
         // **********************************************************
@@ -53,16 +54,15 @@ public class DataFileReader extends RowColPanel {
         browseFileSystemButon.setText("browse");
 
         browseFileSystemButon.addActionListener(e -> {
-            File f = CommonDialog.openFileDialog(
+            file = CommonDialog.openFileDialog(
                     T.text("select_data_text_file"),
-                    T.text("data_text_file"),
-                    "txt", "csv", "dat", "bad");
+                    fileFilters);
 
-            if (f == null) {
+            if (file == null) {
                 ConsoleLogger.error("selected file is null.");
                 return;
             }
-            readFilesLines(f.getAbsolutePath());
+            readFilesLines(file.getAbsolutePath());
             fireChangeListeners();
         });
 
