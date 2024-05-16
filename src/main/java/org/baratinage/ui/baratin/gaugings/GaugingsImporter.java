@@ -15,6 +15,7 @@ import org.baratinage.AppSetup;
 import org.baratinage.translation.T;
 import org.baratinage.utils.Misc;
 import org.baratinage.utils.perf.TimedActions;
+import org.baratinage.ui.component.CommonDialog;
 import org.baratinage.ui.component.DataFileReader;
 import org.baratinage.ui.component.DataParser;
 import org.baratinage.ui.component.SimpleComboBox;
@@ -64,6 +65,7 @@ public class GaugingsImporter extends RowColPanel {
     private RowColPanel dataPreviewPanel;
     private GaugingsDataset dataset;
 
+    private final DataFileReader dataFileReader;
     private final DataParser dataParser;
     private final ColsMapping columnsMapping;
     private final JButton validateButton;
@@ -81,12 +83,51 @@ public class GaugingsImporter extends RowColPanel {
 
         dataPreviewPanel = new RowColPanel();
 
-        DataFileReader dataFileReader = new DataFileReader();
+        dataFileReader = new DataFileReader(
+                new CommonDialog.CustomFileFilter(
+                        T.text("data_text_file"),
+                        "txt", "csv", "dat"),
+                new CommonDialog.CustomFileFilter(
+                        T.text("bareme_bad_text_file"),
+                        "bad"));
         dataParser = new DataParser();
 
         dataPreviewPanel.appendChild(dataParser);
 
         dataFileReader.addChangeListener((chEvt) -> {
+
+            if (isBaremeBadFile()) {
+                System.out.println("BAREME BAD FILE");
+                try {
+
+                    String filePath = dataFileReader.getFilePath();
+                    if (filePath != null) { // FIXME: validateButton should be disabled if import is invalid
+                        dataFileReader.sep = " ";
+                        dataFileReader.nRowSkip = 1;
+                        dataFileReader.hasHeaderRow = false;
+                        String fileName = Path.of(filePath).getFileName().toString();
+                        // necessary to read all the data!
+                        rawData = dataFileReader.getData();
+                        dataParser.setRawData(rawData, headers, "");
+
+                        double[] h = dataParser.getDoubleCol(0);
+                        double[] Q = dataParser.getDoubleCol(2);
+                        double[] uQ = dataParser.getDoubleCol(3);
+
+                        int n = h.length;
+                        for (int k = 0; k < n; k++) {
+                            double uQpercent = (uQ[k] * 2) / Q[k] * 100;
+                            uQ[k] = uQpercent;
+                        }
+
+                        dataset = new GaugingsDataset(fileName, h, Q, uQ);
+                        dialog.setVisible(false);
+                        return;
+                    }
+                } catch (Exception e) {
+                    CommonDialog.errorDialog(T.text("bareme_bad_import_error"));
+                }
+            }
 
             rawData = dataFileReader.getData(dataFileReader.nPreload);
             headers = dataFileReader.getHeaders();
@@ -186,6 +227,20 @@ public class GaugingsImporter extends RowColPanel {
         T.t(this, hColMapLabel, false, "stage");
         T.t(this, qColMapLabel, false, "discharge");
         T.t(this, uqColMapLabel, false, "discharge_uncertainty_percent");
+    }
+
+    private boolean isBaremeBadFile() {
+        if (dataFileReader.file == null) {
+            return false;
+        }
+        String fileName = dataFileReader.file.getName();
+        int lastIndexOfDot = fileName.lastIndexOf('.');
+
+        if (lastIndexOfDot == -1 || lastIndexOfDot == fileName.length() - 1) {
+            return false;
+        }
+
+        return fileName.substring(lastIndexOfDot + 1).toLowerCase().equals("bad");
     }
 
     private void updateValidityStatus() {
