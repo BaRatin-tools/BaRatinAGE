@@ -167,7 +167,7 @@ public class MainMenuBar extends JMenuBar {
             T.t(this, () -> {
                 Locale currentLocale = T.getLocale();
                 String nameInCurrentLocale = targetLocale.getDisplayName(currentLocale);
-                item.setText(nameInCurrentLocale + " - " + nameInTargetLocale);
+                item.setText(String.format("(%s) %s - %s", targetLocaleKey, nameInCurrentLocale, nameInTargetLocale));
             });
 
             item.addActionListener((e) -> {
