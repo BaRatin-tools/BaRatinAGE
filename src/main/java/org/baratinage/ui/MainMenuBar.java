@@ -3,7 +3,6 @@ package org.baratinage.ui;
 import java.awt.Desktop;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
-import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -18,7 +17,6 @@ import javax.swing.JMenuItem;
 import javax.swing.KeyStroke;
 
 import org.baratinage.AppSetup;
-import org.baratinage.project_importer.BaratinageV2Importer;
 import org.baratinage.translation.T;
 import org.baratinage.ui.component.CommonDialog;
 import org.baratinage.utils.ConsoleLogger;
@@ -120,22 +118,7 @@ public class MainMenuBar extends JMenuBar {
         JMenuItem importBaratinageV2projectMenuItem = new JMenuItem();
         T.t(this, importBaratinageV2projectMenuItem, false, "import_baratinage_v2_project");
         importBaratinageV2projectMenuItem.addActionListener((e) -> {
-            File f = CommonDialog.openFileDialog(T.text("import_baratinage_v2_project"),
-                    T.text("bar_zip_file_format"), "bar.zip", "BAR.ZIP");
-            if (f != null) {
-                BaratinageV2Importer projConver = new BaratinageV2Importer();
-                try {
-                    projConver.importProject(
-                            f.getAbsolutePath(),
-                            (project) -> {
-                                ConsoleLogger.log(project);
-                                AppSetup.MAIN_FRAME.setCurrentProject(project);
-                            });
-                } catch (Exception importError) {
-                    ConsoleLogger.error(importError);
-                    CommonDialog.errorDialog(T.text("import_v2_project_error"));
-                }
-            }
+            AppSetup.MAIN_FRAME.importV2Project();
         });
         fileMenu.add(importBaratinageV2projectMenuItem);
 
