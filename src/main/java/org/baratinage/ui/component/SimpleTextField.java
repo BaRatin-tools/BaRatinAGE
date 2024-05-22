@@ -20,6 +20,7 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
 import org.baratinage.AppSetup;
+import org.baratinage.utils.perf.TimedActions;
 
 public class SimpleTextField extends JTextField {
 
@@ -148,6 +149,16 @@ public class SimpleTextField extends JTextField {
         doNotFireChange = true;
         setText(text);
         doNotFireChange = false;
+    }
+
+    public void setTextDelayed(String text, Boolean fireChangeListeners) {
+        TimedActions.delay(0, () -> {
+            if (!fireChangeListeners) {
+                setTextWithoutFiringChangeListeners(text);
+            } else {
+                setText(text);
+            }
+        });
     }
 
     private final List<ChangeListener> textChangeListeners = new ArrayList<>();

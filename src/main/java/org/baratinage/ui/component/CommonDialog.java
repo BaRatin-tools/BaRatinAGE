@@ -115,8 +115,9 @@ public class CommonDialog {
 
     public static File saveFileDialog(String title, String formatName, String... extensions) {
 
-        JFileChooser fileChooser = configureFileChooser(title == null ? defaultSaveTitle : title, formatName,
-                extensions);
+        JFileChooser fileChooser = configureFileChooser(
+                title == null ? defaultSaveTitle : title,
+                new CustomFileFilter(formatName, extensions));
 
         int result = fileChooser.showSaveDialog(AppSetup.MAIN_FRAME);
         if (result != JFileChooser.APPROVE_OPTION) {
@@ -157,8 +158,11 @@ public class CommonDialog {
     }
 
     public static File openFileDialog(String title, String formatName, String... extensions) {
-        JFileChooser fileChooser = configureFileChooser(title == null ? defaultOpenTitle : title, formatName,
-                extensions);
+        return openFileDialog(title, new CustomFileFilter(formatName, extensions));
+    }
+
+    public static File openFileDialog(String title, CustomFileFilter... fileFilters) {
+        JFileChooser fileChooser = configureFileChooser(title == null ? defaultOpenTitle : title, fileFilters);
         int result = fileChooser.showOpenDialog(AppSetup.MAIN_FRAME);
         if (result != JFileChooser.APPROVE_OPTION) {
             return null;
@@ -174,17 +178,16 @@ public class CommonDialog {
         fileChooser.setApproveButtonToolTipText(defaultApproveButtonToolTipText);
     }
 
-    private static JFileChooser configureFileChooser(String title, String formatName, String... extensions) {
+    private static JFileChooser configureFileChooser(String title, CustomFileFilter... fileFilters) {
         if (fileChooser == null) {
             resetFileChooser();
         }
         fileChooser.setSelectedFile(new File(""));
         fileChooser.setDialogTitle(title);
         fileChooser.resetChoosableFileFilters();
-        fileChooser.addChoosableFileFilter(new CustomFileFilter(
-                formatName,
-                extensions));
-
+        for (CustomFileFilter ff : fileFilters) {
+            fileChooser.addChoosableFileFilter(ff);
+        }
         return fileChooser;
     }
 
@@ -223,7 +226,6 @@ public class CommonDialog {
 
     }
 
-    // FIXME: still an experimental rewrite of saveFileDialog
     public static File saveFileDialog(String defaultFileName, String dialogTitle, CustomFileFilter... fileFilters) {
 
         if (fileChooser == null) {

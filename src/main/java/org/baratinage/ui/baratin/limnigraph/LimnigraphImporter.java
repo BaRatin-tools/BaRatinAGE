@@ -127,7 +127,10 @@ public class LimnigraphImporter extends RowColPanel {
 
         dataPreviewPanel = new RowColPanel();
 
-        DataFileReader dataFileReader = new DataFileReader();
+        DataFileReader dataFileReader = new DataFileReader(
+                new CommonDialog.CustomFileFilter(
+                        T.text("data_text_file"),
+                        "txt", "csv", "dat"));
         dataParser = new DataParser();
 
         dataPreviewPanel.appendChild(dataParser);

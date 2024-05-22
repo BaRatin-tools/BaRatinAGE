@@ -119,6 +119,19 @@ public class BaremExporter extends RowColPanel {
 
         // setting listeners
 
+        hydroCodeField.addChangeListener((e) -> {
+            String txt = hydroCodeField.getText();
+            if (txt.length() > 8) {
+                hydroCodeField.setTextDelayed(txt.substring(0, 8), false);
+            }
+        });
+        hyroNameField.addChangeListener((e) -> {
+            String txt = hyroNameField.getText();
+            if (txt.length() > 6) {
+                hyroNameField.setTextDelayed(txt.substring(0, 6), false);
+            }
+        });
+
         canceled = true;
 
         okButton.addActionListener((e) -> {
@@ -252,14 +265,15 @@ public class BaremExporter extends RowColPanel {
 
         // pre-processing timestamps
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyyMMdd");
-        DateTimeFormatter hourFormatter = DateTimeFormatter.ofPattern("HH");
-        DateTimeFormatter minuteFormatter = DateTimeFormatter.ofPattern("mm");
+        DateTimeFormatter hourMinuteFormatter = DateTimeFormatter.ofPattern("HH:mm");
         String startDate = startTime.format(dateFormatter);
-        String startHour = startTime.format(hourFormatter);
-        String startMinute = startTime.format(minuteFormatter);
+        String startHourMinute = startTime.format(hourMinuteFormatter);
+        // String startHour = startTime.format(hourFormatter);
+        // String startMinute = startTime.format(minuteFormatter);
         String endDate = endTime.format(dateFormatter);
-        String endHour = endTime.format(hourFormatter);
-        String endMinute = endTime.format(minuteFormatter);
+        // String endHour = endTime.format(hourFormatter);
+        // String endMinute = endTime.format(minuteFormatter);
+        String endHourMinute = endTime.format(hourMinuteFormatter);
 
         // line 1 - no idea what this means...
         appendLineToBufferedWriter(bw, "DEC", " 6 13");
@@ -274,7 +288,7 @@ public class BaremExporter extends RowColPanel {
 
         // line 4 - lower envelop RC validity
         appendLineToBufferedWriter(bw, "C", "PAT", hydroCode, hydroName + "_inf",
-                startDate, startHour, startMinute, endDate, endHour, endMinute, "");
+                startDate, startHourMinute, endDate, endHourMinute, "");
 
         // line 5 - upper envelop RC - not sure what the "2;12;5000" refers to...
         appendLineToBufferedWriter(bw, "C", "TAR", hydroCode, hydroName + "_sup", "2", "12", "5000", "", "",
@@ -282,7 +296,7 @@ public class BaremExporter extends RowColPanel {
 
         // line 6 - lower envelop RC validity
         appendLineToBufferedWriter(bw, "C", "PAT", hydroCode, hydroName + "_sup",
-                startDate, startHour, startMinute, endDate, endHour, endMinute, "");
+                startDate, startHourMinute, endDate, endHourMinute, "");
 
         // line 7 - maxpost RC - not sure what the "2;12;5000" refers to...
         appendLineToBufferedWriter(bw, "C", "TAR", hydroCode, hydroName, "2", "12", "5000", "", "",
@@ -290,7 +304,7 @@ public class BaremExporter extends RowColPanel {
 
         // line 8 - maxpost RC validity
         appendLineToBufferedWriter(bw, "C", "PAT", hydroCode, hydroName,
-                startDate, startHour, startMinute, endDate, endHour, endMinute, "");
+                startDate, startHourMinute, endDate, endHourMinute, "");
 
         // inf CT block
         for (int k = 0; k < n; k++) {
