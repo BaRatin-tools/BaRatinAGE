@@ -104,7 +104,8 @@ public class RatingCurveResults extends TabContainer {
             List<double[]> paramU,
             List<double[]> totalU,
             List<double[]> gaugings,
-            List<EstimatedParameter> parameters) {
+            List<EstimatedParameter> parameters,
+            boolean[][] controlMatrix) {
 
         RatingCurveEstimatedParameters rcEstimParam = processParameters(parameters);
 
@@ -118,7 +119,7 @@ public class RatingCurveResults extends TabContainer {
 
         updateMcmcResultPanel(rcEstimParam);
 
-        rcEquation.updateEquation(rcEstimParam.controls());
+        rcEquation.updateEquation(rcEstimParam.controls(), controlMatrix);
 
         baremeExporter.updateRatingCurveValues(stage, dischargeMaxpost, totalU.get(0), totalU.get(1));
 

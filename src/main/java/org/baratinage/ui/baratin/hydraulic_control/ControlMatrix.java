@@ -110,6 +110,43 @@ public class ControlMatrix extends RowColPanel implements ChangeListener {
         return controlMatrix;
     }
 
+    public static String toXtra(boolean[][] controlMatrix) {
+        String xtra = "";
+        for (int i = 0; i < controlMatrix.length; i++) {
+            for (int j = 0; j < controlMatrix[i].length; j++) {
+                xtra += controlMatrix[i][j] ? "1 " : "0 ";
+            }
+            if ((i + 1) != controlMatrix.length) {
+                xtra += "\n";
+            }
+        }
+        return xtra;
+    }
+
+    public static boolean[][] fromXtra(String xTra) {
+        String[] rows = xTra.split("\n");
+        int nCtrl = rows.length;
+        boolean[][] controlMatrix = new boolean[nCtrl][nCtrl];
+        for (int i = 0; i < nCtrl; i++) {
+            String[] items = rows[i].split(" ");
+            if (nCtrl != items.length) {
+                ConsoleLogger.error("Should not happend! Malformed xTra data!");
+                return controlMatrix;
+            }
+            for (int j = 0; j < nCtrl; j++) {
+                if (items[j].equals("0")) {
+                    controlMatrix[i][j] = false;
+                } else if (items[j].equals("1")) {
+                    controlMatrix[i][j] = true;
+                } else {
+                    ConsoleLogger.error("Should not happend! Malformed xTra data!");
+                    return controlMatrix;
+                }
+            }
+        }
+        return controlMatrix;
+    }
+
     /**
      * 
      * @param controlMatrix each row is a stage range segment and
