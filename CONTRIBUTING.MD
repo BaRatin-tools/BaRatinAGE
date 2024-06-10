@@ -71,10 +71,10 @@ Binaries for this compiler can be found [here](https://gcc.gnu.org/wiki/GFortran
 On windows, you can do the following:
 
 - install msys: [https://www.msys2.org/](https://www.msys2.org/)
-- run msys2 and install the following packages using pacman (`pacman -S <binary package name>`):
+- run msys2 and install the following packages using pacman (`pacman -S <package name>`):
   - [mingw-w64-x86_64-gcc-fortran](https://packages.msys2.org/package/mingw-w64-x86_64-gcc-fortran)
   - [make](https://packages.msys2.org/package/make)
-- add `C:\msys64\usr\bin` and ``C:\msys64\mingw64\bin` to you path environment variable (modify the paths according to where you install msys2)
+- add `C:\msys64\usr\bin` and `C:\msys64\mingw64\bin` to you path environment variable (modify the paths according to where you install msys2)
 
 ### Compiling BaM using the makefile
 
