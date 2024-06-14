@@ -276,7 +276,7 @@ public class BaremExporter extends RowColPanel {
         String endHourMinute = endTime.format(hourMinuteFormatter);
 
         // line 1 - no idea what this means...
-        appendLineToBufferedWriter(bw, "DEC", " 6 13");
+        appendLineToBufferedWriter(bw, "DEC", "  6 13");
 
         // line 2 - creation date, code, and various stuff I don't understand...
         String currTimeString = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddhhmmss"));
