@@ -102,27 +102,36 @@ public class RatingCurveResults extends TabContainer {
         // reorganize and process results
         OrganizedEstimatedParameters organizedParameters = processParameters(parameters);
 
-        updateRatingCurvePlot(stage, dischargeMaxpost, paramU, totalU, gaugings, rcEstimParam);
+        List<double[]> transitionStages = organizedParameters.parameters
+                .stream()
+                .filter(bep -> bep.shortName.startsWith("k"))
+                .map(bep -> {
+                    double[] u95 = bep.get95interval();
+                    double mp = bep.getMaxpost();
+                    return new double[] { mp, u95[0], u95[1] };
+                }).collect(Collectors.toList());
 
-        updateRatingCurveGridTable(stage, dischargeMaxpost, paramU, totalU);
+        updateRatingCurveGridTable(stage, dischargeMaxpost, paramU, totalU, organizedParameters);
 
-        updateParametersPlots(rcEstimParam); // bottleneck
+        ratingCurvePlot.setPosteriorPlot(
+                stage,
+                dischargeMaxpost,
+                paramU,
+                totalU,
+                transitionStages,
+                gaugings);
 
-        updateParameterSummaryTable(rcEstimParam); // bottleneck
-
-        updateMcmcResultPanel(rcEstimParam);
-
-        rcEquation.updateEquation(rcEstimParam.controls(), controlMatrix);
+        rcEquation.updateKACBEquation(organizedParameters.parameters, controlMatrix);
 
         baremeExporter.updateRatingCurveValues(stage, dischargeMaxpost, totalU.get(0), totalU.get(1));
-
     }
 
     private void updateRatingCurveGridTable(
             double[] stage,
             double[] dischargeMaxpost,
             List<double[]> paramU,
-            List<double[]> totalU) {
+            List<double[]> totalU,
+            OrganizedEstimatedParameters organizedParameters) {
         rcGridTable.clearColumns();
         rcGridTable.addColumn(stage);
         rcGridTable.addColumn(dischargeMaxpost);
@@ -163,10 +172,6 @@ public class RatingCurveResults extends TabContainer {
                 organizedParameters.parameters,
                 organizedParameters.gammas,
                 organizedParameters.logPost);
-
-        // rating curve equation
-        rcEquation.updateKACBEquation(organizedParameters.parameters);
-
     }
 
     private record OrganizedEstimatedParameters(

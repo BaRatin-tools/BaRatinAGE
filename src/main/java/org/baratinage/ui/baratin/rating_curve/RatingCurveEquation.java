@@ -39,22 +39,23 @@ public class RatingCurveEquation extends RowColPanel {
         });
     }
 
-    public void updateEquation(List<EstimatedControlParameters> parameters, boolean[][] controlMatrix) {
-        int nCtrlSeg = parameters.size();
+    public void updateKACBEquation(List<BamEstimatedParameter> parameters, boolean[][] controlMatrix) {
+        // here we assume KACB order for each control (indices 0, 1, 2 and 3)
+        int nCtrlSeg = controlMatrix.length;
         String[] equationLines = new String[nCtrlSeg + 1];
-        equationLines[0] = "h < " + parameters.get(0).k().getMaxpost() + ": Q = 0";
+        equationLines[0] = "h < " + parameters.get(0).getMaxpost() + ": Q = 0";
         for (int i = 0; i < nCtrlSeg; i++) { // for each segment (stage range)
             // retrieve control stage range and initialize equation line
-            Double k = parameters.get(i).k().getMaxpost();
-            Double kNext = i < nCtrlSeg - 1 ? parameters.get(i + 1).k().getMaxpost() : null;
+            Double k = parameters.get(i * 4 + 0).getMaxpost();
+            Double kNext = i < nCtrlSeg - 1 ? parameters.get((i + 1) * 4 + 0).getMaxpost() : null;
             String eqStr = kNext != null ? k + " < h < " + kNext : "h > " + k;
             eqStr = eqStr + ": Q = ";
             boolean first = true;
             for (int j = 0; j <= i; j++) { // for each possibly active control
                 if (controlMatrix[i][j]) {
-                    Double a = parameters.get(j).a().getMaxpost();
-                    Double b = parameters.get(j).b().getMaxpost();
-                    Double c = parameters.get(j).c().getMaxpost();
+                    Double a = parameters.get(j * 4 + 1).getMaxpost();
+                    Double b = parameters.get(i * 4 + 3).getMaxpost();
+                    Double c = parameters.get(i * 4 + 2).getMaxpost();
 
                     eqStr = eqStr + (first ? a : processAdd(a));
                     eqStr = eqStr + " * (h" + processSub(b) + ") ^ " + c;
