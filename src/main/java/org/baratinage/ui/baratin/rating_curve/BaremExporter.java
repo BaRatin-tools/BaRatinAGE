@@ -268,11 +268,7 @@ public class BaremExporter extends RowColPanel {
         DateTimeFormatter hourMinuteFormatter = DateTimeFormatter.ofPattern("HH:mm");
         String startDate = startTime.format(dateFormatter);
         String startHourMinute = startTime.format(hourMinuteFormatter);
-        // String startHour = startTime.format(hourFormatter);
-        // String startMinute = startTime.format(minuteFormatter);
         String endDate = endTime.format(dateFormatter);
-        // String endHour = endTime.format(hourFormatter);
-        // String endMinute = endTime.format(minuteFormatter);
         String endHourMinute = endTime.format(hourMinuteFormatter);
 
         // line 1 - no idea what this means...
