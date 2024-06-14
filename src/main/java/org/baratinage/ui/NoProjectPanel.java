@@ -13,10 +13,11 @@ public class NoProjectPanel extends GridPanel {
     public final JLabel welcomeLabel;
     public final JButton createProjectButton;
     public final JButton openProjectButton;
+    public final JButton importV2ProjectButton;
     public final RowColPanel buttonsPanel;
 
     public NoProjectPanel() {
-        setPadding(5, 5, 50, 5);
+        setPadding(5, 5, 100, 5);
         setGap(10);
 
         mainLabel = new JLabel();
@@ -38,10 +39,17 @@ public class NoProjectPanel extends GridPanel {
             AppSetup.MAIN_FRAME.loadProject();
         });
 
+        importV2ProjectButton = new JButton();
+        T.t(AppSetup.MAIN_FRAME, importV2ProjectButton, false, "import_baratinage_v2_project");
+        importV2ProjectButton.addActionListener((e) -> {
+            AppSetup.MAIN_FRAME.importV2Project();
+        });
+
         buttonsPanel = new RowColPanel(RowColPanel.AXIS.COL);
         buttonsPanel.setGap(5);
         buttonsPanel.appendChild(createProjectButton);
         buttonsPanel.appendChild(openProjectButton);
+        buttonsPanel.appendChild(importV2ProjectButton);
 
         insertChild(mainLabel, 0, 0, ANCHOR.C, FILL.NONE);
         insertChild(welcomeLabel, 0, 1, ANCHOR.C, FILL.NONE);

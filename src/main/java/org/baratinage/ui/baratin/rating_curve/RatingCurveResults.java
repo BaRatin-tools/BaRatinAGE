@@ -96,30 +96,33 @@ public class RatingCurveResults extends TabContainer {
             List<double[]> paramU,
             List<double[]> totalU,
             List<double[]> gaugings,
-            List<EstimatedParameter> parameters) {
+            List<EstimatedParameter> parameters,
+            boolean[][] controlMatrix) {
 
         // reorganize and process results
         OrganizedEstimatedParameters organizedParameters = processParameters(parameters);
 
-        // rating curve plot
-        List<double[]> transitionStages = organizedParameters.parameters
-                .stream()
-                .filter(bep -> bep.shortName.startsWith("k"))
-                .map(bep -> {
-                    double[] u95 = bep.get95interval();
-                    double mp = bep.getMaxpost();
-                    return new double[] { mp, u95[0], u95[1] };
-                }).collect(Collectors.toList());
+        updateRatingCurvePlot(stage, dischargeMaxpost, paramU, totalU, gaugings, rcEstimParam);
 
-        ratingCurvePlot.setPosteriorPlot(
-                stage,
-                dischargeMaxpost,
-                paramU,
-                totalU,
-                transitionStages,
-                gaugings);
+        updateRatingCurveGridTable(stage, dischargeMaxpost, paramU, totalU);
 
-        // rating curve table
+        updateParametersPlots(rcEstimParam); // bottleneck
+
+        updateParameterSummaryTable(rcEstimParam); // bottleneck
+
+        updateMcmcResultPanel(rcEstimParam);
+
+        rcEquation.updateEquation(rcEstimParam.controls(), controlMatrix);
+
+        baremeExporter.updateRatingCurveValues(stage, dischargeMaxpost, totalU.get(0), totalU.get(1));
+
+    }
+
+    private void updateRatingCurveGridTable(
+            double[] stage,
+            double[] dischargeMaxpost,
+            List<double[]> paramU,
+            List<double[]> totalU) {
         rcGridTable.clearColumns();
         rcGridTable.addColumn(stage);
         rcGridTable.addColumn(dischargeMaxpost);

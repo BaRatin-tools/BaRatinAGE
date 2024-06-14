@@ -42,6 +42,7 @@ import org.baratinage.ui.bam.PredExp;
 import org.baratinage.ui.bam.PredExpSet;
 import org.baratinage.ui.bam.RunConfigAndRes;
 import org.baratinage.ui.bam.RunBam;
+import org.baratinage.ui.baratin.hydraulic_control.ControlMatrix;
 import org.baratinage.ui.baratin.rating_curve.RatingCurveResults;
 import org.baratinage.ui.baratin.rating_curve.RatingCurveStageGrid;
 import org.baratinage.ui.commons.MsgPanel;
@@ -513,6 +514,7 @@ public class RatingCurve extends BamItem implements IPredictionMaster, ICalibrat
 
         PredictionResult[] predResults = bamRunConfigAndRes.getPredictionResults();
         CalibrationResult calibrationResults = bamRunConfigAndRes.getCalibrationResults();
+        CalibrationConfig calibrationConfig = bamRunConfigAndRes.getCalibrationConfig();
 
         List<EstimatedParameter> parameters = calibrationResults.estimatedParameters;
 
@@ -521,7 +523,7 @@ public class RatingCurve extends BamItem implements IPredictionMaster, ICalibrat
         List<double[]> paramU = predResults[1].outputResults.get(0).env().subList(1, 3);
         List<double[]> totalU = predResults[2].outputResults.get(0).env().subList(1, 3);
 
-        CalibrationData calData = bamRunConfigAndRes.getCalibrationConfig().calibrationData;
+        CalibrationData calData = calibrationConfig.calibrationData;
 
         double[] stage = calData.inputs[0].values;
         double[] discharge = calData.outputs[0].values;
@@ -542,13 +544,17 @@ public class RatingCurve extends BamItem implements IPredictionMaster, ICalibrat
         gaugings.add(dischargeMin);
         gaugings.add(dischargeMax);
 
+        // retrieve control matrix
+        boolean[][] controlMatrix = ControlMatrix.fromXtra(calibrationConfig.model.xTra);
+
         resultsPanel.updateResults(
                 predResults[0].predictionConfig.inputs[0].dataColumns.get(0),
                 dischargeMaxpost,
                 paramU,
                 totalU,
                 gaugings,
-                parameters);
+                parameters,
+                controlMatrix);
     }
 
 }

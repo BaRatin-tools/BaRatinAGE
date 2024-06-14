@@ -39,40 +39,38 @@ public class RatingCurveEquation extends RowColPanel {
         });
     }
 
-    public void updateKACBEquation(List<BamEstimatedParameter> parameters) {
-        // here we assume KACB order for each control
+    public void updateEquation(List<EstimatedControlParameters> parameters, boolean[][] controlMatrix) {
+        int nCtrlSeg = parameters.size();
+        String[] equationLines = new String[nCtrlSeg + 1];
+        equationLines[0] = "h < " + parameters.get(0).k().getMaxpost() + ": Q = 0";
+        for (int i = 0; i < nCtrlSeg; i++) { // for each segment (stage range)
+            // retrieve control stage range and initialize equation line
+            Double k = parameters.get(i).k().getMaxpost();
+            Double kNext = i < nCtrlSeg - 1 ? parameters.get(i + 1).k().getMaxpost() : null;
+            String eqStr = kNext != null ? k + " < h < " + kNext : "h > " + k;
+            eqStr = eqStr + ": Q = ";
+            boolean first = true;
+            for (int j = 0; j <= i; j++) { // for each possibly active control
+                if (controlMatrix[i][j]) {
+                    Double a = parameters.get(j).a().getMaxpost();
+                    Double b = parameters.get(j).b().getMaxpost();
+                    Double c = parameters.get(j).c().getMaxpost();
 
-        int nControls = parameters.size() / 4;
-
-        String[] equationLines = new String[nControls + 1];
-
-        double k0 = parameters.get(0).getMaxpost();
-
-        equationLines[0] = "h < " + k0 + ": Q = 0";
-
-        for (int k = 0; k < nControls; k++) {
-            Double kLow = parameters.get(k * 4 + 0).getMaxpost();
-            Double kHigh = k < nControls - 1 ? parameters.get((k + 1) * 4 + 0).getMaxpost() : null;
-            Double a = parameters.get(k * 4 + 1).getMaxpost();
-            Double b = parameters.get(k * 4 + 2).getMaxpost();
-            Double c = parameters.get(k * 4 + 3).getMaxpost();
-
-            String start = kHigh == null ? "h > " + kLow : kLow + " < h < " + kHigh;
-            equationLines[k + 1] = start +
-                    ": Q = " + a + " * (h - " + b + ") ^ " + c + "";
-            equationLines[k + 1] = start + ": Q = " + a + " * (" +
-                    processSubstraction("h", b) + ") ^ " + c + "";
+                    eqStr = eqStr + (first ? a : processAdd(a));
+                    eqStr = eqStr + " * (h" + processSub(b) + ") ^ " + c;
+                    first = false;
+                }
+            }
+            equationLines[i + 1] = eqStr;
         }
-
         equationTextArea.setText(String.join("\n", equationLines));
     }
 
-    private static String processSubstraction(String first, Double second) {
-        if (second < 0) {
-            return first + " + " + (second * -1);
-        } else {
-            return first + " - " + second;
-        }
+    private static String processAdd(Double value) {
+        return value < 0 ? " - " + (value * -1) : " + " + value;
     }
 
+    private static String processSub(Double value) {
+        return value < 0 ? " + " + (value * -1) : " - " + value;
+    }
 }

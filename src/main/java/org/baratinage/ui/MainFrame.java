@@ -3,6 +3,7 @@ package org.baratinage.ui;
 import javax.swing.JFrame;
 
 import org.baratinage.AppSetup;
+import org.baratinage.project_importer.BaratinageV2Importer;
 import org.baratinage.translation.T;
 import org.baratinage.ui.bam.BamProject;
 import org.baratinage.ui.bam.BamProjectLoader;
@@ -262,6 +263,27 @@ public class MainFrame extends JFrame {
         currentProject.checkUnsavedChange();
         updateFrameTitle();
         ToasterMessage.info(T.text("project_saved"));
+    }
+
+    public void importV2Project() {
+        if (confirmLoosingUnsavedChanges()) {
+            File f = CommonDialog.openFileDialog(T.text("import_baratinage_v2_project"),
+                    T.text("bar_zip_file_format"), "bar.zip", "BAR.ZIP");
+            if (f != null) {
+                BaratinageV2Importer projConver = new BaratinageV2Importer();
+                try {
+                    projConver.importProject(
+                            f.getAbsolutePath(),
+                            (project) -> {
+                                ConsoleLogger.log(project);
+                                AppSetup.MAIN_FRAME.setCurrentProject(project);
+                            });
+                } catch (Exception importError) {
+                    ConsoleLogger.error(importError);
+                    CommonDialog.errorDialog(T.text("import_v2_project_error"));
+                }
+            }
+        }
     }
 
     public void close() {

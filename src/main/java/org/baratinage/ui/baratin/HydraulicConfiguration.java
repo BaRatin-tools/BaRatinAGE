@@ -128,16 +128,7 @@ public class HydraulicConfiguration
     @Override
     public String getXtra(String workspace) {
         boolean[][] matrix = this.controlMatrix.getControlMatrix();
-        String xtra = "";
-        for (int i = 0; i < matrix.length; i++) {
-            for (int j = 0; j < matrix[i].length; j++) {
-                xtra += matrix[i][j] ? "1 " : "0 ";
-            }
-            if ((i + 1) != matrix.length) {
-                xtra += "\n";
-            }
-        }
-        return xtra;
+        return ControlMatrix.toXtra(matrix);
     }
 
     @Override
