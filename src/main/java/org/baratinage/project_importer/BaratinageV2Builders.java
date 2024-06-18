@@ -160,11 +160,8 @@ public class BaratinageV2Builders {
         // source always starting with K, A, C
         if (controlTypeIndex == 0 ||
                 controlTypeIndex == 1 ||
-                controlTypeIndex == 2 ||
-                controlTypeIndex == 3 ||
                 controlTypeIndex == 4 ||
                 controlTypeIndex == 5 ||
-                controlTypeIndex == 6 ||
                 controlTypeIndex == 7) {
             // weir rect: Cr, Bw, G, C, K => K, Cr, Bw, G, C
             // weir triangle: Ct, V, G, C, K => K, Ct, V, G, C
@@ -181,6 +178,17 @@ public class BaratinageV2Builders {
                     parameters[5],
                     parameters[6]);
 
+        } else if (controlTypeIndex == 2 || controlTypeIndex == 3 || controlTypeIndex == 6) {
+            // FIXME: not sure, but I think 2, 3 and 6 are the only controls with 6
+            // parameters instead of 5
+            oneOfTheControlOptions = buildPriorControlPanelConfig(
+                    false,
+                    parameters[8],
+                    parameters[3],
+                    parameters[4],
+                    parameters[5],
+                    parameters[6],
+                    parameters[7]);
         } else {
             ConsoleLogger.error("Unimplemented case");
         }
