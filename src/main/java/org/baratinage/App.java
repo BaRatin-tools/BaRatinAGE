@@ -17,7 +17,6 @@ public class App {
         EventQueue.invokeLater(() -> {
             try {
                 MainFrame mainFrame = new MainFrame();
-                AppSetup.MAIN_FRAME = mainFrame;
                 if (args.length > 0) {
                     mainFrame.loadProject(args[0]);
                 }
