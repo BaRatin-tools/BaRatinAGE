@@ -6,7 +6,7 @@
 
   <groupId>org.baratinage</groupId>
   <artifactId>BaRatinAGE</artifactId>
-  <version>3.0.2</version>
+  <version>3.0.3</version>
 
   <name>BaRatinAGE</name>
   <description>A graphical user interface to BaM! focused on rating curve estimation</description>
