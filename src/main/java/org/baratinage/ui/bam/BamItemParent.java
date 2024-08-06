@@ -10,8 +10,10 @@ import javax.swing.event.ChangeListener;
 
 import org.baratinage.translation.T;
 import org.baratinage.ui.commons.MsgPanel;
+import org.baratinage.ui.component.CommonDialog;
 import org.baratinage.ui.component.SimpleComboBox;
 import org.baratinage.ui.container.RowColPanel;
+import org.baratinage.utils.ConsoleLogger;
 import org.baratinage.utils.json.JSONCompare;
 import org.baratinage.utils.json.JSONCompareResult;
 import org.baratinage.utils.json.JSONFilter;
@@ -87,7 +89,14 @@ public class BamItemParent extends RowColPanel {
                 return;
             }
             BamItem bamItem = CHILD.PROJECT.addBamItem(TYPE);
-            bamItem.load(bamItemBackup);
+            try {
+                bamItem.load(bamItemBackup);
+            } catch (Exception loadError) {
+                ConsoleLogger.error(loadError);
+                CHILD.PROJECT.deleteBamItem(bamItem);
+                CommonDialog.errorDialog("Error while loading backup component.");
+                return;
+            }
             CHILD.PROJECT.setCurrentBamItem(CHILD);
             setCurrentBamItem(bamItem);
         });
