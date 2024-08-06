@@ -37,6 +37,8 @@ public class MainFrame extends JFrame {
     public final NoProjectPanel noProjectPanel;
 
     public MainFrame() {
+        AppSetup.MAIN_FRAME = this;
+
         setIconImage(AppSetup.ICONS.BARATINAGE_LARGE.getImage());
         setTitle(AppSetup.APP_NAME);
 
