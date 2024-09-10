@@ -18,14 +18,14 @@ BaRatin Advanced Graphical Environment
 
 BaRatin (BAyesian RATINg curve) est une méthode d'estimation des courbes de tarage et des incertitudes associées à l'aide d'un formalisme bayésien. Ce dépôt contient l'interface graphique de BaRatin, nommée BaRatinAGE.
 
-Pour plus d'information sur **BaRatin** et **BaRatinAGE**, visitez le site web dédié: [baratin-tools.github.io/fr/](https://baratin-tools.github.io/fr/).
+Pour plus d'information sur **BaRatin** et **BaRatinAGE**, visitez le site web dédié : [baratin-tools.github.io/fr/](https://baratin-tools.github.io/fr/).
 
 ![impression écran de BaRatinAGE](./resources/screenshots/BaRatinAGE_screenshot_fr.webp)
 
 ## Téléchargement et installation
 
-Pour télécharger la dernière version de **BaRatinAGE**, rendez vous sur la page [https://github.com/BaRatin-tools/BaRatinAGE/releases/latest](https://github.com/BaRatin-tools/BaRatinAGE/releases/latest).
-Choisissez l'archiveadaptée à votre système d'exploitation (Windows ou Linux): `BaRatinAGE-x.x.x_Windows.zip` or `BaRatinAGE-x.x.x_Linux.tar.gz`.
+Pour télécharger la dernière version de **BaRatinAGE**, rendez-vous sur la page [https://github.com/BaRatin-tools/BaRatinAGE/releases/latest](https://github.com/BaRatin-tools/BaRatinAGE/releases/latest).
+Choisissez l'archive adaptée à votre système d'exploitation (Windows ou Linux) : `BaRatinAGE-x.x.x_Windows.zip` ou `BaRatinAGE-x.x.x_Linux.tar.gz`.
 
 **BaRatinAGE** ne nécessite aucune installation.
 Il vous suffit de dézipper / décompresser l'archive dans le répertoire de votre choix.
@@ -35,7 +35,7 @@ Il vous suffit de dézipper / décompresser l'archive dans le répertoire de vot
 Pour lancer **BaRatinAGE**:
 
 - sur Windows, à la racine du dossier contenant BaRatinAGE que vous venez de décompresser, il vous suffit de double-cliquer sur l'exécutable nommé **BaRatinAGE.exe** qui s'y trouve.
-- sur Linux, dans le sous dossier `bin\` du dossier contenant BaRatinAGE que vous venez de décompresser, il vous suffit de double-cliquer sur l'exécutable nommé **BaRatinAGE** qui s'y trouve (ou de le lancer en ligne de commande : `./BaRatinAGE`).
+- sur Linux, dans le sous-dossier `bin\` du dossier contenant BaRatinAGE que vous venez de décompresser, il vous suffit de double-cliquer sur l'exécutable nommé **BaRatinAGE** qui s'y trouve (ou de le lancer en ligne de commande : `./BaRatinAGE`).
 
 Vous pouvez tester **BaRatinAGE** en utilisant le fichier projet (`*.bam`) exemple situé dans le répertoir `example\`.
 
@@ -43,7 +43,7 @@ Vous pouvez tester **BaRatinAGE** en utilisant le fichier projet (`*.bam`) exemp
 
 L'aide de **BaRatinAGE** est accessible en ligne : [baratin-tools.github.io/fr/doc/baratinage/](https://baratin-tools.github.io/fr/doc/baratinage/).
 
-Vous pouvez également poser vos questions en envoyant un mail à **baratin.dev [at] inrae.fr**.
+Vous pouvez également poser vos questions en envoyant un message à **baratin.dev [at] inrae.fr**.
 
 ## Contributions
 
@@ -56,7 +56,7 @@ Dans tous les cas, soyez le plus exhaustif possible dans la description du probl
 
 ### Multilinguisme
 
-Les contributions pour traduire BaRatinAGE vers d'autres langues sont bienvenues!
+Les contributions pour traduire BaRatinAGE vers d'autres langues sont bienvenues !
 Pour plus d'information visitez [baratin-tools.github.io/en/doc/baratinage/going-further/](https://baratin-tools.github.io/en/doc/baratinage/going-further/).
 
 ### Développement
@@ -76,10 +76,10 @@ For more information on **BaRatin** and **BaRatinAGE**, visit the dedicated webs
 ## Download and installation
 
 To download the latest version of **BaRatinAGE**, go to the page [https://github.com/BaRatin-tools/BaRatinAGE/releases/latest](https://github.com/BaRatin-tools/BaRatinAGE/releases/latest).
-Choose the .zip archive which matches your operating system (windows or linux): `BaRatinAGE-x.x.x_Windows.zip` or `BaRatinAGE-x.x.x_Linux.tar.gz`.
+Choose the .zip archive which matches your operating system (Windows or Linux): `BaRatinAGE-x.x.x_Windows.zip` or `BaRatinAGE-x.x.x_Linux.tar.gz`.
 
 **BaRatinAGE** doesn't require any installation.
-You simply need to unzip / uncompress the .zip archive in the repertory of your choice.
+You simply need to unzip / uncompress the .zip archive in the folder of your choice.
 
 ## Getting started
 
@@ -88,7 +88,7 @@ To run **BaRatinAGE**:
 - on Windows, at the root of the folder which contains **BaRatinAGE** (that you've just uncompressed), double-click on the executable file named **BaRatinAGE.exe**.
 - on Linux: in the subfolder `bin\` of the folder containing the unzipped **BaRatinAGE**, double-click on the executable file named **BaRatinAGE** (or using the terminal, run `./BaRatinAGE`).
 
-You can test **BaRatinAGE** the example project file (`*.bam`) located in the subdirectory `example\`.
+You can test **BaRatinAGE** using the example project file (`*.bam`) located in the subfolder `example\`.
 
 ## Help
 
@@ -107,7 +107,7 @@ Please, be as exhaustive as possible when describing the issue.
 
 ### Multi-language support
 
-Contributions to translate BaRatinAGE are welcome! Visit [baratin-tools.github.io/en/doc/baratinage/going-further/](https://baratin-tools.github.io/en/doc/baratinage/going-further/) for more information.
+Contributions to translate BaRatinAGE in any language are welcome! Visit [baratin-tools.github.io/en/doc/baratinage/going-further/](https://baratin-tools.github.io/en/doc/baratinage/going-further/) for more information.
 
 ### Development
 
