@@ -1,6 +1,6 @@
 
 [![DOI](https://zenodo.org/badge/520005014.svg)](https://zenodo.org/badge/latestdoi/520005014)
-![GitHub Release](https://img.shields.io/github/v/release/BaRatin-tools/BaRatinAGE)
+[![GitHub Release](https://img.shields.io/github/v/release/BaRatin-tools/BaRatinAGE)](https://github.com/BaRatin-tools/BaRatinAGE/releases/latest)
 
 <p align="center">
 <img src="./resources/icons/icon.png" alt="logo de BaRatinAGE / logo of BaRatinAGE" />
