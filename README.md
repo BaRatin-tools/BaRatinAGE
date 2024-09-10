@@ -3,7 +3,7 @@
 [![GitHub Release](https://img.shields.io/github/v/release/BaRatin-tools/BaRatinAGE)](https://github.com/BaRatin-tools/BaRatinAGE/releases/latest)
 
 <p align="center">
-<img src="./resources/icons/icon.png" alt="logo de BaRatinAGE / logo of BaRatinAGE" />
+<img src="./resources/icons/icon.png" alt="logo de BaRatinAGE / logo of BaRatinAGE" width="200" />
 </p>
 
 <h1 align="center"> BaRatinAGE </h1>
