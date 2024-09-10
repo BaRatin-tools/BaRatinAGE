@@ -1,20 +1,16 @@
-<div style="display: grid;  justify-content: center">
-
-![logo de BaRatinAGE](./resources/icons/icon.png)
-
-<h1> BaRatinAGE </h1>
-
-_BaRatin Advanced Graphical Environment_
-
-</div>
-
-<div style="display: flex; gap: 1rem; flex-wrap: wrap;">
 
 [![DOI](https://zenodo.org/badge/520005014.svg)](https://zenodo.org/badge/latestdoi/520005014)
-
 ![GitHub Release](https://img.shields.io/github/v/release/BaRatin-tools/BaRatinAGE)
 
-</div>
+<p align="center">
+<img src="./resources/icons/icon.png" alt="logo de BaRatinAGE / logo of BaRatinAGE" />
+</p>
+
+<h1 align="center"> BaRatinAGE </h1>
+
+<p align="center">
+BaRatin Advanced Graphical Environment
+</p>
 
 [English version follows > ](#Overview)
 
