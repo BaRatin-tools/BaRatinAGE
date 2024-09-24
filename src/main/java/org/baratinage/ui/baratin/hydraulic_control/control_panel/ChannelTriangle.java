@@ -51,15 +51,14 @@ public class ChannelTriangle extends PriorControlPanel {
         }
 
         double K = stricklerCoef.meanValueField.getDoubleValue();
-        double V = angle.meanValueField.getDoubleValue();
+        double V = Math.toRadians(angle.meanValueField.getDoubleValue());
         double S = slope.meanValueField.getDoubleValue();
 
-        double toRadFact = Math.PI / 180d;
-        double VInRadOverTwo = V * toRadFact / 2;
-        double trigoStuff = Math.tan(VInRadOverTwo) * Math.pow(0.5 * Math.sin(VInRadOverTwo), 2.0 / 3.0);
         double sqrtOfSlope = Math.sqrt(S);
+        double tanOfVoverTwo = Math.tan(V / 2);
+        double sinOfVoverTwo = Math.sin(V / 2);
 
-        double A = K * trigoStuff * sqrtOfSlope;
+        double A = K * sqrtOfSlope * tanOfVoverTwo * Math.pow(sinOfVoverTwo / 2, 2 / 3);
 
         if (!stricklerCoef.uncertaintyValueField.isValueValid() ||
                 !angle.uncertaintyValueField.isValueValid() ||
@@ -67,19 +66,23 @@ public class ChannelTriangle extends PriorControlPanel {
             return new Double[] { A, null };
         }
 
-        double trigoStuff2 = 0.5 * toRadFact *
-                Math.pow(Math.sin(VInRadOverTwo), 2.0 / 3.0) *
-                ((2.0 / 3.0) + (1.0 / Math.pow(Math.cos(VInRadOverTwo), 2)));
-
         double Kstd = stricklerCoef.uncertaintyValueField.getDoubleValue() / 2;
-        double Vstd = angle.uncertaintyValueField.getDoubleValue() / 2;
+        double Vstd = Math.toRadians(angle.uncertaintyValueField.getDoubleValue()) / 2;
         double Sstd = slope.uncertaintyValueField.getDoubleValue() / 2;
 
-        double Astd = Math.sqrt(
-                Math.pow(Kstd, 2) * Math.pow(trigoStuff * sqrtOfSlope, 2) +
-                        Math.pow(Vstd, 2) * Math.pow(K * sqrtOfSlope * trigoStuff2, 2) +
-                        Math.pow(Sstd, 2) * Math.pow(K * trigoStuff * 0.5 * 1 / sqrtOfSlope * 0.5, 2));
+        double Vpart = Math.pow(Vstd, 2) * Math.pow(
+                K * sqrtOfSlope * Math.pow(0.5, 5 / 3) * Math.pow(sinOfVoverTwo, 2 / 3)
+                        * (1 / Math.pow(Math.cos(V / 2), 2) + 2 / 3),
+                2);
 
+        double Spart = Math.pow(Sstd, 2) * Math.pow(
+                K * tanOfVoverTwo * Math.pow(sinOfVoverTwo / 2, 2 / 3) / 2 * sqrtOfSlope,
+                2);
+
+        double Kpart = Math.pow(Kstd, 2)
+                * Math.pow(sqrtOfSlope * tanOfVoverTwo * Math.pow(sinOfVoverTwo / 2, 2 / 3), 2);
+
+        double Astd = Math.sqrt(Kpart + Spart + Vpart);
         return new Double[] { A, Astd };
 
     }

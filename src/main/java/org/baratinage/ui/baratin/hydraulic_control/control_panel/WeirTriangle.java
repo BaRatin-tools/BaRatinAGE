@@ -57,15 +57,13 @@ public class WeirTriangle extends PriorControlPanel {
         // double toRadFact = Math.PI / 180d;
 
         double C = weirCoef.meanValueField.getDoubleValue();
-        double V = angle.meanValueField.getDoubleValue();
+        double V = Math.toRadians(angle.meanValueField.getDoubleValue());
         double G = gravity.meanValueField.getDoubleValue();
 
         double sqrtOfTwoG = Math.sqrt(2 * G);
-        double toRadFactorOverTwo = Math.PI / 180d * V / 2d;
-        double VOverTwoInRad = toRadFactorOverTwo;
-        double tanOfVOverTwo = Math.tan(VOverTwoInRad);
+        double tanOfVoverTwo = Math.tan(V / 2);
 
-        double A = C * tanOfVOverTwo * sqrtOfTwoG;
+        double A = C * sqrtOfTwoG * tanOfVoverTwo;
 
         if (!weirCoef.uncertaintyValueField.isValueValid() ||
                 !angle.uncertaintyValueField.isValueValid() ||
@@ -74,17 +72,13 @@ public class WeirTriangle extends PriorControlPanel {
         }
 
         double Cstd = weirCoef.uncertaintyValueField.getDoubleValue() / 2;
-        double Vstd = angle.uncertaintyValueField.getDoubleValue() / 2;
+        double Vstd = Math.toRadians(angle.uncertaintyValueField.getDoubleValue()) / 2;
         double Gstd = gravity.uncertaintyValueField.getDoubleValue() / 2;
 
-        double Astd = Math.sqrt(
-                Math.pow(Cstd, 2) * Math.pow(tanOfVOverTwo * sqrtOfTwoG, 2) +
-                        Math.pow(Vstd, 2) *
-                                Math.pow((C * sqrtOfTwoG * toRadFactorOverTwo) /
-                                        Math.pow(Math.cos(VOverTwoInRad), 2), 2)
-                        +
-                        Math.pow(Gstd, 2) * Math.pow(tanOfVOverTwo * C * Math.pow(2 * G, -1 / 2), 2));
-
+        double Vpart = Math.pow(Vstd, 2) * Math.pow(C * sqrtOfTwoG / 2 / Math.pow(Math.cos(V / 2), 2), 2);
+        double Gpart = Math.pow(Gstd, 2) * Math.pow((C * tanOfVoverTwo / sqrtOfTwoG), 2);
+        double Cpart = Math.pow(Cstd, 2) * Math.pow(sqrtOfTwoG * tanOfVoverTwo, 2);
+        double Astd = Math.sqrt(Cpart + Gpart + Vpart);
         return new Double[] { A, Astd };
 
     }

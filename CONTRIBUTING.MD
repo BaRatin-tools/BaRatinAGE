@@ -42,25 +42,22 @@ Below a detailed approach you can follow on windows is suggested but feel free t
 
 ## Getting the BaRatinAGE source code source code
 
-To get the source code of BaRatinAGE V3 simply clone the [GitHub BaRatinAGE repository](https://github.com/BaRatin-tools/BaRatinAGE) and switch to the **v3** branch.
+To get the source code of **BaRatinAGE v3** simply clone the [GitHub BaRatinAGE repository](https://github.com/BaRatin-tools/BaRatinAGE).
 In other words, open a terminal in the directory where BaRatinAGE source code will be downloaded and run the following commands:
 
 ```
 git clone https://github.com/BaRatin-tools/BaRatinAGE.git
 cd BaRatinAGE
-git checkout v3
 ```
 
 Alternatively, simply download the source code from GitHub as a `.zip` archive file that you unzip in a directory of your choice.
-Click the green `<> Code` button on the [**v3** branch BaRatinAGE repo](https://github.com/BaRatin-tools/BaRatinAGE/tree/v3) and then click `Download ZIP`.
-Or here is the direct link: [https://github.com/BaRatin-tools/BaRatinAGE/archive/refs/heads/v3.zip](https://github.com/BaRatin-tools/BaRatinAGE/archive/refs/heads/v3.zip)
 
 ## Getting BaM executable
 
 To get the BaM executable, refere to the instructions in the readme of the [GitHub BaM repository](https://github.com/BaM-tools/BaM).
 _Note: you need a version that doesn't wait for a user input to exit at the end of the execution!_
 
-It can be compiled from source (provided you have access to all the dependencies) as described below.
+It can be compiled from source as described below.
 
 ### Prerequisit for compiling BaM on Windows
 
@@ -102,7 +99,7 @@ Here are the steps for [Eclipse](https://www.eclipse.org/downloads/) and [Visual
 
 1. Click `File > Import`
 2. Choose `Maven > Existing Maven Project`
-3. Select the root directory of BaRatinAGE (**make sure you're on the v3 branch**)
+3. Select the root directory of BaRatinAGE
 
 Done!
 
@@ -118,46 +115,15 @@ If you're using [VS Codium](https://vscodium.com/), you may need to download the
 
 Packaging BaRatinAGE refers to both creating the executable `jar` file and using `jpackage` to create a standalone, platform specific, executable.
 
-On windows, the following workflow can be used:
+A powershell script `build.ps1` should be used.
+On Linux, you probably need to install powershell to run the script.
 
-1. Delete any previously created content in `target-packaged` folder
-2. Create executable `jar` file:
+The `build.ps1` script takes one mandatory arguments, the version number.
+Optionnaly, you can use it to also create the final archive (`*.zip` or `*.tar.gz` file) using the `-archive` flag.
+A `-quiet` flag can also be used to prevent printing too much information to the console.
 
-```sh
-mvn clean package
-```
+For example, to build the version **v3.0.3**, you can run the following in a powershell console:
 
-3. Package, using `jpackage`:
-
-with console outputs...
-
-```sh
-jpackage --type app-image --app-version 3.0.0  --name "BaRatinAGE" --dest "target-packaged" --input "target" --main-jar "BaRatinAGE-3.0.0.jar" --win-console
-```
-
-... or without, and with a custom icon
-
-```sh
-jpackage --type app-image --app-version 3.0.0  --name "BaRatinAGE" --dest "target-packaged" --input "target" --main-jar "BaRatinAGE-3.0.0.jar" --icon "resources\icons\icon.ico"
-```
-
-4. Copy `exe` and `resources` folders into the created standalone packaged executable folder (here it is `target-packaged\BaRatinAGE\`)
-
-```sh
-xcopy ".\exe" ".\target-packaged\BaRatinAGE\exe" /S /I
-xcopy ".\resources" ".\target-packaged\BaRatinAGE\resources" /S /I
-```
-
-5. Finally, you can run the created executable `target-packaged\BaRatinAGE\BaRatinAGE.exe`.
-
-To summarise, delete any existing `target-packaged\BaRatinAGE` directory and then run:
-
-```sh
-mvn clean package
-jpackage --type app-image --app-version 3.0.0  --name "BaRatinAGE-v3.0.0-alpha1" --dest "target-packaged" --input "target" --main-jar "BaRatinAGE-3.0.0-alpha1.jar" --icon "resources\icons\icon.ico" --win-console
-xcopy ".\log" ".\target-packaged\BaRatinAGE-v3.0.0-alpha1\log" /S /I
-xcopy ".\exe" ".\target-packaged\BaRatinAGE-v3.0.0-alpha1\exe" /S /I
-xcopy ".\resources" ".\target-packaged\BaRatinAGE-v3.0.0-alpha1\resources" /S /I
-target-packaged\BaRatinAGE\BaRatinAGE.exe
-
+```ps
+.\build.ps1 "3.0.3" -archive
 ```
