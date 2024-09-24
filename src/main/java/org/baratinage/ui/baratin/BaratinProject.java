@@ -6,6 +6,7 @@ import org.baratinage.ui.bam.BamItemType;
 import org.baratinage.ui.bam.BamProject;
 import org.baratinage.ui.bam.BamProjectType;
 import org.baratinage.ui.baratin.baratin_bac.HydraulicConfigurationBAC;
+import org.baratinage.ui.baratin.baratin_qfh.HydraulicConfigurationQFH;
 import org.baratinage.ui.commons.ExplorerItem;
 import org.baratinage.ui.commons.StructuralErrorModelBamItem;
 import org.baratinage.ui.component.NameSymbolUnit;
@@ -33,6 +34,13 @@ public class BaratinProject extends BamProject {
                 "hydraulic_config",
                 (String uuid) -> {
                     return new HydraulicConfigurationBAC(uuid, this);
+                });
+
+        initBamItemType(
+                BamItemType.HYDRAULIC_CONFIG_QFH,
+                "hydraulic_config",
+                (String uuid) -> {
+                    return new HydraulicConfigurationQFH(uuid, this);
                 });
 
         initBamItemType(
@@ -81,6 +89,7 @@ public class BaratinProject extends BamProject {
 
         addAddBamItemBtns(BamItemType.HYDRAULIC_CONFIG);
         addAddBamItemBtns(BamItemType.HYDRAULIC_CONFIG_BAC);
+        addAddBamItemBtns(BamItemType.HYDRAULIC_CONFIG_QFH);
         addAddBamItemBtns(BamItemType.GAUGINGS);
         addAddBamItemBtns(BamItemType.STRUCTURAL_ERROR);
         addAddBamItemBtns(BamItemType.RATING_CURVE);
@@ -130,6 +139,7 @@ public class BaratinProject extends BamProject {
         return BAM_ITEMS.getOrderedCopy(
                 BamItemType.HYDRAULIC_CONFIG,
                 BamItemType.HYDRAULIC_CONFIG_BAC,
+                BamItemType.HYDRAULIC_CONFIG_QFH,
                 BamItemType.GAUGINGS,
                 BamItemType.STRUCTURAL_ERROR,
                 BamItemType.LIMNIGRAPH,

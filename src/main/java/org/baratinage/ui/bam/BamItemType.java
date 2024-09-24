@@ -22,6 +22,7 @@ public enum BamItemType {
     EMPTY_ITEM("empty_item"),
     HYDRAULIC_CONFIG("hydraulic_config"),
     HYDRAULIC_CONFIG_BAC("hydraulic_config_bac"),
+    HYDRAULIC_CONFIG_QFH("hydraulic_config_qfh"),
     GAUGINGS("gaugings"),
     HYDROGRAPH("hydrograph"),
     LIMNIGRAPH("limnigraph"),

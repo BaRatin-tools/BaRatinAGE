@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="24" height="24" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" version="1.1" viewBox="0 0 24 24" xml:space="preserve" xmlns="http://www.w3.org/2000/svg">
+  <path d="m4.9617 22.202-0.91684-6.5078h9.0246l-0.791 6.6156z" fill="#d5e0ff"/>
+  <g fill="none" stroke="#2c55ff" stroke-linecap="round" stroke-width="1">
+    <path d="m2.3011 4.1707h19.272"/>
+    <path d="m3.5595 10.858h9.7796"/>
+    <path d="m4.5662 15.676h8.1976"/>
+  </g>
+  <path d="m6.5079 19.38a1.4562 1.4741 0 0 0-0.48438 0.08594 1.4428 1.0157 0 0 0-0.30664-0.02344 1.4428 1.0157 0 0 0-1.4434 1.0156 1.4428 1.0157 0 0 0 0.88281 0.93555 1.4562 1.4741 0 0 0 1.3516 0.93359 1.4562 1.4741 0 0 0 1.2285-0.68359 1.0832 1.0966 0 0 0 0.89648 0.48633 1.0832 1.0966 0 0 0 0.49023-0.12109 1.4428 1.0157 0 0 0 1.2324 0.49023 1.4428 1.0157 0 0 0 1.3438-0.65234 0.80799 0.81797 0 0 0 0.32226 0.06836 0.80799 0.81797 0 0 0 0.80664-0.81836 0.80799 0.81797 0 0 0-0.80664-0.81836 0.80799 0.81797 0 0 0-0.43359 0.12695 0.80799 0.81797 0 0 0-0.38867-0.09961 0.80799 0.81797 0 0 0-0.51367 0.1875 1.4428 1.0157 0 0 0-0.33008-0.02539 1.4428 1.0157 0 0 0-0.72461 0.13672 1.0832 1.0966 0 0 0-0.87695-0.66016 0.80799 0.81797 0 0 0-0.70117-0.41211 0.80799 0.81797 0 0 0-0.56055 0.23242 1.4562 1.4741 0 0 0-0.98438-0.38477z" fill="#d65702"/>
+  <path d="m2.0135 2.4449s3.0202 19.883 3.0561 19.739c0.035955-0.14382 7.2269 0 7.2269 0l1.6899-12.8h7.91v-6.9033" fill="none" stroke="#000" stroke-linecap="round" stroke-width="1"/>
+<g transform="matrix(1.1061 0 0 1.1061 30.607 11.155)"><rect x="-27.521" y="-9.9129" width="21.397" height="5.694" ry="1.4604" stroke-linecap="round" stroke-width=".90546"/><text transform="matrix(.90408 0 0 .90408 -31.229 -5.8226)" fill="#ffffff" font-family="'DejaVu Sans'" font-size="6px" font-weight="bold" stroke-linecap="square" stroke-width="2.1354" text-align="end" style="font-variant-caps:normal;font-variant-east-asian:normal;font-variant-ligatures:normal;font-variant-numeric:normal;shape-inside:url(#rect11);white-space:pre" xml:space="preserve"><tspan x="4.796875" y="0.48046875">Q=f(h)</tspan></text></g></svg>
