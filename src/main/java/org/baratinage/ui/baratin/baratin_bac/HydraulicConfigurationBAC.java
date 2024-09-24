@@ -67,7 +67,7 @@ public class HydraulicConfigurationBAC extends BamItem
         // *******************************************
         // DIFFERENT
         JLabel maxStageLabel = new JLabel();
-        maxStageLabel.setText("Maximum stage:"); // FIXME: i18n to do
+        T.t(this, maxStageLabel, false, "rc_validity_maximum_stage");
         maxStageField = new SimpleNumberField();
         maxStageField.addChangeListener((e) -> {
             fireChangeListeners();
