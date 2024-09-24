@@ -110,25 +110,24 @@ public class RunDialog extends JDialog {
 
         runningWorker = new SwingWorker<>() {
 
-            boolean success = true;
+            private boolean success = true;
+            private Exception exception = null;
 
             @Override
             protected Void doInBackground() throws Exception {
-                boolean success = false;
+                success = true;
                 try {
                     ConsoleLogger.log("BaM starting...");
                     bam.run(workspacePath.toString(), txt -> {
                         publish(txt);
                     });
-                    success = true;
-                } catch (IOException e) {
-                    ConsoleLogger.error(e);
-                    cancel(true);
                 } catch (InterruptedException e) {
                     ConsoleLogger.error(e);
                     cancel(true);
-                } catch (BamRunException e) {
+                } catch (BamRunException | IOException e) {
                     ConsoleLogger.error(e);
+                    success = false;
+                    exception = e;
                     cancel(true);
                 }
                 if (success) {
@@ -150,23 +149,25 @@ public class RunDialog extends JDialog {
                 closeButton.setEnabled(true);
                 cancelButton.setEnabled(false);
 
-                if (!isCancelled()) {
-                    setTitle(T.text("bam_result_processing"));
-                    progressBar.setString(T.text("bam_result_processing")); // FIXME: not updating for some reason...
-                    if (success) {
+                if (!success) {
+                    setTitle(T.text("bam_error"));
+                    progressBar.setString(T.text("bam_error"));
+                    if (exception != null) {
+                        BamRunError bre = new BamRunError(exception);
+                        bre.errorMessageDialog();
+                    }
+                } else {
+                    if (!isCancelled()) {
+                        setTitle(T.text("bam_result_processing"));
+                        // FIXME: not updating for some reason...
+                        progressBar.setString(T.text("bam_result_processing"));
                         onSuccess.accept(RunConfigAndRes.buildFromWorkspace(id, workspacePath));
                         setTitle(T.text("bam_done"));
                         progressBar.setString(T.text("bam_done"));
                     } else {
-                        setTitle(T.text("bam_error"));
-                        progressBar.setString(T.text("bam_error"));
+                        setTitle(T.text("bam_canceled"));
                     }
-                } else {
-                    setTitle(T.text("bam_canceled"));
                 }
-
-                ConsoleLogger.log("BaM run done!");
-
             }
 
         };
