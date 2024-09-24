@@ -128,8 +128,12 @@ public class ControlMatrix extends RowColPanel implements ChangeListener {
     }
 
     public static boolean[][] fromXtra(String xTra) {
+        return fromXtra(xTra, false);
+    }
+
+    public static boolean[][] fromXtra(String xTra, boolean ignoreLastRow) {
         String[] rows = xTra.split("\n");
-        int nCtrl = rows.length;
+        int nCtrl = rows.length - (ignoreLastRow ? 1 : 0);
         boolean[][] controlMatrix = new boolean[nCtrl][nCtrl];
         for (int i = 0; i < nCtrl; i++) {
             String[] items = rows[i].split(" ");

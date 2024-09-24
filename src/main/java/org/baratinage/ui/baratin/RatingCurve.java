@@ -545,7 +545,8 @@ public class RatingCurve extends BamItem implements IPredictionMaster, ICalibrat
         gaugings.add(dischargeMax);
 
         // retrieve control matrix
-        boolean[][] controlMatrix = ControlMatrix.fromXtra(calibrationConfig.model.xTra);
+        boolean[][] controlMatrix = ControlMatrix.fromXtra(calibrationConfig.model.xTra,
+                calibrationConfig.model.modelId.equals("BaRatinBAC"));
 
         resultsPanel.updateResults(
                 predResults[0].predictionConfig.inputs[0].dataColumns.get(0),
