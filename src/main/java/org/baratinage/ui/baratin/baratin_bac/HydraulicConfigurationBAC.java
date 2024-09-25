@@ -64,8 +64,6 @@ public class HydraulicConfigurationBAC extends BamItem
         priorRatingCurve = new PriorRatingCurve<>(this);
         runBam = priorRatingCurve.runBam;
 
-        // *******************************************
-        // DIFFERENT
         JLabel maxStageLabel = new JLabel();
         T.t(this, maxStageLabel, false, "rc_validity_maximum_stage");
         maxStageField = new SimpleNumberField();
@@ -83,7 +81,6 @@ public class HydraulicConfigurationBAC extends BamItem
         modelDefPanel.appendChild(controlMatrix, 1);
         modelDefPanel.appendChild(new JSeparator(), 0);
         modelDefPanel.appendChild(maxStagePanel, 0);
-        // *******************************************
 
         controlMatrix.addChangeListener((e) -> {
             priorRatingCurve.checkSync();
@@ -97,8 +94,8 @@ public class HydraulicConfigurationBAC extends BamItem
                 250, 500,
                 150, 300);
 
-        controlMatrixTitledPanel = new TitledPanel(modelDefPanel); // DIFFERENT
-        controlMatrixTitledPanel.setIcon(controlMatrixIcon); // FIXME: icon to change
+        controlMatrixTitledPanel = new TitledPanel(modelDefPanel);
+        controlMatrixTitledPanel.setIcon(controlMatrixIcon);
         hydraulicControlsTitledPanel = new TitledPanel(hydraulicControls);
         hydraulicControlsTitledPanel.setIcon(priorSpecificationIcon);
         priorRatingCurveTitledPanel = new TitledPanel(priorRatingCurve);
@@ -119,7 +116,7 @@ public class HydraulicConfigurationBAC extends BamItem
         T.updateHierarchy(this, hydraulicControls);
         T.updateHierarchy(this, priorRatingCurve);
         T.t(this, () -> {
-            controlMatrixTitledPanel.setText(T.html("control_matrix")); // FIXME: i18n to change
+            controlMatrixTitledPanel.setText(T.html("control_matrix"));
             hydraulicControlsTitledPanel.setText(T.html("prior_parameter_specification"));
             priorRatingCurveTitledPanel.setText(T.html("prior_rating_curve"));
         });
@@ -132,7 +129,7 @@ public class HydraulicConfigurationBAC extends BamItem
 
     @Override
     public String getModelId() {
-        return "BaRatinBAC"; // DIFFERENT
+        return "BaRatinBAC";
     }
 
     @Override
@@ -163,7 +160,7 @@ public class HydraulicConfigurationBAC extends BamItem
                 xtra += "\n";
             }
         }
-        xtra = xtra + "\n" + maxStageField.getDoubleValue() + " ! hmax"; // DIFFERENT
+        xtra = xtra + "\n" + maxStageField.getDoubleValue() + " ! hmax";
         return xtra;
     }
 
