@@ -29,6 +29,7 @@ public class SimpleIntegerField extends JSpinner {
     public void configure(int min, int max, int step) {
         model.setMinimum(min);
         model.setMaximum(max);
+        model.setStepSize(step);
     }
 
     public void setValue(int value) {
