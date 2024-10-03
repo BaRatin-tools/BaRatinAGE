@@ -43,7 +43,13 @@ public class BaremExporter extends RowColPanel {
     private final SimpleDateTimeField endDateField;
 
     public BaremExporter() {
-        this("", "", LocalDateTime.now().minusYears(1L), LocalDateTime.now());
+        this("", "", LocalDateTime.now(), LocalDateTime.of(
+                2050,
+                1,
+                1,
+                0,
+                0));
+
     }
 
     public BaremExporter(
