@@ -234,12 +234,12 @@ public class PriorRatingCurve<HCT extends IModelDefinition & IPriors> extends Ro
                         false)));
     }
 
-    public BamConfig saveConfig() {
+    public BamConfig saveConfig(boolean writeFiles) {
         BamConfig config = new BamConfig(0);
         config.JSON.put("stageGridConfig", priorRatingCurveStageGrid.toJSON());
         if (bamRunConfigAndRes != null) {
             config.JSON.put("bamRunId", bamRunConfigAndRes.id);
-            config.FILE_PATHS.add(bamRunConfigAndRes.zipRun(true));
+            config.FILE_PATHS.add(bamRunConfigAndRes.zipRun(writeFiles));
         }
         if (jsonBackup != null) {
             config.JSON.put("backup", jsonBackup);

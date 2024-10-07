@@ -151,7 +151,7 @@ public class HydraulicConfiguration
 
         // **********************************************************
         // prior rating curve configuration
-        BamConfig priorRatingCurveConfig = priorRatingCurve.saveConfig();
+        BamConfig priorRatingCurveConfig = priorRatingCurve.saveConfig(writeFiles);
         config.JSON.put("priorRatingCurve", priorRatingCurveConfig.JSON);
         if (priorRatingCurveConfig.FILE_PATHS.size() > 0) {
             config.FILE_PATHS.addAll(priorRatingCurveConfig.FILE_PATHS);
