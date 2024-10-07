@@ -38,7 +38,6 @@ import org.json.JSONObject;
 public class PriorRatingCurve<HCT extends IModelDefinition & IPriors> extends RowColPanel implements IPredictionMaster {
 
     private final RatingCurveStageGrid priorRatingCurveStageGrid;
-    // private final RowColPanel priorRatingCurvePanel;
     private final RowColPanel outOufSyncPanel;
     public final RunBam runBam;
     private final RatingCurvePlot plotPanel;
@@ -71,8 +70,6 @@ public class PriorRatingCurve<HCT extends IModelDefinition & IPriors> extends Ro
         runBam.setModelDefintion(hydraulicConfiguration);
         runBam.setPriors(hydraulicConfiguration);
 
-        // priorRatingCurvePanel = new RowColPanel(RowColPanel.AXIS.COL);
-
         outOufSyncPanel = new RowColPanel(RowColPanel.AXIS.COL);
         outOufSyncPanel.setPadding(5);
 
@@ -93,27 +90,27 @@ public class PriorRatingCurve<HCT extends IModelDefinition & IPriors> extends Ro
         T.updateHierarchy(this, plotPanel);
         T.updateHierarchy(this, runBam);
         T.updateHierarchy(this, outOufSyncPanel);
+        T.t(runBam, runBam.runButton, true, "compute_prior_rc");
 
     }
 
-    // public void setModelDefintion(IModelDefinition modelDefinition) {
-    // runBam.setModelDefintion(modelDefinition);
+    private void updateRunBamButton(boolean rerunNeeded) {
+        if (!rerunNeeded) {
+            T.t(runBam, runBam.runButton, true, "compute_prior_rc");
+            runBam.runButton.setForeground(new JButton().getForeground());
+        } else {
+            T.t(runBam, runBam.runButton, true, "recompute_prior_rc");
+            runBam.runButton.setForeground(AppSetup.COLORS.INVALID_FG);
+        }
+        updateUI();
+    }
 
-    // }
-
-    // public void setPriors(IPriors priors) {
-    // runBam.setPriors(priors);
-    // }
-
-    // public void checkSync() {
     public void checkSync() {
         T.clear(outOufSyncPanel);
         T.clear(runBam);
         outOufSyncPanel.clear();
         if (jsonBackup == null) {
-            T.t(runBam, runBam.runButton, true, "compute_prior_rc");
-            runBam.runButton.setForeground(new JButton().getForeground());
-            updateUI();
+            updateRunBamButton(false);
             return;
         }
 
@@ -130,9 +127,7 @@ public class PriorRatingCurve<HCT extends IModelDefinition & IPriors> extends Ro
                 filteredCurrentJson);
 
         if (comparison.matching()) {
-            // FIXME: refactoring needed
-            T.t(runBam, runBam.runButton, true, "compute_prior_rc");
-            runBam.runButton.setForeground(new JButton().getForeground());
+            updateRunBamButton(false);
             return;
         }
 
@@ -176,11 +171,9 @@ public class PriorRatingCurve<HCT extends IModelDefinition & IPriors> extends Ro
             outOufSyncPanel.appendChild(mp);
         }
         if (outOfSyncMessages.size() > 0) {
-            T.t(runBam, runBam.runButton, true, "recompute_prior_rc");
-            runBam.runButton.setForeground(AppSetup.COLORS.INVALID_FG);
+            updateRunBamButton(true);
         } else {
-            T.t(runBam, runBam.runButton, true, "compute_prior_rc");
-            runBam.runButton.setForeground(new JButton().getForeground());
+            updateRunBamButton(false);
         }
 
         updateUI();
