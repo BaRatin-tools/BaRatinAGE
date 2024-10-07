@@ -171,11 +171,34 @@ public class HydraulicConfiguration
 
             JSONObject priorRatingCurveBackup = config.JSON.optJSONObject("backup");
             if (priorRatingCurveBackup != null) {
-                // FIXME: for now, juste get rid of backup, too difficult to reconstruct
-                // The backup object to construct would need to have three components:
-                // modelDefinition, priors and stageGridConfig
-                // the first two are build from IModelDefinition and IPriors object of this
-                // FIXME: should send a warning to user, prior RC may need to be recomputed
+                try {
+                    priorRatingCurveBackup = priorRatingCurveBackup.getJSONObject("jsonObject");
+                    // model definition:
+                    JSONObject modelDefinitionJson = BamConfig.getConfig((IModelDefinition) this);
+                    int nParameters = priorRatingCurveBackup.getJSONObject("hydraulicControls").getJSONArray("controls")
+                            .length() * 3;
+                    modelDefinitionJson.put("nParameters", nParameters);
+                    String xTraJsonString = priorRatingCurveBackup.getJSONObject("controlMatrix")
+                            .getString("controlMatrixString");
+                    boolean[][] ctrlMatrix = ControlMatrix.fromXtraJsonString(xTraJsonString);
+                    String xTra = ControlMatrix.toXtra(ctrlMatrix);
+                    modelDefinitionJson.put("xTra", xTra);
+                    // priors:
+                    JSONObject hydraulicControlsJson = priorRatingCurveBackup.getJSONObject("hydraulicControls");
+                    HydraulicControlPanels hcp = new HydraulicControlPanels();
+                    hcp.fromJSON(hydraulicControlsJson);
+                    JSONObject priorsJson = BamConfig.getConfig(hcp);
+                    // stage gris config
+                    JSONObject stageGridConfigJson = priorRatingCurveBackup.getJSONObject("stageGridConfig");
+                    // fixing priorRatingCurveJson
+                    JSONObject priorRatingCurveBackupJson = new JSONObject();
+                    priorRatingCurveBackupJson.put("modelDefinition", modelDefinitionJson);
+                    priorRatingCurveBackupJson.put("priors", priorsJson);
+                    priorRatingCurveBackupJson.put("stageGridConfig", stageGridConfigJson);
+                    priorRatingCurveJson.put("backup", priorRatingCurveBackupJson);
+                } catch (Exception e) {
+                    ConsoleLogger.error(e);
+                }
             }
             newJson.put("priorRatingCurve", priorRatingCurveJson);
             config = new BamConfig(0);
