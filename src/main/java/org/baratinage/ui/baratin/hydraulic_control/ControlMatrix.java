@@ -322,9 +322,7 @@ public class ControlMatrix extends RowColPanel implements ChangeListener {
         }
     }
 
-    public JSONObject toJSON() {
-        JSONObject json = new JSONObject();
-        boolean[][] matrix = getControlMatrix();
+    public static String toXtraJsonString(boolean[][] matrix) {
         String stringMatrix = "";
         int n = matrix.length;
         for (int i = 0; i < n; i++) {
@@ -333,14 +331,11 @@ public class ControlMatrix extends RowColPanel implements ChangeListener {
             }
             stringMatrix += ";";
         }
-        json.put("controlMatrixString", stringMatrix);
-        json.put("isReversed", getIsReversed());
-        return json;
+        return stringMatrix;
     }
 
-    public void fromJSON(JSONObject json) {
-        String stringMatrix = json.getString("controlMatrixString");
-        String[] stringMatrixRow = stringMatrix.split(";");
+    public static boolean[][] fromXtraJsonString(String xTraJsonString) {
+        String[] stringMatrixRow = xTraJsonString.split(";");
         int n = stringMatrixRow.length;
         boolean[][] matrix = new boolean[n][n];
         char one = "1".charAt(0);
@@ -349,6 +344,21 @@ public class ControlMatrix extends RowColPanel implements ChangeListener {
                 matrix[i][j] = stringMatrixRow[i].charAt(j) != one;
             }
         }
+        return matrix;
+    }
+
+    public JSONObject toJSON() {
+        JSONObject json = new JSONObject();
+        boolean[][] matrix = getControlMatrix();
+        String stringMatrix = toXtraJsonString(matrix);
+        json.put("controlMatrixString", stringMatrix);
+        json.put("isReversed", getIsReversed());
+        return json;
+    }
+
+    public void fromJSON(JSONObject json) {
+        String stringMatrix = json.getString("controlMatrixString");
+        boolean[][] matrix = fromXtraJsonString(stringMatrix);
         setControlMatrix(matrix);
         setIsReversed(json.getBoolean("isReversed"));
     }
