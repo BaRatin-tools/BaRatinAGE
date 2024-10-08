@@ -168,6 +168,13 @@ public class SimpleComboBox extends RowColPanel {
         int k = model.getIndexOf(item);
         return remEmptyLabelOffset(k);
     }
+
+    public JLabel getSelectedItemLabel() {
+        int index = getSelectedIndex();
+        if (index == -1) {
+            return null;
+        }
+        return model.getElementAt(addEmptyLabelOffset(index));
     }
 
     public int getItemCount() {
