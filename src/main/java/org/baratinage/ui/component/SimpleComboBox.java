@@ -69,6 +69,11 @@ public class SimpleComboBox extends RowColPanel {
         comboBox.setEnabled(enabled);
     }
 
+    @Override
+    public boolean isEnabled() {
+        return comboBox.isEnabled();
+    }
+
     public void setItems(String[] items) {
         setItems(items, false);
     }
