@@ -1,19 +1,89 @@
 package org.baratinage.ui.baratin.baratin_qfh;
 
 import org.baratinage.jbam.Parameter;
+import org.baratinage.translation.T;
 import org.baratinage.ui.bam.BamConfig;
 import org.baratinage.ui.bam.BamItem;
 import org.baratinage.ui.bam.BamItemType;
 import org.baratinage.ui.bam.BamProject;
 import org.baratinage.ui.bam.IModelDefinition;
 import org.baratinage.ui.bam.IPriors;
+import org.baratinage.ui.baratin.hydraulic_configuration.PriorRatingCurve;
+import org.baratinage.ui.container.RowColPanel;
+import org.baratinage.ui.container.TitledPanel;
+import org.baratinage.ui.container.TitledPanelSplitTabContainer;
+import org.baratinage.ui.container.RowColPanel.ALIGN;
+import org.baratinage.ui.container.RowColPanel.AXIS;
 
 public class HydraulicConfigurationQFH extends BamItem
         implements IModelDefinition, IPriors {
 
+    private final PriorRatingCurve<HydraulicConfigurationQFH> priorRatingCurve;
+
+    private final RowColPanel priorsPanel;
+
+    private final QFHModelDefinition modelDefinition;
+    private QFHPriors priors;
+
     public HydraulicConfigurationQFH(String uuid, BamProject project) {
         super(BamItemType.HYDRAULIC_CONFIG_QFH, uuid, project);
-        // TODO Auto-generated constructor stub
+
+        modelDefinition = new QFHModelDefinition();
+
+        TitledPanel eqTitledPanel = new TitledPanel(modelDefinition);
+
+        priorRatingCurve = new PriorRatingCurve<>(this);
+
+        priorsPanel = new RowColPanel(AXIS.COL, ALIGN.START);
+        priorsPanel.setPadding(5);
+
+        modelDefinition.addChangeListener(l -> {
+            if (!modelDefinition.isModelDefinitionValid()) {
+                priors = null;
+                priorsPanel.clear();
+                priorsPanel.updateUI();
+                return;
+            }
+            if (!modelDefinition.priorsPanel.equals(priors)) {
+                priors = modelDefinition.priorsPanel;
+                priorsPanel.clear();
+                priorsPanel.appendChild(priors);
+                priorsPanel.updateUI();
+            }
+        });
+        modelDefinition.fireChangeListeners();
+
+        TitledPanel priorRatingCurveTitledPanel = new TitledPanel(priorRatingCurve);
+
+        TitledPanel priorSpecificationTitledPanel = new TitledPanel(priorsPanel);
+
+        TitledPanelSplitTabContainer mainContainer = TitledPanelSplitTabContainer
+                .build2Left1Right(this,
+                        eqTitledPanel,
+                        priorRatingCurveTitledPanel,
+                        priorSpecificationTitledPanel);
+        mainContainer.setBreakpoints(1100, 800);
+        setContent(mainContainer);
+
+        // T.updateHierarchy(this, controlMatrix);
+        // T.updateHierarchy(this, hydraulicControls);
+        T.updateHierarchy(this, priorRatingCurve);
+        T.t(this, () -> {
+            eqTitledPanel.setText(T.html("rating_curve_equation"));
+            priorSpecificationTitledPanel.setText(T.html("prior_parameter_specification"));
+            priorRatingCurveTitledPanel.setText(T.html("prior_rating_curve"));
+        });
+
+        /**
+         * rename RatingCurveTextFileEquation into RatingCurveQFHConfiguration
+         * rename RatingCurveTextFileCustomEquation into RatingCurveTextFileEquation
+         * and make it a IPrior, IModelDefinition
+         * and make it supply the RatingCurveQFHPriors panel (one for custom and one for
+         * each preset)
+         * make RatingCurveQFHPriors be set either from a HashSet of string or
+         * RatingCurveQFHPreset
+         * rename all classes RatingCurve* into QFHRC* done
+         */
     }
 
     @Override
@@ -24,8 +94,7 @@ public class HydraulicConfigurationQFH extends BamItem
 
     @Override
     public String getModelId() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getModelId'");
+        return "TextFile";
     }
 
     @Override

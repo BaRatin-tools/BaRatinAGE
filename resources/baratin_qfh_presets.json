@@ -1,0 +1,45 @@
+[
+  {
+    "id": "charbo",
+    "formula": "C_t * tan( v / 2 ) * sqrt( 2 * g ) * ( h - k_1 ) ^ c_1 + ispos( h > k_2 ) * ( C_r * B_w * sqrt( 2 * g ) * ( h - k_2 ) ^ c_2 - C_t * tan( v / 2 ) * sqrt( 2 * g ) * ( h - k_2 ) ^ c_1 )",
+    "stage_symbole": "h",
+    "parameters": [
+      {
+        "symbole": "C_t",
+        "type": "weir_coefficient"
+      },
+      {
+        "symbole": "v",
+        "type": "angle"
+      },
+      {
+        "symbole": "g",
+        "type": "gravity_acceleration"
+      },
+      {
+        "symbole": "k_1",
+        "type": "activation_stage"
+      },
+      {
+        "symbole": "c_1",
+        "type": "exponent"
+      },
+      {
+        "symbole": "k_2",
+        "type": "activation_stage"
+      },
+      {
+        "symbole": "C_r",
+        "type": "weir_coefficient"
+      },
+      {
+        "symbole": "B_w",
+        "type": "width"
+      },
+      {
+        "symbole": "c_2",
+        "type": "exponent"
+      }
+    ]
+  }
+]
