@@ -9,6 +9,8 @@ import java.awt.Stroke;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.util.Date;
 
 import org.jfree.chart.LegendItem;
 import org.jfree.chart.plot.XYPlot;
@@ -98,13 +100,8 @@ public abstract class PlotItem {
         int n = time.length;
         Second[] s = new Second[n];
         for (int k = 0; k < n; k++) {
-            s[k] = new Second(
-                    time[k].getSecond(),
-                    time[k].getMinute(),
-                    time[k].getHour(),
-                    time[k].getDayOfMonth(),
-                    time[k].getMonthValue(),
-                    time[k].getYear());
+            Date d = new Date(time[k].toEpochSecond(ZoneOffset.UTC));
+            s[k] = new Second(d);
         }
         return s;
     }

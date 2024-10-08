@@ -21,14 +21,15 @@ public class SimpleIntegerField extends JSpinner {
 
     public SimpleIntegerField(int min, int max, int step) {
         super();
-        setEditor(new JSpinner.NumberEditor(this, "#"));
         model = new SpinnerNumberModel(min, min, max, step);
         setModel(model);
+        setEditor(new JSpinner.NumberEditor(this, "0"));
     }
 
     public void configure(int min, int max, int step) {
         model.setMinimum(min);
         model.setMaximum(max);
+        model.setStepSize(step);
     }
 
     public void setValue(int value) {
