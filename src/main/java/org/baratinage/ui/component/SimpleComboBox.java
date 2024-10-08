@@ -60,6 +60,10 @@ public class SimpleComboBox extends RowColPanel {
         appendChild(comboBox);
     }
 
+    public void setChangeListenersEnabled(boolean enabled) {
+        changeListenersDisabled = !enabled;
+    }
+
     @Override
     public void setEnabled(boolean enabled) {
         comboBox.setEnabled(enabled);
