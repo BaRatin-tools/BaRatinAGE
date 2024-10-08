@@ -1,5 +1,8 @@
 package org.baratinage.ui.baratin.baratin_qfh;
 
+import javax.swing.ImageIcon;
+
+import org.baratinage.AppSetup;
 import org.baratinage.jbam.Parameter;
 import org.baratinage.translation.T;
 import org.baratinage.ui.bam.BamConfig;
@@ -18,6 +21,13 @@ import org.baratinage.ui.container.RowColPanel.AXIS;
 public class HydraulicConfigurationQFH extends BamItem
         implements IModelDefinition, IPriors {
 
+    public static final ImageIcon equationQFHIcon = AppSetup.ICONS
+            .getCustomAppImageIcon("rating_curve_equation.svg");
+    public static final ImageIcon priorSpecificationIcon = AppSetup.ICONS
+            .getCustomAppImageIcon("prior_densities.svg");
+    public static final ImageIcon priorRatingCurveIcon = AppSetup.ICONS
+            .getCustomAppImageIcon("prior_rating_curve.svg");
+
     private final PriorRatingCurve<HydraulicConfigurationQFH> priorRatingCurve;
 
     private final RowColPanel priorsPanel;
@@ -29,8 +39,6 @@ public class HydraulicConfigurationQFH extends BamItem
         super(BamItemType.HYDRAULIC_CONFIG_QFH, uuid, project);
 
         modelDefinition = new QFHModelDefinition();
-
-        TitledPanel eqTitledPanel = new TitledPanel(modelDefinition);
 
         priorRatingCurve = new PriorRatingCurve<>(this);
 
@@ -53,9 +61,14 @@ public class HydraulicConfigurationQFH extends BamItem
         });
         modelDefinition.fireChangeListeners();
 
+        TitledPanel eqTitledPanel = new TitledPanel(modelDefinition);
+        eqTitledPanel.setIcon(equationQFHIcon);
+
         TitledPanel priorRatingCurveTitledPanel = new TitledPanel(priorRatingCurve);
+        priorRatingCurveTitledPanel.setIcon(priorRatingCurveIcon);
 
         TitledPanel priorSpecificationTitledPanel = new TitledPanel(priorsPanel);
+        priorSpecificationTitledPanel.setIcon(priorSpecificationIcon);
 
         TitledPanelSplitTabContainer mainContainer = TitledPanelSplitTabContainer
                 .build2Left1Right(this,
