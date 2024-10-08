@@ -16,6 +16,16 @@ public class SplitContainer extends JSplitPane {
                 rightComponent, true);
     }
 
+    public static SplitContainer build1Left2RightSplitContainer(
+            Component leftComponent,
+            Component topRightComponent,
+            Component bottomRightComponent) {
+        return new SplitContainer(
+                leftComponent,
+                new SplitContainer(topRightComponent, bottomRightComponent, false),
+                true);
+    }
+
     public SplitContainer(Component first, Component second, boolean horizontalSplit) {
         super(horizontalSplit ? JSplitPane.HORIZONTAL_SPLIT : JSplitPane.VERTICAL_SPLIT);
         if (horizontalSplit) {

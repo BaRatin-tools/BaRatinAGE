@@ -37,6 +37,30 @@ public class TitledPanelSplitTabContainer extends RowColPanel {
 
     }
 
+    public static TitledPanelSplitTabContainer build1Left2Right(JComponent parentComponent,
+            TitledPanel left,
+            TitledPanel topRight,
+            TitledPanel bottomRight) {
+
+        TitledPanelSplitTabContainer container = new TitledPanelSplitTabContainer(
+                parentComponent,
+                () -> {
+                    return SplitContainer.build1Left2RightSplitContainer(
+                            left.getTitledPanel(),
+                            topRight.getTitledPanel(),
+                            bottomRight.getTitledPanel());
+                }, () -> {
+                    TabContainer tabContainer = new TabContainer();
+                    tabContainer.addTab(left);
+                    tabContainer.addTab(topRight);
+                    tabContainer.addTab(bottomRight);
+                    return tabContainer;
+                });
+
+        return container;
+
+    }
+
     private final String ID = Misc.getTimeStampedId();
     private final Supplier<SplitContainer> splitContainerSupplier;
     private final Supplier<TabContainer> tabContainerSupplier;
