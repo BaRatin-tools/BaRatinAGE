@@ -119,7 +119,6 @@ public class PlotBar extends PlotItem {
         @Override
         public void paintBar(Graphics2D g2, XYBarRenderer renderer, int row, int column, RectangularShape bar,
                 RectangleEdge base) {
-            // TODO Auto-generated method stub
 
             Paint itemPaint = renderer.getItemPaint(row, column);
 
