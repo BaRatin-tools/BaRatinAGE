@@ -14,6 +14,8 @@ import org.baratinage.ui.container.GridPanel;
 import org.baratinage.ui.textfile.EquationEditor;
 import org.baratinage.utils.Misc;
 import org.baratinage.utils.perf.TimedActions;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 public class QFHTextFileEquation extends GridPanel {
 
@@ -166,6 +168,26 @@ public class QFHTextFileEquation extends GridPanel {
     private void fireChangeListeners() {
         for (ChangeListener l : changeListeners) {
             l.stateChanged(new ChangeEvent(this));
+        }
+    }
+
+    public JSONObject toJSON() {
+        JSONObject json = new JSONObject();
+        json.put("equation", eqEditor.getText());
+        json.put("stageVarName", hVariableName);
+        json.put("priors", priorsPanel.toJSON());
+        return json;
+    }
+
+    public void fromJSON(JSONObject json) {
+        String eqString = json.optString("equation", "");
+        eqEditor.setText(eqString);
+        hVariableName = json.optString("stageVarName", null);
+        updateStageVariableCombobox(eqEditor.getVariables());
+        updateEquationParameters();
+        JSONArray priorsJson = json.optJSONArray("priors");
+        if (priorsJson != null) {
+            priorsPanel.fromJSON(priorsJson);
         }
     }
 

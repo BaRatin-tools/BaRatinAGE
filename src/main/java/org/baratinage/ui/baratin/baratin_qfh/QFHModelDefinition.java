@@ -86,6 +86,8 @@ public class QFHModelDefinition extends RowColPanel implements IModelDefinition 
             QFHTextFileEquation eq = getCurrentTextFileEquation();
             updateUI();
             if (eq == null) {
+                priorsPanel = null;
+                fireChangeListeners(); // changed equation type
                 return;
             }
             presetContentPanel.appendChild(eq, 1);
@@ -160,4 +162,36 @@ public class QFHModelDefinition extends RowColPanel implements IModelDefinition 
         throw new UnsupportedOperationException("Unimplemented method 'getXtra'");
     }
 
+    public JSONObject toJSON() {
+        JSONObject json = new JSONObject();
+        // preset id
+        int presetIndex = presetComboBox.getSelectedIndex();
+        json.put("presetId", presetIndex >= 0 && presetIndex < eqIds.size() ? eqIds.get(presetIndex) : null);
+        // equation string for all presets
+        JSONArray eqConfigsAndPriors = new JSONArray();
+        for (String presetId : equationPanels.keySet()) {
+            JSONObject eqJson = new JSONObject();
+            QFHTextFileEquation eq = equationPanels.get(presetId);
+            eqJson.put("presetId", presetId);
+            eqJson.put("eqConfigsAndPriors", eq.toJSON());
+            eqConfigsAndPriors.put(eqJson);
+        }
+        json.put("eqConfigsAndPriors", eqConfigsAndPriors);
+        return json;
+    }
+
+    public void fromJSON(JSONObject json) {
+        String presetId = json.optString("presetId", "custom");
+        int presetIndex = eqIds.indexOf(presetId);
+        presetComboBox.setSelectedItem(presetIndex);
+        JSONArray eqConfigAndPriorsConfig = json.optJSONArray("eqConfigsAndPriors");
+        for (int k = 0; k < eqConfigAndPriorsConfig.length(); k++) {
+            JSONObject eqJson = eqConfigAndPriorsConfig.getJSONObject(k);
+            String pId = eqJson.optString("presetId", "");
+            if (!equationPanels.containsKey(pId)) {
+                continue;
+            }
+            equationPanels.get(pId).fromJSON(eqJson.optJSONObject("eqConfigsAndPriors"));
+        }
+    }
 }

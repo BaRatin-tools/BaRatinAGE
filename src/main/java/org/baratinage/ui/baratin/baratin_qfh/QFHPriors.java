@@ -16,17 +16,19 @@ import org.baratinage.ui.bam.IPriors;
 import org.baratinage.ui.baratin.baratin_qfh.QFHPreset.RatingCurveEquationParameter;
 import org.baratinage.ui.container.GridPanel;
 import org.baratinage.utils.ConsoleLogger;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 public class QFHPriors extends GridPanel implements IPriors, ChangeListener {
 
-    private final HashMap<String, QFHPriorParameterDist> PriorParDists;
+    private final HashMap<String, QFHPriorParameterDist> priorParDists;
     private final HashSet<String> usedParNames;
 
     private final List<JLabel> headers;
 
     public QFHPriors() {
         super();
-        PriorParDists = new HashMap<>();
+        priorParDists = new HashMap<>();
         usedParNames = new HashSet<>();
 
         setColWeight(1, 1);
@@ -65,7 +67,7 @@ public class QFHPriors extends GridPanel implements IPriors, ChangeListener {
             priorParDist.addChangeListener(this);
             priorParDist.setParameterType(p.type());
             priorParDist.knownParameterType.setEnabled(false);
-            PriorParDists.put(p.symbole(), priorParDist);
+            priorParDists.put(p.symbole(), priorParDist);
             usedParNames.add(p.symbole());
         }
         updatePanel();
@@ -74,10 +76,10 @@ public class QFHPriors extends GridPanel implements IPriors, ChangeListener {
     public void updateUsedParNames(HashSet<String> newUsedParNames) {
         usedParNames.clear();
         for (String parName : newUsedParNames) {
-            if (!PriorParDists.containsKey(parName)) {
+            if (!priorParDists.containsKey(parName)) {
                 QFHPriorParameterDist priorParDist = new QFHPriorParameterDist(parName);
                 priorParDist.addChangeListener(this);
-                PriorParDists.put(parName, priorParDist);
+                priorParDists.put(parName, priorParDist);
             }
             usedParNames.add(parName);
         }
@@ -90,7 +92,7 @@ public class QFHPriors extends GridPanel implements IPriors, ChangeListener {
         int rowIndex = 2;
         for (String parName : usedParNames) {
             int colIndex = 0;
-            QFHPriorParameterDist p = PriorParDists.get(parName);
+            QFHPriorParameterDist p = priorParDists.get(parName);
             if (p == null) {
                 ConsoleLogger.error("QFHPriorParameterDist not found though it should exist!");
                 continue;
@@ -98,7 +100,9 @@ public class QFHPriors extends GridPanel implements IPriors, ChangeListener {
             if (p.knownParameterType.isEnabled()) {
                 insertChild(p.knownParameterType, colIndex, rowIndex);
             } else {
-                insertChild(p.knownParameterType.getSelectedItemLabel(), colIndex, rowIndex);
+                JLabel label = p.knownParameterType.getSelectedItemLabel();
+
+                insertChild(label != null ? label : p.knownParameterType, colIndex, rowIndex);
             }
             colIndex++;
             insertChild(p.nameLabel, colIndex, rowIndex);
@@ -108,17 +112,16 @@ public class QFHPriors extends GridPanel implements IPriors, ChangeListener {
             insertChild(p.distributionField.distributionCombobox, colIndex, rowIndex);
             colIndex++;
             insertChild(p.distributionField.parameterFieldsPanel, colIndex, rowIndex);
-
             rowIndex++;
         }
         updateUI();
     }
 
     public void reset() {
-        for (QFHPriorParameterDist QFHPriorParDist : PriorParDists.values()) {
+        for (QFHPriorParameterDist QFHPriorParDist : priorParDists.values()) {
             QFHPriorParDist.removeChangeListener(this);
         }
-        PriorParDists.clear();
+        priorParDists.clear();
         usedParNames.clear();
     }
 
@@ -145,4 +148,27 @@ public class QFHPriors extends GridPanel implements IPriors, ChangeListener {
         }
     }
 
+    public JSONArray toJSON() {
+        // PriorParDists
+        JSONArray json = new JSONArray();
+        for (String key : priorParDists.keySet()) {
+            JSONObject j = new JSONObject();
+            j.put("key", key);
+            j.put("priorParDist", priorParDists.get(key).toJSON());
+            json.put(j);
+        }
+        return json;
+    }
+
+    public void fromJSON(JSONArray json) {
+        for (int k = 0; k < json.length(); k++) {
+            JSONObject j = json.getJSONObject(k);
+            String key = j.optString("key", "");
+            JSONObject priorParDistConfig = j.optJSONObject("priorParDist");
+            if (!priorParDists.containsKey(key)) {
+                continue;
+            }
+            priorParDists.get(key).fromJSON(priorParDistConfig);
+        }
+    }
 }

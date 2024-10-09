@@ -17,6 +17,7 @@ import org.baratinage.ui.container.TitledPanel;
 import org.baratinage.ui.container.TitledPanelSplitTabContainer;
 import org.baratinage.ui.container.RowColPanel.ALIGN;
 import org.baratinage.ui.container.RowColPanel.AXIS;
+import org.json.JSONObject;
 
 public class HydraulicConfigurationQFH extends BamItem
         implements IModelDefinition, IPriors {
@@ -136,14 +137,22 @@ public class HydraulicConfigurationQFH extends BamItem
 
     @Override
     public BamConfig save(boolean writeFiles) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'save'");
+        BamConfig config = new BamConfig(0);
+
+        // contains both the equation/preset config and priors configs
+        config.JSON.put("modelDefinitionAndPriors", modelDefinition.toJSON());
+
+        // TODO: rating curve
+
+        return config;
     }
 
     @Override
     public void load(BamConfig config) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'load'");
+
+        JSONObject modelDefinitionAndPriors = config.JSON.optJSONObject("modelDefinitionAndPriors");
+        modelDefinition.fromJSON(modelDefinitionAndPriors);
+
     }
 
 }

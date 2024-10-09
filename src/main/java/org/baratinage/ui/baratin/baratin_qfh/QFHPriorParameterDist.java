@@ -5,6 +5,7 @@ import org.baratinage.translation.T;
 import org.baratinage.ui.commons.ParameterPriorDist;
 import org.baratinage.ui.component.SimpleComboBox;
 import org.baratinage.ui.component.SvgIcon;
+import org.json.JSONObject;
 
 public class QFHPriorParameterDist extends ParameterPriorDist {
 
@@ -57,9 +58,39 @@ public class QFHPriorParameterDist extends ParameterPriorDist {
         }
     }
 
+    private String getParameterTypeId() {
+        int index = knownParameterType.getSelectedIndex();
+        if (index < 0 || index > validParameterTypes.length) {
+            return null;
+        }
+        return validParameterTypes[index].id;
+    }
+
     // public void setParameterTypeEnabled(boolean enabled) {
     // knownParameterType.setEnabled(enabled);
     // if (enabled)
     // }
 
+    @Override
+    public JSONObject toJSON() {
+        JSONObject json = super.toJSON();
+
+        json.put("knownParameterTypeId", getParameterTypeId());
+        json.put("knownParameterTypeEnabled", knownParameterType.isEnabled());
+
+        return json;
+    }
+
+    @Override
+    public void fromJSON(JSONObject json) {
+        super.fromJSON(json);
+
+        String knownParameterTypeId = json.optString("knownParameterTypeId", null);
+        if (knownParameterTypeId != null) {
+            setParameterType(knownParameterTypeId);
+        }
+        boolean knownParameterTypeEnabled = json.optBoolean("knownParameterTypeEnabled", true);
+
+        knownParameterType.setEnabled(knownParameterTypeEnabled);
+    }
 }
