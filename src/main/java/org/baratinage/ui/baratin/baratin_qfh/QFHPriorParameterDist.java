@@ -66,11 +66,6 @@ public class QFHPriorParameterDist extends ParameterPriorDist {
         return validParameterTypes[index].id;
     }
 
-    // public void setParameterTypeEnabled(boolean enabled) {
-    // knownParameterType.setEnabled(enabled);
-    // if (enabled)
-    // }
-
     @Override
     public JSONObject toJSON() {
         JSONObject json = super.toJSON();
