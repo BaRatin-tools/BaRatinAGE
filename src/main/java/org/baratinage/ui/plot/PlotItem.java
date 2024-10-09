@@ -100,7 +100,7 @@ public abstract class PlotItem {
         int n = time.length;
         Second[] s = new Second[n];
         for (int k = 0; k < n; k++) {
-            Date d = new Date(time[k].toEpochSecond(ZoneOffset.UTC));
+            Date d = new Date(time[k].toEpochSecond(ZoneOffset.UTC) * 1000);
             s[k] = new Second(d);
         }
         return s;
