@@ -55,44 +55,47 @@ public class QFHTextFileEquation extends GridPanel {
                 JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
         eqScrollPane.setViewportView(eqEditor);
 
-        eqEditor.addChangeListener((e) -> {
-            TimedActions.debounce(id, 250, () -> {
-                updateStageVariableCombobox(eqEditor.getVariables());
-                updateEquationParameters();
-                fireChangeListeners(); // equation has changed
-            });
-        });
-
         JLabel hSelectionLabel = new JLabel();
         hSelectionLabel.setText("Variable \"hauteur d'eau\"");
 
         hSelectionCombobox = new SimpleComboBox();
         hSelectionCombobox.setEnabled(editable);
-        hSelectionCombobox.addChangeListener(l -> {
-            int index = hSelectionCombobox.getSelectedIndex();
-            if (index == -1) {
-                hVariableName = null;
-                hSelectionCombobox.setValidityView(false);
-                fireChangeListeners(); // h variable selection has changed
-                return;
-            } else if (index >= eqItems.size()) {
-                hVariableName = null; // Invalid: should not happend
-                hSelectionCombobox.setValidityView(false);
-                fireChangeListeners();
-                return;
-            }
-            hVariableName = eqItems.get(index);
-            hSelectionCombobox.setValidityView(true);
-            eqParameterNames.clear();
-            for (String s : eqItems) {
-                if (!s.equals(hVariableName)) {
-                    eqParameterNames.add(s);
+
+        if (editable) {
+            eqEditor.addChangeListener((e) -> {
+                TimedActions.debounce(id, 250, () -> {
+                    updateStageVariableCombobox(eqEditor.getVariables());
+                    updateEquationParameters();
+                    fireChangeListeners(); // equation has changed
+                });
+            });
+
+            hSelectionCombobox.addChangeListener(l -> {
+                int index = hSelectionCombobox.getSelectedIndex();
+                if (index == -1) {
+                    hVariableName = null;
+                    hSelectionCombobox.setValidityView(false);
+                    fireChangeListeners(); // h variable selection has changed
+                    return;
+                } else if (index >= eqItems.size()) {
+                    hVariableName = null; // Invalid: should not happend
+                    hSelectionCombobox.setValidityView(false);
+                    fireChangeListeners();
+                    return;
                 }
-            }
-            updateEquationParameters();
-            fireChangeListeners(); // h variable selection has changed
-        });
-        hSelectionCombobox.setValidityView(false);
+                hVariableName = eqItems.get(index);
+                hSelectionCombobox.setValidityView(true);
+                eqParameterNames.clear();
+                for (String s : eqItems) {
+                    if (!s.equals(hVariableName)) {
+                        eqParameterNames.add(s);
+                    }
+                }
+                updateEquationParameters();
+                fireChangeListeners(); // h variable selection has changed
+            });
+            hSelectionCombobox.setValidityView(false);
+        }
 
         setColWeight(0, 1);
         setRowWeight(1, 1);
