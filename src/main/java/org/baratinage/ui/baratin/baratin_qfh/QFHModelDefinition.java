@@ -8,6 +8,7 @@ import java.util.List;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import org.baratinage.jbam.utils.ConfigFile;
 import org.baratinage.ui.bam.IModelDefinition;
 import org.baratinage.ui.baratin.baratin_qfh.QFHPreset.RatingCurveEquationParameter;
 import org.baratinage.ui.component.SimpleComboBox;
@@ -49,6 +50,8 @@ public class QFHModelDefinition extends RowColPanel implements IModelDefinition 
     private final RowColPanel presetContentPanel = new RowColPanel(AXIS.COL);
 
     private final HashMap<String, QFHTextFileEquation> equationPanels;
+    private QFHTextFileEquation currentEquationPanel;
+
     public QFHPriors priorsPanel;
 
     private final List<String> eqIds;
@@ -83,15 +86,19 @@ public class QFHModelDefinition extends RowColPanel implements IModelDefinition 
 
         presetComboBox.addChangeListener((e) -> {
             presetContentPanel.clear();
-            QFHTextFileEquation eq = getCurrentTextFileEquation();
+
+            int index = presetComboBox.getSelectedIndex();
+
+            currentEquationPanel = index >= 0 && index < eqIds.size() ? equationPanels.get(eqIds.get(index)) : null;
+
             updateUI();
-            if (eq == null) {
+            if (currentEquationPanel == null) {
                 priorsPanel = null;
                 fireChangeListeners(); // changed equation type
                 return;
             }
-            presetContentPanel.appendChild(eq, 1);
-            priorsPanel = eq.priorsPanel;
+            presetContentPanel.appendChild(currentEquationPanel, 1);
+            priorsPanel = currentEquationPanel.priorsPanel;
             fireChangeListeners(); // changed equation type
         });
 
@@ -100,20 +107,10 @@ public class QFHModelDefinition extends RowColPanel implements IModelDefinition 
     }
 
     public boolean isModelDefinitionValid() {
-        QFHTextFileEquation currentEq = getCurrentTextFileEquation();
-        if (currentEq == null) {
+        if (currentEquationPanel == null) {
             return false;
         }
-        return currentEq.isQFHEquationValid();
-    }
-
-    private QFHTextFileEquation getCurrentTextFileEquation() {
-        int index = presetComboBox.getSelectedIndex();
-        if (index < 0) {
-            return null;
-        }
-        String eqId = eqIds.get(index);
-        return equationPanels.get(eqId);
+        return currentEquationPanel.isQFHEquationValid();
     }
 
     private List<ChangeListener> changeListeners = new ArrayList<>();
@@ -134,32 +131,39 @@ public class QFHModelDefinition extends RowColPanel implements IModelDefinition 
 
     @Override
     public String getModelId() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getModelId'");
+        return "TextFile";
     }
 
     @Override
     public int getNumberOfParameters() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getNumberOfParameters'");
+        if (currentEquationPanel == null) {
+            return 0;
+        }
+        return currentEquationPanel.getParameterNames().size();
     }
 
     @Override
     public String[] getInputNames() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getInputNames'");
+        return new String[] { currentEquationPanel.getStageVariableName() };
     }
 
     @Override
     public String[] getOutputNames() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getOutputNames'");
+        return new String[] { "Q" };
     }
 
     @Override
     public String getXtra(String workspace) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getXtra'");
+        ConfigFile cf = new ConfigFile();
+        cf.addItem(1, "number of input variables");
+        cf.addItem(getInputNames(), "list of input variables, comma-separated");
+        cf.addItem(getNumberOfParameters(), "number of parameters");
+        String[] parameterNames = currentEquationPanel.getParameterNames().toArray(new String[0]);
+        cf.addItem(parameterNames, "list of parameters, comma-separated ");
+        cf.addItem(1, "number of output variables");
+        cf.addItem(currentEquationPanel.getEquation(), "formula");
+        String[] xTraLines = cf.createFileLines();
+        return String.join("\n", xTraLines);
     }
 
     public JSONObject toJSON() {
@@ -191,7 +195,8 @@ public class QFHModelDefinition extends RowColPanel implements IModelDefinition 
             if (!equationPanels.containsKey(pId)) {
                 continue;
             }
-            equationPanels.get(pId).fromJSON(eqJson.optJSONObject("eqConfigsAndPriors"));
+            QFHTextFileEquation eq = equationPanels.get(pId);
+            eq.fromJSON(eqJson.optJSONObject("eqConfigsAndPriors"));
         }
     }
 }

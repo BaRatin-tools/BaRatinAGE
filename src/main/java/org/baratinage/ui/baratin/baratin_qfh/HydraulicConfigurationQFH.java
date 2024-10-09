@@ -102,8 +102,7 @@ public class HydraulicConfigurationQFH extends BamItem
 
     @Override
     public Parameter[] getParameters() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getParameters'");
+        return priors.getParameters();
     }
 
     @Override
@@ -113,26 +112,22 @@ public class HydraulicConfigurationQFH extends BamItem
 
     @Override
     public int getNumberOfParameters() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getNumberOfParameters'");
+        return modelDefinition.getNumberOfParameters();
     }
 
     @Override
     public String[] getInputNames() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getInputNames'");
+        return modelDefinition.getInputNames();
     }
 
     @Override
     public String[] getOutputNames() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getOutputNames'");
+        return modelDefinition.getOutputNames();
     }
 
     @Override
     public String getXtra(String workspace) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getXtra'");
+        return modelDefinition.getXtra(workspace);
     }
 
     @Override

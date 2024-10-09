@@ -77,6 +77,7 @@ public class QFHPriors extends GridPanel implements IPriors, ChangeListener {
         usedParNames.clear();
         for (String parName : newUsedParNames) {
             if (!priorParDists.containsKey(parName)) {
+                System.out.println("Creating QFHPriorParameterDist... (" + parName + ")");
                 QFHPriorParameterDist priorParDist = new QFHPriorParameterDist(parName);
                 priorParDist.addChangeListener(this);
                 priorParDists.put(parName, priorParDist);
@@ -101,7 +102,9 @@ public class QFHPriors extends GridPanel implements IPriors, ChangeListener {
                 insertChild(p.knownParameterType, colIndex, rowIndex);
             } else {
                 JLabel label = p.knownParameterType.getSelectedItemLabel();
-
+                if (label == null) {
+                    System.out.println("Label is null when it shouldn't (" + p.bamName + ")");
+                }
                 insertChild(label != null ? label : p.knownParameterType, colIndex, rowIndex);
             }
             colIndex++;
@@ -127,8 +130,14 @@ public class QFHPriors extends GridPanel implements IPriors, ChangeListener {
 
     @Override
     public Parameter[] getParameters() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getParameters'");
+        int n = priorParDists.size();
+        Parameter[] parameters = new Parameter[n];
+        int k = 0;
+        for (QFHPriorParameterDist p : priorParDists.values()) {
+            parameters[k] = p.getParameter();
+            k++;
+        }
+        return parameters;
     }
 
     private List<ChangeListener> changeListeners = new ArrayList<>();

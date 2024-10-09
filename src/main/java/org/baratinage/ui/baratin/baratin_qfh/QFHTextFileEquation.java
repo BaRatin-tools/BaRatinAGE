@@ -152,6 +152,10 @@ public class QFHTextFileEquation extends GridPanel {
         return eqParameterNames;
     }
 
+    public String getStageVariableName() {
+        return hVariableName;
+    }
+
     public void setFromPreset(QFHPreset preset) {
         eqEditor.setText(preset.formula());
         hVariableName = preset.stageSymbole();
