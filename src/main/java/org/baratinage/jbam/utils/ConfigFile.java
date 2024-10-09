@@ -23,7 +23,7 @@ public class ConfigFile {
         items = new ArrayList<>();
     }
 
-    private String[] createFileLines() {
+    public String[] createFileLines() {
         final int maxSpaces = 50;
         final int minSpaces = 0;
         int maxValueLength = minSpaces;
