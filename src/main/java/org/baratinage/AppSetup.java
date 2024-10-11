@@ -13,6 +13,7 @@ import java.util.Set;
 import javax.swing.JLabel;
 import javax.swing.UIManager;
 
+import org.baratinage.jbam.utils.BamFilesHelpers;
 import org.baratinage.translation.T;
 import org.baratinage.ui.MainFrame;
 import org.baratinage.ui.component.CommonDialog;
@@ -53,6 +54,8 @@ public class AppSetup {
             .of(PATH_APP_ROOT_DIR, "exe", "bam_workspace", APP_INSTANCE_ID)
             .toString();
 
+    public static final String PATH_RESSOURCES_DIR = Path.of(PATH_APP_ROOT_DIR, "resources").toString();
+    public static final String PATH_I18N_RESSOURCES_DIR = Path.of(PATH_APP_ROOT_DIR, "resources", "i18n").toString();
     public static final String PATH_ICONS_RESOURCES_DIR = Path.of(PATH_APP_ROOT_DIR, "resources", "icons").toString();
     public static final String PATH_FONTS_RESOURCES_DIR = Path.of(PATH_APP_ROOT_DIR, "resources", "fonts").toString();
 
@@ -73,8 +76,12 @@ public class AppSetup {
 
     public static void setup() {
 
+        ConsoleLogger.log(String.format("BaRatinAGE root directory: %s", PATH_APP_ROOT_DIR));
+
         DirUtils.createDir(PATH_APP_TEMP_DIR);
         DirUtils.createDir(PATH_BAM_WORKSPACE_DIR);
+
+        BamFilesHelpers.EXE_DIR = Path.of(PATH_APP_ROOT_DIR, "exe").toString();
 
         setupLookAndFeel();
 

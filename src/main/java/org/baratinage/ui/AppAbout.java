@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.net.JarURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -148,7 +149,7 @@ public class AppAbout extends JDialog {
 
         try {
             List<String[]> creditsMatrix = ReadFile.readStringMatrix(
-                    "resources/credits.csv",
+                    Path.of(AppSetup.PATH_RESSOURCES_DIR, "credits.csv").toString(),
                     ";",
                     1,
                     true,

@@ -10,7 +10,7 @@ public class BamFilesHelpers {
 
     public static final String OS_SEP = System.getProperty("file.separator");
     public static final String OS = System.getProperty("os.name").toLowerCase();
-    public static final String EXE_DIR = "./exe/";
+    public static String EXE_DIR = "./exe/";
     public static final String EXE_NAME = "BaM";
 
     public static final String DATA_CALIBRATION = "Data_%s.txt";
