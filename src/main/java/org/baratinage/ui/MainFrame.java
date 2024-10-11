@@ -220,6 +220,7 @@ public class MainFrame extends JFrame {
     }
 
     public void loadProject(String projectFilePath) {
+        ConsoleLogger.log(String.format("Opening file '%s' ...", projectFilePath));
         if (projectFilePath != null) {
             BamProjectLoader.loadProject(
                     projectFilePath,
