@@ -37,6 +37,9 @@ public class AppSetup {
         }
     }
 
+    public static final String OS = System.getProperty("os.name").toLowerCase();
+    public static final boolean IS_WINDOWS = OS.startsWith("windows");
+
     public static final boolean IS_PACKAGED = System.getProperty("jpackage.app-path") != null;
     public static final String APP_NAME = "BaRatinAGE";
     public static final String APP_INSTANCE_ID = Misc.getTimeStampedId();
