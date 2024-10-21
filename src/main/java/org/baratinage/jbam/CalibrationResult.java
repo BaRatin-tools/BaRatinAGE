@@ -184,12 +184,22 @@ public class CalibrationResult {
         CalibrationDataResiduals calDataResiduals = null;
 
         try {
+
             List<double[]> residualMatrix = ReadFile.readMatrix(
                     filePath.toString(),
                     BamFilesHelpers.BAM_COLUMN_SEPARATOR,
                     1, Integer.MAX_VALUE,
                     BamFilesHelpers.BAM_IMPOSSIBLE_SIMULATION_CODE,
                     false, true);
+
+            if (residualMatrix.size() == 0) {
+                String[] headerRow = ReadFile.getHeaderRow(filePath.toString(), BamFilesHelpers.BAM_COLUMN_SEPARATOR, 0,
+                        false, true);
+                residualMatrix = new ArrayList<>();
+                for (int k = 0; k < headerRow.length; k++) {
+                    residualMatrix.add(new double[0]);
+                }
+            }
 
             calDataResiduals = new CalibrationDataResiduals(
                     residualMatrix,

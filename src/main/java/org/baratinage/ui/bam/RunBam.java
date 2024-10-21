@@ -340,7 +340,7 @@ public class RunBam {
                 ConsoleLogger.log(
                         "RunPanel: if calibRun is true, calibration data should be specified! Using fake data instead...");
             }
-            double[] fakeDataArray = new double[] { 0 };
+            double[] fakeDataArray = new double[] {};
             UncertainData[] inputs = new UncertainData[nInputs];
             for (int k = 0; k < nInputs; k++) {
                 inputs[k] = new UncertainData(inputNames[k], fakeDataArray);
