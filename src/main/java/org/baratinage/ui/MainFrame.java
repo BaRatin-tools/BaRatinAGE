@@ -3,6 +3,7 @@ package org.baratinage.ui;
 import javax.swing.AbstractAction;
 import javax.swing.JFrame;
 import javax.swing.JRootPane;
+import javax.swing.JComponent;
 import javax.swing.KeyStroke;
 
 import org.baratinage.AppSetup;
@@ -135,7 +136,7 @@ public class MainFrame extends JFrame {
     private void setAppWideShortcuts() {
         JRootPane rootPane = getRootPane();
         KeyStroke aKeyStroke = KeyStroke.getKeyStroke(KeyEvent.VK_F12, 0);
-        rootPane.getInputMap().put(aKeyStroke, "toggle_debug_menu");
+        rootPane.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(aKeyStroke, "toggle_debug_menu");
         rootPane.getActionMap().put("toggle_debug_menu", new AbstractAction() {
 
             @Override
