@@ -1,6 +1,9 @@
 package org.baratinage.ui.baratin.baratin_qfh;
 
 import org.baratinage.ui.commons.CommonParameterDist.CommonParameterType;
+
+import org.baratinage.jbam.Distribution;
+import org.baratinage.jbam.Parameter;
 import org.baratinage.translation.T;
 import org.baratinage.ui.commons.ParameterPriorDist;
 import org.baratinage.ui.component.SimpleComboBox;
@@ -29,7 +32,6 @@ public class QFHPriorParameterDist extends ParameterPriorDist {
         setNameLabel(bamName);
 
         knownParameterType = new SimpleComboBox();
-
         setKnownParameterTypeCombobox();
 
         T.t(this, () -> {
@@ -59,19 +61,39 @@ public class QFHPriorParameterDist extends ParameterPriorDist {
         }
     }
 
-    private String getParameterTypeId() {
+    private CommonParameterType getSelectedParameterType() {
         int index = knownParameterType.getSelectedIndex();
         if (index < 0 || index > validParameterTypes.length) {
             return null;
         }
-        return validParameterTypes[index].id;
+        return validParameterTypes[index];
+    }
+
+    @Override
+    public Parameter getParameter() {
+        Parameter p = super.getParameter();
+
+        // FIXME: refactor to more generic ? (e.g. part of AbstractParameterPriorDist)
+        CommonParameterType t = getSelectedParameterType();
+
+        if (p == null || t == null || !t.id.equals("angle")) {
+            return p;
+        }
+        Distribution d = p.distribution;
+        double[] convertedPar = new double[d.parameterValues.length];
+        for (int k = 0; k < d.parameterValues.length; k++) {
+            convertedPar[k] = Math.toRadians(d.parameterValues[k]);
+        }
+        Distribution dConverted = new Distribution(d.type, convertedPar);
+        return new Parameter(p.name, Math.toRadians(p.initalGuess), dConverted);
     }
 
     @Override
     public JSONObject toJSON() {
         JSONObject json = super.toJSON();
 
-        json.put("knownParameterTypeId", getParameterTypeId());
+        CommonParameterType t = getSelectedParameterType();
+        json.put("knownParameterTypeId", t == null ? null : t.id);
         json.put("knownParameterTypeEnabled", knownParameterType.isEnabled());
 
         return json;
