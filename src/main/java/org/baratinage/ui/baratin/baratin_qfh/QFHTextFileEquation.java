@@ -159,6 +159,8 @@ public class QFHTextFileEquation extends GridPanel {
     public void setFromPreset(QFHPreset preset) {
         eqEditor.setText(preset.formula());
         hVariableName = preset.stageSymbole();
+        updateStageVariableCombobox(eqEditor.getVariables());
+        updateEquationParameters();
         priorsPanel.setFromPreset(preset);
     }
 
