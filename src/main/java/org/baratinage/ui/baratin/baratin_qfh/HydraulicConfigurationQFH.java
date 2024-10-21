@@ -15,6 +15,7 @@ import org.baratinage.ui.baratin.hydraulic_configuration.PriorRatingCurve;
 import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.ui.container.TitledPanel;
 import org.baratinage.ui.container.TitledPanelSplitTabContainer;
+import org.baratinage.utils.ConsoleLogger;
 import org.baratinage.ui.container.RowColPanel.ALIGN;
 import org.baratinage.ui.container.RowColPanel.AXIS;
 import org.json.JSONObject;
@@ -137,7 +138,12 @@ public class HydraulicConfigurationQFH extends BamItem
         // contains both the equation/preset config and priors configs
         config.JSON.put("modelDefinitionAndPriors", modelDefinition.toJSON());
 
-        // TODO: rating curve
+        // rating curve
+        BamConfig priorRatingCurveConfig = priorRatingCurve.saveConfig(writeFiles);
+        config.JSON.put("priorRatingCurve", priorRatingCurveConfig.JSON);
+        if (priorRatingCurveConfig.FILE_PATHS.size() > 0) {
+            config.FILE_PATHS.addAll(priorRatingCurveConfig.FILE_PATHS);
+        }
 
         return config;
     }
@@ -147,6 +153,12 @@ public class HydraulicConfigurationQFH extends BamItem
 
         JSONObject modelDefinitionAndPriors = config.JSON.optJSONObject("modelDefinitionAndPriors");
         modelDefinition.fromJSON(modelDefinitionAndPriors);
+
+        if (config.JSON.has("priorRatingCurve")) {
+            priorRatingCurve.loadConfig(config.JSON.getJSONObject("priorRatingCurve"));
+        } else {
+            ConsoleLogger.log("missing 'priorRatingCurve'");
+        }
 
     }
 
