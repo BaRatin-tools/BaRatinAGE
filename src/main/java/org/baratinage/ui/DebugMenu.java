@@ -12,6 +12,7 @@ import javax.swing.SwingUtilities;
 import org.baratinage.AppSetup;
 import org.baratinage.translation.T;
 import org.baratinage.utils.ConsoleLogger;
+import org.baratinage.utils.Misc;
 import org.baratinage.utils.fs.WriteFile;
 
 public class DebugMenu extends JMenu {
@@ -127,27 +128,41 @@ public class DebugMenu extends JMenu {
             return;
         }
         if (!AppSetup.IS_PACKAGED) {
-            ConsoleLogger.error(
-                    "Cannot updating Windows registry because BaRatinAGE is not packaged in an executable file");
+            ConsoleLogger
+                    .error("Cannot updating Windows registry because BaRatinAGE is not packaged in an executable file");
             return;
         }
 
-        String scriptPath = Path.of(AppSetup.PATH_APP_TEMP_DIR, "update_reg.ps1").toString();
         String newBaRatinAGEPath = Path.of(AppSetup.PATH_APP_ROOT_DIR, String.format("%s.exe", AppSetup.APP_NAME))
                 .toString();
 
         ConsoleLogger.log("Starting Windows registry update...");
-
         ConsoleLogger.log("New BaRatinAGE path is: ");
-        ConsoleLogger.log(newBaRatinAGEPath);
 
+        String regPath = "HKEY_CLASSES_ROOT\\Applications\\BaRatinAGE.exe\\shell\\open\\command";
+        String cmdCommand = String.format("reg add %s /ve /d \\\"\"%s\" \"%%1\"\\\" /f",
+                regPath,
+                newBaRatinAGEPath);
+
+        if (runAdminCmdCommand(cmdCommand)) {
+
+            ConsoleLogger.log("Registry should be updated.");
+        } else {
+            ConsoleLogger.log("Registry update failed.");
+
+        }
+    }
+
+    private static boolean runAdminCmdCommand(String cmd) {
+
+        String randomId = Misc.getTimeStampedId();
+        String scriptPath = Path.of(AppSetup.PATH_APP_TEMP_DIR, String.format("script_%s.ps1", randomId)).toString();
+        int exitCode = -1;
         try {
 
-            String regPath = "HKEY_CLASSES_ROOT\\Applications\\BaRatinAGE.exe\\shell\\open\\command";
-            String cmdCommand = String.format("\"cmd /c reg add \\\"%s\\\" /ve /d \\\"\\\"%s\\\" \\\"%%1\\\"\\\" /f\"",
-                    regPath,
-                    newBaRatinAGEPath);
-            // note we could remove the NoExit argument...
+            // String cmdCommand = String.format("\"cmd /c %s\"", cmd);
+            String cmdCommand = String.format("cmd /c %s", cmd);
+
             String pwsCommand = String.format(
                     "Start-Process powershell -Verb RunAs -ArgumentList '-NoExit', '-Command', '%s'", cmdCommand);
 
@@ -156,15 +171,15 @@ public class DebugMenu extends JMenu {
             ConsoleLogger.log("Executing powershell script ...");
             String command = "powershell.exe -ExecutionPolicy Bypass -File " + scriptPath;
             Process powerShellProcess = Runtime.getRuntime().exec(command);
-            int exitCode = powerShellProcess.waitFor();
+            exitCode = powerShellProcess.waitFor();
             ConsoleLogger.log("PowerShell script exited with code: " + exitCode);
 
         } catch (Exception e) {
             ConsoleLogger.error(e);
+            return false;
         }
 
         try {
-
             File f = new File(scriptPath);
             if (f.delete()) {
                 ConsoleLogger.log("Successfuly deleted script file");
@@ -175,6 +190,6 @@ public class DebugMenu extends JMenu {
             ConsoleLogger.error(e);
         }
 
-        ConsoleLogger.log("Registry should be updated.");
+        return exitCode == 0;
     }
 }
