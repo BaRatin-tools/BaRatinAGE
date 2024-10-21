@@ -38,7 +38,6 @@ public class QFHPriorParameterDist extends ParameterPriorDist {
     }
 
     private void setKnownParameterTypeCombobox() {
-
         String[] knownParaTypeLabels = new String[validParameterTypes.length];
         SvgIcon[] knownParaTypeIcons = new SvgIcon[validParameterTypes.length];
         for (int k = 0; k < validParameterTypes.length; k++) {
@@ -46,7 +45,9 @@ public class QFHPriorParameterDist extends ParameterPriorDist {
                     validParameterTypes[k].unit);
             knownParaTypeIcons[k] = validParameterTypes[k].icon;
         }
+        int selectedIndex = knownParameterType.getSelectedIndex();
         knownParameterType.setItems(knownParaTypeLabels, knownParaTypeIcons);
+        knownParameterType.setSelectedItem(selectedIndex, true);
     }
 
     public void setParameterType(String id) {
