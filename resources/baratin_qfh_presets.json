@@ -6,7 +6,12 @@
     "parameters": [
       {
         "symbole": "C_t",
-        "type": "weir_coefficient"
+        "type": "weir_coefficient",
+        "default_distribution": {
+          "initial_guess": 0.31,
+          "type": "Gaussian",
+          "parameters": [0.31, 0.025]
+        }
       },
       {
         "symbole": "v",
@@ -14,7 +19,12 @@
       },
       {
         "symbole": "g",
-        "type": "gravity_acceleration"
+        "type": "gravity_acceleration",
+        "default_distribution": {
+          "initial_guess": 9.81,
+          "type": "Gaussian",
+          "parameters": [9.81, 0.005]
+        }
       },
       {
         "symbole": "k_1",
@@ -22,7 +32,12 @@
       },
       {
         "symbole": "c_1",
-        "type": "exponent"
+        "type": "exponent",
+        "default_distribution": {
+          "initial_guess": 2.5,
+          "type": "Gaussian",
+          "parameters": [2.5, 0.025]
+        }
       },
       {
         "symbole": "k_2",
@@ -30,7 +45,12 @@
       },
       {
         "symbole": "C_r",
-        "type": "weir_coefficient"
+        "type": "weir_coefficient",
+        "default_distribution": {
+          "initial_guess": 0.4,
+          "type": "Gaussian",
+          "parameters": [0.4, 0.025]
+        }
       },
       {
         "symbole": "B_w",
@@ -38,7 +58,12 @@
       },
       {
         "symbole": "c_2",
-        "type": "exponent"
+        "type": "exponent",
+        "default_distribution": {
+          "initial_guess": 1.5,
+          "type": "Gaussian",
+          "parameters": [1.5, 0.025]
+        }
       }
     ]
   }

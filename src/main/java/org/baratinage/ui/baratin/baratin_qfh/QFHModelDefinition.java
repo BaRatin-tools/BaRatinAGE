@@ -1,6 +1,5 @@
 package org.baratinage.ui.baratin.baratin_qfh;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -10,40 +9,12 @@ import javax.swing.event.ChangeListener;
 
 import org.baratinage.jbam.utils.ConfigFile;
 import org.baratinage.ui.bam.IModelDefinition;
-import org.baratinage.ui.baratin.baratin_qfh.QFHPreset.RatingCurveEquationParameter;
 import org.baratinage.ui.component.SimpleComboBox;
 import org.baratinage.ui.container.RowColPanel;
-import org.baratinage.utils.ConsoleLogger;
-import org.baratinage.utils.fs.ReadFile;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.json.JSONException;
 
 public class QFHModelDefinition extends RowColPanel implements IModelDefinition {
-
-    static private final List<QFHPreset> eqPresets = new ArrayList<>();
-
-    static {
-        try {
-            String jsonContent = ReadFile.readTextFile("resources/baratin_qfh_presets.json");
-            JSONArray json = new JSONArray(jsonContent);
-            for (int i = 0; i < json.length(); i++) {
-                JSONObject presetJson = json.getJSONObject(i);
-                JSONArray presetParametersJson = presetJson.getJSONArray("parameters");
-                List<RatingCurveEquationParameter> presetParameters = new ArrayList<>();
-                for (int j = 0; j < presetParametersJson.length(); j++) {
-                    JSONObject presetParJson = presetParametersJson.getJSONObject(j);
-                    presetParameters.add(new RatingCurveEquationParameter(presetParJson.getString("symbole"),
-                            presetParJson.getString("type")));
-                }
-                eqPresets.add(new QFHPreset(
-                        presetJson.getString("id"), presetJson.getString("formula"),
-                        presetJson.getString("stage_symbole"), presetParameters));
-            }
-        } catch (IOException | JSONException e) {
-            ConsoleLogger.error(e);
-        }
-    }
 
     private final SimpleComboBox presetComboBox = new SimpleComboBox();
 
@@ -71,7 +42,7 @@ public class QFHModelDefinition extends RowColPanel implements IModelDefinition 
             fireChangeListeners(); // custom equation or stage variable selection has changed
         });
         equationPanels.put("custom", eqPanel);
-        for (QFHPreset preset : eqPresets) {
+        for (QFHPreset preset : QFHPreset.PRESETS) {
             String eqId = preset.id();
             eqIds.add(eqId);
             eqPanel = new QFHTextFileEquation(false);
