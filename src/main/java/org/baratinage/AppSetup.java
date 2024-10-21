@@ -6,9 +6,12 @@ import java.awt.FontFormatException;
 import java.awt.GraphicsEnvironment;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Set;
+import java.util.jar.Manifest;
+import java.util.jar.Attributes;
 
 import javax.swing.JLabel;
 import javax.swing.UIManager;
@@ -50,6 +53,8 @@ public class AppSetup {
                     "baratinage", APP_INSTANCE_ID)
             .toString();
 
+    public static Attributes MANIFEST_MAIN_ATTRIBUTES;
+
     public static final String PATH_BAM_WORKSPACE_DIR = Path
             .of(PATH_APP_ROOT_DIR, "exe", "bam_workspace", APP_INSTANCE_ID)
             .toString();
@@ -77,6 +82,11 @@ public class AppSetup {
     public static void setup() {
 
         ConsoleLogger.log(String.format("BaRatinAGE root directory: %s", PATH_APP_ROOT_DIR));
+
+        MANIFEST_MAIN_ATTRIBUTES = getManifestMainAttributes();
+        if (MANIFEST_MAIN_ATTRIBUTES != null) {
+            ConsoleLogger.log("BaRatinAGE version is: " + MANIFEST_MAIN_ATTRIBUTES.getValue("Project-Version"));
+        }
 
         DirUtils.createDir(PATH_APP_TEMP_DIR);
         DirUtils.createDir(PATH_BAM_WORKSPACE_DIR);
@@ -170,4 +180,19 @@ public class AppSetup {
             }
         }
     }
+
+    public static Attributes getManifestMainAttributes() {
+        ClassLoader classLoader = AppSetup.class.getClassLoader();
+        try (InputStream manifestStream = classLoader.getResourceAsStream("META-INF/MANIFEST.MF")) {
+            if (manifestStream != null) {
+                return new Manifest(manifestStream).getMainAttributes();
+            } else {
+                System.out.println("Manifest file not found.");
+            }
+        } catch (IOException e) {
+            System.out.println("Error reading manifest file: " + e.getMessage());
+        }
+        return null;
+    }
+
 }
