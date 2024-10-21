@@ -1,7 +1,7 @@
 [
   {
     "id": "charbo",
-    "formula": "C_t * tan( v / 2 ) * sqrt( 2 * g ) * ( h - k_1 ) ^ c_1 + ispos( h - k_2 ) * ( C_r * B_w * sqrt( 2 * g ) * ( h - k_2 ) ^ c_2 - C_t * tan( v / 2 ) * sqrt( 2 * g ) * ( h - k_2 ) ^ c_1 )",
+    "formula": "C_t * tan( v / 2 ) * sqrt( 2 * g ) * (ispos( h - k_1 ) * ( h - k_1 )) ^ c_1 +  C_r * B_w * sqrt( 2 * g ) * (ispos( h - k_2 ) * ( h - k_2 )) ^ c_2 - C_t * tan( v / 2 ) * sqrt( 2 * g ) * (ispos( h - k_2 ) * ( h - k_2 )) ^ c_1",
     "stage_symbole": "h",
     "parameters": [
       {
