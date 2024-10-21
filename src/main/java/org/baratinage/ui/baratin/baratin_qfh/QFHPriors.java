@@ -86,7 +86,6 @@ public class QFHPriors extends GridPanel implements IPriors, ChangeListener {
         usedParNames.clear();
         for (String parName : newUsedParNames) {
             if (!priorParDists.containsKey(parName)) {
-                System.out.println("Creating QFHPriorParameterDist... (" + parName + ")");
                 QFHPriorParameterDist priorParDist = new QFHPriorParameterDist(parName);
                 priorParDist.addChangeListener(this);
                 priorParDists.put(parName, priorParDist);
