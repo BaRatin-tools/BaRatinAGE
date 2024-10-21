@@ -10,10 +10,11 @@ import javax.swing.JSeparator;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import org.baratinage.jbam.DistributionType;
 import org.baratinage.jbam.Parameter;
 import org.baratinage.translation.T;
 import org.baratinage.ui.bam.IPriors;
-import org.baratinage.ui.baratin.baratin_qfh.QFHPreset.RatingCurveEquationParameter;
+import org.baratinage.ui.baratin.baratin_qfh.QFHPreset.QFHPresetParameter;
 import org.baratinage.ui.container.GridPanel;
 import org.baratinage.utils.ConsoleLogger;
 import org.json.JSONArray;
@@ -62,11 +63,19 @@ public class QFHPriors extends GridPanel implements IPriors, ChangeListener {
 
     public void setFromPreset(QFHPreset preset) {
         reset();
-        for (RatingCurveEquationParameter p : preset.parameters()) {
+        for (QFHPresetParameter p : preset.parameters()) {
             QFHPriorParameterDist priorParDist = new QFHPriorParameterDist(p.symbole());
             priorParDist.addChangeListener(this);
             priorParDist.setParameterType(p.type());
             priorParDist.knownParameterType.setEnabled(false);
+            if (p.distribution() != null) {
+                priorParDist.setDistributionType(
+                        DistributionType.getDistribFromBamName(
+                                p.distribution().distribution_id()));
+                priorParDist.setDistributionParameters(p.distribution().parameters());
+                priorParDist.setInitialGuess(p.distribution().initial_guess());
+            }
+
             priorParDists.put(p.symbole(), priorParDist);
             usedParNames.add(p.symbole());
         }
@@ -130,10 +139,11 @@ public class QFHPriors extends GridPanel implements IPriors, ChangeListener {
 
     @Override
     public Parameter[] getParameters() {
-        int n = priorParDists.size();
+        int n = usedParNames.size();
         Parameter[] parameters = new Parameter[n];
         int k = 0;
-        for (QFHPriorParameterDist p : priorParDists.values()) {
+        for (String parName : usedParNames) {
+            QFHPriorParameterDist p = priorParDists.get(parName);
             parameters[k] = p.getParameter();
             k++;
         }
