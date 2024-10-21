@@ -34,11 +34,9 @@ public class MainMenuBar extends JMenuBar {
 
     public final Map<String, JCheckBoxMenuItem> translationMenuItems;
 
-    public MainMenuBar() {
+    private DebugMenu debugMenu;
 
-        if (!AppSetup.IS_PACKAGED) {
-            add(new DebugMenu());
-        }
+    public MainMenuBar() {
 
         fileMenu = new JMenu();
 
@@ -52,6 +50,10 @@ public class MainMenuBar extends JMenuBar {
 
         helpMenu = new JMenu("Help");
         add(helpMenu);
+
+        if (!AppSetup.IS_PACKAGED) {
+            toggleDebugMenu();
+        }
 
         saveProjectAsMenuItem = new JMenuItem();
         saveProjectMenuItem = new JMenuItem();
@@ -68,6 +70,17 @@ public class MainMenuBar extends JMenuBar {
         T.t(this, optionMenu, false, "options");
         T.t(this, helpMenu, false, "help");
 
+    }
+
+    public void toggleDebugMenu() {
+        if (debugMenu == null) {
+            debugMenu = new DebugMenu();
+            add(debugMenu);
+        } else {
+            remove(debugMenu);
+            debugMenu = null;
+        }
+        updateUI();
     }
 
     public void updateMenuEnableStates() {

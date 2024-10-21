@@ -1,6 +1,10 @@
 package org.baratinage.ui;
 
+import javax.swing.AbstractAction;
 import javax.swing.JFrame;
+import javax.swing.JRootPane;
+import javax.swing.JComponent;
+import javax.swing.KeyStroke;
 
 import org.baratinage.AppSetup;
 import org.baratinage.project_importer.BaratinageV2Importer;
@@ -16,8 +20,10 @@ import org.baratinage.utils.Misc;
 import org.baratinage.utils.perf.TimedActions;
 
 import java.awt.Dimension;
+import java.awt.event.ActionEvent;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
@@ -109,6 +115,8 @@ public class MainFrame extends JFrame {
 
         noProjectPanel = new NoProjectPanel();
 
+        setAppWideShortcuts();
+
         setVisible(true);
         setCurrentProject(null);
 
@@ -123,6 +131,20 @@ public class MainFrame extends JFrame {
             currentProject.updateUI();
         }
         mainMenuBar.updateUI();
+    }
+
+    private void setAppWideShortcuts() {
+        JRootPane rootPane = getRootPane();
+        KeyStroke aKeyStroke = KeyStroke.getKeyStroke(KeyEvent.VK_F12, 0);
+        rootPane.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(aKeyStroke, "toggle_debug_menu");
+        rootPane.getActionMap().put("toggle_debug_menu", new AbstractAction() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                mainMenuBar.toggleDebugMenu();
+            }
+
+        });
     }
 
     // FIXME: disabled / currently unused
@@ -220,6 +242,7 @@ public class MainFrame extends JFrame {
     }
 
     public void loadProject(String projectFilePath) {
+        ConsoleLogger.log(String.format("Opening file '%s' ...", projectFilePath));
         if (projectFilePath != null) {
             BamProjectLoader.loadProject(
                     projectFilePath,

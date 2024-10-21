@@ -1,23 +1,24 @@
 package org.baratinage.ui;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.InputStreamReader;
+import java.nio.file.Path;
+
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.SwingUtilities;
 
 import org.baratinage.AppSetup;
 import org.baratinage.translation.T;
-import org.baratinage.ui.commons.ToasterMessage;
+import org.baratinage.utils.ConsoleLogger;
+import org.baratinage.utils.Misc;
+import org.baratinage.utils.fs.WriteFile;
 
 public class DebugMenu extends JMenu {
 
     public DebugMenu() {
-        super("DEBUG / DEV");
-
-        JMenuItem testToasterBtn = new JMenuItem("Test toaster");
-        add(testToasterBtn);
-        testToasterBtn.addActionListener((e) -> {
-            ToasterMessage.info("Project saved!");
-        });
+        super("Debug");
 
         JMenuItem clearConsoleBtn = new JMenuItem("Clear console");
         add(clearConsoleBtn);
@@ -44,18 +45,6 @@ public class DebugMenu extends JMenu {
             T.printStats(true);
         });
 
-        JMenuItem cleanupTranslationBtn = new JMenuItem("Cleanup translations");
-        add(cleanupTranslationBtn);
-        cleanupTranslationBtn.addActionListener((e) -> {
-            // T.cleanup();
-        });
-
-        JMenuItem remTranslatorsBtn = new JMenuItem("Remove all registered Translatables");
-        add(remTranslatorsBtn);
-        remTranslatorsBtn.addActionListener((e) -> {
-            T.reset();
-        });
-
         JMenuItem lgResetBtn = new JMenuItem("Reload T resources");
         add(lgResetBtn);
         lgResetBtn.addActionListener((e) -> {
@@ -74,5 +63,133 @@ public class DebugMenu extends JMenu {
             SwingUtilities.updateComponentTreeUI(AppSetup.MAIN_FRAME);
         });
 
+        JMenuItem printWindowsRegistry = new JMenuItem("Print BaRatinAGE location in windows registry");
+        add(printWindowsRegistry);
+        printWindowsRegistry.addActionListener((e) -> {
+            String regPath = getWindowsRegistryBaRatinAGEPath();
+            ConsoleLogger.log(String.format("Path to BaRatinAGE in Windows registry is '%s'", regPath));
+            ConsoleLogger.log(String.format("Is it equal to current executable path?  %b",
+                    AppSetup.PATH_APP_ROOT_DIR.equals(regPath)));
+
+        });
+
+        JMenuItem updateWindowsRegistry = new JMenuItem("Update BaRatinAGE location in windows registry");
+        add(updateWindowsRegistry);
+        updateWindowsRegistry.addActionListener((e) -> {
+            updateWindowsRegistryForBaRatinAGE();
+        });
+
+    }
+
+    private static String getWindowsRegistryBaRatinAGEPath() {
+        if (!AppSetup.IS_WINDOWS) {
+            ConsoleLogger.error("Cannot query Windows registry because it is not a Windows platform");
+            return null;
+        }
+        try {
+            ProcessBuilder builder = new ProcessBuilder(
+                    "reg",
+                    "query",
+                    String.format("HKEY_CLASSES_ROOT\\Applications\\%s.exe\\shell\\open\\command", AppSetup.APP_NAME),
+                    "/s");
+            Process process = builder.start();
+
+            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            String line;
+            while ((line = reader.readLine()) != null) {
+                ConsoleLogger.log(line);
+                if (line.contains("REG_SZ")) {
+                    boolean nextItemIsPath = false;
+                    String[] split = line.split("\\s+");
+                    for (String l : split) {
+                        if (nextItemIsPath) {
+                            l = l.replace("\"", "");
+                            String currentRegistryPath = Path.of(l).getParent().toString();
+                            return currentRegistryPath;
+                        }
+                        if (l.contains("REG_SZ")) {
+                            nextItemIsPath = true;
+                        }
+                    }
+                    break;
+                }
+            }
+
+            process.waitFor();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public static void updateWindowsRegistryForBaRatinAGE() {
+        if (!AppSetup.IS_WINDOWS) {
+            ConsoleLogger.error("Cannot update Windows registry because it is not a Windows platform");
+            return;
+        }
+        if (!AppSetup.IS_PACKAGED) {
+            ConsoleLogger
+                    .error("Cannot updating Windows registry because BaRatinAGE is not packaged in an executable file");
+            return;
+        }
+
+        String newBaRatinAGEPath = Path.of(AppSetup.PATH_APP_ROOT_DIR, String.format("%s.exe", AppSetup.APP_NAME))
+                .toString();
+
+        ConsoleLogger.log("Starting Windows registry update...");
+        ConsoleLogger.log("New BaRatinAGE path is: ");
+
+        String regPath = "HKEY_CLASSES_ROOT\\Applications\\BaRatinAGE.exe\\shell\\open\\command";
+        String cmdCommand = String.format("reg add %s /ve /d \\\"\"%s\" \"%%1\"\\\" /f",
+                regPath,
+                newBaRatinAGEPath);
+
+        if (runAdminCmdCommand(cmdCommand)) {
+
+            ConsoleLogger.log("Registry should be updated.");
+        } else {
+            ConsoleLogger.log("Registry update failed.");
+
+        }
+    }
+
+    private static boolean runAdminCmdCommand(String cmd) {
+
+        String randomId = Misc.getTimeStampedId();
+        String scriptPath = Path.of(AppSetup.PATH_APP_TEMP_DIR, String.format("script_%s.ps1", randomId)).toString();
+        int exitCode = -1;
+        try {
+
+            // String cmdCommand = String.format("\"cmd /c %s\"", cmd);
+            String cmdCommand = String.format("cmd /c %s", cmd);
+
+            String pwsCommand = String.format(
+                    "Start-Process powershell -Verb RunAs -ArgumentList '-NoExit', '-Command', '%s'", cmdCommand);
+
+            ConsoleLogger.log("Writing powershell script ...");
+            WriteFile.writeLines(scriptPath, new String[] { pwsCommand });
+            ConsoleLogger.log("Executing powershell script ...");
+            String command = "powershell.exe -ExecutionPolicy Bypass -File " + scriptPath;
+            Process powerShellProcess = Runtime.getRuntime().exec(command);
+            exitCode = powerShellProcess.waitFor();
+            ConsoleLogger.log("PowerShell script exited with code: " + exitCode);
+
+        } catch (Exception e) {
+            ConsoleLogger.error(e);
+            return false;
+        }
+
+        try {
+            File f = new File(scriptPath);
+            if (f.delete()) {
+                ConsoleLogger.log("Successfuly deleted script file");
+            } else {
+                ConsoleLogger.error("Failed to deleted script file");
+            }
+        } catch (Exception e) {
+            ConsoleLogger.error(e);
+        }
+
+        return exitCode == 0;
     }
 }

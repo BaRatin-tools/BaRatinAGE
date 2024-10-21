@@ -8,14 +8,10 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
-import java.net.JarURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.jar.Attributes;
-import java.util.jar.Manifest;
 
 import javax.swing.JDialog;
 import javax.swing.JLabel;
@@ -59,26 +55,6 @@ public class AppAbout extends JDialog {
     private final List<String> creditsDescTexts;
     private final List<JLabel> creditsDescLabels;
 
-    private Attributes getMyManifestAttributes() {
-        String className = getClass().getSimpleName() + ".class";
-        String classPath = getClass().getResource(className).toString();
-        if (!classPath.startsWith("jar")) {
-            ConsoleLogger.error("Not in a jar file.");
-            return null;
-        }
-        try {
-            URL url = new URL(classPath);
-            JarURLConnection jarConnection = (JarURLConnection) url.openConnection();
-            Manifest manifest = jarConnection.getManifest();
-            return manifest.getMainAttributes();
-        } catch (MalformedURLException e) {
-            ConsoleLogger.error(e);
-        } catch (IOException e) {
-            ConsoleLogger.error(e);
-        }
-        return null;
-    }
-
     public AppAbout() {
         super(AppSetup.MAIN_FRAME, true);
         RowColPanel contentPanel = new RowColPanel(RowColPanel.AXIS.COL);
@@ -87,12 +63,11 @@ public class AppAbout extends JDialog {
 
         String buildInfo = "";
 
-        Attributes manifestAttributes = getMyManifestAttributes();
-        if (manifestAttributes != null) {
-            version = manifestAttributes.getValue("Project-Version");
-            String buildJdk = manifestAttributes.getValue("Build-Jdk");
-            String buildOS = manifestAttributes.getValue("Build-OS");
-            String buildTimestamp = manifestAttributes.getValue("Build-Timestamp");
+        if (AppSetup.MANIFEST_MAIN_ATTRIBUTES != null) {
+            version = AppSetup.MANIFEST_MAIN_ATTRIBUTES.getValue("Project-Version");
+            String buildJdk = AppSetup.MANIFEST_MAIN_ATTRIBUTES.getValue("Build-Jdk");
+            String buildOS = AppSetup.MANIFEST_MAIN_ATTRIBUTES.getValue("Build-OS");
+            String buildTimestamp = AppSetup.MANIFEST_MAIN_ATTRIBUTES.getValue("Build-Timestamp");
             // "jdk: " + ;
             buildInfo = String.format(
                     "<html><b>Build info:</b><br><code>JDK: %s</code><br><code>OS: %s</code><br><code>Timestamp: %s</code></html>",
@@ -148,7 +123,7 @@ public class AppAbout extends JDialog {
 
         try {
             List<String[]> creditsMatrix = ReadFile.readStringMatrix(
-                    "resources/credits.csv",
+                    Path.of(AppSetup.PATH_RESSOURCES_DIR, "credits.csv").toString(),
                     ";",
                     1,
                     true,

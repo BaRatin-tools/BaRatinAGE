@@ -6,13 +6,17 @@ import java.awt.FontFormatException;
 import java.awt.GraphicsEnvironment;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Set;
+import java.util.jar.Manifest;
+import java.util.jar.Attributes;
 
 import javax.swing.JLabel;
 import javax.swing.UIManager;
 
+import org.baratinage.jbam.utils.BamFilesHelpers;
 import org.baratinage.translation.T;
 import org.baratinage.ui.MainFrame;
 import org.baratinage.ui.component.CommonDialog;
@@ -37,6 +41,9 @@ public class AppSetup {
         }
     }
 
+    public static final String OS = System.getProperty("os.name").toLowerCase();
+    public static final boolean IS_WINDOWS = OS.startsWith("windows");
+
     public static final boolean IS_PACKAGED = System.getProperty("jpackage.app-path") != null;
     public static final String APP_NAME = "BaRatinAGE";
     public static final String APP_INSTANCE_ID = Misc.getTimeStampedId();
@@ -46,10 +53,14 @@ public class AppSetup {
                     "baratinage", APP_INSTANCE_ID)
             .toString();
 
+    public static Attributes MANIFEST_MAIN_ATTRIBUTES;
+
     public static final String PATH_BAM_WORKSPACE_DIR = Path
             .of(PATH_APP_ROOT_DIR, "exe", "bam_workspace", APP_INSTANCE_ID)
             .toString();
 
+    public static final String PATH_RESSOURCES_DIR = Path.of(PATH_APP_ROOT_DIR, "resources").toString();
+    public static final String PATH_I18N_RESSOURCES_DIR = Path.of(PATH_APP_ROOT_DIR, "resources", "i18n").toString();
     public static final String PATH_ICONS_RESOURCES_DIR = Path.of(PATH_APP_ROOT_DIR, "resources", "icons").toString();
     public static final String PATH_FONTS_RESOURCES_DIR = Path.of(PATH_APP_ROOT_DIR, "resources", "fonts").toString();
 
@@ -70,8 +81,17 @@ public class AppSetup {
 
     public static void setup() {
 
+        ConsoleLogger.log(String.format("BaRatinAGE root directory: %s", PATH_APP_ROOT_DIR));
+
+        MANIFEST_MAIN_ATTRIBUTES = getManifestMainAttributes();
+        if (MANIFEST_MAIN_ATTRIBUTES != null) {
+            ConsoleLogger.log("BaRatinAGE version is: " + MANIFEST_MAIN_ATTRIBUTES.getValue("Project-Version"));
+        }
+
         DirUtils.createDir(PATH_APP_TEMP_DIR);
         DirUtils.createDir(PATH_BAM_WORKSPACE_DIR);
+
+        BamFilesHelpers.EXE_DIR = Path.of(PATH_APP_ROOT_DIR, "exe").toString();
 
         setupLookAndFeel();
 
@@ -160,4 +180,19 @@ public class AppSetup {
             }
         }
     }
+
+    public static Attributes getManifestMainAttributes() {
+        ClassLoader classLoader = AppSetup.class.getClassLoader();
+        try (InputStream manifestStream = classLoader.getResourceAsStream("META-INF/MANIFEST.MF")) {
+            if (manifestStream != null) {
+                return new Manifest(manifestStream).getMainAttributes();
+            } else {
+                System.out.println("Manifest file not found.");
+            }
+        } catch (IOException e) {
+            System.out.println("Error reading manifest file: " + e.getMessage());
+        }
+        return null;
+    }
+
 }
