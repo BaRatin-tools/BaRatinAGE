@@ -1,6 +1,7 @@
 package org.baratinage.ui.bam;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.swing.JButton;
@@ -127,10 +128,14 @@ public class BamItemParent extends RowColPanel {
                 : currentBamItem.bamItemNameField.getText();
     }
 
-    private JSONFilter filter;
-
     public void setComparisonJSONfilter(JSONFilter filter) {
-        this.filter = filter;
+        filters.put(TYPE, filter);
+    }
+
+    private HashMap<BamItemType, JSONFilter> filters = new HashMap<>();
+
+    public void setComparisonJSONfilter(BamItemType type, JSONFilter filter) {
+        filters.put(type, filter);
     }
 
     public BamItem getCurrentBamItem() {
@@ -220,10 +225,24 @@ public class BamItemParent extends RowColPanel {
         BamConfig currentBamItemBackup = currentBamItem.save(false);
         JSONObject backupFiltered = JSONFilter.filter(bamItemBackup.JSON, true, true, "_version");
         JSONObject currentFiltered = JSONFilter.filter(currentBamItemBackup.JSON, true, true, "_version");
-        if (filter != null) {
-            backupFiltered = filter.apply(backupFiltered);
-            currentFiltered = filter.apply(currentFiltered);
+        if (bamItemBackup.TYPE != null) {
+            if (currentBamItemBackup.TYPE == null ||
+                    bamItemBackup.TYPE != currentBamItemBackup.TYPE) {
+                // BamItemType not matching
+                setSyncStatus(false);
+                return;
+            }
+            if (filters.containsKey(bamItemBackup.TYPE)) {
+                backupFiltered = filters.get(bamItemBackup.TYPE).apply(backupFiltered);
+                currentFiltered = filters.get(bamItemBackup.TYPE).apply(currentFiltered);
+            }
+        } else {
+            if (filters.containsKey(TYPE)) {
+                backupFiltered = filters.get(TYPE).apply(backupFiltered);
+                currentFiltered = filters.get(TYPE).apply(currentFiltered);
+            }
         }
+
         JSONCompareResult result = JSONCompare.compare(backupFiltered, currentFiltered);
         setSyncStatus(result.matching());
     }
