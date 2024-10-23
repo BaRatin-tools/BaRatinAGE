@@ -112,11 +112,18 @@ public class PriorRatingCurve<HCT extends IModelDefinition & IPriors> extends Ro
             updateRunBamButton(false);
             return;
         }
-
         JSONObject jsonCurrent = new JSONObject();
-        jsonCurrent.put("modelDefinition", BamConfig.getConfig((IModelDefinition) hydraulicConfiguration));
-        jsonCurrent.put("priors", BamConfig.getConfig((IPriors) hydraulicConfiguration));
-        jsonCurrent.put("stageGridConfig", priorRatingCurveStageGrid.toJSON());
+        try {
+            jsonCurrent.put("modelDefinition", BamConfig.getConfig((IModelDefinition) hydraulicConfiguration));
+            jsonCurrent.put("priors", BamConfig.getConfig((IPriors) hydraulicConfiguration));
+            jsonCurrent.put("stageGridConfig", priorRatingCurveStageGrid.toJSON());
+        } catch (Exception e) {
+            System.out.println("###############################");
+            System.err.println(e);
+            System.out.println("###############################");
+            updateRunBamButton(false);
+            return;
+        }
 
         JSONObject filteredCurrentJson = jsonCurrent;
         JSONObject filteredBackupJson = jsonBackup;

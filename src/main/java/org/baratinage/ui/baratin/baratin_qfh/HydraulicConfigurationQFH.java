@@ -48,6 +48,7 @@ public class HydraulicConfigurationQFH extends BamItem
 
         modelDefinition.addChangeListener(l -> {
             fireChangeListeners();
+            priorRatingCurve.checkSync();
             if (!modelDefinition.isModelDefinitionValid()) {
                 priors = null;
                 priorsPanel.clear();

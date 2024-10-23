@@ -41,12 +41,18 @@ public class QFHModelDefinition extends RowColPanel implements IModelDefinition 
         eqPanel.addChangeListener(l -> {
             fireChangeListeners(); // custom equation or stage variable selection has changed
         });
+        eqPanel.priorsPanel.addChangeListener(l -> {
+            fireChangeListeners(); // changes in parameters
+        });
         equationPanels.put("custom", eqPanel);
         for (QFHPreset preset : QFHPreset.PRESETS) {
             String eqId = preset.id();
             eqIds.add(eqId);
             eqPanel = new QFHTextFileEquation(false);
             eqPanel.setFromPreset(preset);
+            eqPanel.priorsPanel.addChangeListener(l -> {
+                fireChangeListeners(); // changes in parameters
+            });
             equationPanels.put(eqId, eqPanel);
         }
 
@@ -142,7 +148,7 @@ public class QFHModelDefinition extends RowColPanel implements IModelDefinition 
         // preset id
         int presetIndex = presetComboBox.getSelectedIndex();
         json.put("presetId", presetIndex >= 0 && presetIndex < eqIds.size() ? eqIds.get(presetIndex) : null);
-        // equation string for all presets
+        // equation string and associated priors for all presets
         JSONArray eqConfigsAndPriors = new JSONArray();
         for (String presetId : equationPanels.keySet()) {
             JSONObject eqJson = new JSONObject();
@@ -152,6 +158,12 @@ public class QFHModelDefinition extends RowColPanel implements IModelDefinition 
             eqConfigsAndPriors.put(eqJson);
         }
         json.put("eqConfigsAndPriors", eqConfigsAndPriors);
+        // equation string and associated priors for selected preset
+        // (currently used only for out of sync comparison purposes)
+        if (presetIndex >= 0 && presetIndex < eqIds.size()) {
+            json.put("selectedEqConfigAndPriors",
+                    equationPanels.get(eqIds.get(presetIndex)).toJSON());
+        }
         return json;
     }
 
