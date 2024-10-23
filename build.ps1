@@ -26,7 +26,7 @@ $DIRS_TO_COPY = @(
     "resources/fonts", "resources/i18n", "resources/icons", "example"
 )
 $FILES_TO_COPY = @(
-    "resources/credits.csv"
+    "resources/credits.csv", "resources/baratin_qfh_presets.json"
 )
 
 # no extension!
