@@ -35,6 +35,12 @@ public class Model {
         this.parameters = parameters;
         this.xTra = xTra;
         this.xTraFileName = xTraFileName;
+
+        for (Parameter p : parameters) {
+            if (p.name.equals("LogPost")) {
+                throw new IllegalArgumentException("No parameters can be named LogPost, it is reserved by BaM!");
+            }
+        }
     }
 
     public void toFiles(String workspace) {
