@@ -41,13 +41,13 @@ public class HydraulicConfigurationQFH extends BamItem
         super(BamItemType.HYDRAULIC_CONFIG_QFH, uuid, project);
 
         modelDefinition = new QFHModelDefinition();
-
         priorRatingCurve = new PriorRatingCurve<>(this);
 
         priorsPanel = new RowColPanel(AXIS.COL, ALIGN.START);
         priorsPanel.setPadding(5);
 
         modelDefinition.addChangeListener(l -> {
+            fireChangeListeners();
             if (!modelDefinition.isModelDefinitionValid()) {
                 priors = null;
                 priorsPanel.clear();
