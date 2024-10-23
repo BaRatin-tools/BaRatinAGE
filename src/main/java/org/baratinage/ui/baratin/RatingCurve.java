@@ -548,13 +548,10 @@ public class RatingCurve extends BamItem implements IPredictionMaster, ICalibrat
                 predResults[0].predictionConfig.inputs[0].dataColumns.get(0), // stage
                 predResults[0].outputResults.get(0).spag().get(0), // discharge
                 predResults[1].outputResults.get(0).get95UncertaintyInterval(), // parametric uncertainty
-                predResults[2].outputResults.get(0).get95UncertaintyInterval(),
+                predResults[2].outputResults.get(0).get95UncertaintyInterval(), // total uncertainty
                 ratingCurveParameterSet.getStageTransitions(), // stage transition
                 gaugings // gaugings
-        )
-
-        ; // total uncertainty
-
+        );
         resultsPanel.updateResults2(ratingCurvePlotData, ratingCurveParameterSet);
     }
 
