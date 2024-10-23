@@ -105,19 +105,20 @@ public class RatingCurve extends BamItem implements IPredictionMaster, ICalibrat
         hydrauConfParent = new BamItemParent(
                 this,
                 BamItemType.HYDRAULIC_CONFIG, BamItemType.HYDRAULIC_CONFIG_BAC, BamItemType.HYDRAULIC_CONFIG_QFH);
-        hydrauConfParent.setComparisonJSONfilter(new JSONFilter(true, true,
-                "ui",
-                "bamRunId",
-                "backup",
-                "jsonStringBackup",
-                "priorRatingCurve",
-                "stageGridConfig",
-                "allControlOptions",
-                "controlTypeIndex",
-                "isKACmode",
-                "isLocked",
-                "isReversed",
-                "description"));
+
+        String[] hydraulicConfigFilterKeys = new String[] {
+                "ui", "bamRunId", "backup", "jsonStringBackup", "priorRatingCurve",
+                "stageGridConfig", "allControlOptions", "controlTypeIndex", "isKACmode",
+                "isLocked", "isReversed", "description" };
+        hydrauConfParent.setComparisonJSONfilter(
+                BamItemType.HYDRAULIC_CONFIG, new JSONFilter(true, true, hydraulicConfigFilterKeys));
+        hydrauConfParent.setComparisonJSONfilter(
+                BamItemType.HYDRAULIC_CONFIG_BAC, new JSONFilter(true, true, hydraulicConfigFilterKeys));
+
+        hydrauConfParent.setComparisonJSONfilter(
+                BamItemType.HYDRAULIC_CONFIG_QFH, new JSONFilter(true, true,
+                        "eqConfigsAndPriors"));
+
         hydrauConfParent.addChangeListener((e) -> {
             BamItem bamItem = hydrauConfParent.getCurrentBamItem();
             runBam.setModelDefintion((IModelDefinition) bamItem);
