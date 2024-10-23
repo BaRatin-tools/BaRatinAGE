@@ -185,6 +185,14 @@ public class BaremExporter extends RowColPanel {
         this.Qhigh = Qhigh;
     }
 
+    public void updateRatingCurveValues(RatingCurvePlotData ratingCurveData) {
+        updateRatingCurveValues(
+                ratingCurveData.stage,
+                ratingCurveData.discharge,
+                ratingCurveData.totalUncertainty.get(0),
+                ratingCurveData.totalUncertainty.get(1));
+    }
+
     public void exportRatingCurve() {
         if (h == null || Q == null || Qlow == null || Qhigh == null) {
             ConsoleLogger

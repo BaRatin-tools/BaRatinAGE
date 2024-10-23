@@ -10,9 +10,7 @@ import org.baratinage.AppSetup;
 
 import org.baratinage.jbam.CalDataResidualConfig;
 import org.baratinage.jbam.CalibrationConfig;
-import org.baratinage.jbam.CalibrationData;
 import org.baratinage.jbam.CalibrationResult;
-import org.baratinage.jbam.EstimatedParameter;
 import org.baratinage.jbam.McmcConfig;
 import org.baratinage.jbam.McmcCookingConfig;
 import org.baratinage.jbam.McmcSummaryConfig;
@@ -42,7 +40,8 @@ import org.baratinage.ui.bam.PredExp;
 import org.baratinage.ui.bam.PredExpSet;
 import org.baratinage.ui.bam.RunConfigAndRes;
 import org.baratinage.ui.bam.RunBam;
-import org.baratinage.ui.baratin.hydraulic_control.ControlMatrix;
+import org.baratinage.ui.baratin.rating_curve.RatingCurveCalibrationResults;
+import org.baratinage.ui.baratin.rating_curve.RatingCurvePlotData;
 import org.baratinage.ui.baratin.rating_curve.RatingCurveResults;
 import org.baratinage.ui.baratin.rating_curve.RatingCurveStageGrid;
 import org.baratinage.ui.commons.MsgPanel;
@@ -507,27 +506,22 @@ public class RatingCurve extends BamItem implements IPredictionMaster, ICalibrat
     }
 
     private void updateResults() {
-        // FIXME: this method needs to be reworked!
+
         if (bamRunConfigAndRes == null) {
             return;
         }
 
+        // **********************************************************
+        // Raw results
         PredictionResult[] predResults = bamRunConfigAndRes.getPredictionResults();
         CalibrationResult calibrationResults = bamRunConfigAndRes.getCalibrationResults();
         CalibrationConfig calibrationConfig = bamRunConfigAndRes.getCalibrationConfig();
 
-        List<EstimatedParameter> parameters = calibrationResults.estimatedParameters;
-
-        double[] dischargeMaxpost = predResults[0].outputResults.get(0).spag().get(0);
-
-        List<double[]> paramU = predResults[1].outputResults.get(0).env().subList(1, 3);
-        List<double[]> totalU = predResults[2].outputResults.get(0).env().subList(1, 3);
-
-        CalibrationData calData = calibrationConfig.calibrationData;
-
-        double[] stage = calData.inputs[0].values;
-        double[] discharge = calData.outputs[0].values;
-        double[] dischargeStd = calData.outputs[0].nonSysStd;
+        // **********************************************************
+        // Gauging dataset
+        double[] stage = calibrationConfig.calibrationData.inputs[0].values;
+        double[] discharge = calibrationConfig.calibrationData.outputs[0].values;
+        double[] dischargeStd = calibrationConfig.calibrationData.outputs[0].nonSysStd;
         int n = stage.length;
         double[] dischargeMin = new double[n];
         double[] dischargeMax = new double[n];
@@ -544,18 +538,24 @@ public class RatingCurve extends BamItem implements IPredictionMaster, ICalibrat
         gaugings.add(dischargeMin);
         gaugings.add(dischargeMax);
 
-        // retrieve control matrix
-        boolean[][] controlMatrix = ControlMatrix.fromXtra(calibrationConfig.model.xTra,
-                calibrationConfig.model.modelId.equals("BaRatinBAC"));
+        // **********************************************************
+        // Parameters
+        RatingCurveCalibrationResults ratingCurveParameterSet = new RatingCurveCalibrationResults(calibrationResults);
 
-        resultsPanel.updateResults(
-                predResults[0].predictionConfig.inputs[0].dataColumns.get(0),
-                dischargeMaxpost,
-                paramU,
-                totalU,
-                gaugings,
-                parameters,
-                controlMatrix);
+        // **********************************************************
+        // Rating Curve Plot Data
+        RatingCurvePlotData ratingCurvePlotData = new RatingCurvePlotData(
+                predResults[0].predictionConfig.inputs[0].dataColumns.get(0), // stage
+                predResults[0].outputResults.get(0).spag().get(0), // discharge
+                predResults[1].outputResults.get(0).get95UncertaintyInterval(), // parametric uncertainty
+                predResults[2].outputResults.get(0).get95UncertaintyInterval(),
+                ratingCurveParameterSet.getStageTransitions(), // stage transition
+                gaugings // gaugings
+        )
+
+        ; // total uncertainty
+
+        resultsPanel.updateResults2(ratingCurvePlotData, ratingCurveParameterSet);
     }
 
 }

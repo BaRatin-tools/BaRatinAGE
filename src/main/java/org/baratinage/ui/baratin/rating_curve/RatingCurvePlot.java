@@ -21,266 +21,281 @@ import org.baratinage.utils.ConsoleLogger;
 
 public class RatingCurvePlot extends RowColPanel {
 
-        private final PlotContainer plotContainer;
+    private final PlotContainer plotContainer;
 
-        private Plot plot;
+    private Plot plot;
 
-        private boolean isPrior;
-        private double[] stage;
-        private double[] dischargeMaxpost;
-        private List<double[]> dischargeParamUncertainty;
-        private List<double[]> dischargeTotalUncertainty;
-        private List<double[]> transitionStages;
-        private List<double[]> gaugings;
+    private boolean isPrior;
 
-        private boolean axisFliped = false;
-        private boolean dischargeAxisInLog = false;
-        private boolean smoothTotalEnvelop = true;
+    private double[] stage;
+    private double[] dischargeMaxpost;
+    private List<double[]> dischargeParamUncertainty;
+    private List<double[]> dischargeTotalUncertainty;
+    private List<double[]> transitionStages;
+    private List<double[]> gaugings;
 
-        private final RowColPanel toolsPanel;
-        private final JCheckBox switchDischargeAxisScale;
-        private final JCheckBox switchAxisCheckbox;
-        private final JCheckBox smoothTotalEnvelopCheckbox;
+    private boolean axisFliped = false;
+    private boolean dischargeAxisInLog = false;
+    private boolean smoothTotalEnvelop = true;
 
-        public RatingCurvePlot() {
-                super(AXIS.COL);
+    private final RowColPanel toolsPanel;
+    private final JCheckBox switchDischargeAxisScale;
+    private final JCheckBox switchAxisCheckbox;
+    private final JCheckBox smoothTotalEnvelopCheckbox;
 
-                plotContainer = new PlotContainer(true);
+    public RatingCurvePlot() {
+        super(AXIS.COL);
 
-                switchDischargeAxisScale = new JCheckBox();
-                switchDischargeAxisScale.setSelected(false);
-                switchDischargeAxisScale.setText("log_scale_discharge_axis");
+        plotContainer = new PlotContainer(true);
 
-                switchAxisCheckbox = new JCheckBox();
-                switchAxisCheckbox.setSelected(false);
-                switchAxisCheckbox.setText("swap_xy_axis");
+        switchDischargeAxisScale = new JCheckBox();
+        switchDischargeAxisScale.setSelected(false);
+        switchDischargeAxisScale.setText("log_scale_discharge_axis");
 
-                smoothTotalEnvelopCheckbox = new JCheckBox();
-                smoothTotalEnvelopCheckbox.setSelected(true);
-                smoothTotalEnvelopCheckbox.setText("smooth_total_envelop");
+        switchAxisCheckbox = new JCheckBox();
+        switchAxisCheckbox.setSelected(false);
+        switchAxisCheckbox.setText("swap_xy_axis");
 
-                switchDischargeAxisScale.addActionListener((e) -> {
-                        if (plot == null) {
-                                return;
-                        }
-                        dischargeAxisInLog = switchDischargeAxisScale.isSelected();
-                        updatePlot();
-                });
+        smoothTotalEnvelopCheckbox = new JCheckBox();
+        smoothTotalEnvelopCheckbox.setSelected(true);
+        smoothTotalEnvelopCheckbox.setText("smooth_total_envelop");
 
-                switchAxisCheckbox.addActionListener((e) -> {
-                        if (plot == null) {
-                                return;
-                        }
-                        axisFliped = switchAxisCheckbox.isSelected();
-                        updatePlot();
-                });
+        switchDischargeAxisScale.addActionListener((e) -> {
+            if (plot == null) {
+                return;
+            }
+            dischargeAxisInLog = switchDischargeAxisScale.isSelected();
+            updatePlot();
+        });
 
-                smoothTotalEnvelopCheckbox.addActionListener((e) -> {
-                        if (plot == null) {
-                                return;
-                        }
-                        smoothTotalEnvelop = smoothTotalEnvelopCheckbox.isSelected();
-                        updatePlot();
-                });
+        switchAxisCheckbox.addActionListener((e) -> {
+            if (plot == null) {
+                return;
+            }
+            axisFliped = switchAxisCheckbox.isSelected();
+            updatePlot();
+        });
 
-                toolsPanel = new RowColPanel(AXIS.ROW, ALIGN.START);
-                toolsPanel.setBackground(Color.WHITE);
-                toolsPanel.setGap(5);
-                toolsPanel.appendChild(switchDischargeAxisScale, 0);
-                toolsPanel.appendChild(switchAxisCheckbox, 0);
+        smoothTotalEnvelopCheckbox.addActionListener((e) -> {
+            if (plot == null) {
+                return;
+            }
+            smoothTotalEnvelop = smoothTotalEnvelopCheckbox.isSelected();
+            updatePlot();
+        });
 
-                setBackground(Color.WHITE);
-                appendChild(plotContainer, 1);
-                appendChild(toolsPanel, 0, 5);
+        toolsPanel = new RowColPanel(AXIS.ROW, ALIGN.START);
+        toolsPanel.setBackground(Color.WHITE);
+        toolsPanel.setGap(5);
+        toolsPanel.appendChild(switchDischargeAxisScale, 0);
+        toolsPanel.appendChild(switchAxisCheckbox, 0);
 
-                T.updateHierarchy(this, plotContainer);
+        setBackground(Color.WHITE);
+        appendChild(plotContainer, 1);
+        appendChild(toolsPanel, 0, 5);
 
-                T.t(this, switchAxisCheckbox, false, "swap_xy_axis");
-                T.t(this, switchDischargeAxisScale, false, "log_scale_discharge_axis");
-                T.t(this, smoothTotalEnvelopCheckbox, false, "smooth_total_envelop");
+        T.updateHierarchy(this, plotContainer);
+
+        T.t(this, switchAxisCheckbox, false, "swap_xy_axis");
+        T.t(this, switchDischargeAxisScale, false, "log_scale_discharge_axis");
+        T.t(this, smoothTotalEnvelopCheckbox, false, "smooth_total_envelop");
+    }
+
+    public void setPriorPlot(double[] stage,
+            double[] dischargeMaxpost,
+            List<double[]> dischargeParamUncertainty,
+            List<double[]> transitionStages) {
+
+        this.isPrior = true;
+        this.stage = stage;
+        this.dischargeMaxpost = dischargeMaxpost;
+        this.dischargeParamUncertainty = dischargeParamUncertainty;
+        this.dischargeTotalUncertainty = null;
+        this.transitionStages = transitionStages;
+        this.gaugings = null;
+
+        updatePlot();
+    }
+
+    public void setPosteriorPlot(double[] stage,
+            double[] dischargeMaxpost,
+            List<double[]> dischargeParamUncertainty,
+            List<double[]> dischargeTotalUncertainty,
+            List<double[]> transitionStages,
+            List<double[]> gaugings) {
+
+        this.isPrior = false;
+        this.stage = stage;
+        this.dischargeMaxpost = dischargeMaxpost;
+        this.dischargeParamUncertainty = dischargeParamUncertainty;
+        this.dischargeTotalUncertainty = dischargeTotalUncertainty;
+        this.transitionStages = transitionStages;
+        this.gaugings = gaugings;
+
+        toolsPanel.appendChild(smoothTotalEnvelopCheckbox, 0);
+        updatePlot();
+    }
+
+    public void setPosteriorPlot(
+            RatingCurvePlotData ratingCurveData) {
+        this.isPrior = false;
+        this.stage = ratingCurveData.stage;
+        this.dischargeMaxpost = ratingCurveData.discharge;
+        this.dischargeParamUncertainty = ratingCurveData.parametricUncertainty;
+        this.dischargeTotalUncertainty = ratingCurveData.totalUncertainty;
+        this.transitionStages = ratingCurveData.stageTransitions;
+        this.gaugings = ratingCurveData.gaugings;
+
+        toolsPanel.appendChild(smoothTotalEnvelopCheckbox, 0);
+        updatePlot();
+    }
+
+    private void updatePlot() {
+
+        // remove all translators related to old plot
+        T.clear(plot);
+
+        // create new plot
+        plot = new Plot(true);
+        T.updateHierarchy(this, plot);
+
+        // set proper axis scale
+        if (dischargeAxisInLog) {
+            if (axisFliped) {
+                plot.plot.setDomainAxis(plot.axisXlog);
+            } else {
+                plot.plot.setRangeAxis(plot.axisYlog);
+            }
         }
 
-        public void setPriorPlot(double[] stage,
-                        double[] dischargeMaxpost,
-                        List<double[]> dischargeParamUncertainty,
-                        List<double[]> transitionStages) {
-
-                this.isPrior = true;
-                this.stage = stage;
-                this.dischargeMaxpost = dischargeMaxpost;
-                this.dischargeParamUncertainty = dischargeParamUncertainty;
-                this.dischargeTotalUncertainty = null;
-                this.transitionStages = transitionStages;
-                this.gaugings = null;
-
-                updatePlot();
+        // stage transitions
+        int n = transitionStages.size();
+        String stageLegendText = isPrior ? "lgd_prior_activation_stage"
+                : "lgd_posterior_activation_stage";
+        Color stageActivationValueColor = isPrior ? AppSetup.COLORS.PRIOR_STAGE_ACTIVATION_VALUE
+                : AppSetup.COLORS.POSTERIOR_STAGE_ACTIVATION_VALUE;
+        Color stageActivationUncertaintyColor = isPrior ? AppSetup.COLORS.PRIOR_STAGE_ACTIVATION_UNCERTAINTY
+                : AppSetup.COLORS.POSTERIOR_STAGE_ACTIVATION_UNCERTAINTY;
+        for (int k = 0; k < n; k++) {
+            double[] transitionStage = transitionStages.get(k);
+            double coeffDir = axisFliped ? 0 : Double.POSITIVE_INFINITY;
+            addPlotItemToPlot(plot,
+                    new PlotInfiniteBand2("k", coeffDir,
+                            transitionStage[1], transitionStage[2],
+                            stageActivationUncertaintyColor, 0.9f),
+                    k == 0 ? stageLegendText : null);
+            addPlotItemToPlot(plot,
+                    new PlotInfiniteLine("transition_line", coeffDir, transitionStage[0],
+                            stageActivationValueColor, 2),
+                    null);
         }
 
-        public void setPosteriorPlot(double[] stage,
-                        double[] dischargeMaxpost,
-                        List<double[]> dischargeParamUncertainty,
-                        List<double[]> dischargeTotalUncertainty,
-                        List<double[]> transitionStages,
-                        List<double[]> gaugings) {
-
-                this.isPrior = false;
-                this.stage = stage;
-                this.dischargeMaxpost = dischargeMaxpost;
-                this.dischargeParamUncertainty = dischargeParamUncertainty;
-                this.dischargeTotalUncertainty = dischargeTotalUncertainty;
-                this.transitionStages = transitionStages;
-                this.gaugings = gaugings;
-
-                toolsPanel.appendChild(smoothTotalEnvelopCheckbox, 0);
-                updatePlot();
+        // total uncertainty (only posterior rc)
+        if (!isPrior && dischargeTotalUncertainty != null) {
+            double[] smoothedTotalQUlow = dischargeTotalUncertainty.get(0);
+            double[] smoothedTotalQUhigh = dischargeTotalUncertainty.get(1);
+            if (smoothTotalEnvelop) {
+                int nSmooth = Double.valueOf((double) smoothedTotalQUlow.length * 0.01).intValue();
+                nSmooth = Math.max(nSmooth, 1);
+                ConsoleLogger.log("smoothing total envelop using a half window size of " + nSmooth
+                        + "...");
+                smoothedTotalQUlow = Calc.smoothArray(smoothedTotalQUlow, nSmooth);
+                smoothedTotalQUhigh = Calc.smoothArray(smoothedTotalQUhigh, nSmooth);
+            }
+            Color totalColor = isPrior ? null : AppSetup.COLORS.RATING_CURVE_TOTAL_UNCERTAINTY;
+            addPlotItemToPlot(
+                    plot,
+                    new PlotBand2("post_total_uncertainty",
+                            stage,
+                            smoothedTotalQUlow,
+                            smoothedTotalQUhigh,
+                            axisFliped,
+                            totalColor),
+                    "lgd_posterior_parametric_structural_uncertainty");
         }
 
-        private void updatePlot() {
+        // parametric uncertainty
+        Color paramColor = isPrior ? AppSetup.COLORS.PRIOR_ENVELOP
+                : AppSetup.COLORS.RATING_CURVE_PARAM_UNCERTAINTY;
+        String paramLegendKey = isPrior ? "lgd_prior_parametric_uncertainty"
+                : "lgd_posterior_parametric_uncertainty";
+        addPlotItemToPlot(
+                plot,
+                new PlotBand2("param_uncertainty",
+                        stage,
+                        dischargeParamUncertainty.get(0),
+                        dischargeParamUncertainty.get(1),
+                        axisFliped,
+                        paramColor),
+                paramLegendKey);
 
-                // remove all translators related to old plot
-                T.clear(plot);
+        // maxpost
+        String mpLegendKey = isPrior ? "lgd_prior_rating_curve" : "lgd_posterior_rating_curve";
+        Color mpColor = isPrior ? AppSetup.COLORS.PRIOR_LINE : AppSetup.COLORS.RATING_CURVE;
+        double[] mpX = axisFliped ? dischargeMaxpost : stage;
+        double[] mpY = axisFliped ? stage : dischargeMaxpost;
 
-                // create new plot
-                plot = new Plot(true);
-                T.updateHierarchy(this, plot);
+        addPlotItemToPlot(
+                plot,
+                new PlotLine("mp", mpX, mpY, mpColor, 5),
+                mpLegendKey);
+        // gaugings (only if posterior rc)
 
-                // set proper axis scale
-                if (dischargeAxisInLog) {
-                        if (axisFliped) {
-                                plot.plot.setDomainAxis(plot.axisXlog);
-                        } else {
-                                plot.plot.setRangeAxis(plot.axisYlog);
-                        }
-                }
-
-                // stage transitions
-                int n = transitionStages.size();
-                String stageLegendText = isPrior ? "lgd_prior_activation_stage"
-                                : "lgd_posterior_activation_stage";
-                Color stageActivationValueColor = isPrior ? AppSetup.COLORS.PRIOR_STAGE_ACTIVATION_VALUE
-                                : AppSetup.COLORS.POSTERIOR_STAGE_ACTIVATION_VALUE;
-                Color stageActivationUncertaintyColor = isPrior ? AppSetup.COLORS.PRIOR_STAGE_ACTIVATION_UNCERTAINTY
-                                : AppSetup.COLORS.POSTERIOR_STAGE_ACTIVATION_UNCERTAINTY;
-                for (int k = 0; k < n; k++) {
-                        double[] transitionStage = transitionStages.get(k);
-                        double coeffDir = axisFliped ? 0 : Double.POSITIVE_INFINITY;
-                        addPlotItemToPlot(plot,
-                                        new PlotInfiniteBand2("k", coeffDir,
-                                                        transitionStage[1], transitionStage[2],
-                                                        stageActivationUncertaintyColor, 0.9f),
-                                        k == 0 ? stageLegendText : null);
-                        addPlotItemToPlot(plot,
-                                        new PlotInfiniteLine("transition_line", coeffDir, transitionStage[0],
-                                                        stageActivationValueColor, 2),
-                                        null);
-                }
-
-                // total uncertainty (only posterior rc)
-                if (!isPrior && dischargeTotalUncertainty != null) {
-                        double[] smoothedTotalQUlow = dischargeTotalUncertainty.get(0);
-                        double[] smoothedTotalQUhigh = dischargeTotalUncertainty.get(1);
-                        if (smoothTotalEnvelop) {
-                                int nSmooth = Double.valueOf((double) smoothedTotalQUlow.length * 0.01).intValue();
-                                nSmooth = Math.max(nSmooth, 1);
-                                ConsoleLogger.log("smoothing total envelop using a half window size of " + nSmooth
-                                                + "...");
-                                smoothedTotalQUlow = Calc.smoothArray(smoothedTotalQUlow, nSmooth);
-                                smoothedTotalQUhigh = Calc.smoothArray(smoothedTotalQUhigh, nSmooth);
-                        }
-                        Color totalColor = isPrior ? null : AppSetup.COLORS.RATING_CURVE_TOTAL_UNCERTAINTY;
-                        addPlotItemToPlot(
-                                        plot,
-                                        new PlotBand2("post_total_uncertainty",
-                                                        stage,
-                                                        smoothedTotalQUlow,
-                                                        smoothedTotalQUhigh,
-                                                        axisFliped,
-                                                        totalColor),
-                                        "lgd_posterior_parametric_structural_uncertainty");
-                }
-
-                // parametric uncertainty
-                Color paramColor = isPrior ? AppSetup.COLORS.PRIOR_ENVELOP
-                                : AppSetup.COLORS.RATING_CURVE_PARAM_UNCERTAINTY;
-                String paramLegendKey = isPrior ? "lgd_prior_parametric_uncertainty"
-                                : "lgd_posterior_parametric_uncertainty";
+        if (!isPrior && gaugings != null) {
+            if (axisFliped) {
                 addPlotItemToPlot(
-                                plot,
-                                new PlotBand2("param_uncertainty",
-                                                stage,
-                                                dischargeParamUncertainty.get(0),
-                                                dischargeParamUncertainty.get(1),
-                                                axisFliped,
-                                                paramColor),
-                                paramLegendKey);
-
-                // maxpost
-                String mpLegendKey = isPrior ? "lgd_prior_rating_curve" : "lgd_posterior_rating_curve";
-                Color mpColor = isPrior ? AppSetup.COLORS.PRIOR_LINE : AppSetup.COLORS.RATING_CURVE;
-                double[] mpX = axisFliped ? dischargeMaxpost : stage;
-                double[] mpY = axisFliped ? stage : dischargeMaxpost;
-
+                        plot, new PlotPoints(
+                                "gaugings",
+                                gaugings.get(1),
+                                gaugings.get(2),
+                                gaugings.get(3),
+                                gaugings.get(0),
+                                gaugings.get(0),
+                                gaugings.get(0),
+                                AppSetup.COLORS.GAUGING),
+                        "lgd_active_gaugings");
+            } else {
                 addPlotItemToPlot(
-                                plot,
-                                new PlotLine("mp", mpX, mpY, mpColor, 5),
-                                mpLegendKey);
-                // gaugings (only if posterior rc)
-
-                if (!isPrior && gaugings != null) {
-                        if (axisFliped) {
-                                addPlotItemToPlot(
-                                                plot, new PlotPoints(
-                                                                "gaugings",
-                                                                gaugings.get(1),
-                                                                gaugings.get(2),
-                                                                gaugings.get(3),
-                                                                gaugings.get(0),
-                                                                gaugings.get(0),
-                                                                gaugings.get(0),
-                                                                AppSetup.COLORS.GAUGING),
-                                                "lgd_active_gaugings");
-                        } else {
-                                addPlotItemToPlot(
-                                                plot, new PlotPoints(
-                                                                "gaugings",
-                                                                gaugings.get(0),
-                                                                gaugings.get(0),
-                                                                gaugings.get(0),
-                                                                gaugings.get(1),
-                                                                gaugings.get(2),
-                                                                gaugings.get(3),
-                                                                AppSetup.COLORS.GAUGING),
-                                                "lgd_active_gaugings");
-                        }
-                }
-
-                // dealing with axis translations
-                T.t(plot, () -> {
-                        String dischargeString = T.text("discharge") + " [m3/s]";
-                        String stageString = T.text("stage") + " [m]";
-                        if (axisFliped) {
-                                plot.axisX.setLabel(dischargeString);
-                                plot.axisXlog.setLabel(dischargeString);
-                                plot.axisY.setLabel(stageString);
-                                plot.axisYlog.setLabel(stageString);
-                        } else {
-                                plot.axisX.setLabel(stageString);
-                                plot.axisXlog.setLabel(stageString);
-                                plot.axisY.setLabel(dischargeString);
-                                plot.axisYlog.setLabel(dischargeString);
-                        }
-                });
-
-                plotContainer.setPlot(plot);
+                        plot, new PlotPoints(
+                                "gaugings",
+                                gaugings.get(0),
+                                gaugings.get(0),
+                                gaugings.get(0),
+                                gaugings.get(1),
+                                gaugings.get(2),
+                                gaugings.get(3),
+                                AppSetup.COLORS.GAUGING),
+                        "lgd_active_gaugings");
+            }
         }
 
-        private static void addPlotItemToPlot(Plot plot, PlotItem item, String legendKey) {
-                plot.addXYItem(item, legendKey != null);
-                if (legendKey != null) {
-                        T.t(plot, () -> {
-                                item.setLabel(T.text(legendKey));
-                        });
-                }
+        // dealing with axis translations
+        T.t(plot, () -> {
+            String dischargeString = T.text("discharge") + " [m3/s]";
+            String stageString = T.text("stage") + " [m]";
+            if (axisFliped) {
+                plot.axisX.setLabel(dischargeString);
+                plot.axisXlog.setLabel(dischargeString);
+                plot.axisY.setLabel(stageString);
+                plot.axisYlog.setLabel(stageString);
+            } else {
+                plot.axisX.setLabel(stageString);
+                plot.axisXlog.setLabel(stageString);
+                plot.axisY.setLabel(dischargeString);
+                plot.axisYlog.setLabel(dischargeString);
+            }
+        });
+
+        plotContainer.setPlot(plot);
+    }
+
+    private static void addPlotItemToPlot(Plot plot, PlotItem item, String legendKey) {
+        plot.addXYItem(item, legendKey != null);
+        if (legendKey != null) {
+            T.t(plot, () -> {
+                item.setLabel(T.text(legendKey));
+            });
         }
+    }
 
 }

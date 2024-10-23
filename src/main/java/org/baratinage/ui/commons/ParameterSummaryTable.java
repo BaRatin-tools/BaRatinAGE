@@ -3,10 +3,11 @@ package org.baratinage.ui.commons;
 import java.util.List;
 
 import org.baratinage.jbam.EstimatedParameter;
+import org.baratinage.ui.bam.EstimatedParameterWrapper;
 import org.baratinage.ui.component.DataTable;
 
 public class ParameterSummaryTable extends DataTable {
-    public void updateResults(List<BamEstimatedParameter> parameters) {
+    public void updateResults(List<EstimatedParameterWrapper> parameters) {
 
         int n = parameters.size();
 
@@ -20,17 +21,17 @@ public class ParameterSummaryTable extends DataTable {
         double[] noPrior = new double[] { Double.NaN, Double.NaN };
 
         for (int k = 0; k < n; k++) {
-            BamEstimatedParameter p = parameters.get(k);
-            double[] prior95 = p.isDerivedParameter ? noPrior
-                    : p.parameterConfig.distribution.getPercentiles(0.025, 0.975, 2);
-            double[] post95 = p.get95interval();
-            parameterNames[k] = p.shortName;
+            EstimatedParameterWrapper p = parameters.get(k);
+            double[] prior95 = !p.shouldDisplayPrior() ? noPrior
+                    : p.parameter.parameterConfig.distribution.getPercentiles(0.025, 0.975, 2);
+            double[] post95 = p.parameter.get95interval();
+            parameterNames[k] = p.symbol;
             priorLow[k] = prior95[0];
             priorHigh[k] = prior95[1];
-            postMaxpost[k] = p.getMaxpost();
+            postMaxpost[k] = p.parameter.getMaxpost();
             postLow[k] = post95[0];
             postHigh[k] = post95[1];
-            consistencyCheck[k] = getParameterConsistencyCheckString(p, 0.01f);
+            consistencyCheck[k] = getParameterConsistencyCheckString(p.parameter, 0.01f);
         }
 
         clearColumns();

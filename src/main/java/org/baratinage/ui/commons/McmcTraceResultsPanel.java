@@ -9,6 +9,7 @@ import javax.swing.JButton;
 
 import org.baratinage.AppSetup;
 import org.baratinage.translation.T;
+import org.baratinage.ui.bam.EstimatedParameterWrapper;
 import org.baratinage.ui.bam.BamProject;
 import org.baratinage.ui.component.CommonDialog;
 import org.baratinage.ui.container.RowColPanel;
@@ -19,9 +20,7 @@ public class McmcTraceResultsPanel extends RowColPanel {
     private final TracePlotGrid paramTracePlots;
     private final BamProject project;
 
-    private List<BamEstimatedParameter> parameters;
-    private List<BamEstimatedParameter> gammas;
-    private BamEstimatedParameter logPost;
+    private List<EstimatedParameterWrapper> parameters;
 
     public McmcTraceResultsPanel(BamProject project) {
         super(AXIS.COL);
@@ -49,27 +48,17 @@ public class McmcTraceResultsPanel extends RowColPanel {
         T.updateHierarchy(this, paramTracePlots);
     }
 
-    public void updateResults(List<BamEstimatedParameter> parameters,
-            List<BamEstimatedParameter> gammas,
-            BamEstimatedParameter logPost) {
-
+    public void updateResults(List<EstimatedParameterWrapper> parameters) {
         this.parameters = parameters;
-        this.gammas = gammas;
-        this.logPost = logPost;
-
         updatePlots();
     }
 
     private void updatePlots() {
         // update trace plots
         paramTracePlots.clearPlots();
-        for (BamEstimatedParameter p : parameters) {
+        for (EstimatedParameterWrapper p : parameters) {
             paramTracePlots.addPlot(p);
         }
-        for (BamEstimatedParameter p : gammas) {
-            paramTracePlots.addPlot(p);
-        }
-        paramTracePlots.addPlot(logPost);
         paramTracePlots.updatePlots();
 
     }
@@ -81,22 +70,15 @@ public class McmcTraceResultsPanel extends RowColPanel {
                 new CommonDialog.CustomFileFilter(T.text("csv_format"), "csv", "CSV"));
 
         if (f != null) {
-            int n = parameters.size() + gammas.size() + 1;
+            // int n = parameters.size() + gammas.size() + 1;
+            int n = parameters.size();
             List<double[]> matrix = new ArrayList<>(n);
             List<String> headers = new ArrayList<>();
 
-            for (BamEstimatedParameter p : parameters) {
-                matrix.add(p.mcmc);
-                headers.add(p.shortName);
+            for (EstimatedParameterWrapper p : parameters) {
+                matrix.add(p.parameter.mcmc);
+                headers.add(p.symbol);
             }
-
-            for (BamEstimatedParameter p : gammas) {
-                matrix.add(p.mcmc);
-                headers.add(p.name);
-            }
-
-            matrix.add(logPost.mcmc);
-            headers.add(logPost.shortName);
 
             try {
                 WriteFile.writeMatrix(
