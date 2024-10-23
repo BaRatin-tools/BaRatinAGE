@@ -1,13 +1,13 @@
 package org.baratinage.jbam.utils;
 
-import java.io.BufferedReader;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.baratinage.utils.ConsoleLogger;
-import org.baratinage.utils.fs.ReadFile;
 import org.baratinage.utils.fs.WriteFile;
 
 public class ConfigFile {
@@ -111,23 +111,21 @@ public class ConfigFile {
     }
 
     public static ConfigFile readConfigFile(String filePathFirst, String... filePathMore) {
-        String configFilePath = Path.of(filePathFirst, filePathMore).toString();
-        List<String> lines = new ArrayList<>();
+        Path configFilePath = Path.of(filePathFirst, filePathMore);
+        String content = "";
         try {
-            BufferedReader reader = ReadFile.createBufferedReader(configFilePath, false);
-            String line = reader.readLine();
-            while (line != null) {
-                lines.add(line);
-                line = reader.readLine();
-            }
-
-            reader.close();
+            byte[] bytes = Files.readAllBytes(configFilePath);
+            content = new String(bytes, StandardCharsets.UTF_8);
         } catch (IOException e) {
             ConsoleLogger.error(e);
             return null;
         }
+        return parseConfigFileString(content);
+    }
 
+    public static ConfigFile parseConfigFileString(String content) {
         ConfigFile configFile = new ConfigFile();
+        String[] lines = content.split("\n");
         for (String line : lines) {
             String[] splittedLine = line.split("! ");
             if (splittedLine.length > 1) {
