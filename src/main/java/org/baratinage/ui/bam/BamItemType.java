@@ -61,4 +61,13 @@ public enum BamItemType {
         }
         return false;
     }
+
+    public static BamItemType getBamItemType(String id) {
+        for (BamItemType type : BamItemType.values()) {
+            if (type.id.equals(id)) {
+                return type;
+            }
+        }
+        return null;
+    }
 }

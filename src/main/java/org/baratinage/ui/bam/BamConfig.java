@@ -15,6 +15,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class BamConfig {
+    public final BamItemType TYPE;
     public final int VERSION;
     public final List<String> FILE_PATHS;
     public final JSONObject JSON;
@@ -35,13 +36,29 @@ public class BamConfig {
         }
         VERSION = version;
         JSON.put("_version", VERSION);
+        BamItemType type = null;
+        if (config.has("_bamItemType")) {
+            type = BamItemType.getBamItemType(config.getString("_bamItemType"));
+        }
+        TYPE = type;
+        if (type != null) {
+            JSON.put("_bamItemType", TYPE.id);
+        }
     }
 
     public BamConfig(int version) {
+        this(version, null);
+    }
+
+    public BamConfig(int version, BamItemType type) {
         FILE_PATHS = new ArrayList<>();
         JSON = new JSONObject();
         VERSION = version;
         JSON.put("_version", VERSION);
+        TYPE = type;
+        if (TYPE != null) {
+            JSON.put("_bamItemType", TYPE.id);
+        }
     }
 
     private static <A> JSONArray toJSONArray(A[] objects, Function<A, JSONObject> transformer) {
