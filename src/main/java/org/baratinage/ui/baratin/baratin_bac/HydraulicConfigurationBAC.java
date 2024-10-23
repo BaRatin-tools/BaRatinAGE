@@ -166,7 +166,7 @@ public class HydraulicConfigurationBAC extends BamItem
 
     @Override
     public BamConfig save(boolean writeFiles) {
-        BamConfig config = new BamConfig(0);
+        BamConfig config = new BamConfig(0, TYPE);
 
         // **********************************************************
         // Control matrix

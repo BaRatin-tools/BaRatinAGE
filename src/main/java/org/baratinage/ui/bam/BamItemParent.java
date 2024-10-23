@@ -90,7 +90,8 @@ public class BamItemParent extends RowColPanel {
             if (bamItemBackup == null) {
                 return;
             }
-            BamItem bamItem = CHILD.PROJECT.addBamItem(TYPE);
+            BamItemType type = bamItemBackup.TYPE;
+            BamItem bamItem = CHILD.PROJECT.addBamItem(type == null ? TYPE : type);
             try {
                 bamItem.load(bamItemBackup);
             } catch (Exception loadError) {

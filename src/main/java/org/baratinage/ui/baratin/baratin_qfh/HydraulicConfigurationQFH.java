@@ -133,7 +133,7 @@ public class HydraulicConfigurationQFH extends BamItem
 
     @Override
     public BamConfig save(boolean writeFiles) {
-        BamConfig config = new BamConfig(0);
+        BamConfig config = new BamConfig(0, TYPE);
 
         // contains both the equation/preset config and priors configs
         config.JSON.put("modelDefinitionAndPriors", modelDefinition.toJSON());
