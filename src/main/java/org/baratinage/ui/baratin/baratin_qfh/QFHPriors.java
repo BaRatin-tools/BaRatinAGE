@@ -6,7 +6,9 @@ import java.util.HashSet;
 import java.util.List;
 
 import javax.swing.JLabel;
+import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
+import javax.swing.border.EmptyBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
@@ -20,23 +22,30 @@ import org.baratinage.utils.ConsoleLogger;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-public class QFHPriors extends GridPanel implements IPriors, ChangeListener {
+public class QFHPriors extends JScrollPane implements IPriors, ChangeListener {
 
     private final HashMap<String, QFHPriorParameterDist> priorParDists;
     private final HashSet<String> usedParNames;
 
+    private final GridPanel mainPanel;
     private final List<JLabel> headers;
 
     public QFHPriors() {
         super();
+
+        setBorder(new EmptyBorder(0, 0, 0, 0));
+        mainPanel = new GridPanel();
+        mainPanel.setAnchor(GridPanel.ANCHOR.N);
+        setViewportView(mainPanel);
+
         priorParDists = new HashMap<>();
         usedParNames = new HashSet<>();
 
-        setColWeight(1, 1);
-        setColWeight(2, 1);
-        setColWeight(4, 1);
-        setPadding(0);
-        setGap(5);
+        mainPanel.setColWeight(1, 1);
+        mainPanel.setColWeight(2, 1);
+        mainPanel.setColWeight(4, 1);
+        mainPanel.setPadding(5);
+        mainPanel.setGap(5);
 
         headers = new ArrayList<>();
         // setting up headers
@@ -56,8 +65,8 @@ public class QFHPriors extends GridPanel implements IPriors, ChangeListener {
 
     private void insertHeaders() {
         for (int k = 0; k < headers.size(); k++) {
-            insertChild(headers.get(k), k, 0);
-            insertChild(new JSeparator(JSeparator.HORIZONTAL), k, 1);
+            mainPanel.insertChild(headers.get(k), k, 0);
+            mainPanel.insertChild(new JSeparator(JSeparator.HORIZONTAL), k, 1);
         }
     }
 
@@ -96,7 +105,7 @@ public class QFHPriors extends GridPanel implements IPriors, ChangeListener {
     }
 
     private void updatePanel() {
-        clear();
+        mainPanel.clear();
         insertHeaders();
         int rowIndex = 2;
         for (String parName : usedParNames) {
@@ -107,22 +116,22 @@ public class QFHPriors extends GridPanel implements IPriors, ChangeListener {
                 continue;
             }
             if (p.knownParameterType.isEnabled()) {
-                insertChild(p.knownParameterType, colIndex, rowIndex);
+                mainPanel.insertChild(p.knownParameterType, colIndex, rowIndex);
             } else {
                 JLabel label = p.knownParameterType.getSelectedItemLabel();
                 if (label == null) {
                     System.out.println("Label is null when it shouldn't (" + p.bamName + ")");
                 }
-                insertChild(label != null ? label : p.knownParameterType, colIndex, rowIndex);
+                mainPanel.insertChild(label != null ? label : p.knownParameterType, colIndex, rowIndex);
             }
             colIndex++;
-            insertChild(p.nameLabel, colIndex, rowIndex);
+            mainPanel.insertChild(p.nameLabel, colIndex, rowIndex);
             colIndex++;
-            insertChild(p.initialGuessField, colIndex, rowIndex);
+            mainPanel.insertChild(p.initialGuessField, colIndex, rowIndex);
             colIndex++;
-            insertChild(p.distributionField.distributionCombobox, colIndex, rowIndex);
+            mainPanel.insertChild(p.distributionField.distributionCombobox, colIndex, rowIndex);
             colIndex++;
-            insertChild(p.distributionField.parameterFieldsPanel, colIndex, rowIndex);
+            mainPanel.insertChild(p.distributionField.parameterFieldsPanel, colIndex, rowIndex);
             rowIndex++;
         }
         updateUI();
