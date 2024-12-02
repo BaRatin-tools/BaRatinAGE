@@ -1,6 +1,6 @@
 [
   {
-    "id": "charbo",
+    "id": "rect_triang",
     "formula": "C_t * tan( v / 2 ) * sqrt( 2 * g ) * (ispos( h - k_1 ) * ( h - k_1 )) ^ c_1 +  C_r * B_w * sqrt( 2 * g ) * (ispos( h - k_2 ) * ( h - k_2 )) ^ c_2 - C_t * tan( v / 2 ) * sqrt( 2 * g ) * (ispos( h - k_2 ) * ( h - k_2 )) ^ c_1",
     "stage_symbole": "h",
     "parameters": [
@@ -54,6 +54,323 @@
       },
       {
         "symbole": "B_w",
+        "type": "width"
+      },
+      {
+        "symbole": "c_2",
+        "type": "exponent",
+        "default_distribution": {
+          "initial_guess": 1.5,
+          "type": "Gaussian",
+          "parameters": [1.5, 0.025]
+        }
+      }
+    ]
+  },
+  {
+    "id": "triang_triang",
+    "formula": "C_t1 * tan( v_1 / 2 ) * sqrt( 2 * g ) * (ispos( h - k_1 ) * ( h - k_1 )) ^ c_1 +  C_t2 * tan( v_2 / 2 ) * sqrt( 2 * g ) * (ispos( h - k_2 ) * ( h - k_2 )) ^ c_2 - C_t1 * tan( v_1 / 2 ) * sqrt( 2 * g ) * (ispos( h - k_2 ) * ( h - k_2 )) ^ c_1",
+    "stage_symbole": "h",
+    "parameters": [
+      {
+        "symbole": "C_t1",
+        "type": "weir_coefficient",
+        "default_distribution": {
+          "initial_guess": 0.31,
+          "type": "Gaussian",
+          "parameters": [0.31, 0.025]
+        }
+      },
+      {
+        "symbole": "C_t2",
+        "type": "weir_coefficient",
+        "default_distribution": {
+          "initial_guess": 0.31,
+          "type": "Gaussian",
+          "parameters": [0.31, 0.025]
+        }
+      },
+      {
+        "symbole": "v_1",
+        "type": "angle"
+      },
+      {
+        "symbole": "v_2",
+        "type": "angle"
+      },
+      {
+        "symbole": "g",
+        "type": "gravity_acceleration",
+        "default_distribution": {
+          "initial_guess": 9.81,
+          "type": "Gaussian",
+          "parameters": [9.81, 0.005]
+        }
+      },
+      {
+        "symbole": "k_1",
+        "type": "activation_stage"
+      },
+      {
+        "symbole": "c_1",
+        "type": "exponent",
+        "default_distribution": {
+          "initial_guess": 2.5,
+          "type": "Gaussian",
+          "parameters": [2.5, 0.025]
+        }
+      },
+      {
+        "symbole": "k_2",
+        "type": "activation_stage"
+      },
+      {
+        "symbole": "c_2",
+        "type": "exponent",
+        "default_distribution": {
+          "initial_guess": 2.5,
+          "type": "Gaussian",
+          "parameters": [2.5, 0.025]
+        }
+      }
+    ]
+  },
+  {
+    "id": "rect_parab",
+    "formula": "C_p * B_p / sqrt( H_p ) * sqrt (2 * g) * (ispos( h - k_1 ) * ( h - k_1 )) ^ c_1 +  C_r * B_w * sqrt( 2 * g ) * (ispos( h - k_2 ) * ( h - k_2 )) ^ c_2 - C_p * B_p / sqrt( H_p ) * sqrt (2 * g) * (ispos( h - k_1 ) * ( h - k_1 )) ^ c_1",
+    "stage_symbole": "h",
+    "parameters": [
+      {
+        "symbole": "C_p",
+        "type": "weir_coefficient",
+        "default_distribution": {
+          "initial_guess": 0.22,
+          "type": "Gaussian",
+          "parameters": [0.22, 0.025]
+        }
+      },
+      {
+        "symbole": "B_p",
+        "type": "weir_width"
+      },
+      {
+        "symbole": "H_p"
+      },
+      {
+        "symbole": "g",
+        "type": "gravity_acceleration",
+        "default_distribution": {
+          "initial_guess": 9.81,
+          "type": "Gaussian",
+          "parameters": [9.81, 0.005]
+        }
+      },
+      {
+        "symbole": "k_1",
+        "type": "activation_stage"
+      },
+      {
+        "symbole": "c_1",
+        "type": "exponent",
+        "default_distribution": {
+          "initial_guess": 2,
+          "type": "Gaussian",
+          "parameters": [2, 0.025]
+        }
+      },
+      {
+        "symbole": "k_2",
+        "type": "activation_stage"
+      },
+      {
+        "symbole": "C_r",
+        "type": "weir_coefficient",
+        "default_distribution": {
+          "initial_guess": 0.4,
+          "type": "Gaussian",
+          "parameters": [0.4, 0.025]
+        }
+      },
+      {
+        "symbole": "B_w",
+        "type": "width"
+      },
+      {
+        "symbole": "c_2",
+        "type": "exponent",
+        "default_distribution": {
+          "initial_guess": 1.5,
+          "type": "Gaussian",
+          "parameters": [1.5, 0.025]
+        }
+      }
+    ]
+  },
+  {
+    "id": "trapez_canal",
+    "formula": "K_s * sqrt(S_0) * (B_w * ispos(h - b) * (h - b) + m * (ispos(h - b) * (h - b)) ^2) ^ (c+1) / (B_w + 2 * ispos(h - b) * (h - b)  * sqrt(1 + m^2) ) ^c",
+    "stage_symbole": "h",
+    "parameters": [
+      {
+        "symbole": "K_s"
+      },
+      {
+        "symbole": "S_0",
+        "type": "slope"
+      },
+      {
+        "symbole": "b"
+      },
+      {
+        "symbole": "c",
+        "type": "exponent",
+        "default_distribution": {
+          "initial_guess": 0.67,
+          "type": "Gaussian",
+          "parameters": [0.67, 0.025]
+        }
+      },
+      {
+        "symbole": "m"
+      },
+      {
+        "symbole": "B_w",
+        "type": "width"
+      }
+    ]
+  },
+  {
+    "id": "trapez_weir",
+    "formula": "C_t * tan( v / 2 ) * sqrt( 2 * g ) * (ispos( h - k_1 ) * ( h - k_1 )) ^ c_1 +  C_r * B_w * sqrt( 2 * g ) * (ispos( h - k_1 ) * ( h - k_1 )) ^ c_2",
+    "stage_symbole": "h",
+    "parameters": [
+      {
+        "symbole": "C_t",
+        "type": "weir_coefficient",
+        "default_distribution": {
+          "initial_guess": 0.31,
+          "type": "Gaussian",
+          "parameters": [0.31, 0.025]
+        }
+      },
+      {
+        "symbole": "v",
+        "type": "angle"
+      },
+      {
+        "symbole": "g",
+        "type": "gravity_acceleration",
+        "default_distribution": {
+          "initial_guess": 9.81,
+          "type": "Gaussian",
+          "parameters": [9.81, 0.005]
+        }
+      },
+      {
+        "symbole": "k_1",
+        "type": "activation_stage"
+      },
+      {
+        "symbole": "c_1",
+        "type": "exponent",
+        "default_distribution": {
+          "initial_guess": 2.5,
+          "type": "Gaussian",
+          "parameters": [2.5, 0.025]
+        }
+      },
+      {
+        "symbole": "C_r",
+        "type": "weir_coefficient",
+        "default_distribution": {
+          "initial_guess": 0.4,
+          "type": "Gaussian",
+          "parameters": [0.4, 0.025]
+        }
+      },
+      {
+        "symbole": "B_w",
+        "type": "width"
+      },
+      {
+        "symbole": "c_2",
+        "type": "exponent",
+        "default_distribution": {
+          "initial_guess": 1.5,
+          "type": "Gaussian",
+          "parameters": [1.5, 0.025]
+        }
+      }
+    ]
+  },
+  {
+    "id": "rectang_trapez",
+    "formula": "C_t * tan( v / 2 ) * sqrt( 2 * g ) * (ispos( h - k_1 ) * ( h - k_1 )) ^ c_1 +  C_r1 * B_w1 * sqrt( 2 * g ) * (ispos( h - k_1 ) * ( h - k_1 )) ^ c_2+  C_r2 * B_w2 * sqrt( 2 * g ) * (ispos( h - k_2 ) * ( h - k_2 )) ^ c_2",
+    "stage_symbole": "h",
+    "parameters": [
+      {
+        "symbole": "C_t",
+        "type": "weir_coefficient",
+        "default_distribution": {
+          "initial_guess": 0.31,
+          "type": "Gaussian",
+          "parameters": [0.31, 0.025]
+        }
+      },
+      {
+        "symbole": "v",
+        "type": "angle"
+      },
+      {
+        "symbole": "g",
+        "type": "gravity_acceleration",
+        "default_distribution": {
+          "initial_guess": 9.81,
+          "type": "Gaussian",
+          "parameters": [9.81, 0.005]
+        }
+      },
+      {
+        "symbole": "k_1",
+        "type": "activation_stage"
+      },
+      {
+        "symbole": "k_2",
+        "type": "activation_stage"
+      },
+      {
+        "symbole": "c_1",
+        "type": "exponent",
+        "default_distribution": {
+          "initial_guess": 2.5,
+          "type": "Gaussian",
+          "parameters": [2.5, 0.025]
+        }
+      },
+      {
+        "symbole": "C_r1",
+        "type": "weir_coefficient",
+        "default_distribution": {
+          "initial_guess": 0.4,
+          "type": "Gaussian",
+          "parameters": [0.4, 0.025]
+        }
+      },
+      {
+        "symbole": "C_r2",
+        "type": "weir_coefficient",
+        "default_distribution": {
+          "initial_guess": 0.4,
+          "type": "Gaussian",
+          "parameters": [0.4, 0.025]
+        }
+      },
+      {
+        "symbole": "B_w1",
+        "type": "width"
+      },
+      {
+        "symbole": "B_w2",
         "type": "width"
       },
       {
