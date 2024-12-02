@@ -80,8 +80,8 @@ public class HydraulicConfigurationQFH extends BamItem
         mainContainer.setBreakpoints(1100, 800);
         setContent(mainContainer);
 
-        // T.updateHierarchy(this, controlMatrix);
-        // T.updateHierarchy(this, hydraulicControls);
+        T.updateHierarchy(this, priors);
+        T.updateHierarchy(this, modelDefinition);
         T.updateHierarchy(this, priorRatingCurve);
         T.t(this, () -> {
             eqTitledPanel.setText(T.html("rating_curve_equation"));
@@ -89,16 +89,6 @@ public class HydraulicConfigurationQFH extends BamItem
             priorRatingCurveTitledPanel.setText(T.html("prior_rating_curve"));
         });
 
-        /**
-         * rename RatingCurveTextFileEquation into RatingCurveQFHConfiguration
-         * rename RatingCurveTextFileCustomEquation into RatingCurveTextFileEquation
-         * and make it a IPrior, IModelDefinition
-         * and make it supply the RatingCurveQFHPriors panel (one for custom and one for
-         * each preset)
-         * make RatingCurveQFHPriors be set either from a HashSet of string or
-         * RatingCurveQFHPreset
-         * rename all classes RatingCurve* into QFHRC* done
-         */
     }
 
     @Override
