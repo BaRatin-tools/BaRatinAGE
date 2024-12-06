@@ -160,6 +160,7 @@ public class BaratinageV2Builders {
         // source always starting with K, A, C
         if (controlTypeIndex == 0 ||
                 controlTypeIndex == 1 ||
+                controlTypeIndex == 3 ||
                 controlTypeIndex == 4 ||
                 controlTypeIndex == 5 ||
                 controlTypeIndex == 7) {
@@ -178,9 +179,9 @@ public class BaratinageV2Builders {
                     parameters[5],
                     parameters[6]);
 
-        } else if (controlTypeIndex == 2 || controlTypeIndex == 3 || controlTypeIndex == 6) {
-            // FIXME: not sure, but I think 2, 3 and 6 are the only controls with 6
-            // parameters instead of 5
+        } else if (controlTypeIndex == 2 || controlTypeIndex == 6) {
+            // FIXME: not sure, but I think 2 and 6 are the only controls with 6
+            // parameters instead of 5 (parabola controls)
             oneOfTheControlOptions = buildPriorControlPanelConfig(
                     false,
                     parameters[8],
