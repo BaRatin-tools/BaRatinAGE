@@ -11,8 +11,9 @@ import javax.swing.JButton;
 import javax.swing.JSeparator;
 
 import org.baratinage.AppSetup;
-import org.baratinage.jbam.Distribution;
-import org.baratinage.jbam.DistributionType;
+import org.baratinage.jbam.CalibrationConfig;
+import org.baratinage.jbam.CalibrationResult;
+import org.baratinage.jbam.EstimatedParameter;
 import org.baratinage.jbam.Parameter;
 import org.baratinage.jbam.PredictionConfig;
 import org.baratinage.jbam.PredictionInput;
@@ -33,7 +34,7 @@ import org.baratinage.ui.bam.RunConfigAndRes;
 import org.baratinage.ui.bam.RunBam;
 import org.baratinage.ui.baratin.hydraulic_control.ControlMatrix;
 import org.baratinage.ui.baratin.hydraulic_control.HydraulicControlPanels;
-import org.baratinage.ui.baratin.rating_curve.RatingCurvePlot;
+import org.baratinage.ui.baratin.rating_curve.RatingCurveResults;
 import org.baratinage.ui.baratin.rating_curve.RatingCurveStageGrid;
 import org.baratinage.ui.commons.MsgPanel;
 import org.baratinage.ui.component.Title;
@@ -54,6 +55,7 @@ public class HydraulicConfiguration
     private final ControlMatrix controlMatrix;
     private final HydraulicControlPanels hydraulicControls;
     private final RatingCurveStageGrid priorRatingCurveStageGrid;
+    private final RatingCurveResults resultsPanel;
 
     private boolean isTabView = false;
     private final RowColPanel priorRatingCurvePanel;
@@ -65,7 +67,6 @@ public class HydraulicConfiguration
     private RowColPanel outOufSyncPanel;
 
     public RunBam runBam;
-    private RatingCurvePlot plotPanel;
     private RunConfigAndRes bamRunConfigAndRes;
 
     private BamConfigRecord backup;
@@ -98,14 +99,15 @@ public class HydraulicConfiguration
             checkPriorRatingCurveSync();
         });
 
-        plotPanel = new RatingCurvePlot();
+        // **************************************************
+        // Results panel
 
-        Dimension dimPref = new Dimension(500, 300);
-        controlMatrix.setPreferredSize(dimPref);
-        plotPanel.setPreferredSize(dimPref);
-        Dimension dimMin = new Dimension(250, 150);
-        controlMatrix.setMinimumSize(dimMin);
-        plotPanel.setMinimumSize(dimMin);
+        resultsPanel = new RatingCurveResults(PROJECT, true);
+
+        // prevents the control matrix to be too small in some cases
+        // (e.g. after project load)
+        controlMatrix.setPreferredSize(new Dimension(500, 250));
+        controlMatrix.setMinimumSize(new Dimension(250, 150));
 
         runBam = new RunBam(false, true, false);
         runBam.setModelDefintion(this);
@@ -127,7 +129,7 @@ public class HydraulicConfiguration
         priorRatingCurvePanel.appendChild(new JSeparator(), 0);
         priorRatingCurvePanel.appendChild(outOufSyncPanel, 0);
         priorRatingCurvePanel.appendChild(runBam.runButton, 0, 5);
-        priorRatingCurvePanel.appendChild(plotPanel, 1);
+        priorRatingCurvePanel.appendChild(resultsPanel, 1);
 
         // **********************************************************************
         // SPECIFIC TO SPLIT PANE / TAB SYSTEM APPROACHES
@@ -157,7 +159,7 @@ public class HydraulicConfiguration
         T.updateHierarchy(this, controlMatrix);
         T.updateHierarchy(this, hydraulicControls);
         T.updateHierarchy(this, priorRatingCurveStageGrid);
-        T.updateHierarchy(this, plotPanel);
+        T.updateHierarchy(this, resultsPanel);
         T.updateHierarchy(this, runBam);
         T.updateHierarchy(this, outOufSyncPanel);
 
@@ -511,28 +513,23 @@ public class HydraulicConfiguration
     private void buildPlot() {
 
         PredictionResult[] predResults = bamRunConfigAndRes.getPredictionResults();
-        Parameter[] params = bamRunConfigAndRes.getCalibrationConfig().model.parameters;
+        CalibrationConfig calibrationConfig = bamRunConfigAndRes.getCalibrationConfig();
+        CalibrationResult calibrationResults = bamRunConfigAndRes.getCalibrationResults();
 
         double[] stage = predResults[0].predictionConfig.inputs[0].dataColumns.get(0);
         double[] dischargeMaxpost = predResults[0].outputResults.get(0).spag().get(0);
-        List<double[]> dischargeParamU = predResults[1].outputResults.get(0).env().subList(1, 3);
+        List<double[]> paramU = predResults[1].outputResults.get(0).env().subList(1, 3);
 
-        List<double[]> transitionStages = new ArrayList<>();
-        for (Parameter p : params) {
-            if (p.name.startsWith("k_")) {
-                Distribution d = p.distribution;
-                if (d.type == DistributionType.GAUSSIAN) {
-                    double[] distParams = d.parameterValues;
-                    double mean = distParams[0];
-                    double std = distParams[1];
-                    transitionStages.add(new double[] {
-                            mean, mean - 2 * std, mean + 2 * std
-                    });
-                }
+        List<EstimatedParameter> parameters = calibrationResults.estimatedParameters;
 
-            }
-        }
+        boolean[][] controlMatrix = ControlMatrix.fromXtra(calibrationConfig.model.xTra);
 
-        plotPanel.setPriorPlot(stage, dischargeMaxpost, dischargeParamU, transitionStages);
+        resultsPanel.updateResults(
+                stage,
+                dischargeMaxpost,
+                paramU,
+                parameters,
+                controlMatrix);
+
     }
 }

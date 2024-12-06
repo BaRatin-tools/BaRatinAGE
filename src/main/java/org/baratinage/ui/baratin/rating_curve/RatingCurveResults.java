@@ -35,6 +35,7 @@ public class RatingCurveResults extends TabContainer {
     // private final RowColPanel otherPanel;
     private final DataTable paramSummaryTable;
 
+    private static ImageIcon rcPriorIcon = AppSetup.ICONS.getCustomAppImageIcon("prior_rating_curve.svg");
     private static ImageIcon rcIcon = AppSetup.ICONS.getCustomAppImageIcon("rating_curve.svg");
     private static ImageIcon traceIcon = AppSetup.ICONS.getCustomAppImageIcon("trace.svg");
     private static ImageIcon tableIcon = AppSetup.ICONS.getCustomAppImageIcon("table.svg");
@@ -47,6 +48,10 @@ public class RatingCurveResults extends TabContainer {
     private final BaremExporter baremeExporter;
 
     public RatingCurveResults(BamProject project) {
+        this(project, false);
+    }
+
+    public RatingCurveResults(BamProject project, boolean priorResults) {
 
         this.project = project;
 
@@ -73,12 +78,17 @@ public class RatingCurveResults extends TabContainer {
         mcmcResultPanel = new RowColPanel(
                 RowColPanel.AXIS.COL);
 
-        addTab("rating_curve", rcIcon, ratingCurvePlot);
-        addTab("Rating Curve table", rcTblIcon, rcGridTable);
-        addTab("Rating Curve equation", rcEqIcon, rcEquation);
-        addTab("parameter_densities", dpIcon, paramDensityPlots);
-        addTab("parameter_table", tableIcon, paramSummaryTable);
-        addTab("other_results", traceIcon, mcmcResultPanel);
+        if (priorResults) {
+            addTab("Rating_curve plot", rcPriorIcon, ratingCurvePlot);
+            addTab("Rating Curve table", rcTblIcon, rcGridTable);
+        } else {
+            addTab("Rating_curve plot", rcIcon, ratingCurvePlot);
+            addTab("Rating Curve table", rcTblIcon, rcGridTable);
+            addTab("Rating Curve equation", rcEqIcon, rcEquation);
+            addTab("parameter_densities", dpIcon, paramDensityPlots);
+            addTab("parameter_table", tableIcon, paramSummaryTable);
+            addTab("other_results", traceIcon, mcmcResultPanel);
+        }
 
         T.updateHierarchy(this, ratingCurvePlot);
         T.updateHierarchy(this, paramDensityPlots);
@@ -89,13 +99,28 @@ public class RatingCurveResults extends TabContainer {
 
         T.t(this, () -> {
             exportToBaremeButton.setText(T.text("export_to_bareme_format"));
-            setTitleAt(0, T.html("posterior_rating_curve"));
             setTitleAt(1, T.html("rating_table"));
-            setTitleAt(2, T.html("equation"));
-            setTitleAt(3, T.html("parameter_densities"));
-            setTitleAt(4, T.html("parameter_summary_table"));
-            setTitleAt(5, T.html("mcmc_results"));
+            if (priorResults) {
+                setTitleAt(0, T.html("prior_rating_curve"));
+            } else {
+                setTitleAt(0, T.html("posterior_rating_curve"));
+                setTitleAt(2, T.html("equation"));
+                setTitleAt(3, T.html("parameter_densities"));
+                setTitleAt(4, T.html("parameter_summary_table"));
+                setTitleAt(5, T.html("mcmc_results"));
+            }
         });
+    }
+
+    public void updateResults(double[] stage,
+            double[] dischargeMaxpost,
+            List<double[]> paramU,
+            List<EstimatedParameter> parameters,
+            boolean[][] controlMatrix) {
+        RatingCurveEstimatedParameters rcEstimParam = processParameters(parameters);
+        updateRatingCurvePlot(stage, dischargeMaxpost, paramU, null, null, rcEstimParam);
+        updateRatingCurveGridTable(stage, dischargeMaxpost, paramU, null);
+        baremeExporter.updateRatingCurveValues(stage, dischargeMaxpost, paramU.get(0), paramU.get(1));
     }
 
     public void updateResults(
@@ -106,23 +131,14 @@ public class RatingCurveResults extends TabContainer {
             List<double[]> gaugings,
             List<EstimatedParameter> parameters,
             boolean[][] controlMatrix) {
-
         RatingCurveEstimatedParameters rcEstimParam = processParameters(parameters);
-
         updateRatingCurvePlot(stage, dischargeMaxpost, paramU, totalU, gaugings, rcEstimParam);
-
         updateRatingCurveGridTable(stage, dischargeMaxpost, paramU, totalU);
-
         updateParametersPlots(rcEstimParam); // bottleneck
-
         updateParameterSummaryTable(rcEstimParam); // bottleneck
-
         updateMcmcResultPanel(rcEstimParam);
-
         rcEquation.updateEquation(rcEstimParam.controls(), controlMatrix);
-
         baremeExporter.updateRatingCurveValues(stage, dischargeMaxpost, totalU.get(0), totalU.get(1));
-
     }
 
     private void updateRatingCurveGridTable(
@@ -135,8 +151,10 @@ public class RatingCurveResults extends TabContainer {
         rcGridTable.addColumn(dischargeMaxpost);
         rcGridTable.addColumn(paramU.get(0));
         rcGridTable.addColumn(paramU.get(1));
-        rcGridTable.addColumn(totalU.get(0));
-        rcGridTable.addColumn(totalU.get(1));
+        if (totalU != null) {
+            rcGridTable.addColumn(totalU.get(0));
+            rcGridTable.addColumn(totalU.get(1));
+        }
         rcGridTable.updateData();
 
         rcGridTable.setHeaderWidth(200);
@@ -144,29 +162,11 @@ public class RatingCurveResults extends TabContainer {
         rcGridTable.setHeader(1, "Q_maxpost [m3/s]");
         rcGridTable.setHeader(2, "Q_param_low [m3/s]");
         rcGridTable.setHeader(3, "Q_param_high [m3/s]");
-        rcGridTable.setHeader(4, "Q_total_low [m3/s]");
-        rcGridTable.setHeader(5, "Q_total_high [m3/s]");
+        if (totalU != null) {
+            rcGridTable.setHeader(4, "Q_total_low [m3/s]");
+            rcGridTable.setHeader(5, "Q_total_high [m3/s]");
+        }
         rcGridTable.updateHeader();
-
-        // T.t(this, () -> {
-        // rcGridTable.setHeader(0, T.text("stage"));
-        // rcGridTable.setHeader(1, T.text("discharge"));
-        // rcGridTable.setHeader(2,
-        // T.text("parametric_uncertainty") +
-        // " - " + T.text("percentile_0025"));
-        // rcGridTable.setHeader(3,
-        // T.text("parametric_uncertainty") +
-        // " - " + T.text("percentile_0975"));
-        // rcGridTable.setHeader(4,
-        // T.text("parametric_structural_uncertainty") +
-        // " - " + T.text("percentile_0025"));
-        // rcGridTable.setHeader(5,
-        // T.text("parametric_structural_uncertainty") +
-        // " - " + T.text("percentile_0975"));
-        // rcGridTable.setHeaderWidth(100);
-        // rcGridTable.updateHeader();
-        // });
-
     }
 
     private static String getParameterConsistencyCheckString(float value, float thresholdOffset) {
@@ -260,12 +260,6 @@ public class RatingCurveResults extends TabContainer {
 
         paramSummaryTable.updateData();
 
-        // paramSummaryTable.setHeader(0, "Name");
-        // paramSummaryTable.setHeader(1, "Prior Low (2.5%)");
-        // paramSummaryTable.setHeader(2, "Prior High (97.5%)");
-        // paramSummaryTable.setHeader(3, "Posterior Maxpost ");
-        // paramSummaryTable.setHeader(4, "Posterior Low (2.5%)");
-        // paramSummaryTable.setHeader(5, "Posterior High (97.5%)");
         paramSummaryTable.setHeader(0, "Name");
         paramSummaryTable.setHeader(1, "Prior_low");
         paramSummaryTable.setHeader(2, "Prior_high");
@@ -277,7 +271,6 @@ public class RatingCurveResults extends TabContainer {
         paramSummaryTable.setHeaderWidth(100);
 
         paramSummaryTable.updateHeader();
-
     }
 
     private void updateRatingCurvePlot(
@@ -295,13 +288,21 @@ public class RatingCurveResults extends TabContainer {
             transitionStages.add(new double[] { mp, u95[0], u95[1] });
         }
 
-        ratingCurvePlot.setPosteriorPlot(
-                stage,
-                dischargeMaxpost,
-                paramU,
-                totalU,
-                transitionStages,
-                gaugings);
+        if (totalU == null || gaugings == null) {
+            ratingCurvePlot.setPriorPlot(
+                    stage,
+                    dischargeMaxpost,
+                    paramU,
+                    transitionStages);
+        } else {
+            ratingCurvePlot.setPosteriorPlot(
+                    stage,
+                    dischargeMaxpost,
+                    paramU,
+                    totalU,
+                    transitionStages,
+                    gaugings);
+        }
 
     }
 
