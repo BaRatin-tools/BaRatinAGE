@@ -133,11 +133,21 @@ public class BaratinageV2Builders {
             return json; // empty JSONObject supported by RatingCurveStageGrid class
         }
 
-        json.put("min", Double.parseDouble(options[0 + offset]));
-        json.put("max", Double.parseDouble(options[1 + offset]));
-        json.put("step", Double.parseDouble(options[2 + offset]));
+        json.put("min", toDoubleOrNull(options[0 + offset]));
+        json.put("max", toDoubleOrNull(options[1 + offset]));
+        json.put("step", toDoubleOrNull(options[2 + offset]));
 
         return json;
+    }
+
+    private static Double toDoubleOrNull(String value) {
+        Double doubleValue = null;
+        try {
+            doubleValue = Double.parseDouble(value);
+        } catch (Exception e) {
+            ConsoleLogger.warn(e);
+        }
+        return doubleValue;
     }
 
     public static JSONObject buildOneHydraulicControlConfig(File folder, int controlIndex) {
