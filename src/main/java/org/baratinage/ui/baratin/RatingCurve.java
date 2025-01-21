@@ -553,7 +553,7 @@ public class RatingCurve extends BamItem implements IPredictionMaster, ICalibrat
                 ratingCurveParameterSet.getStageTransitions(), // stage transition
                 gaugings // gaugings
         );
-        resultsPanel.updateResults2(ratingCurvePlotData, ratingCurveParameterSet);
+        resultsPanel.updateResults(ratingCurvePlotData, ratingCurveParameterSet);
     }
 
 }

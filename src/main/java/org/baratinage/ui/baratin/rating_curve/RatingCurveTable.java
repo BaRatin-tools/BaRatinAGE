@@ -10,8 +10,10 @@ public class RatingCurveTable extends DataTable {
         addColumn(ratingCurveData.discharge);
         addColumn(ratingCurveData.parametricUncertainty.get(0));
         addColumn(ratingCurveData.parametricUncertainty.get(1));
-        addColumn(ratingCurveData.totalUncertainty.get(0));
-        addColumn(ratingCurveData.totalUncertainty.get(1));
+        if (!ratingCurveData.isPriorRatingCurve()) {
+            addColumn(ratingCurveData.totalUncertainty.get(0));
+            addColumn(ratingCurveData.totalUncertainty.get(1));
+        }
         updateData();
 
         setHeaderWidth(200);

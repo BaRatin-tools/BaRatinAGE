@@ -25,4 +25,8 @@ public class RatingCurvePlotData {
         this.gaugings = gaugings;
     }
 
+    public boolean isPriorRatingCurve() {
+        return this.totalUncertainty == null || this.gaugings == null;
+    }
+
 }

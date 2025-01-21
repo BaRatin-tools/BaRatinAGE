@@ -24,7 +24,6 @@ public class RatingCurveCalibrationResults extends CalibrationResultsWrapper {
     private final HashMap<String, List<EstimatedParameterWrapper>> gammaParametersPerModelOutput;
     private final List<EstimatedParameterWrapper> allParameters;
     private final EstimatedParameterWrapper logPost;
-    private final List<EstimatedParameterWrapper> stageTransition;
     private final String equationString;
 
     public RatingCurveCalibrationResults(CalibrationResult calibrationResults) throws NoSuchElementException {
@@ -33,7 +32,6 @@ public class RatingCurveCalibrationResults extends CalibrationResultsWrapper {
         List<EstimatedParameterWrapper> rawParameters = extractAllParameters();
         allParameters = new ArrayList<>();
         gammaParametersPerModelOutput = new HashMap<>();
-        stageTransition = new ArrayList<>();
 
         String modelId = calibrationResults.calibrationConfig.model.modelId;
         if (modelId.equals("BaRatin")) {
@@ -99,7 +97,7 @@ public class RatingCurveCalibrationResults extends CalibrationResultsWrapper {
                             .copyAndModify(
                                     String.format("c_%d", i + 1),
                                     String.format("<html>c<sub>%d</sub></html>", i + 1)));
-            baratinParameters.add(b.copyAndModify(String.format("k_%d", i + 1),
+            baratinParameters.add(b.copyAndModify(String.format("b_%d", i + 1),
                     String.format("<html>b<sub>%d</sub></html>", i + 1)));
         }
 
@@ -132,13 +130,10 @@ public class RatingCurveCalibrationResults extends CalibrationResultsWrapper {
         return gammaParameters;
     }
 
-    public List<EstimatedParameterWrapper> getStageTransitionParameters() {
-        return stageTransition;
-    }
-
     public List<double[]> getStageTransitions() {
-        return stageTransition
+        return allParameters
                 .stream()
+                .filter(p -> p.symbol.startsWith("k_"))
                 .map(bep -> {
                     double[] u95 = bep.parameter.get95interval();
                     double mp = bep.parameter.getMaxpost();

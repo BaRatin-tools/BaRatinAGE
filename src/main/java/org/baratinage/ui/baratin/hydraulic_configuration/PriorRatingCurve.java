@@ -16,6 +16,7 @@ import org.baratinage.jbam.PredictionResult;
 import org.baratinage.jbam.PredictionState;
 import org.baratinage.translation.T;
 import org.baratinage.ui.bam.BamConfig;
+import org.baratinage.ui.bam.BamItem;
 import org.baratinage.ui.bam.BamProjectLoader;
 import org.baratinage.ui.bam.IModelDefinition;
 import org.baratinage.ui.bam.IPriors;
@@ -25,7 +26,8 @@ import org.baratinage.ui.bam.PredExpSet;
 import org.baratinage.ui.bam.RunBam;
 import org.baratinage.ui.bam.RunConfigAndRes;
 import org.baratinage.ui.baratin.rating_curve.RatingCurveCalibrationResults;
-import org.baratinage.ui.baratin.rating_curve.RatingCurvePlot;
+import org.baratinage.ui.baratin.rating_curve.RatingCurvePlotData;
+import org.baratinage.ui.baratin.rating_curve.RatingCurveResults;
 import org.baratinage.ui.baratin.rating_curve.RatingCurveStageGrid;
 import org.baratinage.ui.commons.MsgPanel;
 import org.baratinage.ui.container.RowColPanel;
@@ -34,12 +36,13 @@ import org.baratinage.utils.json.JSONCompare;
 import org.baratinage.utils.json.JSONCompareResult;
 import org.json.JSONObject;
 
-public class PriorRatingCurve<HCT extends IModelDefinition & IPriors> extends RowColPanel implements IPredictionMaster {
+public class PriorRatingCurve<HCT extends BamItem & IModelDefinition & IPriors> extends RowColPanel
+        implements IPredictionMaster {
 
     private final RatingCurveStageGrid priorRatingCurveStageGrid;
     private final RowColPanel outOufSyncPanel;
     public final RunBam runBam;
-    private final RatingCurvePlot plotPanel;
+    private final RatingCurveResults resultsPanel;
 
     private final HCT hydraulicConfiguration;
     private RunConfigAndRes bamRunConfigAndRes;
@@ -72,21 +75,20 @@ public class PriorRatingCurve<HCT extends IModelDefinition & IPriors> extends Ro
         outOufSyncPanel = new RowColPanel(RowColPanel.AXIS.COL);
         outOufSyncPanel.setPadding(5);
 
-        plotPanel = new RatingCurvePlot();
-
+        resultsPanel = new RatingCurveResults(hct.PROJECT, true);
         Dimension dimPref = new Dimension(500, 300);
-        plotPanel.setPreferredSize(dimPref);
+        resultsPanel.setPreferredSize(dimPref);
         Dimension dimMin = new Dimension(250, 150);
-        plotPanel.setMinimumSize(dimMin);
+        resultsPanel.setMinimumSize(dimMin);
 
         appendChild(priorRatingCurveStageGrid, 0);
         appendChild(new JSeparator(), 0);
         appendChild(outOufSyncPanel, 0);
         appendChild(runBam.runButton, 0, 5);
-        appendChild(plotPanel, 1);
+        appendChild(resultsPanel, 1);
 
         T.updateHierarchy(this, priorRatingCurveStageGrid);
-        T.updateHierarchy(this, plotPanel);
+        T.updateHierarchy(this, resultsPanel);
         T.updateHierarchy(this, runBam);
         T.updateHierarchy(this, outOufSyncPanel);
         T.t(runBam, runBam.runButton, true, "compute_prior_rc");
@@ -200,7 +202,17 @@ public class PriorRatingCurve<HCT extends IModelDefinition & IPriors> extends Ro
         double[] dischargeMaxpost = predResults[0].outputResults.get(0).spag().get(0);
         List<double[]> dischargeParamU = predResults[1].outputResults.get(0).env().subList(1, 3);
 
-        plotPanel.setPriorPlot(stage, dischargeMaxpost, dischargeParamU, stageTransitions);
+        RatingCurvePlotData rcPlotData = new RatingCurvePlotData(
+                stage,
+                dischargeMaxpost,
+                dischargeParamU,
+                null,
+                stageTransitions,
+                null);
+
+        resultsPanel.updateResults(
+                rcPlotData,
+                rcParameters);
     }
 
     @Override

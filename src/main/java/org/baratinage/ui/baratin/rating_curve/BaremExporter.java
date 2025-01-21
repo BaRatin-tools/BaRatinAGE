@@ -186,11 +186,19 @@ public class BaremExporter extends RowColPanel {
     }
 
     public void updateRatingCurveValues(RatingCurvePlotData ratingCurveData) {
-        updateRatingCurveValues(
-                ratingCurveData.stage,
-                ratingCurveData.discharge,
-                ratingCurveData.totalUncertainty.get(0),
-                ratingCurveData.totalUncertainty.get(1));
+        if (ratingCurveData.isPriorRatingCurve()) {
+            updateRatingCurveValues(
+                    ratingCurveData.stage,
+                    ratingCurveData.discharge,
+                    ratingCurveData.parametricUncertainty.get(0),
+                    ratingCurveData.parametricUncertainty.get(1));
+        } else {
+            updateRatingCurveValues(
+                    ratingCurveData.stage,
+                    ratingCurveData.discharge,
+                    ratingCurveData.totalUncertainty.get(0),
+                    ratingCurveData.totalUncertainty.get(1));
+        }
     }
 
     public void exportRatingCurve() {

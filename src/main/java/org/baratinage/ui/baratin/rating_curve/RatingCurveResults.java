@@ -1,12 +1,12 @@
 package org.baratinage.ui.baratin.rating_curve;
 
-import java.util.List;
+// import java.util.List;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 
 import org.baratinage.AppSetup;
-import org.baratinage.jbam.EstimatedParameter;
+// import org.baratinage.jbam.EstimatedParameter;
 import org.baratinage.ui.bam.EstimatedParameterWrapper;
 import org.baratinage.ui.bam.BamProject;
 import org.baratinage.ui.commons.DensityPlotGrid;
@@ -26,6 +26,7 @@ public class RatingCurveResults extends TabContainer {
     private final McmcTraceResultsPanel mcmcResultPanel;
     private final ParameterSummaryTable paramSummaryTable;
 
+    private static ImageIcon rcPriorIcon = AppSetup.ICONS.getCustomAppImageIcon("prior_rating_curve.svg");
     private static ImageIcon rcIcon = AppSetup.ICONS.getCustomAppImageIcon("rating_curve.svg");
     private static ImageIcon traceIcon = AppSetup.ICONS.getCustomAppImageIcon("trace.svg");
     private static ImageIcon tableIcon = AppSetup.ICONS.getCustomAppImageIcon("table.svg");
@@ -36,6 +37,10 @@ public class RatingCurveResults extends TabContainer {
     private final BaremExporter baremeExporter;
 
     public RatingCurveResults(BamProject project) {
+        this(project, false);
+    }
+
+    public RatingCurveResults(BamProject project, boolean priorResults) {
 
         ratingCurvePlot = new RatingCurvePlot();
 
@@ -57,12 +62,17 @@ public class RatingCurveResults extends TabContainer {
 
         mcmcResultPanel = new McmcTraceResultsPanel(project);
 
-        addTab("rating_curve", rcIcon, ratingCurvePlot);
-        addTab("Rating Curve table", rcTblIcon, rcGridTable);
-        addTab("Rating Curve equation", rcEqIcon, rcEquation);
-        addTab("parameter_densities", dpIcon, paramDensityPlots);
-        addTab("parameter_table", tableIcon, paramSummaryTable);
-        addTab("other_results", traceIcon, mcmcResultPanel);
+        if (priorResults) {
+            addTab("Rating_curve plot", rcPriorIcon, ratingCurvePlot);
+            addTab("Rating Curve table", rcTblIcon, rcGridTable);
+        } else {
+            addTab("Rating_curve plot", rcIcon, ratingCurvePlot);
+            addTab("Rating Curve table", rcTblIcon, rcGridTable);
+            addTab("Rating Curve equation", rcEqIcon, rcEquation);
+            addTab("parameter_densities", dpIcon, paramDensityPlots);
+            addTab("parameter_table", tableIcon, paramSummaryTable);
+            addTab("other_results", traceIcon, mcmcResultPanel);
+        }
 
         T.updateHierarchy(this, ratingCurvePlot);
         T.updateHierarchy(this, paramDensityPlots);
@@ -72,19 +82,27 @@ public class RatingCurveResults extends TabContainer {
 
         T.t(this, () -> {
             exportToBaremeButton.setText(T.text("export_to_bareme_format"));
-            setTitleAt(0, T.html("posterior_rating_curve"));
             setTitleAt(1, T.html("rating_table"));
-            setTitleAt(2, T.html("equation"));
-            setTitleAt(3, T.html("parameter_densities"));
-            setTitleAt(4, T.html("parameter_summary_table"));
-            setTitleAt(5, T.html("mcmc_results"));
+            if (priorResults) {
+                setTitleAt(0, T.html("prior_rating_curve"));
+            } else {
+                setTitleAt(0, T.html("posterior_rating_curve"));
+                setTitleAt(2, T.html("equation"));
+                setTitleAt(3, T.html("parameter_densities"));
+                setTitleAt(4, T.html("parameter_summary_table"));
+                setTitleAt(5, T.html("mcmc_results"));
+            }
         });
     }
 
-    public void updateResults2(
+    public void updateResults(
             RatingCurvePlotData rcPlotData, RatingCurveCalibrationResults parameters) {
 
-        ratingCurvePlot.setPosteriorPlot(rcPlotData);
+        if (rcPlotData.isPriorRatingCurve()) {
+            ratingCurvePlot.setPriorPlot(rcPlotData);
+        } else {
+            ratingCurvePlot.setPosteriorPlot(rcPlotData);
+        }
 
         rcGridTable.updateTable(rcPlotData);
 
@@ -103,15 +121,4 @@ public class RatingCurveResults extends TabContainer {
         mcmcResultPanel.updateResults(parameters.getAllParameters());
 
     }
-
-    public void updateQFHResults(
-            double[] stage,
-            double[] dischargeMaxpost,
-            List<double[]> paramU,
-            List<double[]> totalU,
-            List<double[]> gaugings,
-            List<EstimatedParameter> parameters) {
-
-    }
-
 }

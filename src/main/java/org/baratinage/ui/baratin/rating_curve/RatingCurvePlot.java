@@ -101,38 +101,16 @@ public class RatingCurvePlot extends RowColPanel {
         T.t(this, smoothTotalEnvelopCheckbox, false, "smooth_total_envelop");
     }
 
-    public void setPriorPlot(double[] stage,
-            double[] dischargeMaxpost,
-            List<double[]> dischargeParamUncertainty,
-            List<double[]> transitionStages) {
+    public void setPriorPlot(RatingCurvePlotData ratingCurveData) {
 
         this.isPrior = true;
-        this.stage = stage;
-        this.dischargeMaxpost = dischargeMaxpost;
-        this.dischargeParamUncertainty = dischargeParamUncertainty;
+        this.stage = ratingCurveData.stage;
+        this.dischargeMaxpost = ratingCurveData.discharge;
+        this.dischargeParamUncertainty = ratingCurveData.parametricUncertainty;
         this.dischargeTotalUncertainty = null;
-        this.transitionStages = transitionStages;
+        this.transitionStages = ratingCurveData.stageTransitions;
         this.gaugings = null;
 
-        updatePlot();
-    }
-
-    public void setPosteriorPlot(double[] stage,
-            double[] dischargeMaxpost,
-            List<double[]> dischargeParamUncertainty,
-            List<double[]> dischargeTotalUncertainty,
-            List<double[]> transitionStages,
-            List<double[]> gaugings) {
-
-        this.isPrior = false;
-        this.stage = stage;
-        this.dischargeMaxpost = dischargeMaxpost;
-        this.dischargeParamUncertainty = dischargeParamUncertainty;
-        this.dischargeTotalUncertainty = dischargeTotalUncertainty;
-        this.transitionStages = transitionStages;
-        this.gaugings = gaugings;
-
-        toolsPanel.appendChild(smoothTotalEnvelopCheckbox, 0);
         updatePlot();
     }
 
