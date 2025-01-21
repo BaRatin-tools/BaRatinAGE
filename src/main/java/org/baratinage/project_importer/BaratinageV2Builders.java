@@ -133,11 +133,21 @@ public class BaratinageV2Builders {
             return json; // empty JSONObject supported by RatingCurveStageGrid class
         }
 
-        json.put("min", Double.parseDouble(options[0 + offset]));
-        json.put("max", Double.parseDouble(options[1 + offset]));
-        json.put("step", Double.parseDouble(options[2 + offset]));
+        json.put("min", toDoubleOrNull(options[0 + offset]));
+        json.put("max", toDoubleOrNull(options[1 + offset]));
+        json.put("step", toDoubleOrNull(options[2 + offset]));
 
         return json;
+    }
+
+    private static Double toDoubleOrNull(String value) {
+        Double doubleValue = null;
+        try {
+            doubleValue = Double.parseDouble(value);
+        } catch (Exception e) {
+            ConsoleLogger.warn(e);
+        }
+        return doubleValue;
     }
 
     public static JSONObject buildOneHydraulicControlConfig(File folder, int controlIndex) {
@@ -160,6 +170,7 @@ public class BaratinageV2Builders {
         // source always starting with K, A, C
         if (controlTypeIndex == 0 ||
                 controlTypeIndex == 1 ||
+                controlTypeIndex == 3 ||
                 controlTypeIndex == 4 ||
                 controlTypeIndex == 5 ||
                 controlTypeIndex == 7) {
@@ -178,9 +189,9 @@ public class BaratinageV2Builders {
                     parameters[5],
                     parameters[6]);
 
-        } else if (controlTypeIndex == 2 || controlTypeIndex == 3 || controlTypeIndex == 6) {
-            // FIXME: not sure, but I think 2, 3 and 6 are the only controls with 6
-            // parameters instead of 5
+        } else if (controlTypeIndex == 2 || controlTypeIndex == 6) {
+            // FIXME: not sure, but I think 2 and 6 are the only controls with 6
+            // parameters instead of 5 (parabola controls)
             oneOfTheControlOptions = buildPriorControlPanelConfig(
                     false,
                     parameters[8],

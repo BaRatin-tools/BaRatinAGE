@@ -97,13 +97,9 @@ public class BaratinageV2Importer implements IProjectImporter {
                             mainProgressFrame.done();
                         }
                     }));
-
                     taskList.add(new Task(100, (onProgress, onDone, onError) -> {
-
                         ConsoleLogger.log("importing V2 project item from '" + f.getPath() + "'...");
-
                         bamItemAdderFromFolder.addBamItem(f, onProgress, onDone, onError);
-
                     }));
                 }
             }
@@ -255,7 +251,11 @@ public class BaratinageV2Importer implements IProjectImporter {
         h.runBam.description = String.format("<html><b>%s</b> %s</html>",
                 T.text(BamItemType.HYDROGRAPH.id), bamItem.bamItemNameField.getText());
 
-        h.runBam.runAsync(onProgress, onDone, onError);
+        if (h.runBam.canRun()) {
+            h.runBam.runAsync(onProgress, onDone, onError);
+        } else {
+            onDone.run();
+        }
 
     }
 
@@ -392,7 +392,11 @@ public class BaratinageV2Importer implements IProjectImporter {
         rc.runBam.description = String.format("<html><b>%s</b> %s</html>",
                 T.text(BamItemType.RATING_CURVE.id), bamItem.bamItemNameField.getText());
 
-        rc.runBam.runAsync(onProgress, onDone, onError);
+        if (rc.runBam.canRun()) {
+            rc.runBam.runAsync(onProgress, onDone, onError);
+        } else {
+            onDone.run();
+        }
     }
 
     private String addStructuralError(String type) {
@@ -567,7 +571,11 @@ public class BaratinageV2Importer implements IProjectImporter {
         hc.runBam.description = String.format("<html><b>%s</b> %s</html>",
                 T.text(BamItemType.HYDRAULIC_CONFIG.id), bamItem.bamItemNameField.getText());
 
-        hc.runBam.runAsync(onProgress, onDone, onError);
+        if (hc.runBam.canRun()) {
+            hc.runBam.runAsync(onProgress, onDone, onError);
+        } else {
+            onDone.run();
+        }
     }
 
 }

@@ -64,7 +64,7 @@ public class PredictionConfig {
         int nObs = 0; // FIXME: is zero data allowed?
         int[] nSpag = new int[n];
         for (int k = 0; k < n; k++) {
-            inputFilePaths[k] = inputs[k].toDataFile(workspace);
+            inputFilePaths[k] = BamFilesHelpers.getPathRelativeToExe(inputs[k].toDataFile(workspace));
             int tmpNobs = inputs[k].nObs;
             if (nObs == 0) {
                 nObs = tmpNobs;

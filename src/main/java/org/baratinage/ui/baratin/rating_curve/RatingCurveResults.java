@@ -27,6 +27,7 @@ public class RatingCurveResults extends TabContainer {
     private final ParameterSummaryTable paramSummaryTable;
 
     private static ImageIcon rcPriorIcon = AppSetup.ICONS.getCustomAppImageIcon("prior_rating_curve.svg");
+    private static ImageIcon rcPriorIcon = AppSetup.ICONS.getCustomAppImageIcon("prior_rating_curve.svg");
     private static ImageIcon rcIcon = AppSetup.ICONS.getCustomAppImageIcon("rating_curve.svg");
     private static ImageIcon traceIcon = AppSetup.ICONS.getCustomAppImageIcon("trace.svg");
     private static ImageIcon tableIcon = AppSetup.ICONS.getCustomAppImageIcon("table.svg");
@@ -92,7 +93,27 @@ public class RatingCurveResults extends TabContainer {
                 setTitleAt(4, T.html("parameter_summary_table"));
                 setTitleAt(5, T.html("mcmc_results"));
             }
+            if (priorResults) {
+                setTitleAt(0, T.html("prior_rating_curve"));
+            } else {
+                setTitleAt(0, T.html("posterior_rating_curve"));
+                setTitleAt(2, T.html("equation"));
+                setTitleAt(3, T.html("parameter_densities"));
+                setTitleAt(4, T.html("parameter_summary_table"));
+                setTitleAt(5, T.html("mcmc_results"));
+            }
         });
+    }
+
+    public void updateResults(double[] stage,
+            double[] dischargeMaxpost,
+            List<double[]> paramU,
+            List<EstimatedParameter> parameters,
+            boolean[][] controlMatrix) {
+        RatingCurveEstimatedParameters rcEstimParam = processParameters(parameters);
+        updateRatingCurvePlot(stage, dischargeMaxpost, paramU, null, null, rcEstimParam);
+        updateRatingCurveGridTable(stage, dischargeMaxpost, paramU, null);
+        baremeExporter.updateRatingCurveValues(stage, dischargeMaxpost, paramU.get(0), paramU.get(1));
     }
 
     public void updateResults(

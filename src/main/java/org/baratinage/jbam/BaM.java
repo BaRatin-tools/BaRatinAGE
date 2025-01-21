@@ -175,10 +175,10 @@ public class BaM {
 
         String[] structErrConfNames = calibrationConfig.getStructErrConfNames();
 
-        String absoluteWorkspace = Path.of(workspace).toAbsolutePath().toString();
+        String workspacePath = BamFilesHelpers.getPathRelativeToExe(workspace);
 
         ConfigFile mainBaMconfig = new ConfigFile();
-        mainBaMconfig.addItem(absoluteWorkspace + BamFilesHelpers.OS_SEP, "workspace", true);
+        mainBaMconfig.addItem(workspacePath + BamFilesHelpers.OS_SEP, "workspace", true);
         mainBaMconfig.addItem(runOptions.fileName, "Config file: run options", true);
         mainBaMconfig.addItem(calibrationConfig.model.fileName, "Config file: model", true);
         // NOTE can be empty string

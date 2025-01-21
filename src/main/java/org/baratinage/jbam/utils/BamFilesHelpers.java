@@ -92,4 +92,10 @@ public class BamFilesHelpers {
         return output;
     }
 
+    public static String getPathRelativeToExe(String sourcePath) {
+        Path absPath = Path.of(sourcePath).toAbsolutePath();
+        Path exePath = Path.of(EXE_DIR);
+        return exePath.relativize(absPath).toString();
+    }
+
 }

@@ -162,7 +162,7 @@ public class CalibrationData {
         UncertainDataConfig outputsDataConfig = this.getUncertainDataConfig(this.outputs, inputsDataConfig.nCol);
 
         ConfigFile configFile = new ConfigFile();
-        configFile.addItem(dataFilePath, "Absolute path to data file", true);
+        configFile.addItem(BamFilesHelpers.getPathRelativeToExe(dataFilePath), "Absolute path to data file", true);
         configFile.addItem(1, "number of header lines");
         configFile.addItem(inputsDataConfig.nRow, "Nobs, number of rows in data file (excluding header lines)");
         configFile.addItem(inputsDataConfig.nCol + outputsDataConfig.nCol, "number of columns in the data file");
