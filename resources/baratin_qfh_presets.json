@@ -1,6 +1,7 @@
 [
   {
-    "id": "rect_triang",
+    "id": "rect_triangle",
+    "icon_id": "hc_rect_triangle_weir",
     "formula": "C_t * tan( v / 2 ) * sqrt( 2 * g ) * (ispos( h - k_1 ) * ( h - k_1 )) ^ c_1 +  C_r * B_w * sqrt( 2 * g ) * (ispos( h - k_2 ) * ( h - k_2 )) ^ c_2 - C_t * tan( v / 2 ) * sqrt( 2 * g ) * (ispos( h - k_2 ) * ( h - k_2 )) ^ c_1",
     "stage_symbole": "h",
     "parameters": [
@@ -68,7 +69,8 @@
     ]
   },
   {
-    "id": "triang_triang",
+    "id": "triangle_triangle",
+    "icon_id": "hc_triangle_triangle_weir",
     "formula": "C_t1 * tan( v_1 / 2 ) * sqrt( 2 * g ) * (ispos( h - k_1 ) * ( h - k_1 )) ^ c_1 +  C_t2 * tan( v_2 / 2 ) * sqrt( 2 * g ) * (ispos( h - k_2 ) * ( h - k_2 )) ^ c_2 - C_t1 * tan( v_1 / 2 ) * sqrt( 2 * g ) * (ispos( h - k_2 ) * ( h - k_2 )) ^ c_1",
     "stage_symbole": "h",
     "parameters": [
@@ -207,7 +209,8 @@
     ]
   },
   {
-    "id": "trapez_canal",
+    "id": "trapezoid_channel",
+    "icon_id": "hc_trapezoid_channel",
     "formula": "K_s * sqrt(S_0) * (B_w * ispos(h - b) * (h - b) + m * (ispos(h - b) * (h - b)) ^2) ^ (c+1) / (B_w + 2 * ispos(h - b) * (h - b)  * sqrt(1 + m^2) ) ^c",
     "stage_symbole": "h",
     "parameters": [
@@ -240,7 +243,8 @@
     ]
   },
   {
-    "id": "trapez_weir",
+    "id": "trapezoid_weir",
+    "icon_id": "hc_trapezoid_weir",
     "formula": "C_t * tan( v / 2 ) * sqrt( 2 * g ) * (ispos( h - k_1 ) * ( h - k_1 )) ^ c_1 +  C_r * B_w * sqrt( 2 * g ) * (ispos( h - k_1 ) * ( h - k_1 )) ^ c_2",
     "stage_symbole": "h",
     "parameters": [
@@ -304,7 +308,8 @@
     ]
   },
   {
-    "id": "rectang_trapez",
+    "id": "rect_trapezoid",
+    "icon_id": "hc_rect_trapezoid_weir",
     "formula": "C_t * tan( v / 2 ) * sqrt( 2 * g ) * (ispos( h - k_1 ) * ( h - k_1 )) ^ c_1 +  C_r1 * B_w1 * sqrt( 2 * g ) * (ispos( h - k_1 ) * ( h - k_1 )) ^ c_2+  C_r2 * B_w2 * sqrt( 2 * g ) * (ispos( h - k_2 ) * ( h - k_2 )) ^ c_2",
     "stage_symbole": "h",
     "parameters": [
