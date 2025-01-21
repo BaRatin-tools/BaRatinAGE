@@ -11,6 +11,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 public record QFHPreset(String id,
+        String iconId,
         String formula,
         String stageSymbole,
         List<QFHPresetParameter> parameters) {
@@ -61,6 +62,7 @@ public record QFHPreset(String id,
                 }
                 PRESETS.add(new QFHPreset(
                         presetJson.getString("id"),
+                        presetJson.optString("icon_id"),
                         presetJson.getString("formula"),
                         presetJson.getString("stage_symbole"), presetParameters));
             }
