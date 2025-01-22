@@ -62,6 +62,8 @@ public class ConfigSet {
                     }));
 
     public final ConfigItemBoolean HIDE_BAM_CONSOLE = addConfigItem(new ConfigItemBoolean("hide_bam_console", false));
+    public final ConfigItemBoolean CLOSE_BAM_DIALOG_ON_SUCCESS = addConfigItem(
+            new ConfigItemBoolean("close_bam_console_on_success", false));
 
     // BAM PREFERENCES
 

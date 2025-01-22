@@ -34,6 +34,7 @@ public class RunDialog extends JDialog {
     private final JButton closeButton;
     private final SimpleLogger logger;
     private final JCheckBox showHideLoggerButton;
+    private final JCheckBox closeBamDialogOnSuccessButton;
 
     private SwingWorker<Void, String> runningWorker;
     private SwingWorker<Void, Void> monitoringWorker;
@@ -73,11 +74,17 @@ public class RunDialog extends JDialog {
         showHideLoggerButton.setText(T.text("pref_hide_bam_console"));
         showHideLoggerButton.setSelected(AppSetup.CONFIG.HIDE_BAM_CONSOLE.get());
         showHideLoggerButton.addActionListener(l -> {
-            // System.out.println("CHANGED " + showHideLoggerButton.isSelected());
             AppSetup.CONFIG.HIDE_BAM_CONSOLE.set(showHideLoggerButton.isSelected());
             AppSetup.CONFIG.saveConfiguration();
             resetContent();
-            // repaint();
+        });
+        closeBamDialogOnSuccessButton = new JCheckBox();
+        closeBamDialogOnSuccessButton.setText(T.text("pref_close_bam_console_on_success"));
+        closeBamDialogOnSuccessButton.setSelected(AppSetup.CONFIG.CLOSE_BAM_DIALOG_ON_SUCCESS.get());
+        closeBamDialogOnSuccessButton.addActionListener(l -> {
+            AppSetup.CONFIG.CLOSE_BAM_DIALOG_ON_SUCCESS.set(closeBamDialogOnSuccessButton.isSelected());
+            AppSetup.CONFIG.saveConfiguration();
+            resetContent();
         });
 
         resetContent();
@@ -110,6 +117,7 @@ public class RunDialog extends JDialog {
         }
 
         mainPanel.appendChild(showHideLoggerButton, 0);
+        mainPanel.appendChild(closeBamDialogOnSuccessButton, 0);
 
         mainPanel.appendChild(closeButton, 0);
 
@@ -188,11 +196,13 @@ public class RunDialog extends JDialog {
                 } else {
                     if (!isCancelled()) {
                         setTitle(T.text("bam_result_processing"));
-                        // FIXME: not updating for some reason...
                         progressBar.setString(T.text("bam_result_processing"));
                         onSuccess.accept(RunConfigAndRes.buildFromWorkspace(id, workspacePath));
                         setTitle(T.text("bam_done"));
                         progressBar.setString(T.text("bam_done"));
+                        if (AppSetup.CONFIG.CLOSE_BAM_DIALOG_ON_SUCCESS.get()) {
+                            dispose();
+                        }
                     } else {
                         setTitle(T.text("bam_canceled"));
                     }
