@@ -15,6 +15,10 @@ public class ConfigItemBoolean extends ConfigItem {
         value = defaultValue;
     }
 
+    public void set(boolean value) {
+        this.value = value;
+    }
+
     @Override
     public Boolean get() {
         return value;
