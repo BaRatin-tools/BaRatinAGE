@@ -70,7 +70,7 @@ public class RunDialog extends JDialog {
         });
 
         showHideLoggerButton = new JCheckBox();
-        showHideLoggerButton.setText(T.text("hide_bam_logger"));
+        showHideLoggerButton.setText(T.text("pref_hide_bam_console"));
         showHideLoggerButton.setSelected(AppSetup.CONFIG.HIDE_BAM_CONSOLE.get());
         showHideLoggerButton.addActionListener(l -> {
             // System.out.println("CHANGED " + showHideLoggerButton.isSelected());
