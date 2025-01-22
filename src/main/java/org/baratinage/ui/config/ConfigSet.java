@@ -18,7 +18,6 @@ import org.baratinage.AppSetup;
 import org.baratinage.translation.T;
 import org.baratinage.ui.container.GridPanel;
 import org.baratinage.ui.container.RowColPanel;
-import org.baratinage.ui.container.TabContainer;
 import org.baratinage.ui.container.TitledPanel;
 import org.baratinage.utils.ConsoleLogger;
 import org.baratinage.utils.fs.ReadFile;
@@ -67,7 +66,10 @@ public class ConfigSet {
 
     // BAM PREFERENCES
 
-    public final ConfigItemInteger N_SAMPLES = addConfigItem(new ConfigItemInteger("n_samples", 200));
+    public final ConfigItemInteger N_SAMPLES_LIMNI_ERRORS = addConfigItem(
+            new ConfigItemInteger("n_samples_limni_error", 200));
+    public final ConfigItemInteger N_SAMPLES_PRIOR_RUN = addConfigItem(
+            new ConfigItemInteger("n_samples_prior_run", 200));
 
     //
 
@@ -118,13 +120,27 @@ public class ConfigSet {
         panel.setGap(5);
         panel.setPadding(5);
 
-        TabContainer configTabs = new TabContainer(
-                TabContainer.SIDE.TOP);
+        // TabContainer configTabs = new TabContainer(
+        // TabContainer.SIDE.TOP);
 
-        configTabs.addTab(buildConfigPanel(T.text("pref_ui"), null, LANGUAGE_KEY, DARK_MODE, FONT_SIZE));
-        configTabs.addTab(buildConfigPanel(T.text("pref_bam"), null, N_SAMPLES));
+        // configTabs.addTab(buildConfigPanel(T.text("pref_ui"), null,
+        // LANGUAGE_KEY,
+        // DARK_MODE,
+        // FONT_SIZE,
+        // HIDE_BAM_CONSOLE,
+        // CLOSE_BAM_DIALOG_ON_SUCCESS));
+        // configTabs.addTab(buildConfigPanel(T.text("pref_bam"), null,
+        // N_SAMPLES));
 
-        panel.appendChild(configTabs, 1000);
+        // panel.appendChild(configTabs, 1);
+
+        TitledPanel p = buildConfigPanel(T.text("pref_ui"), null,
+                LANGUAGE_KEY,
+                DARK_MODE,
+                FONT_SIZE,
+                HIDE_BAM_CONSOLE,
+                CLOSE_BAM_DIALOG_ON_SUCCESS);
+        panel.appendChild(p.getContent(), 1);
 
         RowColPanel actionsPanel = new RowColPanel();
         actionsPanel.setGap(5);
@@ -143,7 +159,7 @@ public class ConfigSet {
         });
         actionsPanel.appendChild(saveButton);
         actionsPanel.appendChild(cancelButton);
-        panel.appendChild(actionsPanel);
+        panel.appendChild(actionsPanel, 0);
 
         dialog.setContentPane(panel);
 

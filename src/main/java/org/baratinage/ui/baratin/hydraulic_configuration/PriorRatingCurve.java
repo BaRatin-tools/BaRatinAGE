@@ -234,14 +234,14 @@ public class PriorRatingCurve<HCT extends BamItem & IModelDefinition & IPriors> 
                         new PredictionOutput[] { maxpostOutput },
                         new PredictionState[] {},
                         false,
-                        AppSetup.CONFIG.N_SAMPLES.get(), false)),
+                        AppSetup.CONFIG.N_SAMPLES_LIMNI_ERRORS.get(), false)),
                 new PredExp(PredictionConfig.buildPriorPrediction(
                         "u",
                         new PredictionInput[] { predInput },
                         new PredictionOutput[] { uParamOutput },
                         new PredictionState[] {},
                         true,
-                        AppSetup.CONFIG.N_SAMPLES.get(),
+                        AppSetup.CONFIG.N_SAMPLES_LIMNI_ERRORS.get(),
                         false)));
     }
 

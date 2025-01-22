@@ -194,7 +194,9 @@ public class LimnigraphImporter extends RowColPanel {
             int sysUncertaintyInd = sysUncertaintyComboBox.getSelectedIndex();
             int sysIndInd = sysIndComboBox.getSelectedIndex();
 
-            int nCol = sysUncertaintyInd >= 0 || nonSysUncertaintyInd >= 0 ? AppSetup.CONFIG.N_SAMPLES.get() + 4 : 4;
+            int nCol = sysUncertaintyInd >= 0 || nonSysUncertaintyInd >= 0
+                    ? AppSetup.CONFIG.N_SAMPLES_LIMNI_ERRORS.get() + 4
+                    : 4;
 
             double size = estimateDoubleMatrixTextFileSizeInKb(stage.length, nCol) / 2; // I devide by 2 to estimate the
                                                                                         // zip compression

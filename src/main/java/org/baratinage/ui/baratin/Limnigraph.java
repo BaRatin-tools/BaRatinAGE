@@ -58,7 +58,7 @@ public class Limnigraph extends BamItem {
             LimnigraphDataset newLimniDataset = limniImporter.getDataset();
             if (newLimniDataset != null && newLimniDataset.getNumberOfColumns() >= 1) {
                 if (!newLimniDataset.hasStageErrMatrix()) {
-                    newLimniDataset.computeErroMatrix(AppSetup.CONFIG.N_SAMPLES.get());
+                    newLimniDataset.computeErroMatrix(AppSetup.CONFIG.N_SAMPLES_LIMNI_ERRORS.get());
                 }
                 updateDataset(newLimniDataset);
             }
