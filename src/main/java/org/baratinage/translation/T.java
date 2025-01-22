@@ -27,9 +27,11 @@ public class T {
 
     static public void init() {
         resources = new TResources();
-        currentLocale = Locale.getDefault();
+
         translatables = new WeakHashMap<>();
         hierarchy = new WeakHashMap<>();
+
+        setLocale();
     }
 
     static public void reset() {
@@ -39,6 +41,15 @@ public class T {
     static public void reloadResources() {
         resources = new TResources();
         updateTranslations();
+    }
+
+    static public void setLocale() {
+        String prefKey = AppSetup.CONFIG.LANGUAGE_KEY.get();
+        if (!prefKey.equals("")) {
+            setLocale(prefKey);
+            return;
+        }
+        currentLocale = Locale.getDefault();
     }
 
     static public void setLocale(String localeKey) {
@@ -84,6 +95,13 @@ public class T {
 
     static public Locale[] getAvailableLocales() {
         return resources.getAllLocales();
+    }
+
+    static public String getLocaleLabelString(Locale l) {
+        String key = l.getLanguage();
+        String name = l.getDisplayName(l);
+        String nameInCurrentLocal = l.getDisplayName(getLocale());
+        return String.format("(%s) %s - %s", key, nameInCurrentLocal, name);
     }
 
     static public void permanent(Translatable translatable) {

@@ -154,16 +154,13 @@ public class MainMenuBar extends JMenuBar {
         Locale[] allLocales = T.getAvailableLocales();
         for (Locale targetLocale : allLocales) {
             String targetLocaleKey = targetLocale.getLanguage();
-            String nameInTargetLocale = targetLocale.getDisplayName(targetLocale);
             JCheckBoxMenuItem item = new JCheckBoxMenuItem();
             translationMenuItems.put(targetLocaleKey, item);
             if (targetLocaleKey.equals("ko")) {
                 item.setFont(AppSetup.KO_FONT);
             }
             T.t(this, () -> {
-                Locale currentLocale = T.getLocale();
-                String nameInCurrentLocale = targetLocale.getDisplayName(currentLocale);
-                item.setText(String.format("(%s) %s - %s", targetLocaleKey, nameInCurrentLocale, nameInTargetLocale));
+                item.setText(T.getLocaleLabelString(targetLocale));
             });
 
             item.addActionListener((e) -> {
@@ -174,6 +171,7 @@ public class MainMenuBar extends JMenuBar {
                 }
                 T.setLocale(targetLocaleKey);
                 updateLanguageSwitcherMenu();
+                AppSetup.CONFIG.LANGUAGE_KEY.set(targetLocaleKey);
             });
             switchLanguageMenuItem.add(item);
         }
@@ -191,6 +189,12 @@ public class MainMenuBar extends JMenuBar {
     private void initOptionMenu() {
         JMenu lgSwitcherMenu = createLanguageSwitcherMenu();
         optionMenu.add(lgSwitcherMenu);
+        JMenuItem preferenceMenuItem = new JMenuItem();
+        T.t(this, preferenceMenuItem, false, "preferences");
+        preferenceMenuItem.addActionListener(l -> {
+            AppSetup.CONFIG.openConfigDialog();
+        });
+        optionMenu.add(preferenceMenuItem);
     }
 
     private void initHelpMenu() {

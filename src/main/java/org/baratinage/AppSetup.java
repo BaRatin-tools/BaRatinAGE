@@ -21,14 +21,13 @@ import org.baratinage.translation.T;
 import org.baratinage.ui.MainFrame;
 import org.baratinage.ui.component.CommonDialog;
 import org.baratinage.ui.component.SimpleNumberField;
+import org.baratinage.ui.config.ConfigSet;
 import org.baratinage.utils.ConsoleLogger;
 import org.baratinage.utils.Misc;
 import org.baratinage.utils.fs.DirUtils;
 
 import com.formdev.flatlaf.FlatDarkLaf;
-import com.formdev.flatlaf.FlatIntelliJLaf;
 import com.formdev.flatlaf.FlatLightLaf;
-import com.formdev.flatlaf.themes.FlatMacLightLaf;
 
 public class AppSetup {
 
@@ -72,7 +71,7 @@ public class AppSetup {
     // setting up colors and icons (order matters)
     public static final AppColors COLORS = new AppColors();
     public static final AppIcons ICONS = new AppIcons();
-    public static final AppConfig CONFIG = new AppConfig();
+    public static final ConfigSet CONFIG = new ConfigSet();
 
     // setting up variable
     public static final Font KO_FONT = getKoreanFont();
@@ -80,6 +79,8 @@ public class AppSetup {
     public static MainFrame MAIN_FRAME;
 
     public static void setup() {
+
+        CONFIG.loadConfiguration();
 
         ConsoleLogger.log(String.format("BaRatinAGE root directory: %s", PATH_APP_ROOT_DIR));
 
@@ -119,15 +120,13 @@ public class AppSetup {
     private static void setupLookAndFeel() {
         try {
             try {
-                if (CONFIG.THEME_KEY.is("FlatMacLightLaf")) {
-                    UIManager.setLookAndFeel(new FlatMacLightLaf());
-                } else if (CONFIG.THEME_KEY.is("FlatDarkLaf")) {
-                    // FIXME: cannot use dark themes because of some custom colors and icons
+                // if (CONFIG.DARK_MODE.get()) {
+                if (CONFIG.DARK_MODE.get()) {
                     UIManager.setLookAndFeel(new FlatDarkLaf());
-                } else if (CONFIG.THEME_KEY.is("FlatIntelliJLaf")) {
-                    UIManager.setLookAndFeel(new FlatIntelliJLaf());
                 } else {
                     UIManager.setLookAndFeel(new FlatLightLaf());
+                    // UIManager.setLookAndFeel(new FlatIntelliJLaf());
+                    // UIManager.setLookAndFeel(new FlatMacLightLaf());
                 }
                 UIManager.put("SplitPane.background", new Color(247, 247, 247));
                 UIManager.put("SplitPaneDivider.gripColor", new Color(211, 211, 211));
