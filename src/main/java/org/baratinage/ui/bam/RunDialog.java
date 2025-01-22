@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.function.Consumer;
 
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JDialog;
 import javax.swing.SwingWorker;
 
@@ -32,6 +33,7 @@ public class RunDialog extends JDialog {
     private final JButton cancelButton;
     private final JButton closeButton;
     private final SimpleLogger logger;
+    private final JCheckBox showHideLoggerButton;
 
     private SwingWorker<Void, String> runningWorker;
     private SwingWorker<Void, Void> monitoringWorker;
@@ -48,6 +50,9 @@ public class RunDialog extends JDialog {
         }
 
         progressBar = new ProgressBar();
+        Dimension dim = progressBar.getPreferredSize();
+        dim.width = 600;
+        progressBar.setPreferredSize(dim);
         cancelButton = new JButton();
         closeButton = new JButton();
         logger = new SimpleLogger();
@@ -64,6 +69,32 @@ public class RunDialog extends JDialog {
             dispose();
         });
 
+        showHideLoggerButton = new JCheckBox();
+        showHideLoggerButton.setText(T.text("hide_bam_logger"));
+        showHideLoggerButton.setSelected(AppSetup.CONFIG.HIDE_BAM_CONSOLE.get());
+        showHideLoggerButton.addActionListener(l -> {
+            // System.out.println("CHANGED " + showHideLoggerButton.isSelected());
+            AppSetup.CONFIG.HIDE_BAM_CONSOLE.set(showHideLoggerButton.isSelected());
+            AppSetup.CONFIG.saveConfiguration();
+            resetContent();
+            // repaint();
+        });
+
+        resetContent();
+
+        setTitle(T.text("bam_running"));
+
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+
+            }
+        });
+
+    }
+
+    private void resetContent() {
+
         RowColPanel pbPanel = new RowColPanel();
         pbPanel.setGap(5);
         pbPanel.appendChild(progressBar, 1);
@@ -74,18 +105,16 @@ public class RunDialog extends JDialog {
         mainPanel.setGap(5);
 
         mainPanel.appendChild(pbPanel, 0);
-        mainPanel.appendChild(logger, 1);
+        if (!AppSetup.CONFIG.HIDE_BAM_CONSOLE.get()) {
+            mainPanel.appendChild(logger, 1);
+        }
+
+        mainPanel.appendChild(showHideLoggerButton, 0);
+
         mainPanel.appendChild(closeButton, 0);
 
         setContentPane(mainPanel);
-        setTitle(T.text("bam_running"));
-
-        addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowClosing(WindowEvent e) {
-
-            }
-        });
+        pack();
 
     }
 

@@ -61,6 +61,8 @@ public class ConfigSet {
                         return labels;
                     }));
 
+    public final ConfigItemBoolean HIDE_BAM_CONSOLE = addConfigItem(new ConfigItemBoolean("hide_bam_console", false));
+
     // BAM PREFERENCES
 
     public final ConfigItemInteger N_SAMPLES = addConfigItem(new ConfigItemInteger("n_samples", 200));
