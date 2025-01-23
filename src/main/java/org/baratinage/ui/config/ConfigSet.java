@@ -73,6 +73,10 @@ public class ConfigSet {
 
     //
 
+    public ConfigSet() {
+        loadConfiguration();
+    }
+
     private <A extends ConfigItem> A addConfigItem(A item) {
         configItems.put(item.id, item);
         return item;

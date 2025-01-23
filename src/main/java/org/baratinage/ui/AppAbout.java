@@ -1,6 +1,5 @@
 package org.baratinage.ui;
 
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridBagLayout;
 import java.awt.event.ComponentAdapter;
@@ -93,7 +92,7 @@ public class AppAbout extends JDialog {
         JTextPane howToCiteReference = new JTextPane();
         howToCiteReference.setContentType("text/html");
         howToCiteReference.setEditable(false);
-        howToCiteReference.setBackground(Color.WHITE);
+        howToCiteReference.setBackground(AppSetup.COLORS.DEFAULT_BG);
         howToCiteReference.setText(
                 String.format(
                         "<html> <div> %s (%s).  %s <i> %s,  %s </i>,  %s <a href='%s'> %s </i> <div> </html>",

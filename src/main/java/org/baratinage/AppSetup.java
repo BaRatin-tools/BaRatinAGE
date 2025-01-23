@@ -1,6 +1,5 @@
 package org.baratinage;
 
-import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontFormatException;
 import java.awt.GraphicsEnvironment;
@@ -70,9 +69,9 @@ public class AppSetup {
             .of(PATH_APP_ROOT_DIR, "resources", "i18n").toString();
 
     // setting up colors and icons (order matters)
-    public static final AppColors COLORS = new AppColors();
-    public static final AppIcons ICONS = new AppIcons();
-    public static final ConfigSet CONFIG = new ConfigSet();
+    public static ConfigSet CONFIG;
+    public static AppColors COLORS;
+    public static AppIcons ICONS;
 
     // setting up variable
     public static final Font KO_FONT = getKoreanFont();
@@ -80,7 +79,7 @@ public class AppSetup {
     public static MainFrame MAIN_FRAME;
 
     public static void setup() {
-
+        CONFIG = new ConfigSet();
         CONFIG.loadConfiguration();
 
         ConsoleLogger.log(String.format("BaRatinAGE root directory: %s", PATH_APP_ROOT_DIR));
@@ -102,6 +101,9 @@ public class AppSetup {
         } else {
             setDefaultFont(CONFIG.FONT_SIZE.get());
         }
+
+        COLORS = new AppColors();
+        ICONS = new AppIcons();
 
         T.init();
         SimpleTextField.init();
@@ -130,8 +132,6 @@ public class AppSetup {
                     // UIManager.setLookAndFeel(new FlatIntelliJLaf());
                     // UIManager.setLookAndFeel(new FlatMacLightLaf());
                 }
-                UIManager.put("SplitPane.background", new Color(247, 247, 247));
-                UIManager.put("SplitPaneDivider.gripColor", new Color(211, 211, 211));
             } catch (Exception e1) {
                 ConsoleLogger.error(e1);
                 String sysLookAndFeel = UIManager.getSystemLookAndFeelClassName();

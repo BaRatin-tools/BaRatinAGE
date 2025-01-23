@@ -1,6 +1,5 @@
 package org.baratinage.ui.plot;
 
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Toolkit;
@@ -43,7 +42,6 @@ public class PlotContainer extends RowColPanel {
     private JFreeChart chart;
     private RowColPanel chartPanelContainer;
     private ChartPanel chartPanel;
-    private Color backgroundColor = Color.WHITE;
 
     private final JPopupMenu popupMenu;
     public final RowColPanel toolsPanel;
@@ -136,12 +134,8 @@ public class PlotContainer extends RowColPanel {
         });
         popupMenu.add(menuCopyClipboard);
 
-        setBackground(backgroundColor);
-        topPanel.setBackground(backgroundColor);
         topPanel.setPadding(10);
 
-        toolsPanel.setBackground(backgroundColor);
-        actionPanel.setBackground(backgroundColor);
         toolsPanel.setGap(5);
         actionPanel.setGap(5);
 

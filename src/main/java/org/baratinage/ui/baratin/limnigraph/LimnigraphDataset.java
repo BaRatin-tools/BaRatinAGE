@@ -1,7 +1,6 @@
 package org.baratinage.ui.baratin.limnigraph;
 
 import java.awt.BasicStroke;
-import java.awt.Color;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -9,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
 
+import org.baratinage.AppSetup;
 import org.baratinage.jbam.Distribution;
 import org.baratinage.jbam.DistributionType;
 import org.baratinage.ui.commons.AbstractDataset;
@@ -178,7 +178,8 @@ public class LimnigraphDataset extends AbstractDataset {
                 getName(),
                 timeVector,
                 getStage(),
-                Color.BLACK, new BasicStroke(2));
+                AppSetup.COLORS.PLOT_LINE,
+                new BasicStroke(2));
 
         return plotLine;
     }
@@ -190,7 +191,7 @@ public class LimnigraphDataset extends AbstractDataset {
         PlotTimeSeriesBand plotBand = new PlotTimeSeriesBand(
                 getName(),
                 timeVector,
-                errEnv.get(0), errEnv.get(1), Color.YELLOW);
+                errEnv.get(0), errEnv.get(1), AppSetup.COLORS.LIMNIGRAPH_STAGE_UNCERTAINTY);
         return plotBand;
     }
 

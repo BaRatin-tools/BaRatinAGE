@@ -1,6 +1,5 @@
 package org.baratinage.ui.component;
 
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -329,7 +328,7 @@ public class DataParser extends RowColPanel {
             String valStr = value.toString();
 
             if (ignored) {
-                setForeground(Color.LIGHT_GRAY);
+                setForeground(AppSetup.COLORS.DEFAULT_FG_LIGHT);
                 // setFont(getFont().deriveFont(Font.ITALIC));
                 return this;
             }

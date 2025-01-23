@@ -1,7 +1,6 @@
 package org.baratinage.ui.baratin;
 
 import java.awt.BasicStroke;
-import java.awt.Color;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -48,7 +47,7 @@ public class HydrographPlot extends RowColPanel {
                                 time,
                                 includeLimniBand ? dischargelimniU.get(0) : dischargeParamU.get(0),
                                 includeLimniBand ? dischargelimniU.get(1) : dischargeParamU.get(1),
-                                Color.YELLOW);
+                                AppSetup.COLORS.LIMNIGRAPH_STAGE_UNCERTAINTY);
 
                 PlotTimeSeriesBand totalBand = new PlotTimeSeriesBand(
                                 "Total uncertainty",

@@ -27,6 +27,7 @@ public class SimpleTextField extends JTextField {
     private static Color REGULAR_BG;
     private static Color INVALID_BG;
     private static Color INVALID_DISABLED_BG;
+    private static Color INNER_LABEL_FG;
     private boolean isViewValid = true;
 
     private String placeholder;
@@ -44,7 +45,7 @@ public class SimpleTextField extends JTextField {
         REGULAR_BG = new JTextField().getBackground();
         INVALID_BG = AppSetup.COLORS.INVALID_BG;
         INVALID_DISABLED_BG = AppSetup.COLORS.INVALID_DISABLED_BG;
-
+        INNER_LABEL_FG = AppSetup.COLORS.DEFAULT_FG_LIGHT;
     }
 
     public SimpleTextField() {
@@ -52,10 +53,10 @@ public class SimpleTextField extends JTextField {
 
         defaultBorder = getBorder();
         placeholderFont = getFont();
-        placeholderColor = new Color(180, 180, 200);
+        placeholderColor = INNER_LABEL_FG;
 
         innerLabelFont = getFont().deriveFont(12f);
-        innerLabelColor = new Color(180, 180, 200);
+        innerLabelColor = INNER_LABEL_FG;
 
         getDocument().addDocumentListener(new DocumentListener() {
 
