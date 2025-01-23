@@ -24,10 +24,10 @@ import org.baratinage.utils.perf.TimedActions;
 
 public class SimpleTextField extends JTextField {
 
-    private static Color REGULAR_BG = new JTextField().getBackground();
+    private static Color REGULAR_BG;
+    private static Color INVALID_BG;
+    private static Color INVALID_DISABLED_BG;
     private boolean isViewValid = true;
-    private static Color INVALID_BG = AppSetup.COLORS.INVALID_BG;
-    private static Color INVALID_DISABLED_BG = AppSetup.COLORS.INVALID_DISABLED_BG;
 
     private String placeholder;
     private String innerLabel;
@@ -39,6 +39,13 @@ public class SimpleTextField extends JTextField {
 
     private final Font innerLabelFont;
     private final Color innerLabelColor;
+
+    public static void init() {
+        REGULAR_BG = new JTextField().getBackground();
+        INVALID_BG = AppSetup.COLORS.INVALID_BG;
+        INVALID_DISABLED_BG = AppSetup.COLORS.INVALID_DISABLED_BG;
+
+    }
 
     public SimpleTextField() {
         super();

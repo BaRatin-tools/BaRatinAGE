@@ -21,6 +21,7 @@ import org.baratinage.translation.T;
 import org.baratinage.ui.MainFrame;
 import org.baratinage.ui.component.CommonDialog;
 import org.baratinage.ui.component.SimpleNumberField;
+import org.baratinage.ui.component.SimpleTextField;
 import org.baratinage.ui.config.ConfigSet;
 import org.baratinage.utils.ConsoleLogger;
 import org.baratinage.utils.Misc;
@@ -103,6 +104,7 @@ public class AppSetup {
         }
 
         T.init();
+        SimpleTextField.init();
         SimpleNumberField.init();
         CommonDialog.init();
     }
