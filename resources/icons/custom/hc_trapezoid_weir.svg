@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg width="24" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" version="1.1" viewBox="0 0 24 24" xml:space="preserve" xmlns="http://www.w3.org/2000/svg">
+<svg width="24" height="24" fill="currentColor" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" version="1.1" viewBox="0 0 24 24" xml:space="preserve"
+  xmlns="http://www.w3.org/2000/svg">
   <rect x="1.7768" y="14.418" width="20.5" height="4.7075" fill="#7cb4df" stroke="none"/>
   <path d="m1.75 4.5v15h20.5v-15" fill="none" stroke-linecap="round" stroke-width="1"/>
-  
-<path d="m0.26953-22.152v15.412h20.58v-15.412zm7.6699 8.8524h5.2852v3.9522h-5.2852z" stroke="none"/><g transform="matrix(1 0 0 1.0078 .055421 -.15139)" stroke-width="1.4942"><path d="m1.6458 4.133-0.021484 15.359h7.8047l-7.4258-15.359h-0.35742zm20.24 0-7.4258 15.359h7.8047l-0.021484-15.359h-0.35742z" stroke="none"/></g></svg>
+
+  <path d="m0.26953-22.152v15.412h20.58v-15.412zm7.6699 8.8524h5.2852v3.9522h-5.2852z" stroke="none"/>
+  <g transform="matrix(1 0 0 1.0078 .055421 -.15139)" stroke-width="1.4942">
+    <path d="m1.6458 4.133-0.021484 15.359h7.8047l-7.4258-15.359h-0.35742zm20.24 0-7.4258 15.359h7.8047l-0.021484-15.359h-0.35742z" stroke="none"/>
+  </g>
+</svg>

@@ -1,6 +1,6 @@
 package org.baratinage.ui.baratin.baratin_qfh;
 
-import javax.swing.ImageIcon;
+import javax.swing.Icon;
 
 import org.baratinage.AppSetup;
 import org.baratinage.jbam.Parameter;
@@ -23,11 +23,11 @@ import org.json.JSONObject;
 public class HydraulicConfigurationQFH extends BamItem
         implements IModelDefinition, IPriors {
 
-    public static final ImageIcon equationQFHIcon = AppSetup.ICONS
+    public static final Icon equationQFHIcon = AppSetup.ICONS
             .getCustomAppImageIcon("rating_curve_equation.svg");
-    public static final ImageIcon priorSpecificationIcon = AppSetup.ICONS
+    public static final Icon priorSpecificationIcon = AppSetup.ICONS
             .getCustomAppImageIcon("prior_densities.svg");
-    public static final ImageIcon priorRatingCurveIcon = AppSetup.ICONS
+    public static final Icon priorRatingCurveIcon = AppSetup.ICONS
             .getCustomAppImageIcon("prior_rating_curve.svg");
 
     private final PriorRatingCurve<HydraulicConfigurationQFH> priorRatingCurve;

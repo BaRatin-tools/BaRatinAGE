@@ -2,7 +2,7 @@ package org.baratinage.ui.baratin.rating_curve;
 
 // import java.util.List;
 
-import javax.swing.ImageIcon;
+import javax.swing.Icon;
 import javax.swing.JButton;
 
 import org.baratinage.AppSetup;
@@ -26,13 +26,13 @@ public class RatingCurveResults extends TabContainer {
     private final McmcTraceResultsPanel mcmcResultPanel;
     private final ParameterSummaryTable paramSummaryTable;
 
-    private static ImageIcon rcPriorIcon = AppSetup.ICONS.getCustomAppImageIcon("prior_rating_curve.svg");
-    private static ImageIcon rcIcon = AppSetup.ICONS.getCustomAppImageIcon("rating_curve.svg");
-    private static ImageIcon traceIcon = AppSetup.ICONS.getCustomAppImageIcon("trace.svg");
-    private static ImageIcon tableIcon = AppSetup.ICONS.getCustomAppImageIcon("table.svg");
-    private static ImageIcon dpIcon = AppSetup.ICONS.getCustomAppImageIcon("densities.svg");
-    private static ImageIcon rcTblIcon = AppSetup.ICONS.getCustomAppImageIcon("rating_curve_table.svg");
-    private static ImageIcon rcEqIcon = AppSetup.ICONS.getCustomAppImageIcon("rating_curve_equation.svg");
+    private static Icon rcPriorIcon = AppSetup.ICONS.getCustomAppImageIcon("prior_rating_curve.svg");
+    private static Icon rcIcon = AppSetup.ICONS.getCustomAppImageIcon("rating_curve.svg");
+    private static Icon traceIcon = AppSetup.ICONS.getCustomAppImageIcon("trace.svg");
+    private static Icon tableIcon = AppSetup.ICONS.getCustomAppImageIcon("table.svg");
+    private static Icon dpIcon = AppSetup.ICONS.getCustomAppImageIcon("densities.svg");
+    private static Icon rcTblIcon = AppSetup.ICONS.getCustomAppImageIcon("rating_curve_table.svg");
+    private static Icon rcEqIcon = AppSetup.ICONS.getCustomAppImageIcon("rating_curve_equation.svg");
 
     private final BaremExporter baremeExporter;
 

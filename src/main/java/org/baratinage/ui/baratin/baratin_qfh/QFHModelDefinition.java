@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import javax.swing.ImageIcon;
+import javax.swing.Icon;
 import javax.swing.JLabel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -95,7 +95,7 @@ public class QFHModelDefinition extends RowColPanel implements IModelDefinition 
     }
 
     private JLabel buildComboboxLabel(String id, String iconId) {
-        ImageIcon icon = HydraulicConfigurationQFH.equationQFHIcon;
+        Icon icon = HydraulicConfigurationQFH.equationQFHIcon;
         ;
         if (iconId != null) {
             try {

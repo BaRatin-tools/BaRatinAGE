@@ -7,7 +7,7 @@ import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.ImageIcon;
+import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
@@ -114,7 +114,7 @@ public class ProgressFrame extends JDialog {
         updateProgress(null, message, progress);
     }
 
-    public void updateProgress(final ImageIcon icon, final String message, final int progress) {
+    public void updateProgress(final Icon icon, final String message, final int progress) {
         if (icon != null) {
             progressMsg.setIcon(icon);
         }

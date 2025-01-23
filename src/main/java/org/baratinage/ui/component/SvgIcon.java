@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Image;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.FileInputStream;
@@ -12,7 +13,9 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.io.File;
 
+import javax.swing.Icon;
 import javax.swing.ImageIcon;
+import javax.swing.JComponent;
 
 import org.apache.batik.anim.dom.SAXSVGDocumentFactory;
 import org.apache.batik.transcoder.TranscoderException;
@@ -28,7 +31,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-public class SvgIcon extends ImageIcon {
+public class SvgIcon extends JComponent implements Icon {
 
     private final float width;
     private final float height;
@@ -39,6 +42,8 @@ public class SvgIcon extends ImageIcon {
 
     private static Scales lastUsedScales;
     private static Scales memorizedScales;
+
+    private final ImageIcon actualIcon;
 
     public static void memorizeCurrentScales() {
         memorizedScales = lastUsedScales;
@@ -72,7 +77,10 @@ public class SvgIcon extends ImageIcon {
 
         svgDocument = doc;
 
+        actualIcon = new ImageIcon();
+
         buildIcon();
+
     };
 
     public void setSvgTagAttribute(String attrName, Color attrValue) {
@@ -147,6 +155,8 @@ public class SvgIcon extends ImageIcon {
 
         w = width * (float) s.x;
         h = height * (float) s.y;
+        // h = h + (float) (Math.random() / 1.0);
+        // h = h + (float) (Math.random() * 100.0);
 
         BufferedImageTranscoder imgTranscoder = new BufferedImageTranscoder();
         imgTranscoder.addTranscodingHint(PNGTranscoder.KEY_WIDTH, w);
@@ -160,7 +170,9 @@ public class SvgIcon extends ImageIcon {
             return;
         }
         BufferedImage image = imgTranscoder.getBufferedImage();
-        setImage(image);
+        actualIcon.setImage(image);
+        // repaint();
+        // updateUI();
     }
 
     @Override
@@ -176,26 +188,26 @@ public class SvgIcon extends ImageIcon {
 
         g2d.scale(1 / sX, 1 / sY);
 
-        int iconHeight = super.getIconHeight();
+        int iconHeight = actualIcon.getIconHeight();
         int componentHeight = c.getHeight();
 
         y = scale(componentHeight, sY, false) / 2 - iconHeight / 2;
 
-        super.paintIcon(c, g2d, x, y);
+        actualIcon.paintIcon(c, g2d, x, y);
         g2d.dispose();
 
     }
 
     @Override
     public int getIconWidth() {
-        int d = super.getIconWidth();
+        int d = actualIcon.getIconWidth();
         d = scale(d, getScales().x, true);
         return d;
     }
 
     @Override
     public int getIconHeight() {
-        int d = super.getIconHeight();
+        int d = actualIcon.getIconHeight();
         d = scale(d, getScales().y, true);
         return d;
     }
@@ -250,5 +262,9 @@ public class SvgIcon extends ImageIcon {
             return bufferedImage;
         }
 
+    }
+
+    public Image getImage() {
+        return actualIcon.getImage();
     }
 }

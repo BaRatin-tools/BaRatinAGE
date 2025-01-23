@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.BorderFactory;
-import javax.swing.ImageIcon;
+import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 
@@ -31,8 +31,8 @@ import org.json.JSONObject;
 
 public class Limnigraph extends BamItem {
 
-    private ImageIcon chartIcon = AppSetup.ICONS.getCustomAppImageIcon("limnigraph.svg");
-    private ImageIcon errorIcon = AppSetup.ICONS.getCustomAppImageIcon("errors.svg");
+    private Icon chartIcon = AppSetup.ICONS.getCustomAppImageIcon("limnigraph.svg");
+    private Icon errorIcon = AppSetup.ICONS.getCustomAppImageIcon("errors.svg");
 
     private LimnigraphErrors limniErrors;
 

@@ -1,6 +1,6 @@
 package org.baratinage.ui.bam;
 
-import javax.swing.ImageIcon;
+import javax.swing.Icon;
 
 import org.baratinage.AppSetup;
 
@@ -32,21 +32,21 @@ public enum BamItemType {
 
     public final String id;
 
-    private ImageIcon icon;
-    private ImageIcon addIcon;
+    private Icon icon;
+    private Icon addIcon;
 
     private BamItemType(String id) {
         this.id = id;
     }
 
-    public ImageIcon getIcon() {
+    public Icon getIcon() {
         if (icon == null) {
             icon = AppSetup.ICONS.getCustomAppImageIcon(id + ".svg");
         }
         return icon;
     }
 
-    public ImageIcon getAddIcon() {
+    public Icon getAddIcon() {
         if (addIcon == null) {
             addIcon = AppSetup.ICONS.getCustomAppImageIcon(id + "_add.svg");
         }

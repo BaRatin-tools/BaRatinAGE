@@ -4,7 +4,7 @@ import java.awt.Font;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.ImageIcon;
+import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -35,31 +35,31 @@ import org.json.JSONObject;
 
 public class OneHydraulicControl extends JScrollPane {
 
-    public static final ImageIcon parabolaWeirIcon = AppSetup.ICONS
+    public static final Icon parabolaWeirIcon = AppSetup.ICONS
             .getCustomAppImageIcon(
                     "hc_parabola_weir.svg");
 
-    public static final ImageIcon triangleWeirIcon = AppSetup.ICONS
+    public static final Icon triangleWeirIcon = AppSetup.ICONS
             .getCustomAppImageIcon(
                     "hc_triangle_weir.svg");
 
-    public static final ImageIcon rectWeirIcon = AppSetup.ICONS
+    public static final Icon rectWeirIcon = AppSetup.ICONS
             .getCustomAppImageIcon(
                     "hc_rect_weir.svg");
 
-    public static final ImageIcon orificeWeirIcon = AppSetup.ICONS
+    public static final Icon orificeWeirIcon = AppSetup.ICONS
             .getCustomAppImageIcon(
                     "hc_orifice_weir.svg");
 
-    public static final ImageIcon rectChannelIcon = AppSetup.ICONS
+    public static final Icon rectChannelIcon = AppSetup.ICONS
             .getCustomAppImageIcon(
                     "hc_rect_channel.svg");
 
-    public static final ImageIcon triangleChannelIcon = AppSetup.ICONS
+    public static final Icon triangleChannelIcon = AppSetup.ICONS
             .getCustomAppImageIcon(
                     "hc_triangle_channel.svg");
 
-    public static final ImageIcon parabolaChannelIcon = AppSetup.ICONS
+    public static final Icon parabolaChannelIcon = AppSetup.ICONS
             .getCustomAppImageIcon(
                     "hc_parabola_channel.svg");
 
@@ -77,7 +77,7 @@ public class OneHydraulicControl extends JScrollPane {
     // FIXME: refactor?
     private record HydraulicControlOption(
             String lgKey,
-            ImageIcon icon,
+            Icon icon,
             PriorControlPanel panel) {
     };
 

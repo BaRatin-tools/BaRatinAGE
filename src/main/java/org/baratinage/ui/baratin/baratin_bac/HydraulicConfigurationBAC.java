@@ -1,6 +1,6 @@
 package org.baratinage.ui.baratin.baratin_bac;
 
-import javax.swing.ImageIcon;
+import javax.swing.Icon;
 import javax.swing.JLabel;
 import javax.swing.JSeparator;
 
@@ -40,11 +40,11 @@ public class HydraulicConfigurationBAC extends BamItem
 
     public final RunBam runBam;
 
-    public static final ImageIcon controlMatrixIcon = AppSetup.ICONS
+    public static final Icon controlMatrixIcon = AppSetup.ICONS
             .getCustomAppImageIcon("control_matrix.svg");
-    public static final ImageIcon priorSpecificationIcon = AppSetup.ICONS
+    public static final Icon priorSpecificationIcon = AppSetup.ICONS
             .getCustomAppImageIcon("prior_densities.svg");
-    public static final ImageIcon priorRatingCurveIcon = AppSetup.ICONS
+    public static final Icon priorRatingCurveIcon = AppSetup.ICONS
             .getCustomAppImageIcon("prior_rating_curve.svg");
 
     public HydraulicConfigurationBAC(String uuid, BaratinProject project) {
