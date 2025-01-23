@@ -58,9 +58,7 @@ public class CommonDialog {
             defaultSaveTitle = T.text("save");
             defaultApproveButtonToolTipText = T.text("ok");
 
-            if (fileChooser == null) {
-                resetFileChooser();
-            }
+            resetFileChooser();
         });
     }
 

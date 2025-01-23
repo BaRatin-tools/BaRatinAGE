@@ -31,12 +31,14 @@ public class BamProjectLoader {
     static private Runnable doOnError = () -> {
 
     };
-    static final private ProgressFrame bamProjectLoadingFrame = new ProgressFrame();
+    static private ProgressFrame bamProjectLoadingFrame;
     static final private List<BamItem> bamProjectBamItemsToLoad = new ArrayList<>();
     static final private List<BamConfig> bamProjectBamItemsToLoadConfig = new ArrayList<>();
     static private int bamProjectLoadingProgress = -1;
 
     private static void load(JSONObject json, File sourceFile, Consumer<BamProject> onLoaded, Runnable onError) {
+
+        bamProjectLoadingFrame = new ProgressFrame();
 
         doOnError = onError;
 
