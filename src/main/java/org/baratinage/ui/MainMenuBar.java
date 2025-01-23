@@ -15,6 +15,8 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.KeyStroke;
+import javax.swing.event.MenuEvent;
+import javax.swing.event.MenuListener;
 
 import org.baratinage.AppSetup;
 import org.baratinage.translation.T;
@@ -150,6 +152,21 @@ public class MainMenuBar extends JMenuBar {
 
         JMenu switchLanguageMenuItem = new JMenu();
         T.t(this, switchLanguageMenuItem, false, "change_language");
+        switchLanguageMenuItem.addMenuListener(new MenuListener() {
+            @Override
+            public void menuSelected(MenuEvent e) {
+                System.out.println("menuSelected");
+                updateLanguageSwitcherMenu();
+            }
+
+            @Override
+            public void menuDeselected(MenuEvent e) {
+            }
+
+            @Override
+            public void menuCanceled(MenuEvent e) {
+            }
+        });
 
         Locale[] allLocales = T.getAvailableLocales();
         for (Locale targetLocale : allLocales) {
@@ -170,12 +187,10 @@ public class MainMenuBar extends JMenuBar {
                     CommonDialog.infoDialog(T.text("restart_needed_msg"));
                 }
                 T.setLocale(targetLocaleKey);
-                updateLanguageSwitcherMenu();
                 AppSetup.CONFIG.LANGUAGE_KEY.set(targetLocaleKey);
             });
             switchLanguageMenuItem.add(item);
         }
-        updateLanguageSwitcherMenu();
         return switchLanguageMenuItem;
     }
 
