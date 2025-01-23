@@ -7,6 +7,7 @@ import org.baratinage.ui.bam.BamProject;
 import org.baratinage.ui.bam.BamProjectType;
 import org.baratinage.ui.baratin.baratin_bac.HydraulicConfigurationBAC;
 import org.baratinage.ui.baratin.baratin_qfh.HydraulicConfigurationQFH;
+import org.baratinage.ui.baratin.rc_compare.RatingCurveCompare;
 import org.baratinage.ui.commons.ExplorerItem;
 import org.baratinage.ui.commons.StructuralErrorModelBamItem;
 import org.baratinage.ui.component.NameSymbolUnit;
@@ -83,6 +84,13 @@ public class BaratinProject extends BamProject {
                     return new Hydrograph(uuid, this);
                 });
 
+        initBamItemType(
+                BamItemType.COMPARING_RATING_CURVES,
+                "tools",
+                (String uuid) -> {
+                    return new RatingCurveCompare(uuid, this);
+                });
+
         // resetting toolbar and component menu (where "add bam item" buttons are)
         AppSetup.MAIN_FRAME.mainMenuBar.componentMenu.removeAll();
         AppSetup.MAIN_FRAME.mainToolBars.clearBamItemTools();
@@ -95,6 +103,7 @@ public class BaratinProject extends BamProject {
         addAddBamItemBtns(BamItemType.RATING_CURVE);
         addAddBamItemBtns(BamItemType.LIMNIGRAPH);
         addAddBamItemBtns(BamItemType.HYDROGRAPH);
+        addAddBamItemBtns(BamItemType.COMPARING_RATING_CURVES);
 
         T.t(this, () -> {
             BamItemList strucErrBamItems = BAM_ITEMS.filterByType(BamItemType.STRUCTURAL_ERROR);
@@ -144,7 +153,8 @@ public class BaratinProject extends BamProject {
                 BamItemType.STRUCTURAL_ERROR,
                 BamItemType.LIMNIGRAPH,
                 BamItemType.RATING_CURVE,
-                BamItemType.HYDROGRAPH);
+                BamItemType.HYDROGRAPH,
+                BamItemType.COMPARING_RATING_CURVES);
     }
 
 }
