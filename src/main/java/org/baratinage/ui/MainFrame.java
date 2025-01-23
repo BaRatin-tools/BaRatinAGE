@@ -32,7 +32,7 @@ import java.nio.file.Path;
 public class MainFrame extends JFrame {
 
     private final RowColPanel projectPanel;
-    private BamProject currentProject;
+    public BamProject currentProject;
 
     public final MainMenuBar mainMenuBar;
 

@@ -9,6 +9,7 @@ import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.SwingUtilities;
 
+import org.baratinage.App;
 import org.baratinage.AppSetup;
 import org.baratinage.translation.T;
 import org.baratinage.utils.ConsoleLogger;
@@ -19,6 +20,12 @@ public class DebugMenu extends JMenu {
 
     public DebugMenu() {
         super("Debug");
+
+        JMenuItem restartAppBtn = new JMenuItem("Restart App");
+        add(restartAppBtn);
+        restartAppBtn.addActionListener((e) -> {
+            App.restart();
+        });
 
         JMenuItem clearConsoleBtn = new JMenuItem("Clear console");
         add(clearConsoleBtn);
