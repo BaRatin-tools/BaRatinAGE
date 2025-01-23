@@ -98,9 +98,9 @@ public class PriorRatingCurve<HCT extends BamItem & IModelDefinition & IPriors> 
     private void updateRunBamButton(boolean rerunNeeded) {
         if (!rerunNeeded) {
             T.t(runBam, runBam.runButton, true, "compute_prior_rc");
-            runBam.runButton.setForeground(new JButton().getForeground());
+            runBam.runButton.setForeground(null);
         } else {
-            T.t(runBam, runBam.runButton, true, "recompute_prior_rc");
+            T.t(runBam, runBam.runButton, true, bamRunConfigAndRes == null ? "compute_prior_rc" : "recompute_prior_rc");
             runBam.runButton.setForeground(AppSetup.COLORS.INVALID_FG);
         }
         updateUI();

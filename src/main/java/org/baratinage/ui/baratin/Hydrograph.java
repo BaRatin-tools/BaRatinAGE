@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.TreeSet;
 
-import javax.swing.JButton;
 import javax.swing.JSeparator;
 
 import org.baratinage.AppSetup;
@@ -162,11 +161,11 @@ public class Hydrograph extends BamItem implements IPredictionMaster {
         // update run bam button
         T.clear(runBam);
         if (needBamRerun) {
-            T.t(runBam, runBam.runButton, false, "recompute_qt");
+            T.t(runBam, runBam.runButton, false, currentConfigAndRes == null ? "compute_qt" : "recompute_qt");
             runBam.runButton.setForeground(AppSetup.COLORS.INVALID_FG);
         } else {
             T.t(runBam, runBam.runButton, false, "compute_qt");
-            runBam.runButton.setForeground(new JButton().getForeground());
+            runBam.runButton.setForeground(null);
         }
 
         // FIXME: check if message below is still relevant

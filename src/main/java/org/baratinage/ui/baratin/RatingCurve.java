@@ -377,11 +377,12 @@ public class RatingCurve extends BamItem implements IPredictionMaster, ICalibrat
         // update run bam button
         T.clear(runBam);
         if (!syncStatus.isBamRunInSync()) {
-            T.t(runBam, runBam.runButton, true, "recompute_posterior_rc");
+            T.t(runBam, runBam.runButton, true,
+                    bamRunConfigAndRes == null ? "compute_posterior_rc" : "recompute_posterior_rc");
             runBam.runButton.setForeground(AppSetup.COLORS.INVALID_FG);
         } else {
             T.t(runBam, runBam.runButton, true, "compute_posterior_rc");
-            runBam.runButton.setForeground(new JButton().getForeground());
+            runBam.runButton.setForeground(null);
         }
 
         fireChangeListeners();
