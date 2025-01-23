@@ -197,10 +197,12 @@ public class MainFrame extends JFrame {
         return true;
     }
 
-    public void closeProject() {
-        if (confirmLoosingUnsavedChanges()) {
+    public boolean closeProject() {
+        boolean confirmed = confirmLoosingUnsavedChanges();
+        if (confirmed) {
             setCurrentProject(null);
         }
+        return confirmed;
     }
 
     public void updateFrameTitle() {
