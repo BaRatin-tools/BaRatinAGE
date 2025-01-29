@@ -9,7 +9,7 @@ import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.AppSetup;
 import org.baratinage.translation.T;
 import org.baratinage.ui.plot.Plot;
-import org.baratinage.ui.plot.PlotBand2;
+import org.baratinage.ui.plot.PlotBand;
 import org.baratinage.ui.plot.PlotContainer;
 import org.baratinage.ui.plot.PlotInfiniteBand2;
 import org.baratinage.ui.plot.PlotInfiniteLine;
@@ -181,7 +181,7 @@ public class RatingCurvePlot extends RowColPanel {
             Color totalColor = isPrior ? null : AppSetup.COLORS.RATING_CURVE_TOTAL_UNCERTAINTY;
             addPlotItemToPlot(
                     plot,
-                    new PlotBand2("post_total_uncertainty",
+                    new PlotBand("post_total_uncertainty",
                             stage,
                             smoothedTotalQUlow,
                             smoothedTotalQUhigh,
@@ -197,7 +197,7 @@ public class RatingCurvePlot extends RowColPanel {
                 : "lgd_posterior_parametric_uncertainty";
         addPlotItemToPlot(
                 plot,
-                new PlotBand2("param_uncertainty",
+                new PlotBand("param_uncertainty",
                         stage,
                         dischargeParamUncertainty.get(0),
                         dischargeParamUncertainty.get(1),

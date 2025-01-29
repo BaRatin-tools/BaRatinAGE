@@ -73,6 +73,7 @@ public class DensityPlotGrid extends RowColPanel {
                         priorDensityData.get(0),
                         priorDensityData.get(1),
                         Calc.zeroes(nData),
+                        false,
                         AppSetup.COLORS.PRIOR_ENVELOP,
                         0.9f);
                 plot.addXYItem(priorDensity);
