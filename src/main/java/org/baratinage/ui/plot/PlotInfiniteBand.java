@@ -5,57 +5,47 @@ import java.awt.Shape;
 
 import org.jfree.chart.LegendItem;
 import org.jfree.chart.plot.XYPlot;
-import org.jfree.chart.renderer.xy.DeviationRenderer;
+import org.jfree.chart.renderer.xy.AbstractXYItemRenderer;
 import org.jfree.data.Range;
 import org.jfree.data.general.DatasetUtils;
-import org.jfree.data.xy.AbstractXYDataset;
-import org.jfree.data.xy.YIntervalSeries;
-import org.jfree.data.xy.YIntervalSeriesCollection;
 
 public class PlotInfiniteBand extends PlotItem {
 
-    private static final double MAX_VALUE = 9999999;
-    private static final double MIN_VALUE = -MAX_VALUE;
-
-    private boolean isVerticalBand = false;
-    private double bLow;
-    private double bHigh;
-    private double a;
-
-    private int n = 2000;
-
-    private DeviationRenderer renderer;
-
-    private XYPlot plot;
+    private int n = 2000; // necessary for log scales on y
 
     private String label;
     private Paint fillPaint;
+    private Shape shape;
 
-    public PlotInfiniteBand(String label, double xLow, double xHigh, Paint fillPaint) {
-        this(label, Double.POSITIVE_INFINITY, xLow, xHigh, fillPaint);
-    }
+    private final boolean isVerticalBand;
+    private final boolean isHorizontalBand;
+    private final double coeffDir;
+    private final double offsetLow;
+    private final double offsetHigh;
 
-    public PlotInfiniteBand(String label, double coeffDir, double offsetLow, double offsetHigh, Paint fillPaint) {
+    private XYPlot plot;
+
+    private CustomAreaRenderer renderer;
+
+    public PlotInfiniteBand(String label, double coeffDir, double offsetLow, double offsetHigh, Paint fillPaint,
+            float alpha) {
 
         this.label = label;
         this.fillPaint = fillPaint;
+        this.shape = buildEmptyShape();
 
-        a = coeffDir;
-        bLow = offsetLow;
-        bHigh = offsetHigh;
+        isVerticalBand = Double.isInfinite(coeffDir);
+        isHorizontalBand = coeffDir == 0;
+        this.coeffDir = coeffDir;
+        this.offsetLow = offsetLow;
+        this.offsetHigh = offsetHigh;
 
-        if (Double.isInfinite(coeffDir)) {
-            isVerticalBand = true;
-            n = 2;
-        }
+        renderer = new CustomAreaRenderer();
+        renderer.setAlpha(alpha);
 
-        renderer = new DeviationRenderer();
-        renderer.setSeriesStroke(0, buildEmptyStroke());
         renderer.setSeriesFillPaint(0, fillPaint);
         renderer.setSeriesPaint(0, fillPaint);
-        renderer.setSeriesShape(0, buildEmptyShape());
-        renderer.setSeriesShapesVisible(0, false);
-
+        renderer.setSeriesShape(0, shape);
     }
 
     @Override
@@ -65,66 +55,75 @@ public class PlotInfiniteBand extends PlotItem {
 
     @Override
     public Range getDomainBounds() {
-        return isVerticalBand ? new Range(bLow, bHigh) : null;
+        if (isVerticalBand) {
+            return new Range(offsetLow, offsetHigh);
+        } else if (isHorizontalBand) {
+            return null;
+        } else {
+            return DatasetUtils.findDomainBounds(getDataset());
+        }
     }
 
     @Override
     public Range getRangeBounds() {
-        if (plot == null || isVerticalBand) {
+        if (isVerticalBand) {
             return null;
+        } else if (isHorizontalBand) {
+            return new Range(offsetLow, offsetHigh);
+        } else {
+            return DatasetUtils.findRangeBounds(getDataset());
         }
-        return DatasetUtils.findRangeBounds(getDataset());
     }
 
     @Override
-    public AbstractXYDataset getDataset() {
-        double[] xValues = new double[] { 0, 1 };
-        double[] yValuesLow = new double[] { 0, 1 };
-        double[] yValuesHight = new double[] { 0, 1 };
+    public CustomAreaDataset getDataset() {
+
+        CustomAreaDataset dataset = new CustomAreaDataset();
+
+        if (plot == null) {
+            return dataset;
+        }
 
         if (isVerticalBand) {
-            xValues = new double[] { bLow, bHigh };
-            yValuesLow = new double[] { MIN_VALUE, MIN_VALUE };
-            yValuesHight = new double[] { MAX_VALUE, MAX_VALUE };
-            if (plot != null) {
-                double lb = plot.getRangeAxis().getLowerBound();
-                double ub = plot.getRangeAxis().getUpperBound();
-                yValuesLow = new double[] { lb, lb };
-                yValuesHight = new double[] { ub, ub };
-
-            }
+            double top = plot.getRangeAxis().getLowerBound();
+            double bottom = plot.getRangeAxis().getUpperBound();
+            dataset.addVerticalBandSeries(
+                    "",
+                    new double[] { bottom, top },
+                    new double[] { offsetLow, offsetLow },
+                    new double[] { offsetHigh, offsetHigh });
+        } else if (isHorizontalBand) {
+            double left = plot.getDomainAxis().getLowerBound();
+            double right = plot.getDomainAxis().getUpperBound();
+            dataset.addHorizontalBandSeries(
+                    "",
+                    new double[] { left, right },
+                    new double[] { offsetLow, offsetLow },
+                    new double[] { offsetHigh, offsetHigh });
         } else {
-            double lb = MIN_VALUE;
-            double ub = MAX_VALUE;
-            if (plot != null) {
-                lb = plot.getDomainAxis().getLowerBound();
-                ub = plot.getDomainAxis().getUpperBound();
-                yValuesLow = new double[] { lb, ub };
-                yValuesHight = new double[] { lb, ub };
-            }
-            double step = (ub - lb) / (n - 1);
-            xValues = new double[n];
-            yValuesLow = new double[n];
-            yValuesHight = new double[n];
+            double left = plot.getDomainAxis().getLowerBound();
+            double right = plot.getDomainAxis().getUpperBound();
+
+            double step = (right - left) / (n - 1);
+
+            double[] x = new double[n];
+            double[] yLow = new double[n];
+            double[] yHigh = new double[n];
+
             for (int k = 0; k < n; k++) {
-                xValues[k] = lb + k * step;
-                yValuesLow[k] = a * xValues[k] + bLow;
-                yValuesHight[k] = a * xValues[k] + bHigh;
+                x[k] = left + k * step;
+                yLow[k] = coeffDir * x[k] + offsetLow;
+                yHigh[k] = coeffDir * x[k] + offsetHigh;
             }
+
+            dataset.addHorizontalBandSeries("", x, yLow, yHigh);
         }
 
-        YIntervalSeries series = new YIntervalSeries(label);
-        for (int k = 0; k < n; k++) {
-            series.add(xValues[k], yValuesLow[k], yValuesLow[k], yValuesHight[k]);
-        }
-
-        YIntervalSeriesCollection dataset = new YIntervalSeriesCollection();
-        dataset.addSeries(series);
         return dataset;
     }
 
     @Override
-    public DeviationRenderer getRenderer() {
+    public AbstractXYItemRenderer getRenderer() {
         return renderer;
     }
 
@@ -137,6 +136,7 @@ public class PlotInfiniteBand extends PlotItem {
     @Override
     public void setLabel(String label) {
         this.label = label;
+
     }
 
 }

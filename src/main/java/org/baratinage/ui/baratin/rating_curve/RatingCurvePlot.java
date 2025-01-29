@@ -11,7 +11,7 @@ import org.baratinage.translation.T;
 import org.baratinage.ui.plot.Plot;
 import org.baratinage.ui.plot.PlotBand;
 import org.baratinage.ui.plot.PlotContainer;
-import org.baratinage.ui.plot.PlotInfiniteBand2;
+import org.baratinage.ui.plot.PlotInfiniteBand;
 import org.baratinage.ui.plot.PlotInfiniteLine;
 import org.baratinage.ui.plot.PlotItem;
 import org.baratinage.ui.plot.PlotLine;
@@ -156,7 +156,7 @@ public class RatingCurvePlot extends RowColPanel {
             double[] transitionStage = transitionStages.get(k);
             double coeffDir = axisFliped ? 0 : Double.POSITIVE_INFINITY;
             addPlotItemToPlot(plot,
-                    new PlotInfiniteBand2("k", coeffDir,
+                    new PlotInfiniteBand("k", coeffDir,
                             transitionStage[1], transitionStage[2],
                             stageActivationUncertaintyColor, 0.9f),
                     k == 0 ? stageLegendText : null);
