@@ -1,6 +1,7 @@
 package org.baratinage.ui.baratin;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.swing.JButton;
@@ -34,6 +35,7 @@ import org.baratinage.ui.bam.BamItemParent;
 import org.baratinage.ui.bam.ICalibratedModel;
 import org.baratinage.ui.bam.IMcmc;
 import org.baratinage.ui.bam.IModelDefinition;
+import org.baratinage.ui.bam.IPlotDataProvider;
 import org.baratinage.ui.bam.IPredictionMaster;
 import org.baratinage.ui.bam.IPriors;
 import org.baratinage.ui.bam.PredExp;
@@ -47,7 +49,7 @@ import org.baratinage.ui.baratin.rating_curve.RatingCurveStageGrid;
 import org.baratinage.ui.commons.MsgPanel;
 import org.baratinage.ui.commons.StructuralErrorModelBamItem;
 import org.baratinage.ui.container.RowColPanel;
-
+import org.baratinage.ui.plot.PlotItem;
 import org.baratinage.utils.ConsoleLogger;
 import org.baratinage.utils.json.JSONCompare;
 import org.baratinage.utils.json.JSONCompareResult;
@@ -56,7 +58,8 @@ import org.baratinage.utils.perf.TimedActions;
 
 import org.json.JSONObject;
 
-public class RatingCurve extends BamItem implements IPredictionMaster, ICalibratedModel, IMcmc {
+public class RatingCurve extends BamItem
+        implements IPredictionMaster, ICalibratedModel, IMcmc, IPlotDataProvider {
 
     private static class RatingCurveSyncStatus {
         public boolean hydrauConf = false;
@@ -555,6 +558,54 @@ public class RatingCurve extends BamItem implements IPredictionMaster, ICalibrat
                 gaugings // gaugings
         );
         resultsPanel.updateResults(ratingCurvePlotData, ratingCurveParameterSet);
+    }
+
+    public RatingCurvePlotData getRatingCurvePlotData() {
+        PredictionResult[] predResults = bamRunConfigAndRes.getPredictionResults();
+
+        CalibrationResult calibrationResults = bamRunConfigAndRes.getCalibrationResults();
+
+        RatingCurveCalibrationResults ratingCurveParameterSet = new RatingCurveCalibrationResults(calibrationResults);
+
+        CalibrationConfig calibrationConfig = bamRunConfigAndRes.getCalibrationConfig();
+        double[] stage = calibrationConfig.calibrationData.inputs[0].values;
+        double[] discharge = calibrationConfig.calibrationData.outputs[0].values;
+        double[] dischargeStd = calibrationConfig.calibrationData.outputs[0].nonSysStd;
+        int n = stage.length;
+        double[] dischargeMin = new double[n];
+        double[] dischargeMax = new double[n];
+
+        for (int k = 0; k < n; k++) {
+            double dischargeU = dischargeStd[k] * 2;
+            dischargeMin[k] = discharge[k] - dischargeU;
+            dischargeMax[k] = discharge[k] + dischargeU;
+        }
+
+        List<double[]> gaugings = new ArrayList<>(); // 4 items: h, q, qmin, qmax
+        gaugings.add(stage);
+        gaugings.add(discharge);
+        gaugings.add(dischargeMin);
+        gaugings.add(dischargeMax);
+
+        RatingCurvePlotData ratingCurvePlotData = new RatingCurvePlotData(
+                predResults[0].predictionConfig.inputs[0].dataColumns.get(0), // stage
+                predResults[0].outputResults.get(0).spag().get(0), // discharge
+                predResults[1].outputResults.get(0).get95UncertaintyInterval(), // parametric uncertainty
+                predResults[2].outputResults.get(0).get95UncertaintyInterval(), // total uncertainty
+                ratingCurveParameterSet.getStageTransitions(), // stage transition
+                gaugings // gaugings
+        );
+
+        return ratingCurvePlotData;
+    }
+
+    @Override
+    public HashMap<String, PlotItem> getPlotItems() {
+        RatingCurvePlotData rcPlotData = getRatingCurvePlotData();
+        if (rcPlotData == null) {
+            return new HashMap<>();
+        }
+        return rcPlotData.getPlotItems();
     }
 
 }

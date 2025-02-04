@@ -2,6 +2,7 @@ package org.baratinage.ui.baratin.hydraulic_configuration;
 
 import java.awt.Dimension;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.swing.JButton;
@@ -19,6 +20,7 @@ import org.baratinage.ui.bam.BamConfig;
 import org.baratinage.ui.bam.BamItem;
 import org.baratinage.ui.bam.BamProjectLoader;
 import org.baratinage.ui.bam.IModelDefinition;
+import org.baratinage.ui.bam.IPlotDataProvider;
 import org.baratinage.ui.bam.IPriors;
 import org.baratinage.ui.bam.IPredictionMaster;
 import org.baratinage.ui.bam.PredExp;
@@ -31,13 +33,14 @@ import org.baratinage.ui.baratin.rating_curve.RatingCurveResults;
 import org.baratinage.ui.baratin.rating_curve.RatingCurveStageGrid;
 import org.baratinage.ui.commons.MsgPanel;
 import org.baratinage.ui.container.RowColPanel;
+import org.baratinage.ui.plot.PlotItem;
 import org.baratinage.utils.ConsoleLogger;
 import org.baratinage.utils.json.JSONCompare;
 import org.baratinage.utils.json.JSONCompareResult;
 import org.json.JSONObject;
 
 public class PriorRatingCurve<HCT extends BamItem & IModelDefinition & IPriors> extends RowColPanel
-        implements IPredictionMaster {
+        implements IPredictionMaster, IPlotDataProvider {
 
     private final RatingCurveStageGrid priorRatingCurveStageGrid;
     private final RowColPanel outOufSyncPanel;
@@ -190,25 +193,8 @@ public class PriorRatingCurve<HCT extends BamItem & IModelDefinition & IPriors> 
 
     private void buildPlot() {
 
-        PredictionResult[] predResults = bamRunConfigAndRes.getPredictionResults();
-
-        CalibrationResult calResults = bamRunConfigAndRes.getCalibrationResults();
-
-        RatingCurveCalibrationResults rcParameters = new RatingCurveCalibrationResults(calResults);
-
-        List<double[]> stageTransitions = rcParameters.getStageTransitions();
-
-        double[] stage = predResults[0].predictionConfig.inputs[0].dataColumns.get(0);
-        double[] dischargeMaxpost = predResults[0].outputResults.get(0).spag().get(0);
-        List<double[]> dischargeParamU = predResults[1].outputResults.get(0).env().subList(1, 3);
-
-        RatingCurvePlotData rcPlotData = new RatingCurvePlotData(
-                stage,
-                dischargeMaxpost,
-                dischargeParamU,
-                null,
-                stageTransitions,
-                null);
+        RatingCurveCalibrationResults rcParameters = getRatingCurveCalibrationResults();
+        RatingCurvePlotData rcPlotData = getRatingCurvePlotData();
 
         resultsPanel.updateResults(
                 rcPlotData,
@@ -280,5 +266,45 @@ public class PriorRatingCurve<HCT extends BamItem & IModelDefinition & IPriors> 
         } else {
             ConsoleLogger.log("missing 'backup'");
         }
+    }
+
+    private RatingCurveCalibrationResults getRatingCurveCalibrationResults() {
+        CalibrationResult calResults = bamRunConfigAndRes.getCalibrationResults();
+        RatingCurveCalibrationResults rcParameters = new RatingCurveCalibrationResults(calResults);
+        return rcParameters;
+    }
+
+    private RatingCurvePlotData getRatingCurvePlotData() {
+        if (bamRunConfigAndRes == null) {
+            return null;
+        }
+        PredictionResult[] predResults = bamRunConfigAndRes.getPredictionResults();
+
+        RatingCurveCalibrationResults rcParameters = getRatingCurveCalibrationResults();
+
+        List<double[]> stageTransitions = rcParameters.getStageTransitions();
+
+        double[] stage = predResults[0].predictionConfig.inputs[0].dataColumns.get(0);
+        double[] dischargeMaxpost = predResults[0].outputResults.get(0).spag().get(0);
+        List<double[]> dischargeParamU = predResults[1].outputResults.get(0).env().subList(1, 3);
+
+        RatingCurvePlotData rcPlotData = new RatingCurvePlotData(
+                stage,
+                dischargeMaxpost,
+                dischargeParamU,
+                null,
+                stageTransitions,
+                null);
+
+        return rcPlotData;
+    }
+
+    @Override
+    public HashMap<String, PlotItem> getPlotItems() {
+        RatingCurvePlotData rcPlotData = getRatingCurvePlotData();
+        if (rcPlotData == null) {
+            return new HashMap<>();
+        }
+        return rcPlotData.getPlotItems();
     }
 }
