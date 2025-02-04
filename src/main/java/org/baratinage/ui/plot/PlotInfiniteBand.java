@@ -13,9 +13,9 @@ public class PlotInfiniteBand extends PlotItem {
 
     private int n = 2000; // necessary for log scales on y
 
-    private String label;
     private Paint fillPaint;
     private Shape shape;
+    private float alpha;
 
     private final boolean isVerticalBand;
     private final boolean isHorizontalBand;
@@ -30,9 +30,10 @@ public class PlotInfiniteBand extends PlotItem {
     public PlotInfiniteBand(String label, double coeffDir, double offsetLow, double offsetHigh, Paint fillPaint,
             float alpha) {
 
-        this.label = label;
+        setLabel(label);
         this.fillPaint = fillPaint;
         this.shape = buildEmptyShape();
+        this.alpha = alpha;
 
         isVerticalBand = Double.isInfinite(coeffDir);
         isHorizontalBand = coeffDir == 0;
@@ -134,9 +135,15 @@ public class PlotInfiniteBand extends PlotItem {
     }
 
     @Override
-    public void setLabel(String label) {
-        this.label = label;
+    public void configureRenderer(IPlotItemRendererSettings rendererSettings) {
 
+        alpha = rendererSettings.getFillAlpha();
+        fillPaint = rendererSettings.getFillPaint();
+
+        renderer = new CustomAreaRenderer();
+        renderer.setAlpha(alpha);
+        renderer.setSeriesFillPaint(0, fillPaint);
+        renderer.setSeriesShape(0, shape);
     }
 
 }

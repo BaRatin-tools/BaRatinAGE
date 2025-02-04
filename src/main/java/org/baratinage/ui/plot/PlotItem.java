@@ -22,13 +22,25 @@ import org.jfree.data.xy.XYDataset;
 
 public abstract class PlotItem {
 
+    protected String label;
+
+    protected Plot plot;
+
     public abstract XYDataset getDataset();
 
     public abstract XYItemRenderer getRenderer();
 
     public abstract LegendItem getLegendItem();
 
-    public abstract void setLabel(String label);
+    public void setLabel(String label) {
+        this.label = label;
+    }
+
+    public String getLabel() {
+        return this.label;
+    }
+
+    public abstract void configureRenderer(IPlotItemRendererSettings rendererSettings);
 
     public Range getDomainBounds() {
         return DatasetUtils.findDomainBounds(getDataset());
@@ -39,6 +51,34 @@ public abstract class PlotItem {
     }
 
     public void setPlot(XYPlot plot) {
+    }
+
+    public static enum ShapeType {
+        CIRCLE, SQUARE
+    }
+
+    public static enum LineType {
+        SOLID(new float[] { 1F }), DASHED(new float[] { 5F, 5F }), DOTTED(new float[] { 2F, 2F });
+
+        public final float[] dashArray;
+
+        LineType(float[] dashArray) {
+            this.dashArray = dashArray;
+        }
+
+        public static LineType getLineTypeFromStroke(Stroke stroke) {
+            if (!(stroke instanceof BasicStroke)) {
+                return SOLID;
+            }
+            float[] dashArray = ((BasicStroke) stroke).getDashArray();
+            if (dashArray.length > 1) {
+                if (dashArray[0] > 3F) {
+                    return DASHED;
+                }
+                return DOTTED;
+            }
+            return SOLID;
+        }
     }
 
     public static Ellipse2D.Double buildCircleShape() {
@@ -90,10 +130,14 @@ public abstract class PlotItem {
         return buildStroke(1);
     }
 
-    public static Stroke buildStroke(int lineWidth) {
+    public static Stroke buildStroke(float lineWidth) {
+        return buildStroke(lineWidth, new float[] { 1F });
+    }
+
+    public static Stroke buildStroke(float lineWidth, float[] dashArray) {
         return new BasicStroke(lineWidth,
                 BasicStroke.CAP_ROUND, BasicStroke.JOIN_BEVEL,
-                1, new float[] { 1F }, 0);
+                1, dashArray, 0);
     }
 
     public static Second[] localDateTimeToSecond(LocalDateTime[] time) {

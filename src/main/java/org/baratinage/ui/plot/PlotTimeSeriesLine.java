@@ -1,6 +1,7 @@
 package org.baratinage.ui.plot;
 
 import java.awt.Paint;
+import java.awt.Shape;
 import java.awt.Stroke;
 
 import org.jfree.chart.LegendItem;
@@ -13,17 +14,18 @@ import org.jfree.data.xy.XYDataset;
 
 public class PlotTimeSeriesLine extends PlotItem {
 
-    String label;
-    Paint paint;
-    Stroke stroke;
+    private Paint paint;
+    private Stroke stroke;
+    private Shape shape;
 
     TimeSeriesCollection tsCollection;
     DefaultXYItemRenderer renderer;
 
     public PlotTimeSeriesLine(String label, Second[] time, double[] values, Paint paint, Stroke stroke) {
-        this.label = label;
+        setLabel(label);
         this.paint = paint;
         this.stroke = stroke;
+        this.shape = buildEmptyShape();
 
         int n = time.length;
         TimeSeries ts = new TimeSeries(label);
@@ -37,7 +39,7 @@ public class PlotTimeSeriesLine extends PlotItem {
         renderer = new DefaultXYItemRenderer();
         renderer.setSeriesPaint(0, paint);
         renderer.setSeriesStroke(0, stroke);
-        renderer.setSeriesShape(0, buildEmptyShape());
+        renderer.setSeriesShape(0, shape);
     }
 
     @Override
@@ -56,8 +58,17 @@ public class PlotTimeSeriesLine extends PlotItem {
     }
 
     @Override
-    public void setLabel(String label) {
-        this.label = label;
+    public void configureRenderer(IPlotItemRendererSettings rendererSettings) {
+
+        stroke = buildStroke(
+                rendererSettings.getLineWidth(),
+                rendererSettings.getLineDashArray());
+        paint = rendererSettings.getLinePaint();
+
+        renderer = new DefaultXYItemRenderer();
+        renderer.setSeriesPaint(0, paint);
+        renderer.setSeriesStroke(0, stroke);
+        renderer.setSeriesShape(0, shape);
     }
 
 }

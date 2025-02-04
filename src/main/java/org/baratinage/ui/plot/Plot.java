@@ -171,6 +171,10 @@ public class Plot implements LegendItemSource {
     }
 
     public void update() {
+        for (int k = 0; k < items.size(); k++) {
+            plot.setDataset(k, items.get(k).item.getDataset());
+            plot.setRenderer(k, items.get(k).item.getRenderer());
+        }
         chart.fireChartChanged();
     }
 

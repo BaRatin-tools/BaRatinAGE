@@ -11,8 +11,8 @@ import org.jfree.data.xy.XYIntervalSeriesCollection;
 
 public class PlotPoints extends PlotItem {
 
-    private String label;
     private Paint paint;
+    private Stroke errorLineStroke;
     private Shape shape;
 
     private XYIntervalSeriesCollection dataset;
@@ -50,9 +50,10 @@ public class PlotPoints extends PlotItem {
                 yLow.length != n || yHigh.length != n)
             throw new IllegalArgumentException("x, y, xStart, xEnd, yStart, yEnd must all have the same length!");
 
-        this.label = label;
+        setLabel(label);
         this.paint = paint;
         this.shape = shape;
+        this.errorLineStroke = errorLineStroke;
 
         dataset = new XYIntervalSeriesCollection();
 
@@ -86,8 +87,18 @@ public class PlotPoints extends PlotItem {
     }
 
     @Override
-    public void setLabel(String label) {
-        this.label = label;
+    public void configureRenderer(IPlotItemRendererSettings rendererSettings) {
+
+        errorLineStroke = buildStroke(
+                rendererSettings.getLineWidth(),
+                rendererSettings.getLineDashArray());
+        paint = rendererSettings.getLinePaint();
+
+        renderer = new XYErrorRenderer();
+
+        renderer.setSeriesPaint(0, paint);
+        renderer.setSeriesStroke(0, errorLineStroke);
+        renderer.setSeriesShape(0, shape);
     }
 
 }

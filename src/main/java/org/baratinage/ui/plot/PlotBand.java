@@ -9,11 +9,11 @@ import org.jfree.chart.renderer.xy.AbstractXYItemRenderer;
 
 public class PlotBand extends PlotItem {
 
-    private String label;
     private Paint fillPaint;
     private Paint linePaint;
     private Stroke lineStroke;
     private Shape shape;
+    private float alpha;
 
     private CustomAreaDataset dataset;
     private CustomAreaRenderer renderer;
@@ -52,11 +52,12 @@ public class PlotBand extends PlotItem {
             throw new IllegalArgumentException("'ref' and 'high' must have the same length!");
         }
 
-        this.label = label;
+        setLabel(label);
         this.fillPaint = fillPaint;
         this.linePaint = linePaint;
         this.lineStroke = lineStroke;
         this.shape = buildEmptyShape();
+        this.alpha = alpha;
 
         dataset = new CustomAreaDataset();
         if (vertical) {
@@ -102,9 +103,21 @@ public class PlotBand extends PlotItem {
     }
 
     @Override
-    public void setLabel(String label) {
-        this.label = label;
+    public void configureRenderer(IPlotItemRendererSettings rendererSettings) {
 
+        alpha = rendererSettings.getFillAlpha();
+        lineStroke = buildStroke(
+                rendererSettings.getLineWidth(),
+                rendererSettings.getLineDashArray());
+        fillPaint = rendererSettings.getFillPaint();
+        linePaint = rendererSettings.getLinePaint();
+
+        renderer = new CustomAreaRenderer();
+        renderer.setAlpha(alpha);
+        renderer.setSeriesStroke(0, lineStroke);
+        renderer.setSeriesFillPaint(0, fillPaint);
+        renderer.setSeriesPaint(0, linePaint);
+        renderer.setSeriesShape(0, shape);
     }
 
 }
