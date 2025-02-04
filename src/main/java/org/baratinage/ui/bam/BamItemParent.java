@@ -38,7 +38,7 @@ public class BamItemParent extends RowColPanel {
 
     private boolean isCurrentInSyncWithBackup = false;
 
-    private final SimpleComboBox cb;
+    public final SimpleComboBox cb;
 
     private final ChangeListener onBamItemNameChange;
     private final ChangeListener onBamItemContentChange;
