@@ -274,7 +274,7 @@ public class PriorRatingCurve<HCT extends BamItem & IModelDefinition & IPriors> 
         return rcParameters;
     }
 
-    private RatingCurvePlotData getRatingCurvePlotData() {
+    public RatingCurvePlotData getRatingCurvePlotData() {
         if (bamRunConfigAndRes == null) {
             return null;
         }
