@@ -3,6 +3,8 @@ package org.baratinage.ui.component;
 import java.awt.Color;
 import java.awt.Paint;
 import java.awt.Rectangle;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
@@ -11,23 +13,30 @@ import javax.swing.JColorChooser;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.UIManager;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import org.baratinage.translation.T;
 import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.ui.plot.PlotUtils;
 
-public class SimpleColorField extends JButton {
+public class SimpleColorField extends RowColPanel {
 
+    private final JButton button;
     private Color currentColor;
     private static int colorIconSize = 20;
 
     public SimpleColorField() {
         currentColor = Color.BLACK;
 
-        setIcon(buildColorIcon(currentColor, colorIconSize));
-        addActionListener(l -> {
+        button = new JButton();
+
+        button.setIcon(buildColorIcon(currentColor, colorIconSize));
+        button.addActionListener(l -> {
             editColorPopup();
         });
+
+        appendChild(button, 1);
     }
 
     public void setColor(Paint color) {
@@ -38,7 +47,7 @@ public class SimpleColorField extends JButton {
 
     public void setColor(Color color) {
         currentColor = color;
-        setIcon(buildColorIcon(currentColor, colorIconSize));
+        button.setIcon(buildColorIcon(currentColor, colorIconSize));
     }
 
     public Color getColor() {
@@ -51,6 +60,22 @@ public class SimpleColorField extends JButton {
                 -size / 2,
                 size, size);
         return new ImageIcon(PlotUtils.buildImageFromShape(shape, color, size, size));
+    }
+
+    private final List<ChangeListener> changeListeners = new ArrayList<>();
+
+    public void addChangeListener(ChangeListener listener) {
+        changeListeners.add(listener);
+    }
+
+    public void removeChangeListener(ChangeListener listener) {
+        changeListeners.remove(listener);
+    }
+
+    private void fireChangeListeners() {
+        for (ChangeListener cl : changeListeners) {
+            cl.stateChanged(new ChangeEvent(this));
+        }
     }
 
     private void editColorPopup() {
@@ -82,11 +107,10 @@ public class SimpleColorField extends JButton {
 
         SimpleDialog colorChooserDialog = SimpleDialog.buildOkCancelDialog(T.text("choose_a_color"), colorChooserPanel,
                 (l) -> {
-                    System.out.println("COLOR SAVE");
                     currentColor = colorChooser.getColor();
-                    setIcon(buildColorIcon(currentColor, colorIconSize));
+                    button.setIcon(buildColorIcon(currentColor, colorIconSize));
+                    fireChangeListeners();
                 }, (l) -> {
-                    System.out.println("COLOR CANCEL");
                 });
 
         colorChooserDialog.openDialog();
