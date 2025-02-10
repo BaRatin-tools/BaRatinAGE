@@ -13,7 +13,7 @@ public class AppIcons {
 
     private List<SvgIcon> allIcons = new ArrayList<>();
 
-    public float ICON_SIZE;
+    private float ICON_SIZE;
     private float FEATHER_SIZE;
 
     public final SvgIcon BARATINAGE_LARGE;
@@ -41,9 +41,8 @@ public class AppIcons {
                 Path.of(AppSetup.PATH_ICONS_RESOURCES_DIR, "icon.svg").toString(),
                 64, 64));
 
-        ICON_SIZE = 28;
-        // FEATHER_SIZE = 20;
-        FEATHER_SIZE = ICON_SIZE;
+        ICON_SIZE = AppSetup.CONFIG.ICON_SIZE.get();
+        FEATHER_SIZE = AppSetup.CONFIG.ICON_SIZE.get();
 
         BARATINAGE = addIcon(new SvgIcon(
                 Path.of(AppSetup.PATH_ICONS_RESOURCES_DIR, "icon.svg").toString(),
