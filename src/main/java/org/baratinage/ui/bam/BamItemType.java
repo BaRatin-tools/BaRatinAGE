@@ -33,25 +33,16 @@ public enum BamItemType {
 
     public final String id;
 
-    private Icon icon;
-    private Icon addIcon;
-
     private BamItemType(String id) {
         this.id = id;
     }
 
     public Icon getIcon() {
-        if (icon == null) {
-            icon = AppSetup.ICONS.getCustomAppImageIcon(id + ".svg");
-        }
-        return icon;
+        return AppSetup.ICONS.getCustomAppImageIcon(id + ".svg");
     }
 
     public Icon getAddIcon() {
-        if (addIcon == null) {
-            addIcon = AppSetup.ICONS.getCustomAppImageIcon(id + "_add.svg");
-        }
-        return addIcon;
+        return AppSetup.ICONS.getCustomAppImageIcon(id + "_add.svg");
     }
 
     public boolean matchOneOf(BamItemType... itemTypesToMatch) {
