@@ -5,6 +5,7 @@ import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.swing.DefaultListModel;
@@ -17,56 +18,45 @@ import javax.swing.ListSelectionModel;
 import javax.swing.TransferHandler;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import javax.swing.event.ListDataEvent;
-import javax.swing.event.ListDataListener;
 
 import org.baratinage.ui.component.SimpleListItem.SimpleListItemRenderer;
+import org.baratinage.utils.ConsoleLogger;
 
 public class SimpleList<A> extends JScrollPane {
 
     private final JList<SimpleListItem<A>> list;
     private final DefaultListModel<SimpleListItem<A>> model;
 
-    private boolean hasJustReorderedElements = false;
-
     public SimpleList() {
-        list = new JList<SimpleListItem<A>>();
+        list = new JList<SimpleListItem<A>>() {
+            @Override
+            public int locationToIndex(java.awt.Point location) {
+                int index = super.locationToIndex(location);
+                if (index != -1 && getCellBounds(index, index).contains(location)) {
+                    return index;
+                }
+                clearSelection();
+                return -1; // Prevent selecting the last item when clicking on empty space
+            }
+        };
+
         model = new DefaultListModel<>();
 
         list.setDragEnabled(true);
-        list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        // list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        list.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         list.setDropMode(DropMode.INSERT);
-        list.setTransferHandler(new SimpleListTransferHandler(this));
+        SimpleListTransferHandler<A> transferHandler = new SimpleListTransferHandler<A>(this);
+        transferHandler.addTransferDoneListener(l -> {
+            fireOrderChangeListener();
+        });
+        list.setTransferHandler(transferHandler);
 
         list.setCellRenderer(new SimpleListItemRenderer());
 
         list.setModel(model);
 
         setOpaque(true);
-
-        model.addListDataListener(new ListDataListener() {
-
-            @Override
-            public void intervalAdded(ListDataEvent e) {
-                System.out.println("'intervalAdded'");
-
-                if (hasJustReorderedElements) {
-                    fireOrderChangeListener();
-                    hasJustReorderedElements = false;
-                }
-            }
-
-            @Override
-            public void intervalRemoved(ListDataEvent e) {
-                System.out.println("'intervalRemoved'");
-            }
-
-            @Override
-            public void contentsChanged(ListDataEvent e) {
-                System.out.println("'contentsChanged'");
-            }
-
-        });
 
         list.addListSelectionListener(l -> {
             if (!l.getValueIsAdjusting()) {
@@ -78,7 +68,26 @@ public class SimpleList<A> extends JScrollPane {
 
     }
 
-    // public void add
+    public boolean containsObject(A object) {
+        for (int k = 0; k < model.getSize(); k++) {
+            if (model.getElementAt(k).value.equals(object)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public List<A> getAllObjects() {
+        List<A> values = new ArrayList<A>();
+        for (int k = 0; k < model.getSize(); k++) {
+            values.add(model.getElementAt(k).value);
+        }
+        return values;
+    }
+
+    public List<A> getSelectedObjects() {
+        return list.getSelectedValuesList().stream().map(i -> i.value).toList();
+    }
 
     public A getSelectedObject() {
         SimpleListItem<A> item = list.getSelectedValue();
@@ -94,6 +103,15 @@ public class SimpleList<A> extends JScrollPane {
 
     public void addItem(String label, Icon icon, A value) {
         model.addElement(new SimpleListItem<A>(label, icon, value));
+    }
+
+    public boolean removeItem(A value) {
+        int index = getFirstIndex(value);
+        if (index >= 0) {
+            model.removeElementAt(index);
+            return true;
+        }
+        return false;
     }
 
     public int getFirstIndex(A value) {
@@ -124,6 +142,21 @@ public class SimpleList<A> extends JScrollPane {
         if (icon != null) {
             item.label.setIcon(icon);
         }
+    }
+
+    public void modifyItemValue(int index, A value) {
+
+        if (index < 0 || index >= model.getSize()) {
+            System.err.println("Trying to modify an item at an invalid index '" + index + "'!");
+            return;
+        }
+        SimpleListItem<A> item = model.getElementAt(index);
+        if (item == null) {
+            System.err.println("No item found at index '" + index + "'!");
+            return;
+        }
+
+        item.value = value;
     }
 
     public List<A> getValues() {
@@ -176,7 +209,7 @@ public class SimpleList<A> extends JScrollPane {
         }
     }
 
-    private static class SimpleListTransferable implements Transferable {
+    private static class SimpleListTransferable<A> implements Transferable {
 
         public static DataFlavor flavor = new DataFlavor(
                 SimpleListItem.class,
@@ -185,10 +218,11 @@ public class SimpleList<A> extends JScrollPane {
                 flavor
         };
 
-        private SimpleListItem<?> item;
+        public List<SimpleListItem<A>> data;
 
-        public SimpleListTransferable(SimpleListItem<?> item) {
-            this.item = item;
+        public SimpleListTransferable(List<SimpleListItem<A>> data) {
+            this.data = data;
+
         }
 
         @Override
@@ -198,26 +232,17 @@ public class SimpleList<A> extends JScrollPane {
 
         @Override
         public boolean isDataFlavorSupported(DataFlavor flavor) {
-            for (int i = 0; i < flavors.length; i++) {
-                if (flavor.equals(flavors[i])) {
-                    return true;
-                }
-            }
-            return false;
+            return true;
         }
 
         @Override
         public Object getTransferData(DataFlavor flavor) throws UnsupportedFlavorException, IOException {
-            if (flavor.equals(flavors[0])) {
-                return item;
-            } else {
-                throw new UnsupportedFlavorException(flavor);
-            }
+            return data;
         }
 
     }
 
-    private class SimpleListTransferHandler extends TransferHandler {
+    private static class SimpleListTransferHandler<A> extends TransferHandler {
 
         private final SimpleList<A> simpleList;
 
@@ -225,8 +250,21 @@ public class SimpleList<A> extends JScrollPane {
             this.simpleList = list;
         }
 
+        private final List<ChangeListener> transferDoneListener = new ArrayList<>();
+
+        public void addTransferDoneListener(ChangeListener l) {
+            transferDoneListener.add(l);
+        }
+
+        private void fireTransferDoneListener() {
+            for (ChangeListener l : transferDoneListener) {
+                l.stateChanged(new ChangeEvent(this));
+            }
+        }
+
         protected Transferable createTransferable(JComponent c) {
-            return new SimpleListTransferable(simpleList.list.getSelectedValue());
+
+            return new SimpleListTransferable<A>(simpleList.list.getSelectedValuesList());
         }
 
         public int getSourceActions(JComponent c) {
@@ -234,33 +272,55 @@ public class SimpleList<A> extends JScrollPane {
         }
 
         public boolean canImport(TransferHandler.TransferSupport support) {
-            return support.isDataFlavorSupported(SimpleListTransferable.flavor);
+            return true;
+        }
+
+        private static record TransferedSimpleListItem<A>(int offset, List<SimpleListItem<A>> items) {
+        };
+
+        private TransferedSimpleListItem<A> getItemListInOriginalOrder(
+                TransferHandler.TransferSupport support, int index)
+                throws UnsupportedFlavorException, IOException {
+            List<SimpleListItem<A>> transferedItems = new ArrayList<>();
+
+            Object data = support.getTransferable().getTransferData(SimpleListTransferable.flavor);
+            if (!(data instanceof List)) {
+                ConsoleLogger.error("Transfered data should be a list!");
+                return new TransferedSimpleListItem<>(0, transferedItems);
+            }
+            List<?> dataList = (List<?>) data;
+            if (dataList.size() <= 0) {
+                return new TransferedSimpleListItem<>(0, transferedItems);
+            }
+            for (int k = 0; k < index; k++) {
+                SimpleListItem<A> item = simpleList.model.getElementAt(k);
+                if (dataList.contains(item)) {
+                    transferedItems.add(item);
+                }
+            }
+            int offset = transferedItems.size();
+            for (int k = index; k < simpleList.model.getSize(); k++) {
+                SimpleListItem<A> item = simpleList.model.getElementAt(k);
+                if (dataList.contains(item)) {
+                    transferedItems.add(item);
+                }
+            }
+            Collections.reverse(transferedItems);
+            return new TransferedSimpleListItem<>(offset, transferedItems);
         }
 
         public boolean importData(TransferHandler.TransferSupport support) {
             try {
                 JList.DropLocation dl = (JList.DropLocation) support.getDropLocation();
-                DefaultListModel<SimpleListItem<A>> model = simpleList.model;
                 int index = dl.getIndex();
-                Object data = support.getTransferable()
-                        .getTransferData(SimpleListTransferable.flavor);
-
-                if (data instanceof SimpleListItem<?>) {
-                    @SuppressWarnings("unchecked")
-                    SimpleListItem<A> castedData = (SimpleListItem<A>) data;
-                    int indexOfElementToRemove = -1;
-                    for (int k = 0; k < model.getSize(); k++) {
-                        if (model.getElementAt(k).uuid.equals(castedData.uuid)) {
-                            indexOfElementToRemove = k;
-                            break;
-                        }
-                    }
-                    if (indexOfElementToRemove >= 0) {
-                        simpleList.hasJustReorderedElements = true; // to fire appropriate listeners
-                        model.removeElementAt(indexOfElementToRemove);
-                    }
-                    model.add(indexOfElementToRemove < index ? index - 1 : index, castedData);
+                TransferedSimpleListItem<A> transferedData = getItemListInOriginalOrder(support, index);
+                for (SimpleListItem<A> transferedItem : transferedData.items) {
+                    simpleList.model.removeElement(transferedItem);
                 }
+                for (SimpleListItem<A> transferedItem : transferedData.items) {
+                    simpleList.model.add(index - transferedData.offset, transferedItem);
+                }
+                fireTransferDoneListener();
                 return true;
             } catch (Exception e) {
                 e.printStackTrace();

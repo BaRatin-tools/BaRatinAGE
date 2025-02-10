@@ -12,7 +12,7 @@ public class SimpleListItem<A> {
 
     public final String uuid;
     public final JLabel label;
-    public final A value;
+    public A value;
 
     public SimpleListItem(String label) {
         this(label, null, null);
