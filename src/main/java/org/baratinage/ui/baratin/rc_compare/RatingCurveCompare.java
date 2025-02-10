@@ -1,21 +1,27 @@
 package org.baratinage.ui.baratin.rc_compare;
 
 import java.awt.Dimension;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 
 import javax.swing.JLabel;
+import javax.swing.JSeparator;
 
 import org.baratinage.translation.T;
 import org.baratinage.ui.bam.BamConfig;
 import org.baratinage.ui.bam.BamItem;
 import org.baratinage.ui.bam.BamItemParent;
 import org.baratinage.ui.bam.BamItemType;
-import org.baratinage.ui.bam.EditablePlotItemSet;
 import org.baratinage.ui.bam.IPlotDataProvider;
 import org.baratinage.ui.baratin.BaratinProject;
+import org.baratinage.ui.baratin.HydraulicConfiguration;
+import org.baratinage.ui.baratin.RatingCurve;
+import org.baratinage.ui.baratin.rating_curve.RatingCurvePlotData;
+import org.baratinage.ui.baratin.rating_curve.RatingCurvePlotToolsPanel;
+import org.baratinage.ui.component.SimpleCheckbox;
 import org.baratinage.ui.component.SimpleList;
+import org.baratinage.ui.component.SimpleTextField;
 import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.ui.container.SplitContainer;
 import org.baratinage.ui.plot.EditablePlotItem;
@@ -29,156 +35,387 @@ import org.jfree.chart.ui.RectangleEdge;
 
 public class RatingCurveCompare extends BamItem {
 
+    private final SimpleTextField rcOneNameLabel;
+    private final SimpleTextField rcTwoNameLabel;
+
+    private final SimpleTextField xAxisLabelField;
+    private final SimpleTextField yAxisLabelField;
+
     private final BamItemParent rcOne;
     private final BamItemParent rcTwo;
     private final PlotContainer plotContainer;
+    private final RatingCurvePlotToolsPanel plotToolsPanel;
 
-    private final SimpleList<EditablePlotItem> plotItemsList;
-    private final EditablePlotItemSet editablePlotItemsSet;
+    private final HashMap<BamItem, HashMap<String, EditablePlotItem>> knownEditablePlotItems;
+    private final HashMap<BamItem, String> knownLabels;
+
+    private static record EPI(BamItem bamItem, String key) {
+        public boolean isSame(EPI other) {
+            return other.bamItem.ID.equals(bamItem.ID) && other.key.equals(key);
+        }
+
+        @Override
+        public boolean equals(Object other) {
+            if (other instanceof EPI) {
+                return (isSame((EPI) other));
+            } else {
+                return false;
+            }
+        }
+    }
+
+    private final SimpleList<EPI> episList;
 
     private Plot plot;
 
     public RatingCurveCompare(String uuid, BaratinProject project) {
         super(BamItemType.COMPARING_RATING_CURVES, uuid, project);
 
-        /**
-         * this item should be fed groups of plotItem
-         * 
-         * SimpleList
-         * SimpleListItem (uuid, jlabel, object)
-         * EditablePlotItem
-         * 
-         */
-
         // rating curves chooser
-        rcOne = new BamItemParent(this, BamItemType.RATING_CURVE, BamItemType.HYDRAULIC_CONFIG);
-        rcTwo = new BamItemParent(this, BamItemType.RATING_CURVE, BamItemType.HYDRAULIC_CONFIG);
+
         JLabel rcOneLabel = new JLabel();
         T.t(this, rcOneLabel, false, "rc_n", 1);
         JLabel rcTwoLabel = new JLabel();
         T.t(this, rcTwoLabel, false, "rc_n", 2);
         RowColPanel rcChooserPanel = new RowColPanel(RowColPanel.AXIS.COL);
+
+        rcOne = new BamItemParent(this,
+                BamItemType.RATING_CURVE,
+                BamItemType.HYDRAULIC_CONFIG,
+                BamItemType.HYDRAULIC_CONFIG_BAC,
+                BamItemType.HYDRAULIC_CONFIG_QFH);
+        rcTwo = new BamItemParent(this,
+                BamItemType.RATING_CURVE,
+                BamItemType.HYDRAULIC_CONFIG,
+                BamItemType.HYDRAULIC_CONFIG_BAC,
+                BamItemType.HYDRAULIC_CONFIG_QFH);
+
+        rcOne.cb.setValidityView(true);
+        rcTwo.cb.setValidityView(true);
+
+        rcOneNameLabel = new SimpleTextField();
+        rcTwoNameLabel = new SimpleTextField();
+
         rcChooserPanel.setGap(5);
         rcChooserPanel.appendChild(rcOneLabel);
         rcChooserPanel.appendChild(rcOne.cb);
+        rcChooserPanel.appendChild(rcOneNameLabel);
         rcChooserPanel.appendChild(rcTwoLabel);
         rcChooserPanel.appendChild(rcTwo.cb);
+        rcChooserPanel.appendChild(rcTwoNameLabel);
 
         // plot items management
         RowColPanel plotItemManagementPanel = new RowColPanel();
-        plotItemsList = new SimpleList<EditablePlotItem>();
+        episList = new SimpleList<>();
 
-        plotItemManagementPanel.appendChild(plotItemsList);
+        plotItemManagementPanel.appendChild(episList);
 
         Dimension dim = new Dimension(300, 0);
-        plotItemsList.setMinimumSize(dim);
-        plotItemsList.setPreferredSize(dim);
+        episList.setMinimumSize(dim);
+        episList.setPreferredSize(dim);
 
         // plot item edition
-        RowColPanel plotItemEditionPanel = new RowColPanel();
+        RowColPanel plotItemEditionPanel = new RowColPanel(RowColPanel.AXIS.COL);
 
         // plot configuration
         RowColPanel plotConfigPanel = new RowColPanel();
+        plotConfigPanel.setGap(5);
+        plotConfigPanel.setPadding(5);
+
+        JLabel xAxisLabel = new JLabel();
+        T.t(this, xAxisLabel, false, "discharge_label");
+        xAxisLabelField = new SimpleTextField();
+        xAxisLabelField.setText(T.text("discharge") + " [m3/s]");
+        xAxisLabelField.addChangeListener(l -> {
+            resetPlot();
+        });
+        RowColPanel xAxisConfigPanel = new RowColPanel();
+        xAxisConfigPanel.setGap(5);
+        xAxisConfigPanel.appendChild(xAxisLabel, 0);
+        xAxisConfigPanel.appendChild(xAxisLabelField, 1);
+        plotConfigPanel.appendChild(xAxisConfigPanel, 1);
+
+        JLabel yAxisLabel = new JLabel();
+        T.t(this, yAxisLabel, false, "stage_label");
+        yAxisLabelField = new SimpleTextField();
+        yAxisLabelField.setText(T.text("stage") + " [m]");
+        yAxisLabelField.addChangeListener(l -> {
+            resetPlot();
+        });
+        RowColPanel yAxisConfigPanel = new RowColPanel();
+        yAxisConfigPanel.setGap(5);
+        yAxisConfigPanel.appendChild(yAxisLabel, 0);
+        yAxisConfigPanel.appendChild(yAxisLabelField, 1);
+        plotConfigPanel.appendChild(yAxisConfigPanel, 1);
 
         // main plot
         plotContainer = new PlotContainer(true);
+        plotToolsPanel = new RatingCurvePlotToolsPanel();
+        plotToolsPanel.configure(true, true, true);
+
+        RowColPanel plotArea = new RowColPanel(RowColPanel.AXIS.COL);
+        plotArea.setGap(5);
+        plotArea.setPadding(5);
+        plotArea.appendChild(plotContainer, 1);
+        plotArea.appendChild(plotToolsPanel, 0);
+        plotArea.appendChild(plotConfigPanel, 0);
 
         // final layout
 
         RowColPanel plotItemsConfigPanel = new RowColPanel(RowColPanel.AXIS.COL);
-        plotItemsConfigPanel.setGap(5);
+        plotItemsConfigPanel.setGap(10);
+        plotItemsConfigPanel.setPadding(5);
         plotItemsConfigPanel.appendChild(rcChooserPanel, 0);
+        plotItemsConfigPanel.appendChild(new JSeparator(), 0);
         plotItemsConfigPanel.appendChild(plotItemManagementPanel, 1);
         plotItemsConfigPanel.appendChild(plotItemEditionPanel, 0);
-        RowColPanel plotPanel = new RowColPanel(RowColPanel.AXIS.COL);
-        plotPanel.appendChild(plotConfigPanel, 0);
-        plotPanel.appendChild(plotContainer, 1);
-        SplitContainer mainContainer = new SplitContainer(plotItemsConfigPanel, plotPanel, true);
+
+        SplitContainer mainContainer = new SplitContainer(plotItemsConfigPanel, plotArea, true);
         setContent(mainContainer);
 
         // behavior
 
+        knownEditablePlotItems = new HashMap<>();
+        knownLabels = new HashMap<>();
+
         rcOne.addChangeListener(l -> {
-            handleRatingCurveSelectionChange();
-        });
 
-        rcTwo.addChangeListener(l -> {
-            handleRatingCurveSelectionChange();
-        });
+            BamItem item = rcOne.getCurrentBamItem();
+            updateKnownEditablePlotItems(item);
 
-        plotItemsList.addOrderChangeListeners(l -> {
-            System.out.println("ORDER HAS CHANGED");
+            if (item == null) {
+                rcOneNameLabel.setText("");
+            } else {
+                String label = knownLabels.containsKey(item) ? knownLabels.get(item) : item.bamItemNameField.getText();
+                rcOneNameLabel.setText(label);
+                knownLabels.put(item, label);
+            }
+
+            resetPlotItemList();
             resetPlot();
         });
 
-        plotItemsList.addSelectionChangeListeners(l -> {
-            System.out.println("SELECTION HAS CHANGED");
-            System.out.println(Locale.getDefault());
+        rcTwo.addChangeListener(l -> {
+            BamItem item = rcTwo.getCurrentBamItem();
+            updateKnownEditablePlotItems(item);
+
+            if (item == null) {
+                rcTwoNameLabel.setText("");
+            } else {
+                String label = knownLabels.containsKey(item) ? knownLabels.get(item) : item.bamItemNameField.getText();
+                rcTwoNameLabel.setText(label);
+                knownLabels.put(item, label);
+            }
+            resetPlotItemList();
+            resetPlot();
+        });
+
+        rcOneNameLabel.addChangeListener(l -> {
+            BamItem item = rcOne.getCurrentBamItem();
+            if (item != null) {
+                knownLabels.put(item, rcOneNameLabel.getText());
+            }
+            resetPlot();
+        });
+
+        rcTwoNameLabel.addChangeListener(l -> {
+            BamItem item = rcTwo.getCurrentBamItem();
+            if (item != null) {
+                knownLabels.put(item, rcTwoNameLabel.getText());
+            }
+            resetPlot();
+        });
+
+        episList.addOrderChangeListeners(l -> {
+            resetPlot();
+        });
+
+        episList.addSelectionChangeListeners(l -> {
             plotItemEditionPanel.clear();
-            Object o = plotItemsList.getSelectedObject();
-            if (o != null && o instanceof EditablePlotItem) {
-                EditablePlotItem e = (EditablePlotItem) o;
-                plotItemEditionPanel.appendChild(e.getEditionPanel());
+            List<EPI> epis = episList.getSelectedObjects();
+            if (epis.size() == 0) {
+                return;
+            }
+            EPI epi = episList.getSelectedObject();
+
+            EditablePlotItem e = getEditablePlotItem(epi);
+            if (e == null) {
+                return;
+            }
+
+            List<EditablePlotItem> ePltItemList = getEditablePlotItems(epis);
+
+            // EditablePlotItem e = plotItemsList.getSelectedObject();
+            SimpleCheckbox showPlotItem = new SimpleCheckbox();
+            showPlotItem.setText(T.text("display"));
+            SimpleCheckbox showPlotItemLegend = new SimpleCheckbox();
+            showPlotItemLegend.setText(T.text("include_legend"));
+
+            if (ePltItemList.size() > 1) {
+                showPlotItem.addChangeListener(l2 -> {
+                    ePltItemList.stream().forEach(i -> i.visible = showPlotItem.isSelected());
+                    resetPlot();
+                });
+                showPlotItem.setSelected(ePltItemList.stream().allMatch(i -> i.visible));
+                showPlotItemLegend.addChangeListener(l2 -> {
+                    ePltItemList.stream().forEach(i -> i.showLegend = showPlotItemLegend.isSelected());
+                    resetPlot();
+                });
+                showPlotItemLegend.setSelected(ePltItemList.stream().allMatch(i -> i.showLegend));
+
+                plotItemEditionPanel.appendChild(showPlotItem);
+                plotItemEditionPanel.appendChild(showPlotItemLegend);
+
+            } else {
+                showPlotItem.addChangeListener(l2 -> {
+                    e.visible = showPlotItem.isSelected();
+                    resetPlot();
+                });
+                showPlotItem.setSelected(e.visible);
+                showPlotItemLegend.addChangeListener(l2 -> {
+                    e.showLegend = showPlotItemLegend.isSelected();
+                    resetPlot();
+                });
+                showPlotItemLegend.setSelected(e.showLegend);
+                plotItemEditionPanel.appendChild(showPlotItem);
+                plotItemEditionPanel.appendChild(showPlotItemLegend);
+                RowColPanel ePanel = e.getEditionPanel();
+                ePanel.setGap(5);
+                ePanel.setPadding(5, 0, 5, 0);
+                plotItemEditionPanel.appendChild(ePanel);
             }
         });
 
-        editablePlotItemsSet = new EditablePlotItemSet();
+        plotToolsPanel.addChangeListener(l -> {
 
-        // settings = new HashMap<>();
-        // plotItems = new HashMap<>();
+            updateKnownEditablePlotItems(rcOne.getCurrentBamItem());
+            updateKnownEditablePlotItems(rcTwo.getCurrentBamItem());
 
-        /**
-         * make a default order of component with total > param > mp
-         * do not change legend order based on component order
-         */
+            resetPlotItemList();
+            resetPlot();
+
+        });
+
     }
 
-    private void handleRatingCurveSelectionChange() {
-
-        BamItem itemOne = rcOne.getCurrentBamItem();
-        if (itemOne != null) {
-            getEditablePlotItems(itemOne);
+    private EditablePlotItem getEditablePlotItem(EPI epi) {
+        if (!knownEditablePlotItems.containsKey(epi.bamItem)) {
+            return null;
         }
-        BamItem itemTwo = rcTwo.getCurrentBamItem();
-        if (itemTwo != null) {
-            getEditablePlotItems(itemTwo);
+        if (!knownEditablePlotItems.get(epi.bamItem).containsKey(epi.key)) {
+            return null;
         }
+        return knownEditablePlotItems.get(epi.bamItem).get(epi.key);
+    }
 
-        resetPlotItemList();
-        resetPlot();
+    private List<EditablePlotItem> getEditablePlotItems(List<EPI> epis) {
+        return epis.stream().map(epi -> getEditablePlotItem(epi)).filter(e -> e != null).toList();
+    }
 
+    private void updateKnownEditablePlotItems(BamItem bamItem) {
+        if (bamItem != null) {
+            HashMap<String, EditablePlotItem> newEditablePlotItems = buildEditableRatingCurvePlotItems(bamItem);
+            if (!knownEditablePlotItems.containsKey(bamItem)) {
+                knownEditablePlotItems.put(bamItem, newEditablePlotItems);
+            } else {
+                for (String key : newEditablePlotItems.keySet()) {
+                    if (!knownEditablePlotItems.get(bamItem).containsKey(key)) {
+                        knownEditablePlotItems.get(bamItem).put(key, newEditablePlotItems.get(key));
+                    } else {
+                        EditablePlotItem existingEditablePlotItem = knownEditablePlotItems.get(bamItem).get(key);
+                        EditablePlotItem newEditablePlotItem = newEditablePlotItems.get(key);
+                        newEditablePlotItem.applyState(existingEditablePlotItem);
+                        knownEditablePlotItems.get(bamItem).put(key, newEditablePlotItem);
+                    }
+                }
+            }
+        }
     }
 
     private void resetPlotItemList() {
-        plotItemsList.clearList();
-        BamItem itemOne = rcOne.getCurrentBamItem();
-        if (itemOne != null) {
-            for (EditablePlotItem ePltItem : editablePlotItemsSet.getEditablePlotItems(itemOne)) {
-                plotItemsList.addItem(
-                        itemOne.bamItemNameField.getText() + " > " + ePltItem.plotItem.getLabel(),
-                        PlotUtils.getPlotItemIcon(ePltItem.plotItem, 30, 30),
-                        ePltItem);
+
+        List<EPI> neededEPIs = new ArrayList<>();
+        BamItem bamItemOne = rcOne.getCurrentBamItem();
+        if (bamItemOne != null && knownEditablePlotItems.containsKey(bamItemOne)) {
+            for (String key : episKeys) {
+                if (knownEditablePlotItems.get(bamItemOne).containsKey(key)) {
+                    neededEPIs.add(new EPI(bamItemOne, key));
+                }
             }
         }
-        BamItem itemTwo = rcTwo.getCurrentBamItem();
-        if (itemTwo != null) {
-            for (EditablePlotItem ePltItem : editablePlotItemsSet.getEditablePlotItems(itemTwo)) {
-                plotItemsList.addItem(
-                        itemTwo.bamItemNameField.getText() + " > " + ePltItem.plotItem.getLabel(),
-                        PlotUtils.getPlotItemIcon(ePltItem.plotItem, 30, 30),
-                        ePltItem);
+        BamItem bamItemTwo = rcTwo.getCurrentBamItem();
+        if (bamItemTwo != null && knownEditablePlotItems.containsKey(bamItemTwo)) {
+            for (String key : episKeys) {
+                if (knownEditablePlotItems.get(bamItemTwo).containsKey(key)) {
+                    neededEPIs.add(new EPI(bamItemTwo, key));
+                }
             }
         }
+
+        // remove no longer necessary items
+        List<EPI> existingEPIs = episList.getAllObjects();
+        for (EPI epi1 : existingEPIs) {
+            boolean needed = false;
+            for (EPI epi2 : neededEPIs) {
+                if (epi1.equals(epi2)) {
+                    needed = true;
+                    break;
+                }
+            }
+            if (!needed) {
+                episList.removeItem(epi1);
+            }
+        }
+
+        // add missing items
+        existingEPIs = episList.getAllObjects();
+        for (EPI epi1 : neededEPIs) {
+            boolean missing = true;
+            for (EPI epi2 : existingEPIs) {
+                if (epi1.equals(epi2)) {
+                    missing = false;
+                    break;
+                }
+            }
+            if (missing) {
+                EditablePlotItem ePltItem = knownEditablePlotItems.get(epi1.bamItem).get(epi1.key);
+                if (ePltItem == null) {
+                    System.out.println("ePltItem is null");
+                    continue;
+                }
+                episList.addItem(
+                        epi1.bamItem.bamItemNameField.getText() + " > " + ePltItem.plotItem.getLabel(),
+                        PlotUtils.getPlotItemIcon(ePltItem.plotItem, 30, 30),
+                        epi1);
+            }
+        }
+
     }
 
     private void resetPlot() {
         plot = new Plot();
-        List<EditablePlotItem> items = plotItemsList.getValues();
+        List<EditablePlotItem> items = getEditablePlotItems(episList.getValues());
         for (int k = items.size() - 1; k >= 0; k--) {
-            plot.addXYItem(items.get(k).plotItem);
+            if (items.get(k).visible) {
+                plot.addXYItem(items.get(k).plotItem);
+                for (PlotItem pi : items.get(k).siblings) {
+                    plot.addXYItem(pi);
+                }
+            }
         }
         plot.chart.removeLegend();
         plot.chart.addLegend(getLegendTitle());
+
+        if (plotToolsPanel.logDischargeAxis()) {
+            if (plotToolsPanel.axisFlipped()) {
+                plot.plot.setDomainAxis(plot.axisXlog);
+            } else {
+                plot.plot.setRangeAxis(plot.axisYlog);
+            }
+        }
+
+        plot.setXAxisLabel(plotToolsPanel.axisFlipped() ? yAxisLabelField.getText() : xAxisLabelField.getText());
+        plot.setYAxisLabel(plotToolsPanel.axisFlipped() ? xAxisLabelField.getText() : yAxisLabelField.getText());
         plot.update();
         plotContainer.setPlot(plot);
     }
@@ -186,41 +423,102 @@ public class RatingCurveCompare extends BamItem {
     private LegendTitle getLegendTitle() {
         Legend legend = new Legend();
         // here I add the elements by BamItems with a specific order
+        List<EPI> epis = episList.getAllObjects();
         BamItem itemOne = rcOne.getCurrentBamItem();
-        if (itemOne != null) {
-            legend.addLegendTitleItem(itemOne.bamItemNameField.getText());
-            for (EditablePlotItem ePltItem : editablePlotItemsSet.getEditablePlotItems(itemOne)) {
-                legend.addLegendItem(ePltItem.plotItem.getLegendItem());
+        if (itemOne != null && knownEditablePlotItems.containsKey(itemOne)) {
+            legend.addLegendTitleItem(rcOneNameLabel.getText());
+            for (EPI epi : epis) {
+                if (epi.bamItem.ID.equals(itemOne.ID)) {
+                    EditablePlotItem ePltItem = knownEditablePlotItems.get(itemOne).get(epi.key);
+                    if (ePltItem != null && ePltItem.showLegend) {
+                        legend.addLegendItem(ePltItem.plotItem.getLegendItem());
+                    }
+                }
             }
         }
         BamItem itemTwo = rcTwo.getCurrentBamItem();
-        if (itemTwo != null) {
-            legend.addLegendTitleItem(itemTwo.bamItemNameField.getText());
-            for (EditablePlotItem ePltItem : editablePlotItemsSet.getEditablePlotItems(itemTwo)) {
-                legend.addLegendItem(ePltItem.plotItem.getLegendItem());
+        if (itemTwo != null && knownEditablePlotItems.containsKey(itemTwo)) {
+            legend.addLegendTitleItem(rcOneNameLabel.getText());
+            for (EPI epi : epis) {
+                if (epi.bamItem.ID.equals(itemTwo.ID)) {
+                    EditablePlotItem ePltItem = knownEditablePlotItems.get(itemTwo).get(epi.key);
+                    if (ePltItem != null && ePltItem.showLegend) {
+                        legend.addLegendItem(ePltItem.plotItem.getLegendItem());
+                    }
+                }
             }
         }
         return legend.getLegendTitle(RectangleEdge.RIGHT, true);
     }
 
-    private void getEditablePlotItems(BamItem item) {
-        if (item instanceof IPlotDataProvider) {
-            HashMap<String, PlotItem> bamItemPlotItems = ((IPlotDataProvider) item).getPlotItems();
-            for (String key : bamItemPlotItems.keySet()) {
-                PlotItem plotItem = bamItemPlotItems.get(key);
-                plotItem.setLabel(T.text(plotItem.getLabel()));
-                EditablePlotItem ePltItem = new EditablePlotItem(plotItem);
-                ePltItem.addChangeListener(l -> {
-                    resetPlot();
-                    plotItemsList.modifyItemLabel(
-                            plotItemsList.getFirstIndex(ePltItem),
-                            item.bamItemNameField.getText() + " > " + ePltItem.plotItem.getLabel(),
-                            PlotUtils.getPlotItemIcon(ePltItem.plotItem, 30, 30));
-                    plotItemsList.repaint();
-                });
-                editablePlotItemsSet.addItem(key, item, ePltItem);
+    private static String[] episKeys = new String[] {
+            RatingCurvePlotData.MAXPOST,
+            RatingCurvePlotData.PARAM_U,
+            RatingCurvePlotData.TOTAL_U,
+            RatingCurvePlotData.STAGE_TRANSITION,
+            RatingCurvePlotData.STAGE_TRANSITION_U,
+    };
+
+    private HashMap<String, EditablePlotItem> buildEditableRatingCurvePlotItems(BamItem item) {
+        HashMap<String, EditablePlotItem> editableRatingCurvePlotItems = new HashMap<>();
+        if (item == null) {
+            return editableRatingCurvePlotItems;
+        }
+
+        HashMap<String, PlotItem> allPlotItems;
+        if (item instanceof RatingCurve) {
+            RatingCurvePlotData rcPlotData = ((RatingCurve) item).getRatingCurvePlotData();
+            rcPlotData.smoothed = plotToolsPanel.totalEnvSmoothed();
+            rcPlotData.axisFliped = plotToolsPanel.axisFlipped();
+            allPlotItems = rcPlotData.getPlotItems();
+        } else if (item instanceof HydraulicConfiguration) {
+            RatingCurvePlotData rcPlotData = ((HydraulicConfiguration) item).priorRatingCurve.getRatingCurvePlotData();
+            rcPlotData.smoothed = plotToolsPanel.totalEnvSmoothed();
+            rcPlotData.axisFliped = plotToolsPanel.axisFlipped();
+            allPlotItems = rcPlotData.getPlotItems();
+        } else {
+            allPlotItems = ((IPlotDataProvider) item).getPlotItems();
+        }
+
+        for (String key : episKeys) {
+            List<PlotItem> plotItems = findMatchingPlotItems(allPlotItems, key);
+            if (plotItems.size() > 0) {
+
+                EditablePlotItem ePlotItem = buildEditableRatingCurvePlotItem(
+                        plotItems.get(0), item, key);
+                if (plotItems.size() > 1) {
+                    for (int k = 1; k < plotItems.size(); k++) {
+                        ePlotItem.addSibling(plotItems.get(k));
+                    }
+                }
+                editableRatingCurvePlotItems.put(key, ePlotItem);
             }
         }
+        return editableRatingCurvePlotItems;
+    }
+
+    private EditablePlotItem buildEditableRatingCurvePlotItem(PlotItem plotItem, BamItem bamItem, String key) {
+        EditablePlotItem ePltItem = new EditablePlotItem(plotItem);
+        ePltItem.addChangeListener(l -> {
+            resetPlot();
+            int index = episList.getFirstIndex(new EPI(bamItem, key));
+            if (index >= 0) {
+                episList.modifyItemLabel(
+                        index,
+                        bamItem.bamItemNameField.getText() + " > " + ePltItem.plotItem.getLabel(),
+                        PlotUtils.getPlotItemIcon(ePltItem.plotItem, 30, 30));
+            }
+            episList.repaint();
+        });
+        return ePltItem;
+    }
+
+    private static List<PlotItem> findMatchingPlotItems(HashMap<String, PlotItem> plotItems, String keyPrefix) {
+        List<PlotItem> result = plotItems.keySet().stream()
+                .filter(k -> k.startsWith(keyPrefix))
+                .map(k -> plotItems.get(k))
+                .toList();
+        return result;
     }
 
     @Override
