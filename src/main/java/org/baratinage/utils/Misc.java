@@ -5,6 +5,7 @@ import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.io.File;
 import java.nio.file.Path;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -26,6 +27,16 @@ import javax.swing.JFrame;
 import org.baratinage.translation.T;
 
 public class Misc {
+
+    public static String formatNumber(double num) {
+        if (num == (long) num) {
+            return String.valueOf((long) num); // Whole number as integer
+        } else if (Math.abs(num) < 0.01 || Math.abs(num) >= 10000) {
+            return new DecimalFormat("0.##E0").format(num); // Scientific notation
+        } else {
+            return new DecimalFormat("0.##").format(num); // Regular decimal
+        }
+    }
 
     public static void setCompSize(
             JComponent component,
