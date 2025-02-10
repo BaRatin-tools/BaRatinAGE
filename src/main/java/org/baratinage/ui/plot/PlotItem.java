@@ -58,21 +58,32 @@ public abstract class PlotItem {
     }
 
     public static enum LineType {
-        SOLID(new float[] { 1F }), DASHED(new float[] { 5F, 5F }), DOTTED(new float[] { 2F, 2F });
+        SOLID, DASHED, DOTTED;
 
-        public final float[] dashArray;
+        public float[] getDashArray() {
+            return getDashArray(1F);
+        }
 
-        LineType(float[] dashArray) {
-            this.dashArray = dashArray;
+        public float[] getDashArray(float lineWidth) {
+            if (this == SOLID) {
+                return new float[] { 1F };
+            } else if (this == DASHED) {
+                return new float[] { lineWidth * 2F, lineWidth * 2F };
+            } else if (this == DOTTED) {
+                return new float[] { 1F, lineWidth * 1.5F };
+            }
+            return new float[] { 1F };
         }
 
         public static LineType getLineTypeFromStroke(Stroke stroke) {
             if (!(stroke instanceof BasicStroke)) {
                 return SOLID;
             }
-            float[] dashArray = ((BasicStroke) stroke).getDashArray();
+            BasicStroke basicStroke = (BasicStroke) stroke;
+            float[] dashArray = basicStroke.getDashArray();
             if (dashArray.length > 1) {
-                if (dashArray[0] > 3F) {
+                float refDash = dashArray[0];
+                if (refDash > 3F) {
                     return DASHED;
                 }
                 return DOTTED;
@@ -136,7 +147,8 @@ public abstract class PlotItem {
 
     public static Stroke buildStroke(float lineWidth, float[] dashArray) {
         return new BasicStroke(lineWidth,
-                BasicStroke.CAP_ROUND, BasicStroke.JOIN_BEVEL,
+                // BasicStroke.CAP_ROUND, BasicStroke.JOIN_BEVEL,
+                BasicStroke.CAP_ROUND, BasicStroke.JOIN_MITER,
                 1, dashArray, 0);
     }
 

@@ -166,19 +166,19 @@ public class EditablePlotItem implements IPlotItemRendererSettings {
             solidLineLabel.setText(T.text("line_solid"));
             solidLineLabel.setIcon(new ImageIcon(PlotUtils.buildImage(
                     PlotItem.buildLineShape(20),
-                    PlotItem.buildStroke(1, LineType.SOLID.dashArray), Color.BLACK,
+                    PlotItem.buildStroke(1, LineType.SOLID.getDashArray()), Color.BLACK,
                     20, 20)));
             JLabel dashLineLabel = new JLabel();
             dashLineLabel.setText(T.text("line_dashed"));
             dashLineLabel.setIcon(new ImageIcon(PlotUtils.buildImage(
                     PlotItem.buildLineShape(20),
-                    PlotItem.buildStroke(1, LineType.DASHED.dashArray), Color.BLACK,
+                    PlotItem.buildStroke(1, LineType.DASHED.getDashArray()), Color.BLACK,
                     20, 20)));
             JLabel dottedLineLabel = new JLabel();
             dottedLineLabel.setText(T.text("line_dotted"));
             dottedLineLabel.setIcon(new ImageIcon(PlotUtils.buildImage(
                     PlotItem.buildLineShape(20),
-                    PlotItem.buildStroke(1, LineType.DOTTED.dashArray), Color.BLACK,
+                    PlotItem.buildStroke(1, LineType.DOTTED.getDashArray()), Color.BLACK,
                     20, 20)));
             lineDashCombobox.setItems(new JLabel[] { solidLineLabel, dashLineLabel, dottedLineLabel }, false);
             if (lineType == LineType.SOLID)
@@ -215,7 +215,7 @@ public class EditablePlotItem implements IPlotItemRendererSettings {
 
     @Override
     public float[] getLineDashArray() {
-        return lineType.dashArray;
+        return lineType.getDashArray(lineWidth);
     }
 
     @Override
