@@ -19,11 +19,12 @@ import java.awt.Color;
 import org.baratinage.translation.T;
 import org.baratinage.ui.component.SimpleColorField;
 import org.baratinage.ui.component.SimpleComboBox;
-import org.baratinage.ui.component.SimpleIntegerField;
+import org.baratinage.ui.component.SimpleSlider;
 import org.baratinage.ui.component.SimpleTextField;
 import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.ui.plot.PlotItem.LineType;
 import org.baratinage.ui.plot.PlotItem.ShapeType;
+import org.baratinage.utils.ConsoleLogger;
 import org.jfree.chart.LegendItem;
 import org.jfree.chart.renderer.xy.XYItemRenderer;
 
@@ -45,9 +46,21 @@ public class EditablePlotItem implements IPlotItemRendererSettings {
     private Paint fillPaint;
     private float fillAlpha;
 
+    public boolean visible = true;
+    public boolean showLegend = true;
+
     private static TYPE getTypeFromInstance(PlotItem plotItem) {
-        if (plotItem instanceof PlotLine) {
+        if (plotItem instanceof PlotLine |
+                plotItem instanceof PlotInfiniteLine |
+                plotItem instanceof PlotTimeSeriesLine) {
             return TYPE.LINE;
+        } else if (plotItem instanceof PlotBand |
+                plotItem instanceof PlotInfiniteBand |
+                plotItem instanceof PlotTimeSeriesBand |
+                plotItem instanceof PlotBar) {
+            return TYPE.BAND;
+        } else if (plotItem instanceof PlotPoints) {
+            return TYPE.POINT;
         }
         return TYPE.UNSUPPORTED;
     }
@@ -95,6 +108,16 @@ public class EditablePlotItem implements IPlotItemRendererSettings {
 
     }
 
+    public final List<PlotItem> siblings = new ArrayList<>();
+
+    public void addSibling(PlotItem item) {
+        if (!getTypeFromInstance(item).equals(type)) {
+            ConsoleLogger.error("Cannot add a sibling of different type!");
+            return;
+        }
+        siblings.add(item);
+    }
+
     private final List<ChangeListener> changeListeners = new ArrayList<>();
 
     public void addChangeListener(ChangeListener l) {
@@ -133,6 +156,7 @@ public class EditablePlotItem implements IPlotItemRendererSettings {
             plotItem.setLabel(label);
             fireChangeListeners();
         });
+
         editionPanel.appendChild(labelFieldLabel);
         editionPanel.appendChild(labelField);
 
@@ -143,7 +167,7 @@ public class EditablePlotItem implements IPlotItemRendererSettings {
             linePaintChooser.setColor(linePaint);
             linePaintChooser.addChangeListener(l -> {
                 linePaint = linePaintChooser.getColor();
-                plotItem.configureRenderer(this);
+                updatePlotItems();
                 fireChangeListeners();
             });
 
@@ -152,8 +176,14 @@ public class EditablePlotItem implements IPlotItemRendererSettings {
 
             JLabel lineWidthLabel = new JLabel();
             lineWidthLabel.setText(T.text("line_width"));
-            SimpleIntegerField lineWidthSlider = new SimpleIntegerField(1, 10, 1);
-            lineWidthSlider.setValue(lineWidth);
+            SimpleSlider lineWidthSlider = new SimpleSlider(1, 10, 1);
+            lineWidthSlider.setValue((double) lineWidth);
+            lineWidthSlider.addChangeListener(l -> {
+                lineWidth = (float) lineWidthSlider.getValue();
+                System.out.println(lineWidth);
+                updatePlotItems();
+                fireChangeListeners();
+            });
 
             editionPanel.appendChild(lineWidthLabel);
             editionPanel.appendChild(lineWidthSlider);
@@ -187,16 +217,75 @@ public class EditablePlotItem implements IPlotItemRendererSettings {
                 lineDashCombobox.setSelectedItem(1, true);
             if (lineType == LineType.DOTTED)
                 lineDashCombobox.setSelectedItem(2, true);
+            lineDashCombobox.addChangeListener(l -> {
+                int i = lineDashCombobox.getSelectedIndex();
+                if (i == 0)
+                    lineType = LineType.SOLID;
+                if (i == 1)
+                    lineType = LineType.DASHED;
+                if (i == 2)
+                    lineType = LineType.DOTTED;
+                updatePlotItems();
+                fireChangeListeners();
+            });
 
             editionPanel.appendChild(lineDashFieldLabel);
             editionPanel.appendChild(lineDashCombobox);
 
+        } else if (type == TYPE.BAND) {
+            JLabel fillPaintFieldLabel = new JLabel();
+            fillPaintFieldLabel.setText(T.text("fill_color"));
+            SimpleColorField fillPaintChooser = new SimpleColorField();
+            fillPaintChooser.setColor(fillPaint);
+            fillPaintChooser.addChangeListener(l -> {
+                fillPaint = fillPaintChooser.getColor();
+                updatePlotItems();
+                fireChangeListeners();
+            });
+
+            editionPanel.appendChild(fillPaintFieldLabel);
+            editionPanel.appendChild(fillPaintChooser);
+
+            JLabel fillAlphaLabel = new JLabel();
+            fillAlphaLabel.setText(T.text("fill_alpha"));
+            SimpleSlider fillAlphaSlider = new SimpleSlider(0, 100, 1);
+            fillAlphaSlider.setValue((double) (1 - fillAlpha) * 100);
+            fillAlphaSlider.addChangeListener(l -> {
+                fillAlpha = (float) (1 - (fillAlphaSlider.getValue() / 100));
+                updatePlotItems();
+                fireChangeListeners();
+            });
+
+            editionPanel.appendChild(fillAlphaLabel);
+            editionPanel.appendChild(fillAlphaSlider);
+
         } else {
-            JLabel nothingLabel = new JLabel("<NOT IMPLMENTED>");
+            JLabel nothingLabel = new JLabel("<NOT IMPLEMENTED>");
             editionPanel.appendChild(nothingLabel);
         }
 
         return editionPanel;
+    }
+
+    private void updatePlotItems() {
+        plotItem.configureRenderer(this);
+        for (PlotItem pi : siblings) {
+            pi.configureRenderer(this);
+        }
+    }
+
+    public void applyState(EditablePlotItem other) {
+        label = other.label;
+        linePaint = other.linePaint;
+        lineWidth = other.lineWidth;
+        lineType = other.lineType;
+        shapeType = other.shapeType;
+        shapeSize = other.shapeSize;
+        fillPaint = other.fillPaint;
+        fillAlpha = other.fillAlpha;
+        visible = other.visible;
+        showLegend = other.showLegend;
+        updatePlotItems();
     }
 
     public String getLabel() {
