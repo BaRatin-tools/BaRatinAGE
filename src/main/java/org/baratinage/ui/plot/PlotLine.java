@@ -7,6 +7,7 @@ import java.awt.Stroke;
 import org.jfree.chart.LegendItem;
 import org.jfree.chart.renderer.xy.DefaultXYItemRenderer;
 import org.jfree.chart.renderer.xy.XYItemRenderer;
+import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.chart.renderer.xy.XYSplineRenderer;
 import org.jfree.data.xy.DefaultXYDataset;
 import org.jfree.data.xy.XYDataset;
@@ -18,7 +19,7 @@ public class PlotLine extends PlotItem {
     private Shape shape;
 
     protected DefaultXYDataset dataset;
-    protected XYItemRenderer renderer;
+    protected XYLineAndShapeRenderer renderer;
 
     public PlotLine(String label, double[] x, double[] y, Paint paint) {
         this(label, x, y, paint, buildStroke());
@@ -41,6 +42,7 @@ public class PlotLine extends PlotItem {
         dataset.addSeries(label, new double[][] { x, y });
 
         renderer = new DefaultXYItemRenderer();
+        renderer.setDrawSeriesLineAsPath(true);
         renderer.setSeriesPaint(0, paint);
         renderer.setSeriesStroke(0, stroke);
         renderer.setSeriesShape(0, this.shape);
@@ -84,6 +86,7 @@ public class PlotLine extends PlotItem {
         paint = rendererSettings.getLinePaint();
 
         renderer = new DefaultXYItemRenderer();
+        renderer.setDrawSeriesLineAsPath(true);
         renderer.setSeriesPaint(0, paint);
         renderer.setSeriesStroke(0, stroke);
         renderer.setSeriesShape(0, shape);

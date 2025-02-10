@@ -60,7 +60,7 @@ public class PlotInfiniteLine extends PlotItem {
         }
 
         renderer = new DefaultXYItemRenderer();
-
+        renderer.setDrawSeriesLineAsPath(true);
         renderer.setSeriesShape(0, this.shape);
         renderer.setSeriesShapesVisible(0, false);
         renderer.setSeriesPaint(0, paint);
@@ -138,6 +138,7 @@ public class PlotInfiniteLine extends PlotItem {
         paint = rendererSettings.getLinePaint();
 
         renderer = new DefaultXYItemRenderer();
+        renderer.setDrawSeriesLineAsPath(true);
         renderer.setSeriesShape(0, buildEmptyShape());
         renderer.setSeriesShapesVisible(0, false);
         renderer.setSeriesPaint(0, paint);

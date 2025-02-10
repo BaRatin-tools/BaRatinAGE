@@ -37,6 +37,7 @@ public class PlotTimeSeriesLine extends PlotItem {
         tsCollection.addSeries(ts);
 
         renderer = new DefaultXYItemRenderer();
+        renderer.setDrawSeriesLineAsPath(true);
         renderer.setSeriesPaint(0, paint);
         renderer.setSeriesStroke(0, stroke);
         renderer.setSeriesShape(0, shape);
@@ -66,6 +67,7 @@ public class PlotTimeSeriesLine extends PlotItem {
         paint = rendererSettings.getLinePaint();
 
         renderer = new DefaultXYItemRenderer();
+        renderer.setDrawSeriesLineAsPath(true);
         renderer.setSeriesPaint(0, paint);
         renderer.setSeriesStroke(0, stroke);
         renderer.setSeriesShape(0, shape);
