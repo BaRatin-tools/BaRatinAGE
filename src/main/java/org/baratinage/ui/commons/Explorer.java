@@ -7,10 +7,8 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 import javax.swing.BorderFactory;
-import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 import javax.swing.JTree;
-import javax.swing.border.EmptyBorder;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
@@ -19,8 +17,6 @@ import javax.swing.tree.TreePath;
 import org.baratinage.ui.container.RowColPanel;
 
 public class Explorer extends RowColPanel {
-
-    public final JLabel headerLabel = new JLabel();
 
     private final JTree explorerTree;
     public final ExplorerItem rootNode;
@@ -33,10 +29,6 @@ public class Explorer extends RowColPanel {
         setGap(5);
 
         setMinimumSize(new Dimension(200, 100));
-
-        appendChild(headerLabel, 0);
-
-        headerLabel.setBorder(new EmptyBorder(5, 5, 5, 5));
 
         explorerTree = new JTree();
         explorerTree.setBorder(BorderFactory.createEmptyBorder());
