@@ -111,6 +111,16 @@ public class Plot implements LegendItemSource {
         return this.chart;
     }
 
+    public void setXAxisLabel(String label) {
+        axisX.setLabel(label);
+        axisXlog.setLabel(label);
+    }
+
+    public void setYAxisLabel(String label) {
+        axisY.setLabel(label);
+        axisYlog.setLabel(label);
+    }
+
     public void addXYItem(PlotItem item) {
         addXYItem(item, true);
     }
@@ -200,6 +210,8 @@ public class Plot implements LegendItemSource {
         for (PlotItemConfig item : items) {
             plotCopy.addXYItem(item.item(), item.visibleInLegend());
         }
+        plotCopy.chart.removeLegend();
+        plotCopy.chart.addLegend(chart.getLegend());
         return plotCopy;
     }
 
