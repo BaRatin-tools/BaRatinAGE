@@ -3,8 +3,6 @@ package org.baratinage.ui.baratin.rating_curve;
 import java.awt.Color;
 import java.util.List;
 
-import javax.swing.JCheckBox;
-
 import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.AppSetup;
 import org.baratinage.translation.T;
@@ -34,69 +32,25 @@ public class RatingCurvePlot extends RowColPanel {
     private List<double[]> transitionStages;
     private List<double[]> gaugings;
 
-    private boolean axisFliped = false;
-    private boolean dischargeAxisInLog = false;
-    private boolean smoothTotalEnvelop = true;
-
-    private final RowColPanel toolsPanel;
-    private final JCheckBox switchDischargeAxisScale;
-    private final JCheckBox switchAxisCheckbox;
-    private final JCheckBox smoothTotalEnvelopCheckbox;
+    private final RatingCurvePlotToolsPanel toolsPanel;
 
     public RatingCurvePlot() {
         super(AXIS.COL);
 
         plotContainer = new PlotContainer(true);
-
-        switchDischargeAxisScale = new JCheckBox();
-        switchDischargeAxisScale.setSelected(false);
-        switchDischargeAxisScale.setText("log_scale_discharge_axis");
-
-        switchAxisCheckbox = new JCheckBox();
-        switchAxisCheckbox.setSelected(false);
-        switchAxisCheckbox.setText("swap_xy_axis");
-
-        smoothTotalEnvelopCheckbox = new JCheckBox();
-        smoothTotalEnvelopCheckbox.setSelected(true);
-        smoothTotalEnvelopCheckbox.setText("smooth_total_envelop");
-
-        switchDischargeAxisScale.addActionListener((e) -> {
-            if (plot == null) {
-                return;
+        toolsPanel = new RatingCurvePlotToolsPanel();
+        toolsPanel.addChangeListener(l -> {
+            if (plot != null) {
+                updatePlot();
             }
-            dischargeAxisInLog = switchDischargeAxisScale.isSelected();
-            updatePlot();
         });
-
-        switchAxisCheckbox.addActionListener((e) -> {
-            if (plot == null) {
-                return;
-            }
-            axisFliped = switchAxisCheckbox.isSelected();
-            updatePlot();
-        });
-
-        smoothTotalEnvelopCheckbox.addActionListener((e) -> {
-            if (plot == null) {
-                return;
-            }
-            smoothTotalEnvelop = smoothTotalEnvelopCheckbox.isSelected();
-            updatePlot();
-        });
-
-        toolsPanel = new RowColPanel(AXIS.ROW, ALIGN.START);
-        toolsPanel.setGap(5);
-        toolsPanel.appendChild(switchDischargeAxisScale, 0);
-        toolsPanel.appendChild(switchAxisCheckbox, 0);
 
         appendChild(plotContainer, 1);
         appendChild(toolsPanel, 0, 5);
 
         T.updateHierarchy(this, plotContainer);
+        T.updateHierarchy(this, toolsPanel);
 
-        T.t(this, switchAxisCheckbox, false, "swap_xy_axis");
-        T.t(this, switchDischargeAxisScale, false, "log_scale_discharge_axis");
-        T.t(this, smoothTotalEnvelopCheckbox, false, "smooth_total_envelop");
     }
 
     public void setPriorPlot(RatingCurvePlotData ratingCurveData) {
@@ -109,6 +63,7 @@ public class RatingCurvePlot extends RowColPanel {
         this.transitionStages = ratingCurveData.stageTransitions;
         this.gaugings = null;
 
+        toolsPanel.configure(true, true, false);
         updatePlot();
     }
 
@@ -122,7 +77,7 @@ public class RatingCurvePlot extends RowColPanel {
         this.transitionStages = ratingCurveData.stageTransitions;
         this.gaugings = ratingCurveData.gaugings;
 
-        toolsPanel.appendChild(smoothTotalEnvelopCheckbox, 0);
+        toolsPanel.configure(true, true, true);
         updatePlot();
     }
 
@@ -136,8 +91,8 @@ public class RatingCurvePlot extends RowColPanel {
         T.updateHierarchy(this, plot);
 
         // set proper axis scale
-        if (dischargeAxisInLog) {
-            if (axisFliped) {
+        if (toolsPanel.logDischargeAxis()) {
+            if (toolsPanel.axisFlipped()) {
                 plot.plot.setDomainAxis(plot.axisXlog);
             } else {
                 plot.plot.setRangeAxis(plot.axisYlog);
@@ -154,7 +109,7 @@ public class RatingCurvePlot extends RowColPanel {
                 : AppSetup.COLORS.POSTERIOR_STAGE_ACTIVATION_UNCERTAINTY;
         for (int k = 0; k < n; k++) {
             double[] transitionStage = transitionStages.get(k);
-            double coeffDir = axisFliped ? 0 : Double.POSITIVE_INFINITY;
+            double coeffDir = toolsPanel.axisFlipped() ? 0 : Double.POSITIVE_INFINITY;
             addPlotItemToPlot(plot,
                     new PlotInfiniteBand("k", coeffDir,
                             transitionStage[1], transitionStage[2],
@@ -170,7 +125,7 @@ public class RatingCurvePlot extends RowColPanel {
         if (!isPrior && dischargeTotalUncertainty != null) {
             double[] smoothedTotalQUlow = dischargeTotalUncertainty.get(0);
             double[] smoothedTotalQUhigh = dischargeTotalUncertainty.get(1);
-            if (smoothTotalEnvelop) {
+            if (toolsPanel.totalEnvSmoothed()) {
                 int nSmooth = Double.valueOf((double) smoothedTotalQUlow.length * 0.01).intValue();
                 nSmooth = Math.max(nSmooth, 1);
                 ConsoleLogger.log("smoothing total envelop using a half window size of " + nSmooth
@@ -185,7 +140,7 @@ public class RatingCurvePlot extends RowColPanel {
                             stage,
                             smoothedTotalQUlow,
                             smoothedTotalQUhigh,
-                            axisFliped,
+                            toolsPanel.axisFlipped(),
                             totalColor),
                     "lgd_posterior_parametric_structural_uncertainty");
         }
@@ -201,15 +156,15 @@ public class RatingCurvePlot extends RowColPanel {
                         stage,
                         dischargeParamUncertainty.get(0),
                         dischargeParamUncertainty.get(1),
-                        axisFliped,
+                        toolsPanel.axisFlipped(),
                         paramColor),
                 paramLegendKey);
 
         // maxpost
         String mpLegendKey = isPrior ? "lgd_prior_rating_curve" : "lgd_posterior_rating_curve";
         Color mpColor = isPrior ? AppSetup.COLORS.PRIOR_LINE : AppSetup.COLORS.RATING_CURVE;
-        double[] mpX = axisFliped ? dischargeMaxpost : stage;
-        double[] mpY = axisFliped ? stage : dischargeMaxpost;
+        double[] mpX = toolsPanel.axisFlipped() ? dischargeMaxpost : stage;
+        double[] mpY = toolsPanel.axisFlipped() ? stage : dischargeMaxpost;
 
         addPlotItemToPlot(
                 plot,
@@ -218,7 +173,7 @@ public class RatingCurvePlot extends RowColPanel {
         // gaugings (only if posterior rc)
 
         if (!isPrior && gaugings != null) {
-            if (axisFliped) {
+            if (toolsPanel.axisFlipped()) {
                 addPlotItemToPlot(
                         plot, new PlotPoints(
                                 "gaugings",
@@ -249,16 +204,13 @@ public class RatingCurvePlot extends RowColPanel {
         T.t(plot, () -> {
             String dischargeString = T.text("discharge") + " [m3/s]";
             String stageString = T.text("stage") + " [m]";
-            if (axisFliped) {
-                plot.axisX.setLabel(dischargeString);
-                plot.axisXlog.setLabel(dischargeString);
-                plot.axisY.setLabel(stageString);
-                plot.axisYlog.setLabel(stageString);
+            if (toolsPanel.axisFlipped()) {
+                plot.setXAxisLabel(dischargeString);
+                plot.setYAxisLabel(stageString);
+
             } else {
-                plot.axisX.setLabel(stageString);
-                plot.axisXlog.setLabel(stageString);
-                plot.axisY.setLabel(dischargeString);
-                plot.axisYlog.setLabel(dischargeString);
+                plot.setXAxisLabel(stageString);
+                plot.setYAxisLabel(dischargeString);
             }
         });
 
