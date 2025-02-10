@@ -57,9 +57,9 @@ public class AppColors {
         ERROR = alterColor(DEFAULT_FG, 200, 0, 0, 0);
         DANGER = alterColor(DEFAULT_FG, 200, 0, 0, 0);
 
-        INVALID_FG = alterColor(DEFAULT_FG, 200, 0, 0, 0);
-        INVALID_DISABLED_BG = alterColor(DEFAULT_BG_LIGHT, 20, 0, 0, 0);
-        INVALID_BG = alterColor(DEFAULT_BG, 20, 0, 0, 0);
+        INVALID_FG = alterColor(DEFAULT_FG, 200, -200, -200, 0);
+        INVALID_DISABLED_BG = alterColor(DEFAULT_BG_LIGHT, 20, -20, -20, 0);
+        INVALID_BG = alterColor(DEFAULT_BG, 20, -20, -20, 0);
 
     }
 
