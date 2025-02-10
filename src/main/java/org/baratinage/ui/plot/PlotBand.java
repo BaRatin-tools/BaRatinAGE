@@ -95,7 +95,7 @@ public class PlotBand extends PlotItem {
     public static LegendItem buildLegendItem(String label, Paint fillPaint,
             Paint linePaint, Stroke lineStroke) {
         Shape squareShape = buildSquareShape();
-        return PlotItem.buildLegendItem(label, linePaint, lineStroke, squareShape, linePaint);
+        return PlotItem.buildLegendItem(label, linePaint, lineStroke, squareShape, fillPaint);
     }
 
     public static LegendItem buildLegendItem(String label, Paint fillPaint) {
