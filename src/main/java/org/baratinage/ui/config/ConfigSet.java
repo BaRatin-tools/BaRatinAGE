@@ -41,6 +41,8 @@ public class ConfigSet {
 
     public final ConfigItemInteger FONT_SIZE = addConfigItem(new ConfigItemInteger("font_size", 14));
 
+    public final ConfigItemInteger ICON_SIZE = addConfigItem(new ConfigItemInteger("icon_size", 28));
+
     public final ConfigItemList LANGUAGE_KEY = addConfigItem(
             new ConfigItemList("lg_key", Locale.getDefault().getLanguage(),
                     () -> {
@@ -124,24 +126,11 @@ public class ConfigSet {
         panel.setGap(5);
         panel.setPadding(5);
 
-        // TabContainer configTabs = new TabContainer(
-        // TabContainer.SIDE.TOP);
-
-        // configTabs.addTab(buildConfigPanel(T.text("pref_ui"), null,
-        // LANGUAGE_KEY,
-        // DARK_MODE,
-        // FONT_SIZE,
-        // HIDE_BAM_CONSOLE,
-        // CLOSE_BAM_DIALOG_ON_SUCCESS));
-        // configTabs.addTab(buildConfigPanel(T.text("pref_bam"), null,
-        // N_SAMPLES));
-
-        // panel.appendChild(configTabs, 1);
-
         TitledPanel p = buildConfigPanel(T.text("pref_ui"), null,
                 LANGUAGE_KEY,
                 DARK_MODE,
                 FONT_SIZE,
+                ICON_SIZE,
                 HIDE_BAM_CONSOLE,
                 CLOSE_BAM_DIALOG_ON_SUCCESS);
         panel.appendChild(p.getContent(), 1);
