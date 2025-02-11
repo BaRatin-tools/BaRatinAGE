@@ -37,7 +37,7 @@ public class Plot implements LegendItemSource {
     private double bufferPercentageLeft = 0.01;
     private double bufferPercentageRight = 0.01;
 
-    private final boolean includeLegend;
+    private boolean includeLegend;
     private final boolean timeseries;
 
     private String dateTimeFormat = "yyyy-MM-dd HH:mm:ss";
@@ -99,12 +99,28 @@ public class Plot implements LegendItemSource {
         chart.setBackgroundPaint(Color.WHITE);
         chart.removeLegend();
 
+        // if (includeLegend) {
+        // LegendTitle legendTitle = new LegendTitle(this);
+        // legendTitle.setPosition(RectangleEdge.RIGHT);
+        // chart.addLegend(legendTitle);
+        // }
+
+        updateLegend();
+
+    }
+
+    private void updateLegend() {
+        chart.removeLegend();
         if (includeLegend) {
             LegendTitle legendTitle = new LegendTitle(this);
             legendTitle.setPosition(RectangleEdge.RIGHT);
             chart.addLegend(legendTitle);
         }
+    }
 
+    public void setIncludeLegend(boolean includeLegend) {
+        this.includeLegend = includeLegend;
+        updateLegend();
     }
 
     public JFreeChart getChart() {

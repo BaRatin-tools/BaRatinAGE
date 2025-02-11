@@ -31,6 +31,7 @@ import org.jfree.chart.JFreeChart;
 import org.jfree.data.Range;
 import org.jfree.svg.SVGGraphics2D;
 import org.baratinage.ui.component.CommonDialog;
+import org.baratinage.ui.component.SimpleCheckbox;
 import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.utils.ConsoleLogger;
 import org.baratinage.AppSetup;
@@ -78,8 +79,15 @@ public class PlotContainer extends RowColPanel {
         topPanel.appendChild(toolsPanel, 1);
         topPanel.appendChild(actionPanel, 1);
 
-        JButton btnWindowPlot = new JButton();
+        SimpleCheckbox cbShowLegend = new SimpleCheckbox();
+        cbShowLegend.setSelected(true);
+        cbShowLegend.addChangeListener((e) -> {
+            if (plot != null) {
+                plot.setIncludeLegend(cbShowLegend.isSelected());
+            }
+        });
 
+        JButton btnWindowPlot = new JButton();
         btnWindowPlot.setIcon(AppSetup.ICONS.EXTERNAL);
         btnWindowPlot.addActionListener((e) -> {
             windowPlot();
@@ -105,6 +113,7 @@ public class PlotContainer extends RowColPanel {
             copyToClipboard();
         });
 
+        toolsPanel.appendChild(cbShowLegend);
         actionPanel.appendChild(btnWindowPlot);
         actionPanel.appendChild(btnSaveAsSvg);
         actionPanel.appendChild(btnSaveAsPng);
@@ -139,6 +148,9 @@ public class PlotContainer extends RowColPanel {
         toolsPanel.setGap(5);
         actionPanel.setGap(5);
 
+        T.t(this, () -> {
+            cbShowLegend.setText(T.text("show_legend"));
+        });
         T.t(this, menuWindowPlot, false, "window_plot");
         T.t(this, menuSaveSvg, false, "to_svg");
         T.t(this, menuSavePng, false, "to_png");
