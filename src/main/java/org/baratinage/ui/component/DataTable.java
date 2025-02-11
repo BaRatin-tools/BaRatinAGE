@@ -36,6 +36,7 @@ public class DataTable extends RowColPanel {
     // should create a specific action to export using specific formats
     // (e.g. bareme rating curve format)
     public final RowColPanel actionPanel;
+    public final RowColPanel toolsPanel;
 
     private final CustomTableModel model;
     private final JTable table;
@@ -85,6 +86,11 @@ public class DataTable extends RowColPanel {
             copyToClipboardButton.setToolTipText(T.text("to_clipboard"));
         });
         actionPanel.appendChild(copyToClipboardButton);
+
+        toolsPanel = new RowColPanel();
+        toolsPanel.setGap(5);
+        toolsPanel.setMainAxisAlign(ALIGN.START);
+
         SimpleCheckbox displayFullPrecision = new SimpleCheckbox();
         T.t(this, () -> {
             displayFullPrecision.setText(T.text("display_full_precision"));
@@ -95,7 +101,7 @@ public class DataTable extends RowColPanel {
                     cellRenderer.losslessDoubles = displayFullPrecision.isSelected();
                     repaint();
                 });
-        actionPanel.appendChild(displayFullPrecision);
+        toolsPanel.appendChild(displayFullPrecision);
 
         Dimension defaultPrefDim = scrollpane.getPreferredSize();
         defaultPrefDim.height = 300;
@@ -104,6 +110,7 @@ public class DataTable extends RowColPanel {
 
         appendChild(actionPanel, 0);
         appendChild(scrollpane, 1);
+        appendChild(toolsPanel, 0);
 
     }
 
