@@ -10,13 +10,13 @@ import java.util.List;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
-import javax.swing.JSeparator;
 import javax.swing.event.ChangeListener;
 
 import org.baratinage.ui.component.CommonDialog;
 import org.baratinage.ui.component.DataFileReader;
 import org.baratinage.ui.component.DataParser;
 import org.baratinage.ui.component.SimpleComboBox;
+import org.baratinage.ui.component.SimpleSep;
 import org.baratinage.ui.component.SimpleTextField;
 import org.baratinage.ui.container.GridPanel;
 import org.baratinage.ui.container.RowColPanel;
@@ -131,13 +131,13 @@ public class LimnigraphImporter extends RowColPanel {
                 new CommonDialog.CustomFileFilter(
                         T.text("data_text_file"),
                         "txt", "csv", "dat"));
-        dataParser = new DataParser();
+        dataParser = new DataParser(dataFileReader);
 
         dataPreviewPanel.appendChild(dataParser);
 
         dataFileReader.addChangeListener((chEvt) -> {
 
-            rawData = dataFileReader.getData(dataFileReader.nPreload);
+            rawData = dataFileReader.getData(dataParser.nPreload);
             headers = dataFileReader.getHeaders();
             missingValueString = dataFileReader.missingValueString;
 
@@ -239,10 +239,11 @@ public class LimnigraphImporter extends RowColPanel {
         // final import panel layout
 
         appendChild(dataFileReader, 0);
-        appendChild(dataPreviewPanel, 1);
-        appendChild(new JSeparator(), 0);
+        appendChild(new SimpleSep(), 0);
         appendChild(columnMappingPanel, 0);
-        appendChild(new JSeparator(), 0);
+        appendChild(new SimpleSep(), 0);
+        appendChild(dataPreviewPanel, 1);
+        appendChild(new SimpleSep(), 0);
         appendChild(actionPanel, 0);
 
         // ********************************************************
@@ -280,7 +281,9 @@ public class LimnigraphImporter extends RowColPanel {
         T.t(this, sysIndLabel, false, "stage_sys_error_ind");
         T.t(this, validateButton, false, "import");
         T.t(this, cancelButton, false, "cancel");
+
         T.updateHierarchy(this, dataFileReader);
+        T.updateHierarchy(this, dataParser);
     }
 
     private static String formatSize(double sizeInKb) {
