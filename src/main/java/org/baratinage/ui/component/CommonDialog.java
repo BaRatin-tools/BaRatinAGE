@@ -77,6 +77,21 @@ public class CommonDialog {
                 "");
     }
 
+    public static void warnDialog(String message) {
+        warnDialog(message, null);
+    }
+
+    public static void warnDialog(String message, String title) {
+        JOptionPane.showOptionDialog(AppSetup.MAIN_FRAME,
+                message,
+                title == null ? T.text("warning") : title,
+                JOptionPane.OK_OPTION,
+                JOptionPane.WARNING_MESSAGE,
+                null,
+                new String[] { T.text("ok") },
+                "");
+    }
+
     public static void infoDialog(String message) {
         infoDialog(message, null);
     }
