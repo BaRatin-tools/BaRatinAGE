@@ -29,13 +29,32 @@ import org.baratinage.translation.T;
 public class Misc {
 
     public static String formatNumber(double num) {
+        return formatNumber(num, false);
+    }
+
+    public static String formatNumber(double num, boolean lossless) {
         if (num == (long) num) {
-            return String.valueOf((long) num); // Whole number as integer
-        } else if (Math.abs(num) < 0.01 || Math.abs(num) >= 10000) {
-            return new DecimalFormat("0.##E0").format(num); // Scientific notation
-        } else {
-            return new DecimalFormat("0.##").format(num); // Regular decimal
+            return String.valueOf((long) num);
         }
+        if (lossless) {
+            return new DecimalFormat("#.##########").format(num);
+        }
+        double absNum = Math.abs(num);
+        DecimalFormat df;
+        if (absNum < 0.001 || absNum >= 10000) {
+            df = new DecimalFormat("0.###E0");
+        } else if (absNum < 0.1) {
+            df = new DecimalFormat("0.####");
+        } else if (absNum < 1) {
+            df = new DecimalFormat("0.###");
+        } else if (absNum < 10) {
+            df = new DecimalFormat("0.##");
+        } else if (absNum < 100) {
+            df = new DecimalFormat("0.#");
+        } else {
+            df = new DecimalFormat("0");
+        }
+        return df.format(num);
     }
 
     public static void setCompSize(

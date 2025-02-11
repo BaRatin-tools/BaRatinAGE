@@ -8,7 +8,6 @@ import java.awt.datatransfer.StringSelection;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.text.DecimalFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -30,6 +29,7 @@ import org.baratinage.AppSetup;
 import org.baratinage.translation.T;
 import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.utils.ConsoleLogger;
+import org.baratinage.utils.Misc;
 
 public class DataTable extends RowColPanel {
 
@@ -85,6 +85,17 @@ public class DataTable extends RowColPanel {
             copyToClipboardButton.setToolTipText(T.text("to_clipboard"));
         });
         actionPanel.appendChild(copyToClipboardButton);
+        SimpleCheckbox displayFullPrecision = new SimpleCheckbox();
+        T.t(this, () -> {
+            displayFullPrecision.setText(T.text("display_full_precision"));
+        });
+        displayFullPrecision.setSelected(false);
+        displayFullPrecision.addChangeListener(
+                l -> {
+                    cellRenderer.losslessDoubles = displayFullPrecision.isSelected();
+                    repaint();
+                });
+        actionPanel.appendChild(displayFullPrecision);
 
         Dimension defaultPrefDim = scrollpane.getPreferredSize();
         defaultPrefDim.height = 300;
@@ -401,14 +412,10 @@ public class DataTable extends RowColPanel {
     private static class CustomCellRenderer extends DefaultTableCellRenderer {
 
         private DateTimeFormatter dateTimeFormatter;
-        private DecimalFormat scientificFormatter;
-        private DecimalFormat numberFormatter;
+        public boolean losslessDoubles = false;
 
         public CustomCellRenderer(String printFormat) {
             dateTimeFormatter = DateTimeFormatter.ofPattern(printFormat);
-            scientificFormatter = new DecimalFormat("0.00E0");
-            numberFormatter = new DecimalFormat();
-
         }
 
         public Component getTableCellRendererComponent(JTable table,
@@ -427,13 +434,7 @@ public class DataTable extends RowColPanel {
             } else if (value instanceof Double) {
                 Double d = (Double) value;
                 if (!d.isNaN()) {
-                    Double absD = Math.abs(d);
-                    // if (absD != 0 && (absD < 1e-4 || absD > 1e4)) {
-                    if (absD != 0 && (absD < 1e-4)) {
-                        value = scientificFormatter.format(d);
-                    } else {
-                        value = numberFormatter.format(d);
-                    }
+                    value = Misc.formatNumber(d, losslessDoubles);
                 } else {
                     value = "";
                 }
