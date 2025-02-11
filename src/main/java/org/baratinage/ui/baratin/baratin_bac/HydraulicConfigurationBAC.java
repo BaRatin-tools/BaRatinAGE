@@ -36,7 +36,7 @@ public class HydraulicConfigurationBAC extends BamItem
     private final ControlMatrix controlMatrix;
     private final SimpleNumberField maxStageField;
     private final HydraulicControlPanels hydraulicControls;
-    private final PriorRatingCurve<HydraulicConfigurationBAC> priorRatingCurve;
+    public final PriorRatingCurve<HydraulicConfigurationBAC> priorRatingCurve;
 
     public final RunBam runBam;
 

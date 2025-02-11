@@ -18,7 +18,6 @@ import org.baratinage.ui.baratin.hydraulic_control.HydraulicControlPanels;
 
 import org.baratinage.ui.container.TitledPanel;
 import org.baratinage.ui.container.TitledPanelSplitTabContainer;
-
 import org.baratinage.utils.ConsoleLogger;
 import org.baratinage.utils.Misc;
 import org.baratinage.utils.json.JSONFilter;
@@ -35,7 +34,7 @@ public class HydraulicConfiguration
 
     private final ControlMatrix controlMatrix;
     private final HydraulicControlPanels hydraulicControls;
-    private final PriorRatingCurve<HydraulicConfiguration> priorRatingCurve;
+    public final PriorRatingCurve<HydraulicConfiguration> priorRatingCurve;
 
     public final RunBam runBam;
 

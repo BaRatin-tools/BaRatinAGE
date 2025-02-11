@@ -30,7 +30,7 @@ public class HydraulicConfigurationQFH extends BamItem
     public static final Icon priorRatingCurveIcon = AppSetup.ICONS
             .getCustomAppImageIcon("prior_rating_curve.svg");
 
-    private final PriorRatingCurve<HydraulicConfigurationQFH> priorRatingCurve;
+    public final PriorRatingCurve<HydraulicConfigurationQFH> priorRatingCurve;
 
     private final RowColPanel priorsPanel;
 

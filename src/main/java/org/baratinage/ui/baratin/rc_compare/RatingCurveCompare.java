@@ -17,6 +17,8 @@ import org.baratinage.ui.bam.IPlotDataProvider;
 import org.baratinage.ui.baratin.BaratinProject;
 import org.baratinage.ui.baratin.HydraulicConfiguration;
 import org.baratinage.ui.baratin.RatingCurve;
+import org.baratinage.ui.baratin.baratin_bac.HydraulicConfigurationBAC;
+import org.baratinage.ui.baratin.baratin_qfh.HydraulicConfigurationQFH;
 import org.baratinage.ui.baratin.rating_curve.RatingCurvePlotData;
 import org.baratinage.ui.baratin.rating_curve.RatingCurvePlotToolsPanel;
 import org.baratinage.ui.component.SimpleCheckbox;
@@ -35,6 +37,14 @@ import org.jfree.chart.ui.RectangleEdge;
 
 public class RatingCurveCompare extends BamItem {
 
+    private static String[] episKeys = new String[] {
+            RatingCurvePlotData.MAXPOST,
+            RatingCurvePlotData.PARAM_U,
+            RatingCurvePlotData.TOTAL_U,
+            RatingCurvePlotData.STAGE_TRANSITION,
+            RatingCurvePlotData.STAGE_TRANSITION_U,
+    };
+
     private final SimpleTextField rcOneNameLabel;
     private final SimpleTextField rcTwoNameLabel;
 
@@ -46,8 +56,11 @@ public class RatingCurveCompare extends BamItem {
     private final PlotContainer plotContainer;
     private final RatingCurvePlotToolsPanel plotToolsPanel;
 
+    private Plot plot;
+
     private final HashMap<BamItem, HashMap<String, EditablePlotItem>> knownEditablePlotItems;
     private final HashMap<BamItem, String> knownLabels;
+    private final SimpleList<EPI> episList;
 
     private static record EPI(BamItem bamItem, String key) {
         public boolean isSame(EPI other) {
@@ -63,10 +76,6 @@ public class RatingCurveCompare extends BamItem {
             }
         }
     }
-
-    private final SimpleList<EPI> episList;
-
-    private Plot plot;
 
     public RatingCurveCompare(String uuid, BaratinProject project) {
         super(BamItemType.COMPARING_RATING_CURVES, uuid, project);
@@ -451,31 +460,32 @@ public class RatingCurveCompare extends BamItem {
         return legend.getLegendTitle(RectangleEdge.RIGHT, true);
     }
 
-    private static String[] episKeys = new String[] {
-            RatingCurvePlotData.MAXPOST,
-            RatingCurvePlotData.PARAM_U,
-            RatingCurvePlotData.TOTAL_U,
-            RatingCurvePlotData.STAGE_TRANSITION,
-            RatingCurvePlotData.STAGE_TRANSITION_U,
-    };
-
     private HashMap<String, EditablePlotItem> buildEditableRatingCurvePlotItems(BamItem item) {
         HashMap<String, EditablePlotItem> editableRatingCurvePlotItems = new HashMap<>();
         if (item == null) {
             return editableRatingCurvePlotItems;
         }
 
-        HashMap<String, PlotItem> allPlotItems;
+        HashMap<String, PlotItem> allPlotItems = new HashMap<>();
         if (item instanceof RatingCurve) {
             RatingCurvePlotData rcPlotData = ((RatingCurve) item).getRatingCurvePlotData();
             rcPlotData.smoothed = plotToolsPanel.totalEnvSmoothed();
             rcPlotData.axisFliped = plotToolsPanel.axisFlipped();
             allPlotItems = rcPlotData.getPlotItems();
-        } else if (item instanceof HydraulicConfiguration) {
-            RatingCurvePlotData rcPlotData = ((HydraulicConfiguration) item).priorRatingCurve.getRatingCurvePlotData();
-            rcPlotData.smoothed = plotToolsPanel.totalEnvSmoothed();
-            rcPlotData.axisFliped = plotToolsPanel.axisFlipped();
-            allPlotItems = rcPlotData.getPlotItems();
+        } else if (item instanceof HydraulicConfiguration || item instanceof HydraulicConfigurationBAC
+                || item instanceof HydraulicConfigurationQFH) {
+            RatingCurvePlotData rcPlotData = null;
+            if (item instanceof HydraulicConfiguration)
+                rcPlotData = ((HydraulicConfiguration) item).priorRatingCurve.getRatingCurvePlotData();
+            if (item instanceof HydraulicConfigurationBAC)
+                rcPlotData = ((HydraulicConfigurationBAC) item).priorRatingCurve.getRatingCurvePlotData();
+            if (item instanceof HydraulicConfigurationQFH)
+                rcPlotData = ((HydraulicConfigurationQFH) item).priorRatingCurve.getRatingCurvePlotData();
+            if (rcPlotData != null) {
+                rcPlotData.smoothed = plotToolsPanel.totalEnvSmoothed();
+                rcPlotData.axisFliped = plotToolsPanel.axisFlipped();
+                allPlotItems = rcPlotData.getPlotItems();
+            }
         } else {
             allPlotItems = ((IPlotDataProvider) item).getPlotItems();
         }
