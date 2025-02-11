@@ -2,7 +2,6 @@ package org.baratinage.ui.baratin.baratin_bac;
 
 import javax.swing.Icon;
 import javax.swing.JLabel;
-import javax.swing.JSeparator;
 
 import org.baratinage.AppSetup;
 import org.baratinage.jbam.Parameter;
@@ -18,6 +17,7 @@ import org.baratinage.ui.baratin.hydraulic_configuration.PriorRatingCurve;
 import org.baratinage.ui.baratin.hydraulic_control.ControlMatrix;
 import org.baratinage.ui.baratin.hydraulic_control.HydraulicControlPanels;
 import org.baratinage.ui.component.SimpleNumberField;
+import org.baratinage.ui.component.SimpleSep;
 import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.ui.container.TitledPanel;
 import org.baratinage.ui.container.TitledPanelSplitTabContainer;
@@ -79,7 +79,7 @@ public class HydraulicConfigurationBAC extends BamItem
 
         RowColPanel modelDefPanel = new RowColPanel(RowColPanel.AXIS.COL);
         modelDefPanel.appendChild(controlMatrix, 1);
-        modelDefPanel.appendChild(new JSeparator(), 0);
+        modelDefPanel.appendChild(new SimpleSep(), 0);
         modelDefPanel.appendChild(maxStagePanel, 0);
 
         controlMatrix.addChangeListener((e) -> {

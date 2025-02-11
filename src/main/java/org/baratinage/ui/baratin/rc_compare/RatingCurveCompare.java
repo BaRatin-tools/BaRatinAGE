@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 
 import javax.swing.JLabel;
-import javax.swing.JSeparator;
 
 import org.baratinage.translation.T;
 import org.baratinage.ui.bam.BamConfig;
@@ -23,6 +22,7 @@ import org.baratinage.ui.baratin.rating_curve.RatingCurvePlotData;
 import org.baratinage.ui.baratin.rating_curve.RatingCurvePlotToolsPanel;
 import org.baratinage.ui.component.SimpleCheckbox;
 import org.baratinage.ui.component.SimpleList;
+import org.baratinage.ui.component.SimpleSep;
 import org.baratinage.ui.component.SimpleTextField;
 import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.ui.container.SplitContainer;
@@ -177,7 +177,7 @@ public class RatingCurveCompare extends BamItem {
         plotItemsConfigPanel.setGap(10);
         plotItemsConfigPanel.setPadding(5);
         plotItemsConfigPanel.appendChild(rcChooserPanel, 0);
-        plotItemsConfigPanel.appendChild(new JSeparator(), 0);
+        plotItemsConfigPanel.appendChild(new SimpleSep(), 0);
         plotItemsConfigPanel.appendChild(plotItemManagementPanel, 1);
         plotItemsConfigPanel.appendChild(plotItemEditionPanel, 0);
 

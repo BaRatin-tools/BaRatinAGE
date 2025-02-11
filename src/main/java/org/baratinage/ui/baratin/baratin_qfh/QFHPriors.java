@@ -7,7 +7,6 @@ import java.util.List;
 
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
-import javax.swing.JSeparator;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -17,6 +16,7 @@ import org.baratinage.jbam.Parameter;
 import org.baratinage.translation.T;
 import org.baratinage.ui.bam.IPriors;
 import org.baratinage.ui.baratin.baratin_qfh.QFHPreset.QFHPresetParameter;
+import org.baratinage.ui.component.SimpleSep;
 import org.baratinage.ui.container.GridPanel;
 import org.baratinage.utils.ConsoleLogger;
 import org.json.JSONArray;
@@ -66,7 +66,7 @@ public class QFHPriors extends JScrollPane implements IPriors, ChangeListener {
     private void insertHeaders() {
         for (int k = 0; k < headers.size(); k++) {
             mainPanel.insertChild(headers.get(k), k, 0);
-            mainPanel.insertChild(new JSeparator(JSeparator.HORIZONTAL), k, 1);
+            mainPanel.insertChild(new SimpleSep(), k, 1);
         }
     }
 

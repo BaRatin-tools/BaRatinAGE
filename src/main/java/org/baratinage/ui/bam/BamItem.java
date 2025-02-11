@@ -9,7 +9,6 @@ import java.awt.event.FocusListener;
 import javax.swing.AbstractButton;
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
-import javax.swing.JSeparator;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
@@ -17,6 +16,7 @@ import org.baratinage.AppSetup;
 import org.baratinage.translation.T;
 import org.baratinage.ui.commons.ExplorerItem;
 import org.baratinage.ui.component.SimpleTextField;
+import org.baratinage.ui.component.SimpleSep;
 import org.baratinage.ui.component.Title;
 import org.baratinage.ui.container.GridPanel;
 import org.baratinage.ui.container.RowColPanel;
@@ -64,7 +64,7 @@ abstract public class BamItem extends GridPanel {
         contentPanel = new RowColPanel();
 
         insertChild(headerPanel, 0, 0);
-        insertChild(new JSeparator(), 0, 1);
+        insertChild(new SimpleSep(), 0, 1);
         insertChild(contentPanel, 0, 2);
 
         setColWeight(0, 1);

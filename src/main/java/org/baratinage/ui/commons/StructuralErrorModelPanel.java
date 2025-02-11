@@ -4,13 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JLabel;
-import javax.swing.JSeparator;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import org.baratinage.AppSetup;
 import org.baratinage.jbam.DistributionType;
 import org.baratinage.jbam.Parameter;
+import org.baratinage.ui.component.SimpleSep;
 import org.baratinage.ui.container.GridPanel;
 import org.baratinage.utils.ConsoleLogger;
 import org.baratinage.translation.T;
@@ -38,20 +38,15 @@ public class StructuralErrorModelPanel extends GridPanel implements ChangeListen
         JLabel lockLabel = new JLabel();
         lockLabel.setIcon(AppSetup.ICONS.LOCK);
 
-        JSeparator initialGuessSep = new JSeparator(JSeparator.HORIZONTAL);
-        JSeparator distributionSep = new JSeparator(JSeparator.HORIZONTAL);
-        JSeparator parametersSep = new JSeparator(JSeparator.HORIZONTAL);
-        JSeparator lockSep = new JSeparator(JSeparator.HORIZONTAL);
-
         insertChild(initialGuessLabel, 1, 0);
         insertChild(distributionLabel, 2, 0);
         insertChild(distributionParametersLabel, 3, 0);
         insertChild(lockLabel, 4, 0);
 
-        insertChild(initialGuessSep, 1, 1);
-        insertChild(distributionSep, 2, 1);
-        insertChild(parametersSep, 3, 1);
-        insertChild(lockSep, 4, 1);
+        insertChild(new SimpleSep(), 1, 1);
+        insertChild(new SimpleSep(), 2, 1);
+        insertChild(new SimpleSep(), 3, 1);
+        insertChild(new SimpleSep(), 4, 1);
 
         T.t(this, initialGuessLabel, false, "initial_guess");
         T.t(this, distributionLabel, false, "distribution");

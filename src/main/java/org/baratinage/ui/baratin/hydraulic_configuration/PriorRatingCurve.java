@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 
 import javax.swing.JButton;
-import javax.swing.JSeparator;
 
 import org.baratinage.AppSetup;
 import org.baratinage.jbam.CalibrationResult;
@@ -32,6 +31,7 @@ import org.baratinage.ui.baratin.rating_curve.RatingCurvePlotData;
 import org.baratinage.ui.baratin.rating_curve.RatingCurveResults;
 import org.baratinage.ui.baratin.rating_curve.RatingCurveStageGrid;
 import org.baratinage.ui.commons.MsgPanel;
+import org.baratinage.ui.component.SimpleSep;
 import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.ui.plot.PlotItem;
 import org.baratinage.utils.ConsoleLogger;
@@ -85,7 +85,7 @@ public class PriorRatingCurve<HCT extends BamItem & IModelDefinition & IPriors> 
         resultsPanel.setMinimumSize(dimMin);
 
         appendChild(priorRatingCurveStageGrid, 0);
-        appendChild(new JSeparator(), 0);
+        appendChild(new SimpleSep(), 0);
         appendChild(outOufSyncPanel, 0);
         appendChild(runBam.runButton, 0, 5);
         appendChild(resultsPanel, 1);

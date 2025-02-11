@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 
 import javax.swing.JButton;
-import javax.swing.JSeparator;
 
 import org.baratinage.AppSetup;
 
@@ -48,6 +47,7 @@ import org.baratinage.ui.baratin.rating_curve.RatingCurveResults;
 import org.baratinage.ui.baratin.rating_curve.RatingCurveStageGrid;
 import org.baratinage.ui.commons.MsgPanel;
 import org.baratinage.ui.commons.StructuralErrorModelBamItem;
+import org.baratinage.ui.component.SimpleSep;
 import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.ui.plot.PlotItem;
 import org.baratinage.utils.ConsoleLogger;
@@ -174,11 +174,11 @@ public class RatingCurve extends BamItem
         });
 
         mainConfigPanel.appendChild(hydrauConfParent, 1);
-        mainConfigPanel.appendChild(new JSeparator(JSeparator.VERTICAL), 0);
+        mainConfigPanel.appendChild(new SimpleSep(true), 0);
         mainConfigPanel.appendChild(gaugingsParent, 1);
-        mainConfigPanel.appendChild(new JSeparator(JSeparator.VERTICAL), 0);
+        mainConfigPanel.appendChild(new SimpleSep(true), 0);
         mainConfigPanel.appendChild(structErrorParent, 1);
-        mainConfigPanel.appendChild(new JSeparator(JSeparator.VERTICAL), 0);
+        mainConfigPanel.appendChild(new SimpleSep(true), 0);
         mainConfigPanel.appendChild(ratingCurveStageGrid, 1);
 
         runBam.setPredictionExperiments(this);
@@ -217,7 +217,7 @@ public class RatingCurve extends BamItem
         mainContentPanel.appendChild(resultsPanel, 1);
 
         content.appendChild(mainConfigPanel, 0);
-        content.appendChild(new JSeparator(), 0);
+        content.appendChild(new SimpleSep(), 0);
         content.appendChild(mainContentPanel, 1);
 
         setContent(content);

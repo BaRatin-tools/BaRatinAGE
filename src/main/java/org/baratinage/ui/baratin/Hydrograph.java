@@ -5,8 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.TreeSet;
 
-import javax.swing.JSeparator;
-
 import org.baratinage.AppSetup;
 import org.baratinage.jbam.PredictionConfig;
 import org.baratinage.jbam.PredictionInput;
@@ -26,6 +24,7 @@ import org.baratinage.ui.bam.RunBam;
 import org.baratinage.ui.commons.ExtraDataset;
 import org.baratinage.ui.commons.MsgPanel;
 import org.baratinage.ui.component.DataTable;
+import org.baratinage.ui.component.SimpleSep;
 import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.ui.container.TabContainer;
 import org.baratinage.ui.container.RowColPanel.AXIS;
@@ -91,9 +90,9 @@ public class Hydrograph extends BamItem implements IPredictionMaster {
         RowColPanel parentItemPanel = new RowColPanel();
 
         parentItemPanel.appendChild(ratingCurveParent, 1);
-        parentItemPanel.appendChild(new JSeparator(JSeparator.VERTICAL), 0);
+        parentItemPanel.appendChild(new SimpleSep(true), 0);
         parentItemPanel.appendChild(limnigraphParent, 1);
-        parentItemPanel.appendChild(new JSeparator(JSeparator.VERTICAL), 0);
+        parentItemPanel.appendChild(new SimpleSep(true), 0);
 
         RowColPanel content = new RowColPanel(RowColPanel.AXIS.COL);
 
@@ -110,7 +109,7 @@ public class Hydrograph extends BamItem implements IPredictionMaster {
         outdatedPanel.setColWeight(0, 1);
 
         content.appendChild(parentItemPanel, 0);
-        content.appendChild(new JSeparator(JSeparator.HORIZONTAL), 0);
+        content.appendChild(new SimpleSep(), 0);
         content.appendChild(outdatedPanel, 0);
         content.appendChild(runBam.runButton, 0, 5);
         content.appendChild(tabs, 1);

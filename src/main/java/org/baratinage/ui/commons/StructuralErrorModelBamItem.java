@@ -5,7 +5,6 @@ import org.baratinage.jbam.Parameter;
 import org.baratinage.jbam.StructuralErrorModel;
 
 import javax.swing.JLabel;
-import javax.swing.JSeparator;
 
 import org.baratinage.jbam.utils.BamFilesHelpers;
 import org.baratinage.translation.T;
@@ -15,6 +14,7 @@ import org.baratinage.ui.bam.BamItemType;
 import org.baratinage.ui.bam.BamProject;
 import org.baratinage.ui.bam.IStructuralErrorModels;
 import org.baratinage.ui.component.NameSymbolUnit;
+import org.baratinage.ui.component.SimpleSep;
 import org.baratinage.ui.container.RowColPanel;
 import org.json.JSONArray;
 
@@ -70,8 +70,7 @@ public class StructuralErrorModelBamItem extends BamItem implements IStructuralE
             panel.appendChild(infoLabel, 0);
             panel.appendChild(strucErrModelPanel, 0);
             if (k + 1 < nOutputs) {
-                JSeparator sep = new JSeparator(JSeparator.HORIZONTAL);
-                panel.appendChild(sep, 0);
+                panel.appendChild(new SimpleSep(), 0);
             }
 
             setContent(panel);

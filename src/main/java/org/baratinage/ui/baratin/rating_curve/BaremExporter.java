@@ -11,12 +11,12 @@ import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
-import javax.swing.JSeparator;
 
 import org.baratinage.AppSetup;
 import org.baratinage.translation.T;
 import org.baratinage.ui.component.CommonDialog;
 import org.baratinage.ui.component.SimpleDateTimeField;
+import org.baratinage.ui.component.SimpleSep;
 import org.baratinage.ui.component.SimpleTextField;
 import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.utils.ConsoleLogger;
@@ -93,7 +93,7 @@ public class BaremExporter extends RowColPanel {
         appendChild(endDateLabel, 0);
         appendChild(endDateField, 0);
 
-        appendChild(new JSeparator(), 0);
+        appendChild(new SimpleSep(), 0);
         appendChild(actionPanel, 0);
 
         T.t(this, () -> {
