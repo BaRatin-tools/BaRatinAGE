@@ -22,6 +22,7 @@ import org.baratinage.ui.container.GridPanel;
 import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.utils.ConsoleLogger;
 import org.baratinage.utils.Misc;
+import org.baratinage.utils.fs.ReadFile;
 import org.baratinage.utils.perf.TimedActions;
 import org.baratinage.AppSetup;
 import org.baratinage.translation.T;
@@ -178,6 +179,11 @@ public class LimnigraphImporter extends RowColPanel {
             String fileName = Path.of(filePath).getFileName().toString();
 
             dataParser.setRawData(dataFileReader.getData(), headers, missingValueString);
+
+            boolean didLastReadSkipRows = ReadFile.didLastReadSkipRows(false);
+            if (didLastReadSkipRows) {
+                CommonDialog.warnDialog(T.text("msg_incomplete_rows_skipped_during_import"));
+            }
 
             int dateTimeColIndex = timeColComboBox.getSelectedIndex();
             LocalDateTime[] dateTimeVector = dataParser.getDateTimeCol(
