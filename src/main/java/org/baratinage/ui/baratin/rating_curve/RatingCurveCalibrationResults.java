@@ -24,9 +24,10 @@ public class RatingCurveCalibrationResults extends CalibrationResultsWrapper {
     private final HashMap<String, List<EstimatedParameterWrapper>> gammaParametersPerModelOutput;
     private final List<EstimatedParameterWrapper> allParameters;
     private final EstimatedParameterWrapper logPost;
-    private final String equationString;
+    private String equationString;
 
-    public RatingCurveCalibrationResults(CalibrationResult calibrationResults) throws NoSuchElementException {
+    public RatingCurveCalibrationResults(CalibrationResult calibrationResults, double hMin, double hMax)
+            throws NoSuchElementException {
         super(calibrationResults);
 
         List<EstimatedParameterWrapper> rawParameters = extractAllParameters();
@@ -51,6 +52,9 @@ public class RatingCurveCalibrationResults extends CalibrationResultsWrapper {
             allParameters.addAll(getParametersForAnyModel(rawParameters));
             equationString = "";
         }
+
+        equationString = String.format("%s\nh_min = ", equationString) + hMin;
+        equationString = String.format("%s\nh_max = ", equationString) + hMax;
 
         allParameters.addAll(getGammas(rawParameters));
         logPost = extractLogPost();

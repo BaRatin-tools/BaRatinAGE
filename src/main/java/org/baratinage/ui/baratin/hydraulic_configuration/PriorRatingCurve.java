@@ -268,7 +268,11 @@ public class PriorRatingCurve<HCT extends BamItem & IModelDefinition & IPriors> 
 
     private RatingCurveCalibrationResults getRatingCurveCalibrationResults() {
         CalibrationResult calResults = bamRunConfigAndRes.getCalibrationResults();
-        RatingCurveCalibrationResults rcParameters = new RatingCurveCalibrationResults(calResults);
+        double[] stage = bamRunConfigAndRes.getPredictionResults()[0].predictionConfig.inputs[0].dataColumns.get(0);
+        RatingCurveCalibrationResults rcParameters = new RatingCurveCalibrationResults(
+                calResults,
+                stage[0],
+                stage[stage.length - 1]);
         return rcParameters;
     }
 
