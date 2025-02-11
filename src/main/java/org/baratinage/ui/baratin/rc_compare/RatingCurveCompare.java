@@ -34,6 +34,8 @@ import org.baratinage.ui.plot.PlotItem;
 import org.baratinage.ui.plot.PlotUtils;
 import org.jfree.chart.title.LegendTitle;
 import org.jfree.chart.ui.RectangleEdge;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 public class RatingCurveCompare extends BamItem {
 
@@ -292,6 +294,7 @@ public class RatingCurveCompare extends BamItem {
                 ePanel.setGap(5);
                 ePanel.setPadding(5, 0, 5, 0);
                 plotItemEditionPanel.appendChild(ePanel);
+
             }
         });
 
@@ -389,7 +392,6 @@ public class RatingCurveCompare extends BamItem {
             if (missing) {
                 EditablePlotItem ePltItem = knownEditablePlotItems.get(epi1.bamItem).get(epi1.key);
                 if (ePltItem == null) {
-                    System.out.println("ePltItem is null");
                     continue;
                 }
                 episList.addItem(
@@ -447,7 +449,7 @@ public class RatingCurveCompare extends BamItem {
         }
         BamItem itemTwo = rcTwo.getCurrentBamItem();
         if (itemTwo != null && knownEditablePlotItems.containsKey(itemTwo)) {
-            legend.addLegendTitleItem(rcOneNameLabel.getText());
+            legend.addLegendTitleItem(rcTwoNameLabel.getText());
             for (EPI epi : epis) {
                 if (epi.bamItem.ID.equals(itemTwo.ID)) {
                     EditablePlotItem ePltItem = knownEditablePlotItems.get(itemTwo).get(epi.key);
@@ -534,11 +536,135 @@ public class RatingCurveCompare extends BamItem {
     @Override
     public BamConfig save(boolean writeFiles) {
         BamConfig config = new BamConfig(0);
+
+        JSONObject jsonKnownEditablePlotItems = new JSONObject();
+
+        for (BamItem bamItem : knownEditablePlotItems.keySet()) {
+            JSONObject jsonEPI = new JSONObject();
+            for (String key : knownEditablePlotItems.get(bamItem).keySet()) {
+                jsonEPI.put(key, knownEditablePlotItems.get(bamItem).get(key).toJSON());
+            }
+            jsonKnownEditablePlotItems.put(bamItem.ID, jsonEPI);
+        }
+
+        JSONObject jsonKnownLabels = new JSONObject();
+        for (BamItem bamItem : knownLabels.keySet()) {
+            jsonKnownLabels.put(bamItem.ID, knownLabels.get(bamItem));
+        }
+
+        JSONArray jsonEPIList = new JSONArray();
+        for (EPI epi : episList.getAllObjects()) {
+            JSONObject j = new JSONObject();
+            j.put("bamItemId", epi.bamItem.ID);
+            j.put("plotItemId", epi.key);
+            jsonEPIList.put(j);
+        }
+
+        config.JSON.put("knownEditablePlotItems", jsonKnownEditablePlotItems);
+        config.JSON.put("knownLabels", jsonKnownLabels);
+        config.JSON.put("episList", jsonEPIList);
+        config.JSON.put("rcOne", rcOne.toJSON());
+        config.JSON.put("rcTwo", rcTwo.toJSON());
+        config.JSON.put("rcOneNameLabel", rcOneNameLabel.getText());
+        config.JSON.put("rcTwoNameLabel", rcTwoNameLabel.getText());
+        config.JSON.put("logDischargeAxis", plotToolsPanel.logDischargeAxis());
+        config.JSON.put("axisFlipped", plotToolsPanel.axisFlipped());
+        config.JSON.put("totalEnvSmoothed", plotToolsPanel.totalEnvSmoothed());
+        config.JSON.put("xAxisLabel", xAxisLabelField.getText());
+        config.JSON.put("yAxisLabel", yAxisLabelField.getText());
+
         return config;
     }
 
     @Override
     public void load(BamConfig config) {
+
+        JSONObject jsonKnownEditablePlotItems = config.JSON.optJSONObject("knownEditablePlotItems", null);
+        if (jsonKnownEditablePlotItems != null) {
+            for (String bamItemId : jsonKnownEditablePlotItems.keySet()) {
+                BamItem bamItem = PROJECT.BAM_ITEMS.getBamItemWithId(bamItemId);
+                if (bamItem != null) {
+                    HashMap<String, EditablePlotItem> ePlotItems = buildEditableRatingCurvePlotItems(bamItem);
+                    JSONObject jsonEPI = jsonKnownEditablePlotItems.getJSONObject(bamItemId);
+                    for (String key : jsonEPI.keySet()) {
+                        if (ePlotItems.containsKey(key)) {
+                            ePlotItems.get(key).fromJSON(jsonEPI.getJSONObject(key));
+                        }
+                    }
+                    knownEditablePlotItems.put(bamItem, ePlotItems);
+                }
+            }
+        }
+
+        JSONObject jsonKnownLabels = config.JSON.optJSONObject("knownLabels", null);
+        if (jsonKnownLabels != null) {
+            for (String bamItemId : jsonKnownLabels.keySet()) {
+                BamItem bamItem = PROJECT.BAM_ITEMS.getBamItemWithId(bamItemId);
+                if (bamItem != null) {
+                    knownLabels.put(bamItem, jsonKnownLabels.getString(bamItemId));
+                }
+            }
+        }
+
+        JSONArray jsonEPIList = config.JSON.optJSONArray("episList", null);
+        if (jsonEPIList != null) {
+            for (int k = 0; k < jsonEPIList.length(); k++) {
+                JSONObject j = jsonEPIList.optJSONObject(k, null);
+                if (j != null) {
+                    BamItem bamItem = PROJECT.BAM_ITEMS.getBamItemWithId(j.optString("bamItemId", ""));
+                    String key = j.optString("plotItemId", "");
+                    if (bamItem != null && !key.equals("")) {
+                        EPI epi = new EPI(bamItem, key);
+                        EditablePlotItem ePltItem = getEditablePlotItem(epi);
+                        if (ePltItem != null) {
+                            episList.addItem(
+                                    epi.bamItem.bamItemNameField.getText() + " > " + ePltItem.plotItem.getLabel(),
+                                    PlotUtils.getPlotItemIcon(ePltItem.plotItem, 30, 30),
+                                    epi);
+                        }
+                    }
+                }
+            }
+        }
+
+        if (config.JSON.has("rcOneNameLabel")) {
+            rcOneNameLabel.setText(config.JSON.getString("rcOneNameLabel"));
+        }
+
+        if (config.JSON.has("rcTwoNameLabel")) {
+            rcTwoNameLabel.setText(config.JSON.getString("rcTwoNameLabel"));
+        }
+
+        if (config.JSON.has("logDischargeAxis")) {
+            plotToolsPanel.setLogDischargeAxis(config.JSON.getBoolean("logDischargeAxis"));
+        }
+
+        if (config.JSON.has("axisFlipped")) {
+            plotToolsPanel.setAxisFlipped(config.JSON.getBoolean("axisFlipped"));
+        }
+
+        if (config.JSON.has("totalEnvSmoothed")) {
+            plotToolsPanel.setTotalEnvSmoothed(config.JSON.getBoolean("totalEnvSmoothed"));
+        }
+
+        if (config.JSON.has("xAxisLabel")) {
+            xAxisLabelField.setText(config.JSON.getString("xAxisLabel"));
+        }
+
+        if (config.JSON.has("yAxisLabel")) {
+            yAxisLabelField.setText(config.JSON.getString("yAxisLabel"));
+        }
+
+        if (config.JSON.has("rcOne")) {
+            rcOne.fromJSON(config.JSON.getJSONObject("rcOne"), true);
+        }
+
+        if (config.JSON.has("rcTwo")) {
+            rcTwo.fromJSON(config.JSON.getJSONObject("rcTwo"), true);
+        }
+
+        resetPlotItemList();
+        resetPlot();
     }
 
 }

@@ -271,10 +271,14 @@ public class BamItemParent extends RowColPanel {
         return json;
     }
 
-    public void fromJSON(JSONObject json) {
+    private boolean doNotFireChangeListeners = false;
+
+    public void fromJSON(JSONObject json, boolean doNotFireChangeListeners) {
         if (json.has("bamItemId")) {
             String bamItemId = json.getString("bamItemId");
+            this.doNotFireChangeListeners = doNotFireChangeListeners;
             setCurrentBamItem(bamItemId);
+            this.doNotFireChangeListeners = false;
         }
         if (json.has("bamItemBackup")) {
             JSONObject backupJson = json.getJSONObject("bamItemBackup");
@@ -284,6 +288,10 @@ public class BamItemParent extends RowColPanel {
             }
             bamItemBackupId = json.getString("bamItemBackupId");
         }
+    }
+
+    public void fromJSON(JSONObject json) {
+        fromJSON(json, false);
     }
 
     private final List<ChangeListener> changeListeners = new ArrayList<>();
@@ -297,8 +305,10 @@ public class BamItemParent extends RowColPanel {
     }
 
     public void fireChangeListeners() {
-        for (ChangeListener l : changeListeners) {
-            l.stateChanged(new ChangeEvent(this));
+        if (!doNotFireChangeListeners) {
+            for (ChangeListener l : changeListeners) {
+                l.stateChanged(new ChangeEvent(this));
+            }
         }
     }
 }

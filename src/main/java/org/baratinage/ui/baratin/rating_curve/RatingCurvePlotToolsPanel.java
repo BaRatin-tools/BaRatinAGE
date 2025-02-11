@@ -77,12 +77,27 @@ public class RatingCurvePlotToolsPanel extends RowColPanel {
         return axisFliped;
     }
 
+    public void setAxisFlipped(boolean value) {
+        axisFliped = value;
+        switchAxisCheckbox.setSelected(value);
+    }
+
     public boolean totalEnvSmoothed() {
         return smoothTotalEnvelop;
     }
 
+    public void setTotalEnvSmoothed(boolean value) {
+        smoothTotalEnvelop = value;
+        smoothTotalEnvelopCheckbox.setSelected(value);
+    }
+
     public boolean logDischargeAxis() {
         return dischargeAxisInLog;
+    }
+
+    public void setLogDischargeAxis(boolean value) {
+        dischargeAxisInLog = value;
+        switchDischargeAxisScale.setSelected(value);
     }
 
     private final List<ChangeListener> changeListeners = new ArrayList<>();

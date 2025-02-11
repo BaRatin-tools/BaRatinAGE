@@ -54,11 +54,48 @@ public abstract class PlotItem {
     }
 
     public static enum ShapeType {
-        CIRCLE, SQUARE
+        CIRCLE, SQUARE;
+
+        public static ShapeType fromString(String shapeTypeString) {
+            if (shapeTypeString.equals("CIRCLE"))
+                return CIRCLE;
+            if (shapeTypeString.equals("SQUARE"))
+                return SQUARE;
+            return CIRCLE;
+        }
+
+        public String toString() {
+            if (this == CIRCLE)
+                return "CIRCLE";
+            if (this == SQUARE)
+                return "SQUARE";
+            return "CIRCLE";
+        }
+
     }
 
     public static enum LineType {
         SOLID, DASHED, DOTTED;
+
+        public static LineType fromString(String lineTypeString) {
+            if (lineTypeString.equals("SOLID"))
+                return SOLID;
+            if (lineTypeString.equals("DASHED"))
+                return DASHED;
+            if (lineTypeString.equals("DOTTED"))
+                return DOTTED;
+            return SOLID;
+        }
+
+        public String toString() {
+            if (this == SOLID)
+                return "SOLID";
+            if (this == DASHED)
+                return "DASHED";
+            if (this == DOTTED)
+                return "DOTTED";
+            return "SOLID";
+        }
 
         public float[] getDashArray() {
             return getDashArray(1F);

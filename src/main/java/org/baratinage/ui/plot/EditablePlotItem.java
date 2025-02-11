@@ -27,6 +27,7 @@ import org.baratinage.ui.plot.PlotItem.ShapeType;
 import org.baratinage.utils.ConsoleLogger;
 import org.jfree.chart.LegendItem;
 import org.jfree.chart.renderer.xy.XYItemRenderer;
+import org.json.JSONObject;
 
 public class EditablePlotItem implements IPlotItemRendererSettings {
     public static enum TYPE {
@@ -38,12 +39,12 @@ public class EditablePlotItem implements IPlotItemRendererSettings {
 
     private String label;
 
-    private Paint linePaint;
+    private Color lineColor;
     private float lineWidth;
     private LineType lineType;
     private ShapeType shapeType;
     private double shapeSize;
-    private Paint fillPaint;
+    private Color fillColor;
     private float fillAlpha;
 
     public boolean visible = true;
@@ -78,7 +79,8 @@ public class EditablePlotItem implements IPlotItemRendererSettings {
 
         label = legendItem.getLabel();
 
-        linePaint = renderer.getSeriesPaint(0);
+        lineColor = paintToColor(renderer.getSeriesPaint(0));
+
         Stroke lineStroke = renderer.getSeriesStroke(0);
         lineWidth = 1F;
         if (lineStroke instanceof BasicStroke) {
@@ -99,13 +101,45 @@ public class EditablePlotItem implements IPlotItemRendererSettings {
             }
         }
 
-        fillPaint = renderer.getSeriesFillPaint(0);
+        fillColor = paintToColor(renderer.getSeriesFillPaint(0));
         fillAlpha = 0F;
         if (renderer instanceof CustomAreaRenderer) {
             CustomAreaRenderer r = (CustomAreaRenderer) renderer;
             fillAlpha = r.getFillAlpha();
         }
 
+    }
+
+    private static Color paintToColor(Paint paint) {
+        if (paint instanceof Color) {
+            return (Color) paint;
+        }
+        return null;
+    }
+
+    private static String colorToString(Color color) {
+        String str = "";
+        if (color != null) {
+            str = String.format("%d;%d;%d;%d", color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
+        }
+        return str;
+    }
+
+    private static Color stringToColor(String str, Color defaultColor) {
+        String[] pieces = str.split(";");
+        if (pieces.length == 4) {
+            try {
+                int r = Integer.parseInt(pieces[0]);
+                int g = Integer.parseInt(pieces[1]);
+                int b = Integer.parseInt(pieces[2]);
+                int a = Integer.parseInt(pieces[3]);
+                Color color = new Color(r, g, b, a);
+                return color;
+            } catch (Exception e) {
+                System.err.println(e);
+            }
+        }
+        return defaultColor;
     }
 
     public final List<PlotItem> siblings = new ArrayList<>();
@@ -164,9 +198,9 @@ public class EditablePlotItem implements IPlotItemRendererSettings {
             JLabel linePaintFieldLabel = new JLabel();
             linePaintFieldLabel.setText(T.text("line_color"));
             SimpleColorField linePaintChooser = new SimpleColorField();
-            linePaintChooser.setColor(linePaint);
+            linePaintChooser.setColor(lineColor);
             linePaintChooser.addChangeListener(l -> {
-                linePaint = linePaintChooser.getColor();
+                lineColor = linePaintChooser.getColor();
                 updatePlotItems();
                 fireChangeListeners();
             });
@@ -180,7 +214,6 @@ public class EditablePlotItem implements IPlotItemRendererSettings {
             lineWidthSlider.setValue((double) lineWidth);
             lineWidthSlider.addChangeListener(l -> {
                 lineWidth = (float) lineWidthSlider.getValue();
-                System.out.println(lineWidth);
                 updatePlotItems();
                 fireChangeListeners();
             });
@@ -236,9 +269,9 @@ public class EditablePlotItem implements IPlotItemRendererSettings {
             JLabel fillPaintFieldLabel = new JLabel();
             fillPaintFieldLabel.setText(T.text("fill_color"));
             SimpleColorField fillPaintChooser = new SimpleColorField();
-            fillPaintChooser.setColor(fillPaint);
+            fillPaintChooser.setColor(fillColor);
             fillPaintChooser.addChangeListener(l -> {
-                fillPaint = fillPaintChooser.getColor();
+                fillColor = fillPaintChooser.getColor();
                 updatePlotItems();
                 fireChangeListeners();
             });
@@ -276,12 +309,12 @@ public class EditablePlotItem implements IPlotItemRendererSettings {
 
     public void applyState(EditablePlotItem other) {
         label = other.label;
-        linePaint = other.linePaint;
+        lineColor = other.lineColor;
         lineWidth = other.lineWidth;
         lineType = other.lineType;
         shapeType = other.shapeType;
         shapeSize = other.shapeSize;
-        fillPaint = other.fillPaint;
+        fillColor = other.fillColor;
         fillAlpha = other.fillAlpha;
         visible = other.visible;
         showLegend = other.showLegend;
@@ -294,7 +327,7 @@ public class EditablePlotItem implements IPlotItemRendererSettings {
 
     @Override
     public Paint getLinePaint() {
-        return linePaint;
+        return lineColor;
     }
 
     @Override
@@ -319,12 +352,55 @@ public class EditablePlotItem implements IPlotItemRendererSettings {
 
     @Override
     public Paint getFillPaint() {
-        return fillPaint;
+        return fillColor;
     }
 
     @Override
     public float getFillAlpha() {
         return fillAlpha;
+    }
+
+    // private static Paint addAlpha(Paint paint, float alpha) {
+    // Paint paintWidthAlpha = paint;
+    // if (paint instanceof Color) {
+    // Color color = ((Color) paint);
+    // Color colorWithAlpha = new Color(
+    // color.getRed(),
+    // color.getGreen(),
+    // color.getBlue(),
+    // (int) alpha * 255);
+    // return colorWithAlpha;
+    // }
+    // return paintWidthAlpha;
+    // }
+
+    public JSONObject toJSON() {
+        JSONObject json = new JSONObject();
+        json.put("label", label);
+        json.put("lineColor", colorToString(lineColor));
+        json.put("lineWidth", lineWidth);
+        json.put("lineType", lineType == null ? null : lineType.toString());
+        json.put("shapeType", shapeType == null ? null : shapeType.toString());
+        json.put("shapeSize", shapeSize);
+        json.put("fillColor", colorToString(fillColor));
+        json.put("fillAlpha", fillAlpha);
+        json.put("visible", visible);
+        json.put("showLegend", showLegend);
+        return json;
+    }
+
+    public void fromJSON(JSONObject json) {
+        label = json.optString("label");
+        lineColor = stringToColor(json.optString("lineColor"), lineColor);
+        lineWidth = json.optFloat("lineWidth");
+        lineType = LineType.fromString(json.optString("lineType"));
+        shapeType = ShapeType.fromString(json.optString("shapeType"));
+        shapeSize = json.optDouble("shapeSize");
+        fillColor = stringToColor(json.optString("fillColor"), fillColor);
+        fillAlpha = json.optFloat("fillAlpha");
+        visible = json.optBoolean("visible");
+        showLegend = json.optBoolean("showLegend");
+        updatePlotItems();
     }
 
 }
