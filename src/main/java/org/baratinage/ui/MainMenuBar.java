@@ -155,7 +155,6 @@ public class MainMenuBar extends JMenuBar {
         switchLanguageMenuItem.addMenuListener(new MenuListener() {
             @Override
             public void menuSelected(MenuEvent e) {
-                System.out.println("menuSelected");
                 updateLanguageSwitcherMenu();
             }
 

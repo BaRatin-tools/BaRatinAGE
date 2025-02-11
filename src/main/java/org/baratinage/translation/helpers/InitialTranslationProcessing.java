@@ -152,7 +152,6 @@ public class InitialTranslationProcessing {
                     0,
                     true,
                     true);
-            System.out.println(rawDico);
             List<TDictionary> dictionnaries = new ArrayList<>();
             String[] keys = rawDico.get(0);
             for (int k = 1; k < rawDico.size(); k++) {

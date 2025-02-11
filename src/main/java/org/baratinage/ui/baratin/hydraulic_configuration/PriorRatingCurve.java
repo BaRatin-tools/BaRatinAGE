@@ -123,9 +123,7 @@ public class PriorRatingCurve<HCT extends BamItem & IModelDefinition & IPriors> 
             jsonCurrent.put("priors", BamConfig.getConfig((IPriors) hydraulicConfiguration));
             jsonCurrent.put("stageGridConfig", priorRatingCurveStageGrid.toJSON());
         } catch (Exception e) {
-            System.out.println("###############################");
-            System.err.println(e);
-            System.out.println("###############################");
+            ConsoleLogger.error(e);
             updateRunBamButton(false);
             return;
         }

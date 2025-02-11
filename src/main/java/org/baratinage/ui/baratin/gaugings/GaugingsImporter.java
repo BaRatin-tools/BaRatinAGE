@@ -97,7 +97,6 @@ public class GaugingsImporter extends RowColPanel {
         dataFileReader.addChangeListener((chEvt) -> {
 
             if (isBaremeBadFile()) {
-                System.out.println("BAREME BAD FILE");
                 try {
 
                     String filePath = dataFileReader.getFilePath();
