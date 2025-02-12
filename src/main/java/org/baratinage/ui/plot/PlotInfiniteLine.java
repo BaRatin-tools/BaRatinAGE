@@ -9,7 +9,6 @@ import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.AbstractXYItemRenderer;
 import org.jfree.chart.renderer.xy.DefaultXYItemRenderer;
 import org.jfree.data.Range;
-import org.jfree.data.general.DatasetUtils;
 import org.jfree.data.xy.AbstractXYDataset;
 import org.jfree.data.xy.DefaultXYDataset;
 
@@ -19,6 +18,7 @@ public class PlotInfiniteLine extends PlotItem {
     private static final double MIN_VALUE = -MAX_VALUE;
 
     private boolean isVerticalLine = false;
+    private boolean isHorizontalLine = false;
     private double b;
     private double a;
 
@@ -54,8 +54,14 @@ public class PlotInfiniteLine extends PlotItem {
         a = coeffDir;
         b = offset;
 
+        isVerticalLine = false;
+        isHorizontalLine = false;
+        n = 2000;
         if (Double.isInfinite(coeffDir)) {
             isVerticalLine = true;
+            n = 2;
+        } else if (coeffDir == 0) {
+            isHorizontalLine = true;
             n = 2;
         }
 
@@ -93,16 +99,17 @@ public class PlotInfiniteLine extends PlotItem {
 
     @Override
     public Range getDomainBounds() {
-        return isVerticalLine ? new Range(b, b) : null;
-        // return null;
+        // return isVerticalLine ? new Range(b, b) : null;
+        return null;
     }
 
     @Override
     public Range getRangeBounds() {
-        if (plot == null || isVerticalLine) {
-            return null;
-        }
-        return DatasetUtils.findRangeBounds(getDataset());
+        // if (plot == null || isVerticalLine) {
+        // return null;
+        // }
+        // return DatasetUtils.findRangeBounds(getDataset());
+        return null;
     }
 
     @Override
@@ -116,6 +123,14 @@ public class PlotInfiniteLine extends PlotItem {
                 double lb = plot.getRangeAxis().getLowerBound();
                 double ub = plot.getRangeAxis().getUpperBound();
                 yValues = new double[] { lb, ub };
+            }
+        } else if (isHorizontalLine) {
+            xValues = new double[] { MIN_VALUE, MAX_VALUE };
+            yValues = new double[] { b, b };
+            if (plot != null) {
+                double lb = plot.getDomainAxis().getLowerBound();
+                double ub = plot.getDomainAxis().getUpperBound();
+                xValues = new double[] { lb, ub };
             }
         } else {
             double lb = MIN_VALUE;
