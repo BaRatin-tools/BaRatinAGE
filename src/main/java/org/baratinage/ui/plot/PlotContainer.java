@@ -200,7 +200,9 @@ public class PlotContainer extends RowColPanel {
 
                 }
             }
+
         };
+
         chartPanel.restoreAutoBounds();
 
         chartPanel.setMinimumDrawWidth(100);
@@ -213,6 +215,15 @@ public class PlotContainer extends RowColPanel {
 
         chartPanelContainer.clear();
         chartPanelContainer.appendChild(chartPanel, 1);
+
+    }
+
+    public ChartPanel getChartPanel() {
+        return chartPanel;
+    }
+
+    public Plot getPlot() {
+        return plot;
     }
 
     private String getSvgXML() {
