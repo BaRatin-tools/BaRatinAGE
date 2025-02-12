@@ -187,7 +187,7 @@ public class EditablePlotItem implements IPlotItemRendererSettings {
         labelField.setText(label);
         labelField.addChangeListener(l -> {
             label = labelField.getText();
-            plotItem.setLabel(label);
+            updatePlotItems();
             fireChangeListeners();
         });
 
@@ -302,8 +302,10 @@ public class EditablePlotItem implements IPlotItemRendererSettings {
 
     private void updatePlotItems() {
         plotItem.configureRenderer(this);
+        plotItem.setLabel(label);
         for (PlotItem pi : siblings) {
             pi.configureRenderer(this);
+            pi.setLabel(label);
         }
     }
 
