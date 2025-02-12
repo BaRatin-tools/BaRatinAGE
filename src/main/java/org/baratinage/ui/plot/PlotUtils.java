@@ -4,18 +4,46 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.awt.Stroke;
+import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 
+import org.jfree.chart.ChartPanel;
 import org.jfree.chart.LegendItem;
+import org.jfree.chart.axis.ValueAxis;
 
 import java.awt.RenderingHints;
 import java.awt.Image;
 import java.awt.Paint;
+import java.awt.Point;
 
 public class PlotUtils {
+
+    public static double[] getDistancesFromPoint(PlotContainer plotContainer, double[] x, double[] y,
+            Point screenPoint) {
+
+        Plot plot = plotContainer.getPlot();
+        ChartPanel chartPanel = plotContainer.getChartPanel();
+
+        ValueAxis domainAxis = plot.plot.getDomainAxis();
+        ValueAxis rangeAxis = plot.plot.getRangeAxis();
+
+        Point2D p = chartPanel.translateScreenToJava2D(screenPoint);
+
+        int n = x.length;
+        double[] distances = new double[n];
+        for (int k = 0; k < n; k++) {
+            double xJava2D = domainAxis.valueToJava2D(x[k], chartPanel.getScreenDataArea(),
+                    plot.plot.getDomainAxisEdge());
+            double yJava2D = rangeAxis.valueToJava2D(y[k], chartPanel.getScreenDataArea(),
+                    plot.plot.getRangeAxisEdge());
+            distances[k] = p.distance(xJava2D, yJava2D);
+        }
+
+        return distances;
+    }
 
     public static Image buildImageFromShape(Shape shape, Color color, int width, int height) {
 

@@ -15,6 +15,8 @@ public class AppColors {
     public final Color INFO = new Color(0, 63, 179);
     public final Color INFO_BG = new Color(218, 231, 255);
 
+    public final Color PLOT_HIGHLIGHT = new Color(0, 255, 255);
+
     public final Color PLOT_LINE = new Color(50, 50, 100);
     public final Color PLOT_ENVELOP = new Color(200, 200, 255);
     public final Color PRIOR_LINE = new Color(50, 50, 255);
