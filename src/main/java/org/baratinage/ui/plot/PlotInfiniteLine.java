@@ -67,6 +67,25 @@ public class PlotInfiniteLine extends PlotItem {
         renderer.setSeriesStroke(0, stroke);
     }
 
+    public void updateDataset(double x) {
+        updateDataset(Double.POSITIVE_INFINITY, x);
+    }
+
+    public void updateDataset(double coeffDir, double offset) {
+        a = coeffDir;
+        b = offset;
+        isVerticalLine = false;
+        isHorizontalLine = false;
+        n = 2000;
+        if (Double.isInfinite(coeffDir)) {
+            isVerticalLine = true;
+            n = 2;
+        } else if (coeffDir == 0) {
+            isHorizontalLine = true;
+            n = 2;
+        }
+    }
+
     @Override
     public void setPlot(XYPlot plot) {
         this.plot = plot;

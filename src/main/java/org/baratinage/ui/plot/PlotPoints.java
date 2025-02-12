@@ -71,6 +71,16 @@ public class PlotPoints extends PlotItem {
 
     }
 
+    public void updateDataset(double[] x, double[] xLow, double[] xHigh, double[] y, double[] yLow, double[] yHigh) {
+        int n = x.length;
+        dataset = new XYIntervalSeriesCollection();
+        XYIntervalSeries series = new XYIntervalSeries(label);
+        dataset.addSeries(series);
+        for (int k = 0; k < n; k++) {
+            series.add(x[k], xLow[k], xHigh[k], y[k], yLow[k], yHigh[k]);
+        }
+    }
+
     @Override
     public XYIntervalSeriesCollection getDataset() {
         return dataset;
