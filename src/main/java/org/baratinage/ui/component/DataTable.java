@@ -60,6 +60,7 @@ public class DataTable extends RowColPanel {
         table.setModel(model);
         table.getTableHeader().setReorderingAllowed(false);
         table.setCellSelectionEnabled(true);
+        table.setRowSelectionAllowed(true);
         table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 
         JScrollPane scrollpane = new JScrollPane(table);
@@ -112,6 +113,13 @@ public class DataTable extends RowColPanel {
         appendChild(scrollpane, 1);
         appendChild(toolsPanel, 0);
 
+    }
+
+    public void selectRow(int index) {
+        table.setRowSelectionInterval(index, index);
+        table.setColumnSelectionInterval(0, table.getColumnCount() - 1);
+        table.scrollRectToVisible(table.getCellRect(index, 0, true));
+        table.repaint();
     }
 
     public void updateCellRenderer() {
