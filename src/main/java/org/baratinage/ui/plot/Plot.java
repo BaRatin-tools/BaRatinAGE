@@ -147,6 +147,17 @@ public class Plot implements LegendItemSource {
         items.add(new PlotItemConfig(item, isVisibleInLegend, true));
     }
 
+    public void addXYItem(PlotItemGroup item) {
+        addXYItem(item, true);
+    }
+
+    public void addXYItem(PlotItemGroup item, boolean isVisibleInLegend) {
+        List<PlotItem> items = item.getPlotItems();
+        for (PlotItem i : items) {
+            addXYItem(i, isVisibleInLegend);
+        }
+    }
+
     private static Range applyBufferToRange(Range r, double lowerBufferPercentage, double upperBufferPercentage) {
         if (r == null) {
             return r;
