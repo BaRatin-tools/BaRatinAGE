@@ -118,7 +118,8 @@ public class Hydrograph extends BamItem implements IPredictionMaster {
 
         T.updateHierarchy(this, runBam);
         T.updateHierarchy(this, plotPanel);
-        T.updateHierarchy(this, outdatedPanel);
+        T.updateHierarchy(this, ratingCurveParent);
+        T.updateHierarchy(this, limnigraphParent);
         T.t(runBam, runBam.runButton, false, "compute_qt");
         T.t(this, () -> {
             tabs.setTitleAt(0, T.text("chart"));
@@ -136,43 +137,35 @@ public class Hydrograph extends BamItem implements IPredictionMaster {
 
     private void checkSync() {
 
-        List<MsgPanel> warnings = new ArrayList<>();
-
         ratingCurveParent.updateSyncStatus();
         limnigraphParent.updateSyncStatus();
-        if (!ratingCurveParent.getSyncStatus()) {
-            warnings.add(ratingCurveParent.getOutOfSyncMessage());
-        }
-        if (!limnigraphParent.getSyncStatus()) {
-            warnings.add(limnigraphParent.getOutOfSyncMessage());
-        }
 
-        boolean needBamRerun = warnings.size() > 0;
+        ratingCurveParent.updateValidityView();
+        limnigraphParent.updateValidityView();
+
+        List<MsgPanel> warnings = new ArrayList<>();
+        warnings.add(ratingCurveParent.getMessagePanel());
+        warnings.add(limnigraphParent.getMessagePanel());
 
         // --------------------------------------------------------------------
         // update message panel
-        T.clear(outdatedPanel);
         outdatedPanel.clear();
 
         for (MsgPanel w : warnings) {
-            outdatedPanel.appendChild(w);
+            if (w != null) {
+                outdatedPanel.appendChild(w);
+            }
         }
+
         // --------------------------------------------------------------------
         // update run bam button
         T.clear(runBam);
-        if (needBamRerun) {
-            T.t(runBam, runBam.runButton, false, currentConfigAndRes == null ? "compute_qt" : "recompute_qt");
-            runBam.runButton.setForeground(AppSetup.COLORS.INVALID_FG);
-        } else {
-            T.t(runBam, runBam.runButton, false, "compute_qt");
-            runBam.runButton.setForeground(null);
-        }
 
-        // FIXME: check if message below is still relevant
-        // since text within warnings changes, it is necessary to
-        // call Lg.updateRegisteredComponents() so changes are accounted for.
-        // T.updateRegisteredObjects();
-
+        boolean needBamRerun = currentConfigAndRes != null
+                && (!ratingCurveParent.getSyncStatus() || !limnigraphParent.getSyncStatus());
+        boolean configIsInvalid = !ratingCurveParent.isConfigValid() || !limnigraphParent.isConfigValid();
+        T.t(runBam, runBam.runButton, false, currentConfigAndRes == null ? "compute_qt" : "recompute_qt");
+        runBam.runButton.setForeground(configIsInvalid || needBamRerun ? AppSetup.COLORS.INVALID_FG : null);
     }
 
     @Override
