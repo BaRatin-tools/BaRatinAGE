@@ -1,4 +1,4 @@
-package org.baratinage.ui.baratin.rc_compare;
+package org.baratinage.ui.baratin;
 
 import java.awt.Dimension;
 import java.util.ArrayList;
@@ -13,11 +13,6 @@ import org.baratinage.ui.bam.BamItem;
 import org.baratinage.ui.bam.BamItemParent;
 import org.baratinage.ui.bam.BamItemType;
 import org.baratinage.ui.bam.IPlotDataProvider;
-import org.baratinage.ui.baratin.BaratinProject;
-import org.baratinage.ui.baratin.HydraulicConfiguration;
-import org.baratinage.ui.baratin.RatingCurve;
-import org.baratinage.ui.baratin.HydraulicConfigurationBAC;
-import org.baratinage.ui.baratin.HydraulicConfigurationQFH;
 import org.baratinage.ui.baratin.rating_curve.RatingCurvePlotData;
 import org.baratinage.ui.baratin.rating_curve.RatingCurvePlotToolsPanel;
 import org.baratinage.ui.component.SimpleCheckbox;
