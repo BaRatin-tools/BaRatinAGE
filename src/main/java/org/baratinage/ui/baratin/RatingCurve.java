@@ -61,27 +61,6 @@ import org.json.JSONObject;
 public class RatingCurve extends BamItem
         implements IPredictionMaster, ICalibratedModel, IMcmc, IPlotDataProvider {
 
-    private static class RatingCurveSyncStatus {
-        public boolean hydrauConf = false;
-        public boolean gaugings = false;
-        public boolean structError = false;
-        public boolean ratingCurveStageGrid = false;
-
-        public boolean isCalibrationInSync() {
-            return hydrauConf && gaugings && structError;
-        }
-
-        public boolean isPredictionInSync() {
-            return ratingCurveStageGrid;
-        }
-
-        public boolean isBamRunInSync() {
-            return isCalibrationInSync() && isPredictionInSync();
-        }
-    }
-
-    private final RatingCurveSyncStatus syncStatus;
-
     private final BamItemParent hydrauConfParent;
     private final BamItemParent gaugingsParent;
     private final BamItemParent structErrorParent;
@@ -97,8 +76,6 @@ public class RatingCurve extends BamItem
 
     public RatingCurve(String uuid, BaratinProject project) {
         super(BamItemType.RATING_CURVE, uuid, project);
-
-        syncStatus = new RatingCurveSyncStatus();
 
         runBam = new RunBam(true, false, true);
 
@@ -136,6 +113,7 @@ public class RatingCurve extends BamItem
         gaugingsParent = new BamItemParent(
                 this,
                 BamItemType.GAUGINGS);
+        gaugingsParent.setCanBeEmpty(true);
         gaugingsParent.setComparisonJSONfilter(new JSONFilter(true, true,
                 "name", "headers", "filePath", "nested"));
         gaugingsParent.addChangeListener((e) -> {
@@ -162,7 +140,6 @@ public class RatingCurve extends BamItem
         // **********************************************************
 
         RowColPanel content = new RowColPanel(RowColPanel.AXIS.COL);
-
         RowColPanel mainConfigPanel = new RowColPanel();
         RowColPanel mainContentPanel = new RowColPanel(RowColPanel.AXIS.COL);
 
@@ -184,7 +161,9 @@ public class RatingCurve extends BamItem
         runBam.setPredictionExperiments(this);
         runBam.addOnDoneAction((RunConfigAndRes res) -> {
 
-            if (syncStatus.isCalibrationInSync()) {
+            if (hydrauConfParent.getSyncStatus()
+                    && gaugingsParent.getSyncStatus()
+                    && structErrorParent.getSyncStatus()) {
                 // in this case we make the new result use the previous result id
                 // this fixes out of sync issues with child component (hydrographs)
                 // when a rating curve is re-computed without any relevant change in the
@@ -228,7 +207,6 @@ public class RatingCurve extends BamItem
         T.updateHierarchy(this, ratingCurveStageGrid);
         T.updateHierarchy(this, runBam);
         T.updateHierarchy(this, resultsPanel);
-        T.updateHierarchy(this, outdatedPanel);
 
         T.t(runBam, runBam.runButton, true, "compute_posterior_rc");
 
@@ -335,24 +313,19 @@ public class RatingCurve extends BamItem
         gaugingsParent.updateSyncStatus();
         structErrorParent.updateSyncStatus();
 
-        syncStatus.hydrauConf = hydrauConfParent.getSyncStatus();
-        syncStatus.gaugings = gaugingsParent.getSyncStatus();
-        syncStatus.structError = structErrorParent.getSyncStatus();
-        syncStatus.ratingCurveStageGrid = isRatingCurveStageGridInSync();
+        hydrauConfParent.updateValidityView();
+        gaugingsParent.updateValidityView();
+        structErrorParent.updateValidityView();
+
+        boolean rcGridInSync = isRatingCurveStageGridInSync();
+        boolean rcGridValid = ratingCurveStageGrid.isValueValid();
 
         List<MsgPanel> warnings = new ArrayList<>();
-        if (!syncStatus.hydrauConf) {
-            warnings.add(hydrauConfParent.getOutOfSyncMessage());
-        }
-        if (!syncStatus.gaugings) {
-            warnings.add(gaugingsParent.getOutOfSyncMessage());
-        }
-        if (!syncStatus.structError) {
-            warnings.add(structErrorParent.getOutOfSyncMessage());
-        }
+        warnings.add(hydrauConfParent.getMessagePanel());
+        warnings.add(gaugingsParent.getMessagePanel());
+        warnings.add(structErrorParent.getMessagePanel());
 
-        if (!syncStatus.ratingCurveStageGrid) {
-
+        if (!rcGridInSync) {
             // FIXME: errorMsg should be a final instance variable to limit memory leak
             MsgPanel errorMsg = new MsgPanel(MsgPanel.TYPE.ERROR, true);
             JButton cancelChangeButton = new JButton();
@@ -360,33 +333,38 @@ public class RatingCurve extends BamItem
                 JSONObject json = backup.JSON;
                 JSONObject stageGridJson = json.getJSONObject("stageGridConfig");
                 ratingCurveStageGrid.fromJSON(stageGridJson);
-
                 TimedActions.throttle(ID, AppSetup.CONFIG.THROTTLED_DELAY_MS, this::checkSync);
             });
             errorMsg.addButton(cancelChangeButton);
             T.t(outdatedPanel, cancelChangeButton, false, "cancel_changes");
             T.t(outdatedPanel, errorMsg.message, false, "oos_stage_grid");
-
             warnings.add(errorMsg);
         }
 
         // --------------------------------------------------------------------
         // update message panel
         for (MsgPanel w : warnings) {
-            outdatedPanel.appendChild(w);
+            if (w != null) {
+                outdatedPanel.appendChild(w);
+            }
         }
 
         // --------------------------------------------------------------------
         // update run bam button
         T.clear(runBam);
-        if (!syncStatus.isBamRunInSync()) {
-            T.t(runBam, runBam.runButton, true,
-                    bamRunConfigAndRes == null ? "compute_posterior_rc" : "recompute_posterior_rc");
-            runBam.runButton.setForeground(AppSetup.COLORS.INVALID_FG);
-        } else {
-            T.t(runBam, runBam.runButton, true, "compute_posterior_rc");
-            runBam.runButton.setForeground(null);
-        }
+
+        boolean needBamRerun = bamRunConfigAndRes != null && (!hydrauConfParent.getSyncStatus()
+                || !gaugingsParent.getSyncStatus()
+                || !structErrorParent.getSyncStatus()
+                || !rcGridInSync);
+        boolean configIsInvalid = !hydrauConfParent.isConfigValid()
+                || !gaugingsParent.isConfigValid()
+                || !structErrorParent.isConfigValid()
+                || !rcGridValid;
+
+        T.t(runBam, runBam.runButton, true,
+                bamRunConfigAndRes != null ? "recompute_posterior_rc" : "compute_posterior_rc");
+        runBam.runButton.setForeground(configIsInvalid | needBamRerun ? AppSetup.COLORS.INVALID_FG : null);
 
         fireChangeListeners();
     }
