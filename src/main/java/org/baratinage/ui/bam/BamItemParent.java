@@ -28,8 +28,6 @@ public class BamItemParent extends RowColPanel {
 
     private final JLabel comboboxLabel;
 
-    // private final String errorMessagesKey = Misc.getTimeStampedId();
-
     private String bamItemBackupId = null;
     private BamConfig bamItemBackup = null;
 
@@ -37,14 +35,12 @@ public class BamItemParent extends RowColPanel {
     private BamItem currentBamItem = null;
 
     private boolean isCurrentInSyncWithBackup = false;
+    private boolean canBeEmpty = false;
 
     public final SimpleComboBox cb;
 
     private final ChangeListener onBamItemNameChange;
     private final ChangeListener onBamItemContentChange;
-
-    private final MsgPanel outOfSyncMsgPanel;
-    private final MsgPanel missingSelectionMsgPanel;
 
     public BamItemParent(
             BamItem child,
@@ -84,40 +80,6 @@ public class BamItemParent extends RowColPanel {
             fireChangeListeners();
         };
 
-        outOfSyncMsgPanel = new MsgPanel(MsgPanel.TYPE.ERROR);
-        JButton createInSyncCompBtn = new JButton();
-        createInSyncCompBtn.setIcon(TYPE.getAddIcon());
-        createInSyncCompBtn.addActionListener((e) -> {
-            if (bamItemBackup == null) {
-                return;
-            }
-            BamItemType type = bamItemBackup.TYPE;
-            BamItem bamItem = CHILD.PROJECT.addBamItem(type == null ? TYPE : type);
-            try {
-                bamItem.load(bamItemBackup);
-            } catch (Exception loadError) {
-                ConsoleLogger.error(loadError);
-                CHILD.PROJECT.deleteBamItem(bamItem);
-                CommonDialog.errorDialog("Error while loading backup component.");
-                return;
-            }
-            CHILD.PROJECT.setCurrentBamItem(CHILD);
-            setCurrentBamItem(bamItem);
-        });
-        outOfSyncMsgPanel.addButton(createInSyncCompBtn);
-
-        missingSelectionMsgPanel = new MsgPanel(MsgPanel.TYPE.ERROR);
-
-        T.t(this, () -> {
-            String typeText = T.text(TYPE.id).toLowerCase();
-            String currentItemName = getCurrentItemName();
-            outOfSyncMsgPanel.message.setText(
-                    T.html("msg_component_content_out_of_sync", typeText, currentItemName));
-            createInSyncCompBtn.setText(
-                    T.html("btn_create_component_from_backup", typeText));
-            missingSelectionMsgPanel.message.setText(T.html("msg_no_component_selected", typeText));
-        });
-
         T.t(this, comboboxLabel, false, TYPE.id);
 
         updateCombobox();
@@ -143,8 +105,13 @@ public class BamItemParent extends RowColPanel {
     }
 
     public void updateBackup() {
-        bamItemBackupId = currentBamItem.ID;
-        bamItemBackup = currentBamItem.save(true);
+        if (currentBamItem != null) {
+            bamItemBackupId = currentBamItem.ID;
+            bamItemBackup = currentBamItem.save(true);
+        } else {
+            bamItemBackupId = "";
+            bamItemBackup = null;
+        }
     }
 
     public void updateCombobox() {
@@ -205,20 +172,37 @@ public class BamItemParent extends RowColPanel {
 
     private void setSyncStatus(boolean isCurrentInSyncWithBackup) {
         this.isCurrentInSyncWithBackup = isCurrentInSyncWithBackup;
-        cb.setValidityView(isCurrentInSyncWithBackup);
+    }
+
+    public void setCanBeEmpty(boolean canBeEmpty) {
+        this.canBeEmpty = canBeEmpty;
+    }
+
+    public boolean isConfigValid() {
+        if (currentBamItem == null && bamItemBackup != null) {
+            return false;
+        }
+        if (bamItemBackup == null && currentBamItem != null) {
+            return bamItemBackupId == null; // if empty string, it means a run was done with no selection
+        }
+        if (bamItemBackup != null && currentBamItem != null) {
+            return getSyncStatus();
+        }
+        if (bamItemBackup == null && currentBamItem == null) {
+            return canBeEmpty;
+        }
+        return false;
+    }
+
+    public void updateValidityView() {
+        cb.setValidityView(isConfigValid());
     }
 
     public void updateSyncStatus() {
 
-        if (currentBamItem == null) {
+        if (currentBamItem == null || bamItemBackup == null) {
             // content is different
-            setSyncStatus(false);
-            return;
-        }
-
-        if (bamItemBackup == null) {
-            // no backup, irrelevant
-            setSyncStatus(true);
+            setSyncStatus(currentBamItem == null && bamItemBackup == null);
             return;
         }
 
@@ -251,12 +235,83 @@ public class BamItemParent extends RowColPanel {
         return isCurrentInSyncWithBackup;
     }
 
-    public MsgPanel getOutOfSyncMessage() {
-        T.updateTranslation(this);
-        if (currentBamItem == null) {
-            return missingSelectionMsgPanel;
+    public MsgPanel getMessagePanel() {
+        if (!isCurrentInSyncWithBackup) {
+            if (bamItemBackup == null) {
+                // there has been a run with an empty selection when bamItemBackupId != null
+                return bamItemBackupId != null ? buildUnselectComponentMsgPanel() : null;
+            }
+            return buildCreateNewComponentFromBackupMsgPanel();
+        } else {
+            if (currentBamItem == null && !canBeEmpty) {
+                return buildMissingRequiredSelectionMsgPanel();
+            }
         }
-        return outOfSyncMsgPanel;
+        return null;
+
+    }
+
+    private MsgPanel buildCreateNewComponentFromBackupMsgPanel() {
+        MsgPanel panel = new MsgPanel(MsgPanel.TYPE.ERROR);
+
+        JButton createInSyncCompBtn = new JButton();
+        createInSyncCompBtn.setIcon(TYPE.getAddIcon());
+        createInSyncCompBtn.addActionListener((e) -> {
+            if (bamItemBackup == null) {
+                return;
+            }
+            BamItemType type = bamItemBackup.TYPE;
+            BamItem bamItem = CHILD.PROJECT.addBamItem(type == null ? TYPE : type);
+            try {
+                bamItem.load(bamItemBackup);
+            } catch (Exception loadError) {
+                ConsoleLogger.error(loadError);
+                CHILD.PROJECT.deleteBamItem(bamItem);
+                CommonDialog.errorDialog("Error while loading backup component.");
+                return;
+            }
+            CHILD.PROJECT.setCurrentBamItem(CHILD);
+            setCurrentBamItem(bamItem);
+        });
+
+        panel.addButton(createInSyncCompBtn);
+
+        String typeText = T.text(TYPE.id).toLowerCase();
+        String currentItemName = getCurrentItemName();
+
+        createInSyncCompBtn.setText(
+                T.html("btn_create_component_from_backup", typeText));
+        panel.message.setText(
+                T.html(
+                        "msg_component_content_out_of_sync",
+                        typeText,
+                        currentItemName));
+
+        return panel;
+    }
+
+    private MsgPanel buildMissingRequiredSelectionMsgPanel() {
+        MsgPanel panel = new MsgPanel(MsgPanel.TYPE.ERROR);
+        String typeText = T.text(TYPE.id).toLowerCase();
+        panel.message.setText(T.html("msg_no_component_selected", typeText));
+        return panel;
+    }
+
+    private MsgPanel buildUnselectComponentMsgPanel() {
+        MsgPanel panel = new MsgPanel(MsgPanel.TYPE.ERROR);
+        String typeText = T.text(TYPE.id).toLowerCase();
+        String currentItemName = getCurrentItemName();
+        panel.message.setText(T.html("msg_component_content_out_of_sync", typeText, currentItemName));
+
+        JButton unselectBtn = new JButton();
+        unselectBtn.addActionListener((e) -> {
+            cb.setSelectedItem(-1, false);
+            fireChangeListeners();
+        });
+        unselectBtn.setText(T.html("btn_go_back_to_empty_selection", typeText));
+        panel.addButton(unselectBtn);
+
+        return panel;
     }
 
     public JSONObject toJSON() {
