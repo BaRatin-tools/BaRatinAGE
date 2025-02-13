@@ -20,6 +20,8 @@ import org.baratinage.ui.bam.IPredictionMaster;
 import org.baratinage.ui.bam.PredExp;
 import org.baratinage.ui.bam.PredExpSet;
 import org.baratinage.ui.bam.RunConfigAndRes;
+import org.baratinage.ui.baratin.hydrograph.HydrographPlot;
+import org.baratinage.ui.baratin.hydrograph.HydrographTable;
 import org.baratinage.ui.bam.RunBam;
 import org.baratinage.ui.commons.ExtraDataset;
 import org.baratinage.ui.commons.MsgPanel;

@@ -1,4 +1,4 @@
-package org.baratinage.ui.baratin;
+package org.baratinage.ui.baratin.hydrograph;
 
 import java.awt.BasicStroke;
 import java.time.LocalDateTime;
