@@ -13,6 +13,7 @@ import org.baratinage.AppSetup;
 import org.baratinage.jbam.utils.ConfigFile;
 import org.baratinage.translation.T;
 import org.baratinage.ui.bam.IModelDefinition;
+import org.baratinage.ui.baratin.HydraulicConfigurationQFH;
 import org.baratinage.ui.component.SimpleComboBox;
 import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.utils.ConsoleLogger;

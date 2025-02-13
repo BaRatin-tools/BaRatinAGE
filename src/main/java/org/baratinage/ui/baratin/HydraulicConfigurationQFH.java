@@ -1,4 +1,4 @@
-package org.baratinage.ui.baratin.baratin_qfh;
+package org.baratinage.ui.baratin;
 
 import javax.swing.Icon;
 
@@ -11,6 +11,8 @@ import org.baratinage.ui.bam.BamItemType;
 import org.baratinage.ui.bam.BamProject;
 import org.baratinage.ui.bam.IModelDefinition;
 import org.baratinage.ui.bam.IPriors;
+import org.baratinage.ui.baratin.baratin_qfh.QFHModelDefinition;
+import org.baratinage.ui.baratin.baratin_qfh.QFHPriors;
 import org.baratinage.ui.baratin.hydraulic_configuration.PriorRatingCurve;
 import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.ui.container.TitledPanel;
