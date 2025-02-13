@@ -16,7 +16,7 @@ import org.baratinage.ui.bam.IPlotDataProvider;
 import org.baratinage.ui.baratin.BaratinProject;
 import org.baratinage.ui.baratin.HydraulicConfiguration;
 import org.baratinage.ui.baratin.RatingCurve;
-import org.baratinage.ui.baratin.baratin_bac.HydraulicConfigurationBAC;
+import org.baratinage.ui.baratin.HydraulicConfigurationBAC;
 import org.baratinage.ui.baratin.baratin_qfh.HydraulicConfigurationQFH;
 import org.baratinage.ui.baratin.rating_curve.RatingCurvePlotData;
 import org.baratinage.ui.baratin.rating_curve.RatingCurvePlotToolsPanel;

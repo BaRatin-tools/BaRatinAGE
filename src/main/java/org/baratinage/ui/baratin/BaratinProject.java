@@ -5,7 +5,6 @@ import org.baratinage.ui.bam.BamItemList;
 import org.baratinage.ui.bam.BamItemType;
 import org.baratinage.ui.bam.BamProject;
 import org.baratinage.ui.bam.BamProjectType;
-import org.baratinage.ui.baratin.baratin_bac.HydraulicConfigurationBAC;
 import org.baratinage.ui.baratin.baratin_qfh.HydraulicConfigurationQFH;
 import org.baratinage.ui.baratin.rc_compare.RatingCurveCompare;
 import org.baratinage.ui.commons.ExplorerItem;

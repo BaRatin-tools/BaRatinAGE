@@ -1,4 +1,4 @@
-package org.baratinage.ui.baratin.baratin_bac;
+package org.baratinage.ui.baratin;
 
 import javax.swing.Icon;
 import javax.swing.JLabel;
@@ -12,7 +12,6 @@ import org.baratinage.ui.bam.BamItemType;
 import org.baratinage.ui.bam.IModelDefinition;
 import org.baratinage.ui.bam.IPriors;
 import org.baratinage.ui.bam.RunBam;
-import org.baratinage.ui.baratin.BaratinProject;
 import org.baratinage.ui.baratin.hydraulic_configuration.PriorRatingCurve;
 import org.baratinage.ui.baratin.hydraulic_control.ControlMatrix;
 import org.baratinage.ui.baratin.hydraulic_control.HydraulicControlPanels;
