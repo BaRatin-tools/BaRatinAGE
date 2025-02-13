@@ -23,7 +23,6 @@ import org.baratinage.ui.bam.RunConfigAndRes;
 import org.baratinage.ui.bam.RunBam;
 import org.baratinage.ui.commons.ExtraDataset;
 import org.baratinage.ui.commons.MsgPanel;
-import org.baratinage.ui.component.DataTable;
 import org.baratinage.ui.component.SimpleSep;
 import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.ui.container.TabContainer;
@@ -40,7 +39,7 @@ public class Hydrograph extends BamItem implements IPredictionMaster {
 
     public final RunBam runBam;
     private final HydrographPlot plotPanel;
-    private final DataTable tablePanel;
+    private final HydrographTable tablePanel;
     private final RowColPanel outdatedPanel;
 
     private final BamItemParent ratingCurveParent;
@@ -97,7 +96,7 @@ public class Hydrograph extends BamItem implements IPredictionMaster {
         RowColPanel content = new RowColPanel(RowColPanel.AXIS.COL);
 
         plotPanel = new HydrographPlot();
-        tablePanel = new DataTable();
+        tablePanel = new HydrographTable();
 
         TabContainer tabs = new TabContainer();
         tabs.addTab("plot", TYPE.getIcon(), plotPanel);
@@ -333,23 +332,8 @@ public class Hydrograph extends BamItem implements IPredictionMaster {
         totalU = results.subList(3, 5);
 
         plotPanel.updatePlot(dateTimeVector, maxpost, limniU, paramU, totalU);
-        tablePanel.clearColumns();
-        tablePanel.addColumn(dateTimeVector);
-        tablePanel.addColumn(maxpost);
-        tablePanel.addColumn(paramU.get(0));
-        tablePanel.addColumn(paramU.get(1));
-        tablePanel.addColumn(totalU.get(0));
-        tablePanel.addColumn(totalU.get(1));
-        tablePanel.updateData();
+        tablePanel.updateTable(dateTimeVector, maxpost, paramU, totalU);
 
-        tablePanel.setHeaderWidth(200);
-        tablePanel.setHeader(0, "Time [yyyy-MM-dd hh:mm:ss]");
-        tablePanel.setHeader(1, "Q_maxpost [m3/s]");
-        tablePanel.setHeader(2, "Q_param_low [m3/s]");
-        tablePanel.setHeader(3, "Q_param_high [m3/s]");
-        tablePanel.setHeader(4, "Q_total_low [m3/s]");
-        tablePanel.setHeader(5, "Q_total_high [m3/s]");
-        tablePanel.updateHeader();
     }
 
 }

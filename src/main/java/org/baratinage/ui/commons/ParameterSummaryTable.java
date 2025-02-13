@@ -2,11 +2,49 @@ package org.baratinage.ui.commons;
 
 import java.util.List;
 
+import javax.swing.JButton;
+
 import org.baratinage.jbam.EstimatedParameter;
+import org.baratinage.translation.T;
 import org.baratinage.ui.bam.EstimatedParameterWrapper;
 import org.baratinage.ui.component.DataTable;
 
 public class ParameterSummaryTable extends DataTable {
+
+    public ParameterSummaryTable() {
+
+        ColumnHeaderDescription colHeaderDescRCGridTable = new ColumnHeaderDescription();
+        colHeaderDescRCGridTable.addColumnDesc("Name", () -> {
+            return T.text("name");
+        });
+        colHeaderDescRCGridTable.addColumnDesc("Prior_low", () -> {
+            return T.text("low_bound_parameter", T.text("prior_density"));
+        });
+        colHeaderDescRCGridTable.addColumnDesc("Prior_high", () -> {
+            return T.text("high_bound_parameter", T.text("prior_density"));
+        });
+        colHeaderDescRCGridTable.addColumnDesc("Posterior_maxpost", () -> {
+            return T.text("high_bound_parameter", T.text("maxpost_desc"));
+        });
+        colHeaderDescRCGridTable.addColumnDesc("Posterior_low", () -> {
+            return T.text("low_bound_parameter", T.text("posterior_density"));
+        });
+        colHeaderDescRCGridTable.addColumnDesc("Posterior_high", () -> {
+            return T.text("high_bound_parameter", T.text("posterior_density"));
+        });
+        colHeaderDescRCGridTable.addColumnDesc("consistency", () -> {
+            return T.text("consistency_description");
+        });
+
+        JButton showHeaderDescription = new JButton();
+        showHeaderDescription.addActionListener(l -> {
+            colHeaderDescRCGridTable.openDialog(T.text("rating_table"));
+        });
+        T.t(this, showHeaderDescription, false, "table_headers_desc");
+
+        toolsPanel.appendChild(showHeaderDescription);
+    }
+
     public void updateResults(List<EstimatedParameterWrapper> parameters) {
 
         int n = parameters.size();
