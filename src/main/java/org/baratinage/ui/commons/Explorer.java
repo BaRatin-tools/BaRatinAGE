@@ -1,7 +1,6 @@
 package org.baratinage.ui.commons;
 
 import java.awt.Component;
-import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -15,6 +14,7 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 
 import org.baratinage.ui.container.RowColPanel;
+import org.baratinage.utils.Misc;
 
 public class Explorer extends RowColPanel {
 
@@ -28,7 +28,7 @@ public class Explorer extends RowColPanel {
 
         setGap(5);
 
-        setMinimumSize(new Dimension(200, 100));
+        Misc.setMinimumSize(this, 200, null);
 
         explorerTree = new JTree();
         explorerTree.setBorder(BorderFactory.createEmptyBorder());

@@ -1,6 +1,5 @@
 package org.baratinage.ui.baratin.hydraulic_configuration;
 
-import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -35,6 +34,7 @@ import org.baratinage.ui.component.SimpleSep;
 import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.ui.plot.PlotItem;
 import org.baratinage.utils.ConsoleLogger;
+import org.baratinage.utils.Misc;
 import org.baratinage.utils.json.JSONCompare;
 import org.baratinage.utils.json.JSONCompareResult;
 import org.json.JSONObject;
@@ -79,10 +79,7 @@ public class PriorRatingCurve<HCT extends BamItem & IModelDefinition & IPriors> 
         outOufSyncPanel.setPadding(5);
 
         resultsPanel = new RatingCurveResults(hct.PROJECT, true);
-        Dimension dimPref = new Dimension(500, 300);
-        resultsPanel.setPreferredSize(dimPref);
-        Dimension dimMin = new Dimension(250, 150);
-        resultsPanel.setMinimumSize(dimMin);
+        Misc.setMinimumSize(resultsPanel, null, 350);
 
         appendChild(priorRatingCurveStageGrid, 0);
         appendChild(new SimpleSep(), 0);

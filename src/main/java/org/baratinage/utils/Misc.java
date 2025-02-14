@@ -28,6 +28,17 @@ import org.baratinage.translation.T;
 
 public class Misc {
 
+    public static void setMinimumSize(JComponent component, Integer width, Integer height) {
+        Dimension dim = component.getMinimumSize();
+        if (width != null) {
+            dim.width = width;
+        }
+        if (height != null) {
+            dim.height = height;
+        }
+        component.setMinimumSize(dim);
+    }
+
     public static String formatNumber(double num) {
         return formatNumber(num, false);
     }
@@ -55,16 +66,6 @@ public class Misc {
             df = new DecimalFormat("0");
         }
         return df.format(num);
-    }
-
-    public static void setCompSize(
-            JComponent component,
-            int minWidth, int prefWidth,
-            int minHeight, int prefHeight) {
-        Dimension dimPref = new Dimension(prefWidth, prefHeight);
-        Dimension dimMin = new Dimension(minWidth, minHeight);
-        component.setPreferredSize(dimPref);
-        component.setMinimumSize(dimMin);
     }
 
     public static String sanitizeName(String input) {

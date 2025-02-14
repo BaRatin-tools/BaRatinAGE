@@ -1,20 +1,16 @@
 package org.baratinage.ui.component;
 
-import java.awt.Dimension;
-
 import javax.swing.JProgressBar;
 
 import org.baratinage.translation.T;
+import org.baratinage.utils.Misc;
 
 public class ProgressBar extends JProgressBar {
 
     public ProgressBar() {
         setStringPainted(true);
         setString("");
-        int height = 25;
-        setPreferredSize(new Dimension(0, height));
-        setMinimumSize(new Dimension(0, height));
-        setMaximumSize(new Dimension(Integer.MAX_VALUE, height));
+        Misc.setMinimumSize(this, null, 25);
     }
 
     public void update(String id, int progress, int total, int step, int totalStep) {

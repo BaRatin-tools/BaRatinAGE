@@ -1,6 +1,5 @@
 package org.baratinage.ui.baratin;
 
-import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -27,6 +26,7 @@ import org.baratinage.ui.plot.Plot;
 import org.baratinage.ui.plot.PlotContainer;
 import org.baratinage.ui.plot.PlotItem;
 import org.baratinage.ui.plot.PlotUtils;
+import org.baratinage.utils.Misc;
 import org.jfree.chart.title.LegendTitle;
 import org.jfree.chart.ui.RectangleEdge;
 import org.json.JSONArray;
@@ -113,12 +113,8 @@ public class RatingCurveCompare extends BamItem {
         // plot items management
         RowColPanel plotItemManagementPanel = new RowColPanel();
         episList = new SimpleList<>();
-
         plotItemManagementPanel.appendChild(episList);
-
-        Dimension dim = new Dimension(300, 0);
-        episList.setMinimumSize(dim);
-        episList.setPreferredSize(dim);
+        Misc.setMinimumSize(episList, 300, null);
 
         // plot item edition
         RowColPanel plotItemEditionPanel = new RowColPanel(RowColPanel.AXIS.COL);

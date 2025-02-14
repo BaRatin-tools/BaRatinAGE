@@ -15,6 +15,7 @@ import org.baratinage.ui.component.CommonDialog;
 import org.baratinage.ui.container.GridPanel;
 import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.utils.ConsoleLogger;
+import org.baratinage.utils.Misc;
 import org.baratinage.translation.T;
 import org.json.JSONObject;
 
@@ -28,6 +29,8 @@ public class ControlMatrix extends RowColPanel implements ChangeListener {
 
     public ControlMatrix() {
         super(AXIS.COL);
+
+        Misc.setMinimumSize(this, null, 250);
 
         RowColPanel buttonsPanel = new RowColPanel(AXIS.COL, ALIGN.STRETCH);
         buttonsPanel.setPadding(5);

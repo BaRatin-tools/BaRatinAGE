@@ -17,6 +17,7 @@ import org.baratinage.ui.baratin.HydraulicConfigurationQFH;
 import org.baratinage.ui.component.SimpleComboBox;
 import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.utils.ConsoleLogger;
+import org.baratinage.utils.Misc;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -93,6 +94,7 @@ public class QFHModelDefinition extends RowColPanel implements IModelDefinition 
         }
         presetComboBox.setItems(labels, true);
 
+        Misc.setMinimumSize(this, null, 200);
     }
 
     private JLabel buildComboboxLabel(String id, String iconId) {
