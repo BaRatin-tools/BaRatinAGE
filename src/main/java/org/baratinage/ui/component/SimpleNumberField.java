@@ -176,6 +176,13 @@ public class SimpleNumberField extends SimpleTextField {
     }
 
     public Double getDoubleValue() {
+        if (doubleValue != null && Double.isInfinite(doubleValue)) {
+            if (doubleValue == Double.POSITIVE_INFINITY) {
+                return Double.MAX_VALUE;
+            } else if (doubleValue == Double.NEGATIVE_INFINITY) {
+                return Double.MIN_VALUE;
+            }
+        }
         return doubleValue;
     }
 
