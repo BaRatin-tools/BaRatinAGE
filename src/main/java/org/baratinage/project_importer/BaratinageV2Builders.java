@@ -166,6 +166,8 @@ public class BaratinageV2Builders {
         JSONArray allControlOptions = ohc.toJSON().getJSONArray("allControlOptions");
         json.put("allControlOptions", allControlOptions);
 
+        boolean isKACmode = false;
+
         JSONArray oneOfTheControlOptions = null;
         // source always starting with K, A, C
         if (controlTypeIndex == 0 ||
@@ -180,26 +182,33 @@ public class BaratinageV2Builders {
             // weir orifice: Cp, Bp, Hp, G, C, K => K, Cp, Bp, Hp, G, C
             // rect channel: K, A, C, Ks, Bw, S, C, K => K, Ks, Bw, S, C,
             // FIXME: should check all controls...
-
-            oneOfTheControlOptions = buildPriorControlPanelConfig(
-                    false,
-                    parameters[7],
-                    parameters[3],
-                    parameters[4],
-                    parameters[5],
-                    parameters[6]);
+            if (parameters.length < 7) {
+                isKACmode = true;
+            } else {
+                oneOfTheControlOptions = buildPriorControlPanelConfig(
+                        false,
+                        parameters[7],
+                        parameters[3],
+                        parameters[4],
+                        parameters[5],
+                        parameters[6]);
+            }
 
         } else if (controlTypeIndex == 2 || controlTypeIndex == 6) {
             // FIXME: not sure, but I think 2 and 6 are the only controls with 6
             // parameters instead of 5 (parabola controls)
-            oneOfTheControlOptions = buildPriorControlPanelConfig(
-                    false,
-                    parameters[8],
-                    parameters[3],
-                    parameters[4],
-                    parameters[5],
-                    parameters[6],
-                    parameters[7]);
+            if (parameters.length < 8) {
+                isKACmode = true;
+            } else {
+                oneOfTheControlOptions = buildPriorControlPanelConfig(
+                        false,
+                        parameters[8],
+                        parameters[3],
+                        parameters[4],
+                        parameters[5],
+                        parameters[6],
+                        parameters[7]);
+            }
         } else {
             ConsoleLogger.error("Unimplemented case");
         }
@@ -213,7 +222,7 @@ public class BaratinageV2Builders {
         json.put("kacControl", kacControl);
 
         // > isKACmode
-        json.put("isKACmode", false);
+        json.put("isKACmode", isKACmode);
 
         // > description
         json.put("description", controlConfigStrings[0]);
