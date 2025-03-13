@@ -8,8 +8,8 @@ public class ConfigItemString extends ConfigItem {
     private final String defaultValue;
     private String value;
 
-    public ConfigItemString(String id, String defaultValue) {
-        super(id);
+    public ConfigItemString(String id, String defaultValue, boolean requireRestart) {
+        super(id, requireRestart);
         this.defaultValue = defaultValue;
         value = defaultValue;
 

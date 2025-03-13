@@ -37,11 +37,11 @@ public class ConfigSet {
 
     // UI PREFERENCES
 
-    public final ConfigItemBoolean DARK_MODE = addConfigItem(new ConfigItemBoolean("dark_mode", false));
+    public final ConfigItemBoolean DARK_MODE = addConfigItem(new ConfigItemBoolean("dark_mode", false, true));
 
-    public final ConfigItemInteger FONT_SIZE = addConfigItem(new ConfigItemInteger("font_size", 14));
+    public final ConfigItemInteger FONT_SIZE = addConfigItem(new ConfigItemInteger("font_size", 14, true));
 
-    public final ConfigItemInteger ICON_SIZE = addConfigItem(new ConfigItemInteger("icon_size", 28));
+    public final ConfigItemInteger ICON_SIZE = addConfigItem(new ConfigItemInteger("icon_size", 28, true));
 
     public final ConfigItemList LANGUAGE_KEY = addConfigItem(
             new ConfigItemList("lg_key", Locale.getDefault().getLanguage(),
@@ -60,18 +60,19 @@ public class ConfigSet {
                             labels[k] = new JLabel(T.getLocaleLabelString(locales[k]));
                         }
                         return labels;
-                    }));
+                    }, false));
 
-    public final ConfigItemBoolean HIDE_BAM_CONSOLE = addConfigItem(new ConfigItemBoolean("hide_bam_console", false));
+    public final ConfigItemBoolean HIDE_BAM_CONSOLE = addConfigItem(
+            new ConfigItemBoolean("hide_bam_console", false, false));
     public final ConfigItemBoolean CLOSE_BAM_DIALOG_ON_SUCCESS = addConfigItem(
-            new ConfigItemBoolean("close_bam_console_on_success", false));
+            new ConfigItemBoolean("close_bam_console_on_success", false, false));
 
     // BAM PREFERENCES
 
     public final ConfigItemInteger N_SAMPLES_LIMNI_ERRORS = addConfigItem(
-            new ConfigItemInteger("n_samples_limni_error", 200));
+            new ConfigItemInteger("n_samples_limni_error", 200, false));
     public final ConfigItemInteger N_SAMPLES_PRIOR_RUN = addConfigItem(
-            new ConfigItemInteger("n_samples_prior_run", 200));
+            new ConfigItemInteger("n_samples_prior_run", 200, false));
 
     //
 
@@ -135,6 +136,9 @@ public class ConfigSet {
                 CLOSE_BAM_DIALOG_ON_SUCCESS);
         panel.appendChild(p.getContent(), 1);
 
+        JLabel requireRestartLabel = new JLabel("* " + T.text("require_restart"));
+        panel.appendChild(requireRestartLabel, 0);
+
         RowColPanel actionsPanel = new RowColPanel();
         actionsPanel.setGap(5);
         JButton cancelButton = new JButton();
@@ -180,7 +184,9 @@ public class ConfigSet {
         configItemsPanel.setAnchor(GridPanel.ANCHOR.N);
         int k = 0;
         for (ConfigItem item : items) {
-            JLabel label = new JLabel(T.text(String.format("pref_%s", item.id)));
+            String labelString = T.text(String.format("pref_%s", item.id));
+            labelString = item.requireRestart ? labelString + " *" : labelString;
+            JLabel label = new JLabel(labelString);
             configItemsPanel.insertChild(label, 0, k);
             configItemsPanel.insertChild(item.getField(), 1, k);
             k++;

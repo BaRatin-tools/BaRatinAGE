@@ -19,8 +19,8 @@ public class ConfigItemList extends ConfigItem {
             String id,
             String defaultValue,
             Supplier<String[]> optionsValueBuilder,
-            Supplier<JLabel[]> optionsLabelBuilder) {
-        super(id);
+            Supplier<JLabel[]> optionsLabelBuilder, boolean requireRestart) {
+        super(id, requireRestart);
 
         this.optionsValueBuilder = optionsValueBuilder;
         this.optionsLabelBuilder = optionsLabelBuilder;

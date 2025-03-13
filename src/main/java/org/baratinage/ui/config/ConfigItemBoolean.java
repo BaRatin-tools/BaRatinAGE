@@ -9,8 +9,8 @@ public class ConfigItemBoolean extends ConfigItem {
     private boolean defaultValue;
     private boolean value;
 
-    public ConfigItemBoolean(String id, boolean defaultValue) {
-        super(id);
+    public ConfigItemBoolean(String id, boolean defaultValue, boolean requireRestart) {
+        super(id, requireRestart);
         this.defaultValue = defaultValue;
         value = defaultValue;
     }
