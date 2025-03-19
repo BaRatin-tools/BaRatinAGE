@@ -23,11 +23,11 @@ public class KBAC extends PriorControlPanel {
 
     public KBAC(boolean kMode) {
         super(
-                3, "Q=a(h-b)<sup>c</sup> (h>k)");
+                3, "Q=a(h-b)<sup>c</sup> (h>\u03BA)");
 
         kb = new ParameterPriorDist("k");
         kb.setIcon(activationHeightIcon);
-        kb.setSymbolUnitLabels(kMode ? "k" : "b", "m");
+        kb.setSymbolUnitLabels(kMode ? "\u03BA" : "b", "m");
 
         a = new ParameterPriorDist("a");
         a.setIcon(coefficientIcon);

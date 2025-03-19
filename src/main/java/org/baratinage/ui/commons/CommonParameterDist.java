@@ -10,7 +10,7 @@ public class CommonParameterDist {
                 ACTIVATION_HEIGHT(
                                 "activation_stage",
                                 AppSetup.ICONS.getCustomAppImageIcon("activation_height.svg"),
-                                "m", "k"),
+                                "m", "\u03BA"),
                 SLOPE(
                                 "slope",
                                 AppSetup.ICONS.getCustomAppImageIcon("slope.svg"),

@@ -15,7 +15,7 @@ public class WeirOrifice extends PriorControlPanel {
     public WeirOrifice() {
         super(
                 2,
-                "Q=C<sub>o</sub>A<sub>o</sub>(2g)<sup>1/2</sup>(h-b)<sup>c</sup>&nbsp;(h>k)");
+                "Q=C<sub>o</sub>A<sub>o</sub>(2g)<sup>1/2</sup>(h-b)<sup>c</sup>&nbsp;(h>\u03BA)");
 
         activationHeight = CommonParameterDistSimplified.getActivationHeight();
         weirCoef = CommonParameterDistSimplified.getWeirCoeff("o");

@@ -18,7 +18,7 @@ public class ChannelRect extends PriorControlPanel {
     }
 
     public ChannelRect(boolean kMode) {
-        super(2, "Q=K<sub>s</sub>B<sub>w</sub>S<sup>1/2</sup>(h-b)<sup>c</sup>&nbsp;(h>k)");
+        super(2, "Q=K<sub>s</sub>B<sub>w</sub>S<sup>1/2</sup>(h-b)<sup>c</sup>&nbsp;(h>\u03BA)");
 
         kb = kMode ? CommonParameterDistSimplified.getActivationHeight()
                 : CommonParameterDistSimplified.getOffsetHeight();

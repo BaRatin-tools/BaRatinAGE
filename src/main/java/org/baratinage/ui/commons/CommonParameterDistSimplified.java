@@ -41,7 +41,7 @@ public class CommonParameterDistSimplified {
         public static ParameterPriorDistSimplified getActivationHeight() {
                 ParameterPriorDistSimplified p = new ParameterPriorDistSimplified();
                 p.setIcon(activationHeightIcon);
-                p.setSymbolUnitLabels("k", "m");
+                p.setSymbolUnitLabels("\u03BA", "m");
                 return p;
         }
 
