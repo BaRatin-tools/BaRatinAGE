@@ -16,8 +16,8 @@ import org.baratinage.ui.bam.BamItemType;
 import org.baratinage.ui.baratin.limnigraph.LimnigraphDataset;
 import org.baratinage.ui.baratin.limnigraph.LimnigraphErrors;
 import org.baratinage.ui.baratin.limnigraph.LimnigraphImporter;
+import org.baratinage.ui.baratin.limnigraph.LimnigraphTable;
 import org.baratinage.ui.commons.DatasetConfig;
-import org.baratinage.ui.component.DataTable;
 import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.ui.container.SplitContainer;
 import org.baratinage.ui.container.TabContainer;
@@ -36,8 +36,8 @@ public class Limnigraph extends BamItem {
 
     private LimnigraphErrors limniErrors;
 
-    private DataTable limniTable;
-    // private LimnigraphTable limniTable;
+    private LimnigraphTable limniTable;
+
     private LimnigraphDataset limniDataset;
     private JLabel importedDataSetSourceLabel;
 
@@ -67,7 +67,7 @@ public class Limnigraph extends BamItem {
 
         plotPanel = new RowColPanel();
 
-        limniTable = new DataTable();
+        limniTable = new LimnigraphTable();
         limniTable.setPadding(0);
 
         limniErrors = new LimnigraphErrors();
@@ -122,41 +122,23 @@ public class Limnigraph extends BamItem {
         limniErrors.updateDataset(newDataset);
         updateTables();
         updatePlot();
+        updateImportedDatasetLabel();
         save(true);
     }
 
     private void updateTables() {
-        T.clear(limniTable);
-
-        limniTable.clearColumns();
 
         if (limniDataset == null) {
             return;
         }
-
-        limniTable.addColumn(limniDataset.getDateTime());
-        limniTable.addColumn(limniDataset.getStage());
+        double[] stage_low = null;
+        double[] stage_high = null;
         if (limniDataset.hasStageErrMatrix()) {
             List<double[]> errEnv = limniDataset.getStageErrUncertaintyEnvelop();
-            limniTable.addColumn(errEnv.get(0));
-            limniTable.addColumn(errEnv.get(1));
+            stage_low = errEnv.get(0);
+            stage_high = errEnv.get(1);
         }
-
-        limniTable.updateData();
-
-        T.t(limniTable, () -> {
-            limniTable.setHeader(0, T.text("date_time"));
-            limniTable.setHeader(1, T.text("stage"));
-            if (limniDataset.hasStageErrMatrix()) {
-                limniTable.setHeader(2, T.text("percentile_0025"));
-                limniTable.setHeader(3, T.text("percentile_0975"));
-            }
-            limniTable.setHeaderWidth(100);
-            limniTable.setHeaderWidth(0, 150);
-            limniTable.updateHeader();
-        });
-
-        updateImportedDatasetLabel();
+        limniTable.updateTable(limniDataset.getDateTime(), limniDataset.getStage(), stage_low, stage_high);
     }
 
     private void updatePlot() {

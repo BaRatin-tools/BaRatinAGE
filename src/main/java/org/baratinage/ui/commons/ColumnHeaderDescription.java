@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.function.Supplier;
 
 import javax.swing.JLabel;
+import javax.swing.JScrollPane;
 
 import org.baratinage.translation.T;
 import org.baratinage.ui.component.SimpleDialog;
@@ -29,8 +30,15 @@ public class ColumnHeaderDescription {
         descriptions.put(header, descSupplier);
     }
 
-    private RowColPanel buildMessagePanel() {
+    public void clearAllColumnDesc() {
+        headers.clear();
+        descriptions.clear();
+        k = 0;
+    }
+
+    private JScrollPane buildMessagePanel() {
         RowColPanel panel = new RowColPanel(RowColPanel.AXIS.COL, RowColPanel.ALIGN.START);
+        panel.setPadding(5);
         panel.setGap(5);
         for (String h : headers) {
             Supplier<String> descSupplier = descriptions.get(h);
@@ -45,7 +53,8 @@ public class ColumnHeaderDescription {
             label.setText(message);
             panel.appendChild(label, 0);
         }
-        return panel;
+
+        return new JScrollPane(panel);
     }
 
     public void openDialog() {

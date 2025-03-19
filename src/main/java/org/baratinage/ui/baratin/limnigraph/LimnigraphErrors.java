@@ -2,7 +2,11 @@ package org.baratinage.ui.baratin.limnigraph;
 
 import java.util.Arrays;
 import java.util.List;
+
+import javax.swing.JButton;
+
 import org.baratinage.translation.T;
+import org.baratinage.ui.commons.ColumnHeaderDescription;
 import org.baratinage.ui.component.DataTable;
 import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.ui.container.TabContainer;
@@ -13,6 +17,7 @@ public class LimnigraphErrors extends RowColPanel {
 
     private final DataTable errConfigTable;
     private final DataTable errMatrixTable;
+    private final ColumnHeaderDescription columnsDescription;
 
     public LimnigraphErrors() {
         super(AXIS.COL);
@@ -35,6 +40,17 @@ public class LimnigraphErrors extends RowColPanel {
         });
 
         appendChild(tableTabs, 1);
+
+        columnsDescription = new ColumnHeaderDescription();
+
+        JButton showHeaderDescription = new JButton();
+        showHeaderDescription.addActionListener(l -> {
+            columnsDescription.openDialog(T.text("stage_and_uncertainty"));
+        });
+        T.t(this, showHeaderDescription, false, "table_headers_desc");
+
+        errConfigTable.toolsPanel.appendChild(showHeaderDescription);
+
     }
 
     public void updateDataset(LimnigraphDataset dataset) {
@@ -43,48 +59,68 @@ public class LimnigraphErrors extends RowColPanel {
 
         T.clear(errConfigTable);
         errConfigTable.clearColumns();
+        columnsDescription.clearAllColumnDesc();
 
-        if (dataset.hasNonSysErr() || dataset.hasSysErr()) {
-            errConfigTable.addColumn(dataset.getDateTime());
-            errConfigTable.addColumn(dataset.getStage());
+        updateErrMatrixTable();
 
-            if (dataset.hasNonSysErr()) {
-                errConfigTable.addColumn(Arrays.stream(dataset.getNonSysErrStd()).map(u -> u * 2.0).toArray());
-            }
-
-            if (dataset.hasSysErr()) {
-                errConfigTable.addColumn(Arrays.stream(dataset.getSysErrStd()).map(u -> u * 2.0).toArray());
-                errConfigTable.addColumn(dataset.getSysErrInd());
-            }
-
-            errConfigTable.updateData();
-
-            T.t(errConfigTable, () -> {
-
-                errConfigTable.setHeader(0, T.text("date_time"));
-                errConfigTable.setHeader(1, T.text("stage"));
-                int colIndex = 2;
-                if (dataset.hasNonSysErr()) {
-                    errConfigTable.setHeader(colIndex, T.text("stage_non_sys_error_uncertainty"));
-
-                    colIndex++;
-                }
-                if (dataset.hasSysErr()) {
-                    errConfigTable.setHeader(colIndex, T.text("stage_sys_error_uncertainty"));
-                    colIndex++;
-                    errConfigTable.setHeader(colIndex, T.text("stage_sys_error_ind"));
-                    colIndex++;
-                }
-
-                errConfigTable.setHeaderWidth(100);
-                errConfigTable.setHeaderWidth(0, 150);
-
-                errConfigTable.updateHeader();
-            });
-
-            updateErrMatrixTable();
-
+        if (dataset == null) {
+            return;
         }
+
+        columnsDescription.addColumnDesc("Time [yyyy-MM-dd hh:mm:ss]", () -> {
+            return T.text("time_and_date");
+        });
+        columnsDescription.addColumnDesc("Stage [m]", () -> {
+            return T.text("stage");
+        });
+
+        if (dataset.hasNonSysErr()) {
+            columnsDescription.addColumnDesc("Stage_non_sys_err_std [m]", () -> {
+                return T.text("stage_non_sys_error_uncertainty");
+            });
+        }
+        if (dataset.hasSysErr()) {
+            columnsDescription.addColumnDesc("Stage_sys_err_std [m]", () -> {
+                return T.text("stage_sys_error_uncertainty");
+            });
+            columnsDescription.addColumnDesc("Stage_sys_err_indices", () -> {
+                return T.text("stage_sys_error_ind");
+            });
+        }
+
+        errConfigTable.addColumn(dataset.getDateTime());
+        errConfigTable.addColumn(dataset.getStage());
+
+        if (dataset.hasNonSysErr()) {
+            errConfigTable.addColumn(Arrays.stream(dataset.getNonSysErrStd()).map(u -> u * 2.0).toArray());
+        }
+
+        if (dataset.hasSysErr()) {
+            errConfigTable.addColumn(Arrays.stream(dataset.getSysErrStd()).map(u -> u * 2.0).toArray());
+            errConfigTable.addColumn(dataset.getSysErrInd());
+        }
+
+        errConfigTable.updateData();
+
+        errConfigTable.setHeader(0, "Time [yyyy-MM-dd hh:mm:ss]");
+        errConfigTable.setHeader(1, "Stage [m]");
+        int colIndex = 2;
+        if (dataset.hasNonSysErr()) {
+            errConfigTable.setHeader(colIndex, "Stage_non_sys_err_std [m]");
+
+            colIndex++;
+        }
+        if (dataset.hasSysErr()) {
+            errConfigTable.setHeader(colIndex, "Stage_sys_err_std [m]");
+            colIndex++;
+            errConfigTable.setHeader(colIndex, "Stage_sys_err_indices");
+            colIndex++;
+        }
+
+        errConfigTable.setHeaderWidth(100);
+        errConfigTable.setHeaderWidth(0, 150);
+
+        errConfigTable.updateHeader();
 
     }
 
