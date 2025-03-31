@@ -12,7 +12,6 @@ import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
-import javax.swing.border.EmptyBorder;
 
 import org.baratinage.AppSetup;
 import org.baratinage.translation.T;
@@ -180,6 +179,7 @@ public class ConfigSet {
         GridPanel configItemsPanel = new GridPanel();
         configItemsPanel.setPadding(5);
         configItemsPanel.setGap(5);
+        configItemsPanel.setColWeight(0, 0);
         configItemsPanel.setColWeight(1, 1);
         configItemsPanel.setAnchor(GridPanel.ANCHOR.N);
         int k = 0;
@@ -187,13 +187,13 @@ public class ConfigSet {
             String labelString = T.text(String.format("pref_%s", item.id));
             labelString = item.requireRestart ? labelString + " *" : labelString;
             JLabel label = new JLabel(labelString);
+            label.setText(String.format("<html><div style='width: 250px'>%s</div></html>", labelString));
             configItemsPanel.insertChild(label, 0, k);
             configItemsPanel.insertChild(item.getField(), 1, k);
             k++;
         }
 
         JScrollPane content = new JScrollPane();
-        content.setBorder(new EmptyBorder(0, 0, 0, 0));
         content.setViewportView(configItemsPanel);
 
         TitledPanel panel = new TitledPanel(content);
