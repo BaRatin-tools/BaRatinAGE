@@ -187,6 +187,7 @@ public class MainMenuBar extends JMenuBar {
                 }
                 T.setLocale(targetLocaleKey);
                 AppSetup.CONFIG.LANGUAGE_KEY.set(targetLocaleKey);
+                AppSetup.CONFIG.saveConfiguration();
             });
             switchLanguageMenuItem.add(item);
         }
