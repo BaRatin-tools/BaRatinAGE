@@ -38,11 +38,11 @@ public class AppAbout extends JDialog {
             boolean hasEmail = email != null && !email.equals("");
             String str = name;
             if (hasAffiliation && !hasEmail) {
-                str = String.format("%s (<i>%s</i>)", name, affiliation);
+                str = String.format("%s<br>(<i>%s</i>)", name, affiliation);
             } else if (!hasAffiliation && hasEmail) {
-                str = String.format("%s (<code>%s</code>)", name, email);
+                str = String.format("%s<br>(<code>%s</code>)", name, email);
             } else {
-                str = String.format("%s (<i>%s</i>, <code>%s</code>)", name, affiliation, email);
+                str = String.format("%s<br>(<i>%s</i>, <code>%s</code>)", name, affiliation, email);
             }
             return String.format("<html>%s<html>", str);
         }
