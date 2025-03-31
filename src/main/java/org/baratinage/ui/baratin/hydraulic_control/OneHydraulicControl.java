@@ -121,7 +121,7 @@ public class OneHydraulicControl extends JScrollPane {
                             new WeirParabola()));
             allControlOptions.add(
                     new HydraulicControlOption(
-                            "orifice_weir", orificeWeirIcon,
+                            "orifice_ctrl", orificeWeirIcon,
                             new WeirOrifice()));
         }
         allControlOptions.add(
