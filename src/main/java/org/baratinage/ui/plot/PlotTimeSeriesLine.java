@@ -2,7 +2,10 @@ package org.baratinage.ui.plot;
 
 import java.awt.Paint;
 import java.awt.Stroke;
+import java.util.HashSet;
+import java.util.Set;
 
+import org.baratinage.utils.ConsoleLogger;
 import org.jfree.chart.LegendItem;
 import org.jfree.chart.renderer.xy.DefaultXYItemRenderer;
 import org.jfree.chart.renderer.xy.XYItemRenderer;
@@ -27,8 +30,14 @@ public class PlotTimeSeriesLine extends PlotItem {
 
         int n = time.length;
         TimeSeries ts = new TimeSeries(label);
+        Set<Second> uniqueTimes = new HashSet<>();
         for (int k = 0; k < n; k++) {
-            ts.add(time[k], values[k]);
+            if (uniqueTimes.contains(time[k])) {
+                ConsoleLogger.error(String.format("Duplicated time found at index %d; they were ignored", k));
+            } else {
+                ts.add(time[k], values[k]);
+            }
+            uniqueTimes.add(time[k]);
         }
 
         tsCollection = new TimeSeriesCollection();
