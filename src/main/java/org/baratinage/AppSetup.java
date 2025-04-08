@@ -9,6 +9,7 @@ import java.io.InputStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Set;
+import java.util.TimeZone;
 import java.util.jar.Manifest;
 import java.util.jar.Attributes;
 
@@ -101,6 +102,8 @@ public class AppSetup {
         } else {
             setDefaultFont(CONFIG.FONT_SIZE.get());
         }
+
+        TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
 
         COLORS = new AppColors();
         ICONS = new AppIcons();
