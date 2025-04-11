@@ -14,6 +14,7 @@ import org.baratinage.jbam.utils.ConfigFile;
 import org.baratinage.translation.T;
 import org.baratinage.ui.bam.IModelDefinition;
 import org.baratinage.ui.baratin.HydraulicConfigurationQFH;
+import org.baratinage.ui.component.CommonDialog;
 import org.baratinage.ui.component.SimpleComboBox;
 import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.utils.ConsoleLogger;
@@ -113,19 +114,22 @@ public class QFHModelDefinition extends RowColPanel implements IModelDefinition 
         return label;
     }
 
-    private void setPresetComboboxFromId(String id) {
+    private boolean setPresetComboboxFromId(String id) {
         if (id.startsWith("custom")) {
             presetComboBox.setSelectedItem(0, false);
+            return true;
         } else {
             int index = 0;
             for (QFHPreset p : QFHPreset.PRESETS) {
                 index++;
                 if (p.id().equals(id)) {
                     presetComboBox.setSelectedItem(index, false);
-                    return;
+                    return true;
                 }
             }
         }
+        ConsoleLogger.error(String.format("No preset with id '%s' found!", id));
+        return false;
     }
 
     private String getPresetId() {
@@ -220,8 +224,6 @@ public class QFHModelDefinition extends RowColPanel implements IModelDefinition 
     }
 
     public void fromJSON(JSONObject json) {
-        String presetId = json.optString("presetId", "custom_qfh");
-        setPresetComboboxFromId(presetId);
         JSONArray eqConfigAndPriorsConfig = json.optJSONArray("eqConfigsAndPriors");
         for (int k = 0; k < eqConfigAndPriorsConfig.length(); k++) {
             JSONObject eqJson = eqConfigAndPriorsConfig.getJSONObject(k);
@@ -232,5 +234,28 @@ public class QFHModelDefinition extends RowColPanel implements IModelDefinition 
             QFHTextFileEquation eq = equationPanels.get(pId);
             eq.fromJSON(eqJson.optJSONObject("eqConfigsAndPriors"));
         }
+
+        String presetId = json.optString("presetId", "custom_qfh");
+        boolean foundPreset = setPresetComboboxFromId(presetId);
+        if (!foundPreset) {
+            // modifies the configuraiton so it is interpreted as an actual custom equation
+            CommonDialog.warnDialog(T.text("missing_qfh_preset_warning"));
+            setPresetComboboxFromId("custom_qfh");
+            QFHTextFileEquation eq = equationPanels.get("custom_qfh");
+            JSONObject eqJson = json.optJSONObject("selectedEqConfigAndPriors");
+            if (eqJson != null) {
+                JSONArray eqPriorsJSON = eqJson.getJSONArray("priors");
+                // JSONArray eqPriorsJSONModified = new JSONArray();
+                for (int k = 0; k < eqPriorsJSON.length(); k++) {
+                    JSONObject eqPrior = eqPriorsJSON.getJSONObject(k);
+                    JSONObject eqPriorDist = eqPrior.getJSONObject("priorParDist");
+                    eqPriorDist.put("knownParameterTypeEnabled", true);
+                    eqPrior.put("priorParDist", eqPriorDist);
+                }
+                eqJson.put("priors", eqPriorsJSON);
+                eq.fromJSON(eqJson);
+            }
+        }
+
     }
 }
