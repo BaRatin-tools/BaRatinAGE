@@ -1,10 +1,14 @@
 [
-  {
+    {
     "id": "trapezoid_weir",
     "icon_id": "hc_trapezoid_weir",
-    "formula": "C_t * tan( v / 2 ) * sqrt( 2 * g ) * (ispos( h - k_1 ) * ( h - k_1 )) ^ c_1 +  C_r * B_w * sqrt( 2 * g ) * (ispos( h - k_1 ) * ( h - k_1 )) ^ c_2",
+    "formula": "C_t * tan( v / 2 ) * sqrt( 2 * g ) * (ispos( h - k_1 ) * ( h - k_1 )) ^ c_t +  C_r * B_r * sqrt( 2 * g ) * (ispos( h - k_1 ) * ( h - k_1 )) ^ c_r",
     "stage_symbole": "h",
     "parameters": [
+      {
+        "symbole": "k_1",
+        "type": "activation_stage"
+      },
       {
         "symbole": "C_t",
         "type": "weir_coefficient",
@@ -28,11 +32,7 @@
         }
       },
       {
-        "symbole": "k_1",
-        "type": "activation_stage"
-      },
-      {
-        "symbole": "c_1",
+        "symbole": "c_t",
         "type": "exponent",
         "default_distribution": {
           "initial_guess": 2.5,
@@ -50,11 +50,11 @@
         }
       },
       {
-        "symbole": "B_w",
+        "symbole": "B_r",
         "type": "width"
       },
       {
-        "symbole": "c_2",
+        "symbole": "c_r",
         "type": "exponent",
         "default_distribution": {
           "initial_guess": 1.5,
@@ -67,9 +67,13 @@
   {
     "id": "rect_triangle",
     "icon_id": "hc_rect_triangle_weir",
-    "formula": "C_t * tan( v / 2 ) * sqrt( 2 * g ) * (ispos( h - k_1 ) * ( h - k_1 )) ^ c_1 +  C_r * B_w * sqrt( 2 * g ) * (ispos( h - k_2 ) * ( h - k_2 )) ^ c_2 - C_t * tan( v / 2 ) * sqrt( 2 * g ) * (ispos( h - k_2 ) * ( h - k_2 )) ^ c_1",
+    "formula": "C_t * tan( v / 2 ) * sqrt( 2 * g ) * (ispos( h - k_1 ) * ( h - k_1 )) ^ c_t +  C_r * B_r * sqrt( 2 * g ) * (ispos( h - k_2 ) * ( h - k_2 )) ^ c_r - C_t * tan( v / 2 ) * sqrt( 2 * g ) * (ispos( h - k_2 ) * ( h - k_2 )) ^ c_t",
     "stage_symbole": "h",
     "parameters": [
+      {
+        "symbole": "k_1",
+        "type": "activation_stage"
+      },
       {
         "symbole": "C_t",
         "type": "weir_coefficient",
@@ -93,11 +97,7 @@
         }
       },
       {
-        "symbole": "k_1",
-        "type": "activation_stage"
-      },
-      {
-        "symbole": "c_1",
+        "symbole": "c_t",
         "type": "exponent",
         "default_distribution": {
           "initial_guess": 2.5,
@@ -119,11 +119,11 @@
         }
       },
       {
-        "symbole": "B_w",
+        "symbole": "B_r",
         "type": "width"
       },
       {
-        "symbole": "c_2",
+        "symbole": "c_r",
         "type": "exponent",
         "default_distribution": {
           "initial_guess": 1.5,
@@ -133,12 +133,16 @@
       }
     ]
   },
-  {
+    {
     "id": "rect_trapezoid",
     "icon_id": "hc_rect_trapezoid_weir",
-    "formula": "C_t * tan( v / 2 ) * sqrt( 2 * g ) * (ispos( h - k_1 ) * ( h - k_1 )) ^ c_1 +  C_r1 * B_w1 * sqrt( 2 * g ) * (ispos( h - k_1 ) * ( h - k_1 )) ^ c_2+  C_r2 * B_w2 * sqrt( 2 * g ) * (ispos( h - k_2 ) * ( h - k_2 )) ^ c_2",
+    "formula": "C_t * tan( v / 2 ) * sqrt( 2 * g ) * (ispos( h - k_1 ) * ( h - k_1 )) ^ c_t +  C_r1 * B_r1 * sqrt( 2 * g ) * (ispos( h - k_1 ) * ( h - k_1 )) ^ c_r +  C_r2 * B_r2 * sqrt( 2 * g ) * (ispos( h - k_2 ) * ( h - k_2 )) ^ c_r",
     "stage_symbole": "h",
     "parameters": [
+      {
+        "symbole": "k_1",
+        "type": "activation_stage"
+      },
       {
         "symbole": "C_t",
         "type": "weir_coefficient",
@@ -162,21 +166,17 @@
         }
       },
       {
-        "symbole": "k_1",
-        "type": "activation_stage"
-      },
-      {
-        "symbole": "k_2",
-        "type": "activation_stage"
-      },
-      {
-        "symbole": "c_1",
+        "symbole": "c_t",
         "type": "exponent",
         "default_distribution": {
           "initial_guess": 2.5,
           "type": "Gaussian",
           "parameters": [2.5, 0.025]
         }
+      },
+      {
+        "symbole": "k_2",
+        "type": "activation_stage"
       },
       {
         "symbole": "C_r1",
@@ -197,15 +197,15 @@
         }
       },
       {
-        "symbole": "B_w1",
+        "symbole": "B_r1",
         "type": "width"
       },
       {
-        "symbole": "B_w2",
+        "symbole": "B_r2",
         "type": "width"
       },
       {
-        "symbole": "c_2",
+        "symbole": "c_r",
         "type": "exponent",
         "default_distribution": {
           "initial_guess": 1.5,
@@ -218,10 +218,13 @@
   {
     "id": "triangle_triangle",
     "icon_id": "hc_triangle_triangle_weir",
-    "formula": "C_t1 * tan( v_1 / 2 ) * sqrt( 2 * g ) * (ispos( h - k_1 ) * ( h - k_1 )) ^ c_1 +  C_t2 * tan( v_2 / 2 ) * sqrt( 2 * g ) * (ispos( h - k_2 ) * ( h - k_2 )) ^ c_2 - C_t1 * tan( v_1 / 2 ) * sqrt( 2 * g ) * (ispos( h - k_2 ) * ( h - k_2 )) ^ c_1",
+    "formula": "C_t1 * tan( v_1 / 2 ) * sqrt( 2 * g ) * (ispos( h - k_1 ) * ( h - k_1 )) ^ c_t1 +  C_t2 * tan( v_2 / 2 ) * sqrt( 2 * g ) * (ispos( h - k_2 ) * ( h - k_2 )) ^ c_t2 - C_t1 * tan( v_1 / 2 ) * sqrt( 2 * g ) * (ispos( h - k_2 ) * ( h - k_2 )) ^ c_t1",
     "stage_symbole": "h",
     "parameters": [
       {
+        "symbole": "k_1",
+        "type": "activation_stage"
+      },      {
         "symbole": "C_t1",
         "type": "weir_coefficient",
         "default_distribution": {
@@ -229,6 +232,32 @@
           "type": "Gaussian",
           "parameters": [0.31, 0.025]
         }
+      },
+        {
+        "symbole": "v_1",
+        "type": "angle"
+      },
+        {
+        "symbole": "g",
+        "type": "gravity_acceleration",
+        "default_distribution": {
+          "initial_guess": 9.81,
+          "type": "Gaussian",
+          "parameters": [9.81, 0.005]
+        }
+      },
+      {
+        "symbole": "c_t1",
+        "type": "exponent",
+        "default_distribution": {
+          "initial_guess": 2.5,
+          "type": "Gaussian",
+          "parameters": [2.5, 0.025]
+        }
+      },
+	  {
+        "symbole": "k_2",
+        "type": "activation_stage"
       },
       {
         "symbole": "C_t2",
@@ -240,12 +269,46 @@
         }
       },
       {
-        "symbole": "v_1",
+        "symbole": "v_2",
         "type": "angle"
       },
       {
-        "symbole": "v_2",
-        "type": "angle"
+        "symbole": "c_t2",
+        "type": "exponent",
+        "default_distribution": {
+          "initial_guess": 2.5,
+          "type": "Gaussian",
+          "parameters": [2.5, 0.025]
+        }
+      }
+    ]
+  },
+  {
+    "id": "rect_weir_orifice",
+    "icon_id": "hc_rect_weir_orifice",
+    "formula": "C_r * B_r * sqrt( 2 * g ) * (ispos( h - k_1 ) * ( h - k_1 )) ^ c_1 - C_r * B_r * sqrt( 2 * g ) * (ispos( h - k_2 ) * ( h - k_2 )) ^ c_1",
+    "stage_symbole": "h",
+    "parameters": [
+      {
+        "symbole": "k_1",
+        "type": "activation_stage"
+      },
+      {
+        "symbole": "k_2",
+        "type": "activation_stage"
+      },
+      {
+        "symbole": "C_r",
+        "type": "weir_coefficient",
+        "default_distribution": {
+          "initial_guess": 0.4,
+          "type": "Gaussian",
+          "parameters": [0.4, 0.025]
+        }
+      },
+      {
+        "symbole": "B_r",
+        "type": "width"
       },
       {
         "symbole": "g",
@@ -257,24 +320,7 @@
         }
       },
       {
-        "symbole": "k_1",
-        "type": "activation_stage"
-      },
-      {
         "symbole": "c_1",
-        "type": "exponent",
-        "default_distribution": {
-          "initial_guess": 2.5,
-          "type": "Gaussian",
-          "parameters": [2.5, 0.025]
-        }
-      },
-      {
-        "symbole": "k_2",
-        "type": "activation_stage"
-      },
-      {
-        "symbole": "c_2",
         "type": "exponent",
         "default_distribution": {
           "initial_guess": 2.5,
@@ -283,22 +329,32 @@
         }
       }
     ]
-  },
+  },  
   {
     "id": "trapezoid_channel",
     "icon_id": "hc_trapezoid_channel",
-    "formula": "K_s * sqrt(S_0) * (B_w * ispos(h - b) * (h - b) + m * (ispos(h - b) * (h - b)) ^2) ^ (c+1) / (B_w + 2 * ispos(h - b) * (h - b)  * sqrt(1 + m^2) ) ^c",
+    "formula": "K_s * sqrt(S_0) * (B_r * ispos(h - b) * (h - b) + m * (ispos(h - b) * (h - b)) ^2) ^ (c+1) / (B_r + 2 * ispos(h - b) * (h - b)  * sqrt(1 + m^2) ) ^c",
     "stage_symbole": "h",
     "parameters": [
       {
-        "symbole": "K_s"
+        "symbole": "b",
+        "type": "activation_stage"
+      },
+      {
+        "symbole": "K_s",
+        "type": "strickler_coef"
+      },
+      {
+        "symbole": "B_r",
+        "type": "width"
+      },
+      {
+        "symbole": "m",
+        "type": "slope"
       },
       {
         "symbole": "S_0",
         "type": "slope"
-      },
-      {
-        "symbole": "b"
       },
       {
         "symbole": "c",
@@ -308,13 +364,39 @@
           "type": "Gaussian",
           "parameters": [0.67, 0.025]
         }
+      }
+    ]
+  },
+  {
+    "id": "circular_channel",
+    "icon_id": "hc_circular_channel",
+    "formula": "ispos(h-b)*ispos(r-(h-b))*K_s*sqrt(S_0)*r^(c+2)*2^(-c)*acos(1-(h-b)/r)*(1 - sin(2*acos(1-(h-b)/r)) / (2*acos(1-(h-b)/r)) )^(c+1) + isspos((h-b)-r)*isspos(2*r-(h-b))*K_s*sqrt(S_0)*r^(c+2)*2^(-c)*(3.1416-acos((h-b)/r-1))*(1 + sin(2*acos((h-b)/r-1)) / (2*3.1416 - 2*acos((h-b)/r-1)) )^(c+1)",
+    "stage_symbole": "h",
+    "parameters": [
+      {
+        "symbole": "b",
+        "type": "activation_stage"
       },
       {
-        "symbole": "m"
+        "symbole": "K_s",
+        "type": "strickler_coef"
       },
       {
-        "symbole": "B_w",
+        "symbole": "r",
         "type": "width"
+      },
+      {
+        "symbole": "S_0",
+        "type": "slope"
+      },
+      {
+        "symbole": "c",
+        "type": "exponent",
+        "default_distribution": {
+          "initial_guess": 0.67,
+          "type": "Gaussian",
+          "parameters": [0.67, 0.025]
+        }
       }
     ]
   }
