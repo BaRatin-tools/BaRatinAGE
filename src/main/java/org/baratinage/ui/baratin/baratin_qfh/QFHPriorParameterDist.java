@@ -14,12 +14,15 @@ public class QFHPriorParameterDist extends ParameterPriorDist {
 
     private static CommonParameterType[] validParameterTypes = new CommonParameterType[] {
             CommonParameterType.ACTIVATION_HEIGHT,
+            CommonParameterType.OFFSET,
             CommonParameterType.WIDTH,
-            CommonParameterType.EXPONENT,
-            CommonParameterType.WEIR_COEFFICIENT,
+            CommonParameterType.DISTANCE,
             CommonParameterType.AREA,
             CommonParameterType.SLOPE,
             CommonParameterType.ANGLE,
+            CommonParameterType.WEIR_COEFFICIENT,
+            CommonParameterType.COEFFICIENT,
+            CommonParameterType.EXPONENT,
             CommonParameterType.GRAVITY,
             CommonParameterType.STRICKLER_COEFFICIENT,
     };
