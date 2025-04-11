@@ -5,6 +5,7 @@ import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
+import java.awt.RenderingHints;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.FileInputStream;
@@ -38,8 +39,6 @@ public class SvgIcon extends JComponent implements Icon {
 
     private final Document svgDocument;
 
-    private final String sourcePath;
-
     private static Scales lastUsedScales;
     private static Scales memorizedScales;
 
@@ -57,30 +56,47 @@ public class SvgIcon extends JComponent implements Icon {
         return !s.toString().equals(memorizedScales.toString());
     }
 
-    public SvgIcon(String path, float width, float height) {
-        super();
+    private static ImageIcon initializeImageIcon(int width, int height) {
+        BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g2d = img.createGraphics();
+        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-        this.sourcePath = path;
-        this.width = width;
-        this.height = height;
+        g2d.setColor(new Color(
+                220,
+                220,
+                220));
 
-        Document doc = null;
+        g2d.fillRoundRect(0, 0, width, height, 10, 10);
+        g2d.dispose();
+        ImageIcon icon = new ImageIcon(img);
+        return icon;
+    }
+
+    private static Document getSvgDocument(String path) {
         try {
             String parser = XMLResourceDescriptor.getXMLParserClassName();
             SAXSVGDocumentFactory f = new SAXSVGDocumentFactory(parser);
-            File file = new File(sourcePath);
+            File file = new File(path);
             InputStream inputStream = new FileInputStream(file);
-            doc = f.createDocument(file.getName(), inputStream);
+            Document doc = f.createDocument(file.getName(), inputStream);
+            return doc;
         } catch (IOException ex) {
             ConsoleLogger.error(ex);
         }
+        return null;
+    }
 
-        svgDocument = doc;
+    public SvgIcon(String path, float width, float height) {
+        super();
 
-        actualIcon = new ImageIcon();
+        this.width = width;
+        this.height = height;
+
+        actualIcon = initializeImageIcon((int) width, (int) height);
+
+        svgDocument = getSvgDocument(path);
 
         buildIcon();
-
     };
 
     public void setSvgTagAttribute(String attrName, Color attrValue) {
@@ -92,6 +108,9 @@ public class SvgIcon extends JComponent implements Icon {
     }
 
     public void setSvgTagAttribute(String attrName, String attrValue) {
+        if (svgDocument == null) {
+            return;
+        }
         NodeList nodes = svgDocument.getChildNodes();
         int n = nodes.getLength();
         for (int k = 0; k < n; k++) {
@@ -146,6 +165,10 @@ public class SvgIcon extends JComponent implements Icon {
     }
 
     private void buildIcon() {
+
+        if (svgDocument == null) {
+            return;
+        }
 
         float w = width;
         float h = height;
