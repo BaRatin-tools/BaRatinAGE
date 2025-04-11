@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg width="24" height="24" fill="currentColor" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" version="1.1" viewBox="0 0 24 24" xml:space="preserve"
-  xmlns="http://www.w3.org/2000/svg">
-  <rect x="1.7768" y="14.418" width="20.5" height="4.7075" fill="#7cb4df" stroke="none"/>
-  <path d="m1.75 4.5v15h20.5v-15" fill="none" stroke-linecap="round" stroke-width="1"/>
+<svg width="24" height="24" fill="currentColor" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" version="1.1" viewBox="0 0 24 24" xml:space="preserve" xmlns="http://www.w3.org/2000/svg">
+  <rect x="1.7768" y="8.5" width="20.5" height="11" fill="#7cb4df" stroke="none" stroke-width="2.2929"/>
+  <path d="m1.75 4.5v15h20.5v-15" fill="none" stroke-linecap="round"/>
 
-  <path d="m22.214 19.924v-3.9668h-7.2227l-1.332 2.3066h-3.3184l-1.332-2.3066h-7.2227v3.9668h10.213z" stroke="none"/>
+  <path d="m22.214 19.5v-6.5h-5.9791l-2.5756 3.7796h-3.3184l-2.4086-3.7796h-6.1461v6.5h10.213z" stroke="none" stroke-width="1.9201"/>
 </svg>
- 
