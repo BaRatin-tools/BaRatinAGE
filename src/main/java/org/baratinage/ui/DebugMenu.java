@@ -176,7 +176,7 @@ public class DebugMenu extends JMenu {
             ConsoleLogger.log("Writing powershell script ...");
             WriteFile.writeLines(scriptPath, new String[] { pwsCommand });
             ConsoleLogger.log("Executing powershell script ...");
-            String command = "powershell.exe -ExecutionPolicy Bypass -File " + scriptPath;
+            String[] command = new String[] { "powershell.exe", "-ExecutionPolicy", "Bypass", "-File", scriptPath };
             Process powerShellProcess = Runtime.getRuntime().exec(command);
             exitCode = powerShellProcess.waitFor();
             ConsoleLogger.log("PowerShell script exited with code: " + exitCode);
