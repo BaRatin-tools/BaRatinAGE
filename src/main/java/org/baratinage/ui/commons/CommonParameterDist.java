@@ -50,11 +50,23 @@ public class CommonParameterDist {
                 EXPONENT(
                                 "exponent",
                                 AppSetup.ICONS.getCustomAppImageIcon("exponent.svg"),
-                                "-", "c"),
+                                "-", "e"),
                 WEIR_COEFFICIENT(
                                 "weir_coefficient",
                                 AppSetup.ICONS.getCustomAppImageIcon("weir_coeff.svg"),
-                                "-", "C<sub>r</sub>");
+                                "-", "C<sub>r</sub>"),
+                COEFFICIENT(
+                                "coefficient",
+                                AppSetup.ICONS.getCustomAppImageIcon("coefficient.svg"),
+                                "-", "k"),
+                DISTANCE(
+                                "distance",
+                                AppSetup.ICONS.getCustomAppImageIcon("distance.svg"),
+                                "m", "d"),
+                OFFSET(
+                                "offset",
+                                AppSetup.ICONS.getCustomAppImageIcon("offset.svg"),
+                                "m", "\u03B4");
 
                 public final String id;
                 public final SvgIcon icon;
