@@ -2,8 +2,10 @@ package org.baratinage.ui.baratin.baratin_qfh;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
+// import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
@@ -25,7 +27,7 @@ import org.json.JSONObject;
 public class QFHPriors extends JScrollPane implements IPriors, ChangeListener {
 
     private final HashMap<String, QFHPriorParameterDist> priorParDists;
-    private final HashSet<String> usedParNames;
+    private final Set<String> usedParNames;
 
     private final GridPanel mainPanel;
     private final List<JLabel> headers;
@@ -39,7 +41,7 @@ public class QFHPriors extends JScrollPane implements IPriors, ChangeListener {
         setViewportView(mainPanel);
 
         priorParDists = new HashMap<>();
-        usedParNames = new HashSet<>();
+        usedParNames = new LinkedHashSet<>();
 
         mainPanel.setColWeight(1, 1);
         mainPanel.setColWeight(2, 1);
@@ -91,7 +93,7 @@ public class QFHPriors extends JScrollPane implements IPriors, ChangeListener {
         updatePanel();
     }
 
-    public void updateUsedParNames(HashSet<String> newUsedParNames) {
+    public void updateUsedParNames(Set<String> newUsedParNames) {
         usedParNames.clear();
         for (String parName : newUsedParNames) {
             if (!priorParDists.containsKey(parName)) {
