@@ -49,11 +49,11 @@ public class HydraulicConfigurationQFH extends BamItem
 
         modelDefinition.addChangeListener(l -> {
             fireChangeListeners();
-            priorRatingCurve.checkSync();
             if (!modelDefinition.isModelDefinitionValid()) {
                 priors = null;
                 priorsPanel.clear();
                 priorsPanel.updateUI();
+                priorRatingCurve.checkSync();
                 return;
             }
             if (!modelDefinition.priorsPanel.equals(priors)) {
@@ -62,6 +62,7 @@ public class HydraulicConfigurationQFH extends BamItem
                 priorsPanel.appendChild(priors);
                 priorsPanel.updateUI();
             }
+            priorRatingCurve.checkSync();
         });
         modelDefinition.fireChangeListeners();
 
