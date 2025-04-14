@@ -31,6 +31,15 @@ public record QFHPreset(String id,
 
     static public final List<QFHPreset> PRESETS = new ArrayList<>();
 
+    static public QFHPreset getPreset(String id) {
+        for (QFHPreset p : PRESETS) {
+            if (p.id.equals(id)) {
+                return p;
+            }
+        }
+        return null;
+    }
+
     static {
         try {
             String jsonContent = ReadFile.readTextFile("resources/baratin_qfh_presets.json");

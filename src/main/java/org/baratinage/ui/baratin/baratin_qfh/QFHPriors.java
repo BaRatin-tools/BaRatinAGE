@@ -2,7 +2,6 @@ package org.baratinage.ui.baratin.baratin_qfh;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-// import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -178,7 +177,6 @@ public class QFHPriors extends JScrollPane implements IPriors, ChangeListener {
     }
 
     public JSONArray toJSON() {
-        // PriorParDists
         JSONArray json = new JSONArray();
         for (String key : priorParDists.keySet()) {
             JSONObject j = new JSONObject();
@@ -189,7 +187,7 @@ public class QFHPriors extends JScrollPane implements IPriors, ChangeListener {
         return json;
     }
 
-    public void fromJSON(JSONArray json) {
+    public void fromJSON(JSONArray json, boolean shouldEnableParTypeConfig) {
         for (int k = 0; k < json.length(); k++) {
             JSONObject j = json.getJSONObject(k);
             String key = j.optString("key", "");
@@ -197,7 +195,10 @@ public class QFHPriors extends JScrollPane implements IPriors, ChangeListener {
             if (!priorParDists.containsKey(key)) {
                 continue;
             }
-            priorParDists.get(key).fromJSON(priorParDistConfig);
+            QFHPriorParameterDist par = priorParDists.get(key);
+            par.fromJSON(priorParDistConfig);
+            par.knownParameterType.setEnabled(shouldEnableParTypeConfig);
         }
+        updatePanel();
     }
 }
