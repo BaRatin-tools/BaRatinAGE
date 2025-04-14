@@ -102,7 +102,9 @@ public class BamConfig {
         Parameter[] parameters = priors.getParameters();
         if (parameters != null) {
             for (Parameter p : parameters) {
-                jsonParameterArray.put(getConfig(p));
+                if (p != null) {
+                    jsonParameterArray.put(getConfig(p));
+                }
             }
         }
         JSONObject json = new JSONObject();
