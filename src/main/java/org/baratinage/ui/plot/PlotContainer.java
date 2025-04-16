@@ -1,6 +1,5 @@
 package org.baratinage.ui.plot;
 
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Toolkit;
@@ -32,6 +31,7 @@ import org.jfree.chart.JFreeChart;
 import org.jfree.data.Range;
 import org.jfree.svg.SVGGraphics2D;
 import org.baratinage.ui.component.CommonDialog;
+import org.baratinage.ui.component.SimpleCheckbox;
 import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.utils.ConsoleLogger;
 import org.baratinage.AppSetup;
@@ -43,7 +43,6 @@ public class PlotContainer extends RowColPanel {
     private JFreeChart chart;
     private RowColPanel chartPanelContainer;
     private ChartPanel chartPanel;
-    private Color backgroundColor = Color.WHITE;
 
     private final JPopupMenu popupMenu;
     public final RowColPanel toolsPanel;
@@ -80,8 +79,15 @@ public class PlotContainer extends RowColPanel {
         topPanel.appendChild(toolsPanel, 1);
         topPanel.appendChild(actionPanel, 1);
 
-        JButton btnWindowPlot = new JButton();
+        SimpleCheckbox cbShowLegend = new SimpleCheckbox();
+        cbShowLegend.setSelected(true);
+        cbShowLegend.addChangeListener((e) -> {
+            if (plot != null) {
+                plot.setIncludeLegend(cbShowLegend.isSelected());
+            }
+        });
 
+        JButton btnWindowPlot = new JButton();
         btnWindowPlot.setIcon(AppSetup.ICONS.EXTERNAL);
         btnWindowPlot.addActionListener((e) -> {
             windowPlot();
@@ -107,6 +113,7 @@ public class PlotContainer extends RowColPanel {
             copyToClipboard();
         });
 
+        toolsPanel.appendChild(cbShowLegend);
         actionPanel.appendChild(btnWindowPlot);
         actionPanel.appendChild(btnSaveAsSvg);
         actionPanel.appendChild(btnSaveAsPng);
@@ -136,15 +143,14 @@ public class PlotContainer extends RowColPanel {
         });
         popupMenu.add(menuCopyClipboard);
 
-        setBackground(backgroundColor);
-        topPanel.setBackground(backgroundColor);
         topPanel.setPadding(10);
 
-        toolsPanel.setBackground(backgroundColor);
-        actionPanel.setBackground(backgroundColor);
         toolsPanel.setGap(5);
         actionPanel.setGap(5);
 
+        T.t(this, () -> {
+            cbShowLegend.setText(T.text("show_legend"));
+        });
         T.t(this, menuWindowPlot, false, "window_plot");
         T.t(this, menuSaveSvg, false, "to_svg");
         T.t(this, menuSavePng, false, "to_png");
@@ -194,7 +200,9 @@ public class PlotContainer extends RowColPanel {
 
                 }
             }
+
         };
+
         chartPanel.restoreAutoBounds();
 
         chartPanel.setMinimumDrawWidth(100);
@@ -207,6 +215,15 @@ public class PlotContainer extends RowColPanel {
 
         chartPanelContainer.clear();
         chartPanelContainer.appendChild(chartPanel, 1);
+
+    }
+
+    public ChartPanel getChartPanel() {
+        return chartPanel;
+    }
+
+    public Plot getPlot() {
+        return plot;
     }
 
     private String getSvgXML() {

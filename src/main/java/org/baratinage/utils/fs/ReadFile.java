@@ -200,12 +200,13 @@ public class ReadFile {
             columns.add(column);
         }
 
-        List<Integer> skippedIndex = new ArrayList<>();
+        lastSkippedIndices = new ArrayList<>();
+        lastTotalNumberOfRows = nRow;
         for (int i = 0; i < nRow; i++) {
             int k = nRowSkip + i;
             String[] row = parseString(lines[k], sep, trim);
             if (row.length != nCol) {
-                skippedIndex.add(i);
+                lastSkippedIndices.add(i);
                 continue;
             }
             for (int j = 0; j < nCol; j++) {
@@ -213,7 +214,7 @@ public class ReadFile {
             }
         }
 
-        int nSkipped = skippedIndex.size();
+        int nSkipped = lastSkippedIndices.size();
         if (nSkipped > 0) {
             ConsoleLogger.warn(nSkipped + " row(s) skipped: "
                     + "skipping caused by unexpected number of elements.");
@@ -222,7 +223,7 @@ public class ReadFile {
                 String[] newCol = new String[nRow - nSkipped];
                 int k = 0;
                 for (int i = 0; i < nRow; i++) {
-                    if (!skippedIndex.contains(i)) {
+                    if (!lastSkippedIndices.contains(i)) {
                         newCol[k] = oldCol[i];
                         k++;
                     }
@@ -232,6 +233,16 @@ public class ReadFile {
         }
 
         return columns;
+    }
+
+    private static List<Integer> lastSkippedIndices = new ArrayList<>();
+    private static int lastTotalNumberOfRows = Integer.MAX_VALUE;
+
+    public static boolean didLastReadSkipRows(boolean includeLast) {
+        if (!includeLast && lastSkippedIndices.size() == 1) {
+            return lastSkippedIndices.get(0) != lastTotalNumberOfRows;
+        }
+        return lastSkippedIndices.size() > 0;
     }
 
     /**

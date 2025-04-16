@@ -6,9 +6,9 @@ import java.awt.Component;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 
+import javax.swing.AbstractButton;
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
-import javax.swing.JSeparator;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
@@ -16,6 +16,7 @@ import org.baratinage.AppSetup;
 import org.baratinage.translation.T;
 import org.baratinage.ui.commons.ExplorerItem;
 import org.baratinage.ui.component.SimpleTextField;
+import org.baratinage.ui.component.SimpleSep;
 import org.baratinage.ui.component.Title;
 import org.baratinage.ui.container.GridPanel;
 import org.baratinage.ui.container.RowColPanel;
@@ -45,8 +46,8 @@ abstract public class BamItem extends GridPanel {
         bamItemNameField = new SimpleTextField();
         bamItemDescriptionField = new SimpleTextField();
 
-        cloneButton = new JButton();
-        deleteButton = new JButton();
+        cloneButton = getCloneBamItemBtn(new JButton(), true, true);
+        deleteButton = getDeleteBamItemBtn(new JButton(), false, true);
 
         headerPanel = new GridPanel();
         headerPanel.setGap(5);
@@ -63,7 +64,7 @@ abstract public class BamItem extends GridPanel {
         contentPanel = new RowColPanel();
 
         insertChild(headerPanel, 0, 0);
-        insertChild(new JSeparator(), 0, 1);
+        insertChild(new SimpleSep(), 0, 1);
         insertChild(contentPanel, 0, 2);
 
         setColWeight(0, 1);
@@ -91,30 +92,6 @@ abstract public class BamItem extends GridPanel {
             }
         });
 
-        cloneButton.addActionListener((e) -> {
-            BamItem clonedBamItem = TYPE.buildBamItem();
-            clonedBamItem.load(save(false));
-            clonedBamItem.bamItemNameField.setText(bamItemNameField.getText());
-            clonedBamItem.bamItemDescriptionField.setText(bamItemDescriptionField.getText());
-            clonedBamItem.setCopyName();
-            PROJECT.addBamItem(clonedBamItem);
-        });
-
-        deleteButton.addActionListener((e) -> {
-            int response = JOptionPane.showConfirmDialog(this,
-                    T.html("delete_component_question", bamItemNameField.getText()),
-                    T.text("warning"),
-                    JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
-            if (response == JOptionPane.YES_OPTION) {
-                PROJECT.deleteBamItem(this);
-            }
-        });
-
-        T.t(this, cloneButton, false, "duplicate");
-
-        cloneButton.setIcon(AppSetup.ICONS.COPY);
-        deleteButton.setIcon(AppSetup.ICONS.TRASH);
-
         bamItemTypeLabel.setIcon(TYPE.getIcon());
         T.t(this, bamItemTypeLabel, false, TYPE.id);
         T.t(this, () -> {
@@ -128,9 +105,9 @@ abstract public class BamItem extends GridPanel {
         this.contentPanel.appendChild(component);
     }
 
-    public abstract BamConfigRecord save(boolean writeFiles);
+    public abstract BamConfig save(boolean writeFiles);
 
-    public abstract void load(BamConfigRecord bamItemBackup);
+    public abstract void load(BamConfig config);
 
     @Override
     public String toString() {
@@ -158,4 +135,65 @@ abstract public class BamItem extends GridPanel {
         String newName = T.text("copy_of", oldName);
         bamItemNameField.setText(newName);
     }
+
+    public <A extends AbstractButton> A getCloneBamItemBtn(A btn, boolean label, boolean tooltip) {
+        btn.addActionListener((e) -> {
+            BamItem clonedBamItem = PROJECT.addBamItem(TYPE);
+            clonedBamItem.load(save(false));
+            clonedBamItem.bamItemNameField.setText(bamItemNameField.getText());
+            clonedBamItem.bamItemDescriptionField.setText(bamItemDescriptionField.getText());
+            clonedBamItem.setCopyName();
+        });
+        btn.setIcon(AppSetup.ICONS.COPY);
+        if (label) {
+            T.t(this, btn, false, "duplicate");
+        }
+        if (tooltip) {
+            T.t(this, () -> {
+                btn.setToolTipText(T.text("duplicate"));
+            });
+        }
+        return btn;
+    }
+
+    public <A extends AbstractButton> A getDeleteBamItemBtn(A btn, boolean label, boolean tooltip) {
+        btn.addActionListener((e) -> {
+            int response = JOptionPane.showConfirmDialog(this,
+                    T.html("delete_component_question", bamItemNameField.getText()),
+                    T.text("warning"),
+                    JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+            if (response == JOptionPane.YES_OPTION) {
+                PROJECT.deleteBamItem(this);
+            }
+        });
+        btn.setIcon(AppSetup.ICONS.TRASH);
+        if (label) {
+            T.t(this, btn, false, "delete");
+        }
+        if (tooltip) {
+            T.t(this, () -> {
+                btn.setToolTipText(T.text("delete"));
+            });
+        }
+        return btn;
+    }
+
+    public static <A extends AbstractButton> A getAddBamItemBtn(
+            A btn, BamProject project, BamItemType bamItemType,
+            boolean label, boolean tooltip) {
+        btn.addActionListener((e) -> {
+            project.addBamItem(bamItemType);
+        });
+        btn.setIcon(bamItemType.getAddIcon());
+        if (label) {
+            T.t(project, btn, false, "create_" + bamItemType.id);
+        }
+        if (tooltip) {
+            T.t(project, () -> {
+                btn.setToolTipText(T.text("create_" + bamItemType.id));
+            });
+        }
+        return btn;
+    }
+
 }

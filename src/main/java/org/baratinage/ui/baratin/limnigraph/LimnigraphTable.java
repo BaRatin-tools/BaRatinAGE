@@ -1,158 +1,61 @@
 package org.baratinage.ui.baratin.limnigraph;
 
-import java.awt.Component;
-import java.awt.Dimension;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.List;
 
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.table.AbstractTableModel;
-import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.JTableHeader;
-import javax.swing.table.TableColumnModel;
+import javax.swing.JButton;
 
-import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.translation.T;
+import org.baratinage.ui.commons.ColumnHeaderDescription;
+import org.baratinage.ui.component.DataTable;
 
-public class LimnigraphTable extends RowColPanel {
-
-    private LimniTableModel dataModel;
-    private JTable table;
+public class LimnigraphTable extends DataTable {
 
     public LimnigraphTable() {
 
-        dataModel = new LimniTableModel();
-        table = new JTable(dataModel);
-        table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+        ColumnHeaderDescription columnsDescription = new ColumnHeaderDescription();
 
-        setHeaders(new String[] { "data/time", "h" });
-
-        table.setDefaultRenderer(LocalDateTime.class, new DateTimeCellRenderer("yyyy-MM-dd HH:mm:ss"));
-
-        table.getTableHeader().setReorderingAllowed(false);
-        table.setCellSelectionEnabled(true);
-
-        JScrollPane scrollpane = new JScrollPane(table);
-
-        Dimension defaultPrefDim = scrollpane.getPreferredSize();
-        defaultPrefDim.height = 300;
-        defaultPrefDim.width = 300;
-        scrollpane.setPreferredSize(defaultPrefDim);
-
-        appendChild(scrollpane);
-
-        T.t(this, () -> {
-            if (dataModel.limniDataset == null) {
-                setHeaders(new String[] { "" });
-                return;
-            }
-            setHeaders(dataModel.limniDataset.getHeaders());
+        columnsDescription.addColumnDesc("Time [yyyy-MM-dd hh:mm:ss]", () -> {
+            return T.text("time_and_date");
+        });
+        columnsDescription.addColumnDesc("Stage [m]", () -> {
+            return T.text("stage");
+        });
+        columnsDescription.addColumnDesc("Stage_low_0.025 [m]", () -> {
+            return T.text("percentile_0025");
+        });
+        columnsDescription.addColumnDesc("Stage_low_0.975 [m]", () -> {
+            return T.text("percentile_0975");
         });
 
+        JButton showHeaderDescription = new JButton();
+        showHeaderDescription.addActionListener(l -> {
+            columnsDescription.openDialog(T.text("limnigraph"));
+        });
+        T.t(this, showHeaderDescription, false, "table_headers_desc");
+
+        toolsPanel.appendChild(showHeaderDescription);
+
     }
 
-    public void set(LimnigraphDataset limniDataset) {
-        dataModel.set(limniDataset);
-        dataModel.fireTableStructureChanged();
-        setHeaders(limniDataset.getHeaders());
+    public void updateTable(LocalDateTime[] dateTimeVector, double[] stage, double[] stage_low, double[] stage_high) {
+        clearColumns();
+        addColumn(dateTimeVector);
+        addColumn(stage);
+        if (stage_low != null && stage_high != null) {
+            addColumn(stage_low);
+            addColumn(stage_high);
+        }
+        updateData();
+
+        setHeader(0, "Time [yyyy-MM-dd hh:mm:ss]");
+        setHeader(1, "Stage [m]");
+        if (stage_low != null && stage_high != null) {
+            setHeader(2, "Stage_low_0.025 [m]");
+            setHeader(3, "Stage_high_0.975 [m]");
+        }
+        // setHeaderWidth(100);
+        // setHeaderWidth(0, 150);
+        updateHeader();
+
     }
-
-    public TableColumnModel getTableColumnModel() {
-        JTableHeader tableHeader = table.getTableHeader();
-        return tableHeader.getColumnModel();
-    }
-
-    public void setHeaders(String[] headers) {
-        TableColumnModel tableColModel = getTableColumnModel();
-        int n = Math.min(headers.length, tableColModel.getColumnCount());
-        for (int k = 0; k < n; k++) {
-            tableColModel.getColumn(k).setHeaderValue(headers[k]);
-        }
-        tableColModel.getColumn(0).setHeaderValue(T.text("date_time"));
-
-        table.getTableHeader().updateUI();
-    }
-
-    public AbstractTableModel getTableModel() {
-        return dataModel;
-    }
-
-    private class LimniTableModel extends AbstractTableModel {
-
-        LimnigraphDataset limniDataset;
-
-        public void set(LimnigraphDataset limniDataset) {
-            this.limniDataset = limniDataset;
-        }
-
-        @Override
-        public Class<?> getColumnClass(int index) {
-            return index == 0 ? LocalDateTime.class : Double.class;
-        }
-
-        @Override
-        public int getRowCount() {
-            return limniDataset == null ? 0 : limniDataset.getNumberOfRows();
-        }
-
-        @Override
-        public int getColumnCount() {
-            return limniDataset == null ? 2 : limniDataset.getNumberOfColumns();
-        }
-
-        @Override
-        public Object getValueAt(int rowIndex, int columnIndex) {
-            if (rowIndex >= limniDataset.getNumberOfRows()) {
-                return null;
-            }
-            if (columnIndex - 1 >= limniDataset.getNumberOfColumns()) {
-                return null;
-            }
-
-            if (columnIndex == 0)
-                return limniDataset.getDateTime()[rowIndex];
-            List<double[]> data = limniDataset.getStageErrMatrix();
-            if (data.size() >= columnIndex) {
-                double[] column = data.get(columnIndex - 1);
-                if (column.length > rowIndex) {
-                    return column[rowIndex];
-                }
-            }
-            return null;
-        }
-
-        @Override
-        public void setValueAt(Object value, int rowIndex, int columnIndex) {
-            // do nothing for now
-            fireTableCellUpdated(rowIndex, columnIndex);
-        }
-
-        @Override
-        public boolean isCellEditable(int rowIndex, int columnIndex) {
-            return false;
-        }
-    }
-
-    private class DateTimeCellRenderer extends DefaultTableCellRenderer {
-
-        private DateTimeFormatter formatter;
-
-        public DateTimeCellRenderer(String printFormat) {
-            formatter = DateTimeFormatter.ofPattern(printFormat);
-        }
-
-        public Component getTableCellRendererComponent(JTable table,
-                Object value, boolean isSelected, boolean hasFocus,
-                int row, int column) {
-            if (value instanceof LocalDateTime) {
-                LocalDateTime ldt = (LocalDateTime) value;
-                value = ldt.format(formatter);
-            }
-            return super.getTableCellRendererComponent(table, value, isSelected,
-                    hasFocus, row, column);
-        }
-    }
-
 }

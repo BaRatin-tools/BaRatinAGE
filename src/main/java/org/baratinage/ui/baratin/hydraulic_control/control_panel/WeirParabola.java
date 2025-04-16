@@ -1,5 +1,6 @@
 package org.baratinage.ui.baratin.hydraulic_control.control_panel;
 
+import org.baratinage.ui.commons.CommonParameterDistSimplified;
 import org.baratinage.ui.commons.ParameterPriorDistSimplified;
 import org.baratinage.translation.T;
 
@@ -15,34 +16,16 @@ public class WeirParabola extends PriorControlPanel {
     public WeirParabola() {
         super(
                 2,
-                "Q=C<sub>p</sub>B<sub>p</sub>H<sub>p</sub><sup>-1/2</sup>(2g)<sup>1/2</sup>(h-b)<sup>c</sup>&nbsp;(h>k)");
+                "Q=C<sub>p</sub>B<sub>p</sub>H<sub>p</sub><sup>-1/2</sup>(2g)<sup>1/2</sup>(h-b)<sup>c</sup>&nbsp;(h>\u03BA)");
 
-        activationHeight = new ParameterPriorDistSimplified();
-        activationHeight.setIcon(activationHeightIcon);
-        activationHeight.setSymbolUnitLabels("k", "m");
-
-        weirCoef = new ParameterPriorDistSimplified();
-        weirCoef.setIcon(weirCoefPIcon);
-        weirCoef.setSymbolUnitLabels("C<sub>p</sub>", "-");
+        activationHeight = CommonParameterDistSimplified.getActivationHeight();
+        weirCoef = CommonParameterDistSimplified.getWeirCoeff("p");
         weirCoef.setDefaultValues(0.22, 0.05);
-
-        width = new ParameterPriorDistSimplified();
-        width.setIcon(parabolaWidthIcon);
-        width.setSymbolUnitLabels("B<sub>p</sub>", "m");
-
-        height = new ParameterPriorDistSimplified();
-        height.setIcon(parabolaHeightIcon);
-        height.setSymbolUnitLabels("H<sub>p</sub>", "m");
-
-        gravity = new ParameterPriorDistSimplified();
-        gravity.setIcon(gravityIcon);
-        gravity.setSymbolUnitLabels("g", "m.s<sup>-2</sup>");
-        gravity.setDefaultValues(9.81, 0.01);
+        width = CommonParameterDistSimplified.getParabolaWidth();
+        height = CommonParameterDistSimplified.getHeight("p");
+        gravity = CommonParameterDistSimplified.getGravity();
         gravity.setLocalLock(true);
-
-        exponent = new ParameterPriorDistSimplified();
-        exponent.setIcon(exponentIcon);
-        exponent.setSymbolUnitLabels("c", "-");
+        exponent = CommonParameterDistSimplified.getExponent();
         exponent.setDefaultValues(2, 0.05);
         exponent.setLocalLock(true);
 

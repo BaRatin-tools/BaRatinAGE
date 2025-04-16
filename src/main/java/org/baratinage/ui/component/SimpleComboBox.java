@@ -60,9 +60,18 @@ public class SimpleComboBox extends RowColPanel {
         appendChild(comboBox);
     }
 
+    public void setChangeListenersEnabled(boolean enabled) {
+        changeListenersDisabled = !enabled;
+    }
+
     @Override
     public void setEnabled(boolean enabled) {
         comboBox.setEnabled(enabled);
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return comboBox.isEnabled();
     }
 
     public void setItems(String[] items) {
@@ -157,18 +166,33 @@ public class SimpleComboBox extends RowColPanel {
             return -1;
         }
         int k = model.getIndexOf(item);
-        return emptyLabel != null ? k - 1 : k;
+        return remEmptyLabelOffset(k);
+    }
+
+    public JLabel getSelectedItemLabel() {
+        int index = getSelectedIndex();
+        if (index == -1) {
+            return null;
+        }
+        return model.getElementAt(addEmptyLabelOffset(index));
     }
 
     public int getItemCount() {
-        int size = model.getSize();
-        return emptyLabel != null ? size - 1 : size;
+        return remEmptyLabelOffset(model.getSize());
     }
 
     public void setValidityView(boolean isValid) {
         // renderer.isValid = isValid;
         comboBox.setBackground(isValid ? REGULAR_BG_COLOR : INVALID_BG_COLOR);
         repaint();
+    }
+
+    private int addEmptyLabelOffset(int index) {
+        return emptyLabel == null ? index : index + 1;
+    }
+
+    private int remEmptyLabelOffset(int index) {
+        return emptyLabel == null ? index : index - 1;
     }
 
     private final List<ChangeListener> changeListeners = new ArrayList<>();

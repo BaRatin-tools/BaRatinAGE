@@ -1,11 +1,11 @@
 package org.baratinage.ui;
 
 import javax.swing.JButton;
-import javax.swing.JSeparator;
 import javax.swing.JToolBar;
 
 import org.baratinage.AppSetup;
 import org.baratinage.translation.T;
+import org.baratinage.ui.component.SimpleSep;
 import org.baratinage.ui.container.RowColPanel;
 
 public class MainToolbars extends RowColPanel {
@@ -26,7 +26,7 @@ public class MainToolbars extends RowColPanel {
         bamItemTools = new JToolBar();
 
         appendChild(fileTools, 0);
-        appendChild(new JSeparator(), 0);
+        appendChild(new SimpleSep(true), 0);
         appendChild(bamItemTools, 1);
 
         newProjectButton = new JButton();

@@ -5,9 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.TreeSet;
 
-import javax.swing.JButton;
-import javax.swing.JSeparator;
-
 import org.baratinage.AppSetup;
 import org.baratinage.jbam.PredictionConfig;
 import org.baratinage.jbam.PredictionInput;
@@ -15,7 +12,7 @@ import org.baratinage.jbam.PredictionOutput;
 import org.baratinage.jbam.PredictionResult;
 import org.baratinage.jbam.PredictionState;
 import org.baratinage.ui.bam.BamItem;
-import org.baratinage.ui.bam.BamConfigRecord;
+import org.baratinage.ui.bam.BamConfig;
 import org.baratinage.ui.bam.BamItemParent;
 import org.baratinage.ui.bam.BamItemType;
 import org.baratinage.ui.bam.BamProjectLoader;
@@ -23,10 +20,12 @@ import org.baratinage.ui.bam.IPredictionMaster;
 import org.baratinage.ui.bam.PredExp;
 import org.baratinage.ui.bam.PredExpSet;
 import org.baratinage.ui.bam.RunConfigAndRes;
+import org.baratinage.ui.baratin.hydrograph.HydrographPlot;
+import org.baratinage.ui.baratin.hydrograph.HydrographTable;
 import org.baratinage.ui.bam.RunBam;
 import org.baratinage.ui.commons.ExtraDataset;
 import org.baratinage.ui.commons.MsgPanel;
-import org.baratinage.ui.component.DataTable;
+import org.baratinage.ui.component.SimpleSep;
 import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.ui.container.TabContainer;
 import org.baratinage.ui.container.RowColPanel.AXIS;
@@ -42,17 +41,14 @@ public class Hydrograph extends BamItem implements IPredictionMaster {
 
     public final RunBam runBam;
     private final HydrographPlot plotPanel;
-    private final DataTable tablePanel;
+    private final HydrographTable tablePanel;
     private final RowColPanel outdatedPanel;
 
     private final BamItemParent ratingCurveParent;
     private final BamItemParent limnigraphParent;
 
-    // private RatingCurve currentRatingCurve;
     private Limnigraph currentLimnigraph;
     private RunConfigAndRes currentConfigAndRes;
-
-    private BamConfigRecord backup;
 
     private ExtraDataset extraData;
 
@@ -85,7 +81,6 @@ public class Hydrograph extends BamItem implements IPredictionMaster {
             extraData = new ExtraDataset(
                     currentLimnigraph.getDateTimeExtraData(),
                     currentLimnigraph.getMissingValuesExtraData());
-            backup = save(true);
             currentConfigAndRes = res;
             buildPlot();
             ratingCurveParent.updateBackup();
@@ -96,14 +91,14 @@ public class Hydrograph extends BamItem implements IPredictionMaster {
         RowColPanel parentItemPanel = new RowColPanel();
 
         parentItemPanel.appendChild(ratingCurveParent, 1);
-        parentItemPanel.appendChild(new JSeparator(JSeparator.VERTICAL), 0);
+        parentItemPanel.appendChild(new SimpleSep(true), 0);
         parentItemPanel.appendChild(limnigraphParent, 1);
-        parentItemPanel.appendChild(new JSeparator(JSeparator.VERTICAL), 0);
+        parentItemPanel.appendChild(new SimpleSep(true), 0);
 
         RowColPanel content = new RowColPanel(RowColPanel.AXIS.COL);
 
         plotPanel = new HydrographPlot();
-        tablePanel = new DataTable();
+        tablePanel = new HydrographTable();
 
         TabContainer tabs = new TabContainer();
         tabs.addTab("plot", TYPE.getIcon(), plotPanel);
@@ -115,7 +110,7 @@ public class Hydrograph extends BamItem implements IPredictionMaster {
         outdatedPanel.setColWeight(0, 1);
 
         content.appendChild(parentItemPanel, 0);
-        content.appendChild(new JSeparator(JSeparator.HORIZONTAL), 0);
+        content.appendChild(new SimpleSep(), 0);
         content.appendChild(outdatedPanel, 0);
         content.appendChild(runBam.runButton, 0, 5);
         content.appendChild(tabs, 1);
@@ -123,7 +118,8 @@ public class Hydrograph extends BamItem implements IPredictionMaster {
 
         T.updateHierarchy(this, runBam);
         T.updateHierarchy(this, plotPanel);
-        T.updateHierarchy(this, outdatedPanel);
+        T.updateHierarchy(this, ratingCurveParent);
+        T.updateHierarchy(this, limnigraphParent);
         T.t(runBam, runBam.runButton, false, "compute_qt");
         T.t(this, () -> {
             tabs.setTitleAt(0, T.text("chart"));
@@ -141,85 +137,66 @@ public class Hydrograph extends BamItem implements IPredictionMaster {
 
     private void checkSync() {
 
-        List<MsgPanel> warnings = new ArrayList<>();
-
         ratingCurveParent.updateSyncStatus();
         limnigraphParent.updateSyncStatus();
-        if (!ratingCurveParent.getSyncStatus()) {
-            warnings.add(ratingCurveParent.getOutOfSyncMessage());
-        }
-        if (!limnigraphParent.getSyncStatus()) {
-            warnings.add(limnigraphParent.getOutOfSyncMessage());
-        }
 
-        boolean needBamRerun = warnings.size() > 0;
+        ratingCurveParent.updateValidityView();
+        limnigraphParent.updateValidityView();
+
+        List<MsgPanel> warnings = new ArrayList<>();
+        warnings.add(ratingCurveParent.getMessagePanel());
+        warnings.add(limnigraphParent.getMessagePanel());
 
         // --------------------------------------------------------------------
         // update message panel
-        T.clear(outdatedPanel);
         outdatedPanel.clear();
 
         for (MsgPanel w : warnings) {
-            outdatedPanel.appendChild(w);
-        }
-        // --------------------------------------------------------------------
-        // update run bam button
-        T.clear(runBam);
-        if (needBamRerun) {
-            T.t(runBam, runBam.runButton, false, "recompute_qt");
-            runBam.runButton.setForeground(AppSetup.COLORS.INVALID_FG);
-        } else {
-            T.t(runBam, runBam.runButton, false, "compute_qt");
-            runBam.runButton.setForeground(new JButton().getForeground());
-        }
-
-        // FIXME: check if message below is still relevant
-        // since text within warnings changes, it is necessary to
-        // call Lg.updateRegisteredComponents() so changes are accounted for.
-        // T.updateRegisteredObjects();
-
-    }
-
-    @Override
-    public BamConfigRecord save(boolean writeFiles) {
-
-        JSONObject json = new JSONObject();
-
-        json.put("ratingCurve", ratingCurveParent.toJSON());
-        json.put("limnigraph", limnigraphParent.toJSON());
-
-        String zipPath = null;
-        if (currentConfigAndRes != null) {
-            json.put("bamRunId", currentConfigAndRes.id);
-            zipPath = currentConfigAndRes.zipRun(writeFiles);
-        }
-
-        String extraDataPath = null;
-        if (extraData != null) {
-            json.put("extraDataId", extraData.id);
-            if (writeFiles) {
-                extraDataPath = extraData.writeData();
+            if (w != null) {
+                outdatedPanel.appendChild(w);
             }
         }
 
-        if (backup != null) {
-            json.put("backup", BamConfigRecord.toJSON(backup));
-        }
+        // --------------------------------------------------------------------
+        // update run bam button
+        T.clear(runBam);
 
-        BamConfigRecord rec = new BamConfigRecord(json);
-        if (zipPath != null) {
-            rec = rec.addPaths(zipPath);
-        }
-        if (extraDataPath != null) {
-            rec = rec.addPaths(extraDataPath);
-        }
-        return rec;
+        boolean needBamRerun = currentConfigAndRes != null
+                && (!ratingCurveParent.getSyncStatus() || !limnigraphParent.getSyncStatus());
+        boolean configIsInvalid = !ratingCurveParent.isConfigValid() || !limnigraphParent.isConfigValid();
+        T.t(runBam, runBam.runButton, false, currentConfigAndRes == null ? "compute_qt" : "recompute_qt");
+        runBam.runButton.setForeground(configIsInvalid || needBamRerun ? AppSetup.COLORS.INVALID_FG : null);
     }
 
     @Override
-    public void load(BamConfigRecord bamItemBackup) {
+    public BamConfig save(boolean writeFiles) {
 
-        JSONObject json = bamItemBackup.jsonObject();
+        BamConfig config = new BamConfig(0);
+
+        config.JSON.put("ratingCurve", ratingCurveParent.toJSON());
+        config.JSON.put("limnigraph", limnigraphParent.toJSON());
+
+        if (currentConfigAndRes != null) {
+            config.JSON.put("bamRunId", currentConfigAndRes.id);
+            String zipPath = currentConfigAndRes.zipRun(writeFiles);
+            config.FILE_PATHS.add(zipPath);
+        }
+
+        if (extraData != null) {
+            config.JSON.put("extraDataId", extraData.id);
+            if (writeFiles) {
+                String extraDataPath = extraData.writeData();
+                config.FILE_PATHS.add(extraDataPath);
+            }
+        }
+
+        return config;
+    }
+
+    @Override
+    public void load(BamConfig config) {
+
+        JSONObject json = config.JSON;
 
         if (json.has("ratingCurve")) {
             JSONObject o = json.getJSONObject("ratingCurve");
@@ -248,14 +225,6 @@ public class Hydrograph extends BamItem implements IPredictionMaster {
             });
         } else {
             ConsoleLogger.log("missing 'bamRunId'");
-        }
-
-        if (json.has("backup")) {
-            JSONObject backupJson = json.getJSONObject("backup");
-            backup = BamConfigRecord.fromJSON(backupJson);
-
-        } else {
-            ConsoleLogger.log("missing 'backup'");
         }
 
         TimedActions.throttle(ID, AppSetup.CONFIG.THROTTLED_DELAY_MS, this::checkSync);
@@ -358,23 +327,8 @@ public class Hydrograph extends BamItem implements IPredictionMaster {
         totalU = results.subList(3, 5);
 
         plotPanel.updatePlot(dateTimeVector, maxpost, limniU, paramU, totalU);
-        tablePanel.clearColumns();
-        tablePanel.addColumn(dateTimeVector);
-        tablePanel.addColumn(maxpost);
-        tablePanel.addColumn(paramU.get(0));
-        tablePanel.addColumn(paramU.get(1));
-        tablePanel.addColumn(totalU.get(0));
-        tablePanel.addColumn(totalU.get(1));
-        tablePanel.updateData();
+        tablePanel.updateTable(dateTimeVector, maxpost, paramU, totalU);
 
-        tablePanel.setHeaderWidth(200);
-        tablePanel.setHeader(0, "Time [yyyy-MM-dd hh:mm:ss]");
-        tablePanel.setHeader(1, "Q_maxpost [m3/s]");
-        tablePanel.setHeader(2, "Q_param_low [[m3/s]");
-        tablePanel.setHeader(3, "Q_param_high [m3/s]");
-        tablePanel.setHeader(4, "Q_total_low [m3/s]");
-        tablePanel.setHeader(5, "Q_total_high [m3/s]");
-        tablePanel.updateHeader();
     }
 
 }

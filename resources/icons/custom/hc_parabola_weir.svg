@@ -4,5 +4,5 @@
   <g transform="matrix(1 0 0 1.1012 1.6783 -.16625)" stroke-width="1.4294">
     <rect x="2.0745" y="11.048" width="16.837" height="6.5477" fill="#7cb4df" stroke="none"/>
   </g>
-  <path d="m22.338 4.5v15.066h-20.588v-15.066s4.0451 15.011 10.294 15.011c6.2491 0 10.294-15.011 10.294-15.011z" fill="#000" stroke-linecap="round"/>
+  <path d="m22.338 4.5v15.066h-20.588v-15.066s4.0451 15.011 10.294 15.011c6.2491 0 10.294-15.011 10.294-15.011z" fill="currentColor" stroke-linecap="round"/>
 </svg>

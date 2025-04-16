@@ -1,6 +1,5 @@
 package org.baratinage.ui;
 
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridBagLayout;
 import java.awt.event.ComponentAdapter;
@@ -16,7 +15,6 @@ import java.util.Locale;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
-import javax.swing.JSeparator;
 import javax.swing.JTextPane;
 import javax.swing.SwingConstants;
 
@@ -24,6 +22,7 @@ import org.baratinage.utils.ConsoleLogger;
 import org.baratinage.utils.fs.ReadFile;
 import org.baratinage.AppSetup;
 import org.baratinage.translation.T;
+import org.baratinage.ui.component.SimpleSep;
 import org.baratinage.ui.container.GridPanel;
 import org.baratinage.ui.container.RowColPanel;
 
@@ -39,11 +38,11 @@ public class AppAbout extends JDialog {
             boolean hasEmail = email != null && !email.equals("");
             String str = name;
             if (hasAffiliation && !hasEmail) {
-                str = String.format("%s (<i>%s</i>)", name, affiliation);
+                str = String.format("%s<br>(<i>%s</i>)", name, affiliation);
             } else if (!hasAffiliation && hasEmail) {
-                str = String.format("%s (<code>%s</code>)", name, email);
+                str = String.format("%s<br>(<code>%s</code>)", name, email);
             } else {
-                str = String.format("%s (<i>%s</i>, <code>%s</code>)", name, affiliation, email);
+                str = String.format("%s<br>(<i>%s</i>, <code>%s</code>)", name, affiliation, email);
             }
             return String.format("<html>%s<html>", str);
         }
@@ -93,7 +92,7 @@ public class AppAbout extends JDialog {
         JTextPane howToCiteReference = new JTextPane();
         howToCiteReference.setContentType("text/html");
         howToCiteReference.setEditable(false);
-        howToCiteReference.setBackground(Color.WHITE);
+        howToCiteReference.setBackground(AppSetup.COLORS.DEFAULT_BG);
         howToCiteReference.setText(
                 String.format(
                         "<html> <div> %s (%s).  %s <i> %s,  %s </i>,  %s <a href='%s'> %s </i> <div> </html>",
@@ -143,13 +142,13 @@ public class AppAbout extends JDialog {
 
         contentPanel.appendChild(title, 0);
         contentPanel.appendChild(description, 0);
-        contentPanel.appendChild(new JSeparator(), 0);
+        contentPanel.appendChild(new SimpleSep(), 0);
         contentPanel.appendChild(credits, 0);
         contentPanel.appendChild(creditsScrollPane, 1);
-        contentPanel.appendChild(new JSeparator(), 0);
+        contentPanel.appendChild(new SimpleSep(), 0);
         contentPanel.appendChild(howToCite, 0);
         contentPanel.appendChild(howToCiteReference, 0);
-        contentPanel.appendChild(new JSeparator(), 0);
+        contentPanel.appendChild(new SimpleSep(), 0);
         contentPanel.appendChild(new JLabel(buildInfo), 0);
 
         contentPanel.setGap(5);
@@ -205,7 +204,7 @@ public class AppAbout extends JDialog {
         int rowIndex = 0;
         for (int k = 0; k < creditEntries.size(); k++) {
             if (k != 0) {
-                creditsPanel.insertChild(new JSeparator(), 0, rowIndex, 2, 1);
+                creditsPanel.insertChild(new SimpleSep(), 0, rowIndex, 2, 1);
                 rowIndex++;
             }
 
@@ -232,7 +231,7 @@ public class AppAbout extends JDialog {
                 updateDescLabelWidth(descLabel, descString, 100);
                 contributionPanel.appendChild(descLabel, 0);
                 if (i != entry.contributionKeys.length - 1) {
-                    contributionPanel.appendChild(new JSeparator(), 0);
+                    contributionPanel.appendChild(new SimpleSep(), 0);
                 }
             }
             creditsPanel.insertChild(contributionPanel, 1, rowIndex);

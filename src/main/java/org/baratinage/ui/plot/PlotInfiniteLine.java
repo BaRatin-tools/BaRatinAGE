@@ -1,6 +1,7 @@
 package org.baratinage.ui.plot;
 
 import java.awt.Paint;
+import java.awt.Shape;
 import java.awt.Stroke;
 
 import org.jfree.chart.LegendItem;
@@ -8,7 +9,6 @@ import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.AbstractXYItemRenderer;
 import org.jfree.chart.renderer.xy.DefaultXYItemRenderer;
 import org.jfree.data.Range;
-import org.jfree.data.general.DatasetUtils;
 import org.jfree.data.xy.AbstractXYDataset;
 import org.jfree.data.xy.DefaultXYDataset;
 
@@ -18,6 +18,7 @@ public class PlotInfiniteLine extends PlotItem {
     private static final double MIN_VALUE = -MAX_VALUE;
 
     private boolean isVerticalLine = false;
+    private boolean isHorizontalLine = false;
     private double b;
     private double a;
 
@@ -27,9 +28,9 @@ public class PlotInfiniteLine extends PlotItem {
 
     private XYPlot plot;
 
-    private String label;
     private Paint paint;
     private Stroke stroke;
+    private Shape shape;
 
     public PlotInfiniteLine(String label, double x, Paint paint, int lineWidth) {
         this(label, x, paint, buildStroke(lineWidth));
@@ -45,24 +46,50 @@ public class PlotInfiniteLine extends PlotItem {
 
     public PlotInfiniteLine(String label, double coeffDir, double offset, Paint paint, Stroke stroke) {
 
-        this.label = label;
+        setLabel(label);
         this.paint = paint;
         this.stroke = stroke;
+        this.shape = buildEmptyShape();
 
         a = coeffDir;
         b = offset;
 
+        isVerticalLine = false;
+        isHorizontalLine = false;
+        n = 2000;
         if (Double.isInfinite(coeffDir)) {
             isVerticalLine = true;
+            n = 2;
+        } else if (coeffDir == 0) {
+            isHorizontalLine = true;
             n = 2;
         }
 
         renderer = new DefaultXYItemRenderer();
-
-        renderer.setSeriesShape(0, buildEmptyShape());
+        renderer.setDrawSeriesLineAsPath(true);
+        renderer.setSeriesShape(0, this.shape);
         renderer.setSeriesShapesVisible(0, false);
         renderer.setSeriesPaint(0, paint);
         renderer.setSeriesStroke(0, stroke);
+    }
+
+    public void updateDataset(double x) {
+        updateDataset(Double.POSITIVE_INFINITY, x);
+    }
+
+    public void updateDataset(double coeffDir, double offset) {
+        a = coeffDir;
+        b = offset;
+        isVerticalLine = false;
+        isHorizontalLine = false;
+        n = 2000;
+        if (Double.isInfinite(coeffDir)) {
+            isVerticalLine = true;
+            n = 2;
+        } else if (coeffDir == 0) {
+            isHorizontalLine = true;
+            n = 2;
+        }
     }
 
     @Override
@@ -72,16 +99,17 @@ public class PlotInfiniteLine extends PlotItem {
 
     @Override
     public Range getDomainBounds() {
-        return isVerticalLine ? new Range(b, b) : null;
-        // return null;
+        // return isVerticalLine ? new Range(b, b) : null;
+        return null;
     }
 
     @Override
     public Range getRangeBounds() {
-        if (plot == null || isVerticalLine) {
-            return null;
-        }
-        return DatasetUtils.findRangeBounds(getDataset());
+        // if (plot == null || isVerticalLine) {
+        // return null;
+        // }
+        // return DatasetUtils.findRangeBounds(getDataset());
+        return null;
     }
 
     @Override
@@ -95,6 +123,14 @@ public class PlotInfiniteLine extends PlotItem {
                 double lb = plot.getRangeAxis().getLowerBound();
                 double ub = plot.getRangeAxis().getUpperBound();
                 yValues = new double[] { lb, ub };
+            }
+        } else if (isHorizontalLine) {
+            xValues = new double[] { MIN_VALUE, MAX_VALUE };
+            yValues = new double[] { b, b };
+            if (plot != null) {
+                double lb = plot.getDomainAxis().getLowerBound();
+                double ub = plot.getDomainAxis().getUpperBound();
+                xValues = new double[] { lb, ub };
             }
         } else {
             double lb = MIN_VALUE;
@@ -128,8 +164,19 @@ public class PlotInfiniteLine extends PlotItem {
     }
 
     @Override
-    public void setLabel(String label) {
-        this.label = label;
+    public void configureRenderer(IPlotItemRendererSettings rendererSettings) {
+
+        stroke = buildStroke(
+                rendererSettings.getLineWidth(),
+                rendererSettings.getLineDashArray());
+        paint = rendererSettings.getLinePaint();
+
+        renderer = new DefaultXYItemRenderer();
+        renderer.setDrawSeriesLineAsPath(true);
+        renderer.setSeriesShape(0, buildEmptyShape());
+        renderer.setSeriesShapesVisible(0, false);
+        renderer.setSeriesPaint(0, paint);
+        renderer.setSeriesStroke(0, stroke);
     }
 
 }

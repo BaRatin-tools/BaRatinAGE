@@ -10,18 +10,19 @@ import java.util.List;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
-import javax.swing.JSeparator;
 import javax.swing.event.ChangeListener;
 
 import org.baratinage.ui.component.CommonDialog;
 import org.baratinage.ui.component.DataFileReader;
 import org.baratinage.ui.component.DataParser;
 import org.baratinage.ui.component.SimpleComboBox;
+import org.baratinage.ui.component.SimpleSep;
 import org.baratinage.ui.component.SimpleTextField;
 import org.baratinage.ui.container.GridPanel;
 import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.utils.ConsoleLogger;
 import org.baratinage.utils.Misc;
+import org.baratinage.utils.fs.ReadFile;
 import org.baratinage.utils.perf.TimedActions;
 import org.baratinage.AppSetup;
 import org.baratinage.translation.T;
@@ -131,13 +132,13 @@ public class LimnigraphImporter extends RowColPanel {
                 new CommonDialog.CustomFileFilter(
                         T.text("data_text_file"),
                         "txt", "csv", "dat"));
-        dataParser = new DataParser();
+        dataParser = new DataParser(dataFileReader);
 
         dataPreviewPanel.appendChild(dataParser);
 
         dataFileReader.addChangeListener((chEvt) -> {
 
-            rawData = dataFileReader.getData(dataFileReader.nPreload);
+            rawData = dataFileReader.getData(dataParser.nPreload);
             headers = dataFileReader.getHeaders();
             missingValueString = dataFileReader.missingValueString;
 
@@ -179,6 +180,11 @@ public class LimnigraphImporter extends RowColPanel {
 
             dataParser.setRawData(dataFileReader.getData(), headers, missingValueString);
 
+            boolean didLastReadSkipRows = ReadFile.didLastReadSkipRows(false);
+            if (didLastReadSkipRows) {
+                CommonDialog.warnDialog(T.text("msg_incomplete_rows_skipped_during_import"));
+            }
+
             int dateTimeColIndex = timeColComboBox.getSelectedIndex();
             LocalDateTime[] dateTimeVector = dataParser.getDateTimeCol(
                     dateTimeColIndex,
@@ -194,7 +200,9 @@ public class LimnigraphImporter extends RowColPanel {
             int sysUncertaintyInd = sysUncertaintyComboBox.getSelectedIndex();
             int sysIndInd = sysIndComboBox.getSelectedIndex();
 
-            int nCol = sysUncertaintyInd >= 0 || nonSysUncertaintyInd >= 0 ? AppSetup.CONFIG.N_SAMPLES.get() + 4 : 4;
+            int nCol = sysUncertaintyInd >= 0 || nonSysUncertaintyInd >= 0
+                    ? AppSetup.CONFIG.N_SAMPLES_LIMNI_ERRORS.get() + 4
+                    : 4;
 
             double size = estimateDoubleMatrixTextFileSizeInKb(stage.length, nCol) / 2; // I devide by 2 to estimate the
                                                                                         // zip compression
@@ -237,10 +245,11 @@ public class LimnigraphImporter extends RowColPanel {
         // final import panel layout
 
         appendChild(dataFileReader, 0);
-        appendChild(dataPreviewPanel, 1);
-        appendChild(new JSeparator(), 0);
+        appendChild(new SimpleSep(), 0);
         appendChild(columnMappingPanel, 0);
-        appendChild(new JSeparator(), 0);
+        appendChild(new SimpleSep(), 0);
+        appendChild(dataPreviewPanel, 1);
+        appendChild(new SimpleSep(), 0);
         appendChild(actionPanel, 0);
 
         // ********************************************************
@@ -278,7 +287,9 @@ public class LimnigraphImporter extends RowColPanel {
         T.t(this, sysIndLabel, false, "stage_sys_error_ind");
         T.t(this, validateButton, false, "import");
         T.t(this, cancelButton, false, "cancel");
+
         T.updateHierarchy(this, dataFileReader);
+        T.updateHierarchy(this, dataParser);
     }
 
     private static String formatSize(double sizeInKb) {

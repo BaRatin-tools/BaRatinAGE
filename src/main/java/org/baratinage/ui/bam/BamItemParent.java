@@ -1,6 +1,7 @@
 package org.baratinage.ui.bam;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.swing.JButton;
@@ -22,37 +23,35 @@ import org.json.JSONObject;
 public class BamItemParent extends RowColPanel {
 
     private final BamItemType TYPE;
+    private final BamItemType[] TYPES;
     private final BamItem CHILD;
 
     private final JLabel comboboxLabel;
 
-    // private final String errorMessagesKey = Misc.getTimeStampedId();
-
     private String bamItemBackupId = null;
-    private BamConfigRecord bamItemBackup = null;
+    private BamConfig bamItemBackup = null;
 
     private BamItemList allItems = new BamItemList();
     private BamItem currentBamItem = null;
 
     private boolean isCurrentInSyncWithBackup = false;
+    private boolean canBeEmpty = false;
 
-    private final SimpleComboBox cb;
+    public final SimpleComboBox cb;
 
     private final ChangeListener onBamItemNameChange;
     private final ChangeListener onBamItemContentChange;
 
-    private final MsgPanel outOfSyncMsgPanel;
-    private final MsgPanel missingSelectionMsgPanel;
-
     public BamItemParent(
             BamItem child,
-            BamItemType type) {
+            BamItemType... types) {
 
         super(AXIS.COL);
         setGap(5);
         setPadding(5);
 
-        TYPE = type;
+        TYPE = types[0];
+        TYPES = types;
         CHILD = child;
 
         CHILD.PROJECT.BAM_ITEMS.addChangeListener((chEvt) -> {
@@ -81,39 +80,6 @@ public class BamItemParent extends RowColPanel {
             fireChangeListeners();
         };
 
-        outOfSyncMsgPanel = new MsgPanel(MsgPanel.TYPE.ERROR);
-        JButton createInSyncCompBtn = new JButton();
-        createInSyncCompBtn.setIcon(TYPE.getAddIcon());
-        createInSyncCompBtn.addActionListener((e) -> {
-            if (bamItemBackup == null) {
-                return;
-            }
-            BamItem bamItem = CHILD.PROJECT.addBamItem(TYPE);
-            try {
-                bamItem.load(bamItemBackup);
-            } catch (Exception loadError) {
-                ConsoleLogger.error(loadError);
-                CHILD.PROJECT.deleteBamItem(bamItem);
-                CommonDialog.errorDialog("Error while loading backup component.");
-                return;
-            }
-            CHILD.PROJECT.setCurrentBamItem(CHILD);
-            setCurrentBamItem(bamItem);
-        });
-        outOfSyncMsgPanel.addButton(createInSyncCompBtn);
-
-        missingSelectionMsgPanel = new MsgPanel(MsgPanel.TYPE.ERROR);
-
-        T.t(this, () -> {
-            String typeText = T.text(TYPE.id).toLowerCase();
-            String currentItemName = getCurrentItemName();
-            outOfSyncMsgPanel.message.setText(
-                    T.html("msg_component_content_out_of_sync", typeText, currentItemName));
-            createInSyncCompBtn.setText(
-                    T.html("btn_create_component_from_backup", typeText));
-            missingSelectionMsgPanel.message.setText(T.html("msg_no_component_selected", typeText));
-        });
-
         T.t(this, comboboxLabel, false, TYPE.id);
 
         updateCombobox();
@@ -124,10 +90,14 @@ public class BamItemParent extends RowColPanel {
                 : currentBamItem.bamItemNameField.getText();
     }
 
-    private JSONFilter filter;
-
     public void setComparisonJSONfilter(JSONFilter filter) {
-        this.filter = filter;
+        filters.put(TYPE, filter);
+    }
+
+    private HashMap<BamItemType, JSONFilter> filters = new HashMap<>();
+
+    public void setComparisonJSONfilter(BamItemType type, JSONFilter filter) {
+        filters.put(type, filter);
     }
 
     public BamItem getCurrentBamItem() {
@@ -135,14 +105,19 @@ public class BamItemParent extends RowColPanel {
     }
 
     public void updateBackup() {
-        bamItemBackupId = currentBamItem.ID;
-        bamItemBackup = currentBamItem.save(true);
+        if (currentBamItem != null) {
+            bamItemBackupId = currentBamItem.ID;
+            bamItemBackup = currentBamItem.save(true);
+        } else {
+            bamItemBackupId = "";
+            bamItemBackup = null;
+        }
     }
 
     public void updateCombobox() {
 
         BamItemList bamItemList = CHILD.PROJECT.BAM_ITEMS;
-        BamItemList filteredBamItemList = bamItemList.filterByType(TYPE);
+        BamItemList filteredBamItemList = bamItemList.filterByType(TYPES);
         allItems = filteredBamItemList;
         for (BamItem bamItem : allItems) {
             bamItem.bamItemNameField.removeChangeListener(onBamItemNameChange);
@@ -197,30 +172,61 @@ public class BamItemParent extends RowColPanel {
 
     private void setSyncStatus(boolean isCurrentInSyncWithBackup) {
         this.isCurrentInSyncWithBackup = isCurrentInSyncWithBackup;
-        cb.setValidityView(isCurrentInSyncWithBackup);
+    }
+
+    public void setCanBeEmpty(boolean canBeEmpty) {
+        this.canBeEmpty = canBeEmpty;
+    }
+
+    public boolean isConfigValid() {
+        if (currentBamItem == null && bamItemBackup != null) {
+            return false;
+        }
+        if (bamItemBackup == null && currentBamItem != null) {
+            return bamItemBackupId == null; // if empty string, it means a run was done with no selection
+        }
+        if (bamItemBackup != null && currentBamItem != null) {
+            return getSyncStatus();
+        }
+        if (bamItemBackup == null && currentBamItem == null) {
+            return canBeEmpty;
+        }
+        return false;
+    }
+
+    public void updateValidityView() {
+        cb.setValidityView(isConfigValid());
     }
 
     public void updateSyncStatus() {
 
-        if (currentBamItem == null) {
+        if (currentBamItem == null || bamItemBackup == null) {
             // content is different
-            setSyncStatus(false);
+            setSyncStatus(currentBamItem == null && bamItemBackup == null);
             return;
         }
 
-        if (bamItemBackup == null) {
-            // no backup, irrelevant
-            setSyncStatus(true);
-            return;
+        BamConfig currentBamItemBackup = currentBamItem.save(false);
+        JSONObject backupFiltered = JSONFilter.filter(bamItemBackup.JSON, true, true, "_version");
+        JSONObject currentFiltered = JSONFilter.filter(currentBamItemBackup.JSON, true, true, "_version");
+        if (bamItemBackup.TYPE != null) {
+            if (currentBamItemBackup.TYPE == null ||
+                    bamItemBackup.TYPE != currentBamItemBackup.TYPE) {
+                // BamItemType not matching
+                setSyncStatus(false);
+                return;
+            }
+            if (filters.containsKey(bamItemBackup.TYPE)) {
+                backupFiltered = filters.get(bamItemBackup.TYPE).apply(backupFiltered);
+                currentFiltered = filters.get(bamItemBackup.TYPE).apply(currentFiltered);
+            }
+        } else {
+            if (filters.containsKey(TYPE)) {
+                backupFiltered = filters.get(TYPE).apply(backupFiltered);
+                currentFiltered = filters.get(TYPE).apply(currentFiltered);
+            }
         }
 
-        BamConfigRecord currentBamItemBackup = currentBamItem.save(false);
-        JSONObject backupFiltered = bamItemBackup.jsonObject();
-        JSONObject currentFiltered = currentBamItemBackup.jsonObject();
-        if (filter != null) {
-            backupFiltered = filter.apply(backupFiltered);
-            currentFiltered = filter.apply(currentFiltered);
-        }
         JSONCompareResult result = JSONCompare.compare(backupFiltered, currentFiltered);
         setSyncStatus(result.matching());
     }
@@ -229,12 +235,83 @@ public class BamItemParent extends RowColPanel {
         return isCurrentInSyncWithBackup;
     }
 
-    public MsgPanel getOutOfSyncMessage() {
-        T.updateTranslation(this);
-        if (currentBamItem == null) {
-            return missingSelectionMsgPanel;
+    public MsgPanel getMessagePanel() {
+        if (!isCurrentInSyncWithBackup) {
+            if (bamItemBackup == null) {
+                // there has been a run with an empty selection when bamItemBackupId != null
+                return bamItemBackupId != null ? buildUnselectComponentMsgPanel() : null;
+            }
+            return buildCreateNewComponentFromBackupMsgPanel();
+        } else {
+            if (currentBamItem == null && !canBeEmpty) {
+                return buildMissingRequiredSelectionMsgPanel();
+            }
         }
-        return outOfSyncMsgPanel;
+        return null;
+
+    }
+
+    private MsgPanel buildCreateNewComponentFromBackupMsgPanel() {
+        MsgPanel panel = new MsgPanel(MsgPanel.TYPE.ERROR);
+
+        JButton createInSyncCompBtn = new JButton();
+        createInSyncCompBtn.setIcon(TYPE.getAddIcon());
+        createInSyncCompBtn.addActionListener((e) -> {
+            if (bamItemBackup == null) {
+                return;
+            }
+            BamItemType type = bamItemBackup.TYPE;
+            BamItem bamItem = CHILD.PROJECT.addBamItem(type == null ? TYPE : type);
+            try {
+                bamItem.load(bamItemBackup);
+            } catch (Exception loadError) {
+                ConsoleLogger.error(loadError);
+                CHILD.PROJECT.deleteBamItem(bamItem);
+                CommonDialog.errorDialog("Error while loading backup component.");
+                return;
+            }
+            CHILD.PROJECT.setCurrentBamItem(CHILD);
+            setCurrentBamItem(bamItem);
+        });
+
+        panel.addButton(createInSyncCompBtn);
+
+        String typeText = T.text(TYPE.id).toLowerCase();
+        String currentItemName = getCurrentItemName();
+
+        createInSyncCompBtn.setText(
+                T.html("btn_create_component_from_backup", typeText));
+        panel.message.setText(
+                T.html(
+                        "msg_component_content_out_of_sync",
+                        typeText,
+                        currentItemName));
+
+        return panel;
+    }
+
+    private MsgPanel buildMissingRequiredSelectionMsgPanel() {
+        MsgPanel panel = new MsgPanel(MsgPanel.TYPE.ERROR);
+        String typeText = T.text(TYPE.id).toLowerCase();
+        panel.message.setText(T.html("msg_no_component_selected", typeText));
+        return panel;
+    }
+
+    private MsgPanel buildUnselectComponentMsgPanel() {
+        MsgPanel panel = new MsgPanel(MsgPanel.TYPE.ERROR);
+        String typeText = T.text(TYPE.id).toLowerCase();
+        String currentItemName = getCurrentItemName();
+        panel.message.setText(T.html("msg_component_content_out_of_sync", typeText, currentItemName));
+
+        JButton unselectBtn = new JButton();
+        unselectBtn.addActionListener((e) -> {
+            cb.setSelectedItem(-1, false);
+            fireChangeListeners();
+        });
+        unselectBtn.setText(T.html("btn_go_back_to_empty_selection", typeText));
+        panel.addButton(unselectBtn);
+
+        return panel;
     }
 
     public JSONObject toJSON() {
@@ -243,21 +320,33 @@ public class BamItemParent extends RowColPanel {
             json.put("bamItemId", currentBamItem.ID);
         }
         if (bamItemBackup != null) {
-            json.put("bamItemBackup", BamConfigRecord.toJSON(bamItemBackup));
+            json.put("bamItemBackup", bamItemBackup.JSON);
             json.put("bamItemBackupId", bamItemBackupId);
         }
         return json;
     }
 
-    public void fromJSON(JSONObject json) {
+    private boolean doNotFireChangeListeners = false;
+
+    public void fromJSON(JSONObject json, boolean doNotFireChangeListeners) {
         if (json.has("bamItemId")) {
             String bamItemId = json.getString("bamItemId");
+            this.doNotFireChangeListeners = doNotFireChangeListeners;
             setCurrentBamItem(bamItemId);
+            this.doNotFireChangeListeners = false;
         }
         if (json.has("bamItemBackup")) {
-            bamItemBackup = BamConfigRecord.fromJSON(json.getJSONObject("bamItemBackup"));
+            JSONObject backupJson = json.getJSONObject("bamItemBackup");
+            bamItemBackup = new BamConfig(backupJson);
+            if (bamItemBackup.VERSION < 0 && backupJson.has("jsonObject")) {
+                bamItemBackup = new BamConfig(backupJson.getJSONObject("jsonObject"));
+            }
             bamItemBackupId = json.getString("bamItemBackupId");
         }
+    }
+
+    public void fromJSON(JSONObject json) {
+        fromJSON(json, false);
     }
 
     private final List<ChangeListener> changeListeners = new ArrayList<>();
@@ -271,8 +360,10 @@ public class BamItemParent extends RowColPanel {
     }
 
     public void fireChangeListeners() {
-        for (ChangeListener l : changeListeners) {
-            l.stateChanged(new ChangeEvent(this));
+        if (!doNotFireChangeListeners) {
+            for (ChangeListener l : changeListeners) {
+                l.stateChanged(new ChangeEvent(this));
+            }
         }
     }
 }

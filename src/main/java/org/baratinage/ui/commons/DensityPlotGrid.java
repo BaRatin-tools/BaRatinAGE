@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.baratinage.AppSetup;
-import org.baratinage.jbam.EstimatedParameter;
+import org.baratinage.ui.bam.EstimatedParameterWrapper;
 import org.baratinage.ui.container.GridPanel;
 import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.ui.plot.Legend;
@@ -22,9 +22,9 @@ import org.baratinage.translation.T;
 
 public class DensityPlotGrid extends RowColPanel {
 
-    private final List<EstimatedParameter> estimatedParameters = new ArrayList<>();
+    private final List<EstimatedParameterWrapper> estimatedParameters = new ArrayList<>();
 
-    public void addPlot(EstimatedParameter estimatedParameter) {
+    public void addPlot(EstimatedParameterWrapper estimatedParameter) {
         estimatedParameters.add(estimatedParameter);
     }
 
@@ -55,31 +55,31 @@ public class DensityPlotGrid extends RowColPanel {
         int c = 0;
         for (int k = 0; k < estimatedParameters.size(); k++) {
 
-            EstimatedParameter estimParam = estimatedParameters.get(k);
+            EstimatedParameterWrapper estimParam = estimatedParameters.get(k);
 
             Plot plot = new Plot(false, false);
 
-            FixedTextAnnotation title = new FixedTextAnnotation(estimParam.name, 5, 5);
+            FixedTextAnnotation title = new FixedTextAnnotation(estimParam.htmlName, 5, 5);
             title.setFont(title.getFont().deriveFont(Font.BOLD, 16f));
             plot.plot.addAnnotation(title);
 
             plot.setBufferPercentage(0.1, 0, 0.05, 0.05);
 
-            List<double[]> priorDensityData = estimParam.getPriorDensity();
-
-            if (priorDensityData != null) {
+            if (estimParam.shouldDisplayPrior()) {
+                List<double[]> priorDensityData = estimParam.parameter.getPriorDensity();
                 int nData = priorDensityData.get(0).length;
                 PlotBand priorDensity = new PlotBand(
                         "",
                         priorDensityData.get(0),
                         priorDensityData.get(1),
                         Calc.zeroes(nData),
+                        false,
                         AppSetup.COLORS.PRIOR_ENVELOP,
                         0.9f);
                 plot.addXYItem(priorDensity);
             }
 
-            double maxpost = estimParam.getMaxpost();
+            double maxpost = estimParam.parameter.getMaxpost();
             PlotInfiniteLine maxpostLine = new PlotInfiniteLine(
                     "",
                     maxpost,
@@ -88,7 +88,7 @@ public class DensityPlotGrid extends RowColPanel {
 
             PlotBar postDensity = new PlotBar(
                     "",
-                    estimParam.mcmc,
+                    estimParam.parameter.mcmc,
                     20,
                     AppSetup.COLORS.POSTERIOR_ENVELOP,
                     0.7f);

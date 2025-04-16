@@ -1,5 +1,6 @@
 package org.baratinage.ui.baratin.hydraulic_control.control_panel;
 
+import org.baratinage.ui.commons.CommonParameterDistSimplified;
 import org.baratinage.ui.commons.ParameterPriorDistSimplified;
 import org.baratinage.translation.T;
 
@@ -14,30 +15,15 @@ public class WeirTriangle extends PriorControlPanel {
     public WeirTriangle() {
         super(
                 2,
-                "Q=C<sub>t</sub>tan(v/2)(2g)<sup>1/2</sup>(h-b)<sup>c</sup>&nbsp;(h>k)");
+                "Q=C<sub>t</sub>tan(v/2)(2g)<sup>1/2</sup>(h-b)<sup>c</sup>&nbsp;(h>\u03BA)");
 
-        activationHeight = new ParameterPriorDistSimplified();
-        activationHeight.setIcon(activationHeightIcon);
-        activationHeight.setSymbolUnitLabels("k", "m");
-
-        weirCoef = new ParameterPriorDistSimplified();
-        weirCoef.setIcon(weirCoefTIcon);
-        weirCoef.setSymbolUnitLabels("C<sub>t</sub>", "-");
+        activationHeight = CommonParameterDistSimplified.getActivationHeight();
+        weirCoef = CommonParameterDistSimplified.getWeirCoeff("t");
         weirCoef.setDefaultValues(0.31, 0.05);
-
-        angle = new ParameterPriorDistSimplified();
-        angle.setIcon(angleIcon);
-        angle.setSymbolUnitLabels("v", "°");
-
-        gravity = new ParameterPriorDistSimplified();
-        gravity.setIcon(gravityIcon);
-        gravity.setSymbolUnitLabels("g", "m.s<sup>-2</sup>");
-        gravity.setDefaultValues(9.81, 0.01);
+        angle = CommonParameterDistSimplified.getAngle();
+        gravity = CommonParameterDistSimplified.getGravity();
         gravity.setLocalLock(true);
-
-        exponent = new ParameterPriorDistSimplified();
-        exponent.setIcon(exponentIcon);
-        exponent.setSymbolUnitLabels("c", "-");
+        exponent = CommonParameterDistSimplified.getExponent();
         exponent.setDefaultValues(2.5, 0.05);
         exponent.setLocalLock(true);
 

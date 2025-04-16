@@ -21,8 +21,8 @@ import org.jfree.data.xy.XYDataset;
 public class PlotBar extends PlotItem {
 
     private static double MARGIN = 0.1;
-    private String label;
     private Paint fillPaint;
+    private float alpha;
 
     protected XYDataset dataset;
     protected XYItemRenderer renderer;
@@ -39,6 +39,7 @@ public class PlotBar extends PlotItem {
 
         this.label = label;
         this.fillPaint = fillPaint;
+        this.alpha = alpha;
 
         XYBarRenderer renderer = new XYBarRenderer();
         renderer.setShadowVisible(false);
@@ -58,7 +59,7 @@ public class PlotBar extends PlotItem {
         if (n != y.length)
             throw new IllegalArgumentException("x and y must have the same length!");
 
-        this.label = label;
+        setLabel(label);
         this.fillPaint = fillPaint;
 
         double[] xLow = new double[n];
@@ -107,11 +108,6 @@ public class PlotBar extends PlotItem {
         return PlotItem.buildLegendItem(label, fillPaint, buildEmptyStroke(), squareShape, fillPaint);
     }
 
-    @Override
-    public void setLabel(String label) {
-        this.label = label;
-    }
-
     private static class CustomBarPainter implements XYBarPainter {
 
         public float alpha;
@@ -119,7 +115,6 @@ public class PlotBar extends PlotItem {
         @Override
         public void paintBar(Graphics2D g2, XYBarRenderer renderer, int row, int column, RectangularShape bar,
                 RectangleEdge base) {
-            // TODO Auto-generated method stub
 
             Paint itemPaint = renderer.getItemPaint(row, column);
 
@@ -139,4 +134,23 @@ public class PlotBar extends PlotItem {
             // disabled
         }
     }
+
+    @Override
+    public void configureRenderer(IPlotItemRendererSettings rendererSettings) {
+
+        alpha = rendererSettings.getFillAlpha();
+        fillPaint = rendererSettings.getFillPaint();
+
+        XYBarRenderer renderer = new XYBarRenderer();
+        renderer.setShadowVisible(false);
+        renderer.setDrawBarOutline(false);
+        renderer.setSeriesPaint(0, fillPaint);
+        renderer.setMargin(MARGIN);
+        CustomBarPainter barPainter = new CustomBarPainter();
+        barPainter.alpha = alpha;
+        renderer.setBarPainter(barPainter);
+
+        this.renderer = renderer;
+    }
+
 }

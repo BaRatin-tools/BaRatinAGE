@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="24" height="24" fill="currentColor" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" version="1.1" viewBox="0 0 24 24" xml:space="preserve" xmlns="http://www.w3.org/2000/svg">
+  <rect x="1.7768" y="8.5" width="20.5" height="11" fill="#7cb4df" stroke="none" stroke-width="2.2929"/>
+  <path d="m1.75 4.5v15h20.5v-15" fill="none" stroke-linecap="round"/>
+
+  <path d="m2.1462 4.2122v15.354h19.726v-15.354l-7.646 7.3181-2.2255 6.6823-2.263-6.6823z" stroke="none" stroke-width="2.1919"/>
+</svg>

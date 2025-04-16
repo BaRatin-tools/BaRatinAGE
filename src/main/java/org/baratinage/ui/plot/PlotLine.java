@@ -1,23 +1,25 @@
 package org.baratinage.ui.plot;
 
 import java.awt.Paint;
+import java.awt.Shape;
 import java.awt.Stroke;
 
 import org.jfree.chart.LegendItem;
 import org.jfree.chart.renderer.xy.DefaultXYItemRenderer;
 import org.jfree.chart.renderer.xy.XYItemRenderer;
+import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.chart.renderer.xy.XYSplineRenderer;
 import org.jfree.data.xy.DefaultXYDataset;
 import org.jfree.data.xy.XYDataset;
 
 public class PlotLine extends PlotItem {
 
-    private String label;
     private Paint paint;
     private Stroke stroke;
+    private Shape shape;
 
     protected DefaultXYDataset dataset;
-    protected XYItemRenderer renderer;
+    protected XYLineAndShapeRenderer renderer;
 
     public PlotLine(String label, double[] x, double[] y, Paint paint) {
         this(label, x, y, paint, buildStroke());
@@ -31,16 +33,19 @@ public class PlotLine extends PlotItem {
         if (x.length != y.length)
             throw new IllegalArgumentException("x and y must have the same length!");
 
-        this.label = label;
+        setLabel(label);
         this.paint = paint;
         this.stroke = stroke;
+        this.shape = buildEmptyShape();
+
         dataset = new DefaultXYDataset();
         dataset.addSeries(label, new double[][] { x, y });
 
         renderer = new DefaultXYItemRenderer();
+        renderer.setDrawSeriesLineAsPath(true);
         renderer.setSeriesPaint(0, paint);
         renderer.setSeriesStroke(0, stroke);
-        renderer.setSeriesShape(0, buildEmptyShape());
+        renderer.setSeriesShape(0, this.shape);
 
     }
 
@@ -73,8 +78,18 @@ public class PlotLine extends PlotItem {
     }
 
     @Override
-    public void setLabel(String label) {
-        this.label = label;
+    public void configureRenderer(IPlotItemRendererSettings rendererSettings) {
+
+        stroke = buildStroke(
+                rendererSettings.getLineWidth(),
+                rendererSettings.getLineDashArray());
+        paint = rendererSettings.getLinePaint();
+
+        renderer = new DefaultXYItemRenderer();
+        renderer.setDrawSeriesLineAsPath(true);
+        renderer.setSeriesPaint(0, paint);
+        renderer.setSeriesStroke(0, stroke);
+        renderer.setSeriesShape(0, shape);
     }
 
 }

@@ -3,7 +3,7 @@
   xmlns="http://www.w3.org/2000/svg">
   <g transform="translate(.48485 1.8556)">
     <g transform="translate(.48334 .35358)">
-      <path d="m21.532 2.2922-10.5 17.649-10.5-17.649" fill="none" stroke="#000" stroke-linecap="round" stroke-width="1"/>
+      <path d="m21.532 2.2922-10.5 17.649-10.5-17.649" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1"/>
       <path d="m6.9293 10.29c1.0669-1.0335 2.5409-1.6727 4.169-1.6727 1.6281-1e-7 3.102 0.63921 4.169 1.6727m-0.36756-0.37816 0.40831 0.38871-0.45406-3.1699m0.4573 3.1762-3.2954 0.44497" stroke="#d08a4f" stroke-width="1"/>
     </g>
   </g>

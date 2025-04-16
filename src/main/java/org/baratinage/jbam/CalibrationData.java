@@ -39,9 +39,6 @@ public class CalibrationData {
         }
 
         int nObs = inputs[0].getNumberOfValues();
-        if (nObs == 0) {
-            throw new IllegalArgumentException("Calibration data must contain at least on element!");
-        }
         if (nObs != outputs[0].getNumberOfValues()) {
             throw new IllegalArgumentException(
                     "In  calibration data, number of elements in inputs must match the number of elements in outputs");
@@ -258,9 +255,15 @@ public class CalibrationData {
         }
 
         if (rawData.size() != nColumns) {
-            ConsoleLogger.error("CalibrationData Error: Number of columns in data file '" + dataFilePath
-                    + "' inconsistant with number of columns in config file!");
-            return null;
+            if (rawData.size() != 0) {
+                ConsoleLogger.error("CalibrationData Error: Number of columns in data file '" + dataFilePath
+                        + "' inconsistant with number of columns in config file!");
+                return null;
+            }
+            rawData = new ArrayList<>();
+            for (int k = 0; k < nColumns; k++) {
+                rawData.add(new double[0]);
+            }
         }
 
         if (rawData.get(0).length != nRow) {

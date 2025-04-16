@@ -9,6 +9,7 @@ import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.SwingUtilities;
 
+import org.baratinage.App;
 import org.baratinage.AppSetup;
 import org.baratinage.translation.T;
 import org.baratinage.utils.ConsoleLogger;
@@ -19,6 +20,12 @@ public class DebugMenu extends JMenu {
 
     public DebugMenu() {
         super("Debug");
+
+        JMenuItem restartAppBtn = new JMenuItem("Restart App");
+        add(restartAppBtn);
+        restartAppBtn.addActionListener((e) -> {
+            App.restart();
+        });
 
         JMenuItem clearConsoleBtn = new JMenuItem("Clear console");
         add(clearConsoleBtn);
@@ -169,7 +176,7 @@ public class DebugMenu extends JMenu {
             ConsoleLogger.log("Writing powershell script ...");
             WriteFile.writeLines(scriptPath, new String[] { pwsCommand });
             ConsoleLogger.log("Executing powershell script ...");
-            String command = "powershell.exe -ExecutionPolicy Bypass -File " + scriptPath;
+            String[] command = new String[] { "powershell.exe", "-ExecutionPolicy", "Bypass", "-File", scriptPath };
             Process powerShellProcess = Runtime.getRuntime().exec(command);
             exitCode = powerShellProcess.waitFor();
             ConsoleLogger.log("PowerShell script exited with code: " + exitCode);

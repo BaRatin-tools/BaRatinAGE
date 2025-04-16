@@ -4,8 +4,8 @@
     <g transform="translate(.48485 1.8556)">
         <g transform="translate(.48334 .35358)">
             <g transform="matrix(1.0713 0 0 1.0653 -14.272 25.791)" stroke-width="1.4041">
-                <rect x="14.561" y="-24.815" width="4.3479" height="19.357" ry="0" fill="none" stroke="#000" stroke-linecap="round" stroke-width=".93608"/>
-                <g fill="#000" stroke="none">
+                <rect x="14.561" y="-24.815" width="4.3479" height="19.357" ry="0" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width=".93608"/>
+                <g fill="currentColor" stroke="none">
                     <rect x="14.561" y="-24.974" width="2.239" height="2.74"/>
                     <rect x="14.561" y="-13.912" width="2.239" height="2.74"/>
                     <rect x="16.799" y="-19.443" width="2.239" height="2.74"/>

@@ -3,9 +3,9 @@
   xmlns="http://www.w3.org/2000/svg">
   <g transform="translate(0 .95225)">
     <path d="m22.5 4.5v8.7686m-3.1028 0h-7.8972v-8.7686" fill="none" stroke-linecap="round" stroke-width="1"/>
-    <g stroke="#000" stroke-linecap="round" stroke-width="1">
+    <g stroke="currentColor" stroke-linecap="round" stroke-width="1">
       <path d="m1.5 17.595 10-4.3269" fill="none"/>
-      <path d="m1.5 4.4889v12.805l10.086-3.481-0.085502-9.3131z" fill="#000"/>
+      <path d="m1.5 4.4889v12.805l10.086-3.481-0.085502-9.3131z" fill="currentColor"/>
       <path d="m19.397 17.595 3.1028-4.3269" fill="none"/>
     </g>
     <g stroke="none">
@@ -14,6 +14,6 @@
     </g>
     <path d="m1.5 4.5v13.095h17.897v-13.095" fill="none" stroke-linecap="round" stroke-width="1"/>
     <path d="m19.397 4.5h3.1028" fill="#7cb4df" stroke-linecap="round" stroke-width="1"/>
-    <path d="m19.397 4.5v12.493l3.1028-3.724v-8.7686z" fill="#000" stroke="none"/>
+    <path d="m19.397 4.5v12.493l3.1028-3.724v-8.7686z" fill="currentColor" stroke="none"/>
   </g>
 </svg>

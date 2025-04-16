@@ -227,9 +227,7 @@ public class PredictionConfig {
 
             predictionState = new PredictionState[nState];
             for (int k = 0; k < nState; k++) {
-                String stateName = "State_" + (k + 1);
                 predictionState[k] = new PredictionState(
-                        stateName,
                         stateSpagFileNames[k],
                         stateEnvFileNames[k],
                         false,

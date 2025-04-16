@@ -3,28 +3,28 @@
     xmlns="http://www.w3.org/2000/svg">
     <path d="m9.5773 20.55c2.0414-1.5272 2.4257-2.6435 3.2017-4.0826 0.77606-1.4391 2.2272-7.3433 2.2272-7.3433s0.50597 2.6492 0.80561 3.6086c1.0838 3.4702 1.9805 4.4464 3.212 5.21 1.2316 0.76362 2.3219 0.59981 2.3219 0.59981" fill="none" stroke="#f50000" stroke-linecap="round"/>
     <g transform="matrix(.54557 0 0 .54587 10.422 10.44)" stroke-width="2.7487">
-        <g transform="matrix(1.4014 0 0 1.4014 -51.691 -9.1338)" fill="#f00" stroke="none" style="shape-inside:url(#rect13873-6);white-space:pre" aria-label="h">
-            <path d="m38.006-1.7533v3.3737h-1.3504v-3.1648q0-0.5615-0.16242-0.80281-0.15778-0.24131-0.51974-0.24131-0.37124 0-0.58007 0.32948-0.20882 0.32484-0.20882 0.9049v2.9746h-1.3504v-7.2207h1.3504v2.8029q0.14386-0.43157 0.4919-0.66824 0.34804-0.23667 0.83994-0.23667 0.73784 0 1.1137 0.4919 0.37588 0.48726 0.37588 1.4571z" fill="#000"/>
+        <g transform="matrix(1.4014 0 0 1.4014 -51.691 -9.1338)" fill="currentColor" stroke="none" style="shape-inside:url(#rect13873-6);white-space:pre" aria-label="h">
+            <path d="m38.006-1.7533v3.3737h-1.3504v-3.1648q0-0.5615-0.16242-0.80281-0.15778-0.24131-0.51974-0.24131-0.37124 0-0.58007 0.32948-0.20882 0.32484-0.20882 0.9049v2.9746h-1.3504v-7.2207h1.3504v2.8029q0.14386-0.43157 0.4919-0.66824t0.83994-0.23667q0.73784 0 1.1137 0.4919 0.37588 0.48726 0.37588 1.4571z" fill="currentColor"/>
         </g>
-        <g transform="matrix(1.2453 0 0 1.2454 1.2086 -5.35)" stroke="#000" stroke-linecap="round" stroke-width="1.4714">
+        <g transform="matrix(1.2453 0 0 1.2454 1.2086 -5.35)" stroke="currentColor" stroke-linecap="round" stroke-width="1.4714">
             <path d="m-2.6695 21.055v-18.373" fill="none"/>
-            <path d="m-2.6236 1.1141 1.4868 2.8138-3.123 3.438e-4z" fill="#000"/>
+            <path d="m-2.6236 1.1141 1.4868 2.8138-3.123 3.438e-4z" fill="currentColor"/>
             <g transform="rotate(90 -2.6238 21.067)">
                 <path d="m-2.6695 21.055v-18.373" fill="none"/>
-                <path d="m-2.6236 1.1141 1.4868 2.8138-3.123 3.438e-4z" fill="#000"/>
+                <path d="m-2.6236 1.1141 1.4868 2.8138-3.123 3.438e-4z" fill="currentColor"/>
             </g>
         </g>
     </g>
     <g transform="matrix(1.0713 0 0 1.0653 -14.115 28.259)" stroke-width="1.4041">
-        <rect x="14.561" y="-24.815" width="4.3479" height="19.357" ry="0" fill="#eff30c" stroke="#000" stroke-linecap="round" stroke-width=".93608"/>
-        <g fill="#000" stroke="none">
+        <rect x="14.561" y="-24.815" width="4.3479" height="19.357" ry="0" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width=".93608"/>
+        <g fill="currentColor" stroke="none">
             <rect x="14.561" y="-24.974" width="2.239" height="2.74"/>
             <rect x="14.561" y="-13.912" width="2.239" height="2.74"/>
             <rect x="16.799" y="-19.443" width="2.239" height="2.74"/>
             <rect x="16.799" y="-8.3805" width="2.239" height="2.74"/>
         </g>
     </g>
-    <g transform="matrix(.5494 0 0 .55531 14.982 20.808)" stroke-width="1.8104">
+    <g transform="matrix(.5494 0 0 .55531 14.982 20.808)" stroke="#000" stroke-width="1.8104">
         <circle cx="-5.4279" cy="-15.862" r="10" fill="#fff"/>
         <line x1="-5.4279" x2="-5.4279" y1="-19.862" y2="-11.862"/>
         <line x1="-9.4279" x2="-1.4279" y1="-15.862" y2="-15.862"/>

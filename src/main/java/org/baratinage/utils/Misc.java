@@ -1,9 +1,11 @@
 package org.baratinage.utils;
 
+import java.awt.Dimension;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.io.File;
 import java.nio.file.Path;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -19,11 +21,52 @@ import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.swing.JComponent;
 import javax.swing.JFrame;
 
 import org.baratinage.translation.T;
 
 public class Misc {
+
+    public static void setMinimumSize(JComponent component, Integer width, Integer height) {
+        Dimension dim = component.getMinimumSize();
+        if (width != null) {
+            dim.width = width;
+        }
+        if (height != null) {
+            dim.height = height;
+        }
+        component.setMinimumSize(dim);
+    }
+
+    public static String formatNumber(double num) {
+        return formatNumber(num, false);
+    }
+
+    public static String formatNumber(double num, boolean lossless) {
+        if (num == (long) num) {
+            return String.valueOf((long) num);
+        }
+        if (lossless) {
+            return new DecimalFormat("#.##########").format(num);
+        }
+        double absNum = Math.abs(num);
+        DecimalFormat df;
+        if (absNum < 0.001 || absNum >= 10000) {
+            df = new DecimalFormat("0.###E0");
+        } else if (absNum < 0.1) {
+            df = new DecimalFormat("0.####");
+        } else if (absNum < 1) {
+            df = new DecimalFormat("0.###");
+        } else if (absNum < 10) {
+            df = new DecimalFormat("0.##");
+        } else if (absNum < 100) {
+            df = new DecimalFormat("0.#");
+        } else {
+            df = new DecimalFormat("0");
+        }
+        return df.format(num);
+    }
 
     public static String sanitizeName(String input) {
         String sanitizedName = input.replaceAll("[^a-zA-Z0-9]", "_");

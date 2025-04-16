@@ -1,43 +1,35 @@
 package org.baratinage.ui.baratin.hydraulic_control.control_panel;
 
+import org.baratinage.ui.commons.CommonParameterDistSimplified;
 import org.baratinage.ui.commons.ParameterPriorDistSimplified;
 
 import org.baratinage.translation.T;
 
 public class ChannelRect extends PriorControlPanel {
 
-    private final ParameterPriorDistSimplified activationHeight;
+    private final ParameterPriorDistSimplified kb;
     private final ParameterPriorDistSimplified stricklerCoef;
     private final ParameterPriorDistSimplified width;
     private final ParameterPriorDistSimplified slope;
     private final ParameterPriorDistSimplified exponent;
 
     public ChannelRect() {
-        super(2, "Q=K<sub>s</sub>B<sub>w</sub>S<sup>1/2</sup>(h-b)<sup>c</sup>&nbsp;(h>k)");
+        this(true);
+    }
 
-        activationHeight = new ParameterPriorDistSimplified();
-        activationHeight.setIcon(activationHeightIcon);
-        activationHeight.setSymbolUnitLabels("k", "m");
+    public ChannelRect(boolean kMode) {
+        super(2, "Q=K<sub>s</sub>B<sub>w</sub>S<sup>1/2</sup>(h-b)<sup>c</sup>&nbsp;(h>\u03BA)");
 
-        stricklerCoef = new ParameterPriorDistSimplified();
-        stricklerCoef.setIcon(stricklerCoefIcon);
-        stricklerCoef.setSymbolUnitLabels("K<sub>s</sub>", "m<sup>1/3</sup>.s<sup>-1</sup>");
-
-        width = new ParameterPriorDistSimplified();
-        width.setIcon(widthIcon);
-        width.setSymbolUnitLabels("B<sub>w</sub>", "m");
-
-        slope = new ParameterPriorDistSimplified();
-        slope.setIcon(slopeIcon);
-        slope.setSymbolUnitLabels("S", "-");
-
-        exponent = new ParameterPriorDistSimplified();
-        exponent.setIcon(exponentIcon);
-        exponent.setSymbolUnitLabels("c", "-");
+        kb = kMode ? CommonParameterDistSimplified.getActivationHeight()
+                : CommonParameterDistSimplified.getOffsetHeight();
+        stricklerCoef = CommonParameterDistSimplified.getStricklerCoeff();
+        width = CommonParameterDistSimplified.getRectWidth();
+        slope = CommonParameterDistSimplified.getSlope();
+        exponent = CommonParameterDistSimplified.getExponent();
         exponent.setDefaultValues(1.67, 0.05);
         exponent.setLocalLock(true);
 
-        addParameter(activationHeight);
+        addParameter(kb);
         addParameter(stricklerCoef);
         addParameter(width);
         addParameter(slope);
@@ -47,7 +39,7 @@ public class ChannelRect extends PriorControlPanel {
             setHeaders(
                     T.html("mean_value"),
                     T.html("uncertainty_value"));
-            activationHeight.setNameLabel(T.html("activation_stage"));
+            kb.setNameLabel(kMode ? T.html("activation_stage") : "Offset");
             stricklerCoef.setNameLabel(T.html("strickler_coef"));
             width.setNameLabel(T.html("channel_width"));
             slope.setNameLabel(T.html("channel_slope"));
@@ -55,7 +47,7 @@ public class ChannelRect extends PriorControlPanel {
         });
     }
 
-    public Double[] toAMeanAndStd() {
+    private Double[] toAMeanAndStd() {
 
         if (!stricklerCoef.meanValueField.isValueValid() ||
                 !width.meanValueField.isValueValid() ||
@@ -95,8 +87,8 @@ public class ChannelRect extends PriorControlPanel {
 
         Double[] AGaussianConfig = toAMeanAndStd();
 
-        Double kMean = activationHeight.meanValueField.getDoubleValue();
-        Double kStd = activationHeight.uncertaintyValueField.getDoubleValue();
+        Double kMean = kb.meanValueField.getDoubleValue();
+        Double kStd = kb.uncertaintyValueField.getDoubleValue();
         Double cMean = exponent.meanValueField.getDoubleValue();
         Double cStd = exponent.uncertaintyValueField.getDoubleValue();
 

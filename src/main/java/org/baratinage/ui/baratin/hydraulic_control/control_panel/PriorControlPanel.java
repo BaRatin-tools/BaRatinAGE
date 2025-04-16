@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JLabel;
-import javax.swing.JSeparator;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
@@ -16,7 +15,7 @@ import org.baratinage.ui.commons.AbstractParameterPriorDist;
 import org.baratinage.ui.commons.ParameterPriorDist;
 import org.baratinage.ui.commons.ParameterPriorDistSimplified;
 import org.baratinage.ui.component.SimpleNumberField;
-import org.baratinage.ui.component.SvgIcon;
+import org.baratinage.ui.component.SimpleSep;
 import org.baratinage.ui.container.GridPanel;
 import org.json.JSONArray;
 
@@ -26,56 +25,11 @@ public abstract class PriorControlPanel extends GridPanel implements ChangeListe
                         Double kMean, Double kStd,
                         Double aMean, Double aStd,
                         Double cMean, Double cStd) {
-        };
+        }; // FIXME: rename to KBACGaussianConfig, rename kMean and kStd
 
         private static String vAlignFixString = "<sup>&nbsp;</sup><sub>&nbsp;</sub>";
 
         private static final Font MONOSPACE_FONT = new Font(Font.MONOSPACED, Font.PLAIN, 14);
-
-        public static final SvgIcon activationHeightIcon = AppSetup.ICONS
-                        .getCustomAppImageIcon("activation_height.svg");
-
-        public static final SvgIcon slopeIcon = AppSetup.ICONS
-                        .getCustomAppImageIcon("slope.svg");
-
-        public static final SvgIcon weirCoefRIcon = AppSetup.ICONS
-                        .getCustomAppImageIcon("weir_coef_r.svg");
-
-        public static final SvgIcon weirCoefOIcon = AppSetup.ICONS
-                        .getCustomAppImageIcon("weir_coef_o.svg");
-
-        public static final SvgIcon weirCoefTIcon = AppSetup.ICONS
-                        .getCustomAppImageIcon("weir_coef_t.svg");
-
-        public static final SvgIcon weirCoefPIcon = AppSetup.ICONS
-                        .getCustomAppImageIcon("weir_coef_p.svg");
-
-        public static final SvgIcon stricklerCoefIcon = AppSetup.ICONS
-                        .getCustomAppImageIcon("strickler_coef.svg");
-
-        public static final SvgIcon angleIcon = AppSetup.ICONS
-                        .getCustomAppImageIcon("angle.svg");
-
-        public static final SvgIcon widthIcon = AppSetup.ICONS
-                        .getCustomAppImageIcon("width.svg");
-
-        public static final SvgIcon parabolaWidthIcon = AppSetup.ICONS
-                        .getCustomAppImageIcon("parabola_width.svg");
-
-        public static final SvgIcon parabolaHeightIcon = AppSetup.ICONS
-                        .getCustomAppImageIcon("parabola_height.svg");
-
-        public static final SvgIcon areaIcon = AppSetup.ICONS
-                        .getCustomAppImageIcon("orifice_area.svg");
-
-        public static final SvgIcon gravityIcon = AppSetup.ICONS
-                        .getCustomAppImageIcon("gravity.svg");
-
-        public static final SvgIcon exponentIcon = AppSetup.ICONS
-                        .getCustomAppImageIcon("exponent.svg");
-
-        public static final SvgIcon coefficientIcon = AppSetup.ICONS
-                        .getCustomAppImageIcon("coefficient.svg");
 
         private final JLabel equationLabel;
         protected final JLabel lockLabel;
@@ -97,22 +51,19 @@ public abstract class PriorControlPanel extends GridPanel implements ChangeListe
 
                 insertLabel(equationLabel, 0, 0, 3);
 
-                JSeparator iconNamSymbolUnitSep = new JSeparator(JSeparator.HORIZONTAL);
-                insertChild(iconNamSymbolUnitSep, 0, 1, 3, 1);
+                insertChild(new SimpleSep(), 0, 1, 3, 1);
 
                 lockLabel = new JLabel();
                 lockLabel.setIcon(AppSetup.ICONS.LOCK);
                 insertLabel(lockLabel, 3 + nColumns, 0);
-                JSeparator lockSeparator = new JSeparator(JSeparator.HORIZONTAL);
-                insertChild(lockSeparator, 3 + nColumns, 1);
+                insertChild(new SimpleSep(), 3 + nColumns, 1);
 
                 columnHeaders = new ArrayList<>();
                 for (int k = 0; k < nColumns; k++) {
                         JLabel label = new JLabel("column #" + k + 1);
                         columnHeaders.add(label);
                         insertLabel(label, 3 + k, 0);
-                        JSeparator sep = new JSeparator(JSeparator.HORIZONTAL);
-                        insertChild(sep, 3 + k, 1);
+                        insertChild(new SimpleSep(), 3 + k, 1);
                 }
 
         }

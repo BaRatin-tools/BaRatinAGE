@@ -70,6 +70,10 @@ public class CustomAreaRenderer extends AbstractXYItemRenderer {
         return convertedValues;
     }
 
+    public float getFillAlpha() {
+        return alpha;
+    }
+
     @Override
     public Object clone() {
         CustomAreaRenderer cloned = new CustomAreaRenderer();

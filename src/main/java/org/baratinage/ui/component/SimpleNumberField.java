@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.function.Predicate;
 
 import org.baratinage.translation.T;
+import org.baratinage.utils.Misc;
 
 public class SimpleNumberField extends SimpleTextField {
 
@@ -34,9 +35,7 @@ public class SimpleNumberField extends SimpleTextField {
         if (value == null) {
             return "";
         } else {
-            return value.toString(); // not using localized decimal symbol...
-            // return DOUBLE_FORMATTER.format(value); // doesn't handle small / large number
-            // by switching to scientific notation
+            return Misc.formatNumber(value, true);
         }
     }
 

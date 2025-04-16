@@ -1,6 +1,5 @@
 package org.baratinage.ui.component;
 
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -15,6 +14,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 import javax.swing.BorderFactory;
+import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
@@ -24,6 +24,7 @@ import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 
 import org.baratinage.AppSetup;
+import org.baratinage.translation.T;
 import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.utils.ConsoleLogger;
 
@@ -39,7 +40,7 @@ public class DataParser extends RowColPanel {
     };
 
     private String missingValueCode;
-    // private String[] headers;
+    private String[] headers;
     private List<String[]> rawData;
 
     private DataTableModel dataTableModel;
@@ -106,9 +107,14 @@ public class DataParser extends RowColPanel {
         };
     }
 
-    public DataParser() {
+    public int nPreload = 15;
+
+    public DataParser(DataFileReader dataFileReader) {
+        super(AXIS.COL);
 
         setPadding(5);
+        setGap(5);
+
         dataTableModel = new DataTableModel();
 
         dataTable = new JTable(dataTableModel);
@@ -123,13 +129,35 @@ public class DataParser extends RowColPanel {
         Dimension defaultPrefDim = scrollpane.getPreferredSize();
         defaultPrefDim.height = 300;
         scrollpane.setPreferredSize(defaultPrefDim);
-        appendChild(scrollpane);
+
+        JLabel dataPreviewTitleLabel = new JLabel();
+        T.t(this, dataPreviewTitleLabel, false, "data_preview_title");
+        JLabel nRowPreloadLabel = new JLabel();
+        T.t(this, nRowPreloadLabel, false, "n_rows_to_preload");
+        SimpleIntegerField nRowPreloadField = new SimpleIntegerField(5,
+                Integer.MAX_VALUE, 1);
+        nRowPreloadField.setValue(nPreload);
+        nRowPreloadField.addChangeListener((e) -> {
+            nPreload = nRowPreloadField.getIntValue();
+            this.rawData = dataFileReader.getData(nPreload);
+            setRawData(rawData, headers, missingValueCode);
+            updateColumnTypes();
+        });
+        RowColPanel nRowPreloadPanel = new RowColPanel();
+        nRowPreloadPanel.setGap(5);
+        nRowPreloadPanel.appendChild(nRowPreloadLabel, 0);
+        nRowPreloadPanel.appendChild(nRowPreloadField, 1);
+
+        appendChild(dataPreviewTitleLabel, 0);
+        appendChild(scrollpane, 1);
+        appendChild(nRowPreloadPanel, 0);
 
     }
 
     public void setRawData(List<String[]> rawData, String[] headers, String missingValueCode) {
 
         this.rawData = rawData;
+        this.headers = headers;
         this.missingValueCode = missingValueCode;
 
         dataTableModel.setRawData(rawData);
@@ -329,7 +357,7 @@ public class DataParser extends RowColPanel {
             String valStr = value.toString();
 
             if (ignored) {
-                setForeground(Color.LIGHT_GRAY);
+                setForeground(AppSetup.COLORS.DEFAULT_FG_LIGHT);
                 // setFont(getFont().deriveFont(Font.ITALIC));
                 return this;
             }

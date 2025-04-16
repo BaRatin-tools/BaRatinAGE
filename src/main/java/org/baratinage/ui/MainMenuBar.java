@@ -15,6 +15,8 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.KeyStroke;
+import javax.swing.event.MenuEvent;
+import javax.swing.event.MenuListener;
 
 import org.baratinage.AppSetup;
 import org.baratinage.translation.T;
@@ -150,20 +152,31 @@ public class MainMenuBar extends JMenuBar {
 
         JMenu switchLanguageMenuItem = new JMenu();
         T.t(this, switchLanguageMenuItem, false, "change_language");
+        switchLanguageMenuItem.addMenuListener(new MenuListener() {
+            @Override
+            public void menuSelected(MenuEvent e) {
+                updateLanguageSwitcherMenu();
+            }
+
+            @Override
+            public void menuDeselected(MenuEvent e) {
+            }
+
+            @Override
+            public void menuCanceled(MenuEvent e) {
+            }
+        });
 
         Locale[] allLocales = T.getAvailableLocales();
         for (Locale targetLocale : allLocales) {
             String targetLocaleKey = targetLocale.getLanguage();
-            String nameInTargetLocale = targetLocale.getDisplayName(targetLocale);
             JCheckBoxMenuItem item = new JCheckBoxMenuItem();
             translationMenuItems.put(targetLocaleKey, item);
             if (targetLocaleKey.equals("ko")) {
                 item.setFont(AppSetup.KO_FONT);
             }
             T.t(this, () -> {
-                Locale currentLocale = T.getLocale();
-                String nameInCurrentLocale = targetLocale.getDisplayName(currentLocale);
-                item.setText(String.format("(%s) %s - %s", targetLocaleKey, nameInCurrentLocale, nameInTargetLocale));
+                item.setText(T.getLocaleLabelString(targetLocale));
             });
 
             item.addActionListener((e) -> {
@@ -173,11 +186,11 @@ public class MainMenuBar extends JMenuBar {
                     CommonDialog.infoDialog(T.text("restart_needed_msg"));
                 }
                 T.setLocale(targetLocaleKey);
-                updateLanguageSwitcherMenu();
+                AppSetup.CONFIG.LANGUAGE_KEY.set(targetLocaleKey);
+                AppSetup.CONFIG.saveConfiguration();
             });
             switchLanguageMenuItem.add(item);
         }
-        updateLanguageSwitcherMenu();
         return switchLanguageMenuItem;
     }
 
@@ -191,6 +204,12 @@ public class MainMenuBar extends JMenuBar {
     private void initOptionMenu() {
         JMenu lgSwitcherMenu = createLanguageSwitcherMenu();
         optionMenu.add(lgSwitcherMenu);
+        JMenuItem preferenceMenuItem = new JMenuItem();
+        T.t(this, preferenceMenuItem, false, "preferences");
+        preferenceMenuItem.addActionListener(l -> {
+            AppSetup.CONFIG.openConfigDialog();
+        });
+        optionMenu.add(preferenceMenuItem);
     }
 
     private void initHelpMenu() {

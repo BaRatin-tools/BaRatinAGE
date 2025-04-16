@@ -1,7 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg width="24" height="24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" version="1.1" viewBox="0 0 24 24" xml:space="preserve"
-    xmlns="http://www.w3.org/2000/svg">
-    <g transform="matrix(2.218 0 0 2.218 -155.84 -52.028)" fill="none" stroke="#d08a4f" stroke-width=".45086" style="shape-inside:url(#rect625-5);white-space:pre" aria-label="c">
-        <path d="m79.404 28.659q0 0.16927-1.8359 2.1875-2.0052 2.1875-3.4115 2.1875-0.91146 0-1.5625-0.6901-0.65104-0.70313-0.65104-1.6667 0-1.0938 0.88542-2.2656 0.88542-1.1719 2.3828-2.0182 1.263-0.72917 2.0573-0.72917 0.96354 0 0.96354 1.1458 0 0.89844-0.61198 1.7969-0.59896 0.89844-1.1979 0.89844-0.58594 0-0.58594-0.58594 0-0.6901 1.1979-1.276 0.92448-0.45573 0.92448-1.1979 0-0.58594-0.63802-0.58594-1.0807 0-2.6563 2.1484-1.5755 2.1484-1.5755 3.6068 0 1.224 1.1458 1.224 1.7969 0 4.8698-4.0495 0.16927-0.20833 0.2474-0.20833 0.05208 0.01302 0.05208 0.07813z" fill="none" stroke="#d08a4f" stroke-width=".45086"/>
-    </g>
-</svg>
+<svg width="24" height="24" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" version="1.1" viewBox="0 0 24 24" xml:space="preserve" xmlns="http://www.w3.org/2000/svg">
+    
+<text transform="translate(-31.141 -7.0316)" fill="#000000" font-family="Gabriola" font-size="32px" letter-spacing="0px" text-align="center" style="shape-inside:url(#rect1);white-space:pre" xml:space="preserve"><tspan x="33.249023" y="29.253906">x</tspan></text><text transform="translate(-22.043 -15.964)" fill="#d08a4f" font-family="Gabriola" font-size="32px" letter-spacing="0px" text-align="center" style="shape-inside:url(#rect1-8);white-space:pre" xml:space="preserve"><tspan x="34.495117" y="29.253906">e</tspan></text></svg>

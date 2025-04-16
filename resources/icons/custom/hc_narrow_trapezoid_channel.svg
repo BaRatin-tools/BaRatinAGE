@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="24" height="24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" version="1.1" viewBox="0 0 24 24" xml:space="preserve"
+  xmlns="http://www.w3.org/2000/svg">
+  <g transform="translate(0 .95225)">
+    <g transform="matrix(.75827 0 0 .68625 6.923 1.5607)" fill="currentColor">
+
+      <path d="m1.5391 4.0266h3.7609l2.7 13.521h-6.4609z" stroke="none" stroke-width="2.0794"/>
+      <path d="m16.247 4.4995h3.0452v13.048l-5.7064 0.05376 2.2566-11.11z" stroke-linecap="square" stroke-width="1.389"/>
+    </g>
+    <path d="m22.5 4.5v8.7686m-5.4078 0h-13.764v-8.7686" fill="none" stroke-linecap="round" stroke-width="1"/>
+    <g stroke="currentColor" stroke-linecap="round" stroke-width="1">
+      <path d="m1.5 17.595 10-4.3269" fill="none"/>
+      <path d="m1.5 4.4889v12.805l9.0457-3.481-0.07668-9.3131z" fill="currentColor" stroke-width="1"/>
+      <path d="m19.397 17.595 3.1028-4.3269" fill="none"/>
+    </g>
+    <g transform="matrix(.52848 0 0 1 5.6065 0)" stroke="none" stroke-width="2.0634">
+      <path d="m2.0745 11.045 9.9337-2.0784h10.492l-3.1028 2.0784z" fill="#3187ca"/>
+      <rect x="2.0745" y="11.048" width="16.837" height="6.5477" fill="#7cb4df"/>
+    </g>
+    <path d="m1.5 4.5v13.095h17.897v-13.095" fill="none" stroke-linecap="round" stroke-width="1"/>
+    <path d="m19.397 4.5h3.1028" fill="#7cb4df" stroke-linecap="round" stroke-width="1"/>
+    <g fill="currentColor">
+      <path d="m19.397 4.5v12.493l3.1028-3.724v-8.7686z" stroke="none"/>
+      <path d="m1.5391 4.0266h3.7609l2.7 13.521h-6.4609z" stroke="none"/>
+      <path d="m16.247 4.4995h3.0452v13.048l-5.7064 0.05376z" stroke-linecap="square" stroke-width="1.002"/>
+    </g>
+  </g>
+</svg>

@@ -13,7 +13,7 @@ public class AppIcons {
 
     private List<SvgIcon> allIcons = new ArrayList<>();
 
-    public float ICON_SIZE;
+    private float ICON_SIZE;
     private float FEATHER_SIZE;
 
     public final SvgIcon BARATINAGE_LARGE;
@@ -41,9 +41,8 @@ public class AppIcons {
                 Path.of(AppSetup.PATH_ICONS_RESOURCES_DIR, "icon.svg").toString(),
                 64, 64));
 
-        ICON_SIZE = 28;
-        // FEATHER_SIZE = 20;
-        FEATHER_SIZE = ICON_SIZE;
+        ICON_SIZE = AppSetup.CONFIG.ICON_SIZE.get();
+        FEATHER_SIZE = AppSetup.CONFIG.ICON_SIZE.get();
 
         BARATINAGE = addIcon(new SvgIcon(
                 Path.of(AppSetup.PATH_ICONS_RESOURCES_DIR, "icon.svg").toString(),
@@ -51,7 +50,6 @@ public class AppIcons {
 
         COPY = addIcon(buildFeatherAppImageIcon("copy.svg", FEATHER_SIZE));
         TRASH = addIcon(buildFeatherAppImageIcon("trash.svg", FEATHER_SIZE));
-        TRASH.setSvgTagAttribute("stroke", AppSetup.COLORS.DANGER);
         LOCK = addIcon(buildFeatherAppImageIcon("lock.svg", FEATHER_SIZE));
         SAVE = addIcon(buildFeatherAppImageIcon("save.svg", FEATHER_SIZE));
         EXTERNAL = addIcon(buildFeatherAppImageIcon("external-link.svg", FEATHER_SIZE));
@@ -65,6 +63,19 @@ public class AppIcons {
         LEFT_UP_ARROW = addIcon(buildFeatherAppImageIcon("corner-left-up.svg", FEATHER_SIZE));
         RIGHT_UP_ARROW = addIcon(buildFeatherAppImageIcon("corner-right-up.svg", FEATHER_SIZE));
 
+        setAllIconCurrentColor();
+    }
+
+    private void setAllIconCurrentColor() {
+        allIcons.stream().forEach(i -> {
+            i.setSvgTagAttribute("color", AppSetup.COLORS.DEFAULT_FG);
+        });
+        TRASH.setSvgTagAttribute("color", AppSetup.COLORS.DANGER);
+        TRASH.rebuildIcon();
+
+        allIcons.stream().forEach(i -> {
+            i.rebuildIcon();
+        });
     }
 
     public SvgIcon getCustomAppImageIcon(String fileName) {
@@ -72,6 +83,8 @@ public class AppIcons {
             return otherIcons.get(fileName);
         } else {
             SvgIcon icon = buildCustomAppImageIcon(fileName, ICON_SIZE);
+            icon.setSvgTagAttribute("color", AppSetup.COLORS.DEFAULT_FG);
+            icon.rebuildIcon();
             addIcon(icon);
             otherIcons.put(fileName, icon);
             return icon;
@@ -98,13 +111,10 @@ public class AppIcons {
     }
 
     public void updateAllIcons() {
-        if (!SvgIcon.scalesHaveChanged()) {
-            return;
-        }
         for (SvgIcon icon : allIcons) {
             icon.rebuildIcon();
         }
-        SvgIcon.memorizeCurrentScales();
+        setAllIconCurrentColor();
         SwingUtilities.updateComponentTreeUI(AppSetup.MAIN_FRAME);
     }
 }

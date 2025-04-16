@@ -1,16 +1,19 @@
 package org.baratinage.ui.baratin;
 
-import java.util.List;
+import java.awt.Cursor;
+import java.awt.Point;
+import java.util.HashMap;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
 
+import org.baratinage.AppSetup;
 import org.baratinage.jbam.CalibrationData;
 import org.baratinage.jbam.UncertainData;
 import org.baratinage.jbam.utils.BamFilesHelpers;
 
 import org.baratinage.ui.bam.BamItem;
-import org.baratinage.ui.bam.BamConfigRecord;
+import org.baratinage.ui.bam.BamConfig;
 import org.baratinage.ui.bam.ICalibrationData;
 import org.baratinage.ui.baratin.gaugings.GaugingsDataset;
 import org.baratinage.ui.baratin.gaugings.GaugingsImporter;
@@ -21,8 +24,14 @@ import org.baratinage.ui.container.SplitContainer;
 import org.baratinage.translation.T;
 import org.baratinage.ui.plot.Plot;
 import org.baratinage.ui.plot.PlotContainer;
+import org.baratinage.ui.plot.PlotItem;
 import org.baratinage.ui.plot.PlotPoints;
+import org.baratinage.ui.plot.PlotUtils;
+import org.baratinage.ui.plot.PointHighlight;
 import org.baratinage.utils.Misc;
+import org.jfree.chart.ChartMouseEvent;
+import org.jfree.chart.ChartMouseListener;
+import org.jfree.chart.ChartPanel;
 import org.baratinage.ui.bam.BamItemType;
 
 import org.json.JSONObject;
@@ -121,22 +130,32 @@ public class Gaugings extends BamItem implements ICalibrationData {
     }
 
     private void setPlot() {
-        // FIXME: shouldn't this be handled in a proper GaugingPlot class?
-        // GaugingsPlot gaugingsPlot = new GaugingsPlot(
-        // true,
-        // gaugingDataset);
+
+        HashMap<String, PlotItem> points = gaugingDataset.getPlotItems();
+        PlotPoints activeGaugings = (PlotPoints) points.get("active_gaugings");
+        PlotPoints inactiveGaugings = (PlotPoints) points.get("inactive_gaugings");
+
+        // PlotPoints highlight = new PlotPoints("highlight",
+        // new double[] { 1 },
+        // new double[] { 1 },
+        // Color.ORANGE,
+        // PlotItem.buildCircleShape(20));
+
+        PointHighlight highlight = new PointHighlight(2, 20, AppSetup.COLORS.PLOT_HIGHLIGHT);
 
         Plot plot = new Plot(true);
+        plot.addXYItem(highlight, false);
+        plot.addXYItem(activeGaugings);
+        plot.addXYItem(inactiveGaugings);
 
-        List<PlotPoints> points = gaugingDataset.getPlotPointsItems();
-
-        plot.addXYItem(points.get(0));
-        plot.addXYItem(points.get(1));
+        // if (highlight != null) {
+        // plot.addXYItem(highlight, false);
+        // }
 
         T.clear(plotPanel);
         T.t(plotPanel, () -> {
-            points.get(0).setLabel(T.text("lgd_active_gaugings"));
-            points.get(1).setLabel(T.text("lgd_inactive_gaugings"));
+            activeGaugings.setLabel(T.text("lgd_active_gaugings"));
+            inactiveGaugings.setLabel(T.text("lgd_inactive_gaugings"));
             plot.axisX.setLabel(T.text("stage") + " [m]");
             plot.axisY.setLabel(T.text("discharge") + " [m3/s]");
             plot.axisYlog.setLabel(T.text("discharge") + " [m3/s]");
@@ -144,8 +163,53 @@ public class Gaugings extends BamItem implements ICalibrationData {
         });
 
         PlotContainer plotContainer = new PlotContainer(plot);
-        T.updateHierarchy(this, plotContainer);
+        ChartPanel chartPanel = plotContainer.getChartPanel();
 
+        double[] stage = gaugingDataset.getStageValues();
+        double[] discharge = gaugingDataset.getDischargeValues();
+
+        chartPanel.addChartMouseListener(new ChartMouseListener() {
+            @Override
+            public void chartMouseMoved(ChartMouseEvent event) {
+                updateHighlight(event.getTrigger().getPoint(), false);
+            }
+
+            @Override
+            public void chartMouseClicked(ChartMouseEvent event) {
+                updateHighlight(event.getTrigger().getPoint(), true);
+            }
+
+            private void updateHighlight(Point screenPoint, boolean includeTable) {
+                double[] distances = PlotUtils.getDistancesFromPoint(
+                        plotContainer,
+                        stage,
+                        discharge,
+                        screenPoint);
+                int minIndex = -1;
+                double minValue = Double.POSITIVE_INFINITY;
+                for (int k = 0; k < stage.length; k++) {
+                    if (distances[k] < minValue) {
+                        minValue = distances[k];
+                        minIndex = k;
+                    }
+                }
+                if (minIndex >= 0 && minValue < 20) {
+                    highlight.setPosition(stage[minIndex], discharge[minIndex]);
+                    highlight.setVisible(true);
+                    chartPanel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+                    if (includeTable) {
+                        gaugingsTable.selectRow(minIndex);
+                    }
+                    plot.update();
+                } else {
+                    highlight.setVisible(false);
+                    chartPanel.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+                    plot.update();
+                }
+            }
+        });
+
+        T.updateHierarchy(this, plotContainer);
         plotPanel.clear();
         plotPanel.appendChild(plotContainer);
 
@@ -193,25 +257,24 @@ public class Gaugings extends BamItem implements ICalibrationData {
     }
 
     @Override
-    public BamConfigRecord save(boolean writeFiles) {
-
-        JSONObject json = new JSONObject();
-
-        String[] dataFilePaths = new String[0];
+    public BamConfig save(boolean writeFiles) {
+        BamConfig config = new BamConfig(0);
         if (gaugingDataset != null) {
             DatasetConfig dc = gaugingDataset.save(writeFiles);
             JSONObject gaugingDatasetJson = dc.toJSON();
-            json.put("gaugingDataset", gaugingDatasetJson);
-            dataFilePaths = dc.getAllFilePaths();
+            config.JSON.put("gaugingDataset", gaugingDatasetJson);
+            String[] dataFilePaths = dc.getAllFilePaths();
+            for (String dfp : dataFilePaths) {
+                config.FILE_PATHS.add(dfp);
+            }
         }
-
-        return new BamConfigRecord(json, dataFilePaths);
+        return config;
     }
 
     @Override
-    public void load(BamConfigRecord bamItemBackup) {
+    public void load(BamConfig config) {
 
-        JSONObject json = bamItemBackup.jsonObject();
+        JSONObject json = config.JSON;
 
         if (json.has("gaugingDataset")) {
             JSONObject gaugingDatasetJson = json.getJSONObject("gaugingDataset");

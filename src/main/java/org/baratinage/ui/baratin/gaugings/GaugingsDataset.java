@@ -1,14 +1,19 @@
 package org.baratinage.ui.baratin.gaugings;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.baratinage.AppSetup;
+import org.baratinage.ui.bam.IPlotDataProvider;
 import org.baratinage.ui.commons.AbstractDataset;
+import org.baratinage.ui.plot.PlotItem;
 import org.baratinage.ui.plot.PlotPoints;
 import org.baratinage.utils.ConsoleLogger;
 
-public class GaugingsDataset extends AbstractDataset {
+public class GaugingsDataset extends AbstractDataset implements IPlotDataProvider {
 
     private static double[] ones(int n) {
         double[] d = new double[n];
@@ -67,33 +72,15 @@ public class GaugingsDataset extends AbstractDataset {
     }
 
     public double[] getActiveStageValues() {
-        return filter(getStageValues(), getActiveStateAsBoolean());
+        return splitArray(getStageValues(), getActiveStateAsBoolean()).get(true);
     }
 
     public double[] getActiveDischargeValues() {
-        return filter(getDischargeValues(), getActiveStateAsBoolean());
+        return splitArray(getDischargeValues(), getActiveStateAsBoolean()).get(true);
     }
 
     public double[] getActiveDischargeStdUncertainty() {
-        return filter(getDischargeStdUncertainty(), getActiveStateAsBoolean());
-    }
-
-    private double[] filter(double[] values, boolean[] active) {
-        int n = 0;
-        for (boolean b : active) {
-            if (b) {
-                n++;
-            }
-        }
-        double[] filtered = new double[n];
-        int index = 0;
-        for (int k = 0; k < values.length; k++) {
-            if (active[k]) {
-                filtered[index] = values[k];
-                index++;
-            }
-        }
-        return filtered;
+        return splitArray(getDischargeStdUncertainty(), getActiveStateAsBoolean()).get(true);
     }
 
     /**
@@ -109,7 +96,6 @@ public class GaugingsDataset extends AbstractDataset {
         double[] lowerLimit = new double[n];
         double[] upperLimit = new double[n];
         for (int k = 0; k < n; k++) {
-            // FIXME: check!
             double uHalfInterval = u[k] / 100 * q[k];
             lowerLimit[k] = q[k] - uHalfInterval;
             upperLimit[k] = q[k] + uHalfInterval;
@@ -128,96 +114,63 @@ public class GaugingsDataset extends AbstractDataset {
         return toBoolean(getActiveStateAsDouble());
     }
 
-    // FIXME: feels unnefficient and overly complicated...
-    private static List<List<double[]>> splitMatrix(List<double[]> data,
-            boolean[] filter) {
-        List<List<double[]>> res = new ArrayList<>();
-        int nCol = data.size();
-        if (nCol == 0) {
-            ConsoleLogger.error("Empty matrix!");
-            res.add(data);
-            res.add(new ArrayList<>());
-            return res;
-        }
-        int nRow = data.get(0).length;
-        if (filter.length != nRow) {
-            ConsoleLogger.error("Inconsistent filter array length!");
-            res.add(data);
-            res.add(new ArrayList<>());
-            return res;
-        }
-        int nRowWith = 0;
-        for (int k = 0; k < nRow; k++) {
-            if (filter[k]) {
-                nRowWith++;
-            }
-        }
-        int nRowWithout = nRow - nRowWith;
+    // public
 
-        List<double[]> withData = new ArrayList<>();
-        List<double[]> withoutData = new ArrayList<>();
-        for (int k = 0; k < nCol; k++) {
-            withData.add(new double[nRowWith]);
-            withoutData.add(new double[nRowWithout]);
-        }
+    private static Map<Boolean, double[]> splitArray(double[] array, boolean[] filter) {
+        int n = filter.length;
+        double[] trueValues = new double[n];
+        double[] falseValues = new double[n];
+        int tIndex = 0, fIndex = 0;
 
-        int iWith = 0;
-        int iWithout = 0;
-        for (int i = 0; i < nRow; i++) {
+        for (int i = 0; i < n; i++) {
             if (filter[i]) {
-                for (int j = 0; j < nCol; j++) {
-                    withData.get(j)[iWith] = data.get(j)[i];
-                }
-                iWith++;
+                trueValues[tIndex++] = array[i];
             } else {
-                for (int j = 0; j < nCol; j++) {
-                    withoutData.get(j)[iWithout] = data.get(j)[i];
-                }
-                iWithout++;
+                falseValues[fIndex++] = array[i];
             }
         }
-
-        res.add(withData);
-        res.add(withoutData);
-        return res;
+        Map<Boolean, double[]> result = new HashMap<>();
+        result.put(true, Arrays.copyOf(trueValues, tIndex));
+        result.put(false, Arrays.copyOf(falseValues, fIndex));
+        return result;
     }
 
-    public List<PlotPoints> getPlotPointsItems() {
+    @Override
+    public HashMap<String, PlotItem> getPlotItems() {
 
         double[] stage = getStageValues();
         double[] discharge = getDischargeValues();
         List<double[]> dischargeUncertainty = getDischargeUncertaintyInterval();
+        boolean[] activeGaugings = getActiveStateAsBoolean();
 
-        List<double[]> toSplitData = new ArrayList<>();
-        toSplitData.add(stage);
-        toSplitData.add(discharge);
-        toSplitData.add(dischargeUncertainty.get(0));
-        toSplitData.add(dischargeUncertainty.get(1));
-        List<List<double[]>> splitData = splitMatrix(toSplitData, getActiveStateAsBoolean());
+        Map<Boolean, double[]> splitStage = splitArray(stage, activeGaugings);
+        Map<Boolean, double[]> splitDischarge = splitArray(discharge, activeGaugings);
+        Map<Boolean, double[]> splitDischargeUncertaintyLow = splitArray(dischargeUncertainty.get(0), activeGaugings);
+        Map<Boolean, double[]> splitDischargeUncertaintyHight = splitArray(dischargeUncertainty.get(1), activeGaugings);
 
         PlotPoints activeGaugingsPoints = new PlotPoints(
                 "active gaugings",
-                splitData.get(0).get(0),
-                splitData.get(0).get(0),
-                splitData.get(0).get(0),
-                splitData.get(0).get(1),
-                splitData.get(0).get(2),
-                splitData.get(0).get(3),
+                splitStage.get(true),
+                splitStage.get(true),
+                splitStage.get(true),
+                splitDischarge.get(true),
+                splitDischargeUncertaintyLow.get(true),
+                splitDischargeUncertaintyHight.get(true),
                 AppSetup.COLORS.GAUGING);
 
         PlotPoints inactiveGaugingsPoints = new PlotPoints(
                 "inactive gaugings",
-                splitData.get(1).get(0),
-                splitData.get(1).get(0),
-                splitData.get(1).get(0),
-                splitData.get(1).get(1),
-                splitData.get(1).get(2),
-                splitData.get(1).get(3),
+                splitStage.get(false),
+                splitStage.get(false),
+                splitStage.get(false),
+                splitDischarge.get(false),
+                splitDischargeUncertaintyLow.get(false),
+                splitDischargeUncertaintyHight.get(false),
                 AppSetup.COLORS.DISCARDED_GAUGING);
 
-        List<PlotPoints> results = new ArrayList<>();
-        results.add(activeGaugingsPoints);
-        results.add(inactiveGaugingsPoints);
+        HashMap<String, PlotItem> results = new HashMap<>();
+        results.put("active_gaugings", activeGaugingsPoints);
+        results.put("inactive_gaugings", inactiveGaugingsPoints);
         return results;
     }
 

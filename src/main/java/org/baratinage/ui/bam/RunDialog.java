@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.function.Consumer;
 
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JDialog;
 import javax.swing.SwingWorker;
 
@@ -32,6 +33,8 @@ public class RunDialog extends JDialog {
     private final JButton cancelButton;
     private final JButton closeButton;
     private final SimpleLogger logger;
+    private final JCheckBox showHideLoggerButton;
+    private final JCheckBox closeBamDialogOnSuccessButton;
 
     private SwingWorker<Void, String> runningWorker;
     private SwingWorker<Void, Void> monitoringWorker;
@@ -48,6 +51,9 @@ public class RunDialog extends JDialog {
         }
 
         progressBar = new ProgressBar();
+        Dimension dim = progressBar.getPreferredSize();
+        dim.width = 600;
+        progressBar.setPreferredSize(dim);
         cancelButton = new JButton();
         closeButton = new JButton();
         logger = new SimpleLogger();
@@ -64,6 +70,38 @@ public class RunDialog extends JDialog {
             dispose();
         });
 
+        showHideLoggerButton = new JCheckBox();
+        showHideLoggerButton.setText(T.text("pref_hide_bam_console"));
+        showHideLoggerButton.setSelected(AppSetup.CONFIG.HIDE_BAM_CONSOLE.get());
+        showHideLoggerButton.addActionListener(l -> {
+            AppSetup.CONFIG.HIDE_BAM_CONSOLE.set(showHideLoggerButton.isSelected());
+            AppSetup.CONFIG.saveConfiguration();
+            resetContent();
+        });
+        closeBamDialogOnSuccessButton = new JCheckBox();
+        closeBamDialogOnSuccessButton.setText(T.text("pref_close_bam_console_on_success"));
+        closeBamDialogOnSuccessButton.setSelected(AppSetup.CONFIG.CLOSE_BAM_DIALOG_ON_SUCCESS.get());
+        closeBamDialogOnSuccessButton.addActionListener(l -> {
+            AppSetup.CONFIG.CLOSE_BAM_DIALOG_ON_SUCCESS.set(closeBamDialogOnSuccessButton.isSelected());
+            AppSetup.CONFIG.saveConfiguration();
+            resetContent();
+        });
+
+        resetContent();
+
+        setTitle(T.text("bam_running"));
+
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+
+            }
+        });
+
+    }
+
+    private void resetContent() {
+
         RowColPanel pbPanel = new RowColPanel();
         pbPanel.setGap(5);
         pbPanel.appendChild(progressBar, 1);
@@ -74,18 +112,17 @@ public class RunDialog extends JDialog {
         mainPanel.setGap(5);
 
         mainPanel.appendChild(pbPanel, 0);
-        mainPanel.appendChild(logger, 1);
+        if (!AppSetup.CONFIG.HIDE_BAM_CONSOLE.get()) {
+            mainPanel.appendChild(logger, 1);
+        }
+
+        mainPanel.appendChild(showHideLoggerButton, 0);
+        mainPanel.appendChild(closeBamDialogOnSuccessButton, 0);
+
         mainPanel.appendChild(closeButton, 0);
 
         setContentPane(mainPanel);
-        setTitle(T.text("bam_running"));
-
-        addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowClosing(WindowEvent e) {
-
-            }
-        });
+        pack();
 
     }
 
@@ -110,25 +147,24 @@ public class RunDialog extends JDialog {
 
         runningWorker = new SwingWorker<>() {
 
-            boolean success = true;
+            private boolean success = true;
+            private Exception exception = null;
 
             @Override
             protected Void doInBackground() throws Exception {
-                boolean success = false;
+                success = true;
                 try {
                     ConsoleLogger.log("BaM starting...");
                     bam.run(workspacePath.toString(), txt -> {
                         publish(txt);
                     });
-                    success = true;
-                } catch (IOException e) {
-                    ConsoleLogger.error(e);
-                    cancel(true);
                 } catch (InterruptedException e) {
                     ConsoleLogger.error(e);
                     cancel(true);
-                } catch (BamRunException e) {
+                } catch (BamRunException | IOException e) {
                     ConsoleLogger.error(e);
+                    success = false;
+                    exception = e;
                     cancel(true);
                 }
                 if (success) {
@@ -150,23 +186,27 @@ public class RunDialog extends JDialog {
                 closeButton.setEnabled(true);
                 cancelButton.setEnabled(false);
 
-                if (!isCancelled()) {
-                    setTitle(T.text("bam_result_processing"));
-                    progressBar.setString(T.text("bam_result_processing")); // FIXME: not updating for some reason...
-                    if (success) {
+                if (!success) {
+                    setTitle(T.text("bam_error"));
+                    progressBar.setString(T.text("bam_error"));
+                    if (exception != null) {
+                        BamRunError bre = new BamRunError(exception);
+                        bre.errorMessageDialog();
+                    }
+                } else {
+                    if (!isCancelled()) {
+                        setTitle(T.text("bam_result_processing"));
+                        progressBar.setString(T.text("bam_result_processing"));
                         onSuccess.accept(RunConfigAndRes.buildFromWorkspace(id, workspacePath));
                         setTitle(T.text("bam_done"));
                         progressBar.setString(T.text("bam_done"));
+                        if (AppSetup.CONFIG.CLOSE_BAM_DIALOG_ON_SUCCESS.get()) {
+                            dispose();
+                        }
                     } else {
-                        setTitle(T.text("bam_error"));
-                        progressBar.setString(T.text("bam_error"));
+                        setTitle(T.text("bam_canceled"));
                     }
-                } else {
-                    setTitle(T.text("bam_canceled"));
                 }
-
-                ConsoleLogger.log("BaM run done!");
-
             }
 
         };

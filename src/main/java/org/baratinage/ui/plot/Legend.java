@@ -11,6 +11,7 @@ import org.jfree.chart.annotations.XYTitleAnnotation;
 import org.jfree.chart.block.FlowArrangement;
 import org.jfree.chart.title.LegendTitle;
 import org.jfree.chart.ui.RectangleAnchor;
+import org.jfree.chart.ui.RectangleEdge;
 
 public class Legend implements LegendItemSource {
 
@@ -20,6 +21,12 @@ public class Legend implements LegendItemSource {
 
     public void addLegendItem(LegendItem legendItem) {
         legendItems.add(legendItem);
+    }
+
+    public void addLegendTitleItem(String label) {
+        LegendItem item = new LegendItem(label);
+        item.setShape(PlotItem.buildEmptyShape());
+        addLegendItem(item);
     }
 
     public void clearLegend() {
@@ -36,8 +43,23 @@ public class Legend implements LegendItemSource {
     }
 
     public LegendTitle getLegendTitle() {
-        FlowArrangement arrangement = new FlowArrangement();
-        LegendTitle legendTitle = new LegendTitle(this, arrangement, arrangement);
+        return getLegendTitle(false);
+    }
+
+    public LegendTitle getLegendTitle(boolean vertical) {
+        LegendTitle legendTitle;
+        if (vertical) {
+            legendTitle = new LegendTitle(this);
+        } else {
+            FlowArrangement arrangement = new FlowArrangement();
+            legendTitle = new LegendTitle(this, arrangement, arrangement);
+        }
+        return legendTitle;
+    }
+
+    public LegendTitle getLegendTitle(RectangleEdge position, boolean vertical) {
+        LegendTitle legendTitle = getLegendTitle(vertical);
+        legendTitle.setPosition(position);
         return legendTitle;
     }
 

@@ -83,10 +83,10 @@ public class RatingCurveStageGrid extends RowColPanel {
 
         T.t(this, stageGridLabel, false, "stage_grid");
         T.t(this, () -> {
-            minStageField.setInnerLabel(T.text("min"));
-            maxStageField.setInnerLabel(T.text("max"));
+            minStageField.setInnerLabel(T.text("min") + " [m]");
+            maxStageField.setInnerLabel(T.text("max") + " [m]");
             nbrStepField.setInnerLabel(T.text("n"));
-            valStepField.setInnerLabel(T.text("step"));
+            valStepField.setInnerLabel(T.text("step") + " [m]");
         });
         T.updateHierarchy(this, minStageField);
         T.updateHierarchy(this, maxStageField);

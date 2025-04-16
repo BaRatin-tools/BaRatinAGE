@@ -6,8 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.baratinage.AppSetup;
-import org.baratinage.jbam.EstimatedParameter;
 import org.baratinage.translation.T;
+import org.baratinage.ui.bam.EstimatedParameterWrapper;
 import org.baratinage.ui.container.GridPanel;
 import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.ui.plot.FixedTextAnnotation;
@@ -19,10 +19,10 @@ import org.baratinage.ui.plot.PlotLine;
 import org.baratinage.utils.Calc;
 
 public class TracePlotGrid extends RowColPanel {
-    // FIXME: refactoring possible with DensityPlotGrid
-    private final List<EstimatedParameter> estimatedParameters = new ArrayList<>();
 
-    public void addPlot(EstimatedParameter estimatedParameter) {
+    private final List<EstimatedParameterWrapper> estimatedParameters = new ArrayList<>();
+
+    public void addPlot(EstimatedParameterWrapper estimatedParameter) {
         estimatedParameters.add(estimatedParameter);
     }
 
@@ -51,24 +51,24 @@ public class TracePlotGrid extends RowColPanel {
         int r = 0;
         int c = 0;
 
-        int nMcmc = estimatedParameters.get(0).mcmc.length;
+        int nMcmc = estimatedParameters.get(0).parameter.mcmc.length;
         double[] x = Calc.sequence(0, nMcmc, nMcmc);
         for (int k = 0; k < estimatedParameters.size(); k++) {
 
-            EstimatedParameter estimParam = estimatedParameters.get(k);
+            EstimatedParameterWrapper estimParam = estimatedParameters.get(k);
 
             Plot plot = new Plot(false, false);
 
-            FixedTextAnnotation title = new FixedTextAnnotation(estimParam.name, 5, 5);
+            FixedTextAnnotation title = new FixedTextAnnotation(estimParam.htmlName, 5, 5);
             title.setFont(title.getFont().deriveFont(Font.BOLD, 16f));
             plot.plot.addAnnotation(title);
 
             plot.setBufferPercentage(0.1, 0, 0.05, 0.05);
 
-            PlotLine trace = new PlotLine("", x, estimParam.mcmc,
+            PlotLine trace = new PlotLine("", x, estimParam.parameter.mcmc,
                     AppSetup.COLORS.PLOT_LINE, 1);
             PlotInfiniteLine mp = new PlotInfiniteLine("",
-                    estimParam.maxpostIndex,
+                    estimParam.parameter.maxpostIndex,
                     AppSetup.COLORS.POSTERIOR_LINE,
                     2);
 

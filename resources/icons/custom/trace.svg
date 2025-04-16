@@ -2,12 +2,12 @@
 <svg width="24" height="24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" version="1.1" viewBox="0 0 24 24" xml:space="preserve"
     xmlns="http://www.w3.org/2000/svg">
     <g transform="translate(0 .047113)" stroke-linecap="round" stroke-width="1">
-        <g transform="translate(5.4598 .18588)" stroke="#000">
+        <g transform="translate(5.4598 .18588)" stroke="currentColor">
             <path d="m-2.6695 21.055v-18.373" fill="none"/>
-            <path d="m-2.6236 1.1141 1.4868 2.8138-3.123 3.438e-4z" fill="#000"/>
+            <path d="m-2.6236 1.1141 1.4868 2.8138-3.123 3.438e-4z" fill="currentColor"/>
             <g transform="rotate(90 -2.6238 21.067)">
                 <path d="m-2.6695 21.055v-18.373" fill="none"/>
-                <path d="m-2.6236 1.1141 1.4868 2.8138-3.123 3.438e-4z" fill="#000"/>
+                <path d="m-2.6236 1.1141 1.4868 2.8138-3.123 3.438e-4z" fill="currentColor"/>
             </g>
         </g>
         <path d="m2.8839 17.827 3.5797-10.337 4.3752 11.575 3.2483-7.6706 2.4086 5.6086 4.5299-12.427" fill="none"/>

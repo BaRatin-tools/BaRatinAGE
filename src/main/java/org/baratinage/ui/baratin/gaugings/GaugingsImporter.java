@@ -8,18 +8,18 @@ import java.util.List;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
-import javax.swing.JSeparator;
 import javax.swing.event.ChangeListener;
 
 import org.baratinage.AppSetup;
 import org.baratinage.translation.T;
 import org.baratinage.utils.Misc;
+import org.baratinage.utils.fs.ReadFile;
 import org.baratinage.utils.perf.TimedActions;
 import org.baratinage.ui.component.CommonDialog;
 import org.baratinage.ui.component.DataFileReader;
 import org.baratinage.ui.component.DataParser;
 import org.baratinage.ui.component.SimpleComboBox;
-
+import org.baratinage.ui.component.SimpleSep;
 import org.baratinage.ui.container.GridPanel;
 import org.baratinage.ui.container.RowColPanel;
 
@@ -90,14 +90,13 @@ public class GaugingsImporter extends RowColPanel {
                 new CommonDialog.CustomFileFilter(
                         T.text("bareme_bad_text_file"),
                         "bad"));
-        dataParser = new DataParser();
+        dataParser = new DataParser(dataFileReader);
 
         dataPreviewPanel.appendChild(dataParser);
 
         dataFileReader.addChangeListener((chEvt) -> {
 
             if (isBaremeBadFile()) {
-                System.out.println("BAREME BAD FILE");
                 try {
 
                     String filePath = dataFileReader.getFilePath();
@@ -129,7 +128,7 @@ public class GaugingsImporter extends RowColPanel {
                 }
             }
 
-            rawData = dataFileReader.getData(dataFileReader.nPreload);
+            rawData = dataFileReader.getData(dataParser.nPreload);
             headers = dataFileReader.getHeaders();
             missingValueString = dataFileReader.missingValueString;
 
@@ -168,6 +167,11 @@ public class GaugingsImporter extends RowColPanel {
                 // necessary to read all the data!
                 rawData = dataFileReader.getData();
                 dataParser.setRawData(rawData, headers, missingValueString);
+
+                boolean didLastReadSkipRows = ReadFile.didLastReadSkipRows(false);
+                if (didLastReadSkipRows) {
+                    CommonDialog.warnDialog(T.text("msg_incomplete_rows_skipped_during_import"));
+                }
 
                 dataset = new GaugingsDataset(fileName,
                         dataParser.getDoubleCol(columnsMapping.hCol.getSelectedIndex()),
@@ -216,12 +220,15 @@ public class GaugingsImporter extends RowColPanel {
         // rowIndex++;
 
         appendChild(dataFileReader, 0);
-        appendChild(dataPreviewPanel, 1);
-        appendChild(new JSeparator(), 0);
+        appendChild(new SimpleSep(), 0);
         appendChild(columnMappingPanel, 0);
-        appendChild(new JSeparator(), 0);
+        appendChild(new SimpleSep(), 0);
+        appendChild(dataPreviewPanel, 1);
+        appendChild(new SimpleSep(), 0);
         appendChild(actionPanel, 0);
 
+        T.updateHierarchy(this, dataFileReader);
+        T.updateHierarchy(this, dataParser);
         T.t(this, validateButton, false, "import");
         T.t(this, cancelButton, false, "cancel");
         T.t(this, hColMapLabel, false, "stage");

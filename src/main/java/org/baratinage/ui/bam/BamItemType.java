@@ -1,10 +1,8 @@
 package org.baratinage.ui.bam;
 
-import javax.swing.ImageIcon;
+import javax.swing.Icon;
 
 import org.baratinage.AppSetup;
-import org.baratinage.utils.ConsoleLogger;
-import org.baratinage.utils.Misc;
 
 public enum BamItemType {
     /**
@@ -23,63 +21,28 @@ public enum BamItemType {
 
     EMPTY_ITEM("empty_item"),
     HYDRAULIC_CONFIG("hydraulic_config"),
+    HYDRAULIC_CONFIG_BAC("hydraulic_config_bac"),
+    HYDRAULIC_CONFIG_QFH("hydraulic_config_qfh"),
     GAUGINGS("gaugings"),
     HYDROGRAPH("hydrograph"),
     LIMNIGRAPH("limnigraph"),
     RATING_CURVE("rating_curve"),
     STRUCTURAL_ERROR("structural_error_model"),
-    IMPORTED_DATASET("imported_dataset");
+    IMPORTED_DATASET("imported_dataset"),
+    COMPARING_RATING_CURVES("comparing_rating_curves");
 
     public final String id;
 
-    private BamItemBuilderFunction builBamItemFunction;
-
-    private ImageIcon icon;
-    private ImageIcon addIcon;
-
-    @FunctionalInterface
-    public interface BamItemBuilderFunction {
-        public BamItem build(String id);
-    }
-
     private BamItemType(String id) {
         this.id = id;
-        builBamItemFunction = (i) -> {
-            ConsoleLogger.error("No builder function set.");
-            return null;
-        };
     }
 
-    public void setBamItemBuilderFunction(BamItemBuilderFunction builder) {
-        this.builBamItemFunction = builder;
+    public Icon getIcon() {
+        return AppSetup.ICONS.getCustomAppImageIcon(id + ".svg");
     }
 
-    public BamItem buildBamItem(String uuid) {
-        if (builBamItemFunction == null) {
-            return null;
-        }
-        return builBamItemFunction.build(uuid);
-    }
-
-    public BamItem buildBamItem() {
-        if (builBamItemFunction == null) {
-            return null;
-        }
-        return builBamItemFunction.build(Misc.getTimeStampedId());
-    }
-
-    public ImageIcon getIcon() {
-        if (icon == null) {
-            icon = AppSetup.ICONS.getCustomAppImageIcon(id + ".svg");
-        }
-        return icon;
-    }
-
-    public ImageIcon getAddIcon() {
-        if (addIcon == null) {
-            addIcon = AppSetup.ICONS.getCustomAppImageIcon(id + "_add.svg");
-        }
-        return addIcon;
+    public Icon getAddIcon() {
+        return AppSetup.ICONS.getCustomAppImageIcon(id + "_add.svg");
     }
 
     public boolean matchOneOf(BamItemType... itemTypesToMatch) {
@@ -89,5 +52,14 @@ public enum BamItemType {
             }
         }
         return false;
+    }
+
+    public static BamItemType getBamItemType(String id) {
+        for (BamItemType type : BamItemType.values()) {
+            if (type.id.equals(id)) {
+                return type;
+            }
+        }
+        return null;
     }
 }

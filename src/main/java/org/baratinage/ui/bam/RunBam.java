@@ -126,8 +126,8 @@ public class RunBam {
         if (bamModelDef == null) {
             return false;
         }
-        String[] parNames = bamModelDef.getParameterNames();
-        if (parNames == null) {
+        int nPar = bamModelDef.getNumberOfParameters();
+        if (nPar < 0) {
             return false;
         }
         String[] outputNames = bamModelDef.getOutputNames();
@@ -150,8 +150,8 @@ public class RunBam {
         if (pars == null) {
             return false;
         }
-        String[] parNames = bamModelDef.getParameterNames();
-        if (parNames.length != pars.length) {
+        int nPar = bamModelDef.getNumberOfParameters();
+        if (nPar != pars.length) {
             ConsoleLogger.error(
                     "RunPanel Error: number of parameters of bamPriors doesn't match expected number of parameters");
             return false;
@@ -179,8 +179,11 @@ public class RunBam {
 
     private boolean isBamCalibDataValid() {
         // bamModelDef must be check beforhand
-        if (bamCalibData == null || bamModelDef == null) {
+        if (bamModelDef == null) {
             return false;
+        }
+        if (bamCalibData == null) {
+            return true; // allowed to run a calibration without any data;
         }
         UncertainData[] inputs = bamCalibData.getInputs();
         if (inputs == null) {
@@ -340,24 +343,7 @@ public class RunBam {
                 ConsoleLogger.log(
                         "RunPanel: if calibRun is true, calibration data should be specified! Using fake data instead...");
             }
-            double[] fakeDataArray = new double[] { 0 };
-            UncertainData[] inputs = new UncertainData[nInputs];
-            for (int k = 0; k < nInputs; k++) {
-                inputs[k] = new UncertainData(inputNames[k], fakeDataArray);
-            }
-            UncertainData[] outputs = new UncertainData[nOutputs];
-            for (int k = 0; k < nOutputs; k++) {
-                outputs[k] = new UncertainData(outputNames[k], fakeDataArray);
-            }
-
-            String dataName = "fakeCalibrationData";
-            calibData = new CalibrationData(
-                    dataName,
-                    BamFilesHelpers.CONFIG_CALIBRATION,
-                    String.format(BamFilesHelpers.DATA_CALIBRATION, dataName),
-                    inputs,
-                    outputs);
-
+            calibData = new EmptyCalibrationDataSet(bamModelDef).getCalibrationData();
         } else {
             calibData = bamCalibData.getCalibrationData();
 
@@ -554,5 +540,45 @@ public class RunBam {
         runningWorker.execute();
         monitoringWorker.execute();
 
+    }
+
+    private static class EmptyCalibrationDataSet implements ICalibrationData {
+
+        private final IModelDefinition modelDefinition;
+
+        public EmptyCalibrationDataSet(IModelDefinition modelDefinition) {
+            this.modelDefinition = modelDefinition;
+        }
+
+        private static UncertainData[] buildEmptyUncertaintyDataArray(String[] names) {
+            UncertainData[] data = new UncertainData[names.length];
+            for (int k = 0; k < names.length; k++) {
+                data[k] = new UncertainData(names[k], new double[] {});
+            }
+            return data;
+        }
+
+        @Override
+        public UncertainData[] getInputs() {
+            return buildEmptyUncertaintyDataArray(modelDefinition.getInputNames());
+        }
+
+        @Override
+        public UncertainData[] getOutputs() {
+            return buildEmptyUncertaintyDataArray(modelDefinition.getOutputNames());
+        }
+
+        @Override
+        public CalibrationData getCalibrationData() {
+            UncertainData[] inputs = getInputs();
+            UncertainData[] outputs = getOutputs();
+            String dataName = "no_calibration_data_file";
+            return new CalibrationData(
+                    dataName,
+                    BamFilesHelpers.CONFIG_CALIBRATION,
+                    String.format(BamFilesHelpers.DATA_CALIBRATION, dataName),
+                    inputs,
+                    outputs);
+        }
     }
 }

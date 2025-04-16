@@ -10,7 +10,6 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JRadioButton;
-import javax.swing.JSeparator;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
@@ -27,7 +26,8 @@ public class DataFileReader extends RowColPanel {
     public int nRowSkip = 0;
     public String missingValueString = "";
     public boolean hasHeaderRow = true;
-    public int nPreload = 15;
+
+    // public int nPreload = 15;
 
     private JLabel selectedFilePathLabel;
     private String[] fileLines;
@@ -118,14 +118,6 @@ public class DataFileReader extends RowColPanel {
             fireChangeListeners();
         });
 
-        JLabel nRowPreloadLabel = new JLabel("n_rows_to_preload");
-        SimpleIntegerField nRowPreloadField = new SimpleIntegerField(10, Integer.MAX_VALUE, 1);
-        nRowPreloadField.setValue(nPreload);
-        nRowPreloadField.addChangeListener((e) -> {
-            nPreload = nRowPreloadField.getIntValue();
-            fireChangeListeners();
-        });
-
         // **********************************************************
         // import settings panel
 
@@ -150,15 +142,13 @@ public class DataFileReader extends RowColPanel {
         importSettingsPanel.insertChild(missingValueCodeLabel, 0, rowIndex);
         importSettingsPanel.insertChild(missingValueCodeField, 1, rowIndex);
 
-        importSettingsPanel.insertChild(nRowPreloadLabel, 2, rowIndex);
-        importSettingsPanel.insertChild(nRowPreloadField, 3, rowIndex);
         rowIndex++;
 
         // **********************************************************
         // final panel
 
         appendChild(importFilePanel, 0);
-        appendChild(new JSeparator(), 0);
+        appendChild(new SimpleSep(), 0);
         appendChild(importSettingsPanel, 0);
 
         T.t(this, explainLabel, false, "select_file_to_import");
@@ -171,7 +161,6 @@ public class DataFileReader extends RowColPanel {
         T.t(this, hasHeaderCheckBox, false, "has_header_row");
         T.t(this, nSkipRowLabel, false, "n_rows_to_skip");
         T.t(this, missingValueCodeLabel, false, "missing_value_code");
-        T.t(this, nRowPreloadLabel, false, "n_rows_to_preload");
 
     }
 

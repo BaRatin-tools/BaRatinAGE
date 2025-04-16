@@ -11,12 +11,12 @@
     <g transform="matrix(1.0651 0 0 1.0641 -.3622 -.45244)" stroke-width=".93931">
         <path d="m1.9434 21.077-0.035954 1.0427h14.454l-0.01016-1.4338-7.2886-3.6358z" fill="#1c1ccb" stroke="none"/>
         <path d="m2.0135 21.609h14.418l-0.25168-4.6381-2.7685-3.8112-5.6808-0.61123-3.3797 1.0786-1.8337 3.7033-0.53932 4.4943" fill="#4b4bff" stroke="none"/>
-        <g stroke="#000" stroke-opacity=".99216" stroke-width=".93931">
+        <g stroke="currentColor" stroke-opacity=".99216" stroke-width=".93931">
             <path d="m2.0135 21.375c3e-7 -8.3142 3.2436-8.9347 7.2448-8.9347"/>
             <path d="m16.32 21.376c0-8.3142-3.2436-8.9347-7.2448-8.9347"/>
             <path d="m9.0965 12.476v-10.211" fill="none" stroke-linecap="round"/>
         </g>
         <ellipse cx="9.084" cy="3.4074" rx=".33701" ry=".34534" fill="#4b4bff" stroke="none"/>
     </g>
-    <path d="m22.2 22.406v-20.503" fill="none" stroke="#000" stroke-linecap="round" stroke-width="1"/>
+    <path d="m22.2 22.406v-20.503" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1"/>
 </svg>

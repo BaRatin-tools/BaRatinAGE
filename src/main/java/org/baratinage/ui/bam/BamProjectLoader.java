@@ -31,12 +31,14 @@ public class BamProjectLoader {
     static private Runnable doOnError = () -> {
 
     };
-    static final private ProgressFrame bamProjectLoadingFrame = new ProgressFrame();
+    static private ProgressFrame bamProjectLoadingFrame;
     static final private List<BamItem> bamProjectBamItemsToLoad = new ArrayList<>();
-    static final private List<BamConfigRecord> bamProjectBamItemsToLoadConfig = new ArrayList<>();
+    static final private List<BamConfig> bamProjectBamItemsToLoadConfig = new ArrayList<>();
     static private int bamProjectLoadingProgress = -1;
 
     private static void load(JSONObject json, File sourceFile, Consumer<BamProject> onLoaded, Runnable onError) {
+
+        bamProjectLoadingFrame = new ProgressFrame();
 
         doOnError = onError;
 
@@ -100,7 +102,7 @@ public class BamProjectLoader {
                 item.bamItemDescriptionField.setText(bamItemJson.getString("description"));
 
                 bamProjectBamItemsToLoad.add(item);
-                bamProjectBamItemsToLoadConfig.add(new BamConfigRecord(bamItemJson.getJSONObject("config")));
+                bamProjectBamItemsToLoadConfig.add(new BamConfig(bamItemJson.getJSONObject("config")));
             }
         });
 
@@ -156,7 +158,7 @@ public class BamProjectLoader {
             return;
         }
 
-        BamConfigRecord config = bamProjectBamItemsToLoadConfig.get(bamProjectLoadingProgress);
+        BamConfig config = bamProjectBamItemsToLoadConfig.get(bamProjectLoadingProgress);
         BamItem item = bamProjectBamItemsToLoad.get(bamProjectLoadingProgress);
 
         ConsoleLogger.log("Loading item " + item);
@@ -167,7 +169,8 @@ public class BamProjectLoader {
                 T.text(item.TYPE.id), itemName);
         bamProjectLoadingFrame.updateProgress(progressMsg, bamProjectLoadingProgress);
 
-        Performance.startTimeMonitoring(item.TYPE.toString());
+        String loadingString = String.format("loading %s", item.TYPE.toString());
+        Performance.startTimeMonitoring(loadingString);
         try {
             item.load(config);
         } catch (Exception e) {
@@ -176,7 +179,7 @@ public class BamProjectLoader {
             doOnError = () -> {
             }; // no need to recall the method
         }
-        Performance.endTimeMonitoring(item.TYPE.toString());
+        Performance.endTimeMonitoring(loadingString);
         bamProjectLoadingFrame.updateProgress(progressMsg, bamProjectLoadingProgress + 1);
 
         bamProjectLoadingProgress++;

@@ -1,47 +1,43 @@
 package org.baratinage.ui.baratin.hydraulic_control.control_panel;
 
+import org.baratinage.ui.commons.CommonParameterDistSimplified;
 import org.baratinage.ui.commons.ParameterPriorDistSimplified;
+import org.baratinage.ui.component.SvgIcon;
+import org.baratinage.AppSetup;
 import org.baratinage.translation.T;
 
 public class WeirRect extends PriorControlPanel {
 
-    private final ParameterPriorDistSimplified activationHeight;
+    private final ParameterPriorDistSimplified kb;
     private final ParameterPriorDistSimplified weirCoef;
     private final ParameterPriorDistSimplified width;
     private final ParameterPriorDistSimplified gravity;
     private final ParameterPriorDistSimplified exponent;
 
+    public static final SvgIcon weirCoefIcon = AppSetup.ICONS
+            .getCustomAppImageIcon("weir_coeff.svg");
+
     public WeirRect() {
+        this(true);
+    }
+
+    public WeirRect(boolean kMode) {
         super(
                 2,
-                "Q=C<sub>r</sub>B<sub>w</sub>(2g)<sup>1/2</sup>(h-b)<sup>c</sup>&nbsp;(h>k)");
+                "Q=C<sub>r</sub>B<sub>w</sub>(2g)<sup>1/2</sup>(h-b)<sup>c</sup>&nbsp;(h>\u03BA)");
 
-        activationHeight = new ParameterPriorDistSimplified();
-        activationHeight.setIcon(activationHeightIcon);
-        activationHeight.setSymbolUnitLabels("k", "m");
-
-        weirCoef = new ParameterPriorDistSimplified();
-        weirCoef.setIcon(weirCoefRIcon);
-        weirCoef.setSymbolUnitLabels("C<sub>r</sub>", "-");
+        kb = kMode ? CommonParameterDistSimplified.getActivationHeight()
+                : CommonParameterDistSimplified.getOffsetHeight();
+        weirCoef = CommonParameterDistSimplified.getWeirCoeff("r");
         weirCoef.setDefaultValues(0.4, 0.05);
-
-        width = new ParameterPriorDistSimplified();
-        width.setIcon(widthIcon);
-        width.setSymbolUnitLabels("B<sub>w</sub>", "m");
-
-        gravity = new ParameterPriorDistSimplified();
-        gravity.setIcon(gravityIcon);
-        gravity.setSymbolUnitLabels("g", "m.s<sup>-2</sup>");
-        gravity.setDefaultValues(9.81, 0.01);
+        width = CommonParameterDistSimplified.getRectWidth();
+        gravity = CommonParameterDistSimplified.getGravity();
         gravity.setLocalLock(true);
-
-        exponent = new ParameterPriorDistSimplified();
-        exponent.setIcon(exponentIcon);
-        exponent.setSymbolUnitLabels("c", "-");
+        exponent = CommonParameterDistSimplified.getExponent();
         exponent.setDefaultValues(1.5, 0.05);
         exponent.setLocalLock(true);
 
-        addParameter(activationHeight);
+        addParameter(kb);
         addParameter(weirCoef);
         addParameter(width);
         addParameter(gravity);
@@ -51,7 +47,7 @@ public class WeirRect extends PriorControlPanel {
             setHeaders(
                     T.html("mean_value"),
                     T.html("uncertainty_value"));
-            activationHeight.setNameLabel(T.html("activation_stage"));
+            kb.setNameLabel(kMode ? T.html("activation_stage") : "Offset"); // FIXME: i18n;
             weirCoef.setNameLabel(T.html("weir_coefficient"));
             width.setNameLabel(T.html("weir_width"));
             gravity.setNameLabel(T.html("gravity_acceleration"));
@@ -100,8 +96,8 @@ public class WeirRect extends PriorControlPanel {
 
         Double[] AGaussianConfig = toAMeanAndStd();
 
-        Double kMean = activationHeight.meanValueField.getDoubleValue();
-        Double kStd = activationHeight.uncertaintyValueField.getDoubleValue();
+        Double kMean = kb.meanValueField.getDoubleValue();
+        Double kStd = kb.uncertaintyValueField.getDoubleValue();
         Double cMean = exponent.meanValueField.getDoubleValue();
         Double cStd = exponent.uncertaintyValueField.getDoubleValue();
 

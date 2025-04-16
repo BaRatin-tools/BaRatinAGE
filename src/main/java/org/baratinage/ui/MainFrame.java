@@ -14,6 +14,7 @@ import org.baratinage.ui.bam.BamProjectLoader;
 import org.baratinage.ui.baratin.BaratinProject;
 import org.baratinage.ui.commons.ToasterMessage;
 import org.baratinage.ui.component.CommonDialog;
+import org.baratinage.ui.component.SvgIcon;
 import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.utils.ConsoleLogger;
 import org.baratinage.utils.Misc;
@@ -32,7 +33,7 @@ import java.nio.file.Path;
 public class MainFrame extends JFrame {
 
     private final RowColPanel projectPanel;
-    private BamProject currentProject;
+    public BamProject currentProject;
 
     public final MainMenuBar mainMenuBar;
 
@@ -89,11 +90,25 @@ public class MainFrame extends JFrame {
         });
 
         addComponentListener(new ComponentAdapter() {
-            public void componentResized(ComponentEvent e) {
+            private static void updateIcons() {
                 TimedActions.debounce(
                         "rebuild_icons_if_needed",
                         AppSetup.CONFIG.DEBOUNCED_DELAY_MS,
-                        AppSetup.ICONS::updateAllIcons);
+                        () -> {
+                            if (!SvgIcon.scalesHaveChanged()) {
+                                return;
+                            }
+                            AppSetup.ICONS.updateAllIcons();
+                            SvgIcon.memorizeCurrentScales();
+                        });
+            }
+
+            public void componentResized(ComponentEvent e) {
+                updateIcons();
+            }
+
+            public void componentMoved(ComponentEvent e) {
+                updateIcons();
             }
         });
 
@@ -197,10 +212,12 @@ public class MainFrame extends JFrame {
         return true;
     }
 
-    public void closeProject() {
-        if (confirmLoosingUnsavedChanges()) {
+    public boolean closeProject() {
+        boolean confirmed = confirmLoosingUnsavedChanges();
+        if (confirmed) {
             setCurrentProject(null);
         }
+        return confirmed;
     }
 
     public void updateFrameTitle() {

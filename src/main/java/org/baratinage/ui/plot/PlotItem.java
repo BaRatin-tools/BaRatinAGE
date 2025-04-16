@@ -22,13 +22,25 @@ import org.jfree.data.xy.XYDataset;
 
 public abstract class PlotItem {
 
+    protected String label;
+
+    protected Plot plot;
+
     public abstract XYDataset getDataset();
 
     public abstract XYItemRenderer getRenderer();
 
     public abstract LegendItem getLegendItem();
 
-    public abstract void setLabel(String label);
+    public void setLabel(String label) {
+        this.label = label;
+    }
+
+    public String getLabel() {
+        return this.label;
+    }
+
+    public abstract void configureRenderer(IPlotItemRendererSettings rendererSettings);
 
     public Range getDomainBounds() {
         return DatasetUtils.findDomainBounds(getDataset());
@@ -39,6 +51,82 @@ public abstract class PlotItem {
     }
 
     public void setPlot(XYPlot plot) {
+    }
+
+    public static enum ShapeType {
+        CIRCLE, SQUARE;
+
+        public static ShapeType fromString(String shapeTypeString) {
+            if (shapeTypeString.equals("CIRCLE"))
+                return CIRCLE;
+            if (shapeTypeString.equals("SQUARE"))
+                return SQUARE;
+            return CIRCLE;
+        }
+
+        public String toString() {
+            if (this == CIRCLE)
+                return "CIRCLE";
+            if (this == SQUARE)
+                return "SQUARE";
+            return "CIRCLE";
+        }
+
+    }
+
+    public static enum LineType {
+        SOLID, DASHED, DOTTED;
+
+        public static LineType fromString(String lineTypeString) {
+            if (lineTypeString.equals("SOLID"))
+                return SOLID;
+            if (lineTypeString.equals("DASHED"))
+                return DASHED;
+            if (lineTypeString.equals("DOTTED"))
+                return DOTTED;
+            return SOLID;
+        }
+
+        public String toString() {
+            if (this == SOLID)
+                return "SOLID";
+            if (this == DASHED)
+                return "DASHED";
+            if (this == DOTTED)
+                return "DOTTED";
+            return "SOLID";
+        }
+
+        public float[] getDashArray() {
+            return getDashArray(1F);
+        }
+
+        public float[] getDashArray(float lineWidth) {
+            if (this == SOLID) {
+                return new float[] { 1F };
+            } else if (this == DASHED) {
+                return new float[] { lineWidth * 2F, lineWidth * 2F };
+            } else if (this == DOTTED) {
+                return new float[] { 1F, lineWidth * 1.5F };
+            }
+            return new float[] { 1F };
+        }
+
+        public static LineType getLineTypeFromStroke(Stroke stroke) {
+            if (!(stroke instanceof BasicStroke)) {
+                return SOLID;
+            }
+            BasicStroke basicStroke = (BasicStroke) stroke;
+            float[] dashArray = basicStroke.getDashArray();
+            if (dashArray.length > 1) {
+                float refDash = dashArray[0];
+                if (refDash > 3F) {
+                    return DASHED;
+                }
+                return DOTTED;
+            }
+            return SOLID;
+        }
     }
 
     public static Ellipse2D.Double buildCircleShape() {
@@ -90,10 +178,15 @@ public abstract class PlotItem {
         return buildStroke(1);
     }
 
-    public static Stroke buildStroke(int lineWidth) {
+    public static Stroke buildStroke(float lineWidth) {
+        return buildStroke(lineWidth, new float[] { 1F });
+    }
+
+    public static Stroke buildStroke(float lineWidth, float[] dashArray) {
         return new BasicStroke(lineWidth,
-                BasicStroke.CAP_ROUND, BasicStroke.JOIN_BEVEL,
-                1, new float[] { 1F }, 0);
+                // BasicStroke.CAP_ROUND, BasicStroke.JOIN_BEVEL,
+                BasicStroke.CAP_ROUND, BasicStroke.JOIN_MITER,
+                1, dashArray, 0);
     }
 
     public static Second[] localDateTimeToSecond(LocalDateTime[] time) {

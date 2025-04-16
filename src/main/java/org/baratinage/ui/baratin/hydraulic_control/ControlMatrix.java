@@ -15,6 +15,7 @@ import org.baratinage.ui.component.CommonDialog;
 import org.baratinage.ui.container.GridPanel;
 import org.baratinage.ui.container.RowColPanel;
 import org.baratinage.utils.ConsoleLogger;
+import org.baratinage.utils.Misc;
 import org.baratinage.translation.T;
 import org.json.JSONObject;
 
@@ -28,6 +29,8 @@ public class ControlMatrix extends RowColPanel implements ChangeListener {
 
     public ControlMatrix() {
         super(AXIS.COL);
+
+        Misc.setMinimumSize(this, null, 250);
 
         RowColPanel buttonsPanel = new RowColPanel(AXIS.COL, ALIGN.STRETCH);
         buttonsPanel.setPadding(5);
@@ -110,6 +113,10 @@ public class ControlMatrix extends RowColPanel implements ChangeListener {
         return controlMatrix;
     }
 
+    public int getNumberOfControls() {
+        return controls.size();
+    }
+
     public static String toXtra(boolean[][] controlMatrix) {
         String xtra = "";
         for (int i = 0; i < controlMatrix.length; i++) {
@@ -124,8 +131,12 @@ public class ControlMatrix extends RowColPanel implements ChangeListener {
     }
 
     public static boolean[][] fromXtra(String xTra) {
+        return fromXtra(xTra, false);
+    }
+
+    public static boolean[][] fromXtra(String xTra, boolean ignoreLastRow) {
         String[] rows = xTra.split("\n");
-        int nCtrl = rows.length;
+        int nCtrl = rows.length - (ignoreLastRow ? 1 : 0);
         boolean[][] controlMatrix = new boolean[nCtrl][nCtrl];
         for (int i = 0; i < nCtrl; i++) {
             String[] items = rows[i].split(" ");
@@ -314,9 +325,7 @@ public class ControlMatrix extends RowColPanel implements ChangeListener {
         }
     }
 
-    public JSONObject toJSON() {
-        JSONObject json = new JSONObject();
-        boolean[][] matrix = getControlMatrix();
+    public static String toXtraJsonString(boolean[][] matrix) {
         String stringMatrix = "";
         int n = matrix.length;
         for (int i = 0; i < n; i++) {
@@ -325,14 +334,11 @@ public class ControlMatrix extends RowColPanel implements ChangeListener {
             }
             stringMatrix += ";";
         }
-        json.put("controlMatrixString", stringMatrix);
-        json.put("isReversed", getIsReversed());
-        return json;
+        return stringMatrix;
     }
 
-    public void fromJSON(JSONObject json) {
-        String stringMatrix = json.getString("controlMatrixString");
-        String[] stringMatrixRow = stringMatrix.split(";");
+    public static boolean[][] fromXtraJsonString(String xTraJsonString) {
+        String[] stringMatrixRow = xTraJsonString.split(";");
         int n = stringMatrixRow.length;
         boolean[][] matrix = new boolean[n][n];
         char one = "1".charAt(0);
@@ -341,6 +347,21 @@ public class ControlMatrix extends RowColPanel implements ChangeListener {
                 matrix[i][j] = stringMatrixRow[i].charAt(j) != one;
             }
         }
+        return matrix;
+    }
+
+    public JSONObject toJSON() {
+        JSONObject json = new JSONObject();
+        boolean[][] matrix = getControlMatrix();
+        String stringMatrix = toXtraJsonString(matrix);
+        json.put("controlMatrixString", stringMatrix);
+        json.put("isReversed", getIsReversed());
+        return json;
+    }
+
+    public void fromJSON(JSONObject json) {
+        String stringMatrix = json.getString("controlMatrixString");
+        boolean[][] matrix = fromXtraJsonString(stringMatrix);
         setControlMatrix(matrix);
         setIsReversed(json.getBoolean("isReversed"));
     }

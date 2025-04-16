@@ -37,7 +37,7 @@ public class Plot implements LegendItemSource {
     private double bufferPercentageLeft = 0.01;
     private double bufferPercentageRight = 0.01;
 
-    private final boolean includeLegend;
+    private boolean includeLegend;
     private final boolean timeseries;
 
     private String dateTimeFormat = "yyyy-MM-dd HH:mm:ss";
@@ -99,16 +99,42 @@ public class Plot implements LegendItemSource {
         chart.setBackgroundPaint(Color.WHITE);
         chart.removeLegend();
 
+        // if (includeLegend) {
+        // LegendTitle legendTitle = new LegendTitle(this);
+        // legendTitle.setPosition(RectangleEdge.RIGHT);
+        // chart.addLegend(legendTitle);
+        // }
+
+        updateLegend();
+
+    }
+
+    private void updateLegend() {
+        chart.removeLegend();
         if (includeLegend) {
             LegendTitle legendTitle = new LegendTitle(this);
             legendTitle.setPosition(RectangleEdge.RIGHT);
             chart.addLegend(legendTitle);
         }
+    }
 
+    public void setIncludeLegend(boolean includeLegend) {
+        this.includeLegend = includeLegend;
+        updateLegend();
     }
 
     public JFreeChart getChart() {
         return this.chart;
+    }
+
+    public void setXAxisLabel(String label) {
+        axisX.setLabel(label);
+        axisXlog.setLabel(label);
+    }
+
+    public void setYAxisLabel(String label) {
+        axisY.setLabel(label);
+        axisYlog.setLabel(label);
     }
 
     public void addXYItem(PlotItem item) {
@@ -119,6 +145,17 @@ public class Plot implements LegendItemSource {
         plot.setDataset(items.size(), item.getDataset());
         plot.setRenderer(items.size(), item.getRenderer());
         items.add(new PlotItemConfig(item, isVisibleInLegend, true));
+    }
+
+    public void addXYItem(PlotItemGroup item) {
+        addXYItem(item, true);
+    }
+
+    public void addXYItem(PlotItemGroup item, boolean isVisibleInLegend) {
+        List<PlotItem> items = item.getPlotItems();
+        for (PlotItem i : items) {
+            addXYItem(i, isVisibleInLegend);
+        }
     }
 
     private static Range applyBufferToRange(Range r, double lowerBufferPercentage, double upperBufferPercentage) {
@@ -171,6 +208,10 @@ public class Plot implements LegendItemSource {
     }
 
     public void update() {
+        for (int k = 0; k < items.size(); k++) {
+            plot.setDataset(k, items.get(k).item.getDataset());
+            plot.setRenderer(k, items.get(k).item.getRenderer());
+        }
         chart.fireChartChanged();
     }
 
@@ -196,6 +237,8 @@ public class Plot implements LegendItemSource {
         for (PlotItemConfig item : items) {
             plotCopy.addXYItem(item.item(), item.visibleInLegend());
         }
+        plotCopy.chart.removeLegend();
+        plotCopy.chart.addLegend(chart.getLegend());
         return plotCopy;
     }
 

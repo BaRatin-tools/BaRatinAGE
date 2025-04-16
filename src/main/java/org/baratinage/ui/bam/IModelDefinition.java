@@ -3,7 +3,7 @@ package org.baratinage.ui.bam;
 public interface IModelDefinition {
     public String getModelId();
 
-    public String[] getParameterNames();
+    public int getNumberOfParameters();
 
     public String[] getInputNames();
 
