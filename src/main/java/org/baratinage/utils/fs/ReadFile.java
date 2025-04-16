@@ -160,10 +160,20 @@ public class ReadFile {
      *                         used to indicate missing values)
      * @return double value resulting from the conversion.
      */
-    private static double toDouble(String str, String missingValueCode) {
+    public static double toDouble(String str, String missingValueCode) {
         if (str.equals(missingValueCode)) {
             return Double.NaN;
         }
+        return toDouble(str);
+    }
+
+    /**
+     * converts a string into a double.
+     * 
+     * @param str string to convert
+     * @return double value resulting from the conversion.
+     */
+    public static double toDouble(String str) {
         try {
             Double d = Double.parseDouble(str);
             return d;

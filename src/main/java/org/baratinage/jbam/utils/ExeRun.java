@@ -16,9 +16,10 @@ public class ExeRun implements Runnable {
 
     private File exeDirFile;
     private String[] cmd;
-    private final List<Consumer<String>> consolOutputConsumers = new ArrayList<>();
+    private final List<Consumer<String>> consoleOutputConsumers = new ArrayList<>();
     private int exitValue = -999;
     private Process process;
+    private List<String> lastRunConsoleOutputs;
 
     public void setExeDir(String exeDir) {
         exeDirFile = new File(exeDir);
@@ -67,18 +68,22 @@ public class ExeRun implements Runnable {
         }
     }
 
-    public void addConsolOutputConsumer(Consumer<String> consolOutputConsumer) {
-        consolOutputConsumers.add(consolOutputConsumer);
+    public void addConsoleOutputConsumer(Consumer<String> consoleOutputConsumer) {
+        consoleOutputConsumers.add(consoleOutputConsumer);
     }
 
-    public void removeConsolOutputConsumer(Consumer<String> consolOutputConsumer) {
-        consolOutputConsumers.remove(consolOutputConsumer);
+    public void removeConsoleOutputConsumer(Consumer<String> consoleOutputConsumer) {
+        consoleOutputConsumers.remove(consoleOutputConsumer);
     }
 
-    private void publishConsolOutput(String output) {
-        for (Consumer<String> consolOutputConsumer : consolOutputConsumers) {
-            consolOutputConsumer.accept(output);
+    private void publishConsoleOutput(String output) {
+        for (Consumer<String> consoleOutputConsumer : consoleOutputConsumers) {
+            consoleOutputConsumer.accept(output);
         }
+    }
+
+    public List<String> getLastRunConsoleOutputs() {
+        return lastRunConsoleOutputs;
     }
 
     public Process getProcess() {
@@ -101,35 +106,27 @@ public class ExeRun implements Runnable {
             InputStream inputStream = process.getInputStream();
             InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
             BufferedReader bufferReader = new BufferedReader(inputStreamReader);
-            List<String> consoleLines = new ArrayList<String>();
+            lastRunConsoleOutputs = new ArrayList<>();
             String currentLine = null;
 
             try {
                 while ((currentLine = bufferReader.readLine()) != null) {
-                    consoleLines.add(currentLine);
-                    publishConsolOutput(currentLine);
+                    lastRunConsoleOutputs.add(currentLine);
+                    publishConsoleOutput(currentLine);
                 }
             } catch (IOException e) {
                 ConsoleLogger.error(e);
             }
 
             boolean hasFinished = true;
-            try {
-                hasFinished = process.waitFor(250, TimeUnit.MILLISECONDS);
-            } catch (InterruptedException e) {
-                ConsoleLogger.error(e);
-                return;
-            }
+
+            hasFinished = process.waitFor(250, TimeUnit.MILLISECONDS);
 
             if (hasFinished) {
-                try {
-                    exitValue = process.exitValue();
-                } catch (IllegalThreadStateException e) {
-                    ConsoleLogger.error(e);
-                    return;
-                }
+                exitValue = process.exitValue();
             }
-        } catch (IOException e) {
+
+        } catch (IOException | InterruptedException | IllegalThreadStateException e) {
             ConsoleLogger.error(e);
             return;
         }
