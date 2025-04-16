@@ -61,17 +61,12 @@ It can be compiled from source as described below.
 
 ### Prerequisit for compiling BaM on Windows
 
-On windows, you need to install a Fortran compiler (see [https://fortran-lang.org/en/compilers/](https://fortran-lang.org/en/compilers/)).
-We recommend [GFortran](https://gcc.gnu.org/fortran/).
-Binaries for this compiler can be found [here](https://gcc.gnu.org/wiki/GFortranBinaries).
-
-On windows, you can do the following:
-
-- install msys: [https://www.msys2.org/](https://www.msys2.org/)
-- run msys2 and install the following packages using pacman (`pacman -S <package name>`):
-  - [mingw-w64-x86_64-gcc-fortran](https://packages.msys2.org/package/mingw-w64-x86_64-gcc-fortran)
-  - [make](https://packages.msys2.org/package/make)
-- add `C:\msys64\usr\bin` and `C:\msys64\mingw64\bin` to you path environment variable (modify the paths according to where you install msys2)
+On Windows, we recommand using MSYS2:
+- Go to [msys2.org](https://www.msys2.org/), download the installer and run it to install MSYS2.
+- In the MSYS2 shell, run `pacman -Syu` to update the package list and upgrade everything to the latest version. You may need to restart the shell and rerun the command a few times.
+- install the mingw-w64 gofortran compiler : `pacman -S mingw-w64-x86_64-gcc-fortran`
+- install the make package to make the make command available: `pacman -S make` 
+- to be able to use the powershell (instead of the MSYS2 shell), add the folders where both `gfortran` and `make` are located to you PATH environment variable. You can find this out by running `where gfortran` and `where make` in the MSYS2 shell.
 
 ### Compiling BaM using the makefile
 
@@ -85,6 +80,8 @@ git clone https://github.com/benRenard/miniDMSL.git
 
 To build, BaM, navigate with the console to `BaM/makefile` and run: `make`.
 This will build the executable file, named `BaM` (`BaM.exe` on windows).
+
+You'll also need the `distribution` CLI tool that is located in `BMSL/cli/distribution` which can be compiled run the `make` command in this directory.
 
 ## BaRatinAGE directory final setup
 
