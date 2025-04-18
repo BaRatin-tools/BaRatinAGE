@@ -1,8 +1,6 @@
 package org.baratinage.jbam;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.function.Consumer;
 
 import org.baratinage.jbam.utils.DistributionCLI;
@@ -47,19 +45,10 @@ public class Distribution {
             0d + DENSITY_RANGE_EDGE, 1d - DENSITY_RANGE_EDGE
     };
 
-    private static Map<String, List<double[]>> memoizedDensities = new HashMap<>();
-
     public List<double[]> getDensity() {
         if (density != null) {
             return density;
         }
-
-        String densityKey = DistributionCLI.getDistParamID(type.bamName, parameterValues);
-        if (memoizedDensities.containsKey(densityKey)) {
-            ConsoleLogger.log(String.format("Using memoized density (%s)", densityKey));
-            return memoizedDensities.get(densityKey);
-        }
-
         double[] rangeRes = DistributionCLI.getQuantiles(
                 type.bamName,
                 parameterValues,
@@ -74,8 +63,6 @@ public class Distribution {
                 rangeRes[1],
                 DENSITY_SAMPLES);
 
-        memoizedDensities.put(densityKey, density);
-        ConsoleLogger.log(String.format("Memoizing density (%s).", densityKey));
         return density;
     }
 

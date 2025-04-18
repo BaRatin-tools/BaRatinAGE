@@ -1,7 +1,11 @@
 package org.baratinage.jbam.utils;
 
 import java.nio.file.Path;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import org.baratinage.utils.ConsoleLogger;
 import org.baratinage.utils.Misc;
 
 public class DistributionCLI {
@@ -34,10 +38,6 @@ public class DistributionCLI {
     }
   }
 
-  public static String getDistParamID(String distributionName, double[] distributionParameters) {
-    return String.format("%s_%s", distributionName, doubleArrToStringArg(distributionParameters));
-  }
-
   private static ExeRun runDistributionCommand(String distributionName, double[] distributionParameters, ACTION action,
       Double gridMin, Double gridMax, Integer nGrid, Integer nSim) {
 
@@ -57,9 +57,22 @@ public class DistributionCLI {
     return exeRun;
   }
 
+  private static Map<String, List<double[]>> memoizedDPQ = new HashMap<>();
+
   private static List<double[]> runDistributionCommand_DPQ(String distributionName, double[] distributionParameters,
       ACTION action,
       Double low, Double high, Integer n) {
+
+    String memoizationKey = String.format("%s_%s_%s_%s",
+        distributionName,
+        doubleArrToStringArg(distributionParameters),
+        action.actionKey,
+        doubleArrToStringArg(low, high, (double) n));
+    if (memoizedDPQ.containsKey(memoizationKey)) {
+      ConsoleLogger.log(String.format("Using memoized distribution CLI result (%s)", memoizationKey));
+      return memoizedDPQ.get(memoizationKey);
+    }
+
     ExeRun run = runDistributionCommand(distributionName,
         distributionParameters,
         action,
@@ -72,6 +85,9 @@ public class DistributionCLI {
         Misc.stringToDoubleMatrix(
             runOut,
             BamFilesHelpers.BAM_COLUMN_SEPARATOR));
+
+    ConsoleLogger.log(String.format("Memoizing distribution CLI result (%s)", memoizationKey));
+    memoizedDPQ.put(memoizationKey, runValues);
     return runValues;
   }
 
