@@ -41,10 +41,6 @@ public abstract class PriorControlPanel extends GridPanel implements ChangeListe
                 setPadding(0);
                 setGap(5);
 
-                for (int k = 0; k < nColumns; k++) {
-                        setColWeight(k + 3, 1);
-                }
-
                 equationLabel = new JLabel();
                 equationLabel.setText(String.format("<html>%s %s</html>", equation, vAlignFixString));
                 equationLabel.setFont(MONOSPACE_FONT);
@@ -91,6 +87,9 @@ public abstract class PriorControlPanel extends GridPanel implements ChangeListe
 
         protected void addParameter(ParameterPriorDistSimplified parameter) {
 
+                setColWeight(3, 1);
+                setColWeight(4, 1);
+
                 int index = parameters.size() + 2;
                 int colIndex = 0;
                 insertChild(parameter.iconLabel, colIndex, index);
@@ -116,6 +115,9 @@ public abstract class PriorControlPanel extends GridPanel implements ChangeListe
 
         protected void addParameter(ParameterPriorDist parameter) {
 
+                setColWeight(4, 2);
+                setColWeight(5, 1);
+
                 int index = parameters.size() + 2;
                 int colIndex = 0;
 
@@ -125,11 +127,11 @@ public abstract class PriorControlPanel extends GridPanel implements ChangeListe
                 colIndex++;
                 insertChild(parameter.symbolUnitLabel, colIndex, index);
                 colIndex++;
-                insertChild(parameter.initialGuessField, colIndex, index);
-                colIndex++;
                 insertChild(parameter.distributionField.distributionCombobox, colIndex, index);
                 colIndex++;
                 insertChild(parameter.distributionField.parameterFieldsPanel, colIndex, index);
+                colIndex++;
+                insertChild(parameter.initialGuessField, colIndex, index);
                 colIndex++;
                 insertChild(parameter.lockCheckbox, colIndex, index);
                 colIndex++;

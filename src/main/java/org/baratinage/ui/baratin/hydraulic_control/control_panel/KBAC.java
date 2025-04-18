@@ -43,9 +43,9 @@ public class KBAC extends PriorControlPanel {
 
         T.t(this, () -> {
             setHeaders(
-                    T.html("initial_guess"),
                     T.html("distribution"),
-                    T.html("distribution_parameters"));
+                    T.html("distribution_parameters"),
+                    T.html("initial_guess"));
         });
     }
 

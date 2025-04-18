@@ -12,6 +12,7 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import org.baratinage.AppSetup;
 import org.baratinage.jbam.DistributionType;
 import org.baratinage.jbam.Parameter;
 import org.baratinage.translation.T;
@@ -42,9 +43,9 @@ public class QFHPriors extends JScrollPane implements IPriors, ChangeListener {
         priorParDists = new HashMap<>();
         usedParNames = new LinkedHashSet<>();
 
-        mainPanel.setColWeight(1, 1);
-        mainPanel.setColWeight(2, 1);
+        mainPanel.setColWeight(3, 2);
         mainPanel.setColWeight(4, 1);
+
         mainPanel.setPadding(5);
         mainPanel.setGap(5);
 
@@ -52,16 +53,23 @@ public class QFHPriors extends JScrollPane implements IPriors, ChangeListener {
         // setting up headers
         addHeaderItem("optional_type");
         addHeaderItem("name");
-        addHeaderItem("initial_guess");
         addHeaderItem("distribution");
         addHeaderItem("distribution_parameters");
+        addHeaderItem("initial_guess");
+
+        JLabel lockLabel = new JLabel();
+        lockLabel.setIcon(AppSetup.ICONS.LOCK);
+        addHeaderItem(lockLabel);
     }
 
     private void addHeaderItem(String lgKey) {
         JLabel headerLabel = new JLabel();
         T.t(this, headerLabel, true, lgKey);
-        headers.add(headerLabel);
+        addHeaderItem(headerLabel);
+    }
 
+    private void addHeaderItem(JLabel label) {
+        headers.add(label);
     }
 
     private void insertHeaders() {
@@ -126,13 +134,18 @@ public class QFHPriors extends JScrollPane implements IPriors, ChangeListener {
                 mainPanel.insertChild(label != null ? label : p.knownParameterType, colIndex, rowIndex);
             }
             colIndex++;
-            mainPanel.insertChild(p.nameLabel, colIndex, rowIndex);
-            colIndex++;
-            mainPanel.insertChild(p.initialGuessField, colIndex, rowIndex);
+            mainPanel.insertChild(p.nameLabel, colIndex, rowIndex,
+                    1, 1,
+                    GridPanel.ANCHOR.C, GridPanel.FILL.BOTH,
+                    0, 20, 0, 5);
             colIndex++;
             mainPanel.insertChild(p.distributionField.distributionCombobox, colIndex, rowIndex);
             colIndex++;
             mainPanel.insertChild(p.distributionField.parameterFieldsPanel, colIndex, rowIndex);
+            colIndex++;
+            mainPanel.insertChild(p.initialGuessField, colIndex, rowIndex);
+            colIndex++;
+            mainPanel.insertChild(p.lockCheckbox, colIndex, rowIndex);
             rowIndex++;
         }
         updateUI();

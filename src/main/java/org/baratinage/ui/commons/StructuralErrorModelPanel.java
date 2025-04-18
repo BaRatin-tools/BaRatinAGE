@@ -38,10 +38,14 @@ public class StructuralErrorModelPanel extends GridPanel implements ChangeListen
         JLabel lockLabel = new JLabel();
         lockLabel.setIcon(AppSetup.ICONS.LOCK);
 
-        insertChild(initialGuessLabel, 1, 0);
-        insertChild(distributionLabel, 2, 0);
-        insertChild(distributionParametersLabel, 3, 0);
-        insertChild(lockLabel, 4, 0);
+        int colIndex = 2;
+        insertChild(distributionLabel, colIndex, 0);
+        colIndex++;
+        insertChild(distributionParametersLabel, colIndex, 0);
+        colIndex++;
+        insertChild(initialGuessLabel, colIndex, 0);
+        colIndex++;
+        insertChild(lockLabel, colIndex, 0);
 
         insertChild(new SimpleSep(), 1, 1);
         insertChild(new SimpleSep(), 2, 1);
@@ -85,11 +89,16 @@ public class StructuralErrorModelPanel extends GridPanel implements ChangeListen
     private void addParameter(ParameterPriorDist parameter) {
         int index = parameters.size() + 2;
         parameters.add(parameter);
-        insertChild(parameter.symbolUnitLabel, 0, index);
-        insertChild(parameter.initialGuessField, 1, index);
-        insertChild(parameter.distributionField.distributionCombobox, 2, index);
-        insertChild(parameter.distributionField.parameterFieldsPanel, 3, index);
-        insertChild(parameter.lockCheckbox, 4, index);
+        int colIndex = 1;
+        insertChild(parameter.symbolUnitLabel, colIndex, index);
+        colIndex++;
+        insertChild(parameter.distributionField.distributionCombobox, colIndex, index);
+        colIndex++;
+        insertChild(parameter.distributionField.parameterFieldsPanel, colIndex, index);
+        colIndex++;
+        insertChild(parameter.initialGuessField, colIndex, index);
+        colIndex++;
+        insertChild(parameter.lockCheckbox, colIndex, index);
 
         parameter.addChangeListener(this);
 
