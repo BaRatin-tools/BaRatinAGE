@@ -1,5 +1,52 @@
 [
     {
+    "id": "param_weir",
+    "icon_id": "hc_param_weir",
+    "formula": "C_0 / sqrt( 2 ) * k^(k-1) / (k+1/2)^(k+1/2) * B_s / H_s^(k-1) * (ispos( h - b ) * ( h - b )) ^ (k+1/2)",
+    "stage_symbole": "h",
+    "parameters": [
+      {
+        "symbole": "b",
+        "type": "offset"
+      },
+      {
+        "symbole": "C_0",
+        "type": "weir_coefficient",
+        "default_distribution": {
+          "initial_guess": 1,
+          "type": "Gaussian",
+          "parameters": [1, 0.025]
+        }
+      },
+      {
+        "symbole": "B_s",
+        "type": "distance"
+      },
+	        {
+        "symbole": "H_s",
+        "type": "distance"
+      },
+      {
+        "symbole": "g",
+        "type": "gravity_acceleration",
+        "default_distribution": {
+          "initial_guess": 9.81,
+          "type": "Gaussian",
+          "parameters": [9.81, 0.005]
+        }
+      },
+      {
+        "symbole": "k",
+        "type": "exponent",
+        "default_distribution": {
+          "initial_guess": 1.5,
+          "type": "Uniform",
+          "parameters": [1, 2]
+        }
+      }
+    ]
+  },
+    {
     "id": "trapezoid_weir",
     "icon_id": "hc_trapezoid_weir",
     "formula": "C_t * tan( v / 2 ) * sqrt( 2 * g ) * (ispos( h - k_1 ) * ( h - k_1 )) ^ c_t +  C_r * B_r * sqrt( 2 * g ) * (ispos( h - k_1 ) * ( h - k_1 )) ^ c_r",
@@ -136,7 +183,7 @@
     {
     "id": "rect_trapezoid",
     "icon_id": "hc_rect_trapezoid_weir",
-    "formula": "C_t * tan( v / 2 ) * sqrt( 2 * g ) * (ispos( h - k_1 ) * ( h - k_1 )) ^ c_t +  C_r1 * B_r1 * sqrt( 2 * g ) * (ispos( h - k_1 ) * ( h - k_1 )) ^ c_r +  C_r2 * B_r2 * sqrt( 2 * g ) * (ispos( h - k_2 ) * ( h - k_2 )) ^ c_r",
+    "formula": "C_t * tan( v / 2 ) * sqrt( 2 * g ) * (ispos( h - k_1 ) * ( h - k_1 )) ^ c_t  - C_t * tan( v / 2 ) * sqrt( 2 * g ) * (ispos( h - k_2 ) * ( h - k_2 )) ^ c_t +  C_r1 * B_r1 * sqrt( 2 * g ) * (ispos( h - k_1 ) * ( h - k_1 )) ^ c_r +  C_r2 * B_r2 * sqrt( 2 * g ) * (ispos( h - k_2 ) * ( h - k_2 )) ^ c_r",
     "stage_symbole": "h",
     "parameters": [
       {
@@ -218,7 +265,7 @@
   {
     "id": "triangle_triangle",
     "icon_id": "hc_triangle_triangle_weir",
-    "formula": "C_t1 * tan( v_1 / 2 ) * sqrt( 2 * g ) * (ispos( h - k_1 ) * ( h - k_1 )) ^ c_t1 +  C_t2 * tan( v_2 / 2 ) * sqrt( 2 * g ) * (ispos( h - k_2 ) * ( h - k_2 )) ^ c_t2 - C_t1 * tan( v_1 / 2 ) * sqrt( 2 * g ) * (ispos( h - k_2 ) * ( h - k_2 )) ^ c_t1",
+    "formula": "C_t1 * tan( v_1 / 2 ) * sqrt( 2 * g ) * (ispos( h - k_1 ) * ( h - k_1 )) ^ c_t +  C_t2 * tan( v_2 / 2 ) * sqrt( 2 * g ) * (ispos( h - k_2 ) * ( h - k_2 )) ^ c_t - C_t1 * tan( v_1 / 2 ) * sqrt( 2 * g ) * (ispos( h - k_2 ) * ( h - k_2 )) ^ c_t",
     "stage_symbole": "h",
     "parameters": [
       {
@@ -247,7 +294,7 @@
         }
       },
       {
-        "symbole": "c_t1",
+        "symbole": "c_t",
         "type": "exponent",
         "default_distribution": {
           "initial_guess": 2.5,
@@ -272,21 +319,12 @@
         "symbole": "v_2",
         "type": "angle"
       },
-      {
-        "symbole": "c_t2",
-        "type": "exponent",
-        "default_distribution": {
-          "initial_guess": 2.5,
-          "type": "Gaussian",
-          "parameters": [2.5, 0.025]
-        }
-      }
     ]
   },
   {
     "id": "rect_weir_orifice",
     "icon_id": "hc_rect_weir_orifice",
-    "formula": "C_r * B_r * sqrt( 2 * g ) * (ispos( h - k_1 ) * ( h - k_1 )) ^ c_1 - C_r * B_r * sqrt( 2 * g ) * (ispos( h - k_2 ) * ( h - k_2 )) ^ c_1",
+    "formula": "C_r * B_r * sqrt( 2 * g ) * (ispos( h - k_1 ) * ( h - k_1 )) ^ c_r - C_r * B_r * sqrt( 2 * g ) * (ispos( h - k_2 ) * ( h - k_2 )) ^ c_r",
     "stage_symbole": "h",
     "parameters": [
       {
@@ -320,7 +358,7 @@
         }
       },
       {
-        "symbole": "c_1",
+        "symbole": "c_r",
         "type": "exponent",
         "default_distribution": {
           "initial_guess": 2.5,
