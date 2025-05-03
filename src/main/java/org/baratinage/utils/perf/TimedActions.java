@@ -7,7 +7,6 @@ import java.util.TimerTask;
 
 import javax.swing.SwingUtilities;
 
-// import org.baratinage.utils.ConsoleLogger;
 import org.baratinage.utils.Misc;
 
 public class TimedActions {

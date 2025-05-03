@@ -78,7 +78,7 @@ public abstract class PriorControlPanel extends GridPanel implements ChangeListe
                 int n = headers.length;
                 if (n != columnHeaders.size()) {
                         throw new IllegalArgumentException(
-                                        "Number of provided headers doesn't match the number of need headers!");
+                                        "Number of provided headers doesn't match the number of needed headers!");
                 }
                 for (int k = 0; k < n; k++) {
                         columnHeaders.get(k).setText(headers[k]);
