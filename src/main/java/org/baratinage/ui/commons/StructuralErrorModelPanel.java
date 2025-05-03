@@ -62,6 +62,7 @@ public class StructuralErrorModelPanel extends GridPanel implements ChangeListen
             double... parameterValues) {
 
         ParameterPriorDist gamma = new ParameterPriorDist("gamma_" + parameters.size());
+        gamma.autoInitialValueBtn.setSelected(false);
         gamma.setNameLabel("");
         gamma.setSymbolUnitLabels(symbol, unit);
         gamma.setLock(true);

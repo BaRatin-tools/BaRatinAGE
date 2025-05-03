@@ -81,6 +81,8 @@ public class ParameterPriorDist extends AbstractParameterPriorDist implements Ch
             lockAllValuesBtn.setText(T.text("parameter_dist_lock"));
             autoInitialValueBtn.setText(T.text("parameter_dist_auto_initial"));
         });
+
+        autoInitialValueBtn.setSelected(true);
     }
 
     private void updateEnabledStates() {
