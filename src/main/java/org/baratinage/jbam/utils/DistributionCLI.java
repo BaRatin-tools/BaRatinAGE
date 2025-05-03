@@ -1,9 +1,11 @@
 package org.baratinage.jbam.utils;
 
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.baratinage.utils.ConsoleLogger;
 import org.baratinage.utils.Misc;
@@ -59,39 +61,58 @@ public class DistributionCLI {
 
   private static Map<String, List<double[]>> memoizedDPQ = new HashMap<>();
 
-  private static List<double[]> runDistributionCommand_DPQ(String distributionName, double[] distributionParameters,
+  private static Optional<List<double[]>> runDistributionCommand_DPQ(String distributionName,
+      double[] distributionParameters,
       ACTION action,
       Double low, Double high, Integer n) {
 
-    String memoizationKey = String.format("%s_%s_%s_%s",
-        distributionName,
-        doubleArrToStringArg(distributionParameters),
-        action.actionKey,
-        doubleArrToStringArg(low, high, (double) n));
-    if (memoizedDPQ.containsKey(memoizationKey)) {
-      ConsoleLogger.log(String.format("Using memoized distribution CLI result (%s)", memoizationKey));
-      return memoizedDPQ.get(memoizationKey);
+    List<String> runOut = new ArrayList<>();
+    try {
+
+      String memoizationKey = String.format("%s_%s_%s_%s",
+          distributionName,
+          doubleArrToStringArg(distributionParameters),
+          action.actionKey,
+          doubleArrToStringArg(low, high, (double) n));
+      if (memoizedDPQ.containsKey(memoizationKey)) {
+        ConsoleLogger.log(String.format("Using memoized distribution CLI result (%s)", memoizationKey));
+        return Optional.of(memoizedDPQ.get(memoizationKey));
+      }
+
+      ExeRun run = runDistributionCommand(distributionName,
+          distributionParameters,
+          action,
+          low,
+          high,
+          n,
+          null);
+      runOut = run.getLastRunConsoleOutputs();
+      List<double[]> runValues = Misc.transposeDoubleMatrix(
+          Misc.stringToDoubleMatrix(
+              runOut,
+              BamFilesHelpers.BAM_COLUMN_SEPARATOR));
+
+      ConsoleLogger.log(String.format("Memoizing distribution CLI result (%s)", memoizationKey));
+      memoizedDPQ.put(memoizationKey, runValues);
+      return Optional.of(runValues);
+
+    } catch (Exception e) {
+      String msg = "";
+      for (String l : runOut) {
+        msg += l + "\n";
+      }
+      ConsoleLogger.error(e);
+      ConsoleLogger.error(msg);
+      // List<double[]> defaultResult = new ArrayList<>();
+      // defaultResult.add(new double[n]);
+      // defaultResult.add(new double[n]);
+      // return defaultResult;
+      return Optional.empty();
     }
-
-    ExeRun run = runDistributionCommand(distributionName,
-        distributionParameters,
-        action,
-        low,
-        high,
-        n,
-        null);
-    List<String> runOut = run.getLastRunConsoleOutputs();
-    List<double[]> runValues = Misc.transposeDoubleMatrix(
-        Misc.stringToDoubleMatrix(
-            runOut,
-            BamFilesHelpers.BAM_COLUMN_SEPARATOR));
-
-    ConsoleLogger.log(String.format("Memoizing distribution CLI result (%s)", memoizationKey));
-    memoizedDPQ.put(memoizationKey, runValues);
-    return runValues;
   }
 
-  public static List<double[]> getQuantiles(String distributionName, double[] distributionParameters, double qLow,
+  public static Optional<List<double[]>> getQuantiles(String distributionName, double[] distributionParameters,
+      double qLow,
       double qHigh, int nQuantiles) {
     return runDistributionCommand_DPQ(distributionName,
         distributionParameters,
@@ -101,7 +122,7 @@ public class DistributionCLI {
         nQuantiles);
   }
 
-  public static List<double[]> getDensity(
+  public static Optional<List<double[]>> getDensity(
       String distributionName,
       double[] distributionParameters,
       double valueLow,
@@ -115,23 +136,28 @@ public class DistributionCLI {
         nValues);
   }
 
-  public static double[] getRandom(
+  public static Optional<double[]> getRandom(
       String distributionName,
       double[] distributionParameters,
       int nValues) {
-    ExeRun run = runDistributionCommand(distributionName,
-        distributionParameters,
-        ACTION.RANDOM,
-        null,
-        null,
-        null,
-        nValues);
-    List<String> runOut = run.getLastRunConsoleOutputs();
-    List<double[]> runValues = Misc.transposeDoubleMatrix(
-        Misc.stringToDoubleMatrix(
-            runOut,
-            BamFilesHelpers.BAM_COLUMN_SEPARATOR));
-    return runValues.get(0);
+    try {
+
+      ExeRun run = runDistributionCommand(distributionName,
+          distributionParameters,
+          ACTION.RANDOM,
+          null,
+          null,
+          null,
+          nValues);
+      List<String> runOut = run.getLastRunConsoleOutputs();
+      List<double[]> runValues = Misc.transposeDoubleMatrix(
+          Misc.stringToDoubleMatrix(
+              runOut,
+              BamFilesHelpers.BAM_COLUMN_SEPARATOR));
+      return Optional.of(runValues.get(0));
+    } catch (Exception e) {
+      return Optional.empty();
+    }
   }
 
 }

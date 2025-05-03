@@ -1,6 +1,7 @@
 package org.baratinage.jbam;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 import org.baratinage.jbam.utils.DistributionCLI;
@@ -47,23 +48,34 @@ public class Distribution {
 
     public List<double[]> getDensity() {
         if (density != null) {
-            return density;
+            return null;
         }
-        double[] rangeRes = DistributionCLI.getQuantiles(
+
+        Optional<List<double[]>> quantilesOpt = DistributionCLI.getQuantiles(
                 type.bamName,
                 parameterValues,
                 DENSITY_RANGE[0],
                 DENSITY_RANGE[1],
-                2).get(1);
+                2);
 
-        density = DistributionCLI.getDensity(
+        if (quantilesOpt.isEmpty()) {
+            return null;
+        }
+        double[] rangeRes = quantilesOpt.get().get(1);
+
+        Optional<List<double[]>> densityOpt = DistributionCLI.getDensity(
                 type.bamName,
                 parameterValues,
                 rangeRes[0],
                 rangeRes[1],
                 DENSITY_SAMPLES);
 
-        return density;
+        if (densityOpt.isEmpty()) {
+            return null;
+        } else {
+            density = densityOpt.get();
+            return density;
+        }
     }
 
     public void getDensity(Consumer<List<double[]>> onDone) {
@@ -76,13 +88,32 @@ public class Distribution {
     }
 
     public double[] getRandomValues(int n) {
-        return DistributionCLI.getRandom(type.bamName,
-                parameterValues, n);
+        Optional<double[]> randomValsOpt = DistributionCLI.getRandom(
+                type.bamName,
+                parameterValues,
+                n);
+        return randomValsOpt.isEmpty() ? null : randomValsOpt.get();
     }
 
     public double[] getPercentiles(double low, double high, int nsteps) {
-        return DistributionCLI.getQuantiles(type.bamName,
-                parameterValues, low, high, nsteps).get(1);
+        Optional<List<double[]>> quantilesOpt = DistributionCLI.getQuantiles(type.bamName,
+                parameterValues, low, high, nsteps);
+        if (quantilesOpt.isEmpty()) {
+            return null;
+        } else {
+            return quantilesOpt.get().get(1);
+        }
+    }
+
+    public Double getMedian() {
+        double[] quantiles = getPercentiles(0.5, 0.5, 1);
+        if (quantiles == null) {
+            return null;
+        }
+        if (quantiles.length != 1) {
+            return null;
+        }
+        return quantiles[0];
     }
 
     @Override
