@@ -7,7 +7,6 @@ import javax.swing.JLabel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import org.baratinage.AppSetup;
 import org.baratinage.jbam.DistributionType;
 import org.baratinage.jbam.Parameter;
 import org.baratinage.ui.component.SimpleSep;
@@ -35,22 +34,17 @@ public class StructuralErrorModelPanel extends GridPanel implements ChangeListen
         JLabel distributionParametersLabel = new JLabel();
         distributionParametersLabel.setText("Paramètres de la distribution");
 
-        JLabel lockLabel = new JLabel();
-        lockLabel.setIcon(AppSetup.ICONS.LOCK);
-
         int colIndex = 2;
         insertChild(distributionLabel, colIndex, 0);
         colIndex++;
         insertChild(distributionParametersLabel, colIndex, 0);
         colIndex++;
         insertChild(initialGuessLabel, colIndex, 0);
-        colIndex++;
-        insertChild(lockLabel, colIndex, 0);
 
-        insertChild(new SimpleSep(), 1, 1);
         insertChild(new SimpleSep(), 2, 1);
         insertChild(new SimpleSep(), 3, 1);
         insertChild(new SimpleSep(), 4, 1);
+        insertChild(new SimpleSep(), 5, 1);
 
         T.t(this, initialGuessLabel, false, "initial_guess");
         T.t(this, distributionLabel, false, "distribution");
@@ -70,7 +64,7 @@ public class StructuralErrorModelPanel extends GridPanel implements ChangeListen
         ParameterPriorDist gamma = new ParameterPriorDist("gamma_" + parameters.size());
         gamma.setNameLabel("");
         gamma.setSymbolUnitLabels(symbol, unit);
-        gamma.setLocalLock(true);
+        gamma.setLock(true);
 
         gamma.setDistributionType(DistributionType.UNIFORM);
 
@@ -98,7 +92,7 @@ public class StructuralErrorModelPanel extends GridPanel implements ChangeListen
         colIndex++;
         insertChild(parameter.initialGuessField, colIndex, index);
         colIndex++;
-        insertChild(parameter.lockCheckbox, colIndex, index);
+        insertChild(parameter.menuButton, colIndex, index);
 
         parameter.addChangeListener(this);
 

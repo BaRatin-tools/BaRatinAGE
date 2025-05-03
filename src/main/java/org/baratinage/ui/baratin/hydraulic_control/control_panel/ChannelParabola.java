@@ -23,7 +23,7 @@ public class ChannelParabola extends PriorControlPanel {
         height = CommonParameterDistSimplified.getHeight("p");
         slope = CommonParameterDistSimplified.getSlope();
         exponent = CommonParameterDistSimplified.getActivationHeight();
-        exponent.setLocalLock(true);
+        exponent.setLock(true);
         exponent.setDefaultValues(2.17, 0.05);
 
         addParameter(activationHeight);

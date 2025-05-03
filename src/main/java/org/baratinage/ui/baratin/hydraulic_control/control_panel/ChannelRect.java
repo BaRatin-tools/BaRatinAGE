@@ -27,7 +27,7 @@ public class ChannelRect extends PriorControlPanel {
         slope = CommonParameterDistSimplified.getSlope();
         exponent = CommonParameterDistSimplified.getExponent();
         exponent.setDefaultValues(1.67, 0.05);
-        exponent.setLocalLock(true);
+        exponent.setLock(true);
 
         addParameter(kb);
         addParameter(stricklerCoef);

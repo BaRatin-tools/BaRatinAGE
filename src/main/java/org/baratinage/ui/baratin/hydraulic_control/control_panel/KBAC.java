@@ -41,6 +41,8 @@ public class KBAC extends PriorControlPanel {
         addParameter(a);
         addParameter(c);
 
+        lockLabel.setIcon(null);
+
         T.t(this, () -> {
             setHeaders(
                     T.html("distribution"),
@@ -66,12 +68,6 @@ public class KBAC extends PriorControlPanel {
         c.initialGuessField.setValue(kbacCongig.cMean());
 
         fireChangeListeners();
-    }
-
-    @Override
-    public void setGlobalLock(boolean lock) {
-        super.setGlobalLock(lock);
-        lockLabel.setVisible(!lock);
     }
 
     @Override

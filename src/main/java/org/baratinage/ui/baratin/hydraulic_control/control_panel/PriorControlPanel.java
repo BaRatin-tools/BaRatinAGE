@@ -133,7 +133,7 @@ public abstract class PriorControlPanel extends GridPanel implements ChangeListe
                 colIndex++;
                 insertChild(parameter.initialGuessField, colIndex, index);
                 colIndex++;
-                insertChild(parameter.lockCheckbox, colIndex, index);
+                insertChild(parameter.menuButton, colIndex, index);
                 colIndex++;
 
                 parameter.initialGuessField.addChangeListener(this);
@@ -160,7 +160,7 @@ public abstract class PriorControlPanel extends GridPanel implements ChangeListe
 
         public void setGlobalLock(boolean lock) {
                 for (AbstractParameterPriorDist p : parameters) {
-                        p.setGlobalLock(lock);
+                        p.setEnabled(!lock);
                 }
         }
 

@@ -12,7 +12,6 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import org.baratinage.AppSetup;
 import org.baratinage.jbam.DistributionType;
 import org.baratinage.jbam.Parameter;
 import org.baratinage.translation.T;
@@ -56,10 +55,6 @@ public class QFHPriors extends JScrollPane implements IPriors, ChangeListener {
         addHeaderItem("distribution");
         addHeaderItem("distribution_parameters");
         addHeaderItem("initial_guess");
-
-        JLabel lockLabel = new JLabel();
-        lockLabel.setIcon(AppSetup.ICONS.LOCK);
-        addHeaderItem(lockLabel);
     }
 
     private void addHeaderItem(String lgKey) {
@@ -145,7 +140,7 @@ public class QFHPriors extends JScrollPane implements IPriors, ChangeListener {
             colIndex++;
             mainPanel.insertChild(p.initialGuessField, colIndex, rowIndex);
             colIndex++;
-            mainPanel.insertChild(p.lockCheckbox, colIndex, rowIndex);
+            mainPanel.insertChild(p.menuButton, colIndex, rowIndex);
             rowIndex++;
         }
         updateUI();

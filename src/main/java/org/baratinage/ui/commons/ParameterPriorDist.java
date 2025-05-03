@@ -5,11 +5,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.Icon;
-import javax.swing.JCheckBox;
+import javax.swing.JButton;
+import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JLabel;
+import javax.swing.JPopupMenu;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import org.baratinage.AppSetup;
 import org.baratinage.jbam.Distribution;
 import org.baratinage.jbam.DistributionType;
 import org.baratinage.jbam.Parameter;
@@ -22,9 +25,15 @@ public class ParameterPriorDist extends AbstractParameterPriorDist implements Ch
     public final JLabel symbolUnitLabel;
     public final JLabel nameLabel;
     public final SimpleNumberField initialGuessField;
-
     public final DistributionField distributionField;
-    public final JCheckBox lockCheckbox;
+
+    public final JButton menuButton = new JButton();
+    public final JPopupMenu contextMenu = new JPopupMenu();
+    public final JCheckBoxMenuItem lockAllValuesBtn = new JCheckBoxMenuItem();
+    public final JCheckBoxMenuItem autoInitialValueBtn = new JCheckBoxMenuItem();
+
+    private boolean isEnabled = true;
+    private boolean isLocked = false;
 
     private static String vAlignFixString = "<sup>&nbsp;</sup><sub>&nbsp;</sub>";
 
@@ -43,14 +52,62 @@ public class ParameterPriorDist extends AbstractParameterPriorDist implements Ch
         distributionField = new DistributionField();
         distributionField.addChangeListener(this);
 
-        lockCheckbox = new JCheckBox();
-        lockCheckbox.addChangeListener((chEvt) -> {
-            updateLock();
-            fireChangeListeners();
+        menuButton.setIcon(AppSetup.ICONS.MORE_DOTS);
+
+        contextMenu.add(lockAllValuesBtn);
+        contextMenu.add(autoInitialValueBtn);
+
+        menuButton.addActionListener((l) -> {
+            contextMenu.show(menuButton, 0, menuButton.getHeight());
+        });
+
+        lockAllValuesBtn.addChangeListener(l -> {
+            isLocked = lockAllValuesBtn.isSelected();
+            updateEnabledStates();
+        });
+        autoInitialValueBtn.addChangeListener(l -> {
+            updateEnabledStates();
+            updateInitialGuessField();
+        });
+
+        distributionField.addChangeListener((l) -> {
+            updateInitialGuessField();
         });
 
         T.updateHierarchy(this, initialGuessField);
         T.updateHierarchy(this, distributionField);
+
+        T.t(this, () -> {
+            lockAllValuesBtn.setText(T.text("parameter_dist_lock"));
+            autoInitialValueBtn.setText(T.text("parameter_dist_auto_initial"));
+        });
+    }
+
+    private void updateEnabledStates() {
+        boolean globallyLocked = !isEnabled;
+        boolean allValuesLocked = isLocked;
+        boolean initialValueLocked = autoInitialValueBtn.isSelected();
+
+        distributionField.setEnabled(!globallyLocked && !allValuesLocked);
+        initialGuessField.setEnabled(!globallyLocked && !allValuesLocked && !initialValueLocked);
+        menuButton.setEnabled(!globallyLocked);
+        autoInitialValueBtn.setEnabled(!allValuesLocked);
+    }
+
+    private void updateInitialGuessField() {
+        if (!autoInitialValueBtn.isSelected()) {
+            return;
+        }
+        Distribution dist = distributionField.getDistribution();
+        if (dist != null) {
+            Double median = dist.getMedian();
+            System.out.println(median);
+            if (median != null) {
+                initialGuessField.setValue(median);
+            }
+        } else {
+            initialGuessField.setValue(Double.NaN);
+        }
     }
 
     @Override
@@ -68,31 +125,26 @@ public class ParameterPriorDist extends AbstractParameterPriorDist implements Ch
     }
 
     @Override
-    public void setLocalLock(boolean locked) {
-        lockCheckbox.setSelected(locked);
-        updateLock();
+    public void setEnabled(boolean enabled) {
+        isEnabled = enabled;
+        updateEnabledStates();
     }
 
     @Override
-    public void setGlobalLock(boolean locked) {
-        lockCheckbox.setEnabled(!locked);
-        updateLock();
+    public boolean isEnabled() {
+        return isEnabled;
     }
 
-    private void updateLock() {
-        if (lockCheckbox.isEnabled()) {
-            boolean isLocked = lockCheckbox.isSelected();
-            initialGuessField.setEnabled(!isLocked);
-            distributionField.setEnabled(!isLocked);
-        } else {
-            initialGuessField.setEnabled(false);
-            distributionField.setEnabled(false);
-        }
+    @Override
+    public void setLock(boolean locked) {
+        isLocked = locked;
+        lockAllValuesBtn.setSelected(locked);
+        updateEnabledStates();
     }
 
     @Override
     public boolean isLocked() {
-        return lockCheckbox.isSelected();
+        return isLocked;
     }
 
     @Override

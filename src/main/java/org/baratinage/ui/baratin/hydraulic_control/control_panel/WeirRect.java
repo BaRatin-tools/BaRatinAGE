@@ -32,10 +32,10 @@ public class WeirRect extends PriorControlPanel {
         weirCoef.setDefaultValues(0.4, 0.05);
         width = CommonParameterDistSimplified.getRectWidth();
         gravity = CommonParameterDistSimplified.getGravity();
-        gravity.setLocalLock(true);
+        gravity.setLock(true);
         exponent = CommonParameterDistSimplified.getExponent();
         exponent.setDefaultValues(1.5, 0.05);
-        exponent.setLocalLock(true);
+        exponent.setLock(true);
 
         addParameter(kb);
         addParameter(weirCoef);

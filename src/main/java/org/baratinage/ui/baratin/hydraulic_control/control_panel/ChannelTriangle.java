@@ -22,7 +22,7 @@ public class ChannelTriangle extends PriorControlPanel {
         slope = CommonParameterDistSimplified.getSlope();
         exponent = CommonParameterDistSimplified.getExponent();
         exponent.setDefaultValues(2.67, 0.05);
-        exponent.setLocalLock(true);
+        exponent.setLock(true);
 
         addParameter(activationHeight);
         addParameter(stricklerCoef);
