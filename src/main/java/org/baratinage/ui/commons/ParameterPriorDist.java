@@ -18,6 +18,7 @@ import org.baratinage.jbam.DistributionType;
 import org.baratinage.jbam.Parameter;
 import org.baratinage.translation.T;
 import org.baratinage.ui.component.SimpleNumberField;
+import org.json.JSONObject;
 
 public class ParameterPriorDist extends AbstractParameterPriorDist implements ChangeListener {
     public final String bamName;
@@ -212,4 +213,16 @@ public class ParameterPriorDist extends AbstractParameterPriorDist implements Ch
         fireChangeListeners();
     }
 
+    @Override
+    public JSONObject toJSON() {
+        JSONObject json = super.toJSON();
+        json.put("autoInitialValue", autoInitialValueBtn.isSelected());
+        return json;
+    }
+
+    public void fromJSON(JSONObject json) {
+        super.fromJSON(json);
+        boolean autoInitialValue = json.optBoolean("autoInitialValue", false);
+        autoInitialValueBtn.setSelected(autoInitialValue);
+    }
 }
