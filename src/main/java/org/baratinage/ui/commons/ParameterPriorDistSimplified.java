@@ -39,7 +39,7 @@ public class ParameterPriorDistSimplified extends AbstractParameterPriorDist {
         uncertaintyValueField = new SimpleNumberField();
 
         lockCheckbox = new JCheckBox();
-        lockCheckbox.addChangeListener((chEvt) -> {
+        lockCheckbox.addItemListener((chEvt) -> {
             isLocked = lockCheckbox.isSelected();
             updateEnabledStates();
         });

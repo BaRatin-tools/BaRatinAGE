@@ -61,11 +61,11 @@ public class ParameterPriorDist extends AbstractParameterPriorDist implements Ch
             contextMenu.show(menuButton, 0, menuButton.getHeight());
         });
 
-        lockAllValuesBtn.addChangeListener(l -> {
+        lockAllValuesBtn.addItemListener(l -> {
             isLocked = lockAllValuesBtn.isSelected();
             updateEnabledStates();
         });
-        autoInitialValueBtn.addChangeListener(l -> {
+        autoInitialValueBtn.addItemListener(l -> {
             updateEnabledStates();
             updateInitialGuessField();
         });
