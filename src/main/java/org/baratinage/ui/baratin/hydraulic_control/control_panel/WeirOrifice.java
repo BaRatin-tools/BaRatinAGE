@@ -82,7 +82,7 @@ public class WeirOrifice extends PriorControlPanel {
     }
 
     @Override
-    public KACGaussianConfig toKACGaussianConfig() {
+    public KBACGaussianConfig toKACGaussianConfig() {
 
         Double[] AGaussianConfig = toAMeanAndStd();
 
@@ -91,7 +91,7 @@ public class WeirOrifice extends PriorControlPanel {
         Double cMean = exponent.meanValueField.getDoubleValue();
         Double cStd = exponent.uncertaintyValueField.getDoubleValue();
 
-        return new KACGaussianConfig(
+        return new KBACGaussianConfig(
                 kMean, kStd == null ? null : kStd / 2,
                 AGaussianConfig[0], AGaussianConfig[1],
                 cMean, cStd == null ? null : cStd / 2);

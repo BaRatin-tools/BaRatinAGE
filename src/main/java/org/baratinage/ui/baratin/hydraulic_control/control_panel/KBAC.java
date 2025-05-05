@@ -56,10 +56,10 @@ public class KBAC extends PriorControlPanel {
         a.distributionField.setParameters(mean, std);
     }
 
-    public void setFromKACGaussianConfig(KACGaussianConfig kbacCongig) { // FIXME: rename method and parameter
+    public void setFromKACGaussianConfig(KBACGaussianConfig kbacCongig) { // FIXME: rename method and parameter
         kb.distributionField.setDistributionType(DistributionType.GAUSSIAN);
-        kb.distributionField.setParameters(kbacCongig.kMean(), kbacCongig.kStd());
-        kb.initialGuessField.setValue(kbacCongig.kMean());
+        kb.distributionField.setParameters(kbacCongig.kbMean(), kbacCongig.kbStd());
+        kb.initialGuessField.setValue(kbacCongig.kbMean());
         a.distributionField.setDistributionType(DistributionType.GAUSSIAN);
         a.distributionField.setParameters(kbacCongig.aMean(), kbacCongig.aStd());
         a.initialGuessField.setValue(kbacCongig.aMean());
@@ -71,7 +71,7 @@ public class KBAC extends PriorControlPanel {
     }
 
     @Override
-    public KACGaussianConfig toKACGaussianConfig() {
+    public KBACGaussianConfig toKACGaussianConfig() {
         // irrelevant
         return null;
     }

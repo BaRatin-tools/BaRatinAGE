@@ -21,8 +21,8 @@ import org.json.JSONArray;
 
 public abstract class PriorControlPanel extends GridPanel implements ChangeListener {
 
-        protected record KACGaussianConfig(
-                        Double kMean, Double kStd,
+        protected record KBACGaussianConfig(
+                        Double kbMean, Double kbStd,
                         Double aMean, Double aStd,
                         Double cMean, Double cStd) {
         }; // FIXME: rename to KBACGaussianConfig, rename kMean and kStd
@@ -201,6 +201,6 @@ public abstract class PriorControlPanel extends GridPanel implements ChangeListe
                 fireChangeListeners();
         }
 
-        public abstract KACGaussianConfig toKACGaussianConfig();
+        public abstract KBACGaussianConfig toKACGaussianConfig();
 
 }
