@@ -111,6 +111,67 @@
       }
     ]
   },
+    {
+    "id": "circular_weir",
+    "icon_id": "hc_circular_weir",
+    "formula": "0.001 * (C_c + (110*(ispos( h - b ) * ispos( D - h ) * ( h - b ) / D) )^(-1) + 0.041*(ispos( h - b ) * ispos( D - h ) * ( h - b ) / D) ) * (10*D)^2.5 * (a_1 * (ispos( h - b ) * ispos( D - h ) * ( h - b ) / D ) ^ c_1 - a_2 * (ispos( h - b ) * ispos( D - h ) * ( h - b ) / D ) ^ c_2)",
+    "stage_symbole": "h",
+    "parameters": [
+      {
+        "symbole": "b",
+        "type": "activation_stage"
+      },
+      {
+        "symbole": "C_c",
+        "type": "weir_coefficient",
+        "default_distribution": {
+          "initial_guess": 0.5550,
+          "type": "Gaussian",
+          "parameters": [0.5550, 0.025]
+        }
+      },
+      {
+        "symbole": "D",
+        "type": "distance"
+      },
+      {
+        "symbole": "c_1",
+        "type": "exponent",
+        "default_distribution": {
+          "initial_guess": 1.975,
+          "type": "Gaussian",
+          "parameters": [1.975, 0.0005]
+        }
+      },
+      {
+        "symbole": "a_1",
+        "type": "coefficient",
+        "default_distribution": {
+          "initial_guess": 10.12,
+          "type": "Gaussian",
+          "parameters": [10.12, 0.05]
+        }
+      },
+      {
+        "symbole": "c_2",
+        "type": "exponent",
+        "default_distribution": {
+          "initial_guess": 3.78,
+          "type": "Gaussian",
+          "parameters": [3.78, 0.0005]
+        }
+      },
+      {
+        "symbole": "a_2",
+        "type": "coefficient",
+        "default_distribution": {
+          "initial_guess": 2.66,
+          "type": "Gaussian",
+          "parameters": [2.66, 0.015]
+        }
+      }
+    ]
+  }, 
   {
     "id": "rect_triangle",
     "icon_id": "hc_rect_triangle_weir",
