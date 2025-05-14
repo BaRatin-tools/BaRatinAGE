@@ -21,8 +21,8 @@ import org.json.JSONArray;
 
 public abstract class PriorControlPanel extends GridPanel implements ChangeListener {
 
-        protected record KACGaussianConfig(
-                        Double kMean, Double kStd,
+        protected record KBACGaussianConfig(
+                        Double kbMean, Double kbStd,
                         Double aMean, Double aStd,
                         Double cMean, Double cStd) {
         }; // FIXME: rename to KBACGaussianConfig, rename kMean and kStd
@@ -40,10 +40,6 @@ public abstract class PriorControlPanel extends GridPanel implements ChangeListe
         public PriorControlPanel(int nColumns, String equation) {
                 setPadding(0);
                 setGap(5);
-
-                for (int k = 0; k < nColumns; k++) {
-                        setColWeight(k + 3, 1);
-                }
 
                 equationLabel = new JLabel();
                 equationLabel.setText(String.format("<html>%s %s</html>", equation, vAlignFixString));
@@ -82,7 +78,7 @@ public abstract class PriorControlPanel extends GridPanel implements ChangeListe
                 int n = headers.length;
                 if (n != columnHeaders.size()) {
                         throw new IllegalArgumentException(
-                                        "Number of provided headers doesn't match the number of need headers!");
+                                        "Number of provided headers doesn't match the number of needed headers!");
                 }
                 for (int k = 0; k < n; k++) {
                         columnHeaders.get(k).setText(headers[k]);
@@ -90,6 +86,9 @@ public abstract class PriorControlPanel extends GridPanel implements ChangeListe
         }
 
         protected void addParameter(ParameterPriorDistSimplified parameter) {
+
+                setColWeight(3, 1);
+                setColWeight(4, 1);
 
                 int index = parameters.size() + 2;
                 int colIndex = 0;
@@ -116,6 +115,9 @@ public abstract class PriorControlPanel extends GridPanel implements ChangeListe
 
         protected void addParameter(ParameterPriorDist parameter) {
 
+                setColWeight(4, 2);
+                setColWeight(5, 1);
+
                 int index = parameters.size() + 2;
                 int colIndex = 0;
 
@@ -125,13 +127,13 @@ public abstract class PriorControlPanel extends GridPanel implements ChangeListe
                 colIndex++;
                 insertChild(parameter.symbolUnitLabel, colIndex, index);
                 colIndex++;
-                insertChild(parameter.initialGuessField, colIndex, index);
-                colIndex++;
                 insertChild(parameter.distributionField.distributionCombobox, colIndex, index);
                 colIndex++;
                 insertChild(parameter.distributionField.parameterFieldsPanel, colIndex, index);
                 colIndex++;
-                insertChild(parameter.lockCheckbox, colIndex, index);
+                insertChild(parameter.initialGuessField, colIndex, index);
+                colIndex++;
+                insertChild(parameter.menuButton, colIndex, index);
                 colIndex++;
 
                 parameter.initialGuessField.addChangeListener(this);
@@ -158,7 +160,7 @@ public abstract class PriorControlPanel extends GridPanel implements ChangeListe
 
         public void setGlobalLock(boolean lock) {
                 for (AbstractParameterPriorDist p : parameters) {
-                        p.setGlobalLock(lock);
+                        p.setEnabled(!lock);
                 }
         }
 
@@ -199,6 +201,6 @@ public abstract class PriorControlPanel extends GridPanel implements ChangeListe
                 fireChangeListeners();
         }
 
-        public abstract KACGaussianConfig toKACGaussianConfig();
+        public abstract KBACGaussianConfig toKACGaussianConfig();
 
 }

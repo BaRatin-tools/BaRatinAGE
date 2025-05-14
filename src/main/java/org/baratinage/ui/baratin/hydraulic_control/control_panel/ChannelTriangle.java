@@ -22,7 +22,7 @@ public class ChannelTriangle extends PriorControlPanel {
         slope = CommonParameterDistSimplified.getSlope();
         exponent = CommonParameterDistSimplified.getExponent();
         exponent.setDefaultValues(2.67, 0.05);
-        exponent.setLocalLock(true);
+        exponent.setLock(true);
 
         addParameter(activationHeight);
         addParameter(stricklerCoef);
@@ -88,7 +88,7 @@ public class ChannelTriangle extends PriorControlPanel {
     }
 
     @Override
-    public KACGaussianConfig toKACGaussianConfig() {
+    public KBACGaussianConfig toKACGaussianConfig() {
 
         Double[] AGaussianConfig = toAMeanAndStd();
 
@@ -97,7 +97,7 @@ public class ChannelTriangle extends PriorControlPanel {
         Double cMean = exponent.meanValueField.getDoubleValue();
         Double cStd = exponent.uncertaintyValueField.getDoubleValue();
 
-        return new KACGaussianConfig(
+        return new KBACGaussianConfig(
                 kMean, kStd == null ? null : kStd / 2,
                 AGaussianConfig[0], AGaussianConfig[1],
                 cMean, cStd == null ? null : cStd / 2);

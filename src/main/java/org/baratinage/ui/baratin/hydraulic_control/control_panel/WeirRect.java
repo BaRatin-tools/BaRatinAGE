@@ -32,10 +32,10 @@ public class WeirRect extends PriorControlPanel {
         weirCoef.setDefaultValues(0.4, 0.05);
         width = CommonParameterDistSimplified.getRectWidth();
         gravity = CommonParameterDistSimplified.getGravity();
-        gravity.setLocalLock(true);
+        gravity.setLock(true);
         exponent = CommonParameterDistSimplified.getExponent();
         exponent.setDefaultValues(1.5, 0.05);
-        exponent.setLocalLock(true);
+        exponent.setLock(true);
 
         addParameter(kb);
         addParameter(weirCoef);
@@ -92,7 +92,7 @@ public class WeirRect extends PriorControlPanel {
     }
 
     @Override
-    public KACGaussianConfig toKACGaussianConfig() {
+    public KBACGaussianConfig toKACGaussianConfig() {
 
         Double[] AGaussianConfig = toAMeanAndStd();
 
@@ -101,7 +101,7 @@ public class WeirRect extends PriorControlPanel {
         Double cMean = exponent.meanValueField.getDoubleValue();
         Double cStd = exponent.uncertaintyValueField.getDoubleValue();
 
-        return new KACGaussianConfig(
+        return new KBACGaussianConfig(
                 kMean, kStd == null ? null : kStd / 2,
                 AGaussianConfig[0], AGaussianConfig[1],
                 cMean, cStd == null ? null : cStd / 2);

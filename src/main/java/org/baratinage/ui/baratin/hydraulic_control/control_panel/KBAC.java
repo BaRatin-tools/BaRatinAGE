@@ -41,11 +41,13 @@ public class KBAC extends PriorControlPanel {
         addParameter(a);
         addParameter(c);
 
+        lockLabel.setIcon(null);
+
         T.t(this, () -> {
             setHeaders(
-                    T.html("initial_guess"),
                     T.html("distribution"),
-                    T.html("distribution_parameters"));
+                    T.html("distribution_parameters"),
+                    T.html("initial_guess"));
         });
     }
 
@@ -54,10 +56,10 @@ public class KBAC extends PriorControlPanel {
         a.distributionField.setParameters(mean, std);
     }
 
-    public void setFromKACGaussianConfig(KACGaussianConfig kbacCongig) { // FIXME: rename method and parameter
+    public void setFromKACGaussianConfig(KBACGaussianConfig kbacCongig) { // FIXME: rename method and parameter
         kb.distributionField.setDistributionType(DistributionType.GAUSSIAN);
-        kb.distributionField.setParameters(kbacCongig.kMean(), kbacCongig.kStd());
-        kb.initialGuessField.setValue(kbacCongig.kMean());
+        kb.distributionField.setParameters(kbacCongig.kbMean(), kbacCongig.kbStd());
+        kb.initialGuessField.setValue(kbacCongig.kbMean());
         a.distributionField.setDistributionType(DistributionType.GAUSSIAN);
         a.distributionField.setParameters(kbacCongig.aMean(), kbacCongig.aStd());
         a.initialGuessField.setValue(kbacCongig.aMean());
@@ -69,13 +71,7 @@ public class KBAC extends PriorControlPanel {
     }
 
     @Override
-    public void setGlobalLock(boolean lock) {
-        super.setGlobalLock(lock);
-        lockLabel.setVisible(!lock);
-    }
-
-    @Override
-    public KACGaussianConfig toKACGaussianConfig() {
+    public KBACGaussianConfig toKACGaussianConfig() {
         // irrelevant
         return null;
     }

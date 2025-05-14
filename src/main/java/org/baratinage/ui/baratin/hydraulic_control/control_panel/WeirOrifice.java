@@ -22,10 +22,10 @@ public class WeirOrifice extends PriorControlPanel {
         weirCoef.setDefaultValues(0.6, 0.05);
         area = CommonParameterDistSimplified.getCircleArea();
         gravity = CommonParameterDistSimplified.getGravity();
-        gravity.setLocalLock(true);
+        gravity.setLock(true);
         exponent = CommonParameterDistSimplified.getExponent();
         exponent.setDefaultValues(0.5, 0.05);
-        exponent.setLocalLock(true);
+        exponent.setLock(true);
 
         addParameter(activationHeight);
         addParameter(weirCoef);
@@ -82,7 +82,7 @@ public class WeirOrifice extends PriorControlPanel {
     }
 
     @Override
-    public KACGaussianConfig toKACGaussianConfig() {
+    public KBACGaussianConfig toKACGaussianConfig() {
 
         Double[] AGaussianConfig = toAMeanAndStd();
 
@@ -91,7 +91,7 @@ public class WeirOrifice extends PriorControlPanel {
         Double cMean = exponent.meanValueField.getDoubleValue();
         Double cStd = exponent.uncertaintyValueField.getDoubleValue();
 
-        return new KACGaussianConfig(
+        return new KBACGaussianConfig(
                 kMean, kStd == null ? null : kStd / 2,
                 AGaussianConfig[0], AGaussianConfig[1],
                 cMean, cStd == null ? null : cStd / 2);

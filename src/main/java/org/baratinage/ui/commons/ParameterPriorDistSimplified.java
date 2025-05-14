@@ -25,6 +25,9 @@ public class ParameterPriorDistSimplified extends AbstractParameterPriorDist {
 
     private static final Font MONOSPACE_FONT = new Font(Font.MONOSPACED, Font.PLAIN, 14);
 
+    private boolean isEnabled = true;
+    private boolean isLocked = false;
+
     public ParameterPriorDistSimplified() {
 
         iconLabel = new JLabel();
@@ -36,8 +39,9 @@ public class ParameterPriorDistSimplified extends AbstractParameterPriorDist {
         uncertaintyValueField = new SimpleNumberField();
 
         lockCheckbox = new JCheckBox();
-        lockCheckbox.addChangeListener((chEvt) -> {
-            updateLock();
+        lockCheckbox.addItemListener((chEvt) -> {
+            isLocked = lockCheckbox.isSelected();
+            updateEnabledStates();
         });
 
         T.updateHierarchy(this, meanValueField);
@@ -66,35 +70,39 @@ public class ParameterPriorDistSimplified extends AbstractParameterPriorDist {
     }
 
     @Override
-    public void setLocalLock(boolean locked) {
-        lockCheckbox.setSelected(locked);
+    public void setEnabled(boolean enabled) {
+        isEnabled = enabled;
+        updateEnabledStates();
     }
 
     @Override
-    public void setGlobalLock(boolean locked) {
-        lockCheckbox.setEnabled(locked);
-        updateLock();
+    public boolean isEnabled() {
+        return isEnabled;
     }
 
-    private void updateLock() {
-        if (lockCheckbox.isEnabled()) {
-            boolean isLocked = lockCheckbox.isSelected();
-            meanValueField.setEnabled(!isLocked);
-            uncertaintyValueField.setEnabled(!isLocked);
-        } else {
-            meanValueField.setEnabled(false);
-            uncertaintyValueField.setEnabled(false);
-        }
+    @Override
+    public void setLock(boolean locked) {
+        isLocked = locked;
+        lockCheckbox.setSelected(locked);
+        updateEnabledStates();
+    }
+
+    @Override
+    public boolean isLocked() {
+        return isLocked;
+    }
+
+    private void updateEnabledStates() {
+        boolean globallyLocked = !isEnabled;
+        boolean locallyLocked = isLocked;
+        meanValueField.setEnabled(!globallyLocked && !locallyLocked);
+        uncertaintyValueField.setEnabled(!globallyLocked && !locallyLocked);
+        // lockCheckbox.setEnabled(!globallyLocked);
     }
 
     public void setDefaultValues(double mean, double uncertainty) {
         meanValueField.setValue(mean);
         uncertaintyValueField.setValue(uncertainty);
-    }
-
-    @Override
-    public boolean isLocked() {
-        return lockCheckbox.isSelected();
     }
 
     @Override

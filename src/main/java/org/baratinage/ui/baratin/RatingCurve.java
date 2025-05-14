@@ -89,7 +89,7 @@ public class RatingCurve extends BamItem
         String[] hydraulicConfigFilterKeys = new String[] {
                 "ui", "bamRunId", "backup", "jsonStringBackup", "priorRatingCurve",
                 "stageGridConfig", "allControlOptions", "controlTypeIndex", "isKACmode",
-                "isLocked", "isReversed", "description" };
+                "isLocked", "isReversed", "description", "autoInitialValue" };
         hydrauConfParent.setComparisonJSONfilter(
                 BamItemType.HYDRAULIC_CONFIG, new JSONFilter(true, true, hydraulicConfigFilterKeys));
         hydrauConfParent.setComparisonJSONfilter(
@@ -129,7 +129,7 @@ public class RatingCurve extends BamItem
         structErrorParent = new BamItemParent(
                 this,
                 BamItemType.STRUCTURAL_ERROR);
-        structErrorParent.setComparisonJSONfilter(new JSONFilter(true, true, "isLocked"));
+        structErrorParent.setComparisonJSONfilter(new JSONFilter(true, true, "isLocked", "autoInitialValue"));
         structErrorParent.addChangeListener((e) -> {
             StructuralErrorModelBamItem bamItem = (StructuralErrorModelBamItem) structErrorParent.getCurrentBamItem();
             runBam.setStructuralErrorModel(bamItem);

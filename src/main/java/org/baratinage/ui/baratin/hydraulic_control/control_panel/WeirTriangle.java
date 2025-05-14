@@ -22,10 +22,10 @@ public class WeirTriangle extends PriorControlPanel {
         weirCoef.setDefaultValues(0.31, 0.05);
         angle = CommonParameterDistSimplified.getAngle();
         gravity = CommonParameterDistSimplified.getGravity();
-        gravity.setLocalLock(true);
+        gravity.lockCheckbox.setSelected(true);
         exponent = CommonParameterDistSimplified.getExponent();
         exponent.setDefaultValues(2.5, 0.05);
-        exponent.setLocalLock(true);
+        exponent.lockCheckbox.setSelected(true);
 
         addParameter(activationHeight);
         addParameter(weirCoef);
@@ -84,7 +84,7 @@ public class WeirTriangle extends PriorControlPanel {
     }
 
     @Override
-    public KACGaussianConfig toKACGaussianConfig() {
+    public KBACGaussianConfig toKACGaussianConfig() {
 
         Double[] AGaussianConfig = toAMeanAndStd();
 
@@ -93,7 +93,7 @@ public class WeirTriangle extends PriorControlPanel {
         Double cMean = exponent.meanValueField.getDoubleValue();
         Double cStd = exponent.uncertaintyValueField.getDoubleValue();
 
-        return new KACGaussianConfig(
+        return new KBACGaussianConfig(
                 kMean, kStd == null ? null : kStd / 2,
                 AGaussianConfig[0], AGaussianConfig[1],
                 cMean, cStd == null ? null : cStd / 2);

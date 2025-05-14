@@ -38,6 +38,7 @@ public class RunDialog extends JDialog {
 
     private SwingWorker<Void, String> runningWorker;
     private SwingWorker<Void, Void> monitoringWorker;
+    private boolean isUserCanceled = false;
 
     public RunDialog(String id, BaM bam) {
         super(AppSetup.MAIN_FRAME, true);
@@ -61,6 +62,7 @@ public class RunDialog extends JDialog {
 
         cancelButton.setText(T.text("cancel"));
         cancelButton.addActionListener((e) -> {
+            isUserCanceled = true;
             cancel();
         });
 
@@ -145,6 +147,8 @@ public class RunDialog extends JDialog {
 
     public void executeBam(Consumer<RunConfigAndRes> onSuccess) {
 
+        isUserCanceled = false;
+
         runningWorker = new SwingWorker<>() {
 
             private boolean success = true;
@@ -186,7 +190,7 @@ public class RunDialog extends JDialog {
                 closeButton.setEnabled(true);
                 cancelButton.setEnabled(false);
 
-                if (!success) {
+                if (!success && !isUserCanceled) {
                     setTitle(T.text("bam_error"));
                     progressBar.setString(T.text("bam_error"));
                     if (exception != null) {

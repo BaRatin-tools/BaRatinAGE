@@ -15,11 +15,11 @@ public abstract class AbstractParameterPriorDist {
 
     public abstract void setNameLabel(String name);
 
-    public abstract void setLocalLock(boolean locked);
+    public abstract void setEnabled(boolean enabled);
 
-    public abstract void setGlobalLock(boolean locked);
+    public abstract boolean isEnabled();
 
-    // public abstract void configure(boolean isLocked, Parameter parameter);
+    public abstract void setLock(boolean locked);
 
     public abstract boolean isLocked();
 
@@ -91,6 +91,6 @@ public abstract class AbstractParameterPriorDist {
         }
 
         boolean locked = json.getBoolean("isLocked");
-        setLocalLock(locked);
+        setLock(locked);
     }
 }

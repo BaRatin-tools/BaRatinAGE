@@ -7,7 +7,6 @@ import javax.swing.JLabel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import org.baratinage.AppSetup;
 import org.baratinage.jbam.DistributionType;
 import org.baratinage.jbam.Parameter;
 import org.baratinage.ui.component.SimpleSep;
@@ -35,18 +34,17 @@ public class StructuralErrorModelPanel extends GridPanel implements ChangeListen
         JLabel distributionParametersLabel = new JLabel();
         distributionParametersLabel.setText("Paramètres de la distribution");
 
-        JLabel lockLabel = new JLabel();
-        lockLabel.setIcon(AppSetup.ICONS.LOCK);
+        int colIndex = 2;
+        insertChild(distributionLabel, colIndex, 0);
+        colIndex++;
+        insertChild(distributionParametersLabel, colIndex, 0);
+        colIndex++;
+        insertChild(initialGuessLabel, colIndex, 0);
 
-        insertChild(initialGuessLabel, 1, 0);
-        insertChild(distributionLabel, 2, 0);
-        insertChild(distributionParametersLabel, 3, 0);
-        insertChild(lockLabel, 4, 0);
-
-        insertChild(new SimpleSep(), 1, 1);
         insertChild(new SimpleSep(), 2, 1);
         insertChild(new SimpleSep(), 3, 1);
         insertChild(new SimpleSep(), 4, 1);
+        insertChild(new SimpleSep(), 5, 1);
 
         T.t(this, initialGuessLabel, false, "initial_guess");
         T.t(this, distributionLabel, false, "distribution");
@@ -64,9 +62,10 @@ public class StructuralErrorModelPanel extends GridPanel implements ChangeListen
             double... parameterValues) {
 
         ParameterPriorDist gamma = new ParameterPriorDist("gamma_" + parameters.size());
+        gamma.autoInitialValueBtn.setSelected(false);
         gamma.setNameLabel("");
         gamma.setSymbolUnitLabels(symbol, unit);
-        gamma.setLocalLock(true);
+        gamma.setLock(true);
 
         gamma.setDistributionType(DistributionType.UNIFORM);
 
@@ -85,11 +84,16 @@ public class StructuralErrorModelPanel extends GridPanel implements ChangeListen
     private void addParameter(ParameterPriorDist parameter) {
         int index = parameters.size() + 2;
         parameters.add(parameter);
-        insertChild(parameter.symbolUnitLabel, 0, index);
-        insertChild(parameter.initialGuessField, 1, index);
-        insertChild(parameter.distributionField.distributionCombobox, 2, index);
-        insertChild(parameter.distributionField.parameterFieldsPanel, 3, index);
-        insertChild(parameter.lockCheckbox, 4, index);
+        int colIndex = 1;
+        insertChild(parameter.symbolUnitLabel, colIndex, index);
+        colIndex++;
+        insertChild(parameter.distributionField.distributionCombobox, colIndex, index);
+        colIndex++;
+        insertChild(parameter.distributionField.parameterFieldsPanel, colIndex, index);
+        colIndex++;
+        insertChild(parameter.initialGuessField, colIndex, index);
+        colIndex++;
+        insertChild(parameter.menuButton, colIndex, index);
 
         parameter.addChangeListener(this);
 

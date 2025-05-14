@@ -25,6 +25,7 @@ import javax.swing.JComponent;
 import javax.swing.JFrame;
 
 import org.baratinage.translation.T;
+import org.baratinage.utils.fs.ReadFile;
 
 public class Misc {
 
@@ -319,5 +320,51 @@ public class Misc {
 
         }
         return mvData;
+    }
+
+    public static List<double[]> stringToDoubleMatrix(List<String> stringMatrix, String sep) {
+        List<double[]> matrixRowWise = new ArrayList<>();
+        for (int i = 0; i < stringMatrix.size(); i++) {
+            String[] valuesStr = ReadFile.parseString(stringMatrix.get(i), sep, true);
+            double[] ValuesDbl = new double[valuesStr.length];
+            for (int j = 0; j < valuesStr.length; j++) {
+                ValuesDbl[j] = ReadFile.toDouble(valuesStr[j]);
+            }
+            matrixRowWise.add(ValuesDbl);
+        }
+        return matrixRowWise;
+    }
+
+    public static List<double[]> transposeDoubleMatrix(List<double[]> matrix) {
+        if (matrix.size() == 0) {
+            ConsoleLogger.error("Cannot transpose an empty matrix");
+            return matrix;
+        }
+        int nCol = matrix.get(0).length;
+        for (int k = 0; k < matrix.size(); k++) {
+            if (matrix.get(k).length != nCol) {
+                throw new IllegalArgumentException(
+                        "Transposition impossible because the input matrix has columns of various length");
+            }
+        }
+        List<double[]> transposed = new ArrayList<>();
+        int nRow = matrix.size();
+        for (int i = 0; i < nCol; i++) {
+            double[] col = new double[nRow];
+            for (int j = 0; j < matrix.size(); j++) {
+                col[j] = matrix.get(j)[i];
+            }
+            transposed.add(col);
+        }
+        return transposed;
+    }
+
+    public static String doubleArrToStringArg(double... values) {
+        int n = values.length;
+        String[] valuesString = new String[n];
+        for (int k = 0; k < n; k++) {
+            valuesString[k] = Double.toString(values[k]);
+        }
+        return String.join(",", valuesString);
     }
 }

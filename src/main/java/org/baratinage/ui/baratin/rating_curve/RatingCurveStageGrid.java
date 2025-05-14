@@ -14,7 +14,6 @@ import org.baratinage.utils.ConsoleLogger;
 import org.baratinage.translation.T;
 import org.json.JSONObject;
 
-// FIXME: should have a fromJSON / toJSON methods
 public class RatingCurveStageGrid extends RowColPanel {
 
     private final SimpleNumberField minStageField;
