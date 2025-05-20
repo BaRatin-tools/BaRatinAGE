@@ -12,33 +12,32 @@ import org.baratinage.translation.T;
 import org.baratinage.ui.bam.EstimatedParameterWrapper;
 import org.baratinage.ui.bam.BamProject;
 import org.baratinage.ui.component.CommonDialog;
-import org.baratinage.ui.container.RowColPanel;
+import org.baratinage.ui.container.SimpleFlowPanel;
 import org.baratinage.utils.ConsoleLogger;
 import org.baratinage.utils.fs.WriteFile;
 
-public class McmcTraceResultsPanel extends RowColPanel {
+public class McmcTraceResultsPanel extends SimpleFlowPanel {
     private final TracePlotGrid paramTracePlots;
     private final BamProject project;
 
     private List<EstimatedParameterWrapper> parameters;
 
     public McmcTraceResultsPanel(BamProject project) {
-        super(AXIS.COL);
+        super(true);
         this.project = project;
         paramTracePlots = new TracePlotGrid();
 
-        RowColPanel actionPanel = new RowColPanel(RowColPanel.AXIS.ROW,
-                RowColPanel.ALIGN.START);
+        SimpleFlowPanel actionPanel = new SimpleFlowPanel();
 
         JButton mcmcToCsvButton = new JButton();
         mcmcToCsvButton.setIcon(AppSetup.ICONS.SAVE);
 
         mcmcToCsvButton.addActionListener((e) -> saveMcmcFile());
 
-        actionPanel.appendChild(mcmcToCsvButton, 0);
+        actionPanel.addChild(mcmcToCsvButton, false);
 
-        appendChild(actionPanel, 0, 5);
-        appendChild(paramTracePlots, 1);
+        addChild(actionPanel, 0, 5);
+        addChild(paramTracePlots, 1);
 
         T.t(this, () -> {
             mcmcToCsvButton.setText(T.text("export_mcmc"));

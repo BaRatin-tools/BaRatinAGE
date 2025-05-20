@@ -6,7 +6,7 @@ import javax.swing.JLabel;
 import org.baratinage.AppSetup;
 import org.baratinage.translation.T;
 import org.baratinage.ui.container.GridPanel;
-import org.baratinage.ui.container.RowColPanel;
+import org.baratinage.ui.container.SimpleFlowPanel;
 
 public class NoProjectPanel extends GridPanel {
     public final JLabel mainLabel;
@@ -14,7 +14,7 @@ public class NoProjectPanel extends GridPanel {
     public final JButton createProjectButton;
     public final JButton openProjectButton;
     public final JButton importV2ProjectButton;
-    public final RowColPanel buttonsPanel;
+    public final SimpleFlowPanel buttonsPanel;
 
     public NoProjectPanel() {
         setPadding(5, 5, 100, 5);
@@ -45,11 +45,11 @@ public class NoProjectPanel extends GridPanel {
             AppSetup.MAIN_FRAME.importV2Project();
         });
 
-        buttonsPanel = new RowColPanel(RowColPanel.AXIS.COL);
+        buttonsPanel = new SimpleFlowPanel(true);
         buttonsPanel.setGap(5);
-        buttonsPanel.appendChild(createProjectButton);
-        buttonsPanel.appendChild(openProjectButton);
-        buttonsPanel.appendChild(importV2ProjectButton);
+        buttonsPanel.addChild(createProjectButton, false);
+        buttonsPanel.addChild(openProjectButton, false);
+        buttonsPanel.addChild(importV2ProjectButton, false);
 
         insertChild(mainLabel, 0, 0, ANCHOR.C, FILL.NONE);
         insertChild(welcomeLabel, 0, 1, ANCHOR.C, FILL.NONE);

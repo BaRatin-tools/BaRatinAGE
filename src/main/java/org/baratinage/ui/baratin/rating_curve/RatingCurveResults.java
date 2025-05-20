@@ -54,7 +54,7 @@ public class RatingCurveResults extends TabContainer {
         exportToBaremeButton.addActionListener((e) -> {
             baremeExporter.exportRatingCurve();
         });
-        rcGridTable.actionPanel.appendChild(exportToBaremeButton);
+        rcGridTable.actionPanel.addChild(exportToBaremeButton, false);
 
         rcEquation = new RatingCurveEquation();
 

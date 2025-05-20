@@ -11,7 +11,7 @@ import javax.swing.JScrollPane;
 
 import org.baratinage.translation.T;
 import org.baratinage.ui.component.SimpleDialog;
-import org.baratinage.ui.container.RowColPanel;
+import org.baratinage.ui.container.SimpleFlowPanel;
 
 public class ColumnHeaderDescription {
 
@@ -37,7 +37,7 @@ public class ColumnHeaderDescription {
     }
 
     private JScrollPane buildMessagePanel() {
-        RowColPanel panel = new RowColPanel(RowColPanel.AXIS.COL, RowColPanel.ALIGN.START);
+        SimpleFlowPanel panel = new SimpleFlowPanel(true);
         panel.setPadding(5);
         panel.setGap(5);
         for (String h : headers) {
@@ -51,7 +51,7 @@ public class ColumnHeaderDescription {
             }
             JLabel label = new JLabel();
             label.setText(message);
-            panel.appendChild(label, 0);
+            panel.addChild(label, false);
         }
 
         return new JScrollPane(panel);

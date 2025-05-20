@@ -24,7 +24,7 @@ import org.baratinage.AppSetup;
 import org.baratinage.translation.T;
 import org.baratinage.ui.component.SimpleSep;
 import org.baratinage.ui.container.GridPanel;
-import org.baratinage.ui.container.RowColPanel;
+import org.baratinage.ui.container.SimpleFlowPanel;
 
 public class AppAbout extends JDialog {
 
@@ -56,7 +56,7 @@ public class AppAbout extends JDialog {
 
     public AppAbout() {
         super(AppSetup.MAIN_FRAME, true);
-        RowColPanel contentPanel = new RowColPanel(RowColPanel.AXIS.COL);
+        SimpleFlowPanel contentPanel = new SimpleFlowPanel(true);
 
         String version = "";
 
@@ -140,23 +140,21 @@ public class AppAbout extends JDialog {
             ConsoleLogger.error(e);
         }
 
-        contentPanel.appendChild(title, 0);
-        contentPanel.appendChild(description, 0);
-        contentPanel.appendChild(new SimpleSep(), 0);
-        contentPanel.appendChild(credits, 0);
-        contentPanel.appendChild(creditsScrollPane, 1);
-        contentPanel.appendChild(new SimpleSep(), 0);
-        contentPanel.appendChild(howToCite, 0);
-        contentPanel.appendChild(howToCiteReference, 0);
-        contentPanel.appendChild(new SimpleSep(), 0);
-        contentPanel.appendChild(new JLabel(buildInfo), 0);
+        contentPanel.addChild(title, false);
+        contentPanel.addChild(description, false);
+        contentPanel.addChild(new SimpleSep(), false);
+        contentPanel.addChild(credits, false);
+        contentPanel.addChild(creditsScrollPane, true);
+        contentPanel.addChild(new SimpleSep(), false);
+        contentPanel.addChild(howToCite, false);
+        contentPanel.addChild(howToCiteReference, false);
+        contentPanel.addChild(new SimpleSep(), false);
+        contentPanel.addChild(new JLabel(buildInfo), false);
 
         contentPanel.setGap(5);
         contentPanel.setPadding(10);
 
         Dimension dim = new Dimension(700, 600);
-        creditsScrollPane.setPreferredSize(dim);
-        contentPanel.setPreferredSize(dim);
 
         addWindowListener(new WindowAdapter() {
             @Override
@@ -165,6 +163,7 @@ public class AppAbout extends JDialog {
         });
 
         setContentPane(contentPanel);
+        setPreferredSize(dim);
 
         addComponentListener(new ComponentAdapter() {
             public void componentResized(ComponentEvent e) {
@@ -213,7 +212,7 @@ public class AppAbout extends JDialog {
             personLabel.setVerticalAlignment(SwingConstants.TOP);
             creditsPanel.insertChild(personLabel, 0, rowIndex);
             String descString = "";
-            RowColPanel contributionPanel = new RowColPanel(RowColPanel.AXIS.COL);
+            SimpleFlowPanel contributionPanel = new SimpleFlowPanel(true);
             contributionPanel.setGap(5);
             for (int i = 0; i < entry.contributionKeys.length; i++) {
                 String contributionKey = entry.contributionKeys[i];
@@ -229,9 +228,9 @@ public class AppAbout extends JDialog {
                 JLabel descLabel = new JLabel();
                 creditsDescLabels.add(descLabel);
                 updateDescLabelWidth(descLabel, descString, 100);
-                contributionPanel.appendChild(descLabel, 0);
+                contributionPanel.addChild(descLabel, false);
                 if (i != entry.contributionKeys.length - 1) {
-                    contributionPanel.appendChild(new SimpleSep(), 0);
+                    contributionPanel.addChild(new SimpleSep(), false);
                 }
             }
             creditsPanel.insertChild(contributionPanel, 1, rowIndex);

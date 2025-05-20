@@ -27,7 +27,7 @@ import org.baratinage.ui.baratin.gaugings.GaugingsDataset;
 import org.baratinage.ui.baratin.limnigraph.LimnigraphDataset;
 import org.baratinage.ui.component.CommonDialog;
 import org.baratinage.ui.component.ProgressFrame;
-import org.baratinage.ui.container.RowColPanel;
+import org.baratinage.ui.container.SimpleFlowPanel;
 import org.baratinage.utils.ConsoleLogger;
 import org.baratinage.utils.DateTime;
 import org.baratinage.utils.Misc;
@@ -151,7 +151,7 @@ public class BaratinageV2Importer implements IProjectImporter {
             nTotalProgress += t.weight;
         }
 
-        RowColPanel progressPanel = new RowColPanel(RowColPanel.AXIS.COL);
+        SimpleFlowPanel progressPanel = new SimpleFlowPanel(true);
         progressPanel.setGap(10);
         mainProgressLabel.setIcon(AppSetup.ICONS.BARATINAGE);
         mainProgressLabel.setText("");
@@ -161,8 +161,8 @@ public class BaratinageV2Importer implements IProjectImporter {
                 T.text("importing_baratinage_v2_project"),
                 barZipFilePath);
         mainLabel.setText(message);
-        progressPanel.appendChild(mainLabel, 0);
-        progressPanel.appendChild(mainProgressLabel, 0);
+        progressPanel.addChild(mainLabel, false);
+        progressPanel.addChild(mainProgressLabel, false);
         mainProgressFrame.openProgressFrame(
                 AppSetup.MAIN_FRAME,
                 progressPanel,

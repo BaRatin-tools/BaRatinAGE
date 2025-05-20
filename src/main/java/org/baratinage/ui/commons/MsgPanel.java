@@ -10,13 +10,13 @@ import javax.swing.JLabel;
 import javax.swing.SwingConstants;
 
 import org.baratinage.AppSetup;
-import org.baratinage.ui.container.RowColPanel;
+import org.baratinage.ui.container.SimpleFlowPanel;
 
-public class MsgPanel extends RowColPanel {
+public class MsgPanel extends SimpleFlowPanel {
 
     public final JLabel message;
     private final List<JButton> buttons;
-    private final RowColPanel actionButtonsPanel;
+    private final SimpleFlowPanel actionButtonsPanel;
 
     private TYPE msgType = TYPE.INFO;
 
@@ -33,16 +33,17 @@ public class MsgPanel extends RowColPanel {
     }
 
     public MsgPanel(TYPE type, boolean small) {
-        super(small ? AXIS.ROW : AXIS.COL, ALIGN.START);
+        super(!small);
 
         message = new JLabel();
         buttons = new ArrayList<>();
-        actionButtonsPanel = new RowColPanel();
+        actionButtonsPanel = new SimpleFlowPanel();
+        actionButtonsPanel.setBackground(null);
 
         message.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 5));
 
-        appendChild(message, 0);
-        appendChild(actionButtonsPanel, 0);
+        addChild(message, false);
+        addChild(actionButtonsPanel, false);
 
         setPadding(2);
         setGap(2);
@@ -92,9 +93,9 @@ public class MsgPanel extends RowColPanel {
     @Override
     public void updateUI() {
         if (actionButtonsPanel != null && buttons != null) {
-            actionButtonsPanel.clear();
+            actionButtonsPanel.removeAll();
             for (JButton btn : buttons) {
-                actionButtonsPanel.appendChild(btn);
+                actionButtonsPanel.addChild(btn, false);
             }
             actionButtonsPanel.updateUI();
         }

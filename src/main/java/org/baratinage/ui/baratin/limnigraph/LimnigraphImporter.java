@@ -1,6 +1,5 @@
 package org.baratinage.ui.baratin.limnigraph;
 
-import java.awt.Component;
 import java.awt.Dimension;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
@@ -19,7 +18,7 @@ import org.baratinage.ui.component.SimpleComboBox;
 import org.baratinage.ui.component.SimpleSep;
 import org.baratinage.ui.component.SimpleTextField;
 import org.baratinage.ui.container.GridPanel;
-import org.baratinage.ui.container.RowColPanel;
+import org.baratinage.ui.container.SimpleFlowPanel;
 import org.baratinage.utils.ConsoleLogger;
 import org.baratinage.utils.Misc;
 import org.baratinage.utils.fs.ReadFile;
@@ -27,7 +26,7 @@ import org.baratinage.utils.perf.TimedActions;
 import org.baratinage.AppSetup;
 import org.baratinage.translation.T;
 
-public class LimnigraphImporter extends RowColPanel {
+public class LimnigraphImporter extends SimpleFlowPanel {
 
     private final String ID;
 
@@ -48,12 +47,12 @@ public class LimnigraphImporter extends RowColPanel {
 
     private final JButton validateButton;
 
-    private final RowColPanel dataPreviewPanel;
+    private final SimpleFlowPanel dataPreviewPanel;
 
     private final DataParser dataParser;
 
     public LimnigraphImporter() {
-        super(AXIS.COL);
+        super(true);
 
         ID = Misc.getTimeStampedId();
 
@@ -126,7 +125,7 @@ public class LimnigraphImporter extends RowColPanel {
 
         dataset = null;
 
-        dataPreviewPanel = new RowColPanel();
+        dataPreviewPanel = new SimpleFlowPanel();
 
         DataFileReader dataFileReader = new DataFileReader(
                 new CommonDialog.CustomFileFilter(
@@ -134,7 +133,7 @@ public class LimnigraphImporter extends RowColPanel {
                         "txt", "csv", "dat"));
         dataParser = new DataParser(dataFileReader);
 
-        dataPreviewPanel.appendChild(dataParser);
+        dataPreviewPanel.addChild(dataParser, true);
 
         dataFileReader.addChangeListener((chEvt) -> {
 
@@ -169,7 +168,7 @@ public class LimnigraphImporter extends RowColPanel {
         // ********************************************************
         // action buttons
 
-        RowColPanel actionPanel = new RowColPanel();
+        SimpleFlowPanel actionPanel = new SimpleFlowPanel();
         actionPanel.setPadding(5);
         actionPanel.setGap(5);
         validateButton = new JButton("import");
@@ -236,21 +235,20 @@ public class LimnigraphImporter extends RowColPanel {
             dialog.setVisible(false);
         });
 
-        actionPanel.appendChild(cancelButton, 0);
-        actionPanel.appendChild(new Component() {
-        }, 1);
-        actionPanel.appendChild(validateButton, 0);
+        actionPanel.addChild(cancelButton, false);
+        actionPanel.addExtensor();
+        actionPanel.addChild(validateButton, 0);
 
         // ********************************************************
         // final import panel layout
 
-        appendChild(dataFileReader, 0);
-        appendChild(new SimpleSep(), 0);
-        appendChild(columnMappingPanel, 0);
-        appendChild(new SimpleSep(), 0);
-        appendChild(dataPreviewPanel, 1);
-        appendChild(new SimpleSep(), 0);
-        appendChild(actionPanel, 0);
+        addChild(dataFileReader, false);
+        addChild(new SimpleSep(), false);
+        addChild(columnMappingPanel, false);
+        addChild(new SimpleSep(), false);
+        addChild(dataPreviewPanel, true);
+        addChild(new SimpleSep(), false);
+        addChild(actionPanel, false);
 
         // ********************************************************
         // react to change in user inputs (preview table and import button)

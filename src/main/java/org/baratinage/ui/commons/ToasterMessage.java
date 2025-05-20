@@ -4,7 +4,7 @@ import javax.swing.JDialog;
 import javax.swing.JLabel;
 
 import org.baratinage.AppSetup;
-import org.baratinage.ui.container.RowColPanel;
+import org.baratinage.ui.container.SimpleFlowPanel;
 import org.baratinage.utils.perf.TimedActions;
 
 import com.formdev.flatlaf.ui.FlatButtonBorder;
@@ -18,11 +18,11 @@ public class ToasterMessage {
     public static void info(String message, int durationInMilliseconds) {
 
         JLabel label = new JLabel(message);
-        RowColPanel toasterContent = new RowColPanel();
+        SimpleFlowPanel toasterContent = new SimpleFlowPanel();
         toasterContent.setBackground(AppSetup.COLORS.INFO_BG);
         toasterContent.setBorder(new FlatButtonBorder());
         toasterContent.setPadding(10);
-        toasterContent.appendChild(label);
+        toasterContent.addChild(label, true);
 
         JDialog toaster = new JDialog(AppSetup.MAIN_FRAME);
         toaster.setUndecorated(true);

@@ -13,14 +13,14 @@ import org.baratinage.translation.T;
 import org.baratinage.ui.commons.MsgPanel;
 import org.baratinage.ui.component.CommonDialog;
 import org.baratinage.ui.component.SimpleComboBox;
-import org.baratinage.ui.container.RowColPanel;
+import org.baratinage.ui.container.SimpleFlowPanel;
 import org.baratinage.utils.ConsoleLogger;
 import org.baratinage.utils.json.JSONCompare;
 import org.baratinage.utils.json.JSONCompareResult;
 import org.baratinage.utils.json.JSONFilter;
 import org.json.JSONObject;
 
-public class BamItemParent extends RowColPanel {
+public class BamItemParent extends SimpleFlowPanel {
 
     private final BamItemType TYPE;
     private final BamItemType[] TYPES;
@@ -46,8 +46,8 @@ public class BamItemParent extends RowColPanel {
             BamItem child,
             BamItemType... types) {
 
-        super(AXIS.COL);
-        setGap(5);
+        super(true);
+        // setGap(5);
         setPadding(5);
 
         TYPE = types[0];
@@ -68,8 +68,10 @@ public class BamItemParent extends RowColPanel {
         comboboxLabel = new JLabel();
         comboboxLabel.setIcon(TYPE.getIcon());
 
-        appendChild(comboboxLabel, 0);
-        appendChild(cb, 1);
+        // appendChild(comboboxLabel, 0);
+        // appendChild(cb, 1);
+        addChild(comboboxLabel, false);
+        addChild(cb, false);
 
         onBamItemNameChange = (chEvt) -> {
             syncWithBamItemList();

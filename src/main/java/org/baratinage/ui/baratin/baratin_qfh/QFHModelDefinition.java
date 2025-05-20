@@ -17,19 +17,19 @@ import org.baratinage.ui.bam.IModelDefinition;
 import org.baratinage.ui.baratin.HydraulicConfigurationQFH;
 import org.baratinage.ui.component.CommonDialog;
 import org.baratinage.ui.component.SimpleComboBox;
-import org.baratinage.ui.container.RowColPanel;
+import org.baratinage.ui.container.SimpleFlowPanel;
 import org.baratinage.utils.ConsoleLogger;
 import org.baratinage.utils.Misc;
 import org.baratinage.utils.perf.TimedActions;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-public class QFHModelDefinition extends RowColPanel implements IModelDefinition {
+public class QFHModelDefinition extends SimpleFlowPanel implements IModelDefinition {
 
     private final String id;
     private final SimpleComboBox configSelectionCombobox = new SimpleComboBox();
 
-    private final RowColPanel configPanel = new RowColPanel(AXIS.COL);
+    private final SimpleFlowPanel configPanel = new SimpleFlowPanel(true);
 
     private final Map<String, QFHTextFileEquation> textFileEquations;
     private QFHTextFileEquation currentTextFileEquation;
@@ -37,7 +37,7 @@ public class QFHModelDefinition extends RowColPanel implements IModelDefinition 
     public QFHPriors priorsPanel;
 
     public QFHModelDefinition() {
-        super(AXIS.COL);
+        super(true);
 
         id = Misc.getTimeStampedId();
         setPadding(5);
@@ -50,11 +50,11 @@ public class QFHModelDefinition extends RowColPanel implements IModelDefinition 
             addTextFileEquation(preset);
         }
 
-        appendChild(configSelectionCombobox, 0);
-        appendChild(configPanel, 1);
+        addChild(configSelectionCombobox, false);
+        addChild(configPanel, true);
 
         configSelectionCombobox.addChangeListener((e) -> {
-            configPanel.clear();
+            configPanel.removeAll();
 
             int index = configSelectionCombobox.getSelectedIndex();
 
@@ -67,7 +67,7 @@ public class QFHModelDefinition extends RowColPanel implements IModelDefinition 
                 fireChangeListeners(); // changed equation type
                 return;
             }
-            configPanel.appendChild(currentTextFileEquation, 1);
+            configPanel.addChild(currentTextFileEquation, true);
             priorsPanel = currentTextFileEquation.priorsPanel;
             fireChangeListeners(); // changed equation type
         });

@@ -47,7 +47,7 @@ public class HydrographTable extends DataTable {
         });
         T.t(this, showHeaderDescription, false, "table_headers_desc");
 
-        toolsPanel.appendChild(showHeaderDescription);
+        toolsPanel.addChild(showHeaderDescription, false);
 
     }
 

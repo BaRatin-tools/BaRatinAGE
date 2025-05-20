@@ -7,10 +7,9 @@ import java.awt.event.ItemListener;
 
 import javax.swing.JCheckBox;
 
-import org.baratinage.ui.container.RowColPanel;
+import org.baratinage.ui.container.SimpleFlowPanel;
 
-public class ControlCheckBox
-        extends RowColPanel {
+public class ControlCheckBox extends SimpleFlowPanel {
 
     private int grayRGBvalue = 225;
     private Color uncheckedColor = new Color(grayRGBvalue, grayRGBvalue, grayRGBvalue);
@@ -21,14 +20,17 @@ public class ControlCheckBox
     private ItemListener itemListener;
 
     public ControlCheckBox(String text, ItemListener itemListener) {
-        super(AXIS.ROW, ALIGN.CENTER);
+        super();
         checkBox = new JCheckBox(text);
         checkBox.setSelected(false);
         checkBox.setOpaque(false);
         checkBox.addItemListener(itemListener);
         this.itemListener = itemListener;
 
-        appendChild(checkBox);
+        addExtensor();
+        addChild(checkBox, 0, 5);
+        addExtensor();
+
         this.setOpaque(true);
         this.setBackground(uncheckedColor);
         this.setPreferredSize(new Dimension(100, 30));

@@ -31,7 +31,7 @@ import org.baratinage.ui.baratin.rating_curve.RatingCurveResults;
 import org.baratinage.ui.baratin.rating_curve.RatingCurveStageGrid;
 import org.baratinage.ui.commons.MsgPanel;
 import org.baratinage.ui.component.SimpleSep;
-import org.baratinage.ui.container.RowColPanel;
+import org.baratinage.ui.container.SimpleFlowPanel;
 import org.baratinage.ui.plot.PlotItem;
 import org.baratinage.utils.ConsoleLogger;
 import org.baratinage.utils.Misc;
@@ -39,11 +39,11 @@ import org.baratinage.utils.json.JSONCompare;
 import org.baratinage.utils.json.JSONCompareResult;
 import org.json.JSONObject;
 
-public class PriorRatingCurve<HCT extends BamItem & IModelDefinition & IPriors> extends RowColPanel
+public class PriorRatingCurve<HCT extends BamItem & IModelDefinition & IPriors> extends SimpleFlowPanel
         implements IPredictionMaster, IPlotDataProvider {
 
     private final RatingCurveStageGrid priorRatingCurveStageGrid;
-    private final RowColPanel outOufSyncPanel;
+    private final SimpleFlowPanel outOufSyncPanel;
     public final RunBam runBam;
     private final RatingCurveResults resultsPanel;
 
@@ -53,7 +53,7 @@ public class PriorRatingCurve<HCT extends BamItem & IModelDefinition & IPriors> 
     private JSONObject jsonBackup;
 
     public PriorRatingCurve(HCT hct) {
-        super(AXIS.COL);
+        super(true);
 
         hydraulicConfiguration = hct;
         priorRatingCurveStageGrid = new RatingCurveStageGrid();
@@ -75,17 +75,17 @@ public class PriorRatingCurve<HCT extends BamItem & IModelDefinition & IPriors> 
         runBam.setModelDefintion(hydraulicConfiguration);
         runBam.setPriors(hydraulicConfiguration);
 
-        outOufSyncPanel = new RowColPanel(RowColPanel.AXIS.COL);
+        outOufSyncPanel = new SimpleFlowPanel(true);
         outOufSyncPanel.setPadding(5);
 
         resultsPanel = new RatingCurveResults(hct.PROJECT, true);
         Misc.setMinimumSize(resultsPanel, null, 350);
 
-        appendChild(priorRatingCurveStageGrid, 0);
-        appendChild(new SimpleSep(), 0);
-        appendChild(outOufSyncPanel, 0);
-        appendChild(runBam.runButton, 0, 5);
-        appendChild(resultsPanel, 1);
+        addChild(priorRatingCurveStageGrid, false);
+        addChild(new SimpleSep(), false);
+        addChild(outOufSyncPanel, false);
+        addChild(runBam.runButton, 0, 5);
+        addChild(resultsPanel, true);
 
         T.updateHierarchy(this, priorRatingCurveStageGrid);
         T.updateHierarchy(this, resultsPanel);
@@ -109,7 +109,7 @@ public class PriorRatingCurve<HCT extends BamItem & IModelDefinition & IPriors> 
     public void checkSync() {
         T.clear(outOufSyncPanel);
         T.clear(runBam);
-        outOufSyncPanel.clear();
+        outOufSyncPanel.removeAll();
         if (jsonBackup == null) {
             updateRunBamButton(false);
             return;
@@ -174,7 +174,7 @@ public class PriorRatingCurve<HCT extends BamItem & IModelDefinition & IPriors> 
         }
 
         for (MsgPanel mp : outOfSyncMessages) {
-            outOufSyncPanel.appendChild(mp);
+            outOufSyncPanel.addChild(mp, false);
         }
         if (outOfSyncMessages.size() > 0) {
             updateRunBamButton(true);

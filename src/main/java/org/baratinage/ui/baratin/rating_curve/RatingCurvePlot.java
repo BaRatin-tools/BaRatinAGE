@@ -3,7 +3,7 @@ package org.baratinage.ui.baratin.rating_curve;
 import java.awt.Color;
 import java.util.List;
 
-import org.baratinage.ui.container.RowColPanel;
+import org.baratinage.ui.container.SimpleFlowPanel;
 import org.baratinage.AppSetup;
 import org.baratinage.translation.T;
 import org.baratinage.ui.plot.Plot;
@@ -17,7 +17,7 @@ import org.baratinage.ui.plot.PlotPoints;
 import org.baratinage.utils.Calc;
 import org.baratinage.utils.ConsoleLogger;
 
-public class RatingCurvePlot extends RowColPanel {
+public class RatingCurvePlot extends SimpleFlowPanel {
 
     private final PlotContainer plotContainer;
 
@@ -35,7 +35,7 @@ public class RatingCurvePlot extends RowColPanel {
     private final RatingCurvePlotToolsPanel toolsPanel;
 
     public RatingCurvePlot() {
-        super(AXIS.COL);
+        super(true);
 
         plotContainer = new PlotContainer(true);
         toolsPanel = new RatingCurvePlotToolsPanel();
@@ -45,8 +45,8 @@ public class RatingCurvePlot extends RowColPanel {
             }
         });
 
-        appendChild(plotContainer, 1);
-        appendChild(toolsPanel, 0, 5);
+        addChild(plotContainer, true);
+        addChild(toolsPanel, 0, 5);
 
         T.updateHierarchy(this, plotContainer);
         T.updateHierarchy(this, toolsPanel);

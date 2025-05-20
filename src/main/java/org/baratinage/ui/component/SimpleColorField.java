@@ -17,10 +17,10 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import org.baratinage.translation.T;
-import org.baratinage.ui.container.RowColPanel;
+import org.baratinage.ui.container.SimpleFlowPanel;
 import org.baratinage.ui.plot.PlotUtils;
 
-public class SimpleColorField extends RowColPanel {
+public class SimpleColorField extends SimpleFlowPanel {
 
     private final JButton button;
     private Color currentColor;
@@ -36,7 +36,7 @@ public class SimpleColorField extends RowColPanel {
             editColorPopup();
         });
 
-        appendChild(button, 1);
+        addChild(button, true);
     }
 
     public void setColor(Paint color) {
@@ -82,12 +82,12 @@ public class SimpleColorField extends RowColPanel {
 
         setUI();
 
-        RowColPanel colorChooserPanel = new RowColPanel(RowColPanel.AXIS.COL);
+        SimpleFlowPanel colorChooserPanel = new SimpleFlowPanel(true);
 
-        RowColPanel previewPanel = new RowColPanel();
+        SimpleFlowPanel previewPanel = new SimpleFlowPanel();
         previewPanel.setPadding(5);
         JLabel previewLabel = new JLabel(buildColorIcon(currentColor, colorIconSize));
-        previewPanel.appendChild(previewLabel);
+        previewPanel.addChild(previewLabel);
 
         JColorChooser colorChooser = new JColorChooser();
 
@@ -102,8 +102,8 @@ public class SimpleColorField extends RowColPanel {
             previewLabel.setIcon(buildColorIcon(colorChooser.getColor(), colorIconSize));
         });
 
-        colorChooserPanel.appendChild(colorChooser, 1);
-        colorChooserPanel.appendChild(previewPanel, 0);
+        colorChooserPanel.addChild(colorChooser, true);
+        colorChooserPanel.addChild(previewPanel, false);
 
         SimpleDialog colorChooserDialog = SimpleDialog.buildOkCancelDialog(T.text("choose_a_color"), colorChooserPanel,
                 (l) -> {

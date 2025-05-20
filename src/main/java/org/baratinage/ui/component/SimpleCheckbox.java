@@ -7,9 +7,9 @@ import javax.swing.JCheckBox;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import org.baratinage.ui.container.RowColPanel;
+import org.baratinage.ui.container.SimpleFlowPanel;
 
-public class SimpleCheckbox extends RowColPanel {
+public class SimpleCheckbox extends SimpleFlowPanel {
     private final JCheckBox checkbox;
 
     public SimpleCheckbox() {
@@ -21,7 +21,7 @@ public class SimpleCheckbox extends RowColPanel {
             fireChangeListeners();
         });
 
-        appendChild(checkbox, 1);
+        addChild(checkbox, true);
     }
 
     private final List<ChangeListener> changeListeners = new ArrayList<>();

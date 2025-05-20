@@ -13,10 +13,10 @@ import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 
-import org.baratinage.ui.container.RowColPanel;
+import org.baratinage.ui.container.SimpleFlowPanel;
 import org.baratinage.utils.Misc;
 
-public class Explorer extends RowColPanel {
+public class Explorer extends SimpleFlowPanel {
 
     private final JTree explorerTree;
     public final ExplorerItem rootNode;
@@ -24,7 +24,7 @@ public class Explorer extends RowColPanel {
 
     public Explorer() {
 
-        super(AXIS.COL, ALIGN.STRETCH, ALIGN.STRETCH);
+        super(true);
 
         setGap(5);
 
@@ -39,7 +39,7 @@ public class Explorer extends RowColPanel {
         JScrollPane treeViewScrollableArea = new JScrollPane(explorerTree);
         treeViewScrollableArea.setBorder(BorderFactory.createEmptyBorder());
 
-        appendChild(treeViewScrollableArea);
+        addChild(treeViewScrollableArea, 1);
 
         rootNode = new ExplorerItem("root", "Root");
         explorerTreeModel = new DefaultTreeModel(rootNode);

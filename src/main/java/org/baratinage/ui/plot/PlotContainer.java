@@ -32,21 +32,21 @@ import org.jfree.data.Range;
 import org.jfree.svg.SVGGraphics2D;
 import org.baratinage.ui.component.CommonDialog;
 import org.baratinage.ui.component.SimpleCheckbox;
-import org.baratinage.ui.container.RowColPanel;
+import org.baratinage.ui.container.SimpleFlowPanel;
 import org.baratinage.utils.ConsoleLogger;
 import org.baratinage.AppSetup;
 import org.baratinage.translation.T;
 
-public class PlotContainer extends RowColPanel {
+public class PlotContainer extends SimpleFlowPanel {
 
     private Plot plot;
     private JFreeChart chart;
-    private RowColPanel chartPanelContainer;
+    private SimpleFlowPanel chartPanelContainer;
     private ChartPanel chartPanel;
 
     private final JPopupMenu popupMenu;
-    public final RowColPanel toolsPanel;
-    private final RowColPanel actionPanel;
+    public final SimpleFlowPanel toolsPanel;
+    private final SimpleFlowPanel actionPanel;
 
     public PlotContainer() {
         this(true);
@@ -62,22 +62,23 @@ public class PlotContainer extends RowColPanel {
     }
 
     public PlotContainer(boolean toolbar) {
-        super(AXIS.COL);
+        super(true);
 
-        RowColPanel topPanel = new RowColPanel();
+        SimpleFlowPanel topPanel = new SimpleFlowPanel();
 
         if (toolbar) {
-            appendChild(topPanel, 0);
+            addChild(topPanel, false);
         }
 
-        chartPanelContainer = new RowColPanel();
-        appendChild(chartPanelContainer, 1);
+        chartPanelContainer = new SimpleFlowPanel();
+        addChild(chartPanelContainer, true);
 
-        toolsPanel = new RowColPanel(AXIS.ROW, ALIGN.START);
-        actionPanel = new RowColPanel(AXIS.ROW, ALIGN.END);
+        toolsPanel = new SimpleFlowPanel();
+        actionPanel = new SimpleFlowPanel();
 
-        topPanel.appendChild(toolsPanel, 1);
-        topPanel.appendChild(actionPanel, 1);
+        topPanel.addChild(toolsPanel, false);
+        topPanel.addExtensor();
+        topPanel.addChild(actionPanel, false);
 
         SimpleCheckbox cbShowLegend = new SimpleCheckbox();
         cbShowLegend.setSelected(true);
@@ -113,11 +114,11 @@ public class PlotContainer extends RowColPanel {
             copyToClipboard();
         });
 
-        toolsPanel.appendChild(cbShowLegend);
-        actionPanel.appendChild(btnWindowPlot);
-        actionPanel.appendChild(btnSaveAsSvg);
-        actionPanel.appendChild(btnSaveAsPng);
-        actionPanel.appendChild(btnCopyToClipboard);
+        toolsPanel.addChild(cbShowLegend, false);
+        actionPanel.addChild(btnWindowPlot, false);
+        actionPanel.addChild(btnSaveAsSvg, false);
+        actionPanel.addChild(btnSaveAsPng, false);
+        actionPanel.addChild(btnCopyToClipboard, false);
 
         popupMenu = new JPopupMenu();
         JMenuItem menuWindowPlot = new JMenuItem();
@@ -213,8 +214,8 @@ public class PlotContainer extends RowColPanel {
 
         chartPanel.setPopupMenu(popupMenu);
 
-        chartPanelContainer.clear();
-        chartPanelContainer.appendChild(chartPanel, 1);
+        chartPanelContainer.removeAll();
+        chartPanelContainer.addChild(chartPanel, true);
 
     }
 

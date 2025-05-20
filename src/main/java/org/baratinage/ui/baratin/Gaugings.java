@@ -19,7 +19,7 @@ import org.baratinage.ui.baratin.gaugings.GaugingsDataset;
 import org.baratinage.ui.baratin.gaugings.GaugingsImporter;
 import org.baratinage.ui.commons.DatasetConfig;
 import org.baratinage.ui.component.DataTable;
-import org.baratinage.ui.container.RowColPanel;
+import org.baratinage.ui.container.SimpleFlowPanel;
 import org.baratinage.ui.container.SplitContainer;
 import org.baratinage.translation.T;
 import org.baratinage.ui.plot.Plot;
@@ -40,7 +40,7 @@ public class Gaugings extends BamItem implements ICalibrationData {
 
     private final DataTable gaugingsTable;
     private GaugingsDataset gaugingDataset;
-    private final RowColPanel plotPanel;
+    private final SimpleFlowPanel plotPanel;
     private final JLabel importedDataSetSourceLabel;
 
     private final GaugingsImporter gaugingsImporter;
@@ -48,11 +48,11 @@ public class Gaugings extends BamItem implements ICalibrationData {
     public Gaugings(String uuid, BaratinProject project) {
         super(BamItemType.GAUGINGS, uuid, project);
 
-        RowColPanel importGaugingsPanel = new RowColPanel(RowColPanel.AXIS.COL);
+        SimpleFlowPanel importGaugingsPanel = new SimpleFlowPanel(true);
         importGaugingsPanel.setPadding(5);
         importGaugingsPanel.setGap(5);
 
-        plotPanel = new RowColPanel();
+        plotPanel = new SimpleFlowPanel();
 
         SplitContainer content = new SplitContainer(
                 importGaugingsPanel,
@@ -81,9 +81,9 @@ public class Gaugings extends BamItem implements ICalibrationData {
             fireChangeListeners();
         });
 
-        importGaugingsPanel.appendChild(importDataButton, 0);
-        importGaugingsPanel.appendChild(importedDataSetSourceLabel, 0);
-        importGaugingsPanel.appendChild(gaugingsTable, 1);
+        importGaugingsPanel.addChild(importDataButton, false);
+        importGaugingsPanel.addChild(importedDataSetSourceLabel, false);
+        importGaugingsPanel.addChild(gaugingsTable, true);
 
         setContent(content);
 
@@ -210,8 +210,8 @@ public class Gaugings extends BamItem implements ICalibrationData {
         });
 
         T.updateHierarchy(this, plotContainer);
-        plotPanel.clear();
-        plotPanel.appendChild(plotContainer);
+        plotPanel.removeAll();
+        plotPanel.addChild(plotContainer, true);
 
     }
 

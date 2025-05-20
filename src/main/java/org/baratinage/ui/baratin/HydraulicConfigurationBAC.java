@@ -17,7 +17,7 @@ import org.baratinage.ui.baratin.hydraulic_control.ControlMatrix;
 import org.baratinage.ui.baratin.hydraulic_control.HydraulicControlPanels;
 import org.baratinage.ui.component.SimpleNumberField;
 import org.baratinage.ui.component.SimpleSep;
-import org.baratinage.ui.container.RowColPanel;
+import org.baratinage.ui.container.SimpleFlowPanel;
 import org.baratinage.ui.container.TitledPanel;
 import org.baratinage.ui.container.TitledPanelSplitTabContainer;
 import org.baratinage.utils.ConsoleLogger;
@@ -69,16 +69,16 @@ public class HydraulicConfigurationBAC extends BamItem
             fireChangeListeners();
             priorRatingCurve.checkSync();
         });
-        RowColPanel maxStagePanel = new RowColPanel();
+        SimpleFlowPanel maxStagePanel = new SimpleFlowPanel();
         maxStagePanel.setGap(5);
         maxStagePanel.setPadding(5);
-        maxStagePanel.appendChild(maxStageLabel, 0);
-        maxStagePanel.appendChild(maxStageField, 1);
+        maxStagePanel.addChild(maxStageLabel, false);
+        maxStagePanel.addChild(maxStageField, true);
 
-        RowColPanel modelDefPanel = new RowColPanel(RowColPanel.AXIS.COL);
-        modelDefPanel.appendChild(controlMatrix, 1);
-        modelDefPanel.appendChild(new SimpleSep(), 0);
-        modelDefPanel.appendChild(maxStagePanel, 0);
+        SimpleFlowPanel modelDefPanel = new SimpleFlowPanel(true);
+        modelDefPanel.addChild(controlMatrix, true);
+        modelDefPanel.addChild(new SimpleSep(), false);
+        modelDefPanel.addChild(maxStagePanel, false);
 
         controlMatrix.addChangeListener((e) -> {
             priorRatingCurve.checkSync();
@@ -98,7 +98,8 @@ public class HydraulicConfigurationBAC extends BamItem
                 .build2Left1Right(this,
                         controlMatrixTitledPanel,
                         priorRatingCurveTitledPanel,
-                        hydraulicControlsTitledPanel);
+                        hydraulicControlsTitledPanel,
+                        0.33f, 0.5f);
         mainContainer.setBreakpoints(1100, 800);
         setContent(mainContainer);
 

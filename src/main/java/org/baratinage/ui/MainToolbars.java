@@ -6,9 +6,9 @@ import javax.swing.JToolBar;
 import org.baratinage.AppSetup;
 import org.baratinage.translation.T;
 import org.baratinage.ui.component.SimpleSep;
-import org.baratinage.ui.container.RowColPanel;
+import org.baratinage.ui.container.SimpleFlowPanel;
 
-public class MainToolbars extends RowColPanel {
+public class MainToolbars extends SimpleFlowPanel {
 
     private final JToolBar fileTools;
     private final JToolBar bamItemTools;
@@ -20,14 +20,14 @@ public class MainToolbars extends RowColPanel {
     private final JButton closeProjectButton;
 
     public MainToolbars() {
-        super(AXIS.ROW, ALIGN.START);
+        super();
 
         fileTools = new JToolBar();
         bamItemTools = new JToolBar();
 
-        appendChild(fileTools, 0);
-        appendChild(new SimpleSep(true), 0);
-        appendChild(bamItemTools, 1);
+        addChild(fileTools, false);
+        addChild(new SimpleSep(true), false);
+        addChild(bamItemTools, false);
 
         newProjectButton = new JButton();
         newProjectButton.setIcon(AppSetup.ICONS.NEW_FILE);

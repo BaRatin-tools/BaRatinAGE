@@ -48,7 +48,7 @@ import org.baratinage.ui.baratin.rating_curve.RatingCurveStageGrid;
 import org.baratinage.ui.commons.MsgPanel;
 import org.baratinage.ui.commons.StructuralErrorModelBamItem;
 import org.baratinage.ui.component.SimpleSep;
-import org.baratinage.ui.container.RowColPanel;
+import org.baratinage.ui.container.SimpleFlowPanel;
 import org.baratinage.ui.plot.PlotItem;
 import org.baratinage.utils.ConsoleLogger;
 import org.baratinage.utils.json.JSONCompare;
@@ -68,7 +68,7 @@ public class RatingCurve extends BamItem
     private final RatingCurveStageGrid ratingCurveStageGrid;
     public final RunBam runBam;
     private final RatingCurveResults resultsPanel;
-    private final RowColPanel outdatedPanel;
+    private final SimpleFlowPanel outdatedPanel;
 
     private RunConfigAndRes bamRunConfigAndRes;
 
@@ -139,9 +139,9 @@ public class RatingCurve extends BamItem
 
         // **********************************************************
 
-        RowColPanel content = new RowColPanel(RowColPanel.AXIS.COL);
-        RowColPanel mainConfigPanel = new RowColPanel();
-        RowColPanel mainContentPanel = new RowColPanel(RowColPanel.AXIS.COL);
+        SimpleFlowPanel content = new SimpleFlowPanel(true);
+        SimpleFlowPanel mainConfigPanel = new SimpleFlowPanel(false);
+        SimpleFlowPanel mainContentPanel = new SimpleFlowPanel(true);
 
         // **********************************************************
 
@@ -150,13 +150,13 @@ public class RatingCurve extends BamItem
             TimedActions.throttle(ID, AppSetup.CONFIG.THROTTLED_DELAY_MS, this::checkSync);
         });
 
-        mainConfigPanel.appendChild(hydrauConfParent, 1);
-        mainConfigPanel.appendChild(new SimpleSep(true), 0);
-        mainConfigPanel.appendChild(gaugingsParent, 1);
-        mainConfigPanel.appendChild(new SimpleSep(true), 0);
-        mainConfigPanel.appendChild(structErrorParent, 1);
-        mainConfigPanel.appendChild(new SimpleSep(true), 0);
-        mainConfigPanel.appendChild(ratingCurveStageGrid, 1);
+        mainConfigPanel.addChild(hydrauConfParent, true);
+        mainConfigPanel.addChild(new SimpleSep(true), false);
+        mainConfigPanel.addChild(gaugingsParent, true);
+        mainConfigPanel.addChild(new SimpleSep(true), false);
+        mainConfigPanel.addChild(structErrorParent, true);
+        mainConfigPanel.addChild(new SimpleSep(true), false);
+        mainConfigPanel.addChild(ratingCurveStageGrid, true);
 
         runBam.setPredictionExperiments(this);
         runBam.addOnDoneAction((RunConfigAndRes res) -> {
@@ -185,19 +185,17 @@ public class RatingCurve extends BamItem
         });
 
         resultsPanel = new RatingCurveResults(PROJECT);
-
-        outdatedPanel = new RowColPanel(RowColPanel.AXIS.COL);
-        outdatedPanel.setPadding(5);
+        outdatedPanel = new SimpleFlowPanel(true);
+        outdatedPanel.setPadding(0);
         outdatedPanel.setGap(5);
-        outdatedPanel.setColWeight(0, 1);
 
-        mainContentPanel.appendChild(outdatedPanel, 0);
-        mainContentPanel.appendChild(runBam.runButton, 0, 5);
-        mainContentPanel.appendChild(resultsPanel, 1);
+        mainContentPanel.addChild(outdatedPanel, false);
+        mainContentPanel.addChild(runBam.runButton, 0, 5);
+        mainContentPanel.addChild(resultsPanel, true);
 
-        content.appendChild(mainConfigPanel, 0);
-        content.appendChild(new SimpleSep(), 0);
-        content.appendChild(mainContentPanel, 1);
+        content.addChild(mainConfigPanel, false);
+        content.addChild(new SimpleSep(), false);
+        content.addChild(mainContentPanel, true);
 
         setContent(content);
 
@@ -306,7 +304,9 @@ public class RatingCurve extends BamItem
     }
 
     private void checkSync() {
-        outdatedPanel.clear();
+        outdatedPanel.setPadding(0);
+        outdatedPanel.removeAll();
+
         T.clear(outdatedPanel);
 
         hydrauConfParent.updateSyncStatus();
@@ -343,10 +343,15 @@ public class RatingCurve extends BamItem
 
         // --------------------------------------------------------------------
         // update message panel
+        boolean hasWarning = false;
         for (MsgPanel w : warnings) {
             if (w != null) {
-                outdatedPanel.appendChild(w);
+                outdatedPanel.addChild(w, false);
+                hasWarning = true;
             }
+        }
+        if (hasWarning) {
+            outdatedPanel.setPadding(5);
         }
 
         // --------------------------------------------------------------------

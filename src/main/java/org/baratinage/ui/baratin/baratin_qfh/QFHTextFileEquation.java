@@ -17,7 +17,7 @@ import org.baratinage.ui.baratin.baratin_qfh.QFHPreset.QFHPresetParameter;
 import org.baratinage.ui.commons.MsgPanel;
 import org.baratinage.ui.component.SimpleComboBox;
 import org.baratinage.ui.container.GridPanel;
-import org.baratinage.ui.container.RowColPanel;
+import org.baratinage.ui.container.SimpleFlowPanel;
 import org.baratinage.ui.textfile.EquationEditor;
 import org.baratinage.utils.ConsoleLogger;
 import org.baratinage.utils.Misc;
@@ -132,11 +132,10 @@ public class QFHTextFileEquation extends GridPanel {
             insertChild(hSelectionCombobox, 0, rowIndex);
             rowIndex++;
         } else {
-            RowColPanel p = new RowColPanel();
-            p.setMainAxisAlign(RowColPanel.ALIGN.START);
+            SimpleFlowPanel p = new SimpleFlowPanel();
             p.setGap(5);
-            p.appendChild(hSelectionLabel, 0);
-            p.appendChild(hVariableLabel, 1);
+            p.addChild(hSelectionLabel, false);
+            p.addChild(hVariableLabel, true);
             insertChild(p, 0, rowIndex);
             rowIndex++;
         }

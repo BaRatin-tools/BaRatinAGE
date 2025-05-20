@@ -4,7 +4,7 @@ import java.awt.BasicStroke;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import org.baratinage.ui.container.RowColPanel;
+import org.baratinage.ui.container.SimpleFlowPanel;
 import org.baratinage.AppSetup;
 import org.baratinage.translation.T;
 import org.baratinage.ui.plot.Plot;
@@ -14,7 +14,7 @@ import org.baratinage.ui.plot.PlotTimeSeriesBand;
 import org.baratinage.ui.plot.PlotTimeSeriesLine;
 import org.jfree.data.time.Second;
 
-public class HydrographPlot extends RowColPanel {
+public class HydrographPlot extends SimpleFlowPanel {
         public void updatePlot(
                         LocalDateTime[] dateTime,
                         double[] dischargeMaxpost,
@@ -79,7 +79,7 @@ public class HydrographPlot extends RowColPanel {
                 PlotContainer plotContainer = new PlotContainer(plot);
                 T.updateHierarchy(this, plotContainer);
 
-                clear();
-                appendChild(plotContainer);
+                removeAll();
+                addChild(plotContainer, true);
         }
 }

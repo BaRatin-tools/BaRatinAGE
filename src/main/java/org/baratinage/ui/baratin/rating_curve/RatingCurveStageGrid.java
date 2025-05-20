@@ -9,12 +9,12 @@ import javax.swing.event.ChangeListener;
 
 import org.baratinage.jbam.PredictionInput;
 import org.baratinage.ui.component.SimpleNumberField;
-import org.baratinage.ui.container.RowColPanel;
+import org.baratinage.ui.container.SimpleFlowPanel;
 import org.baratinage.utils.ConsoleLogger;
 import org.baratinage.translation.T;
 import org.json.JSONObject;
 
-public class RatingCurveStageGrid extends RowColPanel {
+public class RatingCurveStageGrid extends SimpleFlowPanel {
 
     private final SimpleNumberField minStageField;
     private final SimpleNumberField maxStageField;
@@ -30,7 +30,6 @@ public class RatingCurveStageGrid extends RowColPanel {
 
     public RatingCurveStageGrid() {
 
-        setCrossAxisAlign(ALIGN.CENTER);
         setGap(5);
         setPadding(5);
 
@@ -68,11 +67,11 @@ public class RatingCurveStageGrid extends RowColPanel {
 
         JLabel stageGridLabel = new JLabel();
 
-        appendChild(stageGridLabel, 0);
-        appendChild(minStageField, 1);
-        appendChild(maxStageField, 1);
-        appendChild(nbrStepField, 1);
-        appendChild(valStepField, 1);
+        addChild(stageGridLabel, false);
+        addChild(minStageField, true);
+        addChild(maxStageField, true);
+        addChild(nbrStepField, true);
+        addChild(valStepField, true);
 
         isValueValid = false;
         stageGridConfig = new StageGridConfig(null, null, null);

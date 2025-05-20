@@ -8,10 +8,10 @@ import javax.swing.JButton;
 import org.baratinage.translation.T;
 import org.baratinage.ui.commons.ColumnHeaderDescription;
 import org.baratinage.ui.component.DataTable;
-import org.baratinage.ui.container.RowColPanel;
+import org.baratinage.ui.container.SimpleFlowPanel;
 import org.baratinage.ui.container.TabContainer;
 
-public class LimnigraphErrors extends RowColPanel {
+public class LimnigraphErrors extends SimpleFlowPanel {
 
     private LimnigraphDataset dataset;
 
@@ -20,7 +20,7 @@ public class LimnigraphErrors extends RowColPanel {
     private final ColumnHeaderDescription columnsDescription;
 
     public LimnigraphErrors() {
-        super(AXIS.COL);
+        super(true);
 
         errConfigTable = new DataTable();
         errMatrixTable = new DataTable();
@@ -39,7 +39,7 @@ public class LimnigraphErrors extends RowColPanel {
             errMatrixTable.updateCellRenderer();
         });
 
-        appendChild(tableTabs, 1);
+        addChild(tableTabs, true);
 
         columnsDescription = new ColumnHeaderDescription();
 
@@ -49,7 +49,7 @@ public class LimnigraphErrors extends RowColPanel {
         });
         T.t(this, showHeaderDescription, false, "table_headers_desc");
 
-        errConfigTable.toolsPanel.appendChild(showHeaderDescription);
+        errConfigTable.toolsPanel.addChild(showHeaderDescription, false);
 
     }
 

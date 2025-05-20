@@ -20,7 +20,7 @@ import org.baratinage.jbam.utils.Monitoring;
 import org.baratinage.translation.T;
 import org.baratinage.ui.component.ProgressBar;
 import org.baratinage.ui.component.SimpleLogger;
-import org.baratinage.ui.container.RowColPanel;
+import org.baratinage.ui.container.SimpleFlowPanel;
 import org.baratinage.utils.ConsoleLogger;
 
 public class RunDialog extends JDialog {
@@ -52,13 +52,11 @@ public class RunDialog extends JDialog {
         }
 
         progressBar = new ProgressBar();
-        Dimension dim = progressBar.getPreferredSize();
-        dim.width = 600;
-        progressBar.setPreferredSize(dim);
         cancelButton = new JButton();
         closeButton = new JButton();
         logger = new SimpleLogger();
-        logger.setPreferredSize(new Dimension(900, 300));
+        logger.setPreferredSize(new Dimension(700, 300));
+        logger.setMinimumSize(new Dimension(700, 300));
 
         cancelButton.setText(T.text("cancel"));
         cancelButton.addActionListener((e) -> {
@@ -104,24 +102,24 @@ public class RunDialog extends JDialog {
 
     private void resetContent() {
 
-        RowColPanel pbPanel = new RowColPanel();
+        SimpleFlowPanel pbPanel = new SimpleFlowPanel();
         pbPanel.setGap(5);
-        pbPanel.appendChild(progressBar, 1);
-        pbPanel.appendChild(cancelButton, 0);
+        pbPanel.addChild(progressBar, true);
+        pbPanel.addChild(cancelButton, false);
 
-        RowColPanel mainPanel = new RowColPanel(RowColPanel.AXIS.COL);
+        SimpleFlowPanel mainPanel = new SimpleFlowPanel(true);
         mainPanel.setPadding(5);
         mainPanel.setGap(5);
 
-        mainPanel.appendChild(pbPanel, 0);
+        mainPanel.addChild(pbPanel, false);
         if (!AppSetup.CONFIG.HIDE_BAM_CONSOLE.get()) {
-            mainPanel.appendChild(logger, 1);
+            mainPanel.addChild(logger, true);
         }
 
-        mainPanel.appendChild(showHideLoggerButton, 0);
-        mainPanel.appendChild(closeBamDialogOnSuccessButton, 0);
+        mainPanel.addChild(showHideLoggerButton, false);
+        mainPanel.addChild(closeBamDialogOnSuccessButton, false);
 
-        mainPanel.appendChild(closeButton, 0);
+        mainPanel.addChild(closeButton, false);
 
         setContentPane(mainPanel);
         pack();

@@ -1,6 +1,5 @@
 package org.baratinage.ui.component;
 
-import java.awt.Container;
 import java.awt.Frame;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -9,18 +8,19 @@ import java.util.List;
 
 import javax.swing.Icon;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JProgressBar;
 
 import org.baratinage.AppSetup;
 import org.baratinage.translation.T;
-import org.baratinage.ui.container.RowColPanel;
+import org.baratinage.ui.container.SimpleFlowPanel;
 import org.baratinage.utils.ConsoleLogger;
 
 public class ProgressFrame extends JDialog {
 
-    private final RowColPanel customContentPanel;
+    private final SimpleFlowPanel customContentPanel;
     private final JProgressBar progressBar;
     private final JLabel progressMsg;
     private final JButton cancelCloseButton;
@@ -35,12 +35,12 @@ public class ProgressFrame extends JDialog {
 
     public ProgressFrame() {
         super(AppSetup.MAIN_FRAME, false);
-        RowColPanel contentPanel = new RowColPanel(RowColPanel.AXIS.COL);
+        SimpleFlowPanel contentPanel = new SimpleFlowPanel(true);
 
         contentPanel.setGap(5);
         contentPanel.setPadding(10);
 
-        customContentPanel = new RowColPanel();
+        customContentPanel = new SimpleFlowPanel();
         progressBar = new JProgressBar();
         progressMsg = new JLabel();
         cancelCloseButton = new JButton();
@@ -49,10 +49,10 @@ public class ProgressFrame extends JDialog {
             cancelOrClose();
         });
 
-        contentPanel.appendChild(customContentPanel, 1);
-        contentPanel.appendChild(progressBar, 0);
-        contentPanel.appendChild(progressMsg, 0);
-        contentPanel.appendChild(cancelCloseButton, 0);
+        contentPanel.addChild(customContentPanel, false);
+        contentPanel.addChild(progressBar, false);
+        contentPanel.addChild(progressMsg, false);
+        contentPanel.addChild(cancelCloseButton, false);
 
         addWindowListener(new WindowAdapter() {
             @Override
@@ -67,7 +67,7 @@ public class ProgressFrame extends JDialog {
 
     public void openProgressFrame(
             Frame parentFrame,
-            Container content,
+            JComponent content,
             String titleString,
             int progressMin,
             int progressMax,
@@ -80,8 +80,8 @@ public class ProgressFrame extends JDialog {
 
         cancelCloseButton.setText(T.text("cancel"));
 
-        customContentPanel.clear();
-        customContentPanel.appendChild(content);
+        customContentPanel.removeAll();
+        customContentPanel.addChild(content, true);
 
         this.autoClose = autoClose;
         canceled = false;

@@ -15,7 +15,7 @@ import org.baratinage.ui.baratin.BaratinProject;
 import org.baratinage.ui.commons.ToasterMessage;
 import org.baratinage.ui.component.CommonDialog;
 import org.baratinage.ui.component.SvgIcon;
-import org.baratinage.ui.container.RowColPanel;
+import org.baratinage.ui.container.SimpleFlowPanel;
 import org.baratinage.utils.ConsoleLogger;
 import org.baratinage.utils.Misc;
 import org.baratinage.utils.perf.TimedActions;
@@ -32,12 +32,12 @@ import java.nio.file.Path;
 
 public class MainFrame extends JFrame {
 
-    private final RowColPanel projectPanel;
+    private final SimpleFlowPanel projectPanel;
     public BamProject currentProject;
 
     public final MainMenuBar mainMenuBar;
 
-    public final RowColPanel topPanel;
+    public final SimpleFlowPanel topPanel;
 
     public final MainToolbars mainToolBars;
 
@@ -57,18 +57,12 @@ public class MainFrame extends JFrame {
         mainMenuBar = new MainMenuBar();
         setJMenuBar(mainMenuBar);
 
-        projectPanel = new RowColPanel();
+        projectPanel = new SimpleFlowPanel();
 
-        topPanel = new RowColPanel();
+        topPanel = new SimpleFlowPanel();
 
         mainToolBars = new MainToolbars();
-        topPanel.appendChild(mainToolBars);
-
-        RowColPanel framePanel = new RowColPanel(RowColPanel.AXIS.COL);
-        framePanel.setGap(5);
-        framePanel.appendChild(topPanel, 0);
-        framePanel.appendChild(projectPanel, 1);
-        add(framePanel);
+        topPanel.addChild(mainToolBars, false);
 
         addComponentListener(new ComponentAdapter() {
             public void componentResized(ComponentEvent e) {
@@ -176,16 +170,16 @@ public class MainFrame extends JFrame {
             T.clear(currentProject);
         }
         currentProject = project;
-        projectPanel.clear();
+        projectPanel.removeAll();
 
         boolean projectIsNull = project == null;
 
         mainToolBars.updateFileTools(!projectIsNull);
 
         if (!projectIsNull) {
-            projectPanel.appendChild(project);
+            projectPanel.addChild(project, true);
         } else {
-            projectPanel.appendChild(noProjectPanel);
+            projectPanel.addChild(noProjectPanel, true);
             mainMenuBar.componentMenu.removeAll();
             mainToolBars.clearBamItemTools();
         }
@@ -196,7 +190,15 @@ public class MainFrame extends JFrame {
 
         updateFrameTitle();
         T.updateTranslations();
-        projectPanel.updateUI();
+        // projectPanel.updateUI();
+
+        SimpleFlowPanel framePanel = new SimpleFlowPanel(true);
+        framePanel.setGap(5);
+        if (!projectIsNull) {
+            framePanel.addChild(topPanel, false);
+        }
+        framePanel.addChild(projectPanel, true);
+        setContentPane(framePanel);
     }
 
     public boolean confirmLoosingUnsavedChanges() {

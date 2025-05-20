@@ -25,10 +25,10 @@ import javax.swing.table.TableColumnModel;
 
 import org.baratinage.AppSetup;
 import org.baratinage.translation.T;
-import org.baratinage.ui.container.RowColPanel;
+import org.baratinage.ui.container.SimpleFlowPanel;
 import org.baratinage.utils.ConsoleLogger;
 
-public class DataParser extends RowColPanel {
+public class DataParser extends SimpleFlowPanel {
 
     private enum COL_TYPE {
         INT, DOUBLE, DATETIME
@@ -110,7 +110,7 @@ public class DataParser extends RowColPanel {
     public int nPreload = 15;
 
     public DataParser(DataFileReader dataFileReader) {
-        super(AXIS.COL);
+        super(true);
 
         setPadding(5);
         setGap(5);
@@ -143,14 +143,14 @@ public class DataParser extends RowColPanel {
             setRawData(rawData, headers, missingValueCode);
             updateColumnTypes();
         });
-        RowColPanel nRowPreloadPanel = new RowColPanel();
+        SimpleFlowPanel nRowPreloadPanel = new SimpleFlowPanel();
         nRowPreloadPanel.setGap(5);
-        nRowPreloadPanel.appendChild(nRowPreloadLabel, 0);
-        nRowPreloadPanel.appendChild(nRowPreloadField, 1);
+        nRowPreloadPanel.addChild(nRowPreloadLabel, false);
+        nRowPreloadPanel.addChild(nRowPreloadField, true);
 
-        appendChild(dataPreviewTitleLabel, 0);
-        appendChild(scrollpane, 1);
-        appendChild(nRowPreloadPanel, 0);
+        addChild(dataPreviewTitleLabel, false);
+        addChild(scrollpane, true);
+        addChild(nRowPreloadPanel, false);
 
     }
 

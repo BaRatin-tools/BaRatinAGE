@@ -11,12 +11,12 @@ import org.baratinage.jbam.Distribution;
 import org.baratinage.jbam.DistributionType;
 import org.baratinage.ui.component.SimpleComboBox;
 import org.baratinage.ui.component.SimpleNumberField;
-import org.baratinage.ui.container.RowColPanel;
+import org.baratinage.ui.container.SimpleFlowPanel;
 import org.baratinage.translation.T;
 
 public class DistributionField implements ChangeListener {
     private final HashMap<DistributionType, List<SimpleNumberField>> allParameterFields;
-    public final RowColPanel parameterFieldsPanel;
+    public final SimpleFlowPanel parameterFieldsPanel;
     public final List<SimpleNumberField> parameterFields;
     public final SimpleComboBox distributionCombobox;
 
@@ -39,7 +39,7 @@ public class DistributionField implements ChangeListener {
             allParameterFields.put(d, parameterFields);
         }
         parameterFields = new ArrayList<>();
-        parameterFieldsPanel = new RowColPanel();
+        parameterFieldsPanel = new SimpleFlowPanel();
         parameterFieldsPanel.setGap(5);
         distributionCombobox = new SimpleComboBox();
         distributionCombobox.addChangeListener((chEvt) -> {
@@ -50,10 +50,10 @@ public class DistributionField implements ChangeListener {
             currentDistributionIndex = index;
             DistributionType d = DISTRIBUTION_TYPES[index];
             List<SimpleNumberField> fields = allParameterFields.get(d);
-            parameterFieldsPanel.clear();
+            parameterFieldsPanel.removeAll();
             parameterFields.clear();
             for (SimpleNumberField field : fields) {
-                parameterFieldsPanel.appendChild(field);
+                parameterFieldsPanel.addChild(field);
                 parameterFields.add(field);
             }
             parameterFieldsPanel.updateUI();

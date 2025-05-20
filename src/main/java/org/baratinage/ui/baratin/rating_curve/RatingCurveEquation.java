@@ -11,13 +11,13 @@ import javax.swing.JTextArea;
 import org.baratinage.AppSetup;
 import org.baratinage.translation.T;
 import org.baratinage.ui.bam.EstimatedParameterWrapper;
-import org.baratinage.ui.container.RowColPanel;
+import org.baratinage.ui.container.SimpleFlowPanel;
 
-public class RatingCurveEquation extends RowColPanel {
+public class RatingCurveEquation extends SimpleFlowPanel {
     private final JTextArea equationTextArea;
 
     RatingCurveEquation() {
-        super(AXIS.COL, ALIGN.START, ALIGN.STRETCH);
+        super(true);
         setGap(5);
         setPadding(5);
         equationTextArea = new JTextArea();
@@ -28,11 +28,10 @@ public class RatingCurveEquation extends RowColPanel {
             Clipboard systemClipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
             systemClipboard.setContents(new StringSelection(equationTextArea.getText()), null);
         });
-        RowColPanel actionPanel = new RowColPanel();
-        actionPanel.setMainAxisAlign(ALIGN.START);
-        actionPanel.appendChild(btnCopyToClipboard);
-        appendChild(actionPanel, 0);
-        appendChild(equationTextArea, 0);
+        SimpleFlowPanel actionPanel = new SimpleFlowPanel();
+        actionPanel.addChild(btnCopyToClipboard, false);
+        addChild(actionPanel, false);
+        addChild(equationTextArea, false);
 
         T.t(this, () -> {
             btnCopyToClipboard.setToolTipText(T.text("to_clipboard"));

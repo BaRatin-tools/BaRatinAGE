@@ -10,12 +10,12 @@ import org.baratinage.jbam.Parameter;
 import org.baratinage.ui.bam.BamItemType;
 import org.baratinage.ui.bam.IPriors;
 import org.baratinage.ui.container.TabContainer;
-import org.baratinage.ui.container.RowColPanel;
+import org.baratinage.ui.container.SimpleFlowPanel;
 import org.baratinage.translation.T;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-public class HydraulicControlPanels extends RowColPanel implements IPriors {
+public class HydraulicControlPanels extends SimpleFlowPanel implements IPriors {
 
     private final List<OneHydraulicControl> controls;
     private final TabContainer tabs;
@@ -30,7 +30,7 @@ public class HydraulicControlPanels extends RowColPanel implements IPriors {
         controls = new ArrayList<>();
         tabs = new TabContainer(TabContainer.SIDE.TOP);
 
-        appendChild(tabs, 1);
+        addChild(tabs, true);
 
         T.t(this, () -> {
             int n = tabs.getTabCount();

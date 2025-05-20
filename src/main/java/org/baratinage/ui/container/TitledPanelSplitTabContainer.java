@@ -10,50 +10,51 @@ import org.baratinage.utils.ConsoleLogger;
 import org.baratinage.utils.Misc;
 import org.baratinage.utils.perf.TimedActions;
 
-public class TitledPanelSplitTabContainer extends RowColPanel {
+public class TitledPanelSplitTabContainer extends SimpleFlowPanel {
+
+    // public static TitledPanelSplitTabContainer build2Left1Right(JComponent
+    // parentComponent,
+    // TitledPanel topLeft,
+    // TitledPanel bottomLeft,
+    // TitledPanel right) {
+    // return build2Left1Right(
+    // parentComponent,
+    // topLeft,
+    // bottomLeft,
+    // right,
+    // -1.0f,
+    // -1.0f);
+    // }
 
     public static TitledPanelSplitTabContainer build2Left1Right(
             JComponent parentComponent,
             TitledPanel topLeft,
             TitledPanel bottomLeft,
-            TitledPanel right) {
+            TitledPanel right,
+            float leftDivider,
+            float mainDivider) {
 
         TitledPanelSplitTabContainer container = new TitledPanelSplitTabContainer(
                 parentComponent,
                 () -> {
-                    return SplitContainer.build2Left1RightSplitContainer(
+                    SplitContainer leftContent = new SplitContainer(
                             topLeft.getTitledPanel(),
                             bottomLeft.getTitledPanel(),
-                            right.getTitledPanel());
+                            false,
+                            leftDivider);
+
+                    SplitContainer rightSplit = new SplitContainer(
+                            leftContent,
+                            right.getTitledPanel(),
+                            true,
+                            mainDivider);
+
+                    return rightSplit;
                 }, () -> {
                     TabContainer tabContainer = new TabContainer();
                     tabContainer.addTab(topLeft);
                     tabContainer.addTab(right);
                     tabContainer.addTab(bottomLeft);
-                    return tabContainer;
-                });
-
-        return container;
-
-    }
-
-    public static TitledPanelSplitTabContainer build1Left2Right(JComponent parentComponent,
-            TitledPanel left,
-            TitledPanel topRight,
-            TitledPanel bottomRight) {
-
-        TitledPanelSplitTabContainer container = new TitledPanelSplitTabContainer(
-                parentComponent,
-                () -> {
-                    return SplitContainer.build1Left2RightSplitContainer(
-                            left.getTitledPanel(),
-                            topRight.getTitledPanel(),
-                            bottomRight.getTitledPanel());
-                }, () -> {
-                    TabContainer tabContainer = new TabContainer();
-                    tabContainer.addTab(left);
-                    tabContainer.addTab(topRight);
-                    tabContainer.addTab(bottomRight);
                     return tabContainer;
                 });
 
@@ -90,7 +91,7 @@ public class TitledPanelSplitTabContainer extends RowColPanel {
             }
         });
 
-        appendChild(splitContainerSupplier.get(), 1);
+        addChild(splitContainerSupplier.get(), true);
         isInTabViewMode = false;
     }
 
@@ -108,14 +109,14 @@ public class TitledPanelSplitTabContainer extends RowColPanel {
         }
         if (panelWidth < widthBreakpoint || panelHeight < heightBreakpoint) {
             if (!isInTabViewMode) {
-                clear();
-                appendChild(tabContainerSupplier.get(), 1);
+                removeAll();
+                addChild(tabContainerSupplier.get(), true);
             }
             isInTabViewMode = true;
         } else {
             if (isInTabViewMode) {
-                clear();
-                appendChild(splitContainerSupplier.get(), 1);
+                removeAll();
+                addChild(splitContainerSupplier.get(), true);
             }
             isInTabViewMode = false;
         }

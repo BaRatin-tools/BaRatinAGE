@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import javax.swing.JButton;
-import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 
@@ -18,10 +17,10 @@ import org.baratinage.ui.component.CommonDialog;
 import org.baratinage.ui.component.SimpleDateTimeField;
 import org.baratinage.ui.component.SimpleSep;
 import org.baratinage.ui.component.SimpleTextField;
-import org.baratinage.ui.container.RowColPanel;
+import org.baratinage.ui.container.SimpleFlowPanel;
 import org.baratinage.utils.ConsoleLogger;
 
-public class BaremExporter extends RowColPanel {
+public class BaremExporter extends SimpleFlowPanel {
 
     private final JDialog dialog;
 
@@ -55,7 +54,7 @@ public class BaremExporter extends RowColPanel {
     public BaremExporter(
             String hydroCode, String hydroName,
             LocalDateTime validityStartTime, LocalDateTime validityEndTime) {
-
+        super(true);
         // creating dialog content
 
         hydroCodeField = new SimpleTextField();
@@ -65,36 +64,29 @@ public class BaremExporter extends RowColPanel {
 
         JButton okButton = new JButton();
         JButton cancelButton = new JButton();
-        RowColPanel actionPanel = new RowColPanel(AXIS.ROW, ALIGN.STRETCH);
-        actionPanel.appendChild(cancelButton, 0);
-        actionPanel.appendChild(new JComponent() {
-
-        }, 1);
-        actionPanel.appendChild(okButton, 0);
+        SimpleFlowPanel actionPanel = new SimpleFlowPanel();
+        actionPanel.addChild(cancelButton, false);
+        actionPanel.addExtensor();
+        actionPanel.addChild(okButton, false);
 
         JLabel hydroCodeLabel = new JLabel();
         JLabel hydroNameLabel = new JLabel();
         JLabel startDateLabel = new JLabel();
         JLabel endDateLabel = new JLabel();
 
-        setMainAxis(AXIS.COL);
         setPadding(5);
         setGap(5);
 
-        appendChild(hydroCodeLabel, 0);
-        appendChild(hydroCodeField, 0);
-
-        appendChild(hydroNameLabel, 0);
-        appendChild(hyroNameField, 0);
-
-        appendChild(startDateLabel, 0);
-        appendChild(startDateField, 0);
-
-        appendChild(endDateLabel, 0);
-        appendChild(endDateField, 0);
-
-        appendChild(new SimpleSep(), 0);
-        appendChild(actionPanel, 0);
+        addChild(hydroCodeLabel, false);
+        addChild(hydroCodeField, false);
+        addChild(hydroNameLabel, false);
+        addChild(hyroNameField, false);
+        addChild(startDateLabel, false);
+        addChild(startDateField, false);
+        addChild(endDateLabel, false);
+        addChild(endDateField, false);
+        addChild(new SimpleSep(), false);
+        addChild(actionPanel, false);
 
         T.t(this, () -> {
             hydroCodeLabel.setText(T.text("hydro_code"));

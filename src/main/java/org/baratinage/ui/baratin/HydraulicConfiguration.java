@@ -79,7 +79,8 @@ public class HydraulicConfiguration
                 .build2Left1Right(this,
                         controlMatrixTitledPanel,
                         priorRatingCurveTitledPanel,
-                        hydraulicControlsTitledPanel);
+                        hydraulicControlsTitledPanel,
+                        0.33f, 0.5f);
         mainContainer.setBreakpoints(1100, 800);
         setContent(mainContainer);
 

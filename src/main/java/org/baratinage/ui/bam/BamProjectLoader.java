@@ -15,7 +15,7 @@ import org.baratinage.translation.T;
 import org.baratinage.ui.baratin.BaratinProject;
 import org.baratinage.ui.commons.ExplorerItem;
 import org.baratinage.ui.component.ProgressFrame;
-import org.baratinage.ui.container.RowColPanel;
+import org.baratinage.ui.container.SimpleFlowPanel;
 import org.baratinage.utils.ConsoleLogger;
 import org.baratinage.utils.fs.ReadFile;
 import org.baratinage.utils.fs.ReadWriteZip;
@@ -47,7 +47,7 @@ public class BamProjectLoader {
         int n = bamItemsJson.length();
 
         // Initalize loading monitoring frame
-        RowColPanel p = new RowColPanel(RowColPanel.AXIS.COL);
+        SimpleFlowPanel p = new SimpleFlowPanel(true);
         p.setGap(5);
         JLabel lMessage = new JLabel();
         String loadingMessage = T.text("loading_project");
@@ -57,7 +57,7 @@ public class BamProjectLoader {
                 "<code>" + sourceFile.getAbsolutePath() + "</code>" +
                 "</html>");
 
-        p.appendChild(lMessage);
+        p.addChild(lMessage);
 
         bamProjectLoadingFrame.openProgressFrame(
                 AppSetup.MAIN_FRAME,

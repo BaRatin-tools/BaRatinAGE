@@ -15,7 +15,7 @@ import org.baratinage.ui.bam.BamProject;
 import org.baratinage.ui.bam.IStructuralErrorModels;
 import org.baratinage.ui.component.NameSymbolUnit;
 import org.baratinage.ui.component.SimpleSep;
-import org.baratinage.ui.container.RowColPanel;
+import org.baratinage.ui.container.SimpleFlowPanel;
 import org.json.JSONArray;
 
 public class StructuralErrorModelBamItem extends BamItem implements IStructuralErrorModels {
@@ -36,7 +36,7 @@ public class StructuralErrorModelBamItem extends BamItem implements IStructuralE
         strucErrModelPanels = new StructuralErrorModelPanel[nOutputs];
         parameterNameLabels = new JLabel[nOutputs];
 
-        RowColPanel panel = new RowColPanel(RowColPanel.AXIS.COL, RowColPanel.ALIGN.START);
+        SimpleFlowPanel panel = new SimpleFlowPanel(true);
         panel.setGap(5);
         panel.setPadding(5);
 
@@ -66,11 +66,18 @@ public class StructuralErrorModelBamItem extends BamItem implements IStructuralE
 
             T.updateHierarchy(this, strucErrModelPanel);
 
-            panel.appendChild(parameterNameLabels[k], 0);
-            panel.appendChild(infoLabel, 0);
-            panel.appendChild(strucErrModelPanel, 0);
+            // panel.appendChild(parameterNameLabels[k], 0);
+            // panel.appendChild(infoLabel, 0);
+            // panel.appendChild(strucErrModelPanel, 0);
+            // if (k + 1 < nOutputs) {
+            // panel.appendChild(new SimpleSep(), 0);
+            // }
+
+            panel.addChild(parameterNameLabels[k], false);
+            panel.addChild(infoLabel, false);
+            panel.addChild(strucErrModelPanel, false);
             if (k + 1 < nOutputs) {
-                panel.appendChild(new SimpleSep(), 0);
+                panel.addChild(new SimpleSep(), false);
             }
 
             setContent(panel);

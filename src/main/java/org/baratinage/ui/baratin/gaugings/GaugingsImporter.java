@@ -1,6 +1,5 @@
 package org.baratinage.ui.baratin.gaugings;
 
-import java.awt.Component;
 import java.awt.Dimension;
 import java.nio.file.Path;
 import java.util.List;
@@ -21,9 +20,9 @@ import org.baratinage.ui.component.DataParser;
 import org.baratinage.ui.component.SimpleComboBox;
 import org.baratinage.ui.component.SimpleSep;
 import org.baratinage.ui.container.GridPanel;
-import org.baratinage.ui.container.RowColPanel;
+import org.baratinage.ui.container.SimpleFlowPanel;
 
-public class GaugingsImporter extends RowColPanel {
+public class GaugingsImporter extends SimpleFlowPanel {
 
     private class ColsMapping {
         public final SimpleComboBox hCol = new SimpleComboBox();
@@ -62,7 +61,7 @@ public class GaugingsImporter extends RowColPanel {
     private String missingValueString;
 
     private JDialog dialog;
-    private RowColPanel dataPreviewPanel;
+    private SimpleFlowPanel dataPreviewPanel;
     private GaugingsDataset dataset;
 
     private final DataFileReader dataFileReader;
@@ -73,7 +72,7 @@ public class GaugingsImporter extends RowColPanel {
     private final String ID;
 
     public GaugingsImporter() {
-        super(AXIS.COL);
+        super(true);
 
         ID = Misc.getTimeStampedId();
 
@@ -81,7 +80,7 @@ public class GaugingsImporter extends RowColPanel {
 
         dataset = null;
 
-        dataPreviewPanel = new RowColPanel();
+        dataPreviewPanel = new SimpleFlowPanel();
 
         dataFileReader = new DataFileReader(
                 new CommonDialog.CustomFileFilter(
@@ -92,7 +91,7 @@ public class GaugingsImporter extends RowColPanel {
                         "bad"));
         dataParser = new DataParser(dataFileReader);
 
-        dataPreviewPanel.appendChild(dataParser);
+        dataPreviewPanel.addChild(dataParser);
 
         dataFileReader.addChangeListener((chEvt) -> {
 
@@ -155,7 +154,7 @@ public class GaugingsImporter extends RowColPanel {
             }
         });
 
-        RowColPanel actionPanel = new RowColPanel();
+        SimpleFlowPanel actionPanel = new SimpleFlowPanel();
         actionPanel.setPadding(5);
         actionPanel.setGap(5);
 
@@ -186,10 +185,9 @@ public class GaugingsImporter extends RowColPanel {
             dialog.setVisible(false);
         });
 
-        actionPanel.appendChild(cancelButton, 0);
-        actionPanel.appendChild(new Component() {
-        }, 1);
-        actionPanel.appendChild(validateButton, 0);
+        actionPanel.addChild(cancelButton, 0);
+        actionPanel.addExtensor();
+        actionPanel.addChild(validateButton, 0);
 
         GridPanel columnMappingPanel = new GridPanel();
         columnMappingPanel.setPadding(5);
@@ -219,13 +217,13 @@ public class GaugingsImporter extends RowColPanel {
         columnMappingPanel.insertChild(columnsMapping.uqCol, 1, rowIndex);
         // rowIndex++;
 
-        appendChild(dataFileReader, 0);
-        appendChild(new SimpleSep(), 0);
-        appendChild(columnMappingPanel, 0);
-        appendChild(new SimpleSep(), 0);
-        appendChild(dataPreviewPanel, 1);
-        appendChild(new SimpleSep(), 0);
-        appendChild(actionPanel, 0);
+        addChild(dataFileReader, false);
+        addChild(new SimpleSep(), false);
+        addChild(columnMappingPanel, false);
+        addChild(new SimpleSep(), false);
+        addChild(dataPreviewPanel, true);
+        addChild(new SimpleSep(), false);
+        addChild(actionPanel, false);
 
         T.updateHierarchy(this, dataFileReader);
         T.updateHierarchy(this, dataParser);

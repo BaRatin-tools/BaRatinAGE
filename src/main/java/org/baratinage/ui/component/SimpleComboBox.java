@@ -16,9 +16,9 @@ import javax.swing.DefaultListCellRenderer;
 import javax.swing.Icon;
 
 import org.baratinage.AppSetup;
-import org.baratinage.ui.container.RowColPanel;
+import org.baratinage.ui.container.SimpleFlowPanel;
 
-public class SimpleComboBox extends RowColPanel {
+public class SimpleComboBox extends SimpleFlowPanel {
 
     private static JLabel buildLabel(String text, Icon icon) {
         JLabel label = new JLabel(text);
@@ -57,7 +57,7 @@ public class SimpleComboBox extends RowColPanel {
 
         INVALID_BG_COLOR = AppSetup.COLORS.INVALID_BG;
         REGULAR_BG_COLOR = comboBox.getBackground();
-        appendChild(comboBox);
+        addChild(comboBox, true);
     }
 
     public void setChangeListenersEnabled(boolean enabled) {

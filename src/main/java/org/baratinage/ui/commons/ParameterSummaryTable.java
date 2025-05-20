@@ -42,7 +42,7 @@ public class ParameterSummaryTable extends DataTable {
         });
         T.t(this, showHeaderDescription, false, "table_headers_desc");
 
-        toolsPanel.appendChild(showHeaderDescription);
+        toolsPanel.addChild(showHeaderDescription, false);
     }
 
     public void updateResults(List<EstimatedParameterWrapper> parameters) {

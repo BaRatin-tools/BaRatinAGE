@@ -26,9 +26,8 @@ import org.baratinage.ui.bam.RunBam;
 import org.baratinage.ui.commons.ExtraDataset;
 import org.baratinage.ui.commons.MsgPanel;
 import org.baratinage.ui.component.SimpleSep;
-import org.baratinage.ui.container.RowColPanel;
+import org.baratinage.ui.container.SimpleFlowPanel;
 import org.baratinage.ui.container.TabContainer;
-import org.baratinage.ui.container.RowColPanel.AXIS;
 import org.baratinage.translation.T;
 import org.baratinage.utils.ConsoleLogger;
 import org.baratinage.utils.DateTime;
@@ -42,7 +41,7 @@ public class Hydrograph extends BamItem implements IPredictionMaster {
     public final RunBam runBam;
     private final HydrographPlot plotPanel;
     private final HydrographTable tablePanel;
-    private final RowColPanel outdatedPanel;
+    private final SimpleFlowPanel outdatedPanel;
 
     private final BamItemParent ratingCurveParent;
     private final BamItemParent limnigraphParent;
@@ -88,14 +87,14 @@ public class Hydrograph extends BamItem implements IPredictionMaster {
             TimedActions.throttle(ID, AppSetup.CONFIG.THROTTLED_DELAY_MS, this::checkSync);
         });
 
-        RowColPanel parentItemPanel = new RowColPanel();
+        SimpleFlowPanel parentItemPanel = new SimpleFlowPanel();
 
-        parentItemPanel.appendChild(ratingCurveParent, 1);
-        parentItemPanel.appendChild(new SimpleSep(true), 0);
-        parentItemPanel.appendChild(limnigraphParent, 1);
-        parentItemPanel.appendChild(new SimpleSep(true), 0);
+        parentItemPanel.addChild(ratingCurveParent, true);
+        parentItemPanel.addChild(new SimpleSep(true), false);
+        parentItemPanel.addChild(limnigraphParent, true);
+        parentItemPanel.addChild(new SimpleSep(true), false);
 
-        RowColPanel content = new RowColPanel(RowColPanel.AXIS.COL);
+        SimpleFlowPanel content = new SimpleFlowPanel(true);
 
         plotPanel = new HydrographPlot();
         tablePanel = new HydrographTable();
@@ -104,16 +103,15 @@ public class Hydrograph extends BamItem implements IPredictionMaster {
         tabs.addTab("plot", TYPE.getIcon(), plotPanel);
         tabs.addTab("chart", AppSetup.ICONS.getCustomAppImageIcon("table.svg"), tablePanel);
 
-        outdatedPanel = new RowColPanel(AXIS.COL);
+        outdatedPanel = new SimpleFlowPanel(true);
         outdatedPanel.setPadding(2);
         outdatedPanel.setGap(2);
-        outdatedPanel.setColWeight(0, 1);
 
-        content.appendChild(parentItemPanel, 0);
-        content.appendChild(new SimpleSep(), 0);
-        content.appendChild(outdatedPanel, 0);
-        content.appendChild(runBam.runButton, 0, 5);
-        content.appendChild(tabs, 1);
+        content.addChild(parentItemPanel, false);
+        content.addChild(new SimpleSep(), false);
+        content.addChild(outdatedPanel, false);
+        content.addChild(runBam.runButton, 0, 5);
+        content.addChild(tabs, true);
         setContent(content);
 
         T.updateHierarchy(this, runBam);
@@ -149,11 +147,11 @@ public class Hydrograph extends BamItem implements IPredictionMaster {
 
         // --------------------------------------------------------------------
         // update message panel
-        outdatedPanel.clear();
+        outdatedPanel.removeAll();
 
         for (MsgPanel w : warnings) {
             if (w != null) {
-                outdatedPanel.appendChild(w);
+                outdatedPanel.addChild(w, false);
             }
         }
 

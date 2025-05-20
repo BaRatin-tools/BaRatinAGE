@@ -13,13 +13,13 @@ import javax.swing.event.ChangeListener;
 
 import org.baratinage.ui.component.CommonDialog;
 import org.baratinage.ui.container.GridPanel;
-import org.baratinage.ui.container.RowColPanel;
+import org.baratinage.ui.container.SimpleFlowPanel;
 import org.baratinage.utils.ConsoleLogger;
 import org.baratinage.utils.Misc;
 import org.baratinage.translation.T;
 import org.json.JSONObject;
 
-public class ControlMatrix extends RowColPanel implements ChangeListener {
+public class ControlMatrix extends SimpleFlowPanel implements ChangeListener {
 
     private final List<ControlMatrixColumn> controls;
     private final GridPanel controlCheckBoxPanel;
@@ -28,11 +28,11 @@ public class ControlMatrix extends RowColPanel implements ChangeListener {
     private final JCheckBox reversedOrderCheckBox;
 
     public ControlMatrix() {
-        super(AXIS.COL);
+        super(true);
 
         Misc.setMinimumSize(this, null, 250);
 
-        RowColPanel buttonsPanel = new RowColPanel(AXIS.COL, ALIGN.STRETCH);
+        SimpleFlowPanel buttonsPanel = new SimpleFlowPanel(true);
         buttonsPanel.setPadding(5);
         buttonsPanel.setGap(5);
 
@@ -41,21 +41,21 @@ public class ControlMatrix extends RowColPanel implements ChangeListener {
             addControl();
         });
 
-        buttonsPanel.appendChild(addControlButton);
+        buttonsPanel.addChild(addControlButton);
 
         removeControlButton = new JButton(" > Supprimer le dernier contrôle");
         removeControlButton.addActionListener((e) -> {
             removeControl();
         });
-        buttonsPanel.appendChild(removeControlButton);
+        buttonsPanel.addChild(removeControlButton);
 
         controlCheckBoxPanel = new GridPanel();
         controlCheckBoxPanel.setGap(5);
 
-        appendChild(buttonsPanel, 0);
+        addChild(buttonsPanel, false);
         JScrollPane controlGridScrollPane = new JScrollPane(controlCheckBoxPanel);
         controlGridScrollPane.setBorder(BorderFactory.createEmptyBorder());
-        appendChild(controlGridScrollPane, 1);
+        addChild(controlGridScrollPane, true);
 
         reversedOrderCheckBox = new JCheckBox(" > Inverser l'ordre des segments");
         // T.t(reversedOrderCheckBox, false, "invert_control_matrix");
@@ -63,7 +63,7 @@ public class ControlMatrix extends RowColPanel implements ChangeListener {
         reversedOrderCheckBox.addItemListener((e) -> {
             updateControlMatrixView();
         });
-        appendChild(reversedOrderCheckBox, 0);
+        addChild(reversedOrderCheckBox, false);
 
         controls = new ArrayList<>();
         ControlMatrixColumn cmc = new ControlMatrixColumn(1);

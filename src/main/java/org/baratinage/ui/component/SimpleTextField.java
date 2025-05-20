@@ -1,7 +1,6 @@
 package org.baratinage.ui.component;
 
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -229,12 +228,5 @@ public class SimpleTextField extends JTextField {
     public void setEnabled(boolean isEnabled) {
         super.setEnabled(isEnabled);
         updateBackgroundColor();
-    }
-
-    @Override
-    public Dimension getPreferredSize() {
-        Dimension dim = super.getPreferredSize();
-        dim.width = 0;
-        return dim;
     }
 }

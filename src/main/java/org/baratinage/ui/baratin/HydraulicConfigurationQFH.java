@@ -14,12 +14,10 @@ import org.baratinage.ui.bam.IPriors;
 import org.baratinage.ui.baratin.baratin_qfh.QFHModelDefinition;
 import org.baratinage.ui.baratin.baratin_qfh.QFHPriors;
 import org.baratinage.ui.baratin.hydraulic_configuration.PriorRatingCurve;
-import org.baratinage.ui.container.RowColPanel;
+import org.baratinage.ui.container.SimpleFlowPanel;
 import org.baratinage.ui.container.TitledPanel;
 import org.baratinage.ui.container.TitledPanelSplitTabContainer;
 import org.baratinage.utils.ConsoleLogger;
-import org.baratinage.ui.container.RowColPanel.ALIGN;
-import org.baratinage.ui.container.RowColPanel.AXIS;
 import org.json.JSONObject;
 
 public class HydraulicConfigurationQFH extends BamItem
@@ -34,7 +32,7 @@ public class HydraulicConfigurationQFH extends BamItem
 
     public final PriorRatingCurve<HydraulicConfigurationQFH> priorRatingCurve;
 
-    private final RowColPanel priorsPanel;
+    private final SimpleFlowPanel priorsPanel;
 
     private final QFHModelDefinition modelDefinition;
     private QFHPriors priors;
@@ -45,22 +43,20 @@ public class HydraulicConfigurationQFH extends BamItem
         modelDefinition = new QFHModelDefinition();
         priorRatingCurve = new PriorRatingCurve<>(this);
 
-        priorsPanel = new RowColPanel(AXIS.COL, ALIGN.STRETCH);
+        priorsPanel = new SimpleFlowPanel(true);
 
         modelDefinition.addChangeListener(l -> {
             fireChangeListeners();
             if (!modelDefinition.isModelDefinitionValid()) {
                 priors = null;
-                priorsPanel.clear();
-                priorsPanel.updateUI();
+                priorsPanel.removeAll();
                 priorRatingCurve.checkSync();
                 return;
             }
             if (!modelDefinition.priorsPanel.equals(priors)) {
                 priors = modelDefinition.priorsPanel;
-                priorsPanel.clear();
-                priorsPanel.appendChild(priors);
-                priorsPanel.updateUI();
+                priorsPanel.removeAll();
+                priorsPanel.addChild(priors, true);
             }
             priorRatingCurve.checkSync();
         });
@@ -79,7 +75,8 @@ public class HydraulicConfigurationQFH extends BamItem
                 .build2Left1Right(this,
                         eqTitledPanel,
                         priorRatingCurveTitledPanel,
-                        priorSpecificationTitledPanel);
+                        priorSpecificationTitledPanel,
+                        0.33f, 0.5f);
         mainContainer.setBreakpoints(1100, 800);
         setContent(mainContainer);
 

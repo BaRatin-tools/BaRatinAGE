@@ -8,9 +8,9 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import org.baratinage.translation.T;
-import org.baratinage.ui.container.RowColPanel;
+import org.baratinage.ui.container.SimpleFlowPanel;
 
-public class RatingCurvePlotToolsPanel extends RowColPanel {
+public class RatingCurvePlotToolsPanel extends SimpleFlowPanel {
 
     private boolean axisFliped = false;
     private boolean dischargeAxisInLog = false;
@@ -21,7 +21,7 @@ public class RatingCurvePlotToolsPanel extends RowColPanel {
     private final JCheckBox smoothTotalEnvelopCheckbox;
 
     public RatingCurvePlotToolsPanel() {
-        super(AXIS.ROW, ALIGN.START);
+        super();
 
         switchDischargeAxisScale = new JCheckBox();
         switchDischargeAxisScale.setSelected(false);
@@ -51,9 +51,9 @@ public class RatingCurvePlotToolsPanel extends RowColPanel {
         });
 
         setGap(5);
-        appendChild(switchDischargeAxisScale, 0);
-        appendChild(switchAxisCheckbox, 0);
-        appendChild(smoothTotalEnvelopCheckbox, 0);
+        addChild(switchDischargeAxisScale, false);
+        addChild(switchAxisCheckbox, false);
+        addChild(smoothTotalEnvelopCheckbox, false);
 
         T.t(this, switchAxisCheckbox, false, "swap_xy_axis");
         T.t(this, switchDischargeAxisScale, false, "log_scale_discharge_axis");
@@ -61,15 +61,15 @@ public class RatingCurvePlotToolsPanel extends RowColPanel {
     }
 
     public void configure(boolean logDischargeAxis, boolean axisFlipped, boolean totalEnvSmoothed) {
-        clear();
+        removeAll();
         if (logDischargeAxis) {
-            appendChild(switchDischargeAxisScale, 0);
+            addChild(switchDischargeAxisScale, false);
         }
         if (axisFlipped) {
-            appendChild(switchAxisCheckbox, 0);
+            addChild(switchAxisCheckbox, false);
         }
         if (totalEnvSmoothed) {
-            appendChild(smoothTotalEnvelopCheckbox, 0);
+            addChild(smoothTotalEnvelopCheckbox, false);
         }
     }
 

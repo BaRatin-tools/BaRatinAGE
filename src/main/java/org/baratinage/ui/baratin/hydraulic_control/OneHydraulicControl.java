@@ -28,7 +28,7 @@ import org.baratinage.ui.baratin.hydraulic_control.control_panel.ChannelTriangle
 import org.baratinage.ui.component.SimpleComboBox;
 import org.baratinage.ui.component.SimpleTextField;
 import org.baratinage.ui.container.GridPanel;
-import org.baratinage.ui.container.RowColPanel;
+import org.baratinage.ui.container.SimpleFlowPanel;
 import org.baratinage.translation.T;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -64,8 +64,9 @@ public class OneHydraulicControl extends JScrollPane {
                     "hc_parabola_channel.svg");
 
     public final int controlNumber;
-    private final RowColPanel physicalParametersPanel;
-    private final RowColPanel hydraulicControlPanel;
+    private final SimpleFlowPanel mainPanel;
+    private final SimpleFlowPanel physicalParametersPanel;
+    private final SimpleFlowPanel hydraulicControlPanel;
     private final JButton switchModeButton;
     private final SimpleComboBox controlTypeComboBox;
     private final KBAC kbacControlPanel;
@@ -95,7 +96,7 @@ public class OneHydraulicControl extends JScrollPane {
         super();
 
         setBorder(new EmptyBorder(0, 0, 0, 0));
-        RowColPanel mainPanel = new RowColPanel(RowColPanel.AXIS.COL, RowColPanel.ALIGN.START);
+        mainPanel = new SimpleFlowPanel(true);
         setViewportView(mainPanel);
 
         kbacControlPanel = new KBAC(kMode);
@@ -151,7 +152,7 @@ public class OneHydraulicControl extends JScrollPane {
 
         this.controlNumber = controlNumber;
 
-        physicalParametersPanel = new RowColPanel(RowColPanel.AXIS.COL);
+        physicalParametersPanel = new SimpleFlowPanel(true);
         physicalParametersPanel.setPadding(5);
 
         GridPanel physicalControlParametersLabelsPanel = new GridPanel();
@@ -177,7 +178,7 @@ public class OneHydraulicControl extends JScrollPane {
         physicalParLabel.setFont(f);
         controlParLabel.setFont(f);
 
-        hydraulicControlPanel = new RowColPanel(RowColPanel.AXIS.COL);
+        hydraulicControlPanel = new SimpleFlowPanel(true);
 
         controlTypeComboBox = new SimpleComboBox();
         controlTypeComboBox.setEmptyItem(null);
@@ -188,9 +189,9 @@ public class OneHydraulicControl extends JScrollPane {
         });
         setControlTypeCombobox();
 
-        physicalParametersPanel.appendChild(controlTypeComboBox);
-        physicalParametersPanel.appendChild(hydraulicControlPanel);
-        physicalParametersPanel.appendChild(physicalControlParametersLabelsPanel);
+        physicalParametersPanel.addChild(controlTypeComboBox, false);
+        physicalParametersPanel.addChild(hydraulicControlPanel, false);
+        physicalParametersPanel.addChild(physicalControlParametersLabelsPanel, false);
 
         switchModeButton = new JButton("Switch to BKAC");
         switchModeButton.addActionListener((e) -> {
@@ -217,19 +218,14 @@ public class OneHydraulicControl extends JScrollPane {
             }
         });
 
-        RowColPanel buttonsPanel = new RowColPanel();
-        buttonsPanel.setPadding(5);
-        buttonsPanel.appendChild(switchModeButton);
+        // SimpleFlowPanel buttonsPanel = new SimpleFlowPanel();
+        // buttonsPanel.setPadding(5);
+        // buttonsPanel.addChild(switchModeButton, true);
 
         descriptionField = new SimpleTextField();
         T.t(this, () -> {
             descriptionField.setPlaceholder(T.text("description"));
         });
-
-        mainPanel.appendChild(descriptionField, 0, 5, 5, 0, 5);
-        mainPanel.appendChild(physicalParametersPanel, 0);
-        mainPanel.appendChild(kbacControlPanel, 0);
-        mainPanel.appendChild(buttonsPanel, 0);
 
         controlTypeComboBox.setSelectedItem(0);
         updatePhysicalControl();
@@ -265,8 +261,8 @@ public class OneHydraulicControl extends JScrollPane {
 
     private void updatePhysicalControl() {
         if (currentPriorControlPanelIndex >= 0) {
-            hydraulicControlPanel.clear();
-            hydraulicControlPanel.appendChild(allControlOptions.get(currentPriorControlPanelIndex).panel);
+            hydraulicControlPanel.removeAll();
+            hydraulicControlPanel.addChild(allControlOptions.get(currentPriorControlPanelIndex).panel, false);
         }
         updateKACfromPhysicalControl();
         updateUI();
@@ -279,12 +275,15 @@ public class OneHydraulicControl extends JScrollPane {
 
     private void updateMode() {
         switchModeButton.setText(bkacMode ? toPhysicalModeText : toBKACmodeText);
-        physicalParametersPanel.setVisible(!bkacMode);
         kbacControlPanel.setGlobalLock(!bkacMode);
+
+        mainPanel.removeAll();
+        mainPanel.addChild(descriptionField, 0, 5);
         if (!bkacMode) {
-            updateKACfromPhysicalControl();
+            mainPanel.addChild(physicalParametersPanel, false);
         }
-        updateUI();
+        mainPanel.addChild(kbacControlPanel, false);
+        mainPanel.addChild(switchModeButton, false);
     }
 
     private final List<ChangeListener> changeListeners = new ArrayList<>();

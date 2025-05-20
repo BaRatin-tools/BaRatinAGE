@@ -21,7 +21,7 @@ import org.baratinage.ui.component.SimpleColorField;
 import org.baratinage.ui.component.SimpleComboBox;
 import org.baratinage.ui.component.SimpleSlider;
 import org.baratinage.ui.component.SimpleTextField;
-import org.baratinage.ui.container.RowColPanel;
+import org.baratinage.ui.container.SimpleFlowPanel;
 import org.baratinage.ui.plot.PlotItem.LineType;
 import org.baratinage.ui.plot.PlotItem.ShapeType;
 import org.baratinage.utils.ConsoleLogger;
@@ -176,8 +176,8 @@ public class EditablePlotItem implements IPlotItemRendererSettings {
      * @return
      */
 
-    public RowColPanel getEditionPanel() {
-        RowColPanel editionPanel = new RowColPanel(RowColPanel.AXIS.COL);
+    public SimpleFlowPanel getEditionPanel() {
+        SimpleFlowPanel editionPanel = new SimpleFlowPanel(true);
         editionPanel.setPadding(0, 0, 5, 0);
 
         JLabel labelFieldLabel = new JLabel();
@@ -191,8 +191,8 @@ public class EditablePlotItem implements IPlotItemRendererSettings {
             fireChangeListeners();
         });
 
-        editionPanel.appendChild(labelFieldLabel);
-        editionPanel.appendChild(labelField);
+        editionPanel.addChild(labelFieldLabel, false);
+        editionPanel.addChild(labelField, false);
 
         if (type == TYPE.LINE) {
             JLabel linePaintFieldLabel = new JLabel();
@@ -205,8 +205,8 @@ public class EditablePlotItem implements IPlotItemRendererSettings {
                 fireChangeListeners();
             });
 
-            editionPanel.appendChild(linePaintFieldLabel);
-            editionPanel.appendChild(linePaintChooser);
+            editionPanel.addChild(linePaintFieldLabel, false);
+            editionPanel.addChild(linePaintChooser, false);
 
             JLabel lineWidthLabel = new JLabel();
             lineWidthLabel.setText(T.text("line_width"));
@@ -218,8 +218,8 @@ public class EditablePlotItem implements IPlotItemRendererSettings {
                 fireChangeListeners();
             });
 
-            editionPanel.appendChild(lineWidthLabel);
-            editionPanel.appendChild(lineWidthSlider);
+            editionPanel.addChild(lineWidthLabel, false);
+            editionPanel.addChild(lineWidthSlider, false);
 
             JLabel lineDashFieldLabel = new JLabel();
             lineDashFieldLabel.setText(T.text("line_type"));
@@ -262,8 +262,8 @@ public class EditablePlotItem implements IPlotItemRendererSettings {
                 fireChangeListeners();
             });
 
-            editionPanel.appendChild(lineDashFieldLabel);
-            editionPanel.appendChild(lineDashCombobox);
+            editionPanel.addChild(lineDashFieldLabel, false);
+            editionPanel.addChild(lineDashCombobox, false);
 
         } else if (type == TYPE.BAND) {
             JLabel fillPaintFieldLabel = new JLabel();
@@ -276,8 +276,8 @@ public class EditablePlotItem implements IPlotItemRendererSettings {
                 fireChangeListeners();
             });
 
-            editionPanel.appendChild(fillPaintFieldLabel);
-            editionPanel.appendChild(fillPaintChooser);
+            editionPanel.addChild(fillPaintFieldLabel, false);
+            editionPanel.addChild(fillPaintChooser, false);
 
             JLabel fillAlphaLabel = new JLabel();
             fillAlphaLabel.setText(T.text("fill_alpha"));
@@ -289,12 +289,12 @@ public class EditablePlotItem implements IPlotItemRendererSettings {
                 fireChangeListeners();
             });
 
-            editionPanel.appendChild(fillAlphaLabel);
-            editionPanel.appendChild(fillAlphaSlider);
+            editionPanel.addChild(fillAlphaLabel, false);
+            editionPanel.addChild(fillAlphaSlider, false);
 
         } else {
             JLabel nothingLabel = new JLabel("<NOT IMPLEMENTED>");
-            editionPanel.appendChild(nothingLabel);
+            editionPanel.addChild(nothingLabel, false);
         }
 
         return editionPanel;

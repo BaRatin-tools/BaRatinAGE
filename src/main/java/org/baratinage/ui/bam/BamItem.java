@@ -2,12 +2,12 @@ package org.baratinage.ui.bam;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.awt.Component;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 
 import javax.swing.AbstractButton;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JOptionPane;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -18,10 +18,9 @@ import org.baratinage.ui.commons.ExplorerItem;
 import org.baratinage.ui.component.SimpleTextField;
 import org.baratinage.ui.component.SimpleSep;
 import org.baratinage.ui.component.Title;
-import org.baratinage.ui.container.GridPanel;
-import org.baratinage.ui.container.RowColPanel;
+import org.baratinage.ui.container.SimpleFlowPanel;
 
-abstract public class BamItem extends GridPanel {
+abstract public class BamItem extends SimpleFlowPanel {
 
     public final BamItemType TYPE;
     public final String ID;
@@ -34,10 +33,11 @@ abstract public class BamItem extends GridPanel {
     public final JButton cloneButton;
     public final JButton deleteButton;
 
-    private GridPanel headerPanel;
-    private RowColPanel contentPanel;
+    private SimpleFlowPanel headerPanel;
+    private SimpleFlowPanel contentPanel;
 
     public BamItem(BamItemType type, String uuid, BamProject project) {
+        super(true);
         TYPE = type;
         ID = uuid;
         PROJECT = project;
@@ -49,26 +49,21 @@ abstract public class BamItem extends GridPanel {
         cloneButton = getCloneBamItemBtn(new JButton(), true, true);
         deleteButton = getDeleteBamItemBtn(new JButton(), false, true);
 
-        headerPanel = new GridPanel();
+        headerPanel = new SimpleFlowPanel();
         headerPanel.setGap(5);
         headerPanel.setPadding(5);
-        headerPanel.setColWeight(1, 1);
-        headerPanel.setColWeight(2, 5);
 
-        headerPanel.insertChild(bamItemTypeLabel, 0, 0);
-        headerPanel.insertChild(bamItemNameField, 1, 0);
-        headerPanel.insertChild(bamItemDescriptionField, 2, 0);
-        headerPanel.insertChild(cloneButton, 3, 0);
-        headerPanel.insertChild(deleteButton, 4, 0);
+        headerPanel.addChild(bamItemTypeLabel, false);
+        headerPanel.addChild(bamItemNameField, 1);
+        headerPanel.addChild(bamItemDescriptionField, 3);
+        headerPanel.addChild(cloneButton, false);
+        headerPanel.addChild(deleteButton, false);
 
-        contentPanel = new RowColPanel();
+        contentPanel = new SimpleFlowPanel();
 
-        insertChild(headerPanel, 0, 0);
-        insertChild(new SimpleSep(), 0, 1);
-        insertChild(contentPanel, 0, 2);
-
-        setColWeight(0, 1);
-        setRowWeight(2, 1);
+        addChild(headerPanel, false);
+        addChild(new SimpleSep(), false);
+        addChild(contentPanel, true);
 
         bamItemNameField.addChangeListener((e) -> {
             String newName = bamItemNameField.getText();
@@ -100,9 +95,9 @@ abstract public class BamItem extends GridPanel {
         });
     }
 
-    public void setContent(Component component) {
-        this.contentPanel.clear();
-        this.contentPanel.appendChild(component);
+    public void setContent(JComponent component) {
+        this.contentPanel.removeAll();
+        this.contentPanel.addChild(component, true);
     }
 
     public abstract BamConfig save(boolean writeFiles);

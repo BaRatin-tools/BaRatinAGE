@@ -8,10 +8,10 @@ import javax.swing.JSlider;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import org.baratinage.ui.container.RowColPanel;
+import org.baratinage.ui.container.SimpleFlowPanel;
 import org.baratinage.utils.Misc;
 
-public class SimpleSlider extends RowColPanel {
+public class SimpleSlider extends SimpleFlowPanel {
 
     private double min;
     private double step;
@@ -28,8 +28,8 @@ public class SimpleSlider extends RowColPanel {
         slider = new JSlider(1, n);
         valueLabel = new JLabel();
 
-        appendChild(slider, 1);
-        appendChild(valueLabel, 0);
+        addChild(slider, true);
+        addChild(valueLabel, false);
 
         slider.addChangeListener(l -> {
             if (!slider.getValueIsAdjusting()) {

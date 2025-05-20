@@ -8,7 +8,7 @@ import java.util.List;
 import org.baratinage.AppSetup;
 import org.baratinage.ui.bam.EstimatedParameterWrapper;
 import org.baratinage.ui.container.GridPanel;
-import org.baratinage.ui.container.RowColPanel;
+import org.baratinage.ui.container.SimpleFlowPanel;
 import org.baratinage.ui.plot.Legend;
 import org.baratinage.ui.plot.FixedTextAnnotation;
 import org.baratinage.ui.plot.Plot;
@@ -20,7 +20,7 @@ import org.baratinage.ui.plot.PlotLine;
 import org.baratinage.utils.Calc;
 import org.baratinage.translation.T;
 
-public class DensityPlotGrid extends RowColPanel {
+public class DensityPlotGrid extends SimpleFlowPanel {
 
     private final List<EstimatedParameterWrapper> estimatedParameters = new ArrayList<>();
 
@@ -41,8 +41,8 @@ public class DensityPlotGrid extends RowColPanel {
         // since Java 18: int Math.ceilDiv(int, int) could be used
         int nRow = (int) Math.ceil(((double) nPlots) / ((double) nCol));
 
-        clear();
-        appendChild(gridPanel, 1);
+        removeAll();
+        addChild(gridPanel, true);
 
         for (int k = 0; k < nCol; k++) {
             gridPanel.setColWeight(k, 1);

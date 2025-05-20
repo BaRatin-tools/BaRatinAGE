@@ -14,12 +14,12 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import org.baratinage.ui.container.GridPanel;
-import org.baratinage.ui.container.RowColPanel;
+import org.baratinage.ui.container.SimpleFlowPanel;
 import org.baratinage.translation.T;
 import org.baratinage.utils.ConsoleLogger;
 import org.baratinage.utils.fs.ReadFile;
 
-public class DataFileReader extends RowColPanel {
+public class DataFileReader extends SimpleFlowPanel {
     public File file = null;
     public String filePath = null;
     public String sep = ";";
@@ -33,7 +33,7 @@ public class DataFileReader extends RowColPanel {
     private String[] fileLines;
 
     public DataFileReader(CommonDialog.CustomFileFilter... fileFilters) {
-        super(AXIS.COL);
+        super(true);
 
         // **********************************************************
         // file selection section
@@ -88,12 +88,12 @@ public class DataFileReader extends RowColPanel {
 
         sepRatioButtons.setSelected("semicolon");
 
-        RowColPanel sepOptionButtons = new RowColPanel(AXIS.ROW, ALIGN.START);
+        SimpleFlowPanel sepOptionButtons = new SimpleFlowPanel();
         sepOptionButtons.setGap(5);
-        sepOptionButtons.appendChild(tabOptBtn);
-        sepOptionButtons.appendChild(semicolOptBtn);
-        sepOptionButtons.appendChild(commaOptBtn);
-        sepOptionButtons.appendChild(spaceOptBtn);
+        sepOptionButtons.addChild(tabOptBtn, false);
+        sepOptionButtons.addChild(semicolOptBtn, false);
+        sepOptionButtons.addChild(commaOptBtn, false);
+        sepOptionButtons.addChild(spaceOptBtn, false);
 
         JCheckBox hasHeaderCheckBox = new JCheckBox("has_header_row");
         hasHeaderCheckBox.setSelected(hasHeaderRow);
@@ -147,9 +147,9 @@ public class DataFileReader extends RowColPanel {
         // **********************************************************
         // final panel
 
-        appendChild(importFilePanel, 0);
-        appendChild(new SimpleSep(), 0);
-        appendChild(importSettingsPanel, 0);
+        addChild(importFilePanel, false);
+        addChild(new SimpleSep(), false);
+        addChild(importSettingsPanel, true);
 
         T.t(this, explainLabel, false, "select_file_to_import");
         T.t(this, browseFileSystemButon, false, "browse");

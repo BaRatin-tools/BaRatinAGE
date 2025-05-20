@@ -27,23 +27,23 @@ import javax.swing.table.TableColumn;
 
 import org.baratinage.AppSetup;
 import org.baratinage.translation.T;
-import org.baratinage.ui.container.RowColPanel;
+import org.baratinage.ui.container.SimpleFlowPanel;
 import org.baratinage.utils.ConsoleLogger;
 import org.baratinage.utils.Misc;
 
-public class DataTable extends RowColPanel {
+public class DataTable extends SimpleFlowPanel {
 
     // should create a specific action to export using specific formats
     // (e.g. bareme rating curve format)
-    public final RowColPanel actionPanel;
-    public final RowColPanel toolsPanel;
+    public final SimpleFlowPanel actionPanel;
+    public final SimpleFlowPanel toolsPanel;
 
     private final CustomTableModel model;
     private final JTable table;
     private CustomCellRenderer cellRenderer;
 
     public DataTable() {
-        super(AXIS.COL);
+        super(true);
         setPadding(5);
         setGap(5);
 
@@ -65,9 +65,8 @@ public class DataTable extends RowColPanel {
 
         JScrollPane scrollpane = new JScrollPane(table);
 
-        actionPanel = new RowColPanel();
+        actionPanel = new SimpleFlowPanel();
         actionPanel.setGap(5);
-        actionPanel.setMainAxisAlign(ALIGN.START);
         JButton exportButton = new JButton();
         exportButton.addActionListener((e) -> {
             saveAsCSV();
@@ -77,7 +76,7 @@ public class DataTable extends RowColPanel {
         T.t(this, () -> {
             exportButton.setToolTipText(T.text("to_csv"));
         });
-        actionPanel.appendChild(exportButton);
+        actionPanel.addChild(exportButton, false);
         JButton copyToClipboardButton = new JButton();
         copyToClipboardButton.addActionListener((e) -> {
             copyToCliboard();
@@ -86,11 +85,10 @@ public class DataTable extends RowColPanel {
         T.t(this, () -> {
             copyToClipboardButton.setToolTipText(T.text("to_clipboard"));
         });
-        actionPanel.appendChild(copyToClipboardButton);
+        actionPanel.addChild(copyToClipboardButton, 0);
 
-        toolsPanel = new RowColPanel();
+        toolsPanel = new SimpleFlowPanel();
         toolsPanel.setGap(5);
-        toolsPanel.setMainAxisAlign(ALIGN.START);
 
         SimpleCheckbox displayFullPrecision = new SimpleCheckbox();
         T.t(this, () -> {
@@ -102,16 +100,16 @@ public class DataTable extends RowColPanel {
                     cellRenderer.losslessDoubles = displayFullPrecision.isSelected();
                     repaint();
                 });
-        toolsPanel.appendChild(displayFullPrecision);
+        toolsPanel.addChild(displayFullPrecision, false);
 
         Dimension defaultPrefDim = scrollpane.getPreferredSize();
         defaultPrefDim.height = 300;
         defaultPrefDim.width = 300;
         scrollpane.setPreferredSize(defaultPrefDim);
 
-        appendChild(actionPanel, 0);
-        appendChild(scrollpane, 1);
-        appendChild(toolsPanel, 0);
+        addChild(actionPanel, false);
+        addChild(scrollpane, true);
+        addChild(toolsPanel, false);
 
     }
 

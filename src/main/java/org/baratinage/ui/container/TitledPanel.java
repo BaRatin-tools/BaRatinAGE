@@ -8,7 +8,7 @@ import org.baratinage.ui.component.Title;
 public class TitledPanel {
 
     private JComponent content;
-    private RowColPanel panel;
+    private SimpleFlowPanel panel;
     private Title title;
     private String titleText;
     private Icon titleIcon;
@@ -16,7 +16,7 @@ public class TitledPanel {
     public TitledPanel(JComponent content) {
         this.content = content;
         title = new Title();
-        panel = new RowColPanel(RowColPanel.AXIS.COL);
+        panel = new SimpleFlowPanel(true);
     }
 
     public void setText(String text) {
@@ -33,9 +33,9 @@ public class TitledPanel {
         return title;
     }
 
-    public RowColPanel getTitledPanel() {
-        panel.appendChild(title, 0);
-        panel.appendChild(content, 1);
+    public SimpleFlowPanel getTitledPanel() {
+        panel.addChild(title, false);
+        panel.addChild(content, true);
         return panel;
     }
 

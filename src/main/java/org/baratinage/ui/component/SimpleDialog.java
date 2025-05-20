@@ -11,27 +11,27 @@ import javax.swing.JDialog;
 
 import org.baratinage.AppSetup;
 import org.baratinage.translation.T;
-import org.baratinage.ui.container.RowColPanel;
+import org.baratinage.ui.container.SimpleFlowPanel;
 
 public class SimpleDialog {
 
     private final JDialog dialog;
-    private final RowColPanel header;
-    private final RowColPanel content;
-    private final RowColPanel footer;
+    private final SimpleFlowPanel header;
+    private final SimpleFlowPanel content;
+    private final SimpleFlowPanel footer;
 
     public SimpleDialog(boolean modal) {
         dialog = new JDialog(AppSetup.MAIN_FRAME, modal);
-        header = new RowColPanel();
-        content = new RowColPanel();
-        footer = new RowColPanel();
+        header = new SimpleFlowPanel();
+        content = new SimpleFlowPanel();
+        footer = new SimpleFlowPanel();
 
-        RowColPanel panel = new RowColPanel(RowColPanel.AXIS.COL);
+        SimpleFlowPanel panel = new SimpleFlowPanel(true);
         panel.setGap(5);
         panel.setPadding(5);
-        panel.appendChild(header, 0);
-        panel.appendChild(content, 1);
-        panel.appendChild(footer, 0);
+        panel.addChild(header, false);
+        panel.addChild(content, true);
+        panel.addChild(footer, false);
 
         dialog.setContentPane(panel);
     }
@@ -52,18 +52,18 @@ public class SimpleDialog {
     }
 
     public void setContent(JComponent newContent) {
-        content.clear();
-        content.appendChild(newContent, 1);
+        content.removeAll();
+        content.addChild(newContent, true);
     }
 
     public void setHeader(JComponent newHeader) {
-        header.clear();
-        header.appendChild(newHeader, 1);
+        header.removeAll();
+        header.addChild(newHeader, true);
     }
 
     public void setFooter(JComponent newFooter) {
-        footer.clear();
-        footer.appendChild(newFooter, 1);
+        footer.removeAll();
+        footer.addChild(newFooter, true);
     }
 
     public void openDialog() {
@@ -88,7 +88,7 @@ public class SimpleDialog {
 
         dialog.setContent(content);
 
-        RowColPanel actionsPanel = new RowColPanel();
+        SimpleFlowPanel actionsPanel = new SimpleFlowPanel();
         actionsPanel.setGap(5);
         JButton cancelButton = new JButton();
         cancelButton.setText(T.text("cancel"));
@@ -102,8 +102,8 @@ public class SimpleDialog {
             onOk.actionPerformed(l);
             dialog.closeDialog();
         });
-        actionsPanel.appendChild(okButton, 1);
-        actionsPanel.appendChild(cancelButton, 0);
+        actionsPanel.addChild(okButton, true);
+        actionsPanel.addChild(cancelButton, false);
 
         dialog.setFooter(actionsPanel);
 

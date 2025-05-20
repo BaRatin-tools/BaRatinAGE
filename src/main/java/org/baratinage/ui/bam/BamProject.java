@@ -14,7 +14,7 @@ import org.baratinage.AppSetup;
 import org.baratinage.translation.T;
 import org.baratinage.ui.commons.Explorer;
 import org.baratinage.ui.commons.ExplorerItem;
-import org.baratinage.ui.container.RowColPanel;
+import org.baratinage.ui.container.SimpleFlowPanel;
 import org.baratinage.ui.container.SplitContainer;
 import org.baratinage.utils.ConsoleLogger;
 import org.baratinage.utils.Misc;
@@ -26,7 +26,7 @@ import org.baratinage.utils.json.JSONFilter;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-public abstract class BamProject extends RowColPanel {
+public abstract class BamProject extends SimpleFlowPanel {
 
     public final String ID;
     public final BamProjectType PROJECT_TYPE;
@@ -37,13 +37,13 @@ public abstract class BamProject extends RowColPanel {
     private String projectPath = null;
 
     protected final SplitContainer content;
-    protected final RowColPanel currentPanel;
+    protected final SimpleFlowPanel currentPanel;
 
     private BamConfig lastSavedConfig;
     private boolean unsavedChanges = false;
 
     public BamProject(BamProjectType projectType) {
-        super(AXIS.COL);
+        super(true);
 
         // main instance public object
         ID = Misc.getTimeStampedId();
@@ -56,12 +56,12 @@ public abstract class BamProject extends RowColPanel {
         setupExplorer();
 
         // inialialize current panel, place holder for bam item panels
-        currentPanel = new RowColPanel(AXIS.COL);
+        currentPanel = new SimpleFlowPanel(true);
         currentPanel.setGap(5);
 
         // final layout
         content = new SplitContainer(EXPLORER, currentPanel, true);
-        appendChild(content, 1);
+        addChild(content, true);
         content.setLeftComponent(EXPLORER);
         content.setRightComponent(currentPanel);
         content.setResizeWeight(0);
@@ -102,11 +102,11 @@ public abstract class BamProject extends RowColPanel {
             if (explorerItem != null) {
                 BamItem bamItem = getBamItem(explorerItem.id);
                 if (bamItem != null) {
-                    currentPanel.clear();
-                    currentPanel.appendChild(bamItem, 1);
+                    currentPanel.removeAll();
+                    currentPanel.addChild(bamItem, true);
                 } else {
                     ConsoleLogger.log("selected BamItem is null");
-                    currentPanel.clear();
+                    currentPanel.removeAll();
                 }
                 updateUI();
             }

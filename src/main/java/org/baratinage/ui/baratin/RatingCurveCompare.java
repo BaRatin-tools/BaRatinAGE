@@ -18,7 +18,7 @@ import org.baratinage.ui.component.SimpleCheckbox;
 import org.baratinage.ui.component.SimpleList;
 import org.baratinage.ui.component.SimpleSep;
 import org.baratinage.ui.component.SimpleTextField;
-import org.baratinage.ui.container.RowColPanel;
+import org.baratinage.ui.container.SimpleFlowPanel;
 import org.baratinage.ui.container.SplitContainer;
 import org.baratinage.ui.plot.EditablePlotItem;
 import org.baratinage.ui.plot.Legend;
@@ -83,7 +83,7 @@ public class RatingCurveCompare extends BamItem {
         T.t(this, rcOneLabel, false, "rc_n", 1);
         JLabel rcTwoLabel = new JLabel();
         T.t(this, rcTwoLabel, false, "rc_n", 2);
-        RowColPanel rcChooserPanel = new RowColPanel(RowColPanel.AXIS.COL);
+        SimpleFlowPanel rcChooserPanel = new SimpleFlowPanel(true);
 
         rcOne = new BamItemParent(this,
                 BamItemType.RATING_CURVE,
@@ -103,24 +103,24 @@ public class RatingCurveCompare extends BamItem {
         rcTwoNameLabel = new SimpleTextField();
 
         rcChooserPanel.setGap(5);
-        rcChooserPanel.appendChild(rcOneLabel);
-        rcChooserPanel.appendChild(rcOne.cb);
-        rcChooserPanel.appendChild(rcOneNameLabel);
-        rcChooserPanel.appendChild(rcTwoLabel);
-        rcChooserPanel.appendChild(rcTwo.cb);
-        rcChooserPanel.appendChild(rcTwoNameLabel);
+        rcChooserPanel.addChild(rcOneLabel, false);
+        rcChooserPanel.addChild(rcOne.cb, false);
+        rcChooserPanel.addChild(rcOneNameLabel, false);
+        rcChooserPanel.addChild(rcTwoLabel, false);
+        rcChooserPanel.addChild(rcTwo.cb, false);
+        rcChooserPanel.addChild(rcTwoNameLabel, false);
 
         // plot items management
-        RowColPanel plotItemManagementPanel = new RowColPanel();
+        SimpleFlowPanel plotItemManagementPanel = new SimpleFlowPanel();
         episList = new SimpleList<>();
-        plotItemManagementPanel.appendChild(episList);
+        plotItemManagementPanel.addChild(episList);
         Misc.setMinimumSize(episList, 300, null);
 
         // plot item edition
-        RowColPanel plotItemEditionPanel = new RowColPanel(RowColPanel.AXIS.COL);
+        SimpleFlowPanel plotItemEditionPanel = new SimpleFlowPanel(true);
 
         // plot configuration
-        RowColPanel plotConfigPanel = new RowColPanel();
+        SimpleFlowPanel plotConfigPanel = new SimpleFlowPanel();
         plotConfigPanel.setGap(5);
         plotConfigPanel.setPadding(5);
 
@@ -131,11 +131,11 @@ public class RatingCurveCompare extends BamItem {
         xAxisLabelField.addChangeListener(l -> {
             resetPlot();
         });
-        RowColPanel xAxisConfigPanel = new RowColPanel();
+        SimpleFlowPanel xAxisConfigPanel = new SimpleFlowPanel();
         xAxisConfigPanel.setGap(5);
-        xAxisConfigPanel.appendChild(xAxisLabel, 0);
-        xAxisConfigPanel.appendChild(xAxisLabelField, 1);
-        plotConfigPanel.appendChild(xAxisConfigPanel, 1);
+        xAxisConfigPanel.addChild(xAxisLabel, false);
+        xAxisConfigPanel.addChild(xAxisLabelField, true);
+        plotConfigPanel.addChild(xAxisConfigPanel, true);
 
         JLabel yAxisLabel = new JLabel();
         T.t(this, yAxisLabel, false, "stage_label");
@@ -144,35 +144,39 @@ public class RatingCurveCompare extends BamItem {
         yAxisLabelField.addChangeListener(l -> {
             resetPlot();
         });
-        RowColPanel yAxisConfigPanel = new RowColPanel();
+        SimpleFlowPanel yAxisConfigPanel = new SimpleFlowPanel();
         yAxisConfigPanel.setGap(5);
-        yAxisConfigPanel.appendChild(yAxisLabel, 0);
-        yAxisConfigPanel.appendChild(yAxisLabelField, 1);
-        plotConfigPanel.appendChild(yAxisConfigPanel, 1);
+        yAxisConfigPanel.addChild(yAxisLabel, false);
+        yAxisConfigPanel.addChild(yAxisLabelField, true);
+        plotConfigPanel.addChild(yAxisConfigPanel, true);
 
         // main plot
         plotContainer = new PlotContainer(true);
         plotToolsPanel = new RatingCurvePlotToolsPanel();
         plotToolsPanel.configure(true, true, true);
 
-        RowColPanel plotArea = new RowColPanel(RowColPanel.AXIS.COL);
+        SimpleFlowPanel plotArea = new SimpleFlowPanel(true);
         plotArea.setGap(5);
         plotArea.setPadding(5);
-        plotArea.appendChild(plotContainer, 1);
-        plotArea.appendChild(plotToolsPanel, 0);
-        plotArea.appendChild(plotConfigPanel, 0);
+        plotArea.addChild(plotContainer, true);
+        plotArea.addChild(plotToolsPanel, false);
+        plotArea.addChild(plotConfigPanel, false);
 
         // final layout
 
-        RowColPanel plotItemsConfigPanel = new RowColPanel(RowColPanel.AXIS.COL);
+        SimpleFlowPanel plotItemsConfigPanel = new SimpleFlowPanel(true);
         plotItemsConfigPanel.setGap(10);
         plotItemsConfigPanel.setPadding(5);
-        plotItemsConfigPanel.appendChild(rcChooserPanel, 0);
-        plotItemsConfigPanel.appendChild(new SimpleSep(), 0);
-        plotItemsConfigPanel.appendChild(plotItemManagementPanel, 1);
-        plotItemsConfigPanel.appendChild(plotItemEditionPanel, 0);
+        plotItemsConfigPanel.addChild(rcChooserPanel, false);
+        plotItemsConfigPanel.addChild(new SimpleSep(), false);
+        plotItemsConfigPanel.addChild(plotItemManagementPanel, true);
+        plotItemsConfigPanel.addChild(plotItemEditionPanel, false);
 
-        SplitContainer mainContainer = new SplitContainer(plotItemsConfigPanel, plotArea, true);
+        SplitContainer mainContainer = new SplitContainer(
+                plotItemsConfigPanel,
+                plotArea,
+                true,
+                0.3f);
         setContent(mainContainer);
 
         // behavior
@@ -233,7 +237,8 @@ public class RatingCurveCompare extends BamItem {
         });
 
         episList.addSelectionChangeListeners(l -> {
-            plotItemEditionPanel.clear();
+            plotItemEditionPanel.removeAll();
+            plotItemEditionPanel.revalidate();
             List<EPI> epis = episList.getSelectedObjects();
             if (epis.size() == 0) {
                 return;
@@ -265,8 +270,8 @@ public class RatingCurveCompare extends BamItem {
                 });
                 showPlotItemLegend.setSelected(ePltItemList.stream().allMatch(i -> i.showLegend));
 
-                plotItemEditionPanel.appendChild(showPlotItem);
-                plotItemEditionPanel.appendChild(showPlotItemLegend);
+                plotItemEditionPanel.addChild(showPlotItem, false);
+                plotItemEditionPanel.addChild(showPlotItemLegend, false);
 
             } else {
                 showPlotItem.addChangeListener(l2 -> {
@@ -279,12 +284,12 @@ public class RatingCurveCompare extends BamItem {
                     resetPlot();
                 });
                 showPlotItemLegend.setSelected(e.showLegend);
-                plotItemEditionPanel.appendChild(showPlotItem);
-                plotItemEditionPanel.appendChild(showPlotItemLegend);
-                RowColPanel ePanel = e.getEditionPanel();
+                plotItemEditionPanel.addChild(showPlotItem, false);
+                plotItemEditionPanel.addChild(showPlotItemLegend, false);
+                SimpleFlowPanel ePanel = e.getEditionPanel();
                 ePanel.setGap(5);
                 ePanel.setPadding(5, 0, 5, 0);
-                plotItemEditionPanel.appendChild(ePanel);
+                plotItemEditionPanel.addChild(ePanel, false);
 
             }
         });

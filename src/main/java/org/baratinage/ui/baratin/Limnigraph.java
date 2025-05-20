@@ -18,7 +18,7 @@ import org.baratinage.ui.baratin.limnigraph.LimnigraphErrors;
 import org.baratinage.ui.baratin.limnigraph.LimnigraphImporter;
 import org.baratinage.ui.baratin.limnigraph.LimnigraphTable;
 import org.baratinage.ui.commons.DatasetConfig;
-import org.baratinage.ui.container.RowColPanel;
+import org.baratinage.ui.container.SimpleFlowPanel;
 import org.baratinage.ui.container.SplitContainer;
 import org.baratinage.ui.container.TabContainer;
 import org.baratinage.translation.T;
@@ -41,7 +41,7 @@ public class Limnigraph extends BamItem {
     private LimnigraphDataset limniDataset;
     private JLabel importedDataSetSourceLabel;
 
-    private RowColPanel plotPanel;
+    private SimpleFlowPanel plotPanel;
 
     private LimnigraphImporter limniImporter;
 
@@ -65,7 +65,7 @@ public class Limnigraph extends BamItem {
             fireChangeListeners();
         });
 
-        plotPanel = new RowColPanel();
+        plotPanel = new SimpleFlowPanel();
 
         limniTable = new LimnigraphTable();
         limniTable.setPadding(0);
@@ -74,13 +74,13 @@ public class Limnigraph extends BamItem {
 
         // laying out panel
 
-        RowColPanel importLimnigraphPanel = new RowColPanel(RowColPanel.AXIS.COL);
+        SimpleFlowPanel importLimnigraphPanel = new SimpleFlowPanel(true);
         importLimnigraphPanel.setPadding(5);
         importLimnigraphPanel.setGap(5);
 
-        importLimnigraphPanel.appendChild(importDataButton, 0);
-        importLimnigraphPanel.appendChild(importedDataSetSourceLabel, 0);
-        importLimnigraphPanel.appendChild(limniTable, 1);
+        importLimnigraphPanel.addChild(importDataButton, false);
+        importLimnigraphPanel.addChild(importedDataSetSourceLabel, false);
+        importLimnigraphPanel.addChild(limniTable, true);
 
         TabContainer limniTablesAndPlots = new TabContainer();
 
@@ -90,7 +90,7 @@ public class Limnigraph extends BamItem {
         SplitContainer content = new SplitContainer(
                 importLimnigraphPanel,
                 limniTablesAndPlots,
-                true);
+                true, 0.2f);
         content.setBorder(BorderFactory.createEmptyBorder());
 
         setContent(content);
@@ -166,8 +166,8 @@ public class Limnigraph extends BamItem {
         PlotContainer plotContainer = new PlotContainer(plot);
         T.updateHierarchy(this, plotContainer);
 
-        plotPanel.clear();
-        plotPanel.appendChild(plotContainer);
+        plotPanel.removeAll();
+        plotPanel.addChild(plotContainer, true);
     }
 
     public PredictionInput getErrorFreePredictionInput() {

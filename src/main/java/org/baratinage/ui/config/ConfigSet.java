@@ -16,7 +16,7 @@ import javax.swing.JScrollPane;
 import org.baratinage.AppSetup;
 import org.baratinage.translation.T;
 import org.baratinage.ui.container.GridPanel;
-import org.baratinage.ui.container.RowColPanel;
+import org.baratinage.ui.container.SimpleFlowPanel;
 import org.baratinage.ui.container.TitledPanel;
 import org.baratinage.utils.ConsoleLogger;
 import org.baratinage.utils.fs.ReadFile;
@@ -122,7 +122,7 @@ public class ConfigSet {
 
         String stringBackup = saveToString();
 
-        RowColPanel panel = new RowColPanel(RowColPanel.AXIS.COL);
+        SimpleFlowPanel panel = new SimpleFlowPanel(true);
         panel.setGap(5);
         panel.setPadding(5);
 
@@ -133,12 +133,12 @@ public class ConfigSet {
                 ICON_SIZE,
                 HIDE_BAM_CONSOLE,
                 CLOSE_BAM_DIALOG_ON_SUCCESS);
-        panel.appendChild(p.getContent(), 1);
+        panel.addChild(p.getContent(), true);
 
         JLabel requireRestartLabel = new JLabel("* " + T.text("require_restart"));
-        panel.appendChild(requireRestartLabel, 0);
+        panel.addChild(requireRestartLabel, 0);
 
-        RowColPanel actionsPanel = new RowColPanel();
+        SimpleFlowPanel actionsPanel = new SimpleFlowPanel();
         actionsPanel.setGap(5);
         JButton cancelButton = new JButton();
         cancelButton.setText(T.text("cancel"));
@@ -153,9 +153,10 @@ public class ConfigSet {
             T.setLocale();
             dialog.dispose();
         });
-        actionsPanel.appendChild(saveButton);
-        actionsPanel.appendChild(cancelButton);
-        panel.appendChild(actionsPanel, 0);
+        actionsPanel.addChild(saveButton, false);
+        actionsPanel.addExtensor();
+        actionsPanel.addChild(cancelButton, false);
+        panel.addChild(actionsPanel, false);
 
         dialog.setContentPane(panel);
 
