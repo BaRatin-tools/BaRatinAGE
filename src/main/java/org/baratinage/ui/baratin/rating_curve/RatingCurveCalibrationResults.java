@@ -165,8 +165,8 @@ public class RatingCurveCalibrationResults extends CalibrationResultsWrapper {
             for (int j = 0; j <= i; j++) { // for each possibly active control
                 if (controlMatrix[i][j]) {
                     Double a = allParameters.get(j * 4 + 1).parameter.getMaxpost();
-                    Double b = allParameters.get(i * 4 + 3).parameter.getMaxpost();
-                    Double c = allParameters.get(i * 4 + 2).parameter.getMaxpost();
+                    Double b = allParameters.get(j * 4 + 3).parameter.getMaxpost();
+                    Double c = allParameters.get(j * 4 + 2).parameter.getMaxpost();
 
                     eqStr = eqStr + (first ? a : processAdd(a));
                     eqStr = eqStr + " * (h" + processSub(b) + ") ^ " + c;
