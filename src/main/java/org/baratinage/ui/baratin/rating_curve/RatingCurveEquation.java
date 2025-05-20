@@ -9,7 +9,6 @@ import javax.swing.JTextArea;
 
 import org.baratinage.AppSetup;
 import org.baratinage.translation.T;
-import org.baratinage.ui.bam.EstimatedParameterWrapper;
 import org.baratinage.ui.container.SimpleFlowPanel;
 
 public class RatingCurveEquation extends SimpleFlowPanel {
