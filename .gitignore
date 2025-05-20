@@ -24,20 +24,7 @@ pom.xml.versionsBackup
 *.bar.zip
 *.bam
 /resources/help/*
-/resources/icons/feather/*
-!/resources/icons/feather/trash.svg
-!/resources/icons/feather/copy.svg
-!/resources/icons/feather/save.svg
-!/resources/icons/feather/list.svg
-!/resources/icons/feather/lock.svg
-!/resources/icons/feather/external-link.svg
-!/resources/icons/feather/corner-left-down.svg
-!/resources/icons/feather/corner-right-down.svg
-!/resources/icons/feather/corner-left-up.svg
-!/resources/icons/feather/corner-right-up.svg
-!/resources/icons/feather/folder.svg
-!/resources/icons/feather/file-plus.svg
-!/resources/icons/feather/x-square.svg
+
 
 # V2 related folder to ignore
 /externalLib
