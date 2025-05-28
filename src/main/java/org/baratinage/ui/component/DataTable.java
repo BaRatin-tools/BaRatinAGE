@@ -113,6 +113,14 @@ public class DataTable extends SimpleFlowPanel {
 
     }
 
+    public int getColumnCount() {
+        return table.getColumnCount();
+    }
+
+    public int getRowCount() {
+        return table.getRowCount();
+    }
+
     public void selectRow(int index) {
         table.setRowSelectionInterval(index, index);
         table.setColumnSelectionInterval(0, table.getColumnCount() - 1);
