@@ -66,7 +66,7 @@ public class Gaugings extends BamItem implements ICalibrationData {
         JButton importDataButton = new JButton();
 
         importDataButton.addActionListener((e) -> {
-            gaugingsImporter.showDialog();
+            gaugingsImporter.showDialog(T.text("import_gauging_set"));
             GaugingsDataset newGaugingDataset = gaugingsImporter.getDataset();
             if (newGaugingDataset != null && newGaugingDataset.getNumberOfColumns() == 4) {
                 gaugingDataset = newGaugingDataset;

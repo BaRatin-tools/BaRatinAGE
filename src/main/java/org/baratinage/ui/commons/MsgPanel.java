@@ -101,4 +101,19 @@ public class MsgPanel extends SimpleFlowPanel {
         }
         super.updateUI();
     }
+
+    public static MsgPanel buildMsgPanel(
+            String boldPart,
+            String plainPart,
+            TYPE type) {
+        MsgPanel panel = new MsgPanel(type);
+        panel.message.setText(String.format("<html><b>%s</b>&nbsp;%s</html>", boldPart, plainPart));
+        return panel;
+    }
+
+    public static MsgPanel buildMsgPanel(String text, TYPE type) {
+        MsgPanel panel = new MsgPanel(type);
+        panel.message.setText(String.format("<html>%s</html>", text));
+        return panel;
+    }
 }

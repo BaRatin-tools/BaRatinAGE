@@ -1,409 +1,259 @@
 package org.baratinage.ui.baratin.limnigraph;
 
-import java.awt.Dimension;
-import java.nio.file.Path;
 import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
-import javax.swing.JButton;
-import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.event.ChangeListener;
 
+import org.baratinage.AppSetup;
+import org.baratinage.translation.T;
+import org.baratinage.ui.commons.MsgPanel;
 import org.baratinage.ui.component.CommonDialog;
-import org.baratinage.ui.component.DataFileReader;
-import org.baratinage.ui.component.DataParser;
-import org.baratinage.ui.component.SimpleComboBox;
 import org.baratinage.ui.component.SimpleSep;
-import org.baratinage.ui.component.SimpleTextField;
-import org.baratinage.ui.container.GridPanel;
+import org.baratinage.ui.component.data_import.DataImporter;
+import org.baratinage.ui.component.data_import.column_mapper.DateTimeColumnMapper;
+import org.baratinage.ui.component.data_import.column_mapper.DoubleColumnMapper;
+import org.baratinage.ui.component.data_import.column_mapper.IntegerColumnMapper;
+import org.baratinage.ui.container.BorderedSimpleFlowPanel;
 import org.baratinage.ui.container.SimpleFlowPanel;
 import org.baratinage.utils.ConsoleLogger;
 import org.baratinage.utils.Misc;
-import org.baratinage.utils.fs.ReadFile;
 import org.baratinage.utils.perf.TimedActions;
-import org.baratinage.AppSetup;
-import org.baratinage.translation.T;
 
-public class LimnigraphImporter extends SimpleFlowPanel {
+public class LimnigraphImporter extends DataImporter {
 
-    private final String ID;
+  private LimnigraphDataset dataset;
 
-    private List<String[]> rawData;
-    private String[] headers;
-    private String missingValueString;
+  private final DateTimeColumnMapper dateTimeColMapper;
+  private final DoubleColumnMapper stageColMapper;
+  private final DoubleColumnMapper stageNonSysErrColMapper;
+  private final DoubleColumnMapper stageSysErrColMapper;
+  private final IntegerColumnMapper stageSysIndColMapper;
 
-    private LimnigraphDataset dataset;
-    private JDialog dialog;
+  public LimnigraphImporter() {
+    super();
 
-    private final SimpleComboBox timeColComboBox;
-    private final SimpleTextField timeColFormatField;
-    private final SimpleComboBox stageColComboBox;
+    dataFileReader.setFilters(
+        new CommonDialog.CustomFileFilter(
+            T.text("data_text_file"),
+            "txt", "csv", "dat"));
 
-    private final SimpleComboBox nonSysUncertaintyComboBox;
-    private final SimpleComboBox sysUncertaintyComboBox;
-    private final SimpleComboBox sysIndComboBox;
+    // **************************************************************
+    // Column mapping fields
 
-    private final JButton validateButton;
+    dateTimeColMapper = new DateTimeColumnMapper();
 
-    private final SimpleFlowPanel dataPreviewPanel;
+    stageColMapper = new DoubleColumnMapper();
+    stageNonSysErrColMapper = new DoubleColumnMapper();
 
-    private final DataParser dataParser;
+    stageSysErrColMapper = new DoubleColumnMapper();
+    stageSysIndColMapper = new IntegerColumnMapper();
 
-    public LimnigraphImporter() {
-        super(true);
+    // **************************************************************
+    // layout and additional labels
 
-        ID = Misc.getTimeStampedId();
+    SimpleFlowPanel leftPanel = new SimpleFlowPanel(true);
+    leftPanel.setPadding(5);
+    leftPanel.setGap(5);
+    SimpleFlowPanel rightPanel = new SimpleFlowPanel(true);
+    rightPanel.setPadding(5);
+    rightPanel.setGap(5);
+    SimpleFlowPanel mappingPanel = new SimpleFlowPanel();
+    mappingPanel.addChild(leftPanel, true);
+    mappingPanel.addChild(rightPanel, true);
 
-        // ********************************************************
-        // Time related fields
+    JLabel mandatoryFieldsLabel = new JLabel();
 
-        timeColComboBox = new SimpleComboBox();
-        timeColFormatField = new SimpleTextField();
+    leftPanel.addChild(mandatoryFieldsLabel, false);
+    leftPanel.addChild(new SimpleSep(), false);
+    leftPanel.addChild(dateTimeColMapper, false);
+    leftPanel.addChild(stageColMapper, false);
 
-        JLabel timeColMappingLabel = new JLabel("date_time");
+    JLabel optionalFieldsLabel = new JLabel();
+    rightPanel.addChild(optionalFieldsLabel, false);
+    rightPanel.addChild(new SimpleSep(), false);
+    rightPanel.addChild(stageNonSysErrColMapper, false);
 
-        JLabel timeColFormatLabel = new JLabel("date_time_format");
-        timeColFormatField.setText("y/M/d H:m:s");
-        JLabel timeFormatDetails = new JLabel();
+    BorderedSimpleFlowPanel stageSysErrPanel = new BorderedSimpleFlowPanel(true);
+    stageSysErrPanel.addChild(stageSysErrColMapper, false);
+    stageSysErrPanel.addChild(stageSysIndColMapper, false);
+    rightPanel.addChild(stageSysErrPanel, false);
 
-        // ********************************************************
-        // Stage related fields
+    mainConfigPanel.addChild(mappingPanel, true);
 
-        stageColComboBox = new SimpleComboBox();
-        JLabel stageColLabel = new JLabel("stage");
+    // **************************************************************
+    // i18n
 
-        nonSysUncertaintyComboBox = new SimpleComboBox();
-        JLabel nonSysUncertaintyLabel = new JLabel("stage_non_sys_error_uncertainty");
+    T.t(this, mandatoryFieldsLabel, false, "mandatory_fields");
+    T.t(this, optionalFieldsLabel, false, "optional_fields");
+    T.t(this, stageColMapper.label, false, "stage");
+    T.t(this, stageNonSysErrColMapper.label, false, "stage_non_sys_error_uncertainty");
+    T.t(this, stageSysErrColMapper.label, false, "stage_sys_error_uncertainty");
+    T.t(this, stageSysIndColMapper.label, false, "stage_sys_error_ind");
 
-        sysUncertaintyComboBox = new SimpleComboBox();
-        JLabel sysUncertaintyLabel = new JLabel("stage_sys_error_uncertainty");
+    // **************************************************************
+    // whenever a field is modified
 
-        sysIndComboBox = new SimpleComboBox();
-        JLabel sysIndLabel = new JLabel("stage_sys_error_ind");
+    ChangeListener l = (e) -> {
+      TimedActions.debounce(ID, AppSetup.CONFIG.DEBOUNCED_DELAY_MS, this::updateValidityStatus);
+    };
 
-        // ********************************************************
-        // Import configuration panel layout
+    dateTimeColMapper.addChangeListener(l);
+    stageColMapper.combobox.addChangeListener(l);
+    stageNonSysErrColMapper.combobox.addChangeListener(l);
+    stageSysErrColMapper.combobox.addChangeListener(l);
+    stageSysIndColMapper.combobox.addChangeListener(l);
 
-        GridPanel columnMappingPanel = new GridPanel();
-        columnMappingPanel.setPadding(5);
-        columnMappingPanel.setGap(5);
-        columnMappingPanel.setColWeight(1, 1);
+  }
 
-        int rowIndex = 0;
+  private static double estimateDoubleMatrixTextFileSizeInKb(int numRows, int numCols) {
+    int numSemicolons = (numRows - 1) * numCols; // Semicolons between values
+    int numNewlines = numRows - 1; // Newlines between rows
 
-        columnMappingPanel.insertChild(timeColMappingLabel, 0, rowIndex);
-        columnMappingPanel.insertChild(timeColComboBox, 1, rowIndex);
-        rowIndex++;
+    // Assuming average double length as 20 bytes
+    int estimatedSizeBytes = (numRows * numCols * 20) + numSemicolons + numNewlines;
 
-        columnMappingPanel.insertChild(timeColFormatLabel, 0, rowIndex);
-        columnMappingPanel.insertChild(timeColFormatField, 1, rowIndex);
-        rowIndex++;
+    // Convert bytes to KB
+    double estimatedSizeKB = (double) estimatedSizeBytes / 1024.0;
 
-        columnMappingPanel.insertChild(timeFormatDetails, 0, rowIndex, 2, 1);
-        rowIndex++;
+    return estimatedSizeKB;
+  }
 
-        columnMappingPanel.insertChild(stageColLabel, 0, rowIndex);
-        columnMappingPanel.insertChild(stageColComboBox, 1, rowIndex);
-        rowIndex++;
+  @Override
+  public LimnigraphDataset getDataset() {
+    return dataset;
+  }
 
-        columnMappingPanel.insertChild(nonSysUncertaintyLabel, 0, rowIndex);
-        columnMappingPanel.insertChild(nonSysUncertaintyComboBox, 1, rowIndex);
-        rowIndex++;
+  private void updateValidityStatus() {
 
-        columnMappingPanel.insertChild(sysUncertaintyLabel, 0, rowIndex);
-        columnMappingPanel.insertChild(sysUncertaintyComboBox, 1, rowIndex);
-        rowIndex++;
+    errorPanel.removeAll();
 
-        columnMappingPanel.insertChild(sysIndLabel, 0, rowIndex);
-        columnMappingPanel.insertChild(sysIndComboBox, 1, rowIndex);
-        rowIndex++;
+    if (dataFileReader.file == null) {
+      return;
+    }
 
-        // ********************************************************
-        // dataset preview panel
+    dataPreview.resetColumnMappers();
 
+    int[] dateTimeIndices = dateTimeColMapper.getIndices();
+    for (int i : dateTimeIndices) {
+      dataPreview.setColumnMapper(i, dateTimeColMapper);
+    }
+
+    dataPreview.setColumnMapper(stageColMapper.getIndex(), stageColMapper);
+    dataPreview.setColumnMapper(stageNonSysErrColMapper.getIndex(), stageNonSysErrColMapper);
+    dataPreview.setColumnMapper(stageSysErrColMapper.getIndex(), stageSysErrColMapper);
+    dataPreview.setColumnMapper(stageSysIndColMapper.getIndex(), stageSysIndColMapper);
+
+    Set<Integer> tInvalidRows = dateTimeColMapper.getInvalidIndices();
+    boolean tColOk = dateTimeColMapper.hasValidSelection() && tInvalidRows.size() == 0;
+
+    Set<Integer> hInvalidRows = stageColMapper.getInvalidIndices();
+    boolean hColOk = stageColMapper.getIndex() >= 0 && hInvalidRows.size() == 0;
+
+    Set<Integer> uNonSysInvalidRows = stageNonSysErrColMapper.getInvalidIndices();
+    boolean uNonSysOk = stageNonSysErrColMapper.getIndex() == -1
+        || (stageNonSysErrColMapper.getIndex() >= 0 && uNonSysInvalidRows.size() == 0);
+
+    boolean uSysErrOk = !(stageSysErrColMapper.getIndex() == -1 && stageSysIndColMapper.getIndex() >= 0);
+    boolean uSysIndOk = !(stageSysIndColMapper.getIndex() == -1 && stageSysErrColMapper.getIndex() >= 0);
+    Set<Integer> uSysErrInvalidRows = stageSysErrColMapper.getInvalidIndices();
+    Set<Integer> uSysIndInvalidRows = stageSysIndColMapper.getInvalidIndices();
+    boolean uSysOk = uSysErrOk && uSysIndOk
+        && uSysErrInvalidRows.size() == 0
+        && uSysIndInvalidRows.size() == 0;
+
+    dateTimeColMapper.setValidityView(tColOk);
+    stageColMapper.combobox.setValidityView(hColOk);
+    stageNonSysErrColMapper.combobox.setValidityView(uNonSysOk);
+    stageSysErrColMapper.combobox.setValidityView(uSysErrOk);
+    stageSysIndColMapper.combobox.setValidityView(uSysIndOk);
+
+    Set<Integer> lastSkippedIndices = dataFileReader.getLastSkippedIndices();
+    if (lastSkippedIndices.size() > 0) {
+      errorPanel.addChild(MsgPanel.buildMsgPanel(
+          T.text("msg_incomplete_rows_skipped_during_import",
+              lastSkippedIndices.size(),
+              Misc.createIntegerStringList(
+                  lastSkippedIndices.stream().map(i -> i + 1).toList(),
+                  5)),
+          MsgPanel.TYPE.ERROR));
+    }
+    if (!tColOk) {
+      errorPanel.addChild(MsgPanel.buildMsgPanel(
+          T.text("date_time"),
+          buildErrorMessage(tInvalidRows), MsgPanel.TYPE.ERROR));
+    }
+    if (!hColOk) {
+      errorPanel.addChild(MsgPanel.buildMsgPanel(
+          T.text("stage"),
+          buildErrorMessage(hInvalidRows), MsgPanel.TYPE.ERROR));
+    }
+    if (!uNonSysOk) {
+      errorPanel.addChild(MsgPanel.buildMsgPanel(
+          T.text("stage_non_sys_error_uncertainty"),
+          buildErrorMessage(uNonSysInvalidRows), MsgPanel.TYPE.ERROR));
+    }
+    if (!uSysOk) {
+      errorPanel.addChild(MsgPanel.buildMsgPanel(
+          T.text("stage_sys_error_uncertainty"),
+          buildErrorMessage(null), MsgPanel.TYPE.ERROR));
+    }
+
+    validateButton.setEnabled(tColOk && hColOk && uNonSysOk && uSysOk);
+
+    dataPreview.updatePreviewTable();
+
+  }
+
+  @Override
+  protected void applyInputFileChange(List<String[]> data, String[] headers, String missingValue) {
+
+    dateTimeColMapper.setData(data, headers, missingValue);
+    stageColMapper.setData(data, headers, missingValue);
+    stageNonSysErrColMapper.setData(data, headers, missingValue);
+    stageSysErrColMapper.setData(data, headers, missingValue);
+    stageSysIndColMapper.setData(data, headers, missingValue);
+
+    updateValidityStatus();
+  }
+
+  @Override
+  protected void buildDataset() {
+
+    String fileName = dataFileReader.file.getName();
+
+    LocalDateTime[] dateTime = dateTimeColMapper.getParsedColumn();
+    double[] stage = stageColMapper.getParsedColumn();
+    double[] nonSysStd = stageNonSysErrColMapper.getParsedColumn();
+    double[] sysStd = stageSysErrColMapper.getParsedColumn();
+    int[] sysInd = stageSysIndColMapper.getParsedColumn();
+
+    int nCol = nonSysStd != null || sysStd != null ? AppSetup.CONFIG.N_SAMPLES_LIMNI_ERRORS.get() + 4
+        : 4;
+    double size = estimateDoubleMatrixTextFileSizeInKb(stage.length, nCol) / 2; // I devide by 2 to estimate the zip
+                                                                                // compression
+    System.out.println(size);
+    if (size > 25000) {
+      String sizeString = Misc.formatKilobitesSize(size);
+      ConsoleLogger.warn("Large error matrix file size : " + size + "Kb (" + sizeString + ")");
+      String areYouSure = T.text("are_you_sure");
+      String message = String.format("<html>%s<br>%s</html>",
+          areYouSure, T.text("large_file_size_warning", sizeString));
+      if (!CommonDialog.confirmDialog(message, areYouSure)) {
         dataset = null;
-
-        dataPreviewPanel = new SimpleFlowPanel();
-
-        DataFileReader dataFileReader = new DataFileReader(
-                new CommonDialog.CustomFileFilter(
-                        T.text("data_text_file"),
-                        "txt", "csv", "dat"));
-        dataParser = new DataParser(dataFileReader);
-
-        dataPreviewPanel.addChild(dataParser, true);
-
-        dataFileReader.addChangeListener((chEvt) -> {
-
-            rawData = dataFileReader.getData(dataParser.nPreload);
-            headers = dataFileReader.getHeaders();
-            missingValueString = dataFileReader.missingValueString;
-
-            dataParser.setRawData(rawData, headers, missingValueString);
-
-            int nItems = timeColComboBox.getItemCount();
-            int timeIndex = timeColComboBox.getSelectedIndex();
-            int stageIndex = stageColComboBox.getSelectedIndex();
-            int nonSysUncertaintyIndex = nonSysUncertaintyComboBox.getSelectedIndex();
-            int sysUncertaintyIndex = sysUncertaintyComboBox.getSelectedIndex();
-            int sysIndIndex = sysIndComboBox.getSelectedIndex();
-
-            timeColComboBox.setItems(headers);
-            stageColComboBox.setItems(headers);
-            nonSysUncertaintyComboBox.setItems(headers);
-            sysUncertaintyComboBox.setItems(headers);
-            sysIndComboBox.setItems(headers);
-
-            if (nItems == headers.length) {
-                timeColComboBox.setSelectedItem(timeIndex);
-                stageColComboBox.setSelectedItem(stageIndex);
-                nonSysUncertaintyComboBox.setSelectedItem(nonSysUncertaintyIndex);
-                sysUncertaintyComboBox.setSelectedItem(sysUncertaintyIndex);
-                sysIndComboBox.setSelectedItem(sysIndIndex);
-            }
-        });
-
-        // ********************************************************
-        // action buttons
-
-        SimpleFlowPanel actionPanel = new SimpleFlowPanel();
-        actionPanel.setPadding(5);
-        actionPanel.setGap(5);
-        validateButton = new JButton("import");
-        validateButton.setEnabled(false);
-        validateButton.addActionListener((e) -> {
-            String filePath = dataFileReader.getFilePath();
-            String fileName = Path.of(filePath).getFileName().toString();
-
-            dataParser.setRawData(dataFileReader.getData(), headers, missingValueString);
-
-            boolean didLastReadSkipRows = ReadFile.didLastReadSkipRows(false);
-            if (didLastReadSkipRows) {
-                CommonDialog.warnDialog(T.text("msg_incomplete_rows_skipped_during_import"));
-            }
-
-            int dateTimeColIndex = timeColComboBox.getSelectedIndex();
-            LocalDateTime[] dateTimeVector = dataParser.getDateTimeCol(
-                    dateTimeColIndex,
-                    timeColFormatField.getText());
-            if (dateTimeVector == null) { // handle case where time vector is invalid
-                CommonDialog.errorDialog(T.text("import_limni_duplicated_timesteps_error"));
-                return;
-            }
-            int stageColIndex = stageColComboBox.getSelectedIndex();
-            double[] stage = dataParser.getDoubleCol(stageColIndex);
-
-            int nonSysUncertaintyInd = nonSysUncertaintyComboBox.getSelectedIndex();
-            int sysUncertaintyInd = sysUncertaintyComboBox.getSelectedIndex();
-            int sysIndInd = sysIndComboBox.getSelectedIndex();
-
-            int nCol = sysUncertaintyInd >= 0 || nonSysUncertaintyInd >= 0
-                    ? AppSetup.CONFIG.N_SAMPLES_LIMNI_ERRORS.get() + 4
-                    : 4;
-
-            double size = estimateDoubleMatrixTextFileSizeInKb(stage.length, nCol) / 2; // I devide by 2 to estimate the
-                                                                                        // zip compression
-            if (size > 25000) {
-                String sizeString = formatSize(size);
-                ConsoleLogger.warn("Large error matrix file size : " + size + "Kb (" + sizeString + ")");
-                String areYouSure = T.text("are_you_sure");
-                String message = String.format("<html>%s<br>%s</html>",
-                        areYouSure, T.text("large_file_size_warning", sizeString));
-                if (!CommonDialog.confirmDialog(message, areYouSure)) {
-                    dataset = null;
-                    return;
-                }
-            }
-
-            dataset = new LimnigraphDataset(
-                    fileName,
-                    dateTimeVector,
-                    stage,
-                    nonSysUncertaintyInd < 0 ? null
-                            : Arrays.stream(dataParser.getDoubleCol(nonSysUncertaintyInd)).map(u -> u / 2.0).toArray(),
-                    sysUncertaintyInd < 0 ? null
-                            : Arrays.stream(dataParser.getDoubleCol(sysUncertaintyInd)).map(u -> u / 2.0).toArray(),
-                    sysIndInd < 0 ? null : dataParser.getIntCol(sysIndInd));
-
-            dialog.setVisible(false);
-
-        });
-        JButton cancelButton = new JButton("cancel");
-        cancelButton.addActionListener((e) -> {
-            dialog.setVisible(false);
-        });
-
-        actionPanel.addChild(cancelButton, false);
-        actionPanel.addExtensor();
-        actionPanel.addChild(validateButton, 0);
-
-        // ********************************************************
-        // final import panel layout
-
-        addChild(dataFileReader, false);
-        addChild(new SimpleSep(), false);
-        addChild(columnMappingPanel, false);
-        addChild(new SimpleSep(), false);
-        addChild(dataPreviewPanel, true);
-        addChild(new SimpleSep(), false);
-        addChild(actionPanel, false);
-
-        // ********************************************************
-        // react to change in user inputs (preview table and import button)
-
-        ChangeListener cbChangeListener = (chEvt) -> {
-            TimedActions.throttle(ID, AppSetup.CONFIG.THROTTLED_DELAY_MS, this::updateValidityStatus);
-        };
-
-        timeColComboBox.addChangeListener(cbChangeListener);
-        timeColFormatField.addChangeListener(cbChangeListener);
-        stageColComboBox.addChangeListener(cbChangeListener);
-        nonSysUncertaintyComboBox.addChangeListener(cbChangeListener);
-        sysUncertaintyComboBox.addChangeListener(cbChangeListener);
-        sysIndComboBox.addChangeListener(cbChangeListener);
-
-        T.t(this, timeColMappingLabel, false, "date_time");
-        T.t(this, timeColFormatLabel, false, "date_time_format");
-        T.t(this, () -> {
-            String timeFormatDetailsText = "<html><code>" +
-                    "y = " + T.text("year") + ", " +
-                    "M = " + T.text("month") + ", " +
-                    "d = " + T.text("day") + ", " +
-                    "H = " + T.text("hour") + " (0-23)" + ", " +
-                    "m = " + T.text("minute") + " (0-59)" + ", " +
-                    "s = " + T.text("second") + " (0-59)" +
-                    "<br>" +
-                    "yyyy-MM-dd HH:mm:ss = 2005-07-26 14:32:09" +
-                    "</code></html>";
-            timeFormatDetails.setText(timeFormatDetailsText);
-        });
-        T.t(this, stageColLabel, false, "stage");
-        T.t(this, nonSysUncertaintyLabel, true, "stage_non_sys_error_uncertainty");
-        T.t(this, sysUncertaintyLabel, true, "stage_sys_error_uncertainty");
-        T.t(this, sysIndLabel, false, "stage_sys_error_ind");
-        T.t(this, validateButton, false, "import");
-        T.t(this, cancelButton, false, "cancel");
-
-        T.updateHierarchy(this, dataFileReader);
-        T.updateHierarchy(this, dataParser);
+        return;
+      }
     }
 
-    private static String formatSize(double sizeInKb) {
-        if (sizeInKb <= 0) {
-            return "0 B";
-        }
-
-        int sizeInBytes = (int) sizeInKb * 1024;
-
-        final String[] units = { "B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB" };
-        int digitGroups = (int) (Math.log10(sizeInBytes) / Math.log10(1024));
-
-        // int digitGroups2 = (int) (Math.log10(sizeInBytes) / Math.log10(1024));
-        // return String.format("%.1f %s", sizeInBytes / Math.pow(1024, digitGroups),
-        // units[digitGroups]);
-
-        return String.format("%.1f %s", sizeInBytes / Math.pow(1024, digitGroups), units[digitGroups]);
-    }
-
-    private static double estimateDoubleMatrixTextFileSizeInKb(int numRows, int numCols) {
-        int numSemicolons = (numRows - 1) * numCols; // Semicolons between values
-        int numNewlines = numRows - 1; // Newlines between rows
-
-        // Assuming average double length as 20 bytes
-        int estimatedSizeBytes = (numRows * numCols * 20) + numSemicolons + numNewlines;
-
-        // Convert bytes to KB
-        double estimatedSizeKB = (double) estimatedSizeBytes / 1024.0;
-
-        return estimatedSizeKB;
-    }
-
-    private void updateValidityStatus() {
-        // if there's not data, not point checking validity
-        if (rawData == null) {
-            timeColComboBox.setValidityView(false);
-            timeColFormatField.setValidityView(false);
-            stageColComboBox.setValidityView(false);
-            nonSysUncertaintyComboBox.setValidityView(false);
-            sysUncertaintyComboBox.setValidityView(false);
-            sysIndComboBox.setValidityView(false);
-            validateButton.setEnabled(false);
-            return;
-        }
-        dataParser.ignoreAll();
-
-        // time
-
-        int timeInd = timeColComboBox.getSelectedIndex();
-        String dateTimeFormat = timeColFormatField.getText();
-        dataParser.setAsDateTimeCol(timeInd, dateTimeFormat);
-        boolean timeOk = timeInd >= 0 && dataParser.testColValidity(timeInd);
-        boolean timeFormatOk = dataParser.testDateTimeFormat(dateTimeFormat);
-
-        // stage
-
-        int stageInd = stageColComboBox.getSelectedIndex();
-        dataParser.setAsDoubleCol(stageInd);
-        boolean stageOk = stageInd >= 0 &&
-                dataParser.testColValidity(stageInd);
-
-        // non-sys error
-
-        int nonSysUncertaintyInd = nonSysUncertaintyComboBox.getSelectedIndex();
-        boolean nonSysErrOk = true;
-        if (nonSysUncertaintyInd >= 0) {
-            dataParser.setAsDoubleCol(nonSysUncertaintyInd);
-            nonSysErrOk = dataParser.testColValidity(nonSysUncertaintyInd);
-        }
-
-        // sys err
-
-        int sysUncertaintyInd = sysUncertaintyComboBox.getSelectedIndex();
-        int sysIndInd = sysIndComboBox.getSelectedIndex();
-
-        boolean sysErrOk = ((sysUncertaintyInd >= 0 && sysIndInd >= 0) ||
-                (sysUncertaintyInd < 0 && sysIndInd < 0));
-
-        if (sysUncertaintyInd >= 0) {
-            dataParser.setAsDoubleCol(sysUncertaintyInd);
-            sysErrOk = sysErrOk && dataParser.testColValidity(sysUncertaintyInd);
-        }
-        if (sysIndInd >= 0) {
-            dataParser.setAsIntCol(sysIndInd);
-            sysErrOk = sysErrOk && dataParser.testColValidity(sysIndInd);
-        }
-
-        // update ui
-        dataParser.updateColumnTypes();
-        timeColComboBox.setValidityView(timeOk);
-        timeColFormatField.setValidityView(timeFormatOk);
-        stageColComboBox.setValidityView(stageOk);
-        nonSysUncertaintyComboBox.setValidityView(nonSysErrOk);
-        sysUncertaintyComboBox.setValidityView(sysErrOk);
-        sysIndComboBox.setValidityView(sysErrOk);
-        validateButton.setEnabled(timeOk && timeFormatOk && stageOk && nonSysErrOk && sysErrOk);
-
-    }
-
-    public void showDialog() {
-
-        dialog = new JDialog(AppSetup.MAIN_FRAME, true);
-        dialog.setContentPane(this);
-
-        dialog.setTitle(T.text("import_limnigraph"));
-        dialog.setMinimumSize(new Dimension(600, 400));
-        dialog.setPreferredSize(new Dimension(900, 800));
-
-        dialog.pack();
-        dialog.setLocationRelativeTo(AppSetup.MAIN_FRAME);
-        dialog.setVisible(true);
-        dialog.dispose();
-    }
-
-    public LimnigraphDataset getDataset() {
-        return dataset;
-    }
+    dataset = new LimnigraphDataset(
+        fileName,
+        dateTime,
+        stage,
+        nonSysStd,
+        sysStd,
+        sysInd);
+  }
 
 }

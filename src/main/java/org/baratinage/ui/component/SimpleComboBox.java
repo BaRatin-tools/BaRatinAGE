@@ -11,6 +11,7 @@ import javax.swing.JList;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.plaf.basic.BasicComboBoxEditor;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.Icon;
@@ -48,6 +49,7 @@ public class SimpleComboBox extends SimpleFlowPanel {
 
         renderer = new CustomListCellRenderer();
         comboBox.setRenderer(renderer);
+        comboBox.setEditor(new CustomEditor());
         comboBox.addActionListener((e) -> {
             if (!changeListenersDisabled) {
                 fireChangeListeners();
@@ -58,6 +60,10 @@ public class SimpleComboBox extends SimpleFlowPanel {
         INVALID_BG_COLOR = AppSetup.COLORS.INVALID_BG;
         REGULAR_BG_COLOR = comboBox.getBackground();
         addChild(comboBox, true);
+    }
+
+    public void setEditable(boolean editable) {
+        comboBox.setEditable(editable);
     }
 
     public void setChangeListenersEnabled(boolean enabled) {
@@ -72,6 +78,19 @@ public class SimpleComboBox extends SimpleFlowPanel {
     @Override
     public boolean isEnabled() {
         return comboBox.isEnabled();
+    }
+
+    /**
+     * It sets the items similarly to setItems. The main differences are:
+     * (1) listeners are disabled
+     * (2) the previous selection is kept (if valid)
+     * 
+     * @param items combobox items
+     */
+    public void resetItems(String[] items) {
+        int currentIndex = getSelectedIndex();
+        setItems(items, true);
+        setSelectedItem(currentIndex);
     }
 
     public void setItems(String[] items) {
@@ -146,7 +165,7 @@ public class SimpleComboBox extends SimpleFlowPanel {
             changeListenersDisabled = true;
         }
         if (k < 0) {
-            model.setSelectedItem(model.getElementAt(0));
+            model.setSelectedItem(emptyLabel);
             changeListenersDisabled = false;
             return;
         }
@@ -154,9 +173,7 @@ public class SimpleComboBox extends SimpleFlowPanel {
             k += 1;
         }
         JLabel label = model.getElementAt(k);
-        if (label != null) {
-            model.setSelectedItem(label);
-        }
+        model.setSelectedItem(label);
         changeListenersDisabled = false;
     }
 
@@ -175,6 +192,19 @@ public class SimpleComboBox extends SimpleFlowPanel {
             return null;
         }
         return model.getElementAt(addEmptyLabelOffset(index));
+    }
+
+    public String getCurrentText() {
+        int index = getSelectedIndex();
+        if (index < 0) {
+            index = emptyLabel == null ? -2 : -1;
+        }
+        if (index == -2) {
+            Object e = comboBox.getEditor().getItem();
+            return e instanceof String ? (String) e : "";
+        }
+        JLabel lbl = model.getElementAt(addEmptyLabelOffset(index));
+        return lbl == null ? "" : lbl.getText();
     }
 
     public int getItemCount() {
@@ -225,6 +255,19 @@ public class SimpleComboBox extends SimpleFlowPanel {
                 label.setBorder(originalLabel.getBorder());
             }
             return label;
+        }
+
+    }
+
+    private static class CustomEditor extends BasicComboBoxEditor {
+
+        @Override
+        public void setItem(Object anObject) {
+            if (anObject instanceof JLabel) {
+                super.setItem(((JLabel) anObject).getText());
+            } else {
+                super.setItem(anObject);
+            }
         }
 
     }

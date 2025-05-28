@@ -4,16 +4,17 @@ import java.awt.Font;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
-import javax.swing.JRadioButton;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import org.baratinage.ui.container.GridPanel;
 import org.baratinage.ui.container.SimpleFlowPanel;
 import org.baratinage.translation.T;
 import org.baratinage.utils.ConsoleLogger;
@@ -27,22 +28,22 @@ public class DataFileReader extends SimpleFlowPanel {
     public String missingValueString = "";
     public boolean hasHeaderRow = true;
 
+    private CommonDialog.CustomFileFilter[] fileFilters = new CommonDialog.CustomFileFilter[0];
+
     // public int nPreload = 15;
 
     private JLabel selectedFilePathLabel;
     private String[] fileLines;
 
-    public DataFileReader(CommonDialog.CustomFileFilter... fileFilters) {
+    public DataFileReader() {
         super(true);
 
         // **********************************************************
         // file selection section
 
-        GridPanel importFilePanel = new GridPanel();
+        SimpleFlowPanel importFilePanel = new SimpleFlowPanel();
         importFilePanel.setPadding(5);
         importFilePanel.setGap(5);
-        importFilePanel.setColWeight(1, 1);
-        // importFilePanel.setRowWeight(2, 10000);
 
         JLabel explainLabel = new JLabel();
         explainLabel.setText("select_file_to_import");
@@ -66,34 +67,37 @@ public class DataFileReader extends SimpleFlowPanel {
             fireChangeListeners();
         });
 
-        importFilePanel.insertChild(explainLabel, 0, 0, 2, 1);
-        importFilePanel.insertChild(browseFileSystemButon, 0, 1);
-        importFilePanel.insertChild(selectedFilePathLabel, 1, 1);
+        importFilePanel.addChild(explainLabel, false);
+        importFilePanel.addChild(browseFileSystemButon, false);
+        importFilePanel.addChild(selectedFilePathLabel, true);
 
         // **********************************************************
         // import settings section
 
         JLabel separatorLabel = new JLabel("column_separator");
 
-        SimpleRadioButtons<String> sepRatioButtons = new SimpleRadioButtons<>();
+        SimpleComboBox colSepChooser = new SimpleComboBox();
+        colSepChooser.setEmptyItem(null);
+        HashMap<String, String> colSepOptions = new HashMap<>();
+        colSepOptions.put("sep_tab", "\\t");
+        colSepOptions.put("sep_semicolon", ";");
+        colSepOptions.put("sep_comma", ";");
+        colSepOptions.put("sep_space", " ");
+        String[] colSepOptionsKeys = new String[] {
+                "sep_tab",
+                "sep_semicolon",
+                "sep_comma",
+                "sep_space" };
 
-        sepRatioButtons.addChangeListener((chEvt) -> {
-            sep = sepRatioButtons.getSelectedValue();
-            fireChangeListeners();
+        colSepChooser.setItems(colSepOptionsKeys);
+        colSepChooser.setSelectedItem(1);
+        colSepChooser.addChangeListener(l -> {
+            int index = colSepChooser.getSelectedIndex();
+            if (index >= 0 && index < colSepOptionsKeys.length) {
+                sep = colSepOptions.get(colSepOptionsKeys[index]);
+                fireChangeListeners();
+            }
         });
-        JRadioButton tabOptBtn = sepRatioButtons.addOption("tab", "sep_tab", "\t");
-        JRadioButton semicolOptBtn = sepRatioButtons.addOption("semicolon", "sep_semicolon", ";");
-        JRadioButton commaOptBtn = sepRatioButtons.addOption("comma", "sep_comma", ",");
-        JRadioButton spaceOptBtn = sepRatioButtons.addOption("space", "sep_space", " ");
-
-        sepRatioButtons.setSelected("semicolon");
-
-        SimpleFlowPanel sepOptionButtons = new SimpleFlowPanel();
-        sepOptionButtons.setGap(5);
-        sepOptionButtons.addChild(tabOptBtn, false);
-        sepOptionButtons.addChild(semicolOptBtn, false);
-        sepOptionButtons.addChild(commaOptBtn, false);
-        sepOptionButtons.addChild(spaceOptBtn, false);
 
         JCheckBox hasHeaderCheckBox = new JCheckBox("has_header_row");
         hasHeaderCheckBox.setSelected(hasHeaderRow);
@@ -121,28 +125,37 @@ public class DataFileReader extends SimpleFlowPanel {
         // **********************************************************
         // import settings panel
 
-        GridPanel importSettingsPanel = new GridPanel();
-        importSettingsPanel.setColWeight(1, 1);
-        importSettingsPanel.setColWeight(3, 1);
-        importSettingsPanel.setGap(5, 5);
+        SimpleFlowPanel importSettingsPanel = new SimpleFlowPanel();
+        importSettingsPanel.setGap(5);
         importSettingsPanel.setPadding(5);
 
-        int rowIndex = 0;
+        SimpleFlowPanel importSettingsLeftPanel = new SimpleFlowPanel(true);
+        importSettingsLeftPanel.setGap(5);
+        importSettingsPanel.addChild(importSettingsLeftPanel, true);
 
-        importSettingsPanel.insertChild(separatorLabel, 0, rowIndex);
-        importSettingsPanel.insertChild(sepOptionButtons, 1, rowIndex, 3, 1);
-        rowIndex++;
+        SimpleFlowPanel importSettingsRightPanel = new SimpleFlowPanel(true);
+        importSettingsRightPanel.setGap(5);
+        importSettingsPanel.addChild(importSettingsRightPanel, true);
 
-        importSettingsPanel.insertChild(hasHeaderCheckBox, 0, rowIndex, 2, 1);
+        SimpleFlowPanel colSepPanel = new SimpleFlowPanel();
+        colSepPanel.setGap(5);
+        colSepPanel.addChild(separatorLabel, false);
+        colSepPanel.addChild(colSepChooser, true);
+        importSettingsLeftPanel.addChild(colSepPanel, false);
 
-        importSettingsPanel.insertChild(nSkipRowLabel, 2, rowIndex);
-        importSettingsPanel.insertChild(nSkipRowField, 3, rowIndex);
-        rowIndex++;
+        SimpleFlowPanel missingValueCodePanel = new SimpleFlowPanel();
+        missingValueCodePanel.setGap(5);
+        missingValueCodePanel.addChild(missingValueCodeLabel, false);
+        missingValueCodePanel.addChild(missingValueCodeField, true);
+        importSettingsLeftPanel.addChild(missingValueCodePanel, false);
 
-        importSettingsPanel.insertChild(missingValueCodeLabel, 0, rowIndex);
-        importSettingsPanel.insertChild(missingValueCodeField, 1, rowIndex);
+        SimpleFlowPanel nSkipRowPanel = new SimpleFlowPanel();
+        nSkipRowPanel.setGap(5);
+        nSkipRowPanel.addChild(nSkipRowLabel, false);
+        nSkipRowPanel.addChild(nSkipRowField, true);
+        importSettingsRightPanel.addChild(nSkipRowPanel, false);
 
-        rowIndex++;
+        importSettingsRightPanel.addChild(hasHeaderCheckBox, false);
 
         // **********************************************************
         // final panel
@@ -154,10 +167,16 @@ public class DataFileReader extends SimpleFlowPanel {
         T.t(this, explainLabel, false, "select_file_to_import");
         T.t(this, browseFileSystemButon, false, "browse");
         T.t(this, separatorLabel, false, "column_separator");
-        T.t(this, tabOptBtn, false, "sep_tab");
-        T.t(this, semicolOptBtn, false, "sep_semicolon");
-        T.t(this, commaOptBtn, false, "sep_comma");
-        T.t(this, spaceOptBtn, false, "sep_space");
+
+        T.t(this, () -> {
+            String[] colSepOptionsLabels = new String[colSepOptionsKeys.length];
+            for (int k = 0; k < colSepOptionsKeys.length; k++) {
+                colSepOptionsLabels[k] = T.text(colSepOptionsKeys[k]);
+            }
+            int index = colSepChooser.getSelectedIndex();
+            colSepChooser.setItems(colSepOptionsLabels);
+            colSepChooser.setSelectedItem(index);
+        });
         T.t(this, hasHeaderCheckBox, false, "has_header_row");
         T.t(this, nSkipRowLabel, false, "n_rows_to_skip");
         T.t(this, missingValueCodeLabel, false, "missing_value_code");
@@ -181,8 +200,17 @@ public class DataFileReader extends SimpleFlowPanel {
             displayPath = (new File(filePath)).getCanonicalPath();
         } catch (IOException e) {
         }
+        if (displayPath.length() > 60) {
+            String start = displayPath.substring(0, 15);
+            String end = displayPath.substring(displayPath.length() - 35, displayPath.length());
+            displayPath = String.format("%s ... %s", start, end);
+        }
         selectedFilePathLabel.setText(displayPath);
         selectedFilePathLabel.setToolTipText(displayPath);
+    }
+
+    public void setFilters(CommonDialog.CustomFileFilter... fileFilters) {
+        this.fileFilters = fileFilters;
     }
 
     public List<String[]> getData(int nRows) {
@@ -200,7 +228,20 @@ public class DataFileReader extends SimpleFlowPanel {
                 nRows,
                 true);
 
+        boolean hasSkippedRows = ReadFile.didLastReadSkipRows(false);
+
+        skippedIndices.clear();
+        if (hasSkippedRows) {
+            skippedIndices.addAll(ReadFile.getLastSkippedIndices());
+        }
+
         return dataString;
+    }
+
+    private final Set<Integer> skippedIndices = new HashSet<>();
+
+    public Set<Integer> getLastSkippedIndices() {
+        return skippedIndices;
     }
 
     public String getFilePath() {
@@ -235,6 +276,10 @@ public class DataFileReader extends SimpleFlowPanel {
         }
 
         return headers;
+    }
+
+    public String getMissingValue() {
+        return missingValueString;
     }
 
     private final List<ChangeListener> changeListeners = new ArrayList<>();

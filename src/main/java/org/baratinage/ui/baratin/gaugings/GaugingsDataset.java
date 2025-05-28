@@ -15,7 +15,7 @@ import org.baratinage.utils.ConsoleLogger;
 
 public class GaugingsDataset extends AbstractDataset implements IPlotDataProvider {
 
-    private static double[] ones(int n) {
+    public static double[] ones(int n) {
         double[] d = new double[n];
         for (int k = 0; k < n; k++) {
             d[k] = 1;
@@ -23,13 +23,22 @@ public class GaugingsDataset extends AbstractDataset implements IPlotDataProvide
         return d;
     }
 
-    public GaugingsDataset(String name, double[] stage, double[] discharge, double[] dischargePercentUncertainty) {
+    public GaugingsDataset(
+            String name,
+            double[] stage,
+            double[] discharge,
+            double[] dischargePercentUncertainty,
+            double[] active) {
         super(name,
                 new NamedColumn("stage", stage),
                 new NamedColumn("discharge", discharge),
                 new NamedColumn("dischargePercentUncertainty",
                         dischargePercentUncertainty),
-                new NamedColumn("active", ones(stage.length)));
+                new NamedColumn("active", active));
+    }
+
+    public GaugingsDataset(String name, double[] stage, double[] discharge, double[] dischargePercentUncertainty) {
+        this(name, stage, discharge, dischargePercentUncertainty, ones(stage.length));
     }
 
     public GaugingsDataset(String name, String hashString) {

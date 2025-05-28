@@ -8,7 +8,9 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.baratinage.utils.ConsoleLogger;
 import org.mozilla.universalchardet.ReaderFactory;
@@ -210,7 +212,7 @@ public class ReadFile {
             columns.add(column);
         }
 
-        lastSkippedIndices = new ArrayList<>();
+        lastSkippedIndices.clear();
         lastTotalNumberOfRows = nRow;
         for (int i = 0; i < nRow; i++) {
             int k = nRowSkip + i;
@@ -245,7 +247,7 @@ public class ReadFile {
         return columns;
     }
 
-    private static List<Integer> lastSkippedIndices = new ArrayList<>();
+    private static final List<Integer> lastSkippedIndices = new ArrayList<>();
     private static int lastTotalNumberOfRows = Integer.MAX_VALUE;
 
     public static boolean didLastReadSkipRows(boolean includeLast) {
@@ -253,6 +255,10 @@ public class ReadFile {
             return lastSkippedIndices.get(0) != lastTotalNumberOfRows;
         }
         return lastSkippedIndices.size() > 0;
+    }
+
+    public static Set<Integer> getLastSkippedIndices() {
+        return new HashSet<>(lastSkippedIndices);
     }
 
     /**

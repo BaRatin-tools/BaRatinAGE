@@ -1,244 +1,128 @@
 package org.baratinage.ui.baratin.gaugings;
 
-import java.awt.Dimension;
-import java.nio.file.Path;
+import java.io.IOException;
 import java.util.List;
+import java.util.Set;
 
-import javax.swing.JButton;
-import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.event.ChangeListener;
 
 import org.baratinage.AppSetup;
 import org.baratinage.translation.T;
+import org.baratinage.utils.ConsoleLogger;
 import org.baratinage.utils.Misc;
 import org.baratinage.utils.fs.ReadFile;
 import org.baratinage.utils.perf.TimedActions;
+import org.baratinage.ui.commons.MsgPanel;
 import org.baratinage.ui.component.CommonDialog;
 import org.baratinage.ui.component.DataFileReader;
-import org.baratinage.ui.component.DataParser;
-import org.baratinage.ui.component.SimpleComboBox;
 import org.baratinage.ui.component.SimpleSep;
+import org.baratinage.ui.component.data_import.DataImporter;
+import org.baratinage.ui.component.data_import.column_mapper.BooleanColumnMapper;
+import org.baratinage.ui.component.data_import.column_mapper.DateTimeColumnMapper;
+import org.baratinage.ui.component.data_import.column_mapper.DoubleColumnMapper;
 import org.baratinage.ui.container.GridPanel;
 import org.baratinage.ui.container.SimpleFlowPanel;
 
-public class GaugingsImporter extends SimpleFlowPanel {
+public class GaugingsImporter extends DataImporter {
 
-    private class ColsMapping {
-        public final SimpleComboBox hCol = new SimpleComboBox();
-        public final SimpleComboBox qCol = new SimpleComboBox();
-        public final SimpleComboBox uqCol = new SimpleComboBox();
-        public String[] headers;
-
-        public void resetHeaders(String[] headers) {
-            this.headers = headers;
-            hCol.setItems(headers);
-            qCol.setItems(headers);
-            uqCol.setItems(headers);
-        }
-
-        public void guessIndices() {
-            int hColIndexGuess = Misc.getIndexGuess(headers, -1,
-                    "(.*\\bh\\b.*)|(.*stage.*)");
-            hCol.setSelectedItem(hColIndexGuess);
-            int qColIndexGuess = Misc.getIndexGuess(headers, -1,
-                    "(.*\\bQ\\b.*)|(.*discharge.*)|(.*streamflow.*)");
-            qCol.setSelectedItem(qColIndexGuess);
-            int uqColIndexGuess = Misc.getIndexGuess(headers, -1,
-                    "(.*\\buQ\\b.*)|(.*discharge.*uncertainty.*)|(.*streamflow.*uncertainty.*)");
-            uqCol.setSelectedItem(uqColIndexGuess);
-        }
-
-        public void setChangeListener(ChangeListener l) {
-            hCol.addChangeListener(l);
-            qCol.addChangeListener(l);
-            uqCol.addChangeListener(l);
-        }
-    }
-
-    private List<String[]> rawData;
-    private String[] headers;
-    private String missingValueString;
-
-    private JDialog dialog;
-    private SimpleFlowPanel dataPreviewPanel;
     private GaugingsDataset dataset;
 
-    private final DataFileReader dataFileReader;
-    private final DataParser dataParser;
-    private final ColsMapping columnsMapping;
-    private final JButton validateButton;
-
-    private final String ID;
+    private final DoubleColumnMapper stageColMapper;
+    private final DoubleColumnMapper dischargeColMapper;
+    private final DoubleColumnMapper dischargeUColMapper;
+    private final BooleanColumnMapper validityColMapper;
+    private final DateTimeColumnMapper dateTimeColMapper;
 
     public GaugingsImporter() {
-        super(true);
+        super();
 
-        ID = Misc.getTimeStampedId();
-
-        columnsMapping = new ColsMapping();
-
-        dataset = null;
-
-        dataPreviewPanel = new SimpleFlowPanel();
-
-        dataFileReader = new DataFileReader(
+        dataFileReader.setFilters(
                 new CommonDialog.CustomFileFilter(
                         T.text("data_text_file"),
                         "txt", "csv", "dat"),
                 new CommonDialog.CustomFileFilter(
                         T.text("bareme_bad_text_file"),
                         "bad"));
-        dataParser = new DataParser(dataFileReader);
 
-        dataPreviewPanel.addChild(dataParser);
+        // **********************************************************
+        // mapping fields
 
-        dataFileReader.addChangeListener((chEvt) -> {
+        stageColMapper = new DoubleColumnMapper();
+        stageColMapper.setGuessPatterns("(?i)^(h|h_[^\\s,;]+|stage|stage_[^\\s,;]+)$");
 
-            if (isBaremeBadFile()) {
-                try {
+        dischargeColMapper = new DoubleColumnMapper();
+        dischargeColMapper.setGuessPatterns(
+                "(?i)^(Q|Q_[^\\s,;]+|discharge|discharge_[^\\s,;]+|streamflow|streamflow_[^\\s,;]+)$");
 
-                    String filePath = dataFileReader.getFilePath();
-                    if (filePath != null) { // FIXME: validateButton should be disabled if import is invalid
-                        dataFileReader.sep = " ";
-                        dataFileReader.nRowSkip = 1;
-                        dataFileReader.hasHeaderRow = false;
-                        String fileName = Path.of(filePath).getFileName().toString();
-                        // necessary to read all the data!
-                        rawData = dataFileReader.getData();
-                        dataParser.setRawData(rawData, headers, "");
+        dischargeUColMapper = new DoubleColumnMapper();
 
-                        double[] h = dataParser.getDoubleCol(0);
-                        double[] Q = dataParser.getDoubleCol(2);
-                        double[] uQ = dataParser.getDoubleCol(3);
+        validityColMapper = new BooleanColumnMapper();
+        dateTimeColMapper = new DateTimeColumnMapper();
 
-                        int n = h.length;
-                        for (int k = 0; k < n; k++) {
-                            double uQpercent = (uQ[k] * 2) / Q[k] * 100;
-                            uQ[k] = uQpercent;
-                        }
-
-                        dataset = new GaugingsDataset(fileName, h, Q, uQ);
-                        dialog.setVisible(false);
-                        return;
-                    }
-                } catch (Exception e) {
-                    CommonDialog.errorDialog(T.text("bareme_bad_import_error"));
-                }
-            }
-
-            rawData = dataFileReader.getData(dataParser.nPreload);
-            headers = dataFileReader.getHeaders();
-            missingValueString = dataFileReader.missingValueString;
-
-            dataParser.setRawData(rawData, headers, missingValueString);
-
-            int nItems = columnsMapping.hCol.getItemCount();
-            int hIndex = columnsMapping.hCol.getSelectedIndex();
-            int qIndex = columnsMapping.qCol.getSelectedIndex();
-            int uqIndex = columnsMapping.uqCol.getSelectedIndex();
-
-            columnsMapping.resetHeaders(headers);
-
-            columnsMapping.guessIndices();
-            if (nItems == headers.length) {
-                if (hIndex != -1) {
-                    columnsMapping.hCol.setSelectedItem(hIndex);
-                }
-                if (qIndex != -1) {
-                    columnsMapping.qCol.setSelectedItem(qIndex);
-                }
-                if (uqIndex != -1) {
-                    columnsMapping.uqCol.setSelectedItem(uqIndex);
-                }
-            }
-        });
-
-        SimpleFlowPanel actionPanel = new SimpleFlowPanel();
-        actionPanel.setPadding(5);
-        actionPanel.setGap(5);
-
-        validateButton = new JButton("import");
-        validateButton.addActionListener((e) -> {
-            String filePath = dataFileReader.getFilePath();
-            if (filePath != null) { // FIXME: validateButton should be disabled if import is invalid
-                String fileName = Path.of(filePath).getFileName().toString();
-                // necessary to read all the data!
-                rawData = dataFileReader.getData();
-                dataParser.setRawData(rawData, headers, missingValueString);
-
-                boolean didLastReadSkipRows = ReadFile.didLastReadSkipRows(false);
-                if (didLastReadSkipRows) {
-                    CommonDialog.warnDialog(T.text("msg_incomplete_rows_skipped_during_import"));
-                }
-
-                dataset = new GaugingsDataset(fileName,
-                        dataParser.getDoubleCol(columnsMapping.hCol.getSelectedIndex()),
-                        dataParser.getDoubleCol(columnsMapping.qCol.getSelectedIndex()),
-                        dataParser.getDoubleCol(columnsMapping.uqCol.getSelectedIndex()));
-            }
-            dialog.setVisible(false);
-        });
-
-        JButton cancelButton = new JButton("cancel");
-        cancelButton.addActionListener((e) -> {
-            dialog.setVisible(false);
-        });
-
-        actionPanel.addChild(cancelButton, 0);
-        actionPanel.addExtensor();
-        actionPanel.addChild(validateButton, 0);
+        // **********************************************************
+        // layout and labels
 
         GridPanel columnMappingPanel = new GridPanel();
         columnMappingPanel.setPadding(5);
         columnMappingPanel.setGap(5);
         columnMappingPanel.setColWeight(1, 1);
 
+        SimpleFlowPanel colMappingMainPanel = new SimpleFlowPanel();
+        colMappingMainPanel.setGap(5);
+        colMappingMainPanel.setPadding(5);
+        SimpleFlowPanel colMappingLeftPanel = new SimpleFlowPanel(true);
+        colMappingLeftPanel.setGap(5);
+        colMappingMainPanel.addChild(colMappingLeftPanel, true);
+        SimpleFlowPanel colMappingRightPanel = new SimpleFlowPanel(true);
+        colMappingRightPanel.setGap(5);
+        colMappingMainPanel.addChild(colMappingRightPanel, true);
+
+        JLabel mandatoryFieldsLabel = new JLabel();
+        T.t(this, mandatoryFieldsLabel, false, "mandatory_fields");
+        colMappingRightPanel.addChild(mandatoryFieldsLabel, false);
+
+        colMappingLeftPanel.addChild(mandatoryFieldsLabel, false);
+        colMappingLeftPanel.addChild(new SimpleSep(), false);
+        colMappingLeftPanel.addChild(stageColMapper, false);
+        colMappingLeftPanel.addChild(dischargeColMapper, false);
+        colMappingLeftPanel.addChild(dischargeUColMapper, false);
+
+        JLabel optionalFieldsLabel = new JLabel();
+        T.t(this, optionalFieldsLabel, false, "optional_fields");
+        colMappingRightPanel.addChild(optionalFieldsLabel, false);
+
+        colMappingRightPanel.addChild(new SimpleSep(), false);
+        colMappingRightPanel.addChild(validityColMapper, false);
+
+        colMappingRightPanel.addChild(dateTimeColMapper, false);
+
+        mainConfigPanel.addChild(colMappingMainPanel, true);
+
+        // **********************************************************
+        // i18n
+
+        T.updateHierarchy(this, validityColMapper);
+        T.updateHierarchy(this, dateTimeColMapper);
+        T.t(this, validateButton, false, "import");
+        T.t(this, stageColMapper.label, false, "stage");
+        T.t(this, dischargeColMapper.label, false, "discharge");
+        T.t(this, dischargeUColMapper.label, false, "discharge_uncertainty_percent");
+
+        // **********************************************************
+        // when updating a field
         ChangeListener cbChangeListener = (chEvt) -> {
             TimedActions.debounce(ID, AppSetup.CONFIG.DEBOUNCED_DELAY_MS, this::updateValidityStatus);
         };
 
-        columnsMapping.setChangeListener(cbChangeListener);
-
-        int rowIndex = 0;
-
-        JLabel hColMapLabel = new JLabel("stage");
-        columnMappingPanel.insertChild(hColMapLabel, 0, rowIndex);
-        columnMappingPanel.insertChild(columnsMapping.hCol, 1, rowIndex);
-        rowIndex++;
-
-        JLabel qColMapLabel = new JLabel("discharge");
-        columnMappingPanel.insertChild(qColMapLabel, 0, rowIndex);
-        columnMappingPanel.insertChild(columnsMapping.qCol, 1, rowIndex);
-        rowIndex++;
-
-        JLabel uqColMapLabel = new JLabel("discharge_uncertainty_percent");
-        columnMappingPanel.insertChild(uqColMapLabel, 0, rowIndex);
-        columnMappingPanel.insertChild(columnsMapping.uqCol, 1, rowIndex);
-        // rowIndex++;
-
-        addChild(dataFileReader, false);
-        addChild(new SimpleSep(), false);
-        addChild(columnMappingPanel, false);
-        addChild(new SimpleSep(), false);
-        addChild(dataPreviewPanel, true);
-        addChild(new SimpleSep(), false);
-        addChild(actionPanel, false);
-
-        T.updateHierarchy(this, dataFileReader);
-        T.updateHierarchy(this, dataParser);
-        T.t(this, validateButton, false, "import");
-        T.t(this, cancelButton, false, "cancel");
-        T.t(this, hColMapLabel, false, "stage");
-        T.t(this, qColMapLabel, false, "discharge");
-        T.t(this, uqColMapLabel, false, "discharge_uncertainty_percent");
+        stageColMapper.combobox.addChangeListener(cbChangeListener);
+        dischargeColMapper.combobox.addChangeListener(cbChangeListener);
+        dischargeUColMapper.combobox.addChangeListener(cbChangeListener);
+        validityColMapper.addChangeListener(cbChangeListener);
+        dateTimeColMapper.addChangeListener(cbChangeListener);
     }
 
-    private boolean isBaremeBadFile() {
-        if (dataFileReader.file == null) {
-            return false;
-        }
-        String fileName = dataFileReader.file.getName();
+    private static boolean isBaremeBadFile(String fileName) {
         int lastIndexOfDot = fileName.lastIndexOf('.');
 
         if (lastIndexOfDot == -1 || lastIndexOfDot == fileName.length() - 1) {
@@ -249,55 +133,167 @@ public class GaugingsImporter extends SimpleFlowPanel {
     }
 
     private void updateValidityStatus() {
-        // if there's not data, not point checking validity
-        if (rawData == null) {
-            columnsMapping.hCol.setValidityView(false);
-            columnsMapping.qCol.setValidityView(false);
-            columnsMapping.uqCol.setValidityView(false);
+        errorPanel.removeAll();
+
+        if (dataFileReader.file == null) {
             return;
         }
-        dataParser.ignoreAll();
 
-        // stage
-        int hColIndex = columnsMapping.hCol.getSelectedIndex();
-        dataParser.setAsDoubleCol(hColIndex);
-        boolean hColOk = hColIndex >= 0 && dataParser.testColValidity(hColIndex);
+        dataPreview.resetColumnMappers();
 
-        // discharge
-        int qColIndex = columnsMapping.qCol.getSelectedIndex();
-        dataParser.setAsDoubleCol(qColIndex);
-        boolean qColOk = qColIndex >= 0 && dataParser.testColValidity(qColIndex);
+        dataPreview.setColumnMapper(stageColMapper.getIndex(), stageColMapper);
+        dataPreview.setColumnMapper(dischargeColMapper.getIndex(), dischargeColMapper);
+        dataPreview.setColumnMapper(dischargeUColMapper.getIndex(), dischargeUColMapper);
+        dataPreview.setColumnMapper(validityColMapper.getIndex(), validityColMapper);
+        int[] dateTimeIndices = dateTimeColMapper.getIndices();
+        for (int i : dateTimeIndices) {
+            dataPreview.setColumnMapper(i, dateTimeColMapper);
+        }
 
-        // discharge
-        int uqColIndex = columnsMapping.uqCol.getSelectedIndex();
-        dataParser.setAsDoubleCol(uqColIndex);
-        boolean uqColOk = uqColIndex >= 0 && dataParser.testColValidity(uqColIndex);
+        Set<Integer> hInvalidIndices = stageColMapper.getInvalidIndices();
+        boolean hColOk = stageColMapper.getIndex() >= 0 && hInvalidIndices.size() == 0;
 
-        // update ui
-        dataParser.updateColumnTypes();
-        columnsMapping.hCol.setValidityView(hColOk);
-        columnsMapping.qCol.setValidityView(qColOk);
-        columnsMapping.uqCol.setValidityView(uqColOk);
-        validateButton.setEnabled(hColOk && qColOk && uqColOk);
-    }
+        Set<Integer> qInvalidIndices = dischargeColMapper.getInvalidIndices();
+        boolean qColOk = dischargeColMapper.getIndex() >= 0 && qInvalidIndices.size() == 0;
 
-    public void showDialog() {
+        Set<Integer> uqInvalidIndices = dischargeUColMapper.getInvalidIndices();
+        boolean uqColOk = dischargeUColMapper.getIndex() >= 0 && uqInvalidIndices.size() == 0;
 
-        dialog = new JDialog(AppSetup.MAIN_FRAME, true);
-        dialog.setContentPane(this);
+        Set<Integer> tInvalidIndices = dateTimeColMapper.getInvalidIndices();
+        boolean tColOk = !dateTimeColMapper.hasValidSelection()
+                || (dateTimeColMapper.hasValidSelection() && tInvalidIndices.size() == 0);
 
-        dialog.setTitle(T.text("import_gauging_set"));
-        dialog.setMinimumSize(new Dimension(600, 400));
-        dialog.setPreferredSize(new Dimension(900, 600));
+        Set<Integer> lastSkippedIndices = dataFileReader.getLastSkippedIndices();
+        if (lastSkippedIndices.size() > 0) {
+            errorPanel.addChild(MsgPanel.buildMsgPanel(
+                    T.text("msg_incomplete_rows_skipped_during_import",
+                            lastSkippedIndices.size(),
+                            Misc.createIntegerStringList(
+                                    lastSkippedIndices.stream().map(i -> i + 1).toList(),
+                                    5)),
+                    MsgPanel.TYPE.ERROR));
+        }
+        if (!hColOk) {
+            errorPanel.addChild(MsgPanel.buildMsgPanel(
+                    T.text("stage"),
+                    buildErrorMessage(hInvalidIndices), MsgPanel.TYPE.ERROR));
+        }
+        if (!qColOk) {
+            errorPanel.addChild(MsgPanel.buildMsgPanel(
+                    T.text("discharge"),
+                    buildErrorMessage(hInvalidIndices), MsgPanel.TYPE.ERROR));
+        }
+        if (!uqColOk) {
+            errorPanel.addChild(MsgPanel.buildMsgPanel(
+                    T.text("discharge_uncertainty_percent"),
+                    buildErrorMessage(uqInvalidIndices), MsgPanel.TYPE.ERROR));
+        }
+        if (!tColOk) {
+            errorPanel.addChild(MsgPanel.buildMsgPanel(
+                    T.text("date_time"),
+                    buildErrorMessage(tInvalidIndices), MsgPanel.TYPE.ERROR));
+        }
 
-        dialog.pack();
-        dialog.setLocationRelativeTo(AppSetup.MAIN_FRAME);
-        dialog.setVisible(true);
-        dialog.dispose();
+        stageColMapper.combobox.setValidityView(hColOk);
+        dischargeColMapper.combobox.setValidityView(qColOk);
+        dischargeUColMapper.combobox.setValidityView(uqColOk);
+        dateTimeColMapper.setValidityView(tColOk);
+
+        validateButton.setEnabled(hColOk && qColOk && uqColOk && tColOk);
+
+        dataPreview.updatePreviewTable();
     }
 
     public GaugingsDataset getDataset() {
         return dataset;
+    }
+
+    private static GaugingsDataset buildGaugingDatasetFromBaremeFile(String fileName, String filePath) {
+        new DataFileReader();
+
+        try {
+            List<double[]> data = ReadFile.readMatrix(
+                    filePath,
+                    " ",
+                    1,
+                    Integer.MAX_VALUE,
+                    "",
+                    true,
+                    true);
+
+            double[] h = data.get(0);
+            double[] Q = data.get(2);
+            double[] uQ = data.get(3);
+
+            int n = h.length;
+            for (int k = 0; k < n; k++) {
+                double uQpercent = (uQ[k] * 2) / Q[k] * 100;
+                uQ[k] = uQpercent;
+            }
+
+            return new GaugingsDataset(fileName, h, Q, uQ);
+        } catch (IOException e) {
+            ConsoleLogger.error("Failed to read Barème .bad file!");
+            ConsoleLogger.error(e);
+        }
+
+        return null;
+    }
+
+    @Override
+    protected void applyInputFileChange(List<String[]> data, String[] headers, String missingValue) {
+
+        String fileName = dataFileReader.file.getName();
+
+        if (isBaremeBadFile(fileName)) {
+            GaugingsDataset gaugings = buildGaugingDatasetFromBaremeFile(fileName, dataFileReader.filePath);
+            if (gaugings == null) {
+                CommonDialog.errorDialog(T.text("bareme_bad_import_error"));
+                return;
+            }
+            dataset = gaugings;
+            return;
+        }
+
+        stageColMapper.setData(data, headers, missingValue);
+        dischargeColMapper.setData(data, headers, missingValue);
+        dischargeUColMapper.setData(data, headers, missingValue);
+        validityColMapper.setData(data, headers, missingValue);
+        dateTimeColMapper.setData(data, headers, missingValue);
+
+        stageColMapper.guessColumnIndex(false);
+        dischargeColMapper.guessColumnIndex(false);
+
+        updateValidityStatus();
+
+    }
+
+    @Override
+    protected void buildDataset() {
+
+        String fileName = dataFileReader.file.getName();
+
+        // boolean didLastReadSkipRows = ReadFile.didLastReadSkipRows(false);
+        // if (didLastReadSkipRows) {
+        // CommonDialog.warnDialog(T.text("msg_incomplete_rows_skipped_during_import"));
+        // }
+
+        double[] h = stageColMapper.getParsedColumn();
+        double[] Q = dischargeColMapper.getParsedColumn();
+        double[] uQ = dischargeUColMapper.getParsedColumn();
+        double[] vDouble = GaugingsDataset.ones(h.length);
+
+        if (validityColMapper.getIndex() >= 0) {
+            boolean[] v = validityColMapper.getParsedColumn();
+            for (int k = 0; k < v.length; k++) {
+                vDouble[k] = v[k] ? 1.0 : 0.0;
+            }
+        }
+
+        dataset = new GaugingsDataset(
+                fileName,
+                h, Q, uQ, vDouble);
+
     }
 
 }

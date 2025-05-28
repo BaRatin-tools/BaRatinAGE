@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
@@ -20,6 +21,7 @@ import java.util.UUID;
 import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import javax.swing.JComponent;
 import javax.swing.JFrame;
@@ -366,5 +368,32 @@ public class Misc {
             valuesString[k] = Double.toString(values[k]);
         }
         return String.join(",", valuesString);
+    }
+
+    public static String createIntegerStringList(List<Integer> indices, int maxValues) {
+        List<Integer> list = new ArrayList<>(indices);
+        Collections.sort(list);
+        String result;
+        if (list.size() <= maxValues) {
+            result = list.stream().map(String::valueOf).collect(Collectors.joining(", "));
+        } else {
+            result = String.format("%s, %s, ..., %s, %s",
+                    list.get(0), list.get(1),
+                    list.get(list.size() - 2), list.get(list.size() - 1));
+        }
+        return result;
+    }
+
+    public static String formatKilobitesSize(double sizeInKb) {
+        if (sizeInKb <= 0) {
+            return "0 B";
+        }
+
+        int sizeInBytes = (int) sizeInKb * 1024;
+
+        final String[] units = { "B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB" };
+        int digitGroups = (int) (Math.log10(sizeInBytes) / Math.log10(1024));
+
+        return String.format("%.1f %s", sizeInBytes / Math.pow(1024, digitGroups), units[digitGroups]);
     }
 }

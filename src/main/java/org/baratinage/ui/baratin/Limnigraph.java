@@ -15,8 +15,8 @@ import org.baratinage.ui.bam.BamConfig;
 import org.baratinage.ui.bam.BamItemType;
 import org.baratinage.ui.baratin.limnigraph.LimnigraphDataset;
 import org.baratinage.ui.baratin.limnigraph.LimnigraphErrors;
-import org.baratinage.ui.baratin.limnigraph.LimnigraphImporter;
 import org.baratinage.ui.baratin.limnigraph.LimnigraphTable;
+import org.baratinage.ui.baratin.limnigraph.LimnigraphImporter;
 import org.baratinage.ui.commons.DatasetConfig;
 import org.baratinage.ui.container.SimpleFlowPanel;
 import org.baratinage.ui.container.SplitContainer;
@@ -54,7 +54,7 @@ public class Limnigraph extends BamItem {
 
         JButton importDataButton = new JButton();
         importDataButton.addActionListener((e) -> {
-            limniImporter.showDialog();
+            limniImporter.showDialog(T.text("import_limnigraph"));
             LimnigraphDataset newLimniDataset = limniImporter.getDataset();
             if (newLimniDataset != null && newLimniDataset.getNumberOfColumns() >= 1) {
                 if (!newLimniDataset.hasStageErrMatrix()) {
