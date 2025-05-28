@@ -97,6 +97,25 @@ public class AbstractDataset {
 
     }
 
+    public static String[] getDatasetHeaders(String name, String hashString) {
+        Path dataFilePath = buildDataFilePath(name, hashString);
+        String[] fileHeaders = null;
+
+        if (Files.exists(dataFilePath)) {
+            ConsoleLogger.log("Reading file '" + dataFilePath + "'...");
+            String dataFilePathString = dataFilePath.toString();
+            try {
+                String headerLine = ReadFile.getLines(dataFilePathString, 1, false)[0];
+                fileHeaders = ReadFile.parseString(headerLine, ";", false);
+            } catch (IOException e) {
+                ConsoleLogger.error("Failed to read data file ...(" + dataFilePathString + ")\n" + e);
+            }
+        } else {
+            ConsoleLogger.error("File '" + dataFilePath + "' not found!");
+        }
+        return fileHeaders;
+    }
+
     public String getName() {
         return name;
     }
