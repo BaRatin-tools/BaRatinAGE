@@ -101,8 +101,8 @@ public class SimpleFlowPanel extends JPanel {
     setPadding(vPadding, hPadding, vPadding, hPadding);
   }
 
-  public void setPadding(int top, int right, int bottom, int left) {
-    this.padding = new Insets(top, right, bottom, left);
+  public void setPadding(int top, int left, int bottom, int right) {
+    this.padding = new Insets(top, left, bottom, right);
     revalidate();
     repaint();
   }
