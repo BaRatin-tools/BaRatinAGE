@@ -312,25 +312,32 @@ public class DateTimeColumnMapper extends BorderedSimpleFlowPanel implements IDa
     } else if (modeCombobox.getSelectedIndex() == 1) {
       String dateFormatStr = dateFormat.getCurrentText();
       String timeFormatStr = timeFormat.getCurrentText();
-      String format = String.format("%s %s", dateFormatStr, timeFormatStr);
-
-      Function<String, LocalDateTime> converter = buildDateTimeConverter(format);
 
       String[] dateVectorStr = dateField.getUnparsedColumn();
       String[] timeVectorStr = timeField.getUnparsedColumn();
 
-      if (dateVectorStr == null || timeVectorStr == null) {
+      if (dateVectorStr == null) {
         unparsed = null;
         parsed = null;
         fireChangeListeners();
         return;
       }
 
+      String format = String.format("%s %s", dateFormatStr, timeVectorStr == null ? "HH:mm:ss" : timeFormatStr);
+
+      Function<String, LocalDateTime> converter = buildDateTimeConverter(format);
+
       int n = dateVectorStr.length;
 
       unparsed = new String[n];
-      for (int k = 0; k < n; k++) {
-        unparsed[k] = dateVectorStr[k] + " " + timeVectorStr[k];
+      if (timeVectorStr == null) {
+        for (int k = 0; k < n; k++) {
+          unparsed[k] = dateVectorStr[k] + " 00:00:00";
+        }
+      } else {
+        for (int k = 0; k < n; k++) {
+          unparsed[k] = dateVectorStr[k] + " " + timeVectorStr[k];
+        }
       }
 
       parsed = new LocalDateTime[n];
