@@ -2,6 +2,7 @@ package org.baratinage.ui.baratin;
 
 import java.awt.Cursor;
 import java.awt.Point;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 
 import javax.swing.JButton;
@@ -57,7 +58,8 @@ public class Gaugings extends BamItem implements ICalibrationData {
         SplitContainer content = new SplitContainer(
                 importGaugingsPanel,
                 plotPanel,
-                true);
+                true,
+                0.3f);
 
         importedDataSetSourceLabel = new JLabel();
 
@@ -68,7 +70,7 @@ public class Gaugings extends BamItem implements ICalibrationData {
         importDataButton.addActionListener((e) -> {
             gaugingsImporter.showDialog(T.text("import_gauging_set"));
             GaugingsDataset newGaugingDataset = gaugingsImporter.getDataset();
-            if (newGaugingDataset != null && newGaugingDataset.getNumberOfColumns() == 4) {
+            if (newGaugingDataset != null && newGaugingDataset.getNumberOfColumns() > 4) {
                 gaugingDataset = newGaugingDataset;
                 updateTable();
             }
@@ -76,7 +78,11 @@ public class Gaugings extends BamItem implements ICalibrationData {
 
         gaugingsTable = new DataTable();
         gaugingsTable.addChangeListener((e) -> {
-            gaugingDataset.updateActiveStateValues((Boolean[]) gaugingsTable.getColumn(3));
+            int activeColIndex = gaugingsTable.getColumnCount() == 5 ? 4 : 3;
+            Object[] activeGaugingColumn = gaugingsTable.getColumn(activeColIndex);
+            if (activeGaugingColumn instanceof Boolean[]) {
+                gaugingDataset.updateActiveStateValues((Boolean[]) activeGaugingColumn);
+            }
             setPlot();
             fireChangeListeners();
         });
@@ -110,18 +116,30 @@ public class Gaugings extends BamItem implements ICalibrationData {
     private void updateTable() {
 
         gaugingsTable.clearColumns();
+        LocalDateTime[] dateTime = gaugingDataset.getDateTime();
+        if (dateTime != null) {
+            gaugingsTable.addColumn(dateTime);
+        }
         gaugingsTable.addColumn(gaugingDataset.getStageValues());
         gaugingsTable.addColumn(gaugingDataset.getDischargeValues());
         gaugingsTable.addColumn(gaugingDataset.getDischargePercentUncertainty());
         gaugingsTable.addColumn(gaugingDataset.getActiveStateAsBoolean(), true);
+
         gaugingsTable.updateData();
 
         T.clear(gaugingsTable);
         T.t(gaugingsTable, () -> {
-            gaugingsTable.setHeader(0, T.text("stage"));
-            gaugingsTable.setHeader(1, T.text("discharge"));
-            gaugingsTable.setHeader(2, T.text("uncertainty_percent"));
-            gaugingsTable.setHeader(3, T.text("active_gauging"));
+            int offset = 0;
+            if (dateTime != null) {
+                gaugingsTable.addColumn(dateTime);
+                gaugingsTable.setHeader(0, T.text("date_time"));
+                offset++;
+            }
+            gaugingsTable.setHeader(0 + offset, T.text("stage"));
+            gaugingsTable.setHeader(1 + offset, T.text("discharge"));
+            gaugingsTable.setHeader(2 + offset, T.text("uncertainty_percent"));
+            gaugingsTable.setHeader(3 + offset, T.text("active_gauging"));
+
             gaugingsTable.updateHeader();
         });
 

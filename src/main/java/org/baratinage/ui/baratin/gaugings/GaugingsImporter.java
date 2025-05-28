@@ -1,6 +1,7 @@
 package org.baratinage.ui.baratin.gaugings;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 
@@ -273,15 +274,11 @@ public class GaugingsImporter extends DataImporter {
 
         String fileName = dataFileReader.file.getName();
 
-        // boolean didLastReadSkipRows = ReadFile.didLastReadSkipRows(false);
-        // if (didLastReadSkipRows) {
-        // CommonDialog.warnDialog(T.text("msg_incomplete_rows_skipped_during_import"));
-        // }
-
         double[] h = stageColMapper.getParsedColumn();
         double[] Q = dischargeColMapper.getParsedColumn();
         double[] uQ = dischargeUColMapper.getParsedColumn();
         double[] vDouble = GaugingsDataset.ones(h.length);
+        LocalDateTime[] dateTime = dateTimeColMapper.getParsedColumn();
 
         if (validityColMapper.getIndex() >= 0) {
             boolean[] v = validityColMapper.getParsedColumn();
@@ -289,10 +286,15 @@ public class GaugingsImporter extends DataImporter {
                 vDouble[k] = v[k] ? 1.0 : 0.0;
             }
         }
-
-        dataset = new GaugingsDataset(
-                fileName,
-                h, Q, uQ, vDouble);
+        if (dateTime != null) {
+            dataset = new GaugingsDataset(
+                    fileName,
+                    h, Q, uQ, vDouble, dateTime);
+        } else {
+            dataset = new GaugingsDataset(
+                    fileName,
+                    h, Q, uQ, vDouble);
+        }
 
     }
 

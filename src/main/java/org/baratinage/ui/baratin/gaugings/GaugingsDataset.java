@@ -1,5 +1,6 @@
 package org.baratinage.ui.baratin.gaugings;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -12,6 +13,7 @@ import org.baratinage.ui.commons.AbstractDataset;
 import org.baratinage.ui.plot.PlotItem;
 import org.baratinage.ui.plot.PlotPoints;
 import org.baratinage.utils.ConsoleLogger;
+import org.baratinage.utils.DateTime;
 
 public class GaugingsDataset extends AbstractDataset implements IPlotDataProvider {
 
@@ -21,6 +23,22 @@ public class GaugingsDataset extends AbstractDataset implements IPlotDataProvide
             d[k] = 1;
         }
         return d;
+    }
+
+    public GaugingsDataset(
+            String name,
+            double[] stage,
+            double[] discharge,
+            double[] dischargePercentUncertainty,
+            double[] active,
+            LocalDateTime[] dateTime) {
+        super(name,
+                new NamedColumn("stage", stage),
+                new NamedColumn("discharge", discharge),
+                new NamedColumn("dischargePercentUncertainty",
+                        dischargePercentUncertainty),
+                new NamedColumn("active", active),
+                new NamedColumn("dateTime", DateTime.dateTimeToDoubleVector(dateTime)));
     }
 
     public GaugingsDataset(
@@ -41,8 +59,29 @@ public class GaugingsDataset extends AbstractDataset implements IPlotDataProvide
         this(name, stage, discharge, dischargePercentUncertainty, ones(stage.length));
     }
 
+    private static final String[] headersWithDateTime = new String[] {
+            "stage",
+            "discharge",
+            "dischargePercentUncertainty",
+            "active",
+            "dateTime" };
+
+    private static final String[] headersWithoutDateTime = new String[] {
+            "stage",
+            "discharge",
+            "dischargePercentUncertainty",
+            "active" };
+
+    private static final boolean datasetIncludesDateTime(String name, String hashString) {
+        String[] headers = AbstractDataset.getDatasetHeaders(name, hashString);
+        return headers != null && headers.length == 5;
+    }
+
     public GaugingsDataset(String name, String hashString) {
-        super(name, hashString, "stage", "discharge", "dischargePercentUncertainty", "active");
+        super(
+                name,
+                hashString,
+                datasetIncludesDateTime(name, hashString) ? headersWithDateTime : headersWithoutDateTime);
     }
 
     public double[] getStageValues() {
@@ -123,7 +162,13 @@ public class GaugingsDataset extends AbstractDataset implements IPlotDataProvide
         return toBoolean(getActiveStateAsDouble());
     }
 
-    // public
+    public LocalDateTime[] getDateTime() {
+        double[] dateTimeAsDouble = getColumn("dateTime");
+        if (dateTimeAsDouble == null) {
+            return null;
+        }
+        return DateTime.doubleToDateTimeVector(dateTimeAsDouble);
+    }
 
     private static Map<Boolean, double[]> splitArray(double[] array, boolean[] filter) {
         int n = filter.length;
