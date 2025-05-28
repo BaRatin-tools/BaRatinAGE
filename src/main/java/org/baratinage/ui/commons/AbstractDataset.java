@@ -163,18 +163,15 @@ public class AbstractDataset {
     }
 
     private String computeHashString() {
-        int[] hashCodes = new int[data.size() * 2];
-        int k = 0;
+        List<Integer> hashCodes = new ArrayList<>();
         for (NamedColumn column : data) {
-            hashCodes[k] = column.name().hashCode();
-            k++;
-            hashCodes[k] = Arrays.hashCode(column.values());
-            k++;
+            hashCodes.add(column.name().hashCode());
+            hashCodes.add(Arrays.hashCode(column.values()));
         }
-        int hashCode = Arrays.hashCode(hashCodes);
+        int hashCode = Arrays.hashCode(hashCodes.stream().mapToInt(Integer::intValue).toArray());
         hashCode = hashCode < 0 ? hashCode * -1 : hashCode;
         String hashString = "" + hashCode;
-        ConsoleLogger.log("hash string  '" + hashString + "' was built for '" + name + "' ");
+        ConsoleLogger.log("hash string '" + hashString + "' was built for '" + name + "' ");
         return hashString;
     }
 
