@@ -13,6 +13,44 @@ import javax.swing.event.ChangeListener;
 
 public class SimpleRadioButtons<T> {
 
+    /**
+     * Usage example:
+     * 
+     * 
+     * 
+     * SimpleRadioButtons<String> sepRatioButtons = new SimpleRadioButtons<>();
+     * 
+     * sepRatioButtons.addChangeListener((chEvt) -> {
+     * sep = sepRatioButtons.getSelectedValue();
+     * fireChangeListeners();
+     * });
+     * JRadioButton tabOptBtn = sepRatioButtons.addOption("tab", "sep_tab", "\t");
+     * JRadioButton semicolOptBtn = sepRatioButtons.addOption(
+     * "semicolon",
+     * "sep_semicolon",
+     * ";"
+     * );
+     * JRadioButton commaOptBtn = sepRatioButtons.addOption(
+     * "comma",
+     * "sep_comma",
+     * ","
+     * );
+     * JRadioButton spaceOptBtn = sepRatioButtons.addOption(
+     * "space",
+     * "sep_space",
+     * " "
+     * );
+     * 
+     * sepRatioButtons.setSelected("semicolon");
+     * SimpleFlowPanel sepOptionButtons = new SimpleFlowPanel();
+     * sepOptionButtons.setGap(5);
+     * sepOptionButtons.addChild(tabOptBtn, false);
+     * sepOptionButtons.addChild(semicolOptBtn, false);
+     * sepOptionButtons.addChild(commaOptBtn, false);
+     * sepOptionButtons.addChild(spaceOptBtn, false);
+     * 
+     */
+
     private final Map<String, T> optVals = new HashMap<>();
     private final Map<String, JRadioButton> optBtns = new HashMap<>();
     private ButtonGroup buttonGroup = new ButtonGroup();
