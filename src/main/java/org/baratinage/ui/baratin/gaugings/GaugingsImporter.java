@@ -232,7 +232,7 @@ public class GaugingsImporter extends DataImporter {
                 uQ[k] = uQpercent;
             }
 
-            return new GaugingsDataset(fileName, h, Q, uQ);
+            return GaugingsDataset.buildGaugingsDataset(fileName, h, Q, uQ, null, null);
         } catch (IOException e) {
             ConsoleLogger.error("Failed to read Barème .bad file!");
             ConsoleLogger.error(e);
@@ -277,25 +277,14 @@ public class GaugingsImporter extends DataImporter {
         double[] h = stageColMapper.getParsedColumn();
         double[] Q = dischargeColMapper.getParsedColumn();
         double[] uQ = dischargeUColMapper.getParsedColumn();
-        double[] vDouble = GaugingsDataset.ones(h.length);
+        // double[] vDouble = Misc.ones(h.length);
         LocalDateTime[] dateTime = dateTimeColMapper.getParsedColumn();
 
-        if (validityColMapper.getIndex() >= 0) {
-            boolean[] v = validityColMapper.getParsedColumn();
-            for (int k = 0; k < v.length; k++) {
-                vDouble[k] = v[k] ? 1.0 : 0.0;
-            }
-        }
-        if (dateTime != null) {
-            dataset = new GaugingsDataset(
-                    fileName,
-                    h, Q, uQ, vDouble, dateTime);
-        } else {
-            dataset = new GaugingsDataset(
-                    fileName,
-                    h, Q, uQ, vDouble);
-        }
+        boolean[] v = validityColMapper.getParsedColumn();
 
+        dataset = GaugingsDataset.buildGaugingsDataset(
+                fileName,
+                h, Q, uQ, v, dateTime);
     }
 
 }

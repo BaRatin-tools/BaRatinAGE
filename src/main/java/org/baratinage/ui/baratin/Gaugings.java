@@ -123,7 +123,7 @@ public class Gaugings extends BamItem implements ICalibrationData {
         gaugingsTable.addColumn(gaugingDataset.getStageValues());
         gaugingsTable.addColumn(gaugingDataset.getDischargeValues());
         gaugingsTable.addColumn(gaugingDataset.getDischargePercentUncertainty());
-        gaugingsTable.addColumn(gaugingDataset.getActiveStateAsBoolean(), true);
+        gaugingsTable.addColumn(gaugingDataset.getStateAsBoolean(), true);
 
         gaugingsTable.updateData();
 
@@ -296,7 +296,7 @@ public class Gaugings extends BamItem implements ICalibrationData {
 
         if (json.has("gaugingDataset")) {
             JSONObject gaugingDatasetJson = json.getJSONObject("gaugingDataset");
-            gaugingDataset = new GaugingsDataset(
+            gaugingDataset = GaugingsDataset.buildGaugingsDataset(
                     gaugingDatasetJson.getString("name"),
                     gaugingDatasetJson.getString("hashString"));
             updateTable();

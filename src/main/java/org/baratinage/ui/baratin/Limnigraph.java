@@ -56,12 +56,12 @@ public class Limnigraph extends BamItem {
         importDataButton.addActionListener((e) -> {
             limniImporter.showDialog(T.text("import_limnigraph"));
             LimnigraphDataset newLimniDataset = limniImporter.getDataset();
-            if (newLimniDataset != null && newLimniDataset.getNumberOfColumns() >= 1) {
-                if (!newLimniDataset.hasStageErrMatrix()) {
-                    newLimniDataset.computeErroMatrix(AppSetup.CONFIG.N_SAMPLES_LIMNI_ERRORS.get());
-                }
-                updateDataset(newLimniDataset);
-            }
+            // if (newLimniDataset != null && newLimniDataset.getNumberOfColumns() >= 1) {
+            // if (!newLimniDataset.hasStageErrMatrix()) {
+            // newLimniDataset.computeErroMatrix(AppSetup.CONFIG.N_SAMPLES_LIMNI_ERRORS.get());
+            // }
+            updateDataset(newLimniDataset);
+            // }
             fireChangeListeners();
         });
 
@@ -237,12 +237,11 @@ public class Limnigraph extends BamItem {
                         limniDatasetJson.getString("name"),
                         limniDatasetJson.getString("hashString"));
             } else {
-                int nCol = limniErrMatrixJson.getJSONArray("headers").length();
                 newLimniDataset = new LimnigraphDataset(
                         limniDatasetJson.getString("name"),
                         limniDatasetJson.getString("hashString"),
                         limniErrMatrixJson.getString("name"),
-                        limniErrMatrixJson.getString("hashString"), nCol);
+                        limniErrMatrixJson.getString("hashString"));
             }
             if (newLimniDataset != null) {
                 updateDataset(newLimniDataset);

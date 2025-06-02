@@ -2,7 +2,6 @@ package org.baratinage.ui.baratin.gaugings;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,97 +13,196 @@ import org.baratinage.ui.plot.PlotItem;
 import org.baratinage.ui.plot.PlotPoints;
 import org.baratinage.utils.ConsoleLogger;
 import org.baratinage.utils.DateTime;
+import org.baratinage.utils.Misc;
 
 public class GaugingsDataset extends AbstractDataset implements IPlotDataProvider {
 
-    public static double[] ones(int n) {
-        double[] d = new double[n];
-        for (int k = 0; k < n; k++) {
-            d[k] = 1;
+    private static final String STAGE = "stage";
+    private static final String DISCHARGE = "discharge";
+    private static final String DISCHARGE_U = "dischargePercentUncertainty";
+    private static final String DISCHARGE_STD = "dischargeStd";
+    private static final String DISCHARGE_LOW = "dischargeStd";
+    private static final String DISCHARGE_HIGH = "dischargeStd";
+    private static final String STATE = "active";
+    private static final String DATETIME = "dateTime";
+
+    final private boolean[] state;
+    final private LocalDateTime[] datetime;
+
+    private final Map<String, double[]> derived = new HashMap<>();
+    private final Map<String, double[]> gaugingsTrue = new HashMap<>();
+    private final Map<String, double[]> gaugingsFalse = new HashMap<>();
+
+    public static GaugingsDataset buildGaugingsDataset(
+            String name,
+            double[] stage,
+            double[] discharge,
+            double[] dischargePercentUncertainty,
+            boolean[] active,
+            LocalDateTime[] datetime) {
+        if (active == null) {
+            active = new boolean[stage.length];
+            for (int k = 0; k < stage.length; k++) {
+                active[k] = true;
+            }
         }
-        return d;
+        GaugingsDataset gds = datetime == null
+                ? new GaugingsDataset(name, stage, discharge, dischargePercentUncertainty, active)
+                : new GaugingsDataset(name, stage, discharge, dischargePercentUncertainty, active, datetime);
+
+        return gds;
     }
 
-    public GaugingsDataset(
+    public static GaugingsDataset buildGaugingsDataset(String name, String hashString) {
+        return new GaugingsDataset(name, hashString);
+    }
+
+    private GaugingsDataset(
             String name,
             double[] stage,
             double[] discharge,
             double[] dischargePercentUncertainty,
-            double[] active,
-            LocalDateTime[] dateTime) {
+            boolean[] active,
+            LocalDateTime[] datetime) {
         super(name,
-                new NamedColumn("stage", stage),
-                new NamedColumn("discharge", discharge),
-                new NamedColumn("dischargePercentUncertainty",
-                        dischargePercentUncertainty),
-                new NamedColumn("active", active),
-                new NamedColumn("dateTime", DateTime.dateTimeToDoubleVector(dateTime)));
+                new String[] {
+                        STAGE, DISCHARGE, DISCHARGE_U, STATE, DATETIME
+                },
+                stage,
+                discharge,
+                dischargePercentUncertainty,
+                toDouble(active),
+                DateTime.dateTimeToDoubleVector(datetime));
+
+        // keep track of original data in its original type
+        this.state = active;
+        this.datetime = datetime;
+
+        updateDerivedValues();
     }
 
-    public GaugingsDataset(
+    private GaugingsDataset(
             String name,
             double[] stage,
             double[] discharge,
             double[] dischargePercentUncertainty,
-            double[] active) {
+            boolean[] active) {
         super(name,
-                new NamedColumn("stage", stage),
-                new NamedColumn("discharge", discharge),
-                new NamedColumn("dischargePercentUncertainty",
-                        dischargePercentUncertainty),
-                new NamedColumn("active", active));
+                new String[] {
+                        STAGE, DISCHARGE, DISCHARGE_U, STATE
+                },
+                stage,
+                discharge,
+                dischargePercentUncertainty,
+                toDouble(active));
+        this.state = active;
+        this.datetime = null;
+        updateDerivedValues();
     }
 
-    public GaugingsDataset(String name, double[] stage, double[] discharge, double[] dischargePercentUncertainty) {
-        this(name, stage, discharge, dischargePercentUncertainty, ones(stage.length));
+    private GaugingsDataset(
+            String name,
+            double[] stage,
+            double[] discharge,
+            double[] dischargePercentUncertainty) {
+        this(
+                name,
+                stage,
+                discharge,
+                dischargePercentUncertainty,
+                toBoolean(Misc.ones(stage.length)));
     }
 
-    private static final String[] headersWithDateTime = new String[] {
-            "stage",
-            "discharge",
-            "dischargePercentUncertainty",
-            "active",
-            "dateTime" };
-
-    private static final String[] headersWithoutDateTime = new String[] {
-            "stage",
-            "discharge",
-            "dischargePercentUncertainty",
-            "active" };
-
-    private static final boolean datasetIncludesDateTime(String name, String hashString) {
-        String[] headers = AbstractDataset.getDatasetHeaders(name, hashString);
-        return headers != null && headers.length == 5;
-    }
-
-    public GaugingsDataset(String name, String hashString) {
+    private GaugingsDataset(String name, String hashString) {
         super(
                 name,
-                hashString,
-                datasetIncludesDateTime(name, hashString) ? headersWithDateTime : headersWithoutDateTime);
+                hashString);
+
+        double[] state = getColumn(STATE);
+        this.state = toBoolean(state);
+        double[] datetime = getColumn(DATETIME);
+        this.datetime = datetime == null ? null : DateTime.doubleToDateTimeVector(datetime);
+
+        updateDerivedValues();
     }
 
-    public double[] getStageValues() {
-        return getColumn("stage");
-    }
+    private void updateDerivedValues() {
 
-    public double[] getDischargeValues() {
-        return getColumn("discharge");
-    }
+        // build derived arrays
+        double[] q = getColumn(DISCHARGE);
+        double[] u = getColumn(DISCHARGE_U);
+        double[] std = getStd(q, u);
+        double[][] env = getEnv(q, std);
 
-    public double[] getDischargePercentUncertainty() {
-        return getColumn("dischargePercentUncertainty");
-    }
+        derived.clear();
+        derived.put(DISCHARGE_STD, std);
+        derived.put(DISCHARGE_LOW, env[0]);
+        derived.put(DISCHARGE_HIGH, env[1]);
 
-    public double[] getDischargeStdUncertainty() {
-        int nRow = getNumberOfRows();
-        double[] u = new double[nRow];
-        double[] q = getDischargeValues();
-        double[] uqp = getDischargePercentUncertainty();
-        for (int k = 0; k < nRow; k++) {
-            u[k] = q[k] * uqp[k] / 100 / 2;
+        // build derived arrays depending on the true/false state
+        gaugingsTrue.clear();
+        gaugingsFalse.clear();
+
+        int[] tfn = getTrueFalseLengths(this.state);
+
+        for (String h : super.headers) {
+            double[] v = getColumn(h);
+            double[][] tf = getTrueFalse(this.state, v, tfn[0], tfn[1]);
+            gaugingsTrue.put(h, tf[0]);
+            gaugingsFalse.put(h, tf[1]);
         }
-        return u;
+
+        for (String h : derived.keySet()) {
+            double[] v = derived.get(h);
+            double[][] tf = getTrueFalse(this.state, v, tfn[0], tfn[1]);
+            gaugingsTrue.put(h, tf[0]);
+            gaugingsFalse.put(h, tf[1]);
+        }
+
+    }
+
+    private static double[] getStd(double[] v, double[] u) {
+        double[] std = new double[v.length];
+        for (int k = 0; k < v.length; k++) {
+            std[k] = v[k] * u[k] / 100 / 2;
+        }
+        return std;
+    }
+
+    private static double[][] getEnv(double[] v, double[] std) {
+        double[][] env = new double[2][v.length];
+        for (int k = 0; k < v.length; k++) {
+            double halfUncertaintyInterval = std[k] * 2;
+            env[0][k] = v[k] - halfUncertaintyInterval;
+            env[1][k] = v[k] + halfUncertaintyInterval;
+        }
+        return env;
+    }
+
+    private static double[][] getTrueFalse(boolean[] state, double[] values, int nTrue, int nFalse) {
+        double[] trueValues = new double[nTrue];
+        double[] falseValues = new double[nFalse];
+        for (int k = 0, kTrue = 0, kFalse = 0; k < state.length; k++) {
+            if (state[k]) {
+                trueValues[kTrue++] = values[k];
+            } else {
+                falseValues[kFalse++] = values[k];
+            }
+        }
+
+        return new double[][] {
+                trueValues, falseValues
+        };
+    }
+
+    private static int[] getTrueFalseLengths(boolean[] state) {
+        int n = state.length;
+        int nTrue = 0;
+        for (boolean a : state)
+            if (a)
+                nTrue++;
+        int nFalse = n - nTrue;
+        return new int[] { nTrue, nFalse };
     }
 
     public void updateActiveStateValues(Boolean[] newValues) {
@@ -117,109 +215,85 @@ public class GaugingsDataset extends AbstractDataset implements IPlotDataProvide
             d[k] = newValues[k] ? 1d : 0d;
         }
         writeDataFile();
+        updateDerivedValues();
     }
 
-    public double[] getActiveStageValues() {
-        return splitArray(getStageValues(), getActiveStateAsBoolean()).get(true);
+    public double[] getStageValues() {
+        return getColumn(STAGE);
     }
 
-    public double[] getActiveDischargeValues() {
-        return splitArray(getDischargeValues(), getActiveStateAsBoolean()).get(true);
+    public double[] getDischargeValues() {
+        return getColumn(DISCHARGE);
     }
 
-    public double[] getActiveDischargeStdUncertainty() {
-        return splitArray(getDischargeStdUncertainty(), getActiveStateAsBoolean()).get(true);
+    public double[] getDischargePercentUncertainty() {
+        return getColumn(DISCHARGE_U);
     }
 
-    /**
-     * Compute and return the 95% uncertainty interval of each gaugings
-     * 
-     * @return a list with two elements: the lower and upper limit of the
-     *         uncertainty interval
-     */
-    public List<double[]> getDischargeUncertaintyInterval() {
-        double[] q = getDischargeValues();
-        double[] u = getDischargePercentUncertainty();
-        int n = q.length;
-        double[] lowerLimit = new double[n];
-        double[] upperLimit = new double[n];
-        for (int k = 0; k < n; k++) {
-            double uHalfInterval = u[k] / 100 * q[k];
-            lowerLimit[k] = q[k] - uHalfInterval;
-            upperLimit[k] = q[k] + uHalfInterval;
-        }
-        List<double[]> uncertaintyInterval = new ArrayList<>();
-        uncertaintyInterval.add(lowerLimit);
-        uncertaintyInterval.add(upperLimit);
-        return uncertaintyInterval;
+    public double[] getDischargeStdUncertainty() {
+        return derived.get(DISCHARGE_STD);
     }
 
-    public double[] getActiveStateAsDouble() {
-        return getColumn("active");
+    public double[] getStateAsDouble() {
+        return getColumn(STATE);
     }
 
-    public boolean[] getActiveStateAsBoolean() {
-        return toBoolean(getActiveStateAsDouble());
+    public double[] getDateTimeAsDouble() {
+        return getColumn(DATETIME);
+    }
+
+    public boolean[] getStateAsBoolean() {
+        return state;
     }
 
     public LocalDateTime[] getDateTime() {
-        double[] dateTimeAsDouble = getColumn("dateTime");
-        if (dateTimeAsDouble == null) {
-            return null;
-        }
-        return DateTime.doubleToDateTimeVector(dateTimeAsDouble);
+        return datetime;
     }
 
-    private static Map<Boolean, double[]> splitArray(double[] array, boolean[] filter) {
-        int n = filter.length;
-        double[] trueValues = new double[n];
-        double[] falseValues = new double[n];
-        int tIndex = 0, fIndex = 0;
+    public double[] getActiveStageValues() {
+        return gaugingsTrue.get(STAGE);
+    }
 
-        for (int i = 0; i < n; i++) {
-            if (filter[i]) {
-                trueValues[tIndex++] = array[i];
-            } else {
-                falseValues[fIndex++] = array[i];
-            }
-        }
-        Map<Boolean, double[]> result = new HashMap<>();
-        result.put(true, Arrays.copyOf(trueValues, tIndex));
-        result.put(false, Arrays.copyOf(falseValues, fIndex));
-        return result;
+    public double[] getActiveDischargeValues() {
+        return gaugingsTrue.get(DISCHARGE);
+    }
+
+    public double[] getActiveDischargeStdUncertainty() {
+        return gaugingsTrue.get(DISCHARGE_STD);
+    }
+
+    public double[] getActiveDateTimeAsDouble() {
+        return gaugingsTrue.get(DATETIME);
+    }
+
+    public List<double[]> getDischargeUncertaintyInterval() {
+        List<double[]> uncertaintyInterval = new ArrayList<>();
+        uncertaintyInterval.add(derived.get(DISCHARGE_LOW));
+        uncertaintyInterval.add(derived.get(DISCHARGE_HIGH));
+        return uncertaintyInterval;
     }
 
     @Override
     public HashMap<String, PlotItem> getPlotItems() {
 
-        double[] stage = getStageValues();
-        double[] discharge = getDischargeValues();
-        List<double[]> dischargeUncertainty = getDischargeUncertaintyInterval();
-        boolean[] activeGaugings = getActiveStateAsBoolean();
-
-        Map<Boolean, double[]> splitStage = splitArray(stage, activeGaugings);
-        Map<Boolean, double[]> splitDischarge = splitArray(discharge, activeGaugings);
-        Map<Boolean, double[]> splitDischargeUncertaintyLow = splitArray(dischargeUncertainty.get(0), activeGaugings);
-        Map<Boolean, double[]> splitDischargeUncertaintyHight = splitArray(dischargeUncertainty.get(1), activeGaugings);
-
         PlotPoints activeGaugingsPoints = new PlotPoints(
                 "active gaugings",
-                splitStage.get(true),
-                splitStage.get(true),
-                splitStage.get(true),
-                splitDischarge.get(true),
-                splitDischargeUncertaintyLow.get(true),
-                splitDischargeUncertaintyHight.get(true),
+                gaugingsTrue.get(STAGE),
+                gaugingsTrue.get(STAGE),
+                gaugingsTrue.get(STAGE),
+                gaugingsTrue.get(DISCHARGE),
+                gaugingsTrue.get(DISCHARGE_LOW),
+                gaugingsTrue.get(DISCHARGE_HIGH),
                 AppSetup.COLORS.GAUGING);
 
         PlotPoints inactiveGaugingsPoints = new PlotPoints(
                 "inactive gaugings",
-                splitStage.get(false),
-                splitStage.get(false),
-                splitStage.get(false),
-                splitDischarge.get(false),
-                splitDischargeUncertaintyLow.get(false),
-                splitDischargeUncertaintyHight.get(false),
+                gaugingsFalse.get(STAGE),
+                gaugingsFalse.get(STAGE),
+                gaugingsFalse.get(STAGE),
+                gaugingsFalse.get(DISCHARGE),
+                gaugingsFalse.get(DISCHARGE_LOW),
+                gaugingsFalse.get(DISCHARGE_HIGH),
                 AppSetup.COLORS.DISCARDED_GAUGING);
 
         HashMap<String, PlotItem> results = new HashMap<>();

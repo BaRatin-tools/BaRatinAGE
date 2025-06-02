@@ -316,14 +316,13 @@ public class BaratinageV2Importer implements IProjectImporter {
         for (int k = 0; k < stage.length; k++) {
             sysErrInd[k] = (int) limnigraph.get(8)[k];
         }
-        LimnigraphDataset ld = new LimnigraphDataset(dataFileSourceName, dateTime, stage, nonSysErrStd,
-                sysErrStd, sysErrInd);
-
-        if (ld != null && ld.getNumberOfColumns() >= 1) {
-            if (!ld.hasStageErrMatrix()) {
-                ld.computeErroMatrix(AppSetup.CONFIG.N_SAMPLES_LIMNI_ERRORS.get());
-            }
-        }
+        LimnigraphDataset ld = new LimnigraphDataset(
+                dataFileSourceName,
+                dateTime,
+                stage,
+                nonSysErrStd,
+                sysErrStd,
+                sysErrInd);
 
         JSONObject limniDataset = ld.save(true).toJSON();
 
@@ -469,7 +468,13 @@ public class BaratinageV2Importer implements IProjectImporter {
             return;
         }
 
-        GaugingsDataset gds = new GaugingsDataset(sourceFileName, gaugings.get(6), gaugings.get(8), gaugings.get(9));
+        GaugingsDataset gds = GaugingsDataset.buildGaugingsDataset(
+                sourceFileName,
+                gaugings.get(6),
+                gaugings.get(8),
+                gaugings.get(9),
+                null,
+                null);
 
         Boolean[] activeState = new Boolean[nGaugings];
         for (int k = 0; k < nGaugings; k++) {

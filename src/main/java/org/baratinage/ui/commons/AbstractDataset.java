@@ -1,46 +1,78 @@
 package org.baratinage.ui.commons;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
-
 import java.nio.file.Files;
 import java.nio.file.Path;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.TreeMap;
 
 import org.baratinage.AppSetup;
 import org.baratinage.utils.ConsoleLogger;
-import org.baratinage.utils.fs.ReadFile;
-import org.baratinage.utils.fs.WriteFile;
 
 public class AbstractDataset {
 
-    public static record NamedColumn(String name, double[] values) {
+    protected final String name;
+    protected final double[][] data;
+    private final TreeMap<String, Integer> headersMap;
+    protected final String[] headers;
+    protected final int nRow;
+    protected final int nCol;
 
-    };
+    private static String[] buildDefaultHeaders(int n) {
+        String[] headers = new String[n];
+        for (Integer k = 0; k < n; k++) {
+            headers[k] = k.toString();
+        }
+        return headers;
+    }
 
-    private final String name;
-    private final List<NamedColumn> data;
+    protected AbstractDataset(String name, double[]... columns) {
+        this(name, buildDefaultHeaders(columns.length), columns);
+    }
 
-    protected AbstractDataset(String name, NamedColumn... namedColumns) {
+    protected AbstractDataset(String name, String[] headers, double[]... columns) {
+
         this.name = name;
-        data = new ArrayList<>();
-        int nRow = -1;
-        for (NamedColumn column : namedColumns) {
-            double[] values = column.values();
-            if (nRow == -1 && values != null) {
-                nRow = values.length;
-            }
-            if (values != null && nRow != values.length) {
-                ConsoleLogger.error("cannot add NamedVector '" +
-                        column.name() + "' because its length (" +
-                        values.length + ") doesn't match expected length (" + nRow + ").");
-            } else {
-                data.add(column);
+        this.data = columns;
+        this.headersMap = new TreeMap<>();
+        this.headers = headers;
+
+        if (columns.length != headers.length) {
+            throw new IllegalArgumentException(
+                    "'headers' length is different than the number of columns! Headers are ignored.");
+        } else {
+            for (int k = 0; k < headers.length; k++) {
+                this.headersMap.put(headers[k], k);
             }
         }
+
+        this.nCol = this.data.length;
+        if (this.nCol <= 0) {
+            this.nRow = 0;
+        } else {
+            int n = this.data[0].length;
+            for (int k = 0; k < this.data.length; k++) {
+                int m = this.data[k].length;
+                if (m != n) {
+                    ConsoleLogger.warn(
+                            String.format(
+                                    "Mismatch in the number of rows per column! " +
+                                            " Column #%d has %d rows wile %d rows are expected",
+                                    k, m, n));
+                    n = Math.max(n, m);
+                }
+            }
+            this.nRow = n;
+        }
+
     }
 
     protected AbstractDataset(String name, String hashString, String... headers) {
@@ -48,72 +80,61 @@ public class AbstractDataset {
         this.name = name;
 
         Path dataFilePath = buildDataFilePath(name, hashString);
-        String[] fileHeaders = null;
-        List<double[]> fileData = null;
-        if (Files.exists(dataFilePath)) {
-            ConsoleLogger.log("Reading file '" + dataFilePath + "'...");
-            String dataFilePathString = dataFilePath.toString();
+        String dataFilePathString = dataFilePath.toString();
 
-            try {
-                String headerLine = ReadFile.getLines(dataFilePathString, 1, false)[0];
-                fileHeaders = ReadFile.parseString(headerLine, ";", false);
-                fileData = ReadFile.readMatrix(
-                        dataFilePathString,
-                        ";",
-                        1,
-                        Integer.MAX_VALUE,
-                        "NA",
-                        false,
-                        false);
+        TreeMap<String, Integer> _headersMap = new TreeMap<>();
+        String[] _headers = new String[0];
+        int _nCol = 0;
+        int _nRow = 0;
+        double[][] _data = new double[0][0];
 
-            } catch (IOException e) {
-                ConsoleLogger.error("Failed to read data file ...(" + dataFilePathString + ")\n" + e);
-            }
-
-        } else {
+        if (!Files.exists(dataFilePath)) {
             ConsoleLogger.error("File '" + dataFilePath + "' not found!");
+            this.headers = _headers;
+            this.headersMap = _headersMap;
+            this.nCol = _nCol;
+            this.nRow = _nRow;
+            this.data = _data;
+            return;
         }
 
-        data = new ArrayList<>();
-        if (fileHeaders != null && fileData != null && fileHeaders.length == fileData.size()) {
-            for (int k = 0; k < headers.length; k++) {
-                int index = -1;
-                for (int i = 0; i < fileHeaders.length; i++) {
-                    if (fileHeaders[i].equals(headers[k])) {
-                        index = i;
-                        break;
-                    }
-                }
-                if (index == -1) {
-                    ConsoleLogger.log("column '" + headers[k] + "' is null.");
-                    data.add(new NamedColumn(headers[k], null));
-                } else {
-                    data.add(new NamedColumn(headers[k], fileData.get(index)));
+        try {
+            _headers = readHeaders(dataFilePathString);
+            for (int k = 0; k < _headers.length; k++) {
+                _headersMap.put(_headers[k], k);
+            }
+            _nCol = _headers.length;
+            _nRow = readRowCount(dataFilePathString);
+            _data = readMatrix(dataFilePathString, _nRow, _nCol);
+        } catch (IOException e) {
+            ConsoleLogger.error("Failed to read data file ...(" + dataFilePathString + ")\n" + e);
+            ConsoleLogger.error(e);
+        }
+
+        // if headers are provided, they are added to the headers array
+        // this is only for backward compatibility issues when building
+        // the hash string
+        if (headers != null && headers.length > 0) {
+            List<String> headersAll = new ArrayList<>();
+            for (String s : _headers) {
+                headersAll.add(s);
+            }
+            for (String s : headers) {
+                if (!headersAll.contains(s)) {
+                    headersAll.add(s);
                 }
             }
-        } else {
-            ConsoleLogger.error("Failed to load data, inconsistencies found between headers and data sizes ...");
-        }
-
-    }
-
-    public static String[] getDatasetHeaders(String name, String hashString) {
-        Path dataFilePath = buildDataFilePath(name, hashString);
-        String[] fileHeaders = null;
-
-        if (Files.exists(dataFilePath)) {
-            ConsoleLogger.log("Reading file '" + dataFilePath + "'...");
-            String dataFilePathString = dataFilePath.toString();
-            try {
-                String headerLine = ReadFile.getLines(dataFilePathString, 1, false)[0];
-                fileHeaders = ReadFile.parseString(headerLine, ";", false);
-            } catch (IOException e) {
-                ConsoleLogger.error("Failed to read data file ...(" + dataFilePathString + ")\n" + e);
+            _headers = new String[headersAll.size()];
+            for (int k = 0; k < headersAll.size(); k++) {
+                _headers[k] = headersAll.get(k);
             }
-        } else {
-            ConsoleLogger.error("File '" + dataFilePath + "' not found!");
         }
-        return fileHeaders;
+
+        this.headersMap = _headersMap;
+        this.headers = _headers;
+        this.nCol = _nCol;
+        this.nRow = _nRow;
+        this.data = _data;
     }
 
     public String getName() {
@@ -121,71 +142,49 @@ public class AbstractDataset {
     }
 
     public String[] getHeaders() {
-        String[] headers = new String[data.size()];
-        for (int k = 0; k < data.size(); k++) {
-            headers[k] = data.get(k).name();
-        }
         return headers;
     }
 
-    public String getHeader(int columnIndex) {
-        if (columnIndex < 0 || columnIndex >= getNumberOfColumns()) {
-            return null;
-        }
-        return data.get(columnIndex).name();
-    }
-
+    @Deprecated
     public List<double[]> getMatrix() {
-        List<double[]> matrix = new ArrayList<>(data.size());
-        for (NamedColumn column : data) {
-            matrix.add(column.values());
+        List<double[]> matrix = new ArrayList<>();
+        for (int col = 0; col < data.length; col++) {
+            matrix.add(data[col]);
         }
         return matrix;
     }
 
-    public double[] getColumn(String colName) {
-        for (NamedColumn col : data) {
-            if (col.name.equals(colName)) {
-                return col.values();
-            }
-        }
-        return null;
+    public boolean containsColumn(String colname) {
+        return headersMap.containsKey(colname);
     }
 
-    public Double getValue(String colName, int rowIndex) {
-        if (rowIndex < 0 || rowIndex >= getNumberOfRows()) {
-            return null;
-        }
-        for (NamedColumn col : data) {
-            if (col.name.equals(colName)) {
-                return col.values()[rowIndex];
-            }
+    public double[] getColumn(String colname) {
+        Integer index = headersMap.containsKey(colname) ? headersMap.get(colname) : null;
+        return index == null ? null : getColumn(index);
+    }
+
+    public double[] getColumn(int index) {
+        if (index >= 0 && index < data.length) {
+            return data[index];
         }
         return null;
     }
 
     public int getNumberOfColumns() {
-        return data.size();
+        return nCol;
     }
 
     public int getNumberOfRows() {
-        if (data.size() < 1) {
-            return 0;
-        }
-        for (NamedColumn column : data) {
-            double[] values = column.values();
-            if (values != null) {
-                return values.length;
-            }
-        }
-        return 0;
+        return nRow;
     }
 
     private String computeHashString() {
         List<Integer> hashCodes = new ArrayList<>();
-        for (NamedColumn column : data) {
-            hashCodes.add(column.name().hashCode());
-            hashCodes.add(Arrays.hashCode(column.values()));
+        for (String h : headers) {
+            hashCodes.add(h.hashCode());
+            Integer i = headersMap.get(h);
+            double[] d = i == null ? null : data[i];
+            hashCodes.add(Arrays.hashCode(d));
         }
         int hashCode = Arrays.hashCode(hashCodes.stream().mapToInt(Integer::intValue).toArray());
         hashCode = hashCode < 0 ? hashCode * -1 : hashCode;
@@ -212,23 +211,9 @@ public class AbstractDataset {
             ConsoleLogger.log("no need to write file, it already exists.");
             return;
         }
-        List<String> nonNullHeaders = new ArrayList<>();
-        List<double[]> nonNullMatrix = new ArrayList<>();
-        for (NamedColumn col : data) {
-            double[] values = col.values();
-            if (values != null) {
-                nonNullHeaders.add(col.name());
-                nonNullMatrix.add(values);
-            }
-        }
         try {
             ConsoleLogger.log("Writting data '" + name + "' to file...");
-            WriteFile.writeMatrix(
-                    dataFilePath,
-                    nonNullMatrix,
-                    ";",
-                    "NA",
-                    nonNullHeaders.toArray(new String[nonNullHeaders.size()]));
+            writeMatrix(dataFilePath, data, getHeaders());
         } catch (IOException e) {
             ConsoleLogger.error("Failed to write data '" +
                     name + "' to file... (" +
@@ -237,9 +222,7 @@ public class AbstractDataset {
     }
 
     public DatasetConfig save(boolean writeFile) {
-
         String hashString = computeHashString();
-
         String[] headers = getHeaders();
         String dataFilePath = buildDataFilePath(name, hashString).toString();
         if (writeFile) {
@@ -292,6 +275,67 @@ public class AbstractDataset {
             tgt[k] = ((Double) src[k]).intValue();
         }
         return tgt;
+    }
+
+    private static String[] readHeaders(String filePath) throws IOException {
+        String[] headers = new String[0];
+        try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
+            String header = br.readLine();
+            if (header == null)
+                throw new IOException("Empty file");
+            headers = header.split(";");
+        }
+        return headers;
+    }
+
+    private static int readRowCount(String filePath) throws IOException {
+        int rows = 0;
+        try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
+            br.readLine(); // skip headers
+            while (br.readLine() != null)
+                rows++;
+        }
+        return rows;
+    }
+
+    private static double[][] readMatrix(String filePath, int rows, int cols) throws IOException {
+        double[][] matrix = new double[cols][rows];
+        try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
+            br.readLine(); // Skip header
+            String line;
+            int row = 0;
+            while ((line = br.readLine()) != null) {
+                String[] parts = line.split(";");
+                for (int col = 0; col < cols; col++) {
+                    Double v = parts[col].equals("NA") ? Double.NaN : Double.parseDouble(parts[col]);
+                    matrix[col][row] = v;
+                }
+                row++;
+            }
+        }
+        return matrix;
+    }
+
+    private static void writeMatrix(String filePath, double[][] matrix, String[] headers) throws IOException {
+        int rows = matrix[0].length;
+        int cols = matrix.length;
+
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(filePath))) {
+            bw.write(String.join(";", headers));
+            bw.newLine();
+            // Write data row by row
+            for (int row = 0; row < rows; row++) {
+                StringBuilder sb = new StringBuilder();
+                for (int col = 0; col < cols; col++) {
+                    if (col > 0)
+                        sb.append(";");
+                    Double d = matrix[col][row];
+                    sb.append(Double.isNaN(d) || Double.isInfinite(d) ? "NA" : d);
+                }
+                bw.write(sb.toString());
+                bw.newLine();
+            }
+        }
     }
 
 }

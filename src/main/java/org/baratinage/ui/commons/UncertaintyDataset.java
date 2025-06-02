@@ -7,41 +7,20 @@ import org.baratinage.utils.Calc;
 
 public class UncertaintyDataset extends AbstractDataset {
 
-    private static NamedColumn[] toNamedColumnArray(List<double[]> matrix) {
-        int n = matrix.size();
-        NamedColumn[] namedColumns = new NamedColumn[n];
-        for (int k = 0; k < n; k++) {
-            namedColumns[k] = new NamedColumn("" + k, matrix.get(k));
-        }
-        return namedColumns;
-    }
-
-    private static String[] toHeaders(int n) {
-        String[] headers = new String[n];
-        for (int k = 0; k < n; k++) {
-            headers[k] = "" + k;
-        }
-        return headers;
-    }
-
     private final List<double[]> uncertaintyEnvelop;
 
-    public UncertaintyDataset(String name, List<double[]> matrix) {
-        super(name, toNamedColumnArray(matrix));
+    public UncertaintyDataset(String name, double[][] matrix) {
+        super(name, matrix);
         uncertaintyEnvelop = computeUncertaintyEnvelop(0.025, 0.975);
     }
 
-    public UncertaintyDataset(String name, String hashString, int nCol) {
-        super(name, hashString, toHeaders(nCol));
+    public UncertaintyDataset(String name, String hashString) {
+        super(name, hashString);
         uncertaintyEnvelop = computeUncertaintyEnvelop(0.025, 0.975);
     }
 
     public double[] getColumn(int index) {
-        return getColumn("" + index);
-    }
-
-    public double getValue(int colIndex, int rowIndex) {
-        return getValue("" + colIndex, rowIndex);
+        return getColumn(index);
     }
 
     public List<double[]> getUncertaintyEnvelop() {
