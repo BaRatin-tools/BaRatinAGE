@@ -156,7 +156,7 @@ public class RatingCurve extends BamItem
         mainConfigPanel.addChild(new SimpleSep(true), false);
         mainConfigPanel.addChild(structErrorParent, true);
         mainConfigPanel.addChild(new SimpleSep(true), false);
-        mainConfigPanel.addChild(ratingCurveStageGrid, true);
+        mainConfigPanel.addChild(ratingCurveStageGrid, 2.5f);
 
         runBam.setPredictionExperiments(this);
         runBam.addOnDoneAction((RunConfigAndRes res) -> {

@@ -135,9 +135,6 @@ public class BaM {
 
     protected void toFiles(String workspace) {
 
-        // FIXME: assuming that that these filenames are fixed which may not
-        // in particular for the prediction master file
-        // FIXME: looks like PredictionMaster class is needed.
         String bamMasterConfigFileName = BamFilesHelpers.CONFIG_BAM;
         String predictionMasterConfigFileName = BamFilesHelpers.CONFIG_PREDICTION_MASTER;
 
