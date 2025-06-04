@@ -396,4 +396,34 @@ public class Misc {
 
         return String.format("%.1f %s", sizeInBytes / Math.pow(1024, digitGroups), units[digitGroups]);
     }
+
+    public static double[] ones(int n) {
+        double[] d = new double[n];
+        for (int k = 0; k < n; k++) {
+            d[k] = 1;
+        }
+        return d;
+    }
+
+    public static Integer[] range(int start, int end) {
+        int n = end - start;
+        Integer[] result = new Integer[n];
+        for (int k = start; k < n; k++) {
+            result[k] = k;
+        }
+        return result;
+    }
+
+    public static double[] reorderArray(Integer[] indices, double[] array) {
+        if (array.length != indices.length) {
+            ConsoleLogger.error("'array' and 'indices' must have the same length!");
+            return null;
+        }
+        int n = array.length;
+        double[] reordered = new double[n];
+        for (int k = 0; k < n; k++) {
+            reordered[k] = array[indices[k]];
+        }
+        return reordered;
+    }
 }
