@@ -296,7 +296,7 @@ public class Hydrograph extends BamItem implements IPredictionMaster {
             mvIndices.add((int) value);
         }
 
-        LocalDateTime[] dateTimeVector = DateTime.doubleToDateTimeVector(dateTimeExtraData);
+        LocalDateTime[] dateTimeVector = DateTime.doubleToDateTimeArray(dateTimeExtraData);
 
         List<double[]> results = new ArrayList<>();
 

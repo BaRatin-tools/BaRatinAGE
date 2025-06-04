@@ -81,7 +81,7 @@ public class LimnigraphDataset extends AbstractDataset {
             String errMatrixHashString) {
         super(name, hashString, NONSYSERR_STD, SYSERR_STD, SYSERR_IND);
 
-        this.dateTime = DateTime.doubleToDateTimeVector(getColumn(DATETIME));
+        this.dateTime = DateTime.doubleToDateTimeArray(getColumn(DATETIME));
         double[] sysErrIndAsDouble = getColumn(SYSERR_IND);
         this.sysErrInd = sysErrIndAsDouble == null ? null : toInt(sysErrIndAsDouble);
 

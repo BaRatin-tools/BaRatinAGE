@@ -13,16 +13,20 @@ public class DateTime {
         return dateTimeDouble;
     }
 
-    public static LocalDateTime[] doubleToDateTimeVector(double[] dataTimeDouble) {
-        int n = dataTimeDouble.length;
+    public static LocalDateTime doubleToDateTime(double dateTimeDouble) {
+        return LocalDateTime.ofEpochSecond((long) dateTimeDouble, 0, ZoneOffset.UTC);
+    }
+
+    public static LocalDateTime[] doubleToDateTimeArray(double[] dateTimeDouble) {
+        int n = dateTimeDouble.length;
         LocalDateTime[] dateTime = new LocalDateTime[n];
         for (int k = 0; k < n; k++) {
-            dateTime[k] = LocalDateTime.ofEpochSecond((long) dataTimeDouble[k], 0, ZoneOffset.UTC);
+            dateTime[k] = doubleToDateTime(dateTimeDouble[k]);
         }
         return dateTime;
     }
 
-    public static LocalDateTime[] ymdhmsDoubleToTimeVector(double[] years, double[] months, double[] days,
+    public static LocalDateTime[] ymdhmsDoubleToTimeArray(double[] years, double[] months, double[] days,
             double[] hours, double[] minutes, double[] seconds) {
         int n = years.length;
         if (months.length != n) {

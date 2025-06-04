@@ -302,7 +302,7 @@ public class BaratinageV2Importer implements IProjectImporter {
             dataFileSourceName = dataFileSourcePath.getFileName().toString();
         }
 
-        LocalDateTime[] dateTime = DateTime.ymdhmsDoubleToTimeVector(
+        LocalDateTime[] dateTime = DateTime.ymdhmsDoubleToTimeArray(
                 limnigraph.get(0),
                 limnigraph.get(1),
                 limnigraph.get(2),

@@ -121,7 +121,7 @@ public class GaugingsDataset extends AbstractDataset implements IPlotDataProvide
         double[] state = getColumn(STATE);
         this.state = toBoolean(state);
         double[] datetime = getColumn(DATETIME);
-        this.datetime = datetime == null ? null : DateTime.doubleToDateTimeVector(datetime);
+        this.datetime = datetime == null ? null : DateTime.doubleToDateTimeArray(datetime);
 
         updateDerivedValues();
     }
