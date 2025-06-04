@@ -34,6 +34,8 @@ public class BamFilesHelpers {
     public static final String RESULTS_MCMC = "Results_MCMC.txt";
     public static final String RESULTS_MCMC_COOKING = "Results_MCMC_Cooked.txt";
     public static final String RESULTS_MCMC_SUMMARY = "Results_Summary.txt";
+    public static final String RESULTS_MCMC_DIC = "Results_DIC.txt";
+    public static final String RESULTS_MCMC_EXTENDED = "Results_MCMC_Extended.txt";
     public static final String RESULTS_OUTPUT_SPAG = "output_%s_%s.spag";
     public static final String RESULTS_OUTPUT_ENV = "output_%s_%s.env";
     public static final String RESULTS_STATE_SPAG = "state_%s_%s.spag";
