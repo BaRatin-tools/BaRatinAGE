@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -21,17 +22,22 @@ public class CalibrationResult {
     public final List<EstimatedParameter> estimatedParameters;
     public final CalibrationDataResiduals calibrationDataResiduals;
     public final int maxpostIndex;
+    public final HashMap<String, Double> DIC;
 
     public CalibrationResult(String workspace, CalibrationConfig calibConfig, RunOptions runOptions) {
 
         calibrationConfig = calibConfig;
 
         Path cookedMcmcFilePath = Path.of(workspace, calibrationConfig.mcmcCookingConfig.outputFileName);
-        Path summaryMcmcFilePath = Path.of(workspace, calibrationConfig.mcmcSummaryConfig.outputFileName);
+        Path summaryMcmcFilePath = Path.of(workspace, calibrationConfig.mcmcSummaryConfig.summaryFileName);
         Path calDatResidulatFilePath = Path.of(workspace, calibrationConfig.calDataResidualConfig.outputFileName);
 
         mcmcValues = readMcmcValues(cookedMcmcFilePath);
         mcmcHeaders = readMcmcHeaders(cookedMcmcFilePath);
+
+        DIC = calibrationConfig.mcmcSummaryConfig.DICFileName != null
+                ? readDICValues(Path.of(workspace, calibrationConfig.mcmcSummaryConfig.DICFileName))
+                : new HashMap<>();
 
         int logPostColIndex = -1;
         for (int k = 0; k < mcmcHeaders.length; k++) {
@@ -131,7 +137,35 @@ public class CalibrationResult {
             return mcmc;
         }
         return mcmc;
+    }
 
+    private HashMap<String, Double> readDICValues(Path filePath) {
+        HashMap<String, Double> results = new HashMap<>();
+        try {
+            List<String[]> res = ReadFile.readStringMatrix(filePath.toString(), BamFilesHelpers.BAM_COLUMN_SEPARATOR,
+                    0,
+                    false, true);
+            if (res.size() == 2) {
+                for (int k = 0; k < res.get(0).length; k++) {
+                    try {
+                        results.put(
+                                res.get(0)[k],
+                                Double.parseDouble(res.get(1)[k]));
+                    } catch (Exception e) {
+                        ConsoleLogger.error(
+                                "Value cannot be parsed to double! Returning '" + Double.NaN + "'");
+                    }
+                }
+            } else {
+                ConsoleLogger.error("CalibrationResult Error:  DIC results file '" +
+                        filePath.getFileName() + "' has an unexpected number of columns");
+            }
+
+        } catch (IOException e) {
+            ConsoleLogger.error("CalibrationResult Error: Failed to read DIC results file '" +
+                    filePath.getFileName() + "'");
+        }
+        return results;
     }
 
     private List<EstimatedParameter> buildEstimatedParameters(
