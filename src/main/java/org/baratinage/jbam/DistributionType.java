@@ -7,7 +7,9 @@ public enum DistributionType {
     EXPONENTIAL("Exponential", new String[] { "location", "scale" }),
     // GEV("GEV", new String[] { "location", "scale", "shape" }),
     TRANGLE("Triangle", new String[] { "peak", "lower_bound", "upper_bound" }),
-    FIXED("FIX", new String[] {});
+    FIXED("FIX", new String[] {}),
+    FLAT("FlatPrior", new String[] {}),
+    FLAT_POSITIVE("FlatPrior+", new String[] {});
 
     public final String bamName;
     public final String[] parameterNames;
