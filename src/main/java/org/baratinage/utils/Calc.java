@@ -19,6 +19,17 @@ public class Calc {
         return s / values.length;
     }
 
+    public static double std(double[] values) {
+        int n = values.length;
+        double sum = sum(values);
+        double mean = sum / n;
+        double diffSum = 0;
+        for (double d : values) {
+            diffSum += Math.pow(d - mean, 2);
+        }
+        return Math.sqrt(diffSum / n);
+    }
+
     public static double min(double[] values) {
         double m = Double.POSITIVE_INFINITY;
         for (double d : values) {
@@ -81,7 +92,7 @@ public class Calc {
                 p = 0;
             int index = Math.round((float) (p * n));
             if (index >= n) {
-                ConsoleLogger.log("ERROR!");
+                ConsoleLogger.error("ERROR!");
                 index = n - 1;
             }
             percentiles[k] = sorted[index];
