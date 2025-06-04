@@ -7,6 +7,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Insets;
+import java.awt.Rectangle;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -18,9 +19,17 @@ import java.util.Map;
  */
 public class SimpleFlowPanel extends JPanel {
 
+  public boolean DEBUG_MODE = false;
+
   private final boolean isVertical;
 
-  private record ChildCompConfig(Component component, Float weight, Insets padding) {
+  private ALIGN defaultCrossAsixAlign = ALIGN.STRETCH;
+
+  public enum ALIGN {
+    STRETCH, START, CENTER, END
+  }
+
+  private record ChildCompConfig(Component component, Float weight, Insets padding, ALIGN align) {
 
     public boolean isSizeFixed() {
       return weight.equals(0f);
@@ -78,8 +87,16 @@ public class SimpleFlowPanel extends JPanel {
     addChild(child, fill ? 1f : 0f);
   }
 
+  public void addChild(JComponent child, boolean fill, int padding) {
+    addChild(child, fill ? 1f : 0f, padding);
+  }
+
   public void addChild(JComponent child, float weight) {
     addChild(child, weight, 0);
+  }
+
+  public void addChild(JComponent child, float weight, ALIGN align) {
+    addChild(child, weight, 0, 0, align);
   }
 
   public void addChild(JComponent child, float weight, int padding) {
@@ -87,7 +104,16 @@ public class SimpleFlowPanel extends JPanel {
   }
 
   public void addChild(JComponent child, float weight, int vPadding, int hPadding) {
-    childrenConfigs.put(child, new ChildCompConfig(child, weight, new Insets(vPadding, hPadding, vPadding, hPadding)));
+    addChild(child, weight, vPadding, hPadding, null);
+  }
+
+  public void addChild(JComponent child, float weight, int vPadding, int hPadding, ALIGN align) {
+    childrenConfigs.put(child,
+        new ChildCompConfig(
+            child,
+            weight,
+            new Insets(vPadding, hPadding, vPadding, hPadding),
+            align));
     super.add(child);
     revalidate();
     repaint();
@@ -109,6 +135,12 @@ public class SimpleFlowPanel extends JPanel {
 
   public void setGap(int gap) {
     this.gap = gap;
+    revalidate();
+    repaint();
+  }
+
+  public void setAlign(ALIGN align) {
+    defaultCrossAsixAlign = align;
     revalidate();
     repaint();
   }
@@ -146,39 +178,77 @@ public class SimpleFlowPanel extends JPanel {
     if (isVertical) {
       for (int k = 0; k < nComp; k++) {
         Component comp = components[k];
-
         ChildCompConfig childConfig = childrenConfigs.get(comp);
         Float size = eachSize * childConfig.weight;
-        int h = childConfig.isSizeFixed()
-            ? childConfig.getPrefHeight()
-            : size.intValue();
-        comp.setBounds(
-            x + childConfig.padding.left,
-            y + childConfig.padding.top,
-            availableWidth - childConfig.getHorizontalPadding(),
-            h);
+        int h = childConfig.isSizeFixed() ? childConfig.getPrefHeight() : size.intValue();
+        Rectangle rect = getComponentRect(
+            x, y, availableWidth, h,
+            childConfig,
+            childConfig.align == null ? defaultCrossAsixAlign : childConfig.align,
+            isVertical);
+        comp.setBounds(rect);
         y += h + childConfig.getVerticalPadding();
         y += k == nComp - 1 ? 0 : gap;
       }
     } else {
       for (int k = 0; k < nComp; k++) {
         Component comp = components[k];
-
         ChildCompConfig childConfig = childrenConfigs.get(comp);
         Float size = eachSize * childConfig.weight;
-        int w = childConfig.isSizeFixed()
-            ? childConfig.getPrefWidth()
-            : size.intValue();
-        comp.setBounds(
-            x + childConfig.padding.left,
-            y + childConfig.padding.top,
-            w,
-            availableHeight - childConfig.getVerticalPadding());
+        int w = childConfig.isSizeFixed() ? childConfig.getPrefWidth() : size.intValue();
+        Rectangle rect = getComponentRect(
+            x, y, w, availableHeight,
+            childConfig,
+            childConfig.align == null ? defaultCrossAsixAlign : childConfig.align,
+            isVertical);
+        comp.setBounds(rect);
         x += w + childConfig.getHorizontalPadding();
         x += k == nComp - 1 ? 0 : gap;
       }
     }
+  }
 
+  private static Rectangle getComponentRect(
+      int x, int y, int w, int h,
+      ChildCompConfig config,
+      ALIGN align,
+      boolean isVertical) {
+    int _x = x + config.padding.left;
+    int _y = y + config.padding.top;
+    int _w = w - (!isVertical ? 0 : config.getHorizontalPadding());
+    int _h = h - (isVertical ? 0 : config.getVerticalPadding());
+
+    if (!isVertical) {
+      // adjust vertical positioning
+      int[] startAndSize = getStartAndSize(_y, _h, config.getPrefHeight(), align);
+      _y = startAndSize[0];
+      _h = startAndSize[1];
+    } else {
+      // adjust horizontal positioning
+      int[] startAndSize = getStartAndSize(_x, _w, config.getPrefWidth(), align);
+      _x = startAndSize[0];
+      _w = startAndSize[1];
+    }
+
+    return new Rectangle(_x, _y, _w, _h);
+  }
+
+  private static int[] getStartAndSize(int startPosition, int availableSize, int preferredSize, ALIGN align) {
+    int start = startPosition;
+    int size = availableSize;
+    if (preferredSize < availableSize) {
+      int remaining = availableSize - preferredSize;
+      if (align == ALIGN.CENTER) {
+        start = startPosition + remaining / 2;
+        size = preferredSize;
+      } else if (align == ALIGN.START) {
+        size = preferredSize;
+      } else if (align == ALIGN.END) {
+        start = startPosition + remaining;
+        size = preferredSize;
+      }
+    }
+    return new int[] { start, size };
   }
 
   @Override
