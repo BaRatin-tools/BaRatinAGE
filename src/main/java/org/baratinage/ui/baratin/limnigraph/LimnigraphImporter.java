@@ -234,7 +234,6 @@ public class LimnigraphImporter extends DataImporter {
         : 4;
     double size = estimateDoubleMatrixTextFileSizeInKb(stage.length, nCol) / 2; // I devide by 2 to estimate the zip
                                                                                 // compression
-    System.out.println(size);
     if (size > 25000) {
       String sizeString = Misc.formatKilobitesSize(size);
       ConsoleLogger.warn("Large error matrix file size : " + size + "Kb (" + sizeString + ")");

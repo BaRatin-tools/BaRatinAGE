@@ -104,7 +104,6 @@ public class ParameterPriorDist extends AbstractParameterPriorDist implements Ch
         Distribution dist = distributionField.getDistribution();
         if (dist != null) {
             Double median = dist.getMedian();
-            System.out.println(median);
             if (median != null) {
                 initialGuessField.setValue(median);
             }

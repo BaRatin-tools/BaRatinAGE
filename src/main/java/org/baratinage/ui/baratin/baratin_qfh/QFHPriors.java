@@ -124,7 +124,7 @@ public class QFHPriors extends JScrollPane implements IPriors, ChangeListener {
             } else {
                 JLabel label = p.knownParameterType.getSelectedItemLabel();
                 if (label == null) {
-                    System.out.println("Label is null when it shouldn't (" + p.bamName + ")");
+                    ConsoleLogger.warn("Label is null when it shouldn't (" + p.bamName + ")");
                 }
                 mainPanel.insertChild(label != null ? label : p.knownParameterType, colIndex, rowIndex);
             }

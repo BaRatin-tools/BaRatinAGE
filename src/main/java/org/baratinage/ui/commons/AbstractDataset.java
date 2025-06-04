@@ -145,7 +145,6 @@ public class AbstractDataset {
         return headers;
     }
 
-    @Deprecated
     public List<double[]> getMatrix() {
         List<double[]> matrix = new ArrayList<>();
         for (int col = 0; col < data.length; col++) {
