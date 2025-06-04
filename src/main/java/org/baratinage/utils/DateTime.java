@@ -4,11 +4,20 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 
 public class DateTime {
-    public static double[] dateTimeToDoubleVector(LocalDateTime[] dateTime) {
+    public static double[] dateTimeToDoubleArray(LocalDateTime[] dateTime) {
         int n = dateTime.length;
         double[] dateTimeDouble = new double[n];
         for (int k = 0; k < n; k++) {
             dateTimeDouble[k] = dateTime[k].toEpochSecond(ZoneOffset.UTC);
+        }
+        return dateTimeDouble;
+    }
+
+    public static double[] dateTimeToDoubleArrayMilliseconds(LocalDateTime[] dateTime) {
+        int n = dateTime.length;
+        double[] dateTimeDouble = new double[n];
+        for (int k = 0; k < n; k++) {
+            dateTimeDouble[k] = dateTime[k].toEpochSecond(ZoneOffset.UTC) * 1000;
         }
         return dateTimeDouble;
     }

@@ -52,12 +52,10 @@ public class EditablePlotItem implements IPlotItemRendererSettings {
 
     private static TYPE getTypeFromInstance(PlotItem plotItem) {
         if (plotItem instanceof PlotLine |
-                plotItem instanceof PlotInfiniteLine |
-                plotItem instanceof PlotTimeSeriesLine) {
+                plotItem instanceof PlotInfiniteLine) {
             return TYPE.LINE;
         } else if (plotItem instanceof PlotBand |
                 plotItem instanceof PlotInfiniteBand |
-                plotItem instanceof PlotTimeSeriesBand |
                 plotItem instanceof PlotBar) {
             return TYPE.BAND;
         } else if (plotItem instanceof PlotPoints) {

@@ -9,10 +9,9 @@ import org.baratinage.AppSetup;
 import org.baratinage.translation.T;
 import org.baratinage.ui.plot.Plot;
 import org.baratinage.ui.plot.PlotContainer;
-import org.baratinage.ui.plot.PlotItem;
-import org.baratinage.ui.plot.PlotTimeSeriesBand;
-import org.baratinage.ui.plot.PlotTimeSeriesLine;
-import org.jfree.data.time.Second;
+import org.baratinage.utils.DateTime;
+import org.baratinage.ui.plot.PlotLine;
+import org.baratinage.ui.plot.PlotBand;
 
 public class HydrographPlot extends SimpleFlowPanel {
         public void updatePlot(
@@ -26,34 +25,38 @@ public class HydrographPlot extends SimpleFlowPanel {
 
                 Plot plot = new Plot(true, true);
 
-                Second[] time = PlotItem.localDateTimeToSecond(dateTime);
+                // Second[] time = PlotItem.localDateTimeToSecond(dateTime);
+                double[] time = DateTime.dateTimeToDoubleArrayMilliseconds(dateTime);
 
-                PlotTimeSeriesLine mpLine = new PlotTimeSeriesLine(
+                PlotLine mpLine = new PlotLine(
                                 "Maxpost",
                                 time,
                                 dischargeMaxpost,
                                 AppSetup.COLORS.PLOT_LINE,
                                 new BasicStroke(2));
 
-                PlotTimeSeriesBand paramBand = new PlotTimeSeriesBand(
+                PlotBand paramBand = new PlotBand(
                                 "Parametric uncertainty",
                                 time,
                                 dischargeParamU.get(0),
                                 dischargeParamU.get(1),
+                                false,
                                 AppSetup.COLORS.RATING_CURVE_PARAM_UNCERTAINTY);
 
-                PlotTimeSeriesBand limniBand = new PlotTimeSeriesBand(
+                PlotBand limniBand = new PlotBand(
                                 "Limnigraph uncertainty",
                                 time,
                                 includeLimniBand ? dischargelimniU.get(0) : dischargeParamU.get(0),
                                 includeLimniBand ? dischargelimniU.get(1) : dischargeParamU.get(1),
+                                false,
                                 AppSetup.COLORS.LIMNIGRAPH_STAGE_UNCERTAINTY);
 
-                PlotTimeSeriesBand totalBand = new PlotTimeSeriesBand(
+                PlotBand totalBand = new PlotBand(
                                 "Total uncertainty",
                                 time,
                                 dischargeTotalU.get(0),
                                 dischargeTotalU.get(1),
+                                false,
                                 AppSetup.COLORS.RATING_CURVE_TOTAL_UNCERTAINTY);
 
                 plot.addXYItem(totalBand);

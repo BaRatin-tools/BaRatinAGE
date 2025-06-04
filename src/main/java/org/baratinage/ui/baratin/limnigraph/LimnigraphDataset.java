@@ -14,12 +14,11 @@ import org.baratinage.jbam.DistributionType;
 import org.baratinage.ui.commons.AbstractDataset;
 import org.baratinage.ui.commons.DatasetConfig;
 import org.baratinage.ui.commons.UncertaintyDataset;
+import org.baratinage.ui.plot.PlotBand;
 import org.baratinage.ui.plot.PlotItem;
-import org.baratinage.ui.plot.PlotTimeSeriesBand;
-import org.baratinage.ui.plot.PlotTimeSeriesLine;
+import org.baratinage.ui.plot.PlotLine;
 import org.baratinage.utils.ConsoleLogger;
 import org.baratinage.utils.DateTime;
-import org.jfree.data.time.Second;
 
 public class LimnigraphDataset extends AbstractDataset {
 
@@ -29,12 +28,12 @@ public class LimnigraphDataset extends AbstractDataset {
     private static final String SYSERR_STD = "sysErrStd";
     private static final String SYSERR_IND = "sysErrInd";
 
+    private final double[] dateTimeMillis;
     private final LocalDateTime[] dateTime;
     private final int[] sysErrInd;
 
     private final UncertaintyDataset errorMatrixDataset;
 
-    // private final TreeSet<Integer> missingValueIndices;
     private final BitSet invalidRowsIndices;
 
     public LimnigraphDataset(String name,
@@ -47,13 +46,14 @@ public class LimnigraphDataset extends AbstractDataset {
                 new String[] {
                         DATETIME, STAGE, NONSYSERR_STD, SYSERR_STD, SYSERR_IND
                 },
-                DateTime.dateTimeToDoubleVector(dateTime),
+                DateTime.dateTimeToDoubleArray(dateTime),
                 stage,
                 nonSysErrStd,
                 sysErrStd,
                 sysErrInd == null ? null : toDouble(sysErrInd));
 
         this.dateTime = dateTime;
+        this.dateTimeMillis = DateTime.dateTimeToDoubleArrayMilliseconds(dateTime);
         this.sysErrInd = sysErrInd;
         this.invalidRowsIndices = getMissingValuesIndices(
                 this.dateTime.length,
@@ -82,6 +82,7 @@ public class LimnigraphDataset extends AbstractDataset {
         super(name, hashString, NONSYSERR_STD, SYSERR_STD, SYSERR_IND);
 
         this.dateTime = DateTime.doubleToDateTimeArray(getColumn(DATETIME));
+        this.dateTimeMillis = DateTime.dateTimeToDoubleArrayMilliseconds(dateTime);
         double[] sysErrIndAsDouble = getColumn(SYSERR_IND);
         this.sysErrInd = sysErrIndAsDouble == null ? null : toInt(sysErrIndAsDouble);
 
@@ -173,25 +174,15 @@ public class LimnigraphDataset extends AbstractDataset {
     }
 
     public PlotItem getPlotLine() {
-        Second[] timeVector = PlotTimeSeriesLine.localDateTimeToSecond(dateTime);
-        PlotTimeSeriesLine plotLine = new PlotTimeSeriesLine(
-                getName(),
-                timeVector,
-                getStage(),
-                AppSetup.COLORS.PLOT_LINE,
+        PlotLine plotLine = new PlotLine(name, dateTimeMillis, getStage(), AppSetup.COLORS.PLOT_LINE,
                 new BasicStroke(2));
-
         return plotLine;
     }
 
     public PlotItem getPlotEnv() {
-        // FIXME: timeVector is shared with plotLine... refactoring needed.
-        Second[] timeVector = PlotTimeSeriesLine.localDateTimeToSecond(dateTime);
         List<double[]> errEnv = getStageErrUncertaintyEnvelop();
-        PlotTimeSeriesBand plotBand = new PlotTimeSeriesBand(
-                getName(),
-                timeVector,
-                errEnv.get(0), errEnv.get(1), AppSetup.COLORS.LIMNIGRAPH_STAGE_UNCERTAINTY);
+        PlotBand plotBand = new PlotBand(name, dateTimeMillis,
+                errEnv.get(0), errEnv.get(1), false, AppSetup.COLORS.LIMNIGRAPH_STAGE_UNCERTAINTY);
         return plotBand;
     }
 
