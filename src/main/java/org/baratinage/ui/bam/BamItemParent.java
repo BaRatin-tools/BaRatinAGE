@@ -47,8 +47,7 @@ public class BamItemParent extends SimpleFlowPanel {
             BamItemType... types) {
 
         super(true);
-        // setGap(5);
-        setPadding(5);
+        setGap(5);
 
         TYPE = types[0];
         TYPES = types;

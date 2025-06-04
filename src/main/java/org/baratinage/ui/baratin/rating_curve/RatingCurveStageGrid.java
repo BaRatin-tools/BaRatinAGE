@@ -31,7 +31,6 @@ public class RatingCurveStageGrid extends SimpleFlowPanel {
     public RatingCurveStageGrid() {
 
         setGap(5);
-        setPadding(5);
 
         minStageField = new SimpleNumberField();
         minStageField.addChangeListener((e) -> {

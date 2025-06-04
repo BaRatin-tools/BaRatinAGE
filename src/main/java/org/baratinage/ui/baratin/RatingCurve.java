@@ -141,6 +141,8 @@ public class RatingCurve extends BamItem
 
         SimpleFlowPanel content = new SimpleFlowPanel(true);
         SimpleFlowPanel mainConfigPanel = new SimpleFlowPanel(false);
+        mainConfigPanel.setGap(5);
+        mainConfigPanel.setPadding(5);
         SimpleFlowPanel mainContentPanel = new SimpleFlowPanel(true);
 
         // **********************************************************
@@ -190,7 +192,7 @@ public class RatingCurve extends BamItem
         outdatedPanel.setGap(5);
 
         mainContentPanel.addChild(outdatedPanel, false);
-        mainContentPanel.addChild(runBam.runButton, 0, 5);
+        mainContentPanel.addChild(runBam.runButton, 0f, 5);
         mainContentPanel.addChild(resultsPanel, true);
 
         content.addChild(mainConfigPanel, false);
