@@ -23,6 +23,13 @@ public class ConfigFile {
         items = new ArrayList<>();
     }
 
+    @Override
+    public String toString() {
+        String[] lines = createFileLines();
+        String str = String.join("\n", lines);
+        return str;
+    }
+
     public String[] createFileLines() {
         final int maxSpaces = 50;
         final int minSpaces = 0;
@@ -141,6 +148,10 @@ public class ConfigFile {
         return configFile;
     }
 
+    public int getNumberOfItems() {
+        return items.size();
+    }
+
     // --------------------------------------------------------------
     // String
     // --------------------------------------------------------------
@@ -178,7 +189,7 @@ public class ConfigFile {
 
     public String[] getStringArray(int index) {
         ValueCommentPair item = items.get(index);
-        return splitString(item.value);
+        return item.value.equals("") ? new String[0] : splitString(item.value);
     }
 
     // --------------------------------------------------------------
