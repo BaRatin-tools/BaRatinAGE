@@ -8,16 +8,12 @@ import java.awt.Shape;
 import java.awt.Stroke;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
-import java.util.Date;
 
 import org.jfree.chart.LegendItem;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYItemRenderer;
 import org.jfree.data.Range;
 import org.jfree.data.general.DatasetUtils;
-import org.jfree.data.time.Second;
 import org.jfree.data.xy.XYDataset;
 
 public abstract class PlotItem {
@@ -187,25 +183,6 @@ public abstract class PlotItem {
                 // BasicStroke.CAP_ROUND, BasicStroke.JOIN_BEVEL,
                 BasicStroke.CAP_ROUND, BasicStroke.JOIN_MITER,
                 1, dashArray, 0);
-    }
-
-    public static Second[] localDateTimeToSecond(LocalDateTime[] time) {
-        int n = time.length;
-        Second[] s = new Second[n];
-        for (int k = 0; k < n; k++) {
-            Date d = new Date(time[k].toInstant(ZoneOffset.UTC).toEpochMilli());
-            s[k] = new Second(d);
-        }
-        return s;
-    }
-
-    protected static double[] secondToDouble(Second[] seconds) {
-        int n = seconds.length;
-        double[] d = new double[n];
-        for (int k = 0; k < n; k++) {
-            d[k] = seconds[k].getFirstMillisecond();
-        }
-        return d;
     }
 
     public static LegendItem buildLegendItem(String label, Paint linePaint, Stroke lineStroke, Shape shape,
