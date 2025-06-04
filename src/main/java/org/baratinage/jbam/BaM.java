@@ -212,6 +212,11 @@ public class BaM {
     // FIXME: refactor to use ExeRun class?
     public void run(String workspace, Consumer<String> consoleOutputFollower)
             throws BamRunException, IOException, InterruptedException {
+        run(workspace, consoleOutputFollower, true);
+    }
+
+    public void run(String workspace, Consumer<String> consoleOutputFollower, boolean verbose)
+            throws BamRunException, IOException, InterruptedException {
 
         // Delete workspace content
         File workspaceDirFile = new File(workspace);
@@ -244,7 +249,9 @@ public class BaM {
         while ((currentLine = bufferReader.readLine()) != null) {
             consoleLines.add(currentLine);
             consoleOutputFollower.accept(currentLine);
-            ConsoleLogger.log(currentLine);
+            if (verbose) {
+                ConsoleLogger.log(currentLine);
+            }
         }
 
         // FIXME: all cases except default have message that should be captured!
