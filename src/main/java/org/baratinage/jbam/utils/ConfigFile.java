@@ -77,7 +77,7 @@ public class ConfigFile {
             WriteFile.writeLines(filePath, lines);
         } catch (IOException e) {
             ConsoleLogger.error(
-                    String.format("ConfigFile Error: Failed to write configuration \n '%s'... \n%e",
+                    String.format("ConfigFile Error: Failed to write configuration \n '%s'... \n%s",
                             filePath.toString(), e.toString()));
         }
     }
