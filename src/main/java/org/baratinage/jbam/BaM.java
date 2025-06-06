@@ -230,6 +230,8 @@ public class BaM {
                     f.delete();
                 }
             }
+        } else {
+            workspaceDirFile.mkdirs();
         }
 
         this.toFiles(workspace);
