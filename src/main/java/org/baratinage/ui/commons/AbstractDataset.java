@@ -16,6 +16,7 @@ import java.util.TreeMap;
 
 import org.baratinage.AppSetup;
 import org.baratinage.utils.ConsoleLogger;
+import org.baratinage.utils.Misc;
 
 public class AbstractDataset {
 
@@ -79,7 +80,11 @@ public class AbstractDataset {
 
         this.name = name;
 
-        Path dataFilePath = buildDataFilePath(name, hashString);
+        // try loading using sanitized name
+        Path dataFilePath = buildDataFilePath(Misc.sanitizeName(name), hashString);
+        if (!Files.exists(dataFilePath)) {
+            dataFilePath = buildDataFilePath(name, hashString);
+        }
         String dataFilePathString = dataFilePath.toString();
 
         TreeMap<String, Integer> _headersMap = new TreeMap<>();
@@ -194,7 +199,8 @@ public class AbstractDataset {
 
     protected void writeDataFile() {
         String hashString = computeHashString();
-        String dataFilePath = buildDataFilePath(name, hashString).toString();
+        String sanitizedName = Misc.sanitizeName(name);
+        String dataFilePath = buildDataFilePath(sanitizedName, hashString).toString();
         writeDataFile(dataFilePath);
     }
 
@@ -223,7 +229,8 @@ public class AbstractDataset {
     public DatasetConfig save(boolean writeFile) {
         String hashString = computeHashString();
         String[] headers = getHeaders();
-        String dataFilePath = buildDataFilePath(name, hashString).toString();
+        String sanitizedName = Misc.sanitizeName(name);
+        String dataFilePath = buildDataFilePath(sanitizedName, hashString).toString();
         if (writeFile) {
             writeDataFile(dataFilePath);
         }
