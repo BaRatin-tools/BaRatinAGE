@@ -47,15 +47,17 @@ public class BaM {
 
         RunOptions runOptions = RunOptions.readRunOptions(workspacePath, runOptionFileName);
 
-        ConfigFile predMasterConfig = ConfigFile.readConfigFile(workspacePath, predictionFileName);
         PredictionConfig[] predictionConfigs = new PredictionConfig[0];
-        if (predMasterConfig != null) {
-            int nPred = predMasterConfig.getInt(0);
-            predictionConfigs = new PredictionConfig[nPred];
-            for (int k = 0; k < nPred; k++) {
-                String predictionConfigFileName = predMasterConfig.getString(k + 1);
-                predictionConfigs[k] = PredictionConfig.readPredictionConfig(workspacePath,
-                        predictionConfigFileName);
+        if (runOptions.doPrediction) {
+            ConfigFile predMasterConfig = ConfigFile.readConfigFile(workspacePath, predictionFileName);
+            if (predMasterConfig != null) {
+                int nPred = predMasterConfig.getInt(0);
+                predictionConfigs = new PredictionConfig[nPred];
+                for (int k = 0; k < nPred; k++) {
+                    String predictionConfigFileName = predMasterConfig.getString(k + 1);
+                    predictionConfigs[k] = PredictionConfig.readPredictionConfig(workspacePath,
+                            predictionConfigFileName);
+                }
             }
         }
 
