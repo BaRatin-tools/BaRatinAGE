@@ -23,6 +23,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 
 import org.baratinage.AppSetup;
@@ -291,6 +292,19 @@ public class DataTable extends SimpleFlowPanel {
         for (int k = 0; k < nCol; k++) {
             TableColumn tableColumn = table.getColumnModel().getColumn(k);
             tableColumn.setPreferredWidth(width);
+        }
+    }
+
+    public void autoResizeColumns() {
+        for (int col = 0; col < table.getColumnCount(); col++) {
+            TableColumn column = table.getColumnModel().getColumn(col);
+            int width = 50; // min width
+            for (int row = 0; row < table.getRowCount(); row++) {
+                TableCellRenderer renderer = table.getCellRenderer(row, col);
+                Component comp = table.prepareRenderer(renderer, row, col);
+                width = Math.max(comp.getPreferredSize().width + 1, width);
+            }
+            column.setPreferredWidth(width);
         }
     }
 
