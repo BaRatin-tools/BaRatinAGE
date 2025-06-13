@@ -2,8 +2,17 @@ package org.baratinage.utils;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 
 public class DateTime {
+
+    public static String dateTimeToTimeStamp(LocalDateTime dateTime, String format) {
+        if (format == null) {
+            format = "yyyyMMdd_HHmmss";
+        }
+        return dateTime.format(DateTimeFormatter.ofPattern(format));
+    }
+
     public static double[] dateTimeToDoubleArray(LocalDateTime[] dateTime) {
         int n = dateTime.length;
         double[] dateTimeDouble = new double[n];
@@ -33,6 +42,14 @@ public class DateTime {
             dateTime[k] = doubleToDateTime(dateTimeDouble[k]);
         }
         return dateTime;
+    }
+
+    public static double[] dateTimeDoubleToSecondsDouble(double[] data) {
+        double[] res = new double[data.length];
+        for (int k = 0; k < data.length; k++) {
+            res[k] = data[k] * 1000;
+        }
+        return res;
     }
 
     public static LocalDateTime[] ymdhmsDoubleToTimeArray(double[] years, double[] months, double[] days,
