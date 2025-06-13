@@ -224,6 +224,15 @@ public class Gaugings extends BamItem implements ICalibrationData {
         return gaugingDataset;
     }
 
+    public void setGaugingDataset(GaugingsDataset gaugingsDataset) {
+        this.gaugingDataset = gaugingsDataset;
+        updateTable();
+        setPlot();
+        importedDataSetSourceLabel.setText(
+                T.html("gauging_set_imported_from",
+                        T.text(BamItemType.RATING_SHIFT_HAPPENS.id)));
+    }
+
     @Override
     public UncertainData[] getInputs() {
         if (gaugingDataset == null) {

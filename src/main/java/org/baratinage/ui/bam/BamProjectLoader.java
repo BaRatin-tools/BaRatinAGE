@@ -175,6 +175,7 @@ public class BamProjectLoader {
             item.load(config);
         } catch (Exception e) {
             ConsoleLogger.error(e);
+            e.printStackTrace();
             doOnError.run();
             doOnError = () -> {
             }; // no need to recall the method

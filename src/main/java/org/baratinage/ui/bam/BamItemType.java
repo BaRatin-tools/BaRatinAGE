@@ -29,7 +29,8 @@ public enum BamItemType {
     RATING_CURVE("rating_curve"),
     STRUCTURAL_ERROR("structural_error_model"),
     IMPORTED_DATASET("imported_dataset"),
-    COMPARING_RATING_CURVES("comparing_rating_curves");
+    COMPARING_RATING_CURVES("comparing_rating_curves"),
+    RATING_SHIFT_HAPPENS("rating_shift_happens");
 
     public final String id;
 

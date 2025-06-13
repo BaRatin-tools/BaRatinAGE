@@ -88,6 +88,13 @@ public class BaratinProject extends BamProject {
                     return new RatingCurveCompare(uuid, this);
                 });
 
+        initBamItemType(
+                BamItemType.RATING_SHIFT_HAPPENS,
+                "tools",
+                (String uuid) -> {
+                    return new RatingShiftHappens(uuid, this);
+                });
+
         // resetting toolbar and component menu (where "add bam item" buttons are)
         AppSetup.MAIN_FRAME.mainMenuBar.componentMenu.removeAll();
         AppSetup.MAIN_FRAME.mainToolBars.clearBamItemTools();
@@ -101,6 +108,7 @@ public class BaratinProject extends BamProject {
         addAddBamItemBtns(BamItemType.LIMNIGRAPH);
         addAddBamItemBtns(BamItemType.HYDROGRAPH);
         addAddBamItemBtns(BamItemType.COMPARING_RATING_CURVES);
+        addAddBamItemBtns(BamItemType.RATING_SHIFT_HAPPENS);
 
         T.t(this, () -> {
             BamItemList strucErrBamItems = BAM_ITEMS.filterByType(BamItemType.STRUCTURAL_ERROR);
@@ -151,7 +159,8 @@ public class BaratinProject extends BamProject {
                 BamItemType.LIMNIGRAPH,
                 BamItemType.RATING_CURVE,
                 BamItemType.HYDROGRAPH,
-                BamItemType.COMPARING_RATING_CURVES);
+                BamItemType.COMPARING_RATING_CURVES,
+                BamItemType.RATING_SHIFT_HAPPENS);
     }
 
 }
