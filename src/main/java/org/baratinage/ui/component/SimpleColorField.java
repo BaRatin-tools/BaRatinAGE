@@ -54,7 +54,7 @@ public class SimpleColorField extends SimpleFlowPanel {
         return currentColor;
     }
 
-    private static Icon buildColorIcon(Color color, int size) {
+    public static Icon buildColorIcon(Color color, int size) {
         Rectangle shape = new Rectangle(
                 -size / 2,
                 -size / 2,
