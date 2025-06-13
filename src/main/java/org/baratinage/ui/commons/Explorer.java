@@ -128,6 +128,11 @@ public class Explorer extends SimpleFlowPanel {
         explorerTreeModel.nodeStructureChanged(root);
     }
 
+    public void removeAllItems() {
+        rootNode.removeAllChildren();
+        explorerTreeModel.nodeStructureChanged(rootNode);
+    }
+
     private ExplorerItem searchItem(String id, ExplorerItem parentItem) {
         int n = parentItem.getChildCount();
         for (int k = 0; k < n; k++) {
