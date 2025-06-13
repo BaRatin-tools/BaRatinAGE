@@ -57,8 +57,10 @@ public class RatingCurveTable extends DataTable {
         setHeader(1, "Q_maxpost [m3/s]");
         setHeader(2, "Q_param_low [m3/s]");
         setHeader(3, "Q_param_high [m3/s]");
-        setHeader(4, "Q_total_low [m3/s]");
-        setHeader(5, "Q_total_high [m3/s]");
+        if (!ratingCurveData.isPriorRatingCurve()) {
+            setHeader(4, "Q_total_low [m3/s]");
+            setHeader(5, "Q_total_high [m3/s]");
+        }
         updateHeader();
 
     }
