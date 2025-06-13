@@ -1,5 +1,7 @@
 package org.baratinage.ui.baratin.gaugings;
 
+import java.awt.Color;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -21,8 +23,8 @@ public class GaugingsDataset extends AbstractDataset implements IPlotDataProvide
     private static final String DISCHARGE = "discharge";
     private static final String DISCHARGE_U = "dischargePercentUncertainty";
     private static final String DISCHARGE_STD = "dischargeStd";
-    private static final String DISCHARGE_LOW = "dischargeStd";
-    private static final String DISCHARGE_HIGH = "dischargeStd";
+    private static final String DISCHARGE_LOW = "dischargeLow";
+    private static final String DISCHARGE_HIGH = "dischargeHigh";
     private static final String STATE = "active";
     private static final String DATETIME = "dateTime";
 
@@ -72,7 +74,7 @@ public class GaugingsDataset extends AbstractDataset implements IPlotDataProvide
                 discharge,
                 dischargePercentUncertainty,
                 toDouble(active),
-                DateTime.dateTimeToDoubleVector(datetime));
+                DateTime.dateTimeToDoubleArray(datetime));
 
         // keep track of original data in its original type
         this.state = active;
@@ -274,6 +276,7 @@ public class GaugingsDataset extends AbstractDataset implements IPlotDataProvide
     }
 
     @Override
+    @Deprecated
     public HashMap<String, PlotItem> getPlotItems() {
 
         PlotPoints activeGaugingsPoints = new PlotPoints(
@@ -302,4 +305,64 @@ public class GaugingsDataset extends AbstractDataset implements IPlotDataProvide
         return results;
     }
 
+    public static enum PlotType {
+        Qh, hQ, Qt, ht
+    }
+
+    public PlotPoints getPlotPoints(PlotType plotType) {
+        return getPlotPoints(plotType, null);
+    }
+
+    public PlotPoints getPlotPoints(PlotType plotType, Boolean active) {
+
+        double[] time = getColumn(DATETIME);
+        double[] stage = getColumn(STAGE);
+        double[] discharge = getColumn(DISCHARGE);
+        double[] dischargeLow = derived.get(DISCHARGE_LOW);
+        double[] dischargeHigh = derived.get(DISCHARGE_HIGH);
+        String lgd = "gaugings";
+        Color clr = AppSetup.COLORS.GAUGING;
+
+        if (active != null) {
+            Map<String, double[]> data = active ? gaugingsTrue : gaugingsFalse;
+            clr = active ? AppSetup.COLORS.GAUGING : AppSetup.COLORS.DISCARDED_GAUGING;
+            lgd = active ? "active gaugings" : "inactive gaugings";
+            time = data.get(DATETIME);
+            stage = data.get(STAGE);
+            discharge = data.get(DISCHARGE);
+            dischargeLow = data.get(DISCHARGE_LOW);
+            dischargeHigh = data.get(DISCHARGE_HIGH);
+        }
+
+        double[] x = stage;
+        double[] xL = stage;
+        double[] xH = stage;
+        double[] y = discharge;
+        double[] yL = dischargeLow;
+        double[] yH = dischargeHigh;
+
+        if (plotType.equals(PlotType.hQ)) {
+            double[] z = x;
+            x = y;
+            xL = yL;
+            xH = yH;
+            y = z;
+            yL = z;
+            yH = z;
+        } else if (plotType.equals(PlotType.Qt) || plotType.equals(PlotType.ht)) {
+            x = DateTime.dateTimeDoubleToSecondsDouble(time);
+            xL = x;
+            xH = x;
+            if (plotType.equals(PlotType.ht)) {
+                y = stage;
+                yL = y;
+                yH = y;
+            }
+        }
+
+        return new PlotPoints(lgd,
+                x, xL, xH,
+                y, yL, yH,
+                clr);
+    }
 }

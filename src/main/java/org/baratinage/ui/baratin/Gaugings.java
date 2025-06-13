@@ -3,7 +3,6 @@ package org.baratinage.ui.baratin;
 import java.awt.Cursor;
 import java.awt.Point;
 import java.time.LocalDateTime;
-import java.util.HashMap;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -25,7 +24,6 @@ import org.baratinage.ui.container.SplitContainer;
 import org.baratinage.translation.T;
 import org.baratinage.ui.plot.Plot;
 import org.baratinage.ui.plot.PlotContainer;
-import org.baratinage.ui.plot.PlotItem;
 import org.baratinage.ui.plot.PlotPoints;
 import org.baratinage.ui.plot.PlotUtils;
 import org.baratinage.ui.plot.PointHighlight;
@@ -149,15 +147,8 @@ public class Gaugings extends BamItem implements ICalibrationData {
 
     private void setPlot() {
 
-        HashMap<String, PlotItem> points = gaugingDataset.getPlotItems();
-        PlotPoints activeGaugings = (PlotPoints) points.get("active_gaugings");
-        PlotPoints inactiveGaugings = (PlotPoints) points.get("inactive_gaugings");
-
-        // PlotPoints highlight = new PlotPoints("highlight",
-        // new double[] { 1 },
-        // new double[] { 1 },
-        // Color.ORANGE,
-        // PlotItem.buildCircleShape(20));
+        PlotPoints activeGaugings = gaugingDataset.getPlotPoints(GaugingsDataset.PlotType.Qh, true);
+        PlotPoints inactiveGaugings = gaugingDataset.getPlotPoints(GaugingsDataset.PlotType.Qh, false);
 
         PointHighlight highlight = new PointHighlight(2, 20, AppSetup.COLORS.PLOT_HIGHLIGHT);
 
@@ -165,10 +156,6 @@ public class Gaugings extends BamItem implements ICalibrationData {
         plot.addXYItem(highlight, false);
         plot.addXYItem(activeGaugings);
         plot.addXYItem(inactiveGaugings);
-
-        // if (highlight != null) {
-        // plot.addXYItem(highlight, false);
-        // }
 
         T.clear(plotPanel);
         T.t(plotPanel, () -> {
