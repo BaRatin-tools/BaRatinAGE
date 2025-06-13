@@ -48,7 +48,7 @@ public class Distribution {
 
     public List<double[]> getDensity() {
         if (density != null) {
-            return null;
+            return density;
         }
 
         Optional<List<double[]>> quantilesOpt = DistributionCLI.getQuantiles(
