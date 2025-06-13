@@ -28,21 +28,12 @@ public class RunConfigAndRes extends BaM {
         return new RunConfigAndRes(id, workspacePath, bam);
     }
 
-    public static RunConfigAndRes buildFromZipArchive(String id, Path zipPath) {
-
-        Path workspacePath = Path.of(AppSetup.PATH_BAM_WORKSPACE_DIR, id);
-        String zipName = id + ".zip";
-        zipPath = Path.of(AppSetup.PATH_APP_TEMP_DIR, zipName);
-
-        ReadWriteZip.unzip(zipPath.toString(), workspacePath.toString());
-
-        return buildFromWorkspace(id, workspacePath);
-    }
-
     public static RunConfigAndRes buildFromTempZipArchive(String id) {
         String zipName = id + ".zip";
         Path zipPath = Path.of(AppSetup.PATH_APP_TEMP_DIR, zipName);
-        return buildFromZipArchive(id, zipPath);
+        Path workspacePath = Path.of(AppSetup.PATH_BAM_WORKSPACE_DIR, id);
+        ReadWriteZip.unzip(zipPath.toString(), workspacePath.toString());
+        return buildFromWorkspace(id, workspacePath);
     }
 
     public RunConfigAndRes createCopy(String id) {
