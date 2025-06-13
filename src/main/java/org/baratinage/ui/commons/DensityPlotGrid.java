@@ -24,6 +24,8 @@ public class DensityPlotGrid extends SimpleFlowPanel {
 
     private final List<EstimatedParameterWrapper> estimatedParameters = new ArrayList<>();
 
+    public boolean isTimeSeries = false;
+
     public void addPlot(EstimatedParameterWrapper estimatedParameter) {
         estimatedParameters.add(estimatedParameter);
     }
@@ -51,13 +53,15 @@ public class DensityPlotGrid extends SimpleFlowPanel {
             gridPanel.setRowWeight(k, 1);
         }
 
+        boolean anyPriorCurve = false;
+
         int r = 0;
         int c = 0;
         for (int k = 0; k < estimatedParameters.size(); k++) {
 
             EstimatedParameterWrapper estimParam = estimatedParameters.get(k);
 
-            Plot plot = new Plot(false, false);
+            Plot plot = new Plot(false, isTimeSeries);
 
             FixedTextAnnotation title = new FixedTextAnnotation(estimParam.htmlName, 5, 5);
             title.setFont(title.getFont().deriveFont(Font.BOLD, 16f));
@@ -67,16 +71,19 @@ public class DensityPlotGrid extends SimpleFlowPanel {
 
             if (estimParam.shouldDisplayPrior()) {
                 List<double[]> priorDensityData = estimParam.parameter.getPriorDensity();
-                int nData = priorDensityData.get(0).length;
-                PlotBand priorDensity = new PlotBand(
-                        "",
-                        priorDensityData.get(0),
-                        priorDensityData.get(1),
-                        Calc.zeroes(nData),
-                        false,
-                        AppSetup.COLORS.PRIOR_ENVELOP,
-                        0.9f);
-                plot.addXYItem(priorDensity);
+                if (priorDensityData != null) {
+                    int nData = priorDensityData.get(0).length;
+                    PlotBand priorDensity = new PlotBand(
+                            "",
+                            priorDensityData.get(0),
+                            priorDensityData.get(1),
+                            Calc.zeroes(nData),
+                            false,
+                            AppSetup.COLORS.PRIOR_ENVELOP,
+                            0.9f);
+                    plot.addXYItem(priorDensity);
+                    anyPriorCurve = true;
+                }
             }
 
             double maxpost = estimParam.parameter.getMaxpost();
@@ -114,12 +121,14 @@ public class DensityPlotGrid extends SimpleFlowPanel {
 
         gridPanel.insertChild(pc, c, r);
 
+        final boolean anyPriorCurveFinal = anyPriorCurve;
         T.t(this, () -> {
             legend.clearLegend();
-
-            legend.addLegendItem(PlotBand.buildLegendItem(
-                    T.text("prior_density"),
-                    AppSetup.COLORS.PRIOR_ENVELOP));
+            if (anyPriorCurveFinal) {
+                legend.addLegendItem(PlotBand.buildLegendItem(
+                        T.text("prior_density"),
+                        AppSetup.COLORS.PRIOR_ENVELOP));
+            }
             legend.addLegendItem(PlotBand.buildLegendItem(
                     T.text("posterior_density"),
                     AppSetup.COLORS.POSTERIOR_ENVELOP));
