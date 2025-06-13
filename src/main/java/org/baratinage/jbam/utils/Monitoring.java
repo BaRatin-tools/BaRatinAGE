@@ -1,6 +1,5 @@
 package org.baratinage.jbam.utils;
 
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -9,9 +8,6 @@ import java.util.function.Consumer;
 
 import org.baratinage.jbam.BaM;
 import org.baratinage.jbam.PredictionConfig;
-
-import org.baratinage.utils.ConsoleLogger;
-import org.baratinage.utils.fs.ReadFile;
 
 public class Monitoring {
 
@@ -75,7 +71,7 @@ public class Monitoring {
 
     public void startMonitoring() throws InterruptedException {
 
-        final int CHECK_INTERVAL = 10;
+        final int CHECK_INTERVAL = 50;
         final int MAX_DURATION = 24 * 60 * 60 * 1000; // 24h!
         final int N_MAX = MAX_DURATION / CHECK_INTERVAL;
         int k = 0;
@@ -89,35 +85,48 @@ public class Monitoring {
                 Thread.sleep(CHECK_INTERVAL);
                 if (Files.exists(ms.monitorFilePath)) {
 
-                    try {
-                        // FIXME: should use a more low level function for this task...
-                        List<double[]> res = ReadFile.readMatrix(
-                                ms.monitorFilePath.toString(),
-                                "/",
-                                0, Integer.MAX_VALUE,
-                                "",
-                                false, true);
-                        if (res.size() == 2 && res.get(0).length == 1) {
-                            ms.progress = (int) res.get(0)[0];
-                            ms.total = (int) res.get(1)[0];
-                            if (ms.progress > ms.total) {
-                                // FIXME: this happens for prediction with a single sample
-                                ms.progress = ms.total;
-                            }
-                        }
-                        ms.currenStep = currentStep;
-                        ms.totalSteps = this.monitoringSteps.size();
-                        publishToMonitoringConsumers(ms);
-                        if (ms.progress >= ms.total) {
-                            k = N_MAX;
-                        }
-                    } catch (IOException e) {
-                        ConsoleLogger.error(e);
+                    int[] res = getProgressFromFile(ms.monitorFilePath);
+                    if (res == null) {
+                        System.out.println("Invalid monitoring file");
+                        res = new int[] { 1, 1 };
+                        continue;
+                    }
+                    ms.progress = res[0];
+                    ms.total = res[1];
+
+                    if (ms.progress > ms.total) {
+                        // This happens for prediction with a single sample
+                        ms.progress = ms.total;
+                    }
+
+                    ms.currenStep = currentStep;
+                    ms.totalSteps = this.monitoringSteps.size();
+                    publishToMonitoringConsumers(ms);
+
+                    if (ms.progress >= ms.total) {
+                        k = N_MAX;
                     }
                 }
 
             }
         }
 
+    }
+
+    private static int[] getProgressFromFile(Path filePath) {
+        try {
+            String line = Files.readString(filePath).trim();
+            String[] parts = line.split("/");
+
+            if (parts.length != 2) {
+                return null;
+            }
+            return new int[] {
+                    Integer.parseInt(parts[0]),
+                    Integer.parseInt(parts[1])
+            };
+        } catch (Exception e) {
+            return null;
+        }
     }
 }
