@@ -76,6 +76,10 @@ public class SimpleDialog {
         dialog.dispose();
     }
 
+    public void update() {
+        dialog.pack();
+    }
+
     public static SimpleDialog buildOkCancelDialog(
             String title,
             JComponent content,
