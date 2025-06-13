@@ -1,5 +1,6 @@
 package org.baratinage.ui.plot;
 
+import java.awt.Color;
 import java.awt.Paint;
 import java.awt.Shape;
 import java.awt.Stroke;
@@ -9,6 +10,7 @@ import org.jfree.chart.renderer.xy.DefaultXYItemRenderer;
 import org.jfree.chart.renderer.xy.XYItemRenderer;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.chart.renderer.xy.XYSplineRenderer;
+import org.jfree.chart.renderer.xy.XYSplineRenderer.FillType;
 import org.jfree.data.xy.DefaultXYDataset;
 import org.jfree.data.xy.XYDataset;
 
@@ -50,7 +52,14 @@ public class PlotLine extends PlotItem {
     }
 
     public void setSplineRenderer(int precision) {
-        XYSplineRenderer splineRenderer = new XYSplineRenderer(precision);
+        XYSplineRenderer splineRenderer = new XYSplineRenderer(precision, FillType.TO_ZERO);
+
+        Paint fillPaint = paint;
+        if (paint instanceof Color) {
+            Color paintAsColor = (Color) paint;
+            fillPaint = new Color(paintAsColor.getRed(), paintAsColor.getGreen(), paintAsColor.getBlue(), 150);
+        }
+        splineRenderer.setSeriesFillPaint(0, fillPaint);
         splineRenderer.setSeriesPaint(0, paint);
         splineRenderer.setSeriesStroke(0, stroke);
         splineRenderer.setSeriesShape(0, buildEmptyShape());

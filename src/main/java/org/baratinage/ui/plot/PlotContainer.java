@@ -28,7 +28,6 @@ import javax.swing.JPopupMenu;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.ChartUtils;
 import org.jfree.chart.JFreeChart;
-import org.jfree.data.Range;
 import org.jfree.svg.SVGGraphics2D;
 import org.baratinage.ui.component.CommonDialog;
 import org.baratinage.ui.component.SimpleCheckbox;
@@ -42,7 +41,7 @@ public class PlotContainer extends SimpleFlowPanel {
     private Plot plot;
     private JFreeChart chart;
     private SimpleFlowPanel chartPanelContainer;
-    private ChartPanel chartPanel;
+    private CustomChartPanel chartPanel;
 
     private final JPopupMenu popupMenu;
     public final SimpleFlowPanel toolsPanel;
@@ -172,45 +171,7 @@ public class PlotContainer extends SimpleFlowPanel {
         this.plot = plot;
         chart = plot.getChart();
 
-        // modified restoreAutoBounds methods to ignore
-        // dataset marked to be ignored in Plot.
-        chartPanel = new ChartPanel(chart) {
-            @Override
-            public void restoreAutoBounds() {
-                super.restoreAutoDomainBounds();
-                super.restoreAutoRangeBounds();
-                Range domainBounds = plot.getDomainBounds();
-                Range rangeBounds = plot.getRangeBounds();
-                // FIXME: this approach is not ideal but I don't have any clever idea to fixe
-                // the issue...
-                if (domainBounds != null) {
-                    if (domainBounds.getLength() == 0) {
-                        double value = domainBounds.getCentralValue();
-                        double offset = Math.abs(value * 0.1);
-                        domainBounds = new Range(value - offset, value + offset);
-                    }
-                    plot.plot.getDomainAxis().setRange(domainBounds);
-                }
-                if (rangeBounds != null) {
-                    if (rangeBounds.getLength() == 0) {
-                        double value = rangeBounds.getCentralValue();
-                        double offset = Math.abs(value * 0.1);
-                        rangeBounds = new Range(value - offset, value + offset);
-                    }
-                    plot.plot.getRangeAxis().setRange(rangeBounds);
-
-                }
-            }
-
-        };
-
-        chartPanel.restoreAutoBounds();
-
-        chartPanel.setMinimumDrawWidth(100);
-        chartPanel.setMinimumDrawHeight(100);
-
-        chartPanel.setMaximumDrawWidth(10000);
-        chartPanel.setMaximumDrawHeight(10000);
+        chartPanel = new CustomChartPanel(plot);
 
         chartPanel.setPopupMenu(popupMenu);
 
@@ -311,7 +272,7 @@ public class PlotContainer extends SimpleFlowPanel {
         clipboard.setContents(chartTransferable, null);
     }
 
-    private BufferedImage createBufferedImage(
+    private static BufferedImage createBufferedImage(
             JFreeChart chart, int width, int height, int widthScaleFactor,
             int heightScaleFactor) {
         double desiredWidth = width * widthScaleFactor;

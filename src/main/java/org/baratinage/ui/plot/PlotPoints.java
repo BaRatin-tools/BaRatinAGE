@@ -71,6 +71,11 @@ public class PlotPoints extends PlotItem {
 
     }
 
+    public void setPaint(Paint paint) {
+        this.paint = paint;
+        renderer.setSeriesPaint(0, paint);
+    }
+
     public void updateDataset(double[] x, double[] xLow, double[] xHigh, double[] y, double[] yLow, double[] yHigh) {
         int n = x.length;
         dataset = new XYIntervalSeriesCollection();

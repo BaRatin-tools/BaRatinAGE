@@ -6,6 +6,7 @@ import java.awt.Graphics2D;
 import java.awt.Paint;
 import java.awt.Shape;
 import java.awt.geom.RectangularShape;
+import java.util.List;
 
 import org.baratinage.utils.Calc;
 import org.jfree.chart.LegendItem;
@@ -153,4 +154,56 @@ public class PlotBar extends PlotItem {
         this.renderer = renderer;
     }
 
+    public static double computeOptimalBinwidth(List<double[]> data, int bins) {
+        double[] binWiths = new double[data.size()];
+        int k = 0;
+        for (double[] d : data) {
+            double[] minMax = getMinMax(d);
+            binWiths[k] = (minMax[1] - minMax[0]) / bins;
+            k++;
+        }
+        return Calc.mean(binWiths);
+    }
+
+    public static double[][] densityEstimate(double[] data, double binWidth) {
+        double[] minMax = getMinMax(data);
+        int bins = (int) Math.ceil((minMax[1] - minMax[0]) / binWidth);
+        return getDensityEstimate(data, bins, binWidth, minMax[0], minMax[1]);
+    }
+
+    private static double[] getMinMax(double[] data) {
+        double min = Double.MAX_VALUE;
+        double max = -Double.MAX_VALUE;
+        for (double d : data) {
+            if (d < min) {
+                min = d;
+            }
+            if (d > max) {
+                max = d;
+            }
+        }
+        return new double[] { min, max };
+    }
+
+    private static double[][] getDensityEstimate(double[] data, int bins, double binWidth, double min, double max) {
+
+        double[] x = new double[bins];
+        for (int i = 0; i < bins; i++) {
+            x[i] = min + binWidth / 2 + i * binWidth;
+        }
+
+        double[] histogram = new double[bins];
+        for (double d : data) {
+            int bin = (int) ((d - min) / binWidth);
+            if (bin == bins)
+                bin--; // edge case
+            histogram[bin]++;
+        }
+
+        for (int i = 0; i < bins; i++) {
+            histogram[i] /= (data.length * binWidth);
+        }
+
+        return new double[][] { x, histogram };
+    }
 }

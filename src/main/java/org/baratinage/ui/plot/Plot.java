@@ -99,14 +99,7 @@ public class Plot implements LegendItemSource {
         chart.setBackgroundPaint(Color.WHITE);
         chart.removeLegend();
 
-        // if (includeLegend) {
-        // LegendTitle legendTitle = new LegendTitle(this);
-        // legendTitle.setPosition(RectangleEdge.RIGHT);
-        // chart.addLegend(legendTitle);
-        // }
-
         updateLegend();
-
     }
 
     private void updateLegend() {
@@ -153,6 +146,14 @@ public class Plot implements LegendItemSource {
 
     public void addXYItem(PlotItemGroup item, boolean isVisibleInLegend) {
         List<PlotItem> items = item.getPlotItems();
+        addXYItems(items, isVisibleInLegend);
+    }
+
+    public void addXYItems(List<? extends PlotItem> items) {
+        addXYItems(items, true);
+    }
+
+    public void addXYItems(List<? extends PlotItem> items, boolean isVisibleInLegend) {
         for (PlotItem i : items) {
             addXYItem(i, isVisibleInLegend);
         }
@@ -194,6 +195,14 @@ public class Plot implements LegendItemSource {
             }
         }
         return applyBufferToRange(range, bufferPercentageBottom, bufferPercentageTop);
+    }
+
+    public void setDomainZoom(double start, double end) {
+        plot.getDomainAxis().setRange(start, end);
+    }
+
+    public void setRangeZoom(double start, double end) {
+        plot.getRangeAxis().setRange(start, end);
     }
 
     @Override

@@ -43,10 +43,14 @@ public class Legend implements LegendItemSource {
     }
 
     public LegendTitle getLegendTitle() {
-        return getLegendTitle(false);
+        return getLegendTitle(true);
     }
 
     public LegendTitle getLegendTitle(boolean vertical) {
+        return getLegendTitle(RectangleEdge.RIGHT, vertical);
+    }
+
+    public LegendTitle getLegendTitle(RectangleEdge position, boolean vertical) {
         LegendTitle legendTitle;
         if (vertical) {
             legendTitle = new LegendTitle(this);
@@ -54,11 +58,6 @@ public class Legend implements LegendItemSource {
             FlowArrangement arrangement = new FlowArrangement();
             legendTitle = new LegendTitle(this, arrangement, arrangement);
         }
-        return legendTitle;
-    }
-
-    public LegendTitle getLegendTitle(RectangleEdge position, boolean vertical) {
-        LegendTitle legendTitle = getLegendTitle(vertical);
         legendTitle.setPosition(position);
         return legendTitle;
     }
