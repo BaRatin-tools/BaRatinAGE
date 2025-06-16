@@ -92,6 +92,7 @@ public class DateTimeColumnMapper extends BorderedSimpleFlowPanel implements IDa
         // "yyyy-MM-dd",
         // "dd/MM/yyyy",
         // "dd-MM-yyyy"
+    	"yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",
         "y/M/d H:m:s",
         "y-M-d H:m:s",
         "d/M/y H:m:s",
