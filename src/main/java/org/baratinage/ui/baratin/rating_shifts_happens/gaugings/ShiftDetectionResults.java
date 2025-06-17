@@ -16,6 +16,7 @@ import org.baratinage.translation.T;
 import org.baratinage.ui.bam.BamItemType;
 import org.baratinage.ui.baratin.Gaugings;
 import org.baratinage.ui.baratin.gaugings.GaugingsDataset;
+import org.baratinage.ui.baratin.rating_curve.RatingCurvePlotToolsPanel;
 import org.baratinage.ui.baratin.rating_shifts_happens.BamSegmentation;
 import org.baratinage.ui.commons.ColumnHeaderDescription;
 import org.baratinage.ui.commons.Explorer;
@@ -174,14 +175,16 @@ public class ShiftDetectionResults {
       ResultShift startShift,
       ResultShift endShift,
       Color color) {
-
     PlotPoints Qh = dataset.getPlotPoints(GaugingsDataset.PlotType.Qh);
+    PlotPoints hQ = dataset.getPlotPoints(GaugingsDataset.PlotType.hQ);
     PlotPoints Qt = dataset.getPlotPoints(GaugingsDataset.PlotType.Qt);
     PlotPoints ht = dataset.getPlotPoints(GaugingsDataset.PlotType.ht);
     Qh.setLabel(dataset.getName());
+    hQ.setLabel(dataset.getName());
     Qt.setLabel(dataset.getName());
     ht.setLabel(dataset.getName());
     Qh.setPaint(color);
+    hQ.setPaint(color);
     Qt.setPaint(color);
     ht.setPaint(color);
     return new ResultPeriod(
@@ -191,6 +194,7 @@ public class ShiftDetectionResults {
         dataset.getName(),
         color,
         Qh,
+        hQ,
         Qt,
         ht);
   }
@@ -304,68 +308,93 @@ public class ShiftDetectionResults {
   }
 
   public SimpleFlowPanel getMainResultPanel() {
-    SimpleFlowPanel panel = new SimpleFlowPanel();
+    SimpleFlowPanel panel = new SimpleFlowPanel(true);
     panel.setGap(5);
-    SimpleFlowPanel config = new SimpleFlowPanel(true);
+    // SimpleFlowPanel config = new SimpleFlowPanel(true);
     SimpleFlowPanel plots = new SimpleFlowPanel();
 
-    List<PlotBar> shiftBars = shifts.stream().map(s -> s.distribution()).toList();
-    List<PlotInfiniteLine> shiftLines = shifts.stream().map(s -> s.line()).toList();
-    List<PlotPoints> ht = periods.stream().map(p -> p.htPoints()).toList();
-    List<PlotPoints> Qt = periods.stream().map(p -> p.QtPoints()).toList();
-
-    Plot shiftsPlot = new Plot(true, true);
-    shiftsPlot.addXYItems(shiftBars, true);
-    shiftsPlot.addXYItems(shiftLines, false);
-    shiftsPlot.plot.getRangeAxis().setVisible(false);
-
-    Plot stagePlot = new Plot(true, true);
-    stagePlot.addXYItems(ht, true);
-    stagePlot.addXYItems(shiftLines, false);
-
-    Plot dischargePlot = new Plot(true, true);
-    dischargePlot.addXYItems(Qt, true);
-    dischargePlot.addXYItems(shiftLines, false);
-
-    MultiPlotContainer mainStagePlot = new MultiPlotContainer(true);
-    mainStagePlot.addPlot(stagePlot, 3);
-    if (shiftBars.size() > 0) {
-      mainStagePlot.addPlot(shiftsPlot, 1);
-    }
-
-    MultiPlotContainer mainDischargePlot = new MultiPlotContainer(true);
-    mainDischargePlot.addPlot(dischargePlot, 3);
-    if (shiftBars.size() > 0) {
-      mainDischargePlot.addPlot(shiftsPlot, 1);
-    }
+    RatingCurvePlotToolsPanel toolsPanel = new RatingCurvePlotToolsPanel();
+    toolsPanel.configure(true, false, false);
 
     SimpleRadioButtons<String> radioDischargeOrStage = new SimpleRadioButtons<>();
     JRadioButton stageBtn = radioDischargeOrStage.addOption("h", T.text("stage"), "h");
     JRadioButton dischargeBtn = radioDischargeOrStage.addOption("q", T.text("discharge"), "q");
-    config.addChild(stageBtn, false);
-    config.addChild(dischargeBtn, false);
-    radioDischargeOrStage.addChangeListener(l -> {
+    // config.addChild(stageBtn, false);
+    // config.addChild(dischargeBtn, false);
+
+    toolsPanel.addChild(stageBtn, false);
+    toolsPanel.addChild(dischargeBtn, false);
+
+    Runnable plotBuiler = () -> {
+
+      List<PlotBar> shiftBars = shifts.stream().map(s -> s.distribution()).toList();
+      List<PlotInfiniteLine> shiftLines = shifts.stream().map(s -> s.line()).toList();
+      List<PlotPoints> ht = periods.stream().map(p -> p.htPoints()).toList();
+      List<PlotPoints> Qt = periods.stream().map(p -> p.QtPoints()).toList();
+
+      Plot shiftsPlot = new Plot(true, true);
+      shiftsPlot.addXYItems(shiftBars, true);
+      shiftsPlot.addXYItems(shiftLines, false);
+      shiftsPlot.plot.getRangeAxis().setVisible(false);
+
+      Plot stagePlot = new Plot(true, true);
+      stagePlot.addXYItems(ht, true);
+      stagePlot.addXYItems(shiftLines, false);
+
+      Plot dischargePlot = new Plot(true, true);
+      dischargePlot.addXYItems(Qt, true);
+      dischargePlot.addXYItems(shiftLines, false);
+
+      MultiPlotContainer mainStagePlot = new MultiPlotContainer(true);
+      mainStagePlot.addPlot(stagePlot, 3);
+      if (shiftBars.size() > 0) {
+        mainStagePlot.addPlot(shiftsPlot, 1);
+      }
+
+      MultiPlotContainer mainDischargePlot = new MultiPlotContainer(true);
+      mainDischargePlot.addPlot(dischargePlot, 3);
+      if (shiftBars.size() > 0) {
+        mainDischargePlot.addPlot(shiftsPlot, 1);
+      }
+
       plots.removeAll();
-      String id = radioDischargeOrStage.getSelectedId();
-      if (id.equals("h")) {
+      boolean isDischargePlot = radioDischargeOrStage.getSelectedId().equals("q");
+
+      // String id = radioDischargeOrStage.getSelectedId();
+      if (!isDischargePlot) {
         plots.addChild(mainStagePlot, true);
         mainStagePlot.setDomainRange(mainDischargePlot.getCurrentDomainRange());
       } else {
         plots.addChild(mainDischargePlot, true);
         mainDischargePlot.setDomainRange(mainStagePlot.getCurrentDomainRange());
       }
+
+      stagePlot.setYAxisLabel(String.format("%s [m]", T.text("stage")));
+      dischargePlot.setYAxisLabel(String.format("%s [m3/s]", T.text("discharge")));
+
+      toolsPanel.updatePlotAxis(dischargePlot);
+    };
+
+    toolsPanel.addChangeListener(l -> {
+      plotBuiler.run();
+    });
+    radioDischargeOrStage.addChangeListener(l -> {
+      boolean isDischargePlot = radioDischargeOrStage.getSelectedId().equals("q");
+      toolsPanel.logScaleDischargeAxis.setEnabled(isDischargePlot);
+      plotBuiler.run();
     });
 
     radioDischargeOrStage.setSelected("h");
-    plots.addChild(mainStagePlot, true);
+    // plots.addChild(mainStagePlot, true);
 
-    panel.addChild(config, false);
+    // panel.addChild(config, false);
     panel.addChild(plots, true);
+    panel.addChild(toolsPanel, false);
 
-    stagePlot.setYAxisLabel(String.format("%s [m]", T.text("stage")));
-    dischargePlot.setYAxisLabel(String.format("%s [m3/s]", T.text("discharge")));
     stageBtn.setText(T.text("stage"));
     dischargeBtn.setText(T.text("discharge"));
+
+    plotBuiler.run();
 
     return panel;
   }
@@ -374,22 +403,35 @@ public class ShiftDetectionResults {
     SimpleFlowPanel panel = new SimpleFlowPanel();
     panel.setGap(5);
 
+    RatingCurvePlotToolsPanel toolsPanel = new RatingCurvePlotToolsPanel();
+    toolsPanel.configure(true, true, false);
+
     SimpleFlowPanel periodSelectionPanel = new SimpleFlowPanel(true);
     periodSelectionPanel.setPadding(5);
     periodSelectionPanel.setGap(5);
-    SimpleFlowPanel plotPanel = new SimpleFlowPanel();
+    SimpleFlowPanel plotPanel = new SimpleFlowPanel(true);
+    plotPanel.setGap(5);
 
-    List<PlotPoints> gaugingsPoints = periods.stream().map(p -> p.QhPoints()).toList();
     PlotContainer plotContainer = new PlotContainer();
-    Plot plot = new Plot();
-    plot.addXYItems(gaugingsPoints);
 
-    plot.axisX.setLabel(T.text("stage") + " [m]");
-    plot.axisY.setLabel(T.text("discharge") + " [m3/s]");
-    plot.axisYlog.setLabel(T.text("discharge") + " [m3/s]");
+    Runnable plotUpdater = () -> {
+      List<PlotPoints> gaugingsPoints = periods.stream().map(p -> {
+        return toolsPanel.axisFlipped() ? p.hQPoints() : p.QhPoints();
+      }).toList();
+      Plot plot = new Plot();
+      plot.addXYItems(gaugingsPoints);
+      toolsPanel.updatePlotAxis(plot);
+      plotContainer.setPlot(plot);
+    };
 
-    plotContainer.setPlot(plot);
+    toolsPanel.addChangeListener(l -> {
+      plotUpdater.run();
+    });
+
+    plotUpdater.run();
+
     plotPanel.addChild(plotContainer, true);
+    plotPanel.addChild(toolsPanel, false);
 
     panel.addChild(periodSelectionPanel, false);
     panel.addChild(plotPanel, true);
@@ -449,6 +491,7 @@ public class ShiftDetectionResults {
       String name,
       Color color,
       PlotPoints QhPoints,
+      PlotPoints hQPoints,
       PlotPoints QtPoints,
       PlotPoints htPoints) {
 

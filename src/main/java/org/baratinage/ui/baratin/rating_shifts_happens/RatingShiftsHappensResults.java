@@ -10,7 +10,7 @@ import org.baratinage.ui.container.TitledPanel;
 public class RatingShiftsHappensResults extends SimpleFlowPanel {
 
   public RatingShiftsHappensResults() {
-
+    setPadding(5);
   }
 
   public void setGaugingsBasedDetectionResults(ShiftDetectionOverall shiftDetectionOverall) {

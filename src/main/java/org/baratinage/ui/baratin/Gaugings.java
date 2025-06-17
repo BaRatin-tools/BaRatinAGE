@@ -17,6 +17,7 @@ import org.baratinage.ui.bam.BamConfig;
 import org.baratinage.ui.bam.ICalibrationData;
 import org.baratinage.ui.baratin.gaugings.GaugingsDataset;
 import org.baratinage.ui.baratin.gaugings.GaugingsImporter;
+import org.baratinage.ui.baratin.rating_curve.RatingCurvePlotToolsPanel;
 import org.baratinage.ui.commons.DatasetConfig;
 import org.baratinage.ui.component.DataTable;
 import org.baratinage.ui.container.SimpleFlowPanel;
@@ -44,6 +45,8 @@ public class Gaugings extends BamItem implements ICalibrationData {
 
     private final GaugingsImporter gaugingsImporter;
 
+    private final RatingCurvePlotToolsPanel toolsPanel;
+
     public Gaugings(String uuid, BaratinProject project) {
         super(BamItemType.GAUGINGS, uuid, project);
 
@@ -51,7 +54,13 @@ public class Gaugings extends BamItem implements ICalibrationData {
         importGaugingsPanel.setPadding(5);
         importGaugingsPanel.setGap(5);
 
-        plotPanel = new SimpleFlowPanel();
+        plotPanel = new SimpleFlowPanel(true);
+
+        toolsPanel = new RatingCurvePlotToolsPanel();
+        toolsPanel.configure(true, true, false);
+        toolsPanel.addChangeListener(l -> {
+            setPlot();
+        });
 
         SplitContainer content = new SplitContainer(
                 importGaugingsPanel,
@@ -147,23 +156,25 @@ public class Gaugings extends BamItem implements ICalibrationData {
 
     private void setPlot() {
 
-        PlotPoints activeGaugings = gaugingDataset.getPlotPoints(GaugingsDataset.PlotType.Qh, true);
-        PlotPoints inactiveGaugings = gaugingDataset.getPlotPoints(GaugingsDataset.PlotType.Qh, false);
+        // boolean axisFlipped = toolsPanel.axisFlipped();
+        PlotPoints activeGaugings = gaugingDataset.getPlotPoints(
+                toolsPanel.axisFlipped() ? GaugingsDataset.PlotType.hQ : GaugingsDataset.PlotType.Qh, true);
+        PlotPoints inactiveGaugings = gaugingDataset.getPlotPoints(
+                toolsPanel.axisFlipped() ? GaugingsDataset.PlotType.hQ : GaugingsDataset.PlotType.Qh, false);
 
         PointHighlight highlight = new PointHighlight(2, 20, AppSetup.COLORS.PLOT_HIGHLIGHT);
 
         Plot plot = new Plot(true);
+
         plot.addXYItem(highlight, false);
         plot.addXYItem(activeGaugings);
         plot.addXYItem(inactiveGaugings);
 
         T.clear(plotPanel);
         T.t(plotPanel, () -> {
+            toolsPanel.updatePlotAxis(plot);
             activeGaugings.setLabel(T.text("lgd_active_gaugings"));
             inactiveGaugings.setLabel(T.text("lgd_inactive_gaugings"));
-            plot.axisX.setLabel(T.text("stage") + " [m]");
-            plot.axisY.setLabel(T.text("discharge") + " [m3/s]");
-            plot.axisYlog.setLabel(T.text("discharge") + " [m3/s]");
             plot.update();
         });
 
@@ -217,6 +228,7 @@ public class Gaugings extends BamItem implements ICalibrationData {
         T.updateHierarchy(this, plotContainer);
         plotPanel.removeAll();
         plotPanel.addChild(plotContainer, true);
+        plotPanel.addChild(toolsPanel, 0, 5);
 
     }
 
