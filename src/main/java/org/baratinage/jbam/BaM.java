@@ -5,6 +5,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
@@ -248,6 +250,7 @@ public class BaM {
         bamExecutionProcess = Runtime.getRuntime().exec(cmd, null, exeDirectory);
 
         InputStream inputStream = bamExecutionProcess.getInputStream();
+        OutputStream ouputStream = bamExecutionProcess.getOutputStream();
         InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
         BufferedReader bufferReader = new BufferedReader(inputStreamReader);
         List<String> consoleLines = new ArrayList<String>();
@@ -260,23 +263,37 @@ public class BaM {
                 ConsoleLogger.log(currentLine);
             }
         }
+        
 
         // FIXME: all cases except default have message that should be captured!
         List<String> errMsg = new ArrayList<>();
         boolean inErrMsg = false;
+        //System.out.println(consoleLines);
         for (String l : consoleLines) {
             if (l.contains("FATAL ERROR")) {
                 inErrMsg = true;
             }
+            
+            if (l.contains("Press [enter]")) {
+            	PrintWriter writer = new PrintWriter(ouputStream);
+                writer.println();
+                writer.flush();
+                writer.close();
+            }
+            
             if (inErrMsg) {
                 errMsg.add(l);
             }
+            
         }
+        
+        bufferReader.close();
+        inputStreamReader.close();
+        
+        
         if (inErrMsg) {
             throw new BamRunException(String.join("\n", errMsg));
         }
-        
-        ConsoleLogger.log("Enter");
         
         if (bamExecutionProcess.exitValue() != 0) {
             throw new BamRunException("BaM encountered an uncaugth Fatal Error!");
