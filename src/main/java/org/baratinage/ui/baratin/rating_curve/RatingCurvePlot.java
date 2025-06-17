@@ -90,15 +90,6 @@ public class RatingCurvePlot extends SimpleFlowPanel {
         plot = new Plot(true);
         T.updateHierarchy(this, plot);
 
-        // set proper axis scale
-        if (toolsPanel.logDischargeAxis()) {
-            if (toolsPanel.axisFlipped()) {
-                plot.plot.setDomainAxis(plot.axisXlog);
-            } else {
-                plot.plot.setRangeAxis(plot.axisYlog);
-            }
-        }
-
         // stage transitions
         int n = transitionStages.size();
         String stageLegendText = isPrior ? "lgd_prior_activation_stage"
@@ -202,16 +193,7 @@ public class RatingCurvePlot extends SimpleFlowPanel {
 
         // dealing with axis translations
         T.t(plot, () -> {
-            String dischargeString = T.text("discharge") + " [m3/s]";
-            String stageString = T.text("stage") + " [m]";
-            if (toolsPanel.axisFlipped()) {
-                plot.setXAxisLabel(dischargeString);
-                plot.setYAxisLabel(stageString);
-
-            } else {
-                plot.setXAxisLabel(stageString);
-                plot.setYAxisLabel(dischargeString);
-            }
+            toolsPanel.updatePlotAxis(plot);
         });
 
         plotContainer.setPlot(plot);

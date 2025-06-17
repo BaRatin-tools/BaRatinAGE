@@ -9,23 +9,20 @@ import javax.swing.event.ChangeListener;
 
 import org.baratinage.translation.T;
 import org.baratinage.ui.container.SimpleFlowPanel;
+import org.baratinage.ui.plot.Plot;
 
 public class RatingCurvePlotToolsPanel extends SimpleFlowPanel {
 
-    private boolean axisFliped = false;
-    private boolean dischargeAxisInLog = false;
-    private boolean smoothTotalEnvelop = true;
-
-    private final JCheckBox switchDischargeAxisScale;
-    private final JCheckBox switchAxisCheckbox;
-    private final JCheckBox smoothTotalEnvelopCheckbox;
+    public final JCheckBox logScaleDischargeAxis;
+    public final JCheckBox switchAxisCheckbox;
+    public final JCheckBox smoothTotalEnvelopCheckbox;
 
     public RatingCurvePlotToolsPanel() {
         super();
 
-        switchDischargeAxisScale = new JCheckBox();
-        switchDischargeAxisScale.setSelected(false);
-        switchDischargeAxisScale.setText("log_scale_discharge_axis");
+        logScaleDischargeAxis = new JCheckBox();
+        logScaleDischargeAxis.setSelected(false);
+        logScaleDischargeAxis.setText("log_scale_discharge_axis");
 
         switchAxisCheckbox = new JCheckBox();
         switchAxisCheckbox.setSelected(false);
@@ -35,35 +32,32 @@ public class RatingCurvePlotToolsPanel extends SimpleFlowPanel {
         smoothTotalEnvelopCheckbox.setSelected(true);
         smoothTotalEnvelopCheckbox.setText("smooth_total_envelop");
 
-        switchDischargeAxisScale.addActionListener((e) -> {
-            dischargeAxisInLog = switchDischargeAxisScale.isSelected();
+        logScaleDischargeAxis.addActionListener((e) -> {
             fireChangeListeners();
         });
 
         switchAxisCheckbox.addActionListener((e) -> {
-            axisFliped = switchAxisCheckbox.isSelected();
             fireChangeListeners();
         });
 
         smoothTotalEnvelopCheckbox.addActionListener((e) -> {
-            smoothTotalEnvelop = smoothTotalEnvelopCheckbox.isSelected();
             fireChangeListeners();
         });
 
         setGap(5);
-        addChild(switchDischargeAxisScale, false);
+        addChild(logScaleDischargeAxis, false);
         addChild(switchAxisCheckbox, false);
         addChild(smoothTotalEnvelopCheckbox, false);
 
         T.t(this, switchAxisCheckbox, false, "swap_xy_axis");
-        T.t(this, switchDischargeAxisScale, false, "log_scale_discharge_axis");
+        T.t(this, logScaleDischargeAxis, false, "log_scale_discharge_axis");
         T.t(this, smoothTotalEnvelopCheckbox, false, "smooth_total_envelop");
     }
 
     public void configure(boolean logDischargeAxis, boolean axisFlipped, boolean totalEnvSmoothed) {
         removeAll();
         if (logDischargeAxis) {
-            addChild(switchDischargeAxisScale, false);
+            addChild(logScaleDischargeAxis, false);
         }
         if (axisFlipped) {
             addChild(switchAxisCheckbox, false);
@@ -73,31 +67,49 @@ public class RatingCurvePlotToolsPanel extends SimpleFlowPanel {
         }
     }
 
+    public void updatePlotAxis(Plot plot) {
+        // apply log/linear scale
+        if (logScaleDischargeAxis.isSelected()) {
+            if (switchAxisCheckbox.isSelected()) {
+                plot.plot.setDomainAxis(plot.axisXlog);
+            } else {
+                plot.plot.setRangeAxis(plot.axisYlog);
+            }
+        }
+        // update labels
+        if (axisFlipped()) {
+            plot.axisY.setLabel(T.text("stage") + " [m]");
+            plot.axisX.setLabel(T.text("discharge") + " [m3/s]");
+            plot.axisXlog.setLabel(T.text("discharge") + " [m3/s]");
+        } else {
+            plot.axisX.setLabel(T.text("stage") + " [m]");
+            plot.axisY.setLabel(T.text("discharge") + " [m3/s]");
+            plot.axisYlog.setLabel(T.text("discharge") + " [m3/s]");
+        }
+    }
+
     public boolean axisFlipped() {
-        return axisFliped;
+        return switchAxisCheckbox.isSelected();
     }
 
     public void setAxisFlipped(boolean value) {
-        axisFliped = value;
         switchAxisCheckbox.setSelected(value);
     }
 
     public boolean totalEnvSmoothed() {
-        return smoothTotalEnvelop;
+        return smoothTotalEnvelopCheckbox.isSelected();
     }
 
     public void setTotalEnvSmoothed(boolean value) {
-        smoothTotalEnvelop = value;
         smoothTotalEnvelopCheckbox.setSelected(value);
     }
 
     public boolean logDischargeAxis() {
-        return dischargeAxisInLog;
+        return logScaleDischargeAxis.isSelected();
     }
 
     public void setLogDischargeAxis(boolean value) {
-        dischargeAxisInLog = value;
-        switchDischargeAxisScale.setSelected(value);
+        logScaleDischargeAxis.setSelected(value);
     }
 
     private final List<ChangeListener> changeListeners = new ArrayList<>();
