@@ -196,7 +196,11 @@ public class ReadFile {
      * @param trim     wether heading/trailing spaces should be removed
      * @return String Matrix (List of String arrays)
      */
-    public static List<String[]> linesToStringMatrix(String[] lines, String sep, int nRowSkip, int nRowMax,
+    public static List<String[]> linesToStringMatrix(
+            String[] lines,
+            String sep,
+            int nRowSkip,
+            int nRowMax,
             boolean trim) {
         int nLines = lines.length;
         if (nRowSkip >= nLines) {
