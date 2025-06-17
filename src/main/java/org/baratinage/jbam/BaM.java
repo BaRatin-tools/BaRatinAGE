@@ -275,6 +275,9 @@ public class BaM {
         if (inErrMsg) {
             throw new BamRunException(String.join("\n", errMsg));
         }
+        
+        ConsoleLogger.log("Enter");
+        
         if (bamExecutionProcess.exitValue() != 0) {
             throw new BamRunException("BaM encountered an uncaugth Fatal Error!");
         }

@@ -81,7 +81,7 @@ public class DataFileReader extends SimpleFlowPanel {
         HashMap<String, String> colSepOptions = new HashMap<>();
         colSepOptions.put("sep_tab", "\\t");
         colSepOptions.put("sep_semicolon", ";");
-        colSepOptions.put("sep_comma", ";");
+        colSepOptions.put("sep_comma", ",");
         colSepOptions.put("sep_space", " ");
         String[] colSepOptionsKeys = new String[] {
                 "sep_tab",

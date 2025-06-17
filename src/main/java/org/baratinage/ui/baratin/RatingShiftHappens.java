@@ -219,8 +219,8 @@ public class RatingShiftHappens extends BamItem {
     }
 
     Model model = buildModel();
-    ConsoleLogger.error("Hydraulic configuration is not valid!");
     if (model == null) {
+      ConsoleLogger.error("Hydraulic configuration is not valid!");
       return;
     }
 
