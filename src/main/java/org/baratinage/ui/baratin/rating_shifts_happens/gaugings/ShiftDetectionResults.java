@@ -312,7 +312,7 @@ public class ShiftDetectionResults {
     List<PlotBar> shiftBars = shifts.stream().map(s -> s.distribution()).toList();
     List<PlotInfiniteLine> shiftLines = shifts.stream().map(s -> s.line()).toList();
     List<PlotPoints> ht = periods.stream().map(p -> p.htPoints()).toList();
-    List<PlotPoints> Qt = periods.stream().map(p -> p.htPoints()).toList();
+    List<PlotPoints> Qt = periods.stream().map(p -> p.QtPoints()).toList();
 
     Plot shiftsPlot = new Plot(true, true);
     shiftsPlot.addXYItems(shiftBars, true);
