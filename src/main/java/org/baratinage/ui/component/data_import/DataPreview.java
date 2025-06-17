@@ -115,8 +115,6 @@ public class DataPreview extends SimpleFlowPanel {
     for (int index = 0; index < data.size(); index++) {
       dataTableModel.addColumn(headers[index], data.get(index));
     }
-    // dataTableRenderer.missingValueString = missingValueString;
-    updatePreviewTable();
   }
 
   public void setColumnMapper(int colIndex, IDataTableColumn columnConfig) {

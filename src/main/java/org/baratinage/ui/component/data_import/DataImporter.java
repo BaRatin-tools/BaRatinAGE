@@ -74,9 +74,7 @@ public abstract class DataImporter extends SimpleFlowPanel {
       String missingValue = dataFileReader.getMissingValue();
 
       dataPreview.setData(data, headers);
-
       dataPreview.updatePreviewTable();
-
       applyInputFileChange(data, headers, missingValue);
     });
 

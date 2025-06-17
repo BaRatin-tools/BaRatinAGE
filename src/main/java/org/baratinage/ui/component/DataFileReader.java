@@ -35,6 +35,9 @@ public class DataFileReader extends SimpleFlowPanel {
     private JLabel selectedFilePathLabel;
     private String[] fileLines;
 
+    private List<String[]> parsedData = new ArrayList<>();
+    private String[] parsedHeaders = new String[0];
+
     public DataFileReader() {
         super(true);
 
@@ -213,29 +216,8 @@ public class DataFileReader extends SimpleFlowPanel {
         this.fileFilters = fileFilters;
     }
 
-    public List<String[]> getData(int nRows) {
-
-        if (fileLines == null || fileLines.length <= nRowSkip) {
-            List<String[]> dataString = new ArrayList<>();
-            dataString.add(new String[0]);
-            return dataString;
-        }
-
-        List<String[]> dataString = ReadFile.linesToStringMatrix(
-                fileLines,
-                sep,
-                nRowSkip + (hasHeaderRow ? 1 : 0),
-                nRows,
-                true);
-
-        boolean hasSkippedRows = ReadFile.didLastReadSkipRows(false);
-
-        skippedIndices.clear();
-        if (hasSkippedRows) {
-            skippedIndices.addAll(ReadFile.getLastSkippedIndices());
-        }
-
-        return dataString;
+    private List<String[]> getData(int nRows) {
+        return parsedData;
     }
 
     private final Set<Integer> skippedIndices = new HashSet<>();
@@ -253,29 +235,72 @@ public class DataFileReader extends SimpleFlowPanel {
     }
 
     public String[] getHeaders() {
+        return parsedHeaders;
+    }
 
+    private void updateParsedData() {
         if (fileLines == null || fileLines.length <= nRowSkip) {
-            return new String[0];
+            // when there is no data to parse
+            parsedHeaders = new String[0];
+            List<String[]> dataString = new ArrayList<>();
+            parsedData = dataString;
+            return;
         }
 
-        List<String[]> dataString = ReadFile.linesToStringMatrix(
+        // headers
+        List<String[]> headersDataString = ReadFile.linesToStringMatrix(
                 fileLines,
                 sep,
                 nRowSkip,
                 1,
                 true);
 
-        int nCol = dataString.size();
+        // data
+        List<String[]> dataString = ReadFile.linesToStringMatrix(
+                fileLines,
+                sep,
+                nRowSkip + (hasHeaderRow ? 1 : 0),
+                Integer.MAX_VALUE,
+                true);
+
+        // handle case where there is a mismatch
+        if (headersDataString.size() != dataString.size()) {
+            ConsoleLogger.error("Mismatch between header length and the number of column infered from first data row!");
+            parsedData = new ArrayList<>();
+            int nRowStart = nRowSkip + (hasHeaderRow ? 1 : 0);
+            int nRow = fileLines.length - nRowStart;
+            String[] singleColumn = new String[nRow];
+            for (int k = nRowStart; k < fileLines.length; k++) {
+                singleColumn[k - nRowStart] = fileLines[k];
+            }
+            parsedData.add(singleColumn);
+            String header = nRowStart - 1 >= 0 ? fileLines[nRowStart - 1] : "-";
+            parsedHeaders = new String[] { header };
+            return;
+        }
+
+        // update parsed headers
+        int nCol = headersDataString.size();
         String[] headers = new String[nCol];
         if (hasHeaderRow) {
-            headers = ReadFile.getStringRow(dataString, 0);
+            headers = ReadFile.getStringRow(headersDataString, 0);
         } else {
             for (int k = 0; k < nCol; k++) {
                 headers[k] = "col #" + (k + 1);
             }
         }
+        parsedHeaders = headers;
 
-        return headers;
+        // update parsed data
+        parsedData = dataString;
+
+        // update skipped rows set
+        boolean hasSkippedRows = ReadFile.didLastReadSkipRows(false);
+        skippedIndices.clear();
+        if (hasSkippedRows) {
+            skippedIndices.addAll(ReadFile.getLastSkippedIndices());
+        }
+
     }
 
     public String getMissingValue() {
@@ -293,6 +318,7 @@ public class DataFileReader extends SimpleFlowPanel {
     }
 
     public void fireChangeListeners() {
+        updateParsedData();
         if (fileLines == null) {
             return;
         }
