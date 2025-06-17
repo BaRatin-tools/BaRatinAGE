@@ -31,7 +31,7 @@ public class RatingShiftsHappensResults extends SimpleFlowPanel {
     tabContainer.addTab(tableResTab);
 
     TitledPanel gaugingsTab = new TitledPanel(results.getGaugingsDatasetsPanel());
-    gaugingsTab.setText(T.text("gaugings_per_period"));
+    gaugingsTab.setText(T.text("gaugings"));
     tabContainer.addTab(gaugingsTab);
 
     TitledPanel detailsTab = new TitledPanel(results.getDetailedResultsPanel());
