@@ -107,6 +107,7 @@ public class Plot implements LegendItemSource {
         if (includeLegend) {
             LegendTitle legendTitle = new LegendTitle(this);
             legendTitle.setPosition(RectangleEdge.RIGHT);
+            legendTitle.setPadding(0, 0, 0, 10);
             chart.addLegend(legendTitle);
         }
     }
