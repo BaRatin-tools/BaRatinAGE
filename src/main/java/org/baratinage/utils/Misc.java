@@ -97,8 +97,12 @@ public class Misc {
     }
 
     public static String getTimeStampedId() {
-        String id = Misc.getTimeStamp() + "_" + UUID.randomUUID().toString().substring(0, 5);
+        String id = Misc.getTimeStamp() + "_" + Misc.getId();
         return id;
+    }
+
+    public static String getId() {
+        return UUID.randomUUID().toString().substring(0, 5);
     }
 
     public static String getNextName(String defaultName, String[] allNames) {
