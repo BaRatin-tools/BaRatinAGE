@@ -148,7 +148,7 @@ public class BamRatingCurveRun {
           progress.accept(p.totalProgress());
         },
         p -> {
-          // System.out.println("baratin: " + p);
+          System.out.println("baratin: " + p);
         });
 
   }

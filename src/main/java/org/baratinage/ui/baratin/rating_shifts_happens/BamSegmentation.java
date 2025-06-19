@@ -198,7 +198,7 @@ public class BamSegmentation {
           progress.accept(p.totalProgress());
         },
         p -> {
-          // System.out.println("segmentation: " + p);
+          System.out.println("segmentation: " + p);
         });
   }
 
