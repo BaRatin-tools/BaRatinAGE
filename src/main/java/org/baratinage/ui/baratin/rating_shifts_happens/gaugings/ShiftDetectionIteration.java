@@ -155,14 +155,14 @@ public class ShiftDetectionIteration {
     }
 
     private static String buildId(double[] time) {
-        String id = Misc.getTimeStampedId();
+        String id = Misc.getId();
         String dataId = "nodata";
         if (time.length > 0) {
-            dataId = String.format("%s_%S",
-                    DateTime.dateTimeToTimeStamp(DateTime.doubleToDateTime(time[0]), "yyyyMMdd_HHmm"),
-                    DateTime.dateTimeToTimeStamp(DateTime.doubleToDateTime(time[time.length - 1]), "yyyyMMdd_HHmm"));
+            dataId = String.format("%s_%s",
+                    DateTime.dateTimeToTimeStamp(DateTime.doubleToDateTime(time[0]), "yyMMdd"),
+                    DateTime.dateTimeToTimeStamp(DateTime.doubleToDateTime(time[time.length - 1]), "yyMMdd"));
         }
-        return String.format("%s_%s_rc", id, dataId);
+        return String.format("%s_%s", id, dataId);
     }
 
     public void runShiftDetection(Consumer<Float> progress) {
