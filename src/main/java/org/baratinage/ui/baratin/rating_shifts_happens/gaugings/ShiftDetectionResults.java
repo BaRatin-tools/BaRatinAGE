@@ -345,13 +345,13 @@ public class ShiftDetectionResults {
       dischargePlot.addXYItems(Qt, true);
       dischargePlot.addXYItems(shiftLines, false);
 
-      MultiPlotContainer mainStagePlot = new MultiPlotContainer(true);
+      MultiPlotContainer mainStagePlot = new MultiPlotContainer();
       mainStagePlot.addPlot(stagePlot, 3);
       if (shiftBars.size() > 0) {
         mainStagePlot.addPlot(shiftsPlot, 1);
       }
 
-      MultiPlotContainer mainDischargePlot = new MultiPlotContainer(true);
+      MultiPlotContainer mainDischargePlot = new MultiPlotContainer();
       mainDischargePlot.addPlot(dischargePlot, 3);
       if (shiftBars.size() > 0) {
         mainDischargePlot.addPlot(shiftsPlot, 1);

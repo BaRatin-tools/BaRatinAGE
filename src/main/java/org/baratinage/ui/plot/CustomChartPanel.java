@@ -1,16 +1,11 @@
 package org.baratinage.ui.plot;
 
-import java.awt.Graphics;
-
-// import java.util.ArrayList;
-// import java.util.List;
-// import javax.swing.event.ChangeEvent;
-// import javax.swing.event.ChangeListener;
-
+import java.awt.Insets;
 import java.awt.geom.Rectangle2D;
 
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.ChartRenderingInfo;
+import org.jfree.chart.plot.PlotRenderingInfo;
 import org.jfree.chart.ui.RectangleInsets;
 import org.jfree.data.Range;
 
@@ -65,38 +60,63 @@ public class CustomChartPanel extends ChartPanel {
 
   boolean noLongerChange = false;
 
-  public void setFixedPadding(
-      double top, double left, double bottom, double right) {
-    fixedInsets = new RectangleInsets(top, left, bottom, right);
+  public Insets getMaxInsets() {
+    Insets insets = new Insets(0, 0, 0, 0);
+    ChartRenderingInfo chartInfo = getChartRenderingInfo();
+    if (chartInfo == null) {
+      return insets;
+    }
+    Rectangle2D chartArea = chartInfo.getChartArea();
+    if (chartArea == null) {
+      return insets;
+    }
+    PlotRenderingInfo plotInfo = chartInfo.getPlotInfo();
+    if (plotInfo == null) {
+      return insets;
+    }
+    Rectangle2D dataArea = plotInfo.getDataArea();
+    if (dataArea == null) {
+      return insets;
+    }
+    RectangleInsets totalInsets = getRectInsets(dataArea, chartArea);
+    return toInsets(totalInsets);
   }
 
-  @Override
-  public void paintComponent(Graphics g) {
-    super.paintComponent(g);
-    if (fixedInsets != null) {
-
-      ChartRenderingInfo info = getChartRenderingInfo();
-      Rectangle2D chartArea = info.getChartArea();
-      Rectangle2D dataArea = info.getPlotInfo().getDataArea();
-
-      RectangleInsets chartInsets = plot.getChart().getPadding();
-
-      RectangleInsets currentInsets = new RectangleInsets(
-          dataArea.getY(),
-          dataArea.getX(),
-          chartArea.getHeight() - dataArea.getY() - dataArea.getHeight(),
-          chartArea.getWidth() - dataArea.getX() - dataArea.getWidth());
-
-      RectangleInsets missingInsets = new RectangleInsets(
-          fixedInsets.getTop() - currentInsets.getTop() + chartInsets.getTop(),
-          fixedInsets.getLeft() - currentInsets.getLeft() + chartInsets.getLeft(),
-          fixedInsets.getBottom() - currentInsets.getBottom() + chartInsets.getBottom(),
-          fixedInsets.getRight() - currentInsets.getRight() + chartInsets.getRight());
-
-      if (missingInsets.equals(chartInsets)) {
-        return;
-      }
-      plot.getChart().setPadding(missingInsets);
+  public Insets getPadding() {
+    if (plot == null || plot.getChart() == null || plot.getChart().getPadding() == null) {
+      return new Insets(0, 0, 0, 0);
     }
+    return toInsets(plot.getChart().getPadding());
+  }
+
+  public void setPadding(Insets insets) {
+    if (plot == null || plot.getChart() == null) {
+      return;
+    }
+    plot.getChart().setPadding(getRectInsets(insets));
+  }
+
+  public static Insets toInsets(RectangleInsets rectInsets) {
+    return new Insets(
+        (int) rectInsets.getTop(),
+        (int) rectInsets.getLeft(),
+        (int) rectInsets.getBottom(),
+        (int) rectInsets.getRight());
+  }
+
+  private static RectangleInsets getRectInsets(Insets insets) {
+    return new RectangleInsets(
+        (double) insets.top,
+        (double) insets.left,
+        (double) insets.bottom,
+        (double) insets.right);
+  }
+
+  private static RectangleInsets getRectInsets(Rectangle2D inner, Rectangle2D outer) {
+    double top = inner.getY() - outer.getY();
+    double left = inner.getX() - outer.getX();
+    double bottom = outer.getMaxY() - inner.getMaxY();
+    double right = outer.getMaxX() - inner.getMaxX();
+    return new RectangleInsets(top, left, bottom, right);
   }
 }
