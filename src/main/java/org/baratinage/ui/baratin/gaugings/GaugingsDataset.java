@@ -194,6 +194,18 @@ public class GaugingsDataset extends AbstractDataset implements IPlotDataProvide
         return new int[] { nTrue, nFalse };
     }
 
+    public boolean containsMissingValues() {
+        for (String columnName : gaugingsTrue.keySet()) {
+            double[] column = gaugingsTrue.get(columnName);
+            for (int row = 0; row < column.length; row++) {
+                if (Double.isNaN(column[row])) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     public void updateActiveStateValues(Boolean[] newValues) {
         if (newValues.length != getNumberOfRows()) {
             ConsoleLogger.error("Cannot update active state values because the numbers of rows don't match!");
