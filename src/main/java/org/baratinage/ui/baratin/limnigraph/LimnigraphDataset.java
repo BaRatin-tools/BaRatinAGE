@@ -4,20 +4,16 @@ import java.awt.BasicStroke;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.BitSet;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.baratinage.AppSetup;
-import org.baratinage.jbam.Distribution;
-import org.baratinage.jbam.DistributionType;
+import org.baratinage.jbam.UncertainData;
 import org.baratinage.ui.commons.AbstractDataset;
 import org.baratinage.ui.commons.DatasetConfig;
 import org.baratinage.ui.commons.UncertaintyDataset;
 import org.baratinage.ui.plot.PlotBand;
 import org.baratinage.ui.plot.PlotItem;
 import org.baratinage.ui.plot.PlotLine;
-import org.baratinage.utils.ConsoleLogger;
 import org.baratinage.utils.DateTime;
 
 public class LimnigraphDataset extends AbstractDataset {
@@ -62,12 +58,11 @@ public class LimnigraphDataset extends AbstractDataset {
                 getColumn(SYSERR_STD),
                 getColumn(SYSERR_IND));
 
-        errorMatrixDataset = buildUncertaintyDataset(
-                stage,
-                AppSetup.CONFIG.N_SAMPLES_LIMNI_ERRORS.get(),
-                nonSysErrStd,
-                sysErrStd,
-                sysErrInd);
+        UncertainData uncertainData = new UncertainData(name, stage, nonSysErrStd, sysErrStd, sysErrInd);
+        errorMatrixDataset = new UncertaintyDataset(
+                "stageErrorMatrix",
+                uncertainData.getErrorMatrix(AppSetup.CONFIG.N_SAMPLES_LIMNI_ERRORS.get()));
+        ;
     }
 
     public LimnigraphDataset(String name, String hashString) {
@@ -256,137 +251,4 @@ public class LimnigraphDataset extends AbstractDataset {
 
         return mvFreeMatrix;
     }
-
-    // **************************************************************
-    // Uncertainty Related Methods
-
-    private static UncertaintyDataset buildUncertaintyDataset(
-            double[] stage,
-            int nCol,
-            double[] nonSysErrStd,
-            double[] sysErrStd,
-            int[] sysErrInd) {
-        boolean hasNonSysErr = nonSysErrStd != null;
-        boolean hasSysErr = sysErrStd != null && sysErrInd != null;
-
-        if (!hasNonSysErr && !hasSysErr) {
-            return null;
-        }
-
-        int nRow = stage.length;
-        double[][] matrix = new double[nCol][nRow];
-        try {
-            for (int i = 0; i < nCol; i++) {
-                // initialize with stage values
-                for (int j = 0; j < nRow; j++) {
-                    matrix[i][j] = stage[j];
-                }
-            }
-        } catch (OutOfMemoryError E) {
-            ConsoleLogger.error("cannot create error matrix because memory is insufficient.");
-            return null;
-        }
-
-        if (hasNonSysErr) {
-            addNonSysError(matrix, nonSysErrStd);
-        }
-
-        if (hasSysErr) {
-            addSysError(matrix, sysErrStd, sysErrInd);
-        }
-
-        return new UncertaintyDataset("stageErrorMatrix", matrix);
-    }
-
-    // Note: this is coded to limit the number of calls to get the very slow method
-    // getErrors() however, this may be quite inefficient memory wise...
-    private static void addSysError(double[][] errorMatrix, double[] sStd, int[] sInd) {
-        Map<Double, Map<Integer, List<Integer>>> indicesPerSysIndAndSysStd = new HashMap<>();
-
-        int nRow = sStd.length;
-
-        for (int k = 0; k < nRow; k++) {
-            Double std = sStd[k];
-            Integer ind = sInd[k];
-            Map<Integer, List<Integer>> indicesPerSysInd = indicesPerSysIndAndSysStd.containsKey(std)
-                    ? indicesPerSysIndAndSysStd.get(std)
-                    : new HashMap<>();
-
-            List<Integer> indices = indicesPerSysInd.containsKey(ind) ? indicesPerSysInd.get(ind) : new ArrayList<>();
-
-            indices.add(k);
-            indicesPerSysInd.put(ind, indices);
-            indicesPerSysIndAndSysStd.put(std, indicesPerSysInd);
-
-        }
-
-        int nCol = errorMatrix.length;
-        for (Double std : indicesPerSysIndAndSysStd.keySet()) {
-            // generate error vector for each unique std
-            Map<Integer, List<Integer>> indicesPerSysInd = indicesPerSysIndAndSysStd.get(std);
-            int nInd = indicesPerSysInd.size(); // number of sys resampling indices
-            double[] errors = getErrors(std, nInd * nCol);
-            int k = 0;
-            for (Integer ind : indicesPerSysInd.keySet()) {
-                // for each resamplgin index, loop over all its associated row indices
-                // and for each column add the appropriate error
-                List<Integer> indices = indicesPerSysInd.get(ind);
-                for (int index : indices) {
-                    for (int i = 0; i < nCol; i++) {
-                        errorMatrix[i][index] = errorMatrix[i][index] + errors[k * nCol + i];
-                    }
-                }
-                k++;
-            }
-        }
-    }
-
-    // Note: the note for method addSysError() also applies here
-    private static void addNonSysError(double[][] errorMatrix, double[] nsStd) {
-        Map<Double, List<Integer>> indicesPerStd = new HashMap<>();
-        int nRow = nsStd.length;
-        for (int k = 0; k < nRow; k++) {
-            Double std = nsStd[k];
-            List<Integer> indices = indicesPerStd.containsKey(std) ? indicesPerStd.get(std) : new ArrayList<>();
-            indices.add(k);
-            indicesPerStd.put(std, indices);
-        }
-
-        int nCol = errorMatrix.length;
-        for (Double std : indicesPerStd.keySet()) {
-            List<Integer> indices = indicesPerStd.get(std);
-            int nInd = indices.size();
-            double[] errors = getErrors(std, nInd * nCol);
-            for (int i = 0; i < nCol; i++) {
-                double[] e = errorMatrix[i];
-                for (int j = 0; j < nInd; j++) {
-                    int index = indices.get(j);
-                    e[index] = e[index] + errors[j * nCol + i];
-                }
-            }
-        }
-    }
-
-    private static double[] getErrors(double std, int n) {
-        if (std == 0) {
-            double[] zeros = new double[n];
-            for (int k = 0; k < n; k++) {
-                zeros[k] = 0;
-            }
-            return zeros;
-        }
-        if (Double.isNaN(std)) {
-            double[] nans = new double[n];
-            for (int k = 0; k < n; k++) {
-                nans[k] = Double.NaN;
-            }
-            return nans;
-        }
-        Distribution distribution = new Distribution(
-                DistributionType.GAUSSIAN,
-                0, std);
-
-        return distribution.getRandomValues(n);
-    }
-
 }
