@@ -85,8 +85,9 @@ public class Gaugings extends BamItem implements ICalibrationData {
 
         gaugingsTable = new DataTable();
         gaugingsTable.addChangeListener((e) -> {
-            int activeColIndex = gaugingsTable.getColumnCount() == 5 ? 4 : 3;
-            Object[] activeGaugingColumn = gaugingsTable.getColumn(activeColIndex);
+            int columnIndex = e.getColumn();
+            Object[] activeGaugingColumn = gaugingsTable.getColumn(columnIndex);
+            // double check that is indeed a boolean column
             if (activeGaugingColumn instanceof Boolean[]) {
                 gaugingDataset.updateActiveStateValues((Boolean[]) activeGaugingColumn);
             }
