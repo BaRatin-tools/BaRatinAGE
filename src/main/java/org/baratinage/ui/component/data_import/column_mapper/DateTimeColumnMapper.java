@@ -75,23 +75,22 @@ public class DateTimeColumnMapper extends BorderedSimpleFlowPanel implements IDa
     SimpleFlowPanel oneColPanel = new SimpleFlowPanel();
     oneColPanel.setGap(5);
 
+    // JButton dateTimeInfoButton = buildHelpButton(
+    // true, true, true, true, true, true, true,
+    // "y-M-d H:m:s.SSS = 2005-7-26 14:32:09.000");
+
     JButton dateTimeInfoButton = buildHelpButton(
-        true, true, true, true, true, true,true,
-        "y-M-d H:m:s.SSS = 2005-7-26 14:32:09.000");
-    // "yyyy-MM-dd HH:mm:ss = 2005-07-26 14:32:09");
+        true, true, true,
+        "y-M-d H:m:s = 2005-7-26 14:32:09",
+        "d.M.y H:m = 26.7.2005 14:32",
+        "y/M/d = 2005/07/26",
+        "y-M-d H:m:s.SSS = 2005-7-26 14:32:09.000",
+        "ISO 8601: y-M-d'T'H:m:s.SSS'Z' = 2005-07-26T14:32:09.000Z");
 
     oneColPanel.addChild(dateTimeField, true);
     dateTimeFormat.setEmptyItem(null);
     dateTimeFormat.setEditable(true);
     dateTimeFormat.setItems(new String[] {
-        // "yyyy/MM/dd HH:mm",
-        // "yyyy-MM-dd HH:mm",
-        // "dd/MM/yyyy HH:mm",
-        // "dd-MM-yyyy HH:mm",
-        // "yyyy/MM/dd",
-        // "yyyy-MM-dd",
-        // "dd/MM/yyyy",
-        // "dd-MM-yyyy"
         "y/M/d H:m:s",
         "y-M-d H:m:s",
         "d/M/y H:m:s",
@@ -121,19 +120,15 @@ public class DateTimeColumnMapper extends BorderedSimpleFlowPanel implements IDa
     dateFormat.setEmptyItem(null);
     dateFormat.setEditable(true);
     dateFormat.setItems(new String[] {
-        // "yyyy/MM/dd",
-        // "yyyy-MM-dd",
-        // "dd/MM/yyyy",
-        // "dd-MM-yyyy"
         "y/M/d",
         "y-M-d",
         "d/M/y",
         "d-M-y"
     });
     JButton dateInfoButton = buildHelpButton(
-        true, true, true, false, false, false, false,
-        "y-M-d = 2005-07-26");
-    // "yyyy-MM-dd = 2005-07-26");
+        true, false, false,
+        "y-M-d = 2005-07-26", "d/M/y = 26/07/2005");
+
     datePanel.addChild(dateLabel, false);
     datePanel.addChild(dateField, true);
     datePanel.addChild(dateFormat, true);
@@ -146,15 +141,12 @@ public class DateTimeColumnMapper extends BorderedSimpleFlowPanel implements IDa
     timeFormat.setEmptyItem(null);
     timeFormat.setEditable(true);
     timeFormat.setItems(new String[] {
-        // "HH:mm:ss",
-        // "HH:mm",
         "H:m:s",
         "H:m",
     });
     JButton timeInfoButton = buildHelpButton(
-        false, false, false, true, true, true, false,
-        "H:m:s = 14:32:09");
-    // "HH:mm:ss = 14:32:09");
+        false, true, false,
+        "H:m:s = 14:32:09", "H:m= 14:32");
     timePanel.addChild(timeLabel, false);
     timePanel.addChild(timeField, true);
     timePanel.addChild(timeFormat, true);
@@ -238,23 +230,6 @@ public class DateTimeColumnMapper extends BorderedSimpleFlowPanel implements IDa
 
     modeCombobox.setSelectedItem(0);
   }
-
-  // private String[] guessPatterns = new String[0];
-  // private String[] headers = new String[0];
-
-  // private int index = -1;
-
-  // private void setColumnHeaders(String... headers) {
-  // dateTimeField.combobox.resetItems(headers);
-  // dateField.combobox.resetItems(headers);
-  // timeField.combobox.resetItems(headers);
-  // yearField.combobox.resetItems(headers);
-  // monthField.combobox.resetItems(headers);
-  // dayField.combobox.resetItems(headers);
-  // hourField.combobox.resetItems(headers);
-  // minuteField.combobox.resetItems(headers);
-  // secondField.combobox.resetItems(headers);
-  // }
 
   private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
@@ -494,17 +469,6 @@ public class DateTimeColumnMapper extends BorderedSimpleFlowPanel implements IDa
     }
   }
 
-  // private static Predicate<String> buildDateTimeValidator(String format) {
-  // return (String v) -> {
-  // try {
-  // LocalDateTime.parse(v, DateTimeFormatter.ofPattern(format));
-  // return true;
-  // } catch (Exception e) {
-  // return false;
-  // }
-  // };
-  // }
-
   private static Function<String, LocalDateTime> buildDateTimeConverter(String format) {
     return (String v) -> {
       try {
@@ -516,54 +480,56 @@ public class DateTimeColumnMapper extends BorderedSimpleFlowPanel implements IDa
     };
   }
 
-  // private static toLocalDateTime()
-
-  private JButton buildHelpButton(boolean year,
-      boolean month,
-      boolean day,
-      boolean hour,
-      boolean minute,
-      boolean second,
+  private JButton buildHelpButton(
+      boolean date,
+      boolean time,
       boolean fractionofsecond,
-      String example) {
-
+      String... examples) {
     JButton btn = new JButton();
     btn.setIcon(AppSetup.ICONS.HELP_SMALL);
     btn.addActionListener(l -> {
       JLabel infoLabel = new JLabel();
-      infoLabel.setText(buildHelpString(
-          year, month, day, hour, minute, second,fractionofsecond,
-          example));
+      String msg = "";
+      if (date) {
+        msg += buildDateTimeHelpStringPiece("y", T.text("year"), null, true);
+        msg += buildDateTimeHelpStringPiece("M", T.text("month"), null, true);
+        msg += buildDateTimeHelpStringPiece("d", T.text("day"), null, time || fractionofsecond);
+      }
+      if (time) {
+        msg += buildDateTimeHelpStringPiece("H", T.text("hour"), "0-23", true);
+        msg += buildDateTimeHelpStringPiece("m", T.text("minute"), "0-59", true);
+        msg += buildDateTimeHelpStringPiece("s", T.text("second"), "0-59", fractionofsecond);
+      }
+      if (fractionofsecond) {
+        msg += buildDateTimeHelpStringPiece("SSS", T.text("fraction_of_seconds"), "0-999", false);
+      }
+      for (int k = 0; k < examples.length; k++) {
+        examples[k] = T.text("example_num", k + 1) + ": " + examples[k];
+      }
+      String examplesJoined = String.join("<br>", examples);
+      infoLabel.setText(String.format("<html><code>%s<br>%s</code></html>", msg, examplesJoined));
       SimplePopup popup = new SimplePopup(btn);
+      popup.setPadding(10);
       popup.setContent(infoLabel);
       popup.show();
     });
 
     return btn;
-
   }
 
-  private static String buildHelpString(
-      boolean year,
-      boolean month,
-      boolean day,
-      boolean hour,
-      boolean minute,
-      boolean second,
-      boolean fractionofsecond,
-      String example) {
-    String helpString = "<html><code>" +
-        (year ? ("y = " + T.text("year") + ", ") : "") +
-        (month ? ("M = " + T.text("month") + ", ") : "") +
-        (day ? ("d = " + T.text("day") + ", ") : "") +
-        (hour ? ("H = " + T.text("hour") + " (0-23)" + ", ") : "") +
-        (minute ? ("m = " + T.text("minute") + " (0-59)" + ", ") : "") +
-        (second ? ("s = " + T.text("second") + " (0-59)") : "") +
-        (fractionofsecond ? ("SSS = " + T.text("fraction-of-second") + " (0-999)") : "") +
-        "<br>" +
-        example +
-        "</code></html>";
-    return helpString;
+  private static String buildDateTimeHelpStringPiece(
+      String code,
+      String meanning,
+      String range,
+      boolean comma) {
+    String piece = String.format("%s = %s", code, meanning);
+    if (range != null) {
+      piece += String.format(" (%s)", range);
+    }
+    if (comma) {
+      piece += ",<br>";
+    }
+    return piece;
   }
 
   @Override
