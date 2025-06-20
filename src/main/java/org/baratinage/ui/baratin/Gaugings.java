@@ -150,6 +150,7 @@ public class Gaugings extends BamItem implements ICalibrationData {
             }
             gaugingsTable.setHeader(0 + offset, T.text("stage"));
             if (stagePercentUncertainty != null) {
+                offset++;
                 gaugingsTable.setHeader(0 + offset, T.text("stage_uncertainty_percent"));
             }
             gaugingsTable.setHeader(1 + offset, T.text("discharge_uncertainty_percent"));
