@@ -263,41 +263,36 @@ public class BaM {
                 ConsoleLogger.log(currentLine);
             }
         }
-        
 
         // FIXME: all cases except default have message that should be captured!
         List<String> errMsg = new ArrayList<>();
         boolean inErrMsg = false;
-        //System.out.println(consoleLines);
         for (String l : consoleLines) {
             if (l.contains("FATAL ERROR")) {
                 inErrMsg = true;
             }
-            
+            if (inErrMsg) {
+                errMsg.add(l);
+            }
             if (l.contains("Press [enter]")) {
-            	PrintWriter writer = new PrintWriter(ouputStream);
+                PrintWriter writer = new PrintWriter(ouputStream);
                 writer.println();
                 writer.flush();
                 writer.close();
             }
-            
-            if (inErrMsg) {
-                errMsg.add(l);
-            }
-            
         }
-        
+
         bufferReader.close();
         inputStreamReader.close();
-        
-        
+
         if (inErrMsg) {
             throw new BamRunException(String.join("\n", errMsg));
         }
-        
+
         if (bamExecutionProcess.exitValue() != 0) {
             throw new BamRunException("BaM encountered an uncaugth Fatal Error!");
         }
+
         bamExecutionProcess = null;
     }
 
