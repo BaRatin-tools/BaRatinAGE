@@ -147,7 +147,7 @@ public class RatingShiftHappens extends BamItem {
       if (gaugingsDataset == null) {
         ConsoleLogger.error("Gaugings BamItem is missing data!");
         MsgPanel msg = new MsgPanel(MsgPanel.TYPE.ERROR, true);
-        msg.message.setText("missing_gaugings_data_error");
+        msg.message.setText(T.text("missing_gaugings_data_error"));
         allMessagePanels.add(
             msg);
         gaugingsValid = false;
@@ -155,7 +155,16 @@ public class RatingShiftHappens extends BamItem {
         if (gaugingsDataset.getActiveDateTimeAsDouble() == null) {
           ConsoleLogger.error("Gaugings BamItem is missing a date/time component!");
           MsgPanel msg = new MsgPanel(MsgPanel.TYPE.ERROR, true);
-          msg.message.setText("missing_gaugings_datetime_data_error");
+          msg.message.setText(T.text("missing_gaugings_datetime_data_error"));
+          allMessagePanels.add(
+              msg);
+          gaugingsValid = false;
+        }
+
+        if (gaugingsDataset.containsMissingValues()) {
+          ConsoleLogger.error("Gaugings BamItem contains missing values!");
+          MsgPanel msg = new MsgPanel(MsgPanel.TYPE.ERROR, true);
+          msg.message.setText(T.text("gaugings_data_contains_missing_values_error"));
           allMessagePanels.add(
               msg);
           gaugingsValid = false;
@@ -177,7 +186,7 @@ public class RatingShiftHappens extends BamItem {
       if (model == null) {
         ConsoleLogger.error("Hydraulic configuration is not valid!");
         MsgPanel msg = new MsgPanel(MsgPanel.TYPE.ERROR, true);
-        msg.message.setText("invalid_hydrauconf_error");
+        msg.message.setText(T.text("invalid_hydrauconf_error"));
         allMessagePanels.add(
             msg);
         hydrauConfValid = false;
@@ -215,6 +224,11 @@ public class RatingShiftHappens extends BamItem {
 
     if (gaugingsDataset.getActiveDateTimeAsDouble() == null) {
       ConsoleLogger.error("Gaugings BamItem is missing a date/time component!");
+      return;
+    }
+
+    if (gaugingsDataset.containsMissingValues()) {
+      ConsoleLogger.error("Gaugings BamItem contains missing values!");
       return;
     }
 
