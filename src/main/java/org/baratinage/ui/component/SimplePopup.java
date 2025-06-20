@@ -22,6 +22,10 @@ public class SimplePopup {
     popup.add(content);
   }
 
+  public void setPadding(int padding) {
+    content.setPadding(padding);
+  }
+
   public void setContent(JComponent content) {
     this.content.removeAll();
     this.content.addChild(content, false);
