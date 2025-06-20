@@ -76,8 +76,8 @@ public class DateTimeColumnMapper extends BorderedSimpleFlowPanel implements IDa
     oneColPanel.setGap(5);
 
     JButton dateTimeInfoButton = buildHelpButton(
-        true, true, true, true, true, true,
-        "y-M-d H:m:s = 2005-7-26 14:32:09");
+        true, true, true, true, true, true,true,
+        "y-M-d H:m:s.SSS = 2005-7-26 14:32:09.000");
     // "yyyy-MM-dd HH:mm:ss = 2005-07-26 14:32:09");
 
     oneColPanel.addChild(dateTimeField, true);
@@ -103,7 +103,8 @@ public class DateTimeColumnMapper extends BorderedSimpleFlowPanel implements IDa
         "y/M/d",
         "y-M-d",
         "d/M/y",
-        "d-M-y"
+        "d-M-y",
+        "y-M-d'T'H:m:s.SSS'Z'",
     });
     oneColPanel.addChild(dateTimeFormat, true);
     oneColPanel.addChild(dateTimeInfoButton, false);
@@ -130,7 +131,7 @@ public class DateTimeColumnMapper extends BorderedSimpleFlowPanel implements IDa
         "d-M-y"
     });
     JButton dateInfoButton = buildHelpButton(
-        true, true, true, false, false, false,
+        true, true, true, false, false, false, false,
         "y-M-d = 2005-07-26");
     // "yyyy-MM-dd = 2005-07-26");
     datePanel.addChild(dateLabel, false);
@@ -151,7 +152,7 @@ public class DateTimeColumnMapper extends BorderedSimpleFlowPanel implements IDa
         "H:m",
     });
     JButton timeInfoButton = buildHelpButton(
-        false, false, false, true, true, true,
+        false, false, false, true, true, true, false,
         "H:m:s = 14:32:09");
     // "HH:mm:ss = 14:32:09");
     timePanel.addChild(timeLabel, false);
@@ -523,6 +524,7 @@ public class DateTimeColumnMapper extends BorderedSimpleFlowPanel implements IDa
       boolean hour,
       boolean minute,
       boolean second,
+      boolean fractionofsecond,
       String example) {
 
     JButton btn = new JButton();
@@ -530,7 +532,7 @@ public class DateTimeColumnMapper extends BorderedSimpleFlowPanel implements IDa
     btn.addActionListener(l -> {
       JLabel infoLabel = new JLabel();
       infoLabel.setText(buildHelpString(
-          year, month, day, hour, minute, second,
+          year, month, day, hour, minute, second,fractionofsecond,
           example));
       SimplePopup popup = new SimplePopup(btn);
       popup.setContent(infoLabel);
@@ -548,6 +550,7 @@ public class DateTimeColumnMapper extends BorderedSimpleFlowPanel implements IDa
       boolean hour,
       boolean minute,
       boolean second,
+      boolean fractionofsecond,
       String example) {
     String helpString = "<html><code>" +
         (year ? ("y = " + T.text("year") + ", ") : "") +
@@ -556,6 +559,7 @@ public class DateTimeColumnMapper extends BorderedSimpleFlowPanel implements IDa
         (hour ? ("H = " + T.text("hour") + " (0-23)" + ", ") : "") +
         (minute ? ("m = " + T.text("minute") + " (0-59)" + ", ") : "") +
         (second ? ("s = " + T.text("second") + " (0-59)") : "") +
+        (fractionofsecond ? ("SSS = " + T.text("fraction-of-second") + " (0-999)") : "") +
         "<br>" +
         example +
         "</code></html>";
