@@ -36,6 +36,7 @@ public class ShiftDetectionIteration {
     public ShiftDetectionIteration(
             double[] time,
             double[] stage,
+            double[] stageStd,
             double[] discharge,
             double[] dischargeStd,
             Model ratingCurveModel,
@@ -47,7 +48,14 @@ public class ShiftDetectionIteration {
         this.nSegmentMax = nSegmentMax;
         this.nObsMin = nObsMin;
 
-        ratingCurveEstimation = new BamRatingCurveRun(ID, time, stage, discharge, dischargeStd, ratingCurveModel);
+        ratingCurveEstimation = new BamRatingCurveRun(
+                ID,
+                time,
+                stage,
+                stageStd,
+                discharge,
+                dischargeStd,
+                ratingCurveModel);
         children = new ArrayList<>();
         segmentations = new HashMap<>();
     }
@@ -97,6 +105,16 @@ public class ShiftDetectionIteration {
         json.put("seg", segJsonArr);
 
         // **************************************
+        // save stage std if any
+        if (ratingCurveEstimation.stageStd != null) {
+            JSONArray arr = new JSONArray();
+            for (int k = 0; k < ratingCurveEstimation.stageStd.length; k++) {
+                arr.put(ratingCurveEstimation.stageStd[k]);
+            }
+            json.put("stageStd", arr);
+        }
+
+        // **************************************
         // save array of children IDs
         List<ShiftDetectionConfig> childrenConfig = new ArrayList<>();
         for (ShiftDetectionIteration rsd : children) {
@@ -133,6 +151,17 @@ public class ShiftDetectionIteration {
         double[] time = segCalConfig.calibrationData.inputs[0].values;
 
         // **************************************
+        // load stage std if any
+        double[] stageStd = null;
+        if (config.config().has("stageStd")) {
+            JSONArray arr = config.config().getJSONArray("stageStd");
+            stageStd = new double[arr.length()];
+            for (int k = 0; k < arr.length(); k++) {
+                stageStd[k] = arr.getDouble(k);
+            }
+        }
+
+        // **************************************
         // load all children
         List<ShiftDetectionIteration> children = new ArrayList<>();
         for (ShiftDetectionConfig c : config.children()) {
@@ -141,7 +170,7 @@ public class ShiftDetectionIteration {
 
         // **************************************
         // build the actual RatingShifDetection object
-        BamRatingCurveRun ratingCurveEstimation = new BamRatingCurveRun(rcBam, time);
+        BamRatingCurveRun ratingCurveEstimation = new BamRatingCurveRun(rcBam, time, stageStd);
         HashMap<Integer, BamSegmentation> segmentations = new HashMap<>();
         for (Integer nSeg : segBam.keySet()) {
             BamSegmentation s = new BamSegmentation(segBam.get(nSeg), nSeg, nObsMin);
@@ -329,6 +358,8 @@ public class ShiftDetectionIteration {
 
             double[] segmentTime = Arrays.copyOfRange(ratingCurveEstimation.time, startIndex, endIndex);
             double[] segmentStage = Arrays.copyOfRange(ratingCurveEstimation.stage, startIndex, endIndex);
+            double[] segmentStageStd = ratingCurveEstimation.stageStd == null ? null
+                    : Arrays.copyOfRange(ratingCurveEstimation.stageStd, startIndex, endIndex);
             double[] segmentDischarge = Arrays.copyOfRange(ratingCurveEstimation.discharge, startIndex, endIndex);
             double[] segmentDischargeStd = Arrays.copyOfRange(ratingCurveEstimation.dischargeStd, startIndex, endIndex);
 
@@ -341,6 +372,7 @@ public class ShiftDetectionIteration {
             children.add(new ShiftDetectionIteration(
                     segmentTime,
                     segmentStage,
+                    segmentStageStd,
                     segmentDischarge,
                     segmentDischargeStd,
                     ratingCurveEstimation.model,

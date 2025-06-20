@@ -40,6 +40,7 @@ public class ShiftDetectionOverall {
   public ShiftDetectionOverall(
       double[] time,
       double[] stage,
+      double[] stageStd,
       double[] discharge,
       double[] dischargeStd,
       Model model,
@@ -47,7 +48,10 @@ public class ShiftDetectionOverall {
       int nObsMin) {
 
     rootRatingShiftDetection = new ShiftDetectionIteration(
-        time, stage, discharge, dischargeStd, model,
+        time,
+        stage, stageStd,
+        discharge, dischargeStd,
+        model,
         nSegmentMax, nObsMin);
 
     ratingShiftDone = new ArrayList<>();

@@ -35,6 +35,7 @@ public class BamRatingCurveRun {
 
   public final double[] time;
   public final double[] stage;
+  public final double[] stageStd;
   public final double[] discharge;
   public final double[] dischargeStd;
   public final Model model;
@@ -45,6 +46,7 @@ public class BamRatingCurveRun {
       String id,
       double[] time,
       double[] stage,
+      double[] stageStd,
       double[] discharge,
       double[] dischargeStd,
       Model model) {
@@ -52,6 +54,7 @@ public class BamRatingCurveRun {
     this.ID = id + "_rc";
     this.time = time;
     this.stage = stage;
+    this.stageStd = stageStd;
     this.discharge = discharge;
     this.dischargeStd = dischargeStd;
 
@@ -83,11 +86,12 @@ public class BamRatingCurveRun {
     return bam;
   }
 
-  public BamRatingCurveRun(BamRun bam, double[] time) {
+  public BamRatingCurveRun(BamRun bam, double[] time, double[] stageStd) {
     this.bam = bam;
     this.time = time;
     ID = bam.id;
     stage = bam.getCalibrationConfig().calibrationData.inputs[0].values;
+    this.stageStd = stageStd;
     discharge = bam.getCalibrationConfig().calibrationData.outputs[0].values;
     dischargeStd = bam.getCalibrationConfig().calibrationData.outputs[0].nonSysStd;
     model = bam.getCalibrationConfig().model;
@@ -125,7 +129,16 @@ public class BamRatingCurveRun {
   private PredictionConfig[] getPredictions(CalibrationData calibData) {
 
     List<double[]> hInput = new ArrayList<>();
-    hInput.add(calibData.inputs[0].values);
+    if (stageStd == null) {
+      hInput.add(calibData.inputs[0].values);
+    } else {
+      int nSamples = 200;
+      double[][] hInputMatrix = calibData.inputs[0].getErrorMatrix(nSamples);
+      for (int k = 0; k < nSamples; k++) {
+        hInput.add(hInputMatrix[k]);
+      }
+    }
+
     PredictionInput hPredInput = new PredictionInput("gauging_stage", hInput);
     PredictionOutput QPredOutput = PredictionOutput.buildPredictionOutput(
         "gauging_discharge", "Q", true);

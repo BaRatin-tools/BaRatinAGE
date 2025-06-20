@@ -264,6 +264,10 @@ public class GaugingsDataset extends AbstractDataset implements IPlotDataProvide
         return gaugingsTrue.get(STAGE);
     }
 
+    public double[] getActiveStageStdUncertainty() {
+        return gaugingsTrue.containsKey(STAGE_STD) ? gaugingsTrue.get(STAGE_STD) : null;
+    }
+
     public double[] getActiveDischargeValues() {
         return gaugingsTrue.get(DISCHARGE);
     }

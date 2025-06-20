@@ -243,6 +243,7 @@ public class RatingShiftHappens extends BamItem {
 
     double[] ldt = gaugingsDataset.getActiveDateTimeAsDouble();
     double[] h = gaugingsDataset.getActiveStageValues();
+    double[] hstd = gaugingsDataset.getActiveStageStdUncertainty();
     double[] q = gaugingsDataset.getActiveDischargeValues();
     double[] qstd = gaugingsDataset.getActiveDischargeStdUncertainty();
 
@@ -260,6 +261,7 @@ public class RatingShiftHappens extends BamItem {
     ratingShiftDetection = new ShiftDetectionOverall(
         Misc.reorderArray(indices, ldt),
         Misc.reorderArray(indices, h),
+        hstd == null ? null : Misc.reorderArray(indices, hstd),
         Misc.reorderArray(indices, q),
         Misc.reorderArray(indices, qstd),
         model,
