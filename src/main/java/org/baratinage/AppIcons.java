@@ -30,6 +30,8 @@ public class AppIcons {
     public final SvgIcon MORE_DOTS;
     public final SvgIcon HELP;
     public final SvgIcon HELP_SMALL;
+    public final SvgIcon WARNING;
+    public final SvgIcon WARNING_SMALL;
 
     public final SvgIcon LEFT_DOWN_ARROW;
     public final SvgIcon RIGHT_DOWN_ARROW;
@@ -63,6 +65,8 @@ public class AppIcons {
         MORE_DOTS = addIcon(buildFeatherAppImageIcon("more-horizontal.svg", FEATHER_SIZE));
         HELP = addIcon(buildFeatherAppImageIcon("help-circle.svg", FEATHER_SIZE));
         HELP_SMALL = addIcon(buildFeatherAppImageIcon("help-circle.svg", FEATHER_SIZE - 8));
+        WARNING = addIcon(buildFeatherAppImageIcon("alert-triangle.svg", FEATHER_SIZE));
+        WARNING_SMALL = addIcon(buildFeatherAppImageIcon("alert-triangle.svg", FEATHER_SIZE - 8));
 
         LEFT_DOWN_ARROW = addIcon(buildFeatherAppImageIcon("corner-left-down.svg", FEATHER_SIZE));
         RIGHT_DOWN_ARROW = addIcon(buildFeatherAppImageIcon("corner-right-down.svg", FEATHER_SIZE));
@@ -78,6 +82,10 @@ public class AppIcons {
         });
         TRASH.setSvgTagAttribute("color", AppSetup.COLORS.DANGER);
         TRASH.rebuildIcon();
+        WARNING.setSvgTagAttribute("color", AppSetup.COLORS.DANGER);
+        WARNING.rebuildIcon();
+        WARNING_SMALL.setSvgTagAttribute("color", AppSetup.COLORS.DANGER);
+        WARNING_SMALL.rebuildIcon();
 
         allIcons.stream().forEach(i -> {
             i.rebuildIcon();

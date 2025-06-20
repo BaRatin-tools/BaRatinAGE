@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 
+import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.event.ChangeListener;
 
@@ -17,6 +18,7 @@ import org.baratinage.utils.perf.TimedActions;
 import org.baratinage.ui.commons.MsgPanel;
 import org.baratinage.ui.component.CommonDialog;
 import org.baratinage.ui.component.DataFileReader;
+import org.baratinage.ui.component.SimplePopup;
 import org.baratinage.ui.component.SimpleSep;
 import org.baratinage.ui.component.data_import.DataImporter;
 import org.baratinage.ui.component.data_import.column_mapper.BooleanColumnMapper;
@@ -34,6 +36,7 @@ public class GaugingsImporter extends DataImporter {
     private final DoubleColumnMapper dischargeUColMapper;
     private final BooleanColumnMapper validityColMapper;
     private final DateTimeColumnMapper dateTimeColMapper;
+    private final DoubleColumnMapper stageUColMapper;
 
     public GaugingsImporter() {
         super();
@@ -60,6 +63,19 @@ public class GaugingsImporter extends DataImporter {
 
         validityColMapper = new BooleanColumnMapper();
         dateTimeColMapper = new DateTimeColumnMapper();
+
+        stageUColMapper = new DoubleColumnMapper();
+        SimpleFlowPanel stageUColMapperPanel = new SimpleFlowPanel();
+        stageUColMapperPanel.setGap(5);
+        JButton btnWarning = new JButton();
+        btnWarning.setIcon(AppSetup.ICONS.WARNING_SMALL);
+        btnWarning.addActionListener(l -> {
+            SimplePopup popup = new SimplePopup(btnWarning);
+            popup.setContent(new JLabel(T.html("gauging_stage_uncertainty_import_warning")));
+            popup.show();
+        });
+        stageUColMapperPanel.addChild(stageUColMapper, true);
+        stageUColMapperPanel.addChild(btnWarning, false);
 
         // **********************************************************
         // layout and labels
@@ -97,6 +113,7 @@ public class GaugingsImporter extends DataImporter {
         colMappingRightPanel.addChild(validityColMapper, false);
 
         colMappingRightPanel.addChild(dateTimeColMapper, false);
+        colMappingRightPanel.addChild(stageUColMapperPanel, false);
 
         mainConfigPanel.addChild(colMappingMainPanel, true);
 
@@ -109,6 +126,7 @@ public class GaugingsImporter extends DataImporter {
         T.t(this, stageColMapper.label, false, "stage");
         T.t(this, dischargeColMapper.label, false, "discharge");
         T.t(this, dischargeUColMapper.label, false, "discharge_uncertainty_percent");
+        T.t(this, stageUColMapper.label, false, "stage_uncertainty_percent");
 
         // **********************************************************
         // when updating a field
@@ -121,6 +139,7 @@ public class GaugingsImporter extends DataImporter {
         dischargeUColMapper.combobox.addChangeListener(cbChangeListener);
         validityColMapper.addChangeListener(cbChangeListener);
         dateTimeColMapper.addChangeListener(cbChangeListener);
+        stageUColMapper.combobox.addChangeListener(cbChangeListener);
     }
 
     private static boolean isBaremeBadFile(String fileName) {
@@ -164,6 +183,9 @@ public class GaugingsImporter extends DataImporter {
         boolean tColOk = !dateTimeColMapper.hasValidSelection()
                 || (dateTimeColMapper.hasValidSelection() && tInvalidIndices.size() == 0);
 
+        Set<Integer> uhInvalidIndices = stageUColMapper.getInvalidIndices();
+        boolean uhColOk = stageUColMapper.getIndex() >= 0 && uhInvalidIndices.size() == 0;
+
         Set<Integer> lastSkippedIndices = dataFileReader.getLastSkippedIndices();
         if (lastSkippedIndices.size() > 0) {
             errorPanel.addChild(MsgPanel.buildMsgPanel(
@@ -195,12 +217,19 @@ public class GaugingsImporter extends DataImporter {
                     buildErrorMessage(tInvalidIndices), MsgPanel.TYPE.ERROR));
         }
 
+        if (!uhColOk) {
+            errorPanel.addChild(MsgPanel.buildMsgPanel(
+                    T.text("stage_uncertainty_percent"),
+                    buildErrorMessage(uhInvalidIndices), MsgPanel.TYPE.ERROR));
+        }
+
         stageColMapper.combobox.setValidityView(hColOk);
         dischargeColMapper.combobox.setValidityView(qColOk);
         dischargeUColMapper.combobox.setValidityView(uqColOk);
         dateTimeColMapper.setValidityView(tColOk);
+        stageUColMapper.combobox.setValidityView(uhColOk);
 
-        validateButton.setEnabled(hColOk && qColOk && uqColOk && tColOk);
+        validateButton.setEnabled(hColOk && qColOk && uqColOk && tColOk && uhColOk);
 
         dataPreview.updatePreviewTable();
     }
@@ -232,7 +261,14 @@ public class GaugingsImporter extends DataImporter {
                 uQ[k] = uQpercent;
             }
 
-            return GaugingsDataset.buildGaugingsDataset(fileName, h, Q, uQ, null, null);
+            return GaugingsDataset.buildGaugingsDataset(
+                    fileName,
+                    h,
+                    Q,
+                    uQ,
+                    null,
+                    null,
+                    null);
         } catch (IOException e) {
             ConsoleLogger.error("Failed to read Barème .bad file!");
             ConsoleLogger.error(e);
@@ -261,6 +297,7 @@ public class GaugingsImporter extends DataImporter {
         dischargeUColMapper.setData(data, headers, missingValue);
         validityColMapper.setData(data, headers, missingValue);
         dateTimeColMapper.setData(data, headers, missingValue);
+        stageUColMapper.setData(data, headers, missingValue);
 
         stageColMapper.guessColumnIndex(false);
         dischargeColMapper.guessColumnIndex(false);
@@ -282,9 +319,16 @@ public class GaugingsImporter extends DataImporter {
 
         boolean[] v = validityColMapper.getParsedColumn();
 
+        double[] uh = stageUColMapper.getParsedColumn();
+
         dataset = GaugingsDataset.buildGaugingsDataset(
                 fileName,
-                h, Q, uQ, v, dateTime);
+                h,
+                Q,
+                uQ,
+                v,
+                dateTime,
+                uh);
     }
 
 }

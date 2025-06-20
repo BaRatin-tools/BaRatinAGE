@@ -474,6 +474,7 @@ public class BaratinageV2Importer implements IProjectImporter {
                 gaugings.get(8),
                 gaugings.get(9),
                 null,
+                null,
                 null);
 
         Boolean[] activeState = new Boolean[nGaugings];

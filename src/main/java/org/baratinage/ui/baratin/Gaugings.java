@@ -122,12 +122,17 @@ public class Gaugings extends BamItem implements ICalibrationData {
 
     private void updateTable() {
 
+        double[] stagePercentUncertainty = gaugingDataset.getStagePercentUncertainty();
+
         gaugingsTable.clearColumns();
         LocalDateTime[] dateTime = gaugingDataset.getDateTime();
         if (dateTime != null) {
             gaugingsTable.addColumn(dateTime);
         }
         gaugingsTable.addColumn(gaugingDataset.getStageValues());
+        if (stagePercentUncertainty != null) {
+            gaugingsTable.addColumn(stagePercentUncertainty);
+        }
         gaugingsTable.addColumn(gaugingDataset.getDischargeValues());
         gaugingsTable.addColumn(gaugingDataset.getDischargePercentUncertainty());
         gaugingsTable.addColumn(gaugingDataset.getStateAsBoolean(), true);
@@ -143,10 +148,12 @@ public class Gaugings extends BamItem implements ICalibrationData {
                 offset++;
             }
             gaugingsTable.setHeader(0 + offset, T.text("stage"));
-            gaugingsTable.setHeader(1 + offset, T.text("discharge"));
-            gaugingsTable.setHeader(2 + offset, T.text("uncertainty_percent"));
+            if (stagePercentUncertainty != null) {
+                gaugingsTable.setHeader(0 + offset, T.text("stage_uncertainty_percent"));
+            }
+            gaugingsTable.setHeader(1 + offset, T.text("discharge_uncertainty_percent"));
+            gaugingsTable.setHeader(2 + offset, T.text("stage_uncertainty_percent"));
             gaugingsTable.setHeader(3 + offset, T.text("active_gauging"));
-
             gaugingsTable.updateHeader();
         });
 

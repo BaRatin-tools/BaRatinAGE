@@ -4,9 +4,11 @@ import java.awt.Color;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import org.baratinage.AppSetup;
 import org.baratinage.ui.bam.IPlotDataProvider;
@@ -15,7 +17,6 @@ import org.baratinage.ui.plot.PlotItem;
 import org.baratinage.ui.plot.PlotPoints;
 import org.baratinage.utils.ConsoleLogger;
 import org.baratinage.utils.DateTime;
-import org.baratinage.utils.Misc;
 
 public class GaugingsDataset extends AbstractDataset implements IPlotDataProvider {
 
@@ -25,6 +26,10 @@ public class GaugingsDataset extends AbstractDataset implements IPlotDataProvide
     private static final String DISCHARGE_STD = "dischargeStd";
     private static final String DISCHARGE_LOW = "dischargeLow";
     private static final String DISCHARGE_HIGH = "dischargeHigh";
+    private static final String STAGE_U = "stagePercentUncertainty";
+    private static final String STAGE_STD = "stageStd";
+    private static final String STAGE_LOW = "stageLow";
+    private static final String STAGE_HIGH = "stageHigh";
     private static final String STATE = "active";
     private static final String DATETIME = "dateTime";
 
@@ -41,16 +46,32 @@ public class GaugingsDataset extends AbstractDataset implements IPlotDataProvide
             double[] discharge,
             double[] dischargePercentUncertainty,
             boolean[] active,
-            LocalDateTime[] datetime) {
+            LocalDateTime[] datetime,
+            double[] stagePercentUncertainty) {
         if (active == null) {
             active = new boolean[stage.length];
             for (int k = 0; k < stage.length; k++) {
                 active[k] = true;
             }
         }
-        GaugingsDataset gds = datetime == null
-                ? new GaugingsDataset(name, stage, discharge, dischargePercentUncertainty, active)
-                : new GaugingsDataset(name, stage, discharge, dischargePercentUncertainty, active, datetime);
+        String[] headers = new String[] {
+                STAGE, DISCHARGE, DISCHARGE_U, STATE,
+                datetime == null ? null : DATETIME,
+                stagePercentUncertainty == null ? null : STAGE_U
+        };
+        double[][] columns = new double[][] {
+                stage, discharge, dischargePercentUncertainty, toDouble(active),
+                datetime == null ? null : DateTime.dateTimeToDoubleArray(datetime),
+                stagePercentUncertainty == null ? null : stagePercentUncertainty,
+        };
+        headers = Arrays.stream(headers)
+                .filter(Objects::nonNull)
+                .toArray(String[]::new);
+        columns = Arrays.stream(columns)
+                .filter(Objects::nonNull)
+                .toArray(double[][]::new);
+
+        GaugingsDataset gds = new GaugingsDataset(name, active, datetime, headers, columns);
 
         return gds;
     }
@@ -61,58 +82,14 @@ public class GaugingsDataset extends AbstractDataset implements IPlotDataProvide
 
     private GaugingsDataset(
             String name,
-            double[] stage,
-            double[] discharge,
-            double[] dischargePercentUncertainty,
             boolean[] active,
-            LocalDateTime[] datetime) {
-        super(name,
-                new String[] {
-                        STAGE, DISCHARGE, DISCHARGE_U, STATE, DATETIME
-                },
-                stage,
-                discharge,
-                dischargePercentUncertainty,
-                toDouble(active),
-                DateTime.dateTimeToDoubleArray(datetime));
-
-        // keep track of original data in its original type
+            LocalDateTime[] datetime,
+            String[] headers,
+            double[]... columns) {
+        super(name, headers, columns);
         this.state = active;
         this.datetime = datetime;
-
         updateDerivedValues();
-    }
-
-    private GaugingsDataset(
-            String name,
-            double[] stage,
-            double[] discharge,
-            double[] dischargePercentUncertainty,
-            boolean[] active) {
-        super(name,
-                new String[] {
-                        STAGE, DISCHARGE, DISCHARGE_U, STATE
-                },
-                stage,
-                discharge,
-                dischargePercentUncertainty,
-                toDouble(active));
-        this.state = active;
-        this.datetime = null;
-        updateDerivedValues();
-    }
-
-    private GaugingsDataset(
-            String name,
-            double[] stage,
-            double[] discharge,
-            double[] dischargePercentUncertainty) {
-        this(
-                name,
-                stage,
-                discharge,
-                dischargePercentUncertainty,
-                toBoolean(Misc.ones(stage.length)));
     }
 
     private GaugingsDataset(String name, String hashString) {
@@ -141,24 +118,34 @@ public class GaugingsDataset extends AbstractDataset implements IPlotDataProvide
         derived.put(DISCHARGE_LOW, env[0]);
         derived.put(DISCHARGE_HIGH, env[1]);
 
+        double[] uh = getColumn(STAGE_U);
+        if (uh != null) {
+            double[] h = getColumn(STAGE);
+            double[] stdh = getStd(h, uh);
+            double[][] envh = getEnv(h, stdh);
+            derived.put(STAGE_STD, stdh);
+            derived.put(STAGE_LOW, envh[0]);
+            derived.put(STAGE_HIGH, envh[1]);
+        }
+
         // build derived arrays depending on the true/false state
         gaugingsTrue.clear();
         gaugingsFalse.clear();
 
         int[] tfn = getTrueFalseLengths(this.state);
 
-        for (String h : super.headers) {
-            double[] v = getColumn(h);
+        for (String header : super.headers) {
+            double[] v = getColumn(header);
             double[][] tf = getTrueFalse(this.state, v, tfn[0], tfn[1]);
-            gaugingsTrue.put(h, tf[0]);
-            gaugingsFalse.put(h, tf[1]);
+            gaugingsTrue.put(header, tf[0]);
+            gaugingsFalse.put(header, tf[1]);
         }
 
-        for (String h : derived.keySet()) {
-            double[] v = derived.get(h);
+        for (String header : derived.keySet()) {
+            double[] v = derived.get(header);
             double[][] tf = getTrueFalse(this.state, v, tfn[0], tfn[1]);
-            gaugingsTrue.put(h, tf[0]);
-            gaugingsFalse.put(h, tf[1]);
+            gaugingsTrue.put(header, tf[0]);
+            gaugingsFalse.put(header, tf[1]);
         }
 
     }
@@ -224,6 +211,14 @@ public class GaugingsDataset extends AbstractDataset implements IPlotDataProvide
         return getColumn(STAGE);
     }
 
+    public double[] getStagePercentUncertainty() {
+        return getColumn(STAGE_U);
+    }
+
+    public double[] getStageStdUncertainty() {
+        return derived.containsKey(STAGE_STD) ? derived.get(STAGE_STD) : null;
+    }
+
     public double[] getDischargeValues() {
         return getColumn(DISCHARGE);
     }
@@ -266,6 +261,13 @@ public class GaugingsDataset extends AbstractDataset implements IPlotDataProvide
 
     public double[] getActiveDateTimeAsDouble() {
         return gaugingsTrue.get(DATETIME);
+    }
+
+    public List<double[]> getStageUncertaintyInterval() {
+        List<double[]> uncertaintyInterval = new ArrayList<>();
+        uncertaintyInterval.add(derived.get(DISCHARGE_LOW));
+        uncertaintyInterval.add(derived.get(DISCHARGE_HIGH));
+        return uncertaintyInterval;
     }
 
     public List<double[]> getDischargeUncertaintyInterval() {
@@ -315,8 +317,12 @@ public class GaugingsDataset extends AbstractDataset implements IPlotDataProvide
 
     public PlotPoints getPlotPoints(PlotType plotType, Boolean active) {
 
+        boolean hasStageUncertainty = getColumn(STAGE_U) != null;
+
         double[] time = getColumn(DATETIME);
         double[] stage = getColumn(STAGE);
+        double[] stageLow = hasStageUncertainty ? derived.get(STAGE_LOW) : stage;
+        double[] stageHigh = hasStageUncertainty ? derived.get(STAGE_HIGH) : stage;
         double[] discharge = getColumn(DISCHARGE);
         double[] dischargeLow = derived.get(DISCHARGE_LOW);
         double[] dischargeHigh = derived.get(DISCHARGE_HIGH);
@@ -329,26 +335,30 @@ public class GaugingsDataset extends AbstractDataset implements IPlotDataProvide
             lgd = active ? "active gaugings" : "inactive gaugings";
             time = data.get(DATETIME);
             stage = data.get(STAGE);
+            stageLow = hasStageUncertainty ? data.get(STAGE_LOW) : stage;
+            stageHigh = hasStageUncertainty ? data.get(STAGE_HIGH) : stage;
             discharge = data.get(DISCHARGE);
             dischargeLow = data.get(DISCHARGE_LOW);
             dischargeHigh = data.get(DISCHARGE_HIGH);
         }
 
         double[] x = stage;
-        double[] xL = stage;
-        double[] xH = stage;
+        double[] xL = stageLow;
+        double[] xH = stageHigh;
         double[] y = discharge;
         double[] yL = dischargeLow;
         double[] yH = dischargeHigh;
 
         if (plotType.equals(PlotType.hQ)) {
             double[] z = x;
+            double[] zL = xL;
+            double[] zH = xH;
             x = y;
             xL = yL;
             xH = yH;
             y = z;
-            yL = z;
-            yH = z;
+            yL = zL;
+            yH = zH;
         } else if (plotType.equals(PlotType.Qt) || plotType.equals(PlotType.ht)) {
             x = DateTime.dateTimeDoubleToSecondsDouble(time);
             xL = x;

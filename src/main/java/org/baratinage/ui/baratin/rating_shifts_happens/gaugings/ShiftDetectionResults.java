@@ -263,7 +263,8 @@ public class ShiftDetectionResults {
         q,
         qstd,
         active,
-        t);
+        t,
+        null);
   }
 
   public DataTable getShiftsDataTablePlotItems() {
