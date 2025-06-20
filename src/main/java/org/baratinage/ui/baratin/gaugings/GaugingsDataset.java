@@ -202,6 +202,7 @@ public class GaugingsDataset extends AbstractDataset implements IPlotDataProvide
         double[] d = getColumn("active");
         for (int k = 0; k < getNumberOfRows(); k++) {
             d[k] = newValues[k] ? 1d : 0d;
+            this.state[k] = newValues[k];
         }
         writeDataFile();
         updateDerivedValues();
