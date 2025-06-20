@@ -19,8 +19,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
@@ -52,7 +52,7 @@ public class DataTable extends SimpleFlowPanel {
 
         model.addTableModelListener(
                 (e) -> {
-                    fireChangeListeners();
+                    fireChangeListeners(e);
                 });
         table = new JTable();
 
@@ -308,19 +308,19 @@ public class DataTable extends SimpleFlowPanel {
         }
     }
 
-    private List<ChangeListener> changeListeners = new ArrayList<>();
+    private List<TableModelListener> changeListeners = new ArrayList<>();
 
-    public void addChangeListener(ChangeListener l) {
+    public void addChangeListener(TableModelListener l) {
         changeListeners.add(l);
     }
 
-    public void removeChangeListener(ChangeListener l) {
+    public void removeChangeListener(TableModelListener l) {
         changeListeners.remove(l);
     }
 
-    private void fireChangeListeners() {
-        for (ChangeListener l : changeListeners) {
-            l.stateChanged(new ChangeEvent(this));
+    private void fireChangeListeners(TableModelEvent e) {
+        for (TableModelListener l : changeListeners) {
+            l.tableChanged(e);
         }
     }
 
@@ -422,7 +422,7 @@ public class DataTable extends SimpleFlowPanel {
                     return;
                 }
                 c.values()[rowIndex] = value;
-                fireTableDataChanged();
+                fireTableCellUpdated(rowIndex, colIndex);
             }
 
         }
