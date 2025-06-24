@@ -1,10 +1,12 @@
 package org.baratinage.ui.plot;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.baratinage.AppSetup;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.LegendItemCollection;
 import org.jfree.chart.LegendItemSource;
@@ -100,6 +102,25 @@ public class Plot implements LegendItemSource {
         chart.removeLegend();
 
         updateLegend();
+        updateFont();
+    }
+
+    private void updateFont() {
+        Font font = new Font("SansSerif", Font.PLAIN, AppSetup.CONFIG.FONT_SIZE.get());
+
+        axisX.setLabelFont(font);
+        axisXlog.setLabelFont(font);
+        axisY.setLabelFont(font);
+        axisYlog.setLabelFont(font);
+        axisXdate.setLabelFont(font);
+
+        axisX.setTickLabelFont(font);
+        axisXlog.setTickLabelFont(font);
+        axisY.setTickLabelFont(font);
+        axisYlog.setTickLabelFont(font);
+        axisXdate.setTickLabelFont(font);
+
+        chart.getLegend().setItemFont(font);
     }
 
     private void updateLegend() {
@@ -109,6 +130,7 @@ public class Plot implements LegendItemSource {
             legendTitle.setPosition(RectangleEdge.RIGHT);
             legendTitle.setPadding(0, 0, 0, 10);
             chart.addLegend(legendTitle);
+            updateFont();
         }
     }
 
@@ -223,6 +245,7 @@ public class Plot implements LegendItemSource {
             plot.setRenderer(k, items.get(k).item.getRenderer());
         }
         chart.fireChartChanged();
+        updateFont();
     }
 
     public void setBufferPercentage(double top, double bottom, double left, double right) {
