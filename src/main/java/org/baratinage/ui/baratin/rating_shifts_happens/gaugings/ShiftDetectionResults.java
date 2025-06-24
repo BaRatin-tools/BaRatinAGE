@@ -6,88 +6,30 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JRadioButton;
-
-import org.baratinage.AppSetup;
 import org.baratinage.jbam.EstimatedParameter;
-import org.baratinage.translation.T;
-import org.baratinage.ui.bam.BamItemType;
-import org.baratinage.ui.baratin.Gaugings;
 import org.baratinage.ui.baratin.gaugings.GaugingsDataset;
-import org.baratinage.ui.baratin.rating_curve.RatingCurvePlotToolsPanel;
 import org.baratinage.ui.baratin.rating_shifts_happens.BamSegmentation;
-import org.baratinage.ui.commons.ColumnHeaderDescription;
-import org.baratinage.ui.commons.Explorer;
-import org.baratinage.ui.commons.ExplorerItem;
-import org.baratinage.ui.component.DataTable;
-import org.baratinage.ui.component.SimpleColorField;
-import org.baratinage.ui.component.SimpleRadioButtons;
-import org.baratinage.ui.container.SimpleFlowPanel;
-import org.baratinage.ui.container.SplitContainer;
-import org.baratinage.ui.plot.MultiPlotContainer;
-import org.baratinage.ui.plot.Plot;
+import org.baratinage.ui.plot.ColorPalette;
 import org.baratinage.ui.plot.PlotBar;
-import org.baratinage.ui.plot.PlotContainer;
 import org.baratinage.ui.plot.PlotInfiniteLine;
 import org.baratinage.ui.plot.PlotPoints;
 import org.baratinage.utils.DateTime;
 
 public class ShiftDetectionResults {
 
-  private static final Color[] COLORS = {
-      new Color(230, 159, 0), // #E69F00
-      new Color(86, 180, 233), // #56B4E9
-      new Color(0, 158, 115), // #009E73
-      new Color(240, 228, 66), // #F0E442
-      new Color(0, 114, 178), // #0072B2
-      new Color(213, 94, 0), // #D55E00
-      new Color(204, 121, 167), // #CC79A7
-      new Color(153, 153, 153), // #999999
-      new Color(0, 0, 0), // #000000
-      new Color(228, 26, 28), // #E41A1C
-      new Color(55, 126, 184), // #377EB8
-      new Color(77, 175, 74), // #4DAF4A
-      new Color(122, 47, 133), // #7a2f85
-  };
-
-  public static Color getColor(int index) {
-    int safeIndex = Math.floorMod(index, COLORS.length);
-    return COLORS[safeIndex];
-  }
-
-  private static ColumnHeaderDescription buildColumnDescs() {
-
-    ColumnHeaderDescription headerDesc = new ColumnHeaderDescription();
-    headerDesc.addColumnDesc("Name", () -> {
-      return T.text("name");
-    });
-
-    headerDesc.addColumnDesc("Posterior_maxpost", () -> {
-      return T.text("high_bound_parameter", T.text("maxpost_desc"));
-    });
-    headerDesc.addColumnDesc("Posterior_low", () -> {
-      return T.text("low_bound_parameter", T.text("posterior_density"));
-    });
-    headerDesc.addColumnDesc("Posterior_high", () -> {
-      return T.text("high_bound_parameter", T.text("posterior_density"));
-    });
-
-    return headerDesc;
-  }
-
-  private static final ColumnHeaderDescription resultsColumnsDescritption = buildColumnDescs();
-
   private static DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-
-  private final ShiftDetectionIteration rcShiftsDetectionRun;
 
   private final List<ResultPeriod> periods;
   private final List<ResultShift> shifts;
 
-  public ShiftDetectionResults(ShiftDetectionIteration rcShiftsDetectionRun, boolean local) {
-    this.rcShiftsDetectionRun = rcShiftsDetectionRun;
+  public final ShiftDetectionMainPlot mainPlot;
+  public final ShiftDetectionTable table;
+  public final ShiftDetectionGaugings gaugings;
+  public final ShiftDetectionIntermediateResults intermediateResults;
+
+  public ShiftDetectionResults(
+      ShiftDetectionIteration rcShiftsDetectionRun,
+      boolean local) {
 
     // **************************************************************
     // get all shifts in the proper order
@@ -111,6 +53,8 @@ public class ShiftDetectionResults {
     double optimBinWidth = PlotBar.computeOptimalBinwidth(
         shiftsOrdered.stream().map(p -> p.mcmc).toList(), 50);
 
+    Color[] palette = ColorPalette.getColors(shiftsOrdered.size() + 1, ColorPalette.VIRIDIS);
+
     shifts = new ArrayList<>();
 
     for (int k = 0; k < shiftsOrdered.size(); k++) {
@@ -121,21 +65,21 @@ public class ShiftDetectionResults {
       PlotInfiniteLine line = new PlotInfiniteLine(
           dateStr,
           maxpost * 1000,
-          getColor(k),
+          palette[k],
           4);
       double[][] densities = PlotBar.densityEstimate(p.mcmc, optimBinWidth);
       PlotBar dist = new PlotBar(
           dateStr,
           DateTime.dateTimeDoubleToSecondsDouble(densities[0]),
           densities[1],
-          getColor(k),
+          palette[k],
           0.7f);
 
       shifts.add(new ResultShift(
           date,
           p,
           dateStr,
-          getColor(k),
+          palette[k],
           line,
           dist));
     }
@@ -157,7 +101,7 @@ public class ShiftDetectionResults {
           time, stage, discharge, dischargeStd,
           startShift == null ? 0 : startShift.parameter().getMaxpost(),
           endShift.parameter().getMaxpost());
-      Color color = getColor(k);
+      Color color = palette[k];
       periods.add(buildResultPeriod(dataset, startShift, endShift, color));
       startShift = endShift;
     }
@@ -165,9 +109,27 @@ public class ShiftDetectionResults {
         time, stage, discharge, dischargeStd,
         startShift == null ? 0 : startShift.parameter().getMaxpost(),
         Double.MAX_VALUE);
-    Color color = getColor(shifts.size());
+    Color color = palette[shifts.size()];
     periods.add(buildResultPeriod(dataset, startShift, null, color));
 
+    // **************************************************************
+    // build the various results panels
+    mainPlot = new ShiftDetectionMainPlot(shifts, periods);
+    table = new ShiftDetectionTable(shifts);
+    gaugings = new ShiftDetectionGaugings(periods);
+    intermediateResults = new ShiftDetectionIntermediateResults(rcShiftsDetectionRun);
+  }
+
+  public void setPalette(ColorPalette palette) {
+    mainPlot.setPalette(palette);
+    gaugings.setPalette(palette);
+    intermediateResults.setPalette(palette);
+  }
+
+  public void updateResults() {
+    mainPlot.updatePlot();
+    gaugings.updatePlot();
+    intermediateResults.updatePlots();
   }
 
   private static ResultPeriod buildResultPeriod(
@@ -267,225 +229,7 @@ public class ShiftDetectionResults {
         null);
   }
 
-  public DataTable getShiftsDataTablePlotItems() {
-
-    // int n = shiftsOld.size();
-    int n = shifts.size();
-    String[] names = new String[n];
-    LocalDateTime[] postMaxpost = new LocalDateTime[n];
-    LocalDateTime[] postLow = new LocalDateTime[n];
-    LocalDateTime[] postHight = new LocalDateTime[n];
-    for (int k = 0; k < n; k++) {
-      ResultShift shift = shifts.get(k);
-      EstimatedParameter p = shift.parameter();
-      names[k] = String.format("tau_%d", k);
-      postMaxpost[k] = DateTime.doubleToDateTime(p.getMaxpost());
-      double[] interval = p.get95interval();
-      postLow[k] = DateTime.doubleToDateTime(interval[0]);
-      postHight[k] = DateTime.doubleToDateTime(interval[1]);
-    }
-
-    DataTable dataTable = new DataTable();
-    dataTable.addColumn(names);
-    dataTable.addColumn(postMaxpost);
-    dataTable.addColumn(postLow);
-    dataTable.addColumn(postHight);
-    dataTable.updateData();
-    dataTable.setHeader(0, "Name");
-    dataTable.setHeader(1, "Posterior_maxpost");
-    dataTable.setHeader(2, "Posterior_low");
-    dataTable.setHeader(3, "Posterior_high");
-    dataTable.updateHeader();
-    dataTable.autoResizeColumns();
-
-    JButton showHeaderDescription = new JButton();
-    showHeaderDescription.addActionListener(l -> {
-      resultsColumnsDescritption.openDialog(T.text("shifts"));
-    });
-    T.t(this, showHeaderDescription, false, "table_headers_desc");
-    dataTable.toolsPanel.addChild(showHeaderDescription, false);
-
-    return dataTable;
-  }
-
-  public SimpleFlowPanel getMainResultPanel() {
-    SimpleFlowPanel panel = new SimpleFlowPanel(true);
-    panel.setGap(5);
-    // SimpleFlowPanel config = new SimpleFlowPanel(true);
-    SimpleFlowPanel plots = new SimpleFlowPanel();
-
-    RatingCurvePlotToolsPanel toolsPanel = new RatingCurvePlotToolsPanel();
-    toolsPanel.configure(true, false, false);
-
-    SimpleRadioButtons<String> radioDischargeOrStage = new SimpleRadioButtons<>();
-    JRadioButton stageBtn = radioDischargeOrStage.addOption("h", T.text("stage"), "h");
-    JRadioButton dischargeBtn = radioDischargeOrStage.addOption("q", T.text("discharge"), "q");
-    // config.addChild(stageBtn, false);
-    // config.addChild(dischargeBtn, false);
-
-    toolsPanel.addChild(stageBtn, false);
-    toolsPanel.addChild(dischargeBtn, false);
-
-    Runnable plotBuiler = () -> {
-
-      List<PlotBar> shiftBars = shifts.stream().map(s -> s.distribution()).toList();
-      List<PlotInfiniteLine> shiftLines = shifts.stream().map(s -> s.line()).toList();
-      List<PlotPoints> ht = periods.stream().map(p -> p.htPoints()).toList();
-      List<PlotPoints> Qt = periods.stream().map(p -> p.QtPoints()).toList();
-
-      Plot shiftsPlot = new Plot(true, true);
-      shiftsPlot.addXYItems(shiftBars, true);
-      shiftsPlot.addXYItems(shiftLines, false);
-      shiftsPlot.plot.getRangeAxis().setVisible(false);
-
-      Plot stagePlot = new Plot(true, true);
-      stagePlot.addXYItems(ht, true);
-      stagePlot.addXYItems(shiftLines, false);
-
-      Plot dischargePlot = new Plot(true, true);
-      dischargePlot.addXYItems(Qt, true);
-      dischargePlot.addXYItems(shiftLines, false);
-
-      MultiPlotContainer mainStagePlot = new MultiPlotContainer();
-      mainStagePlot.addPlot(stagePlot, 3);
-      if (shiftBars.size() > 0) {
-        mainStagePlot.addPlot(shiftsPlot, 1);
-      }
-
-      MultiPlotContainer mainDischargePlot = new MultiPlotContainer();
-      mainDischargePlot.addPlot(dischargePlot, 3);
-      if (shiftBars.size() > 0) {
-        mainDischargePlot.addPlot(shiftsPlot, 1);
-      }
-
-      plots.removeAll();
-      boolean isDischargePlot = radioDischargeOrStage.getSelectedId().equals("q");
-
-      // String id = radioDischargeOrStage.getSelectedId();
-      if (!isDischargePlot) {
-        plots.addChild(mainStagePlot, true);
-        mainStagePlot.setDomainRange(mainDischargePlot.getCurrentDomainRange());
-      } else {
-        plots.addChild(mainDischargePlot, true);
-        mainDischargePlot.setDomainRange(mainStagePlot.getCurrentDomainRange());
-      }
-
-      stagePlot.setYAxisLabel(String.format("%s [m]", T.text("stage")));
-      dischargePlot.setYAxisLabel(String.format("%s [m3/s]", T.text("discharge")));
-
-      toolsPanel.updatePlotAxis(dischargePlot);
-    };
-
-    toolsPanel.addChangeListener(l -> {
-      plotBuiler.run();
-    });
-    radioDischargeOrStage.addChangeListener(l -> {
-      boolean isDischargePlot = radioDischargeOrStage.getSelectedId().equals("q");
-      toolsPanel.logScaleDischargeAxis.setEnabled(isDischargePlot);
-      plotBuiler.run();
-    });
-
-    radioDischargeOrStage.setSelected("h");
-    // plots.addChild(mainStagePlot, true);
-
-    // panel.addChild(config, false);
-    panel.addChild(plots, true);
-    panel.addChild(toolsPanel, false);
-
-    stageBtn.setText(T.text("stage"));
-    dischargeBtn.setText(T.text("discharge"));
-
-    plotBuiler.run();
-
-    return panel;
-  }
-
-  public SimpleFlowPanel getGaugingsDatasetsPanel() {
-    SimpleFlowPanel panel = new SimpleFlowPanel();
-    panel.setGap(5);
-
-    RatingCurvePlotToolsPanel toolsPanel = new RatingCurvePlotToolsPanel();
-    toolsPanel.configure(true, true, false);
-
-    SimpleFlowPanel periodSelectionPanel = new SimpleFlowPanel(true);
-    periodSelectionPanel.setPadding(5);
-    periodSelectionPanel.setGap(5);
-    SimpleFlowPanel plotPanel = new SimpleFlowPanel(true);
-    plotPanel.setGap(5);
-
-    PlotContainer plotContainer = new PlotContainer();
-
-    Runnable plotUpdater = () -> {
-      List<PlotPoints> gaugingsPoints = periods.stream().map(p -> {
-        return toolsPanel.axisFlipped() ? p.hQPoints() : p.QhPoints();
-      }).toList();
-      Plot plot = new Plot();
-      plot.addXYItems(gaugingsPoints);
-      toolsPanel.updatePlotAxis(plot);
-      plotContainer.setPlot(plot);
-    };
-
-    toolsPanel.addChangeListener(l -> {
-      plotUpdater.run();
-    });
-
-    plotUpdater.run();
-
-    plotPanel.addChild(plotContainer, true);
-    plotPanel.addChild(toolsPanel, false);
-
-    panel.addChild(periodSelectionPanel, false);
-    panel.addChild(plotPanel, true);
-
-    for (ResultPeriod p : periods) {
-      periodSelectionPanel.addChild(buildPeriodAction(p), false);
-    }
-
-    JButton buildGaugingItemBtn = new JButton();
-    buildGaugingItemBtn.setIcon(BamItemType.GAUGINGS.getAddIcon());
-    buildGaugingItemBtn.addActionListener(l -> {
-      for (ResultPeriod p : periods) {
-        addGaugingBamItemFromPeriod(p);
-      }
-    });
-
-    periodSelectionPanel.addChild(buildGaugingItemBtn, false);
-
-    return panel;
-  }
-
-  private static SimpleFlowPanel buildPeriodAction(ResultPeriod period) {
-    SimpleFlowPanel panel = new SimpleFlowPanel();
-    panel.setGap(5);
-
-    JLabel icon = new JLabel(SimpleColorField.buildColorIcon(period.color(), 20));
-
-    // SimpleCheckbox cb = new SimpleCheckbox();
-
-    JLabel lbl = new JLabel(period.name());
-
-    JButton buildGaugingItemBtn = new JButton();
-    buildGaugingItemBtn.setIcon(BamItemType.GAUGINGS.getAddIcon());
-    buildGaugingItemBtn.addActionListener(l -> {
-      addGaugingBamItemFromPeriod(period);
-    });
-
-    panel.addChild(icon, false);
-    // panel.addChild(cb, false);
-    panel.addChild(lbl, true);
-    panel.addChild(buildGaugingItemBtn, false);
-
-    return panel;
-  }
-
-  private static Gaugings addGaugingBamItemFromPeriod(ResultPeriod period) {
-    Gaugings item = (Gaugings) AppSetup.MAIN_FRAME.currentProject.addBamItem(BamItemType.GAUGINGS);
-    item.setGaugingDataset(period.dataset());
-    item.bamItemNameField.setText(period.name());
-    return item;
-  }
-
-  private static record ResultPeriod(
+  public static record ResultPeriod(
       ResultShift start,
       ResultShift end,
       GaugingsDataset dataset,
@@ -495,10 +239,9 @@ public class ShiftDetectionResults {
       PlotPoints hQPoints,
       PlotPoints QtPoints,
       PlotPoints htPoints) {
-
   }
 
-  private static record ResultShift(
+  public static record ResultShift(
       LocalDateTime date,
       EstimatedParameter parameter,
       String name,
@@ -506,59 +249,6 @@ public class ShiftDetectionResults {
       PlotInfiniteLine line,
       PlotBar distribution) {
 
-  }
-
-  public SplitContainer getDetailedResultsPanel() {
-
-    SimpleFlowPanel currentPanel = new SimpleFlowPanel();
-
-    Explorer explorer = new Explorer();
-    buildTree(rcShiftsDetectionRun, explorer);
-    explorer.addTreeSelectionListener(l -> {
-
-      ExplorerItem item = explorer.getLastSelectedPathComponent();
-      if (item == null) {
-        return;
-      }
-
-      currentPanel.removeAll();
-
-      ShiftDetectionIteration selectedRsd = rcShiftsDetectionRun.getRatingShiftDetection(item.id);
-      if (selectedRsd != null) {
-        ShiftDetectionResults localRes = new ShiftDetectionResults(selectedRsd, true);
-        currentPanel.addChild(localRes.getMainResultPanel());
-      }
-    });
-
-    SplitContainer container = new SplitContainer(explorer, currentPanel, true);
-
-    return container;
-  }
-
-  private static void buildTree(
-      ShiftDetectionIteration ratingShiftDetection,
-      Explorer explorer) {
-    buildTree(ratingShiftDetection, null, explorer);
-  }
-
-  private static void buildTree(
-      ShiftDetectionIteration ratingShiftDetection,
-      ExplorerItem parent,
-      Explorer explorer) {
-    ExplorerItem node = new ExplorerItem(
-        ratingShiftDetection.ID,
-        ratingShiftDetection.getName(),
-        AppSetup.ICONS.getCustomAppImageIcon(BamItemType.RATING_SHIFT_HAPPENS.id + ".svg"),
-        parent);
-    explorer.appendItem(node);
-    List<ShiftDetectionIteration> children = ratingShiftDetection.getChildren();
-
-    for (ShiftDetectionIteration child : children) {
-      if (child.getChildren().size() == 0) {
-        continue;
-      }
-      buildTree(child, node, explorer);
-    }
   }
 
 }
