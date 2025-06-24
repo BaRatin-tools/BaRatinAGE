@@ -207,7 +207,7 @@ public class BamSegmentation {
     if (results == null) {
       return Double.MAX_VALUE;
     }
-    return results.DIC.get("DIC1");
+    return results.DIC.containsKey("DIC1") ? results.DIC.get("DIC1") : Double.MAX_VALUE;
   }
 
   public List<EstimatedParameter> getTauParameters() {
