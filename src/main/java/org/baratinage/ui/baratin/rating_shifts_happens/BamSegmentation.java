@@ -116,9 +116,9 @@ public class BamSegmentation {
   private static String buildXtraString(int nSegments, int tMin, int nMinObs, int xtraOption) {
     ConfigFile cf = new ConfigFile();
     cf.addItem(nSegments, "number of segments");
-    cf.addItem(tMin, "???");
-    cf.addItem(nMinObs, "minimum number of gaugings per segment");
-    cf.addItem(xtraOption, "???");
+    cf.addItem(tMin, "minimum segment duration");
+    cf.addItem(nMinObs, "minimum number of points per segment");
+    cf.addItem(xtraOption, "option - 1: shift times, 2: inter-shift durations");
     return cf.toString();
   }
 
