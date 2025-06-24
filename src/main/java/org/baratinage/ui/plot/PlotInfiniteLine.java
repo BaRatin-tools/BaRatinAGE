@@ -92,6 +92,11 @@ public class PlotInfiniteLine extends PlotItem {
         }
     }
 
+    public void setPaint(Paint paint) {
+        this.paint = paint;
+        renderer.setSeriesPaint(0, paint);
+    }
+
     @Override
     public void setPlot(XYPlot plot) {
         this.plot = plot;

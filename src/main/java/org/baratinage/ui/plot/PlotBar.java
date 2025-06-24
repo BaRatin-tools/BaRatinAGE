@@ -89,6 +89,11 @@ public class PlotBar extends PlotItem {
 
     }
 
+    public void setPaint(Paint paint) {
+        this.fillPaint = paint;
+        renderer.setSeriesPaint(0, paint);
+    }
+
     @Override
     public XYDataset getDataset() {
         return dataset;

@@ -67,6 +67,11 @@ public class PlotLine extends PlotItem {
 
     }
 
+    public void setPaint(Paint paint) {
+        this.paint = paint;
+        renderer.setSeriesPaint(0, paint);
+    }
+
     @Override
     public XYDataset getDataset() {
         return dataset;
