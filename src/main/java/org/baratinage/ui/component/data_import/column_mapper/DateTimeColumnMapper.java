@@ -85,7 +85,7 @@ public class DateTimeColumnMapper extends BorderedSimpleFlowPanel implements IDa
         "d.M.y H:m = 26.7.2005 14:32",
         "y/M/d = 2005/07/26",
         "y-M-d H:m:s.SSS = 2005-7-26 14:32:09.000",
-        "ISO 8601: y-M-d'T'H:m:s.SSS'Z' = 2005-07-26T14:32:09.000Z");
+        "(ISO 8601) y-M-d'T'H:m:s.SSS'Z' = 2005-07-26T14:32:09.000Z");
 
     oneColPanel.addChild(dateTimeField, true);
     dateTimeFormat.setEmptyItem(null);
@@ -487,6 +487,12 @@ public class DateTimeColumnMapper extends BorderedSimpleFlowPanel implements IDa
       String... examples) {
     JButton btn = new JButton();
     btn.setIcon(AppSetup.ICONS.HELP_SMALL);
+
+    for (int k = 0; k < examples.length; k++) {
+      examples[k] = T.text("example_num", k + 1) + ": " + examples[k];
+    }
+    String examplesJoined = String.join("<br>", examples);
+
     btn.addActionListener(l -> {
       JLabel infoLabel = new JLabel();
       String msg = "";
@@ -503,10 +509,6 @@ public class DateTimeColumnMapper extends BorderedSimpleFlowPanel implements IDa
       if (fractionofsecond) {
         msg += buildDateTimeHelpStringPiece("SSS", T.text("fraction_of_seconds"), "0-999", false);
       }
-      for (int k = 0; k < examples.length; k++) {
-        examples[k] = T.text("example_num", k + 1) + ": " + examples[k];
-      }
-      String examplesJoined = String.join("<br>", examples);
       infoLabel.setText(String.format("<html><code>%s<br>%s</code></html>", msg, examplesJoined));
       SimplePopup popup = new SimplePopup(btn);
       popup.setPadding(10);
