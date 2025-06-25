@@ -16,7 +16,6 @@ import org.baratinage.translation.T;
 import org.baratinage.ui.baratin.baratin_qfh.QFHPreset.QFHPresetParameter;
 import org.baratinage.ui.commons.MsgPanel;
 import org.baratinage.ui.component.SimpleComboBox;
-import org.baratinage.ui.container.GridPanel;
 import org.baratinage.ui.container.SimpleFlowPanel;
 import org.baratinage.ui.textfile.EquationEditor;
 import org.baratinage.utils.ConsoleLogger;
@@ -25,7 +24,7 @@ import org.baratinage.utils.perf.TimedActions;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-public class QFHTextFileEquation extends GridPanel {
+public class QFHTextFileEquation extends SimpleFlowPanel {
 
     private final QFHPreset preset;
     private final SimpleComboBox hSelectionCombobox;
@@ -47,7 +46,7 @@ public class QFHTextFileEquation extends GridPanel {
     }
 
     public QFHTextFileEquation(QFHPreset preset) {
-        super();
+        super(true);
         setGap(5);
 
         this.preset = preset;
@@ -100,9 +99,7 @@ public class QFHTextFileEquation extends GridPanel {
         } else {
             setFromPreset(preset);
         }
-
         buildUI(preset == null);
-
     }
 
     private void buildUI(boolean editable) {
@@ -118,30 +115,26 @@ public class QFHTextFileEquation extends GridPanel {
                 JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
         eqScrollPane.setViewportView(eqEditor);
 
-        clear();
-        setColWeight(0, 1);
-        setRowWeight(1, 1);
-        int rowIndex = 0;
-        insertChild(eqLabel, 0, rowIndex);
-        rowIndex++;
-        insertChild(eqScrollPane, 0, rowIndex);
-        rowIndex++;
+        removeAll();
+        // clear();
+        // setColWeight(0, 1);
+        // setRowWeight(1, 1);
+
+        addChild(eqLabel, false);
+        addChild(eqScrollPane, true);
+
         if (editable) {
-            insertChild(hSelectionLabel, 0, rowIndex);
-            rowIndex++;
-            insertChild(hSelectionCombobox, 0, rowIndex);
-            rowIndex++;
+            addChild(hSelectionLabel, false);
+            addChild(hSelectionCombobox, false);
         } else {
             SimpleFlowPanel p = new SimpleFlowPanel();
             p.setGap(5);
             p.addChild(hSelectionLabel, false);
             p.addChild(hVariableLabel, true);
-            insertChild(p, 0, rowIndex);
-            rowIndex++;
+            addChild(p, false);
         }
         if (isConfigInconsistent) {
-            insertChild(inconsistencyWarning, 0, rowIndex);
-            rowIndex++;
+            addChild(inconsistencyWarning, false);
         }
 
         T.clear(this);
