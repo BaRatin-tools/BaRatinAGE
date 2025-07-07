@@ -37,19 +37,18 @@ import org.baratinage.utils.DateTime;
 public class ShiftDetectionResults {
 
   private static final Color[] COLORS = {
-      new Color(230, 159, 0), // #E69F00
-      new Color(86, 180, 233), // #56B4E9
-      new Color(0, 158, 115), // #009E73
-      new Color(240, 228, 66), // #F0E442
-      new Color(0, 114, 178), // #0072B2
-      new Color(213, 94, 0), // #D55E00
-      new Color(204, 121, 167), // #CC79A7
-      new Color(153, 153, 153), // #999999
-      new Color(0, 0, 0), // #000000
-      new Color(228, 26, 28), // #E41A1C
-      new Color(55, 126, 184), // #377EB8
-      new Color(77, 175, 74), // #4DAF4A
-      new Color(122, 47, 133), // #7a2f85
+    new Color(68, 1, 84),
+    new Color(72, 33, 115),
+    new Color(67, 62, 133),
+    new Color(56, 88, 140),
+    new Color(45, 112, 142),
+    new Color(37, 133, 142),
+    new Color(30, 155, 138),
+    new Color(42, 176, 127),
+    new Color(82, 197, 105),
+    new Color(134, 213, 73),
+    new Color(194, 223, 35),
+    new Color(253, 231, 37)
   };
 
   public static Color getColor(int index) {
