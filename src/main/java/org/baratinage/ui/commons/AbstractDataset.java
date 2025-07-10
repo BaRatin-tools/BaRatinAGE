@@ -105,10 +105,10 @@ public class AbstractDataset {
 
         try {
             _headers = readHeaders(dataFilePathString);
-            for (int k = 0; k < _headers.length; k++) {
+            _nCol = getColCount(dataFilePathString);
+            for (int k = 0; k < _nCol; k++) {
                 _headersMap.put(_headers[k], k);
             }
-            _nCol = _headers.length;
             _nRow = readRowCount(dataFilePathString);
             _data = readMatrix(dataFilePathString, _nRow, _nCol);
         } catch (IOException e) {
@@ -294,6 +294,16 @@ public class AbstractDataset {
         return headers;
     }
 
+    private static int getColCount(String filePath) throws IOException {
+        try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
+            String header = br.readLine();
+            if (header == null)
+                throw new IOException("Empty file");
+            String firstRow = br.readLine();
+            return firstRow.split(";").length;
+        }
+    }
+
     private static int readRowCount(String filePath) throws IOException {
         int rows = 0;
         try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
@@ -312,6 +322,9 @@ public class AbstractDataset {
             int row = 0;
             while ((line = br.readLine()) != null) {
                 String[] parts = line.split(";");
+                if (parts.length != cols) {
+                    continue;
+                }
                 for (int col = 0; col < cols; col++) {
                     Double v = parts[col].equals("NA") ? Double.NaN : Double.parseDouble(parts[col]);
                     matrix[col][row] = v;
