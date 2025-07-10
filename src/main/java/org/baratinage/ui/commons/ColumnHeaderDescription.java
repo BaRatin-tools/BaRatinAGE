@@ -9,6 +9,7 @@ import java.util.function.Supplier;
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 
+import org.baratinage.AppSetup;
 import org.baratinage.translation.T;
 import org.baratinage.ui.component.SimpleDialog;
 import org.baratinage.ui.container.SimpleFlowPanel;
@@ -67,7 +68,7 @@ public class ColumnHeaderDescription {
         if (title != null) {
             titleText = String.format("%s - %s", title, titleText);
         }
-        SimpleDialog dialog = SimpleDialog.buildInfoDialog(titleText, buildMessagePanel());
+        SimpleDialog dialog = SimpleDialog.buildInfoDialog(AppSetup.MAIN_FRAME, titleText, buildMessagePanel());
 
         dialog.setSize(800, 500);
         dialog.openDialog();
