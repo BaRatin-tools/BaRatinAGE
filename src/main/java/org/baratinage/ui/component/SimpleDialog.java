@@ -1,5 +1,6 @@
 package org.baratinage.ui.component;
 
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
@@ -8,6 +9,7 @@ import java.awt.event.WindowEvent;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
+import javax.swing.SwingUtilities;
 
 import org.baratinage.AppSetup;
 import org.baratinage.translation.T;
@@ -20,8 +22,9 @@ public class SimpleDialog {
     private final SimpleFlowPanel content;
     private final SimpleFlowPanel footer;
 
-    public SimpleDialog(boolean modal) {
-        dialog = new JDialog(AppSetup.MAIN_FRAME, modal);
+    public SimpleDialog(Component parent, boolean modal) {
+        dialog = new JDialog(SwingUtilities.getWindowAncestor(parent));
+        dialog.setModal(modal);
         header = new SimpleFlowPanel();
         content = new SimpleFlowPanel();
         footer = new SimpleFlowPanel();
@@ -81,12 +84,13 @@ public class SimpleDialog {
     }
 
     public static SimpleDialog buildOkCancelDialog(
+            Component parent,
             String title,
             JComponent content,
             ActionListener onOk,
             ActionListener onCancel) {
 
-        SimpleDialog dialog = new SimpleDialog(true);
+        SimpleDialog dialog = new SimpleDialog(parent, true);
 
         dialog.setTitle(title);
 
@@ -121,9 +125,9 @@ public class SimpleDialog {
         return dialog;
     }
 
-    public static SimpleDialog buildInfoDialog(String title, JComponent content) {
+    public static SimpleDialog buildInfoDialog(Component parent, String title, JComponent content) {
 
-        SimpleDialog dialog = new SimpleDialog(false);
+        SimpleDialog dialog = new SimpleDialog(parent, true);
 
         dialog.setTitle(title);
 

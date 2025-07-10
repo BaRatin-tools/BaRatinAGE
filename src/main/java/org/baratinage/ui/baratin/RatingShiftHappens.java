@@ -272,7 +272,7 @@ public class RatingShiftHappens extends BamItem {
 
   private void runShiftDetection() {
 
-    SimpleDialog dialog = new SimpleDialog(true);
+    SimpleDialog dialog = new SimpleDialog(AppSetup.MAIN_FRAME, true);
     JProgressBar pbOverall = new JProgressBar();
     pbOverall.setMaximum(100);
     pbOverall.setString("0%");
