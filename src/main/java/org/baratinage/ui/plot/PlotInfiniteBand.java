@@ -161,7 +161,7 @@ public class PlotInfiniteBand extends PlotItem {
     }
 
     @Override
-    public PlotInfiniteBand getCopy() {
+    protected PlotInfiniteBand getPartialCopy() {
         return new PlotInfiniteBand(getLabel(),
                 coeffDir,
                 offsetLow,

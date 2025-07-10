@@ -54,7 +54,16 @@ public abstract class PlotItem {
 
     public abstract void configureRenderer(IPlotItemRendererSettings rendererSettings);
 
-    public abstract PlotItem getCopy();
+    protected abstract PlotItem getPartialCopy();
+
+    public PlotItem getCopy() {
+        PlotItem item = getPartialCopy();
+        item.setLabel(getLabel());
+        item.setLegendVisible(getLegendVisible());
+        item.setVisible(getVisible());
+        item.setLabel(getLabel());
+        return item;
+    }
 
     public Range getDomainBounds() {
         return DatasetUtils.findDomainBounds(getDataset());

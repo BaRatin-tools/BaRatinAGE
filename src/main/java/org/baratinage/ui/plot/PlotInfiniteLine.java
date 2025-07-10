@@ -189,7 +189,7 @@ public class PlotInfiniteLine extends PlotItem {
     }
 
     @Override
-    public PlotInfiniteLine getCopy() {
+    protected PlotInfiniteLine getPartialCopy() {
         return new PlotInfiniteLine(getLabel(), a, b, paint, stroke);
     }
 

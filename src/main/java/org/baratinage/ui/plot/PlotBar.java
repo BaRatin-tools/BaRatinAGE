@@ -145,7 +145,7 @@ public class PlotBar extends PlotItem {
     }
 
     @Override
-    public PlotBar getCopy() {
+    protected PlotBar getPartialCopy() {
         return new PlotBar(getLabel(), x, y, fillPaint, alpha);
     }
 

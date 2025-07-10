@@ -120,7 +120,7 @@ public class PlotLine extends PlotItem {
     }
 
     @Override
-    public PlotLine getCopy() {
+    protected PlotLine getPartialCopy() {
         return new PlotLine(getLabel(), x, y, paint, stroke);
     }
 

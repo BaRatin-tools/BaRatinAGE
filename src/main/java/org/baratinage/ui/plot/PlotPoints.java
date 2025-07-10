@@ -152,7 +152,7 @@ public class PlotPoints extends PlotItem {
     }
 
     @Override
-    public PlotPoints getCopy() {
+    protected PlotPoints getPartialCopy() {
         return new PlotPoints(getLabel(), x, xLow, xHigh, y, yLow, yHigh, paint, shape, errorLineStroke);
     }
 }

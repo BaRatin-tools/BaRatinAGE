@@ -159,7 +159,7 @@ public class PlotBand extends PlotItem {
     }
 
     @Override
-    public PlotBand getCopy() {
+    protected PlotBand getPartialCopy() {
         return new PlotBand(getLabel(), ref, low, high, vertical, fillPaint, alpha, linePaint, lineStroke);
     }
 
