@@ -140,6 +140,8 @@ public class GaugingsImporter extends DataImporter {
         validityColMapper.addChangeListener(cbChangeListener);
         dateTimeColMapper.addChangeListener(cbChangeListener);
         stageUColMapper.combobox.addChangeListener(cbChangeListener);
+
+        updateValidityStatus();
     }
 
     private static boolean isBaremeBadFile(String fileName) {
@@ -156,6 +158,7 @@ public class GaugingsImporter extends DataImporter {
         errorPanel.removeAll();
 
         if (dataFileReader.file == null) {
+            validateButton.setEnabled(false);
             return;
         }
 
@@ -184,7 +187,8 @@ public class GaugingsImporter extends DataImporter {
                 || (dateTimeColMapper.hasValidSelection() && tInvalidIndices.size() == 0);
 
         Set<Integer> uhInvalidIndices = stageUColMapper.getInvalidIndices();
-        boolean uhColOk = stageUColMapper.getIndex() >= 0 && uhInvalidIndices.size() == 0;
+        boolean uhColOk = stageUColMapper.getIndex() < 0
+                || (stageUColMapper.getIndex() >= 0 && uhInvalidIndices.size() == 0);
 
         Set<Integer> lastSkippedIndices = dataFileReader.getLastSkippedIndices();
         if (lastSkippedIndices.size() > 0) {
