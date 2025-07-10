@@ -42,6 +42,17 @@ public class Misc {
         component.setMinimumSize(dim);
     }
 
+    public static void setPreferredSize(JComponent component, Integer width, Integer height) {
+        Dimension dim = component.getMinimumSize();
+        if (width != null) {
+            dim.width = width;
+        }
+        if (height != null) {
+            dim.height = height;
+        }
+        component.setPreferredSize(dim);
+    }
+
     public static String formatNumber(double num) {
         return formatNumber(num, false);
     }
