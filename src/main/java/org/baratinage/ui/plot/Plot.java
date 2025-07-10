@@ -2,6 +2,8 @@ package org.baratinage.ui.plot;
 
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.Graphics2D;
+import java.awt.geom.Rectangle2D;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -10,20 +12,21 @@ import org.baratinage.AppSetup;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.LegendItemCollection;
 import org.jfree.chart.LegendItemSource;
+import org.jfree.chart.plot.CrosshairState;
 import org.jfree.chart.plot.DatasetRenderingOrder;
+import org.jfree.chart.plot.PlotRenderingInfo;
 import org.jfree.chart.plot.XYPlot;
+import org.jfree.chart.renderer.xy.AbstractXYItemRenderer;
+import org.jfree.chart.renderer.xy.XYItemRendererState;
 import org.jfree.chart.axis.DateAxis;
 import org.jfree.chart.axis.NumberAxis;
+import org.jfree.chart.axis.ValueAxis;
 import org.jfree.chart.title.LegendTitle;
 import org.jfree.chart.ui.RectangleEdge;
 import org.jfree.data.Range;
 import org.jfree.data.xy.XYDataset;
 
 public class Plot implements LegendItemSource {
-
-    // FIXME: useBounds never set to false
-    private static record PlotItemConfig(PlotItem item, boolean visibleInLegend, boolean useBounds) {
-    };
 
     public final XYPlot plot;
     public final JFreeChart chart;
@@ -40,11 +43,13 @@ public class Plot implements LegendItemSource {
     private double bufferPercentageRight = 0.01;
 
     private boolean includeLegend;
-    private final boolean timeseries;
+    private boolean timeseries;
 
     private String dateTimeFormat = "yyyy-MM-dd HH:mm:ss";
 
-    public final List<PlotItemConfig> items = new ArrayList<>();
+    public final List<PlotItem> items = new ArrayList<>();
+
+    private LegendTitle currentLegend;
 
     public Plot() {
         this(true, false);
@@ -82,7 +87,7 @@ public class Plot implements LegendItemSource {
             @Override
             public XYDataset getDataset(int index) {
                 if (index < items.size()) {
-                    PlotItem item = items.get(index).item;
+                    PlotItem item = items.get(index);
                     item.setPlot(this);
                     return item.getDataset();
                 } else {
@@ -120,23 +125,55 @@ public class Plot implements LegendItemSource {
         axisYlog.setTickLabelFont(font);
         axisXdate.setTickLabelFont(font);
 
-        chart.getLegend().setItemFont(font);
-    }
-
-    private void updateLegend() {
-        chart.removeLegend();
-        if (includeLegend) {
-            LegendTitle legendTitle = new LegendTitle(this);
-            legendTitle.setPosition(RectangleEdge.RIGHT);
-            legendTitle.setPadding(0, 0, 0, 10);
-            chart.addLegend(legendTitle);
-            updateFont();
+        LegendTitle legendTitle = chart.getLegend();
+        if (legendTitle != null) {
+            legendTitle.setItemFont(font);
         }
     }
 
+    public void updateLegend() {
+        updateLegend(RectangleEdge.RIGHT);
+    }
+
+    public void updateLegend(RectangleEdge position) {
+        setLegend(this, position);
+    }
+
+    public void setLegend(LegendItemSource legendItemSource, RectangleEdge position) {
+        chart.removeLegend();
+        if (!includeLegend) {
+            return;
+        }
+        currentLegend = new LegendTitle(legendItemSource);
+        currentLegend.setPosition(RectangleEdge.RIGHT);
+        currentLegend.setPadding(
+                position == RectangleEdge.TOP ? 10 : 0,
+                position == RectangleEdge.LEFT ? 10 : 0,
+                position == RectangleEdge.BOTTOM ? 10 : 0,
+                position == RectangleEdge.RIGHT ? 10 : 0);
+        chart.addLegend(currentLegend);
+        updateFont();
+    }
+
+    public boolean getIncludeLegend() {
+        return this.includeLegend;
+    }
+
     public void setIncludeLegend(boolean includeLegend) {
+        chart.removeLegend();
         this.includeLegend = includeLegend;
-        updateLegend();
+        if (includeLegend && currentLegend != null) {
+            chart.addLegend(currentLegend);
+        }
+    }
+
+    public boolean getTimeseries() {
+        return this.timeseries;
+    }
+
+    public void setTimeseries(boolean timeseries) {
+        this.timeseries = timeseries;
+        update();
     }
 
     public JFreeChart getChart() {
@@ -154,31 +191,63 @@ public class Plot implements LegendItemSource {
     }
 
     public void addXYItem(PlotItem item) {
-        addXYItem(item, true);
-    }
-
-    public void addXYItem(PlotItem item, boolean isVisibleInLegend) {
         plot.setDataset(items.size(), item.getDataset());
         plot.setRenderer(items.size(), item.getRenderer());
-        items.add(new PlotItemConfig(item, isVisibleInLegend, true));
+        items.add(item);
     }
 
     public void addXYItem(PlotItemGroup item) {
-        addXYItem(item, true);
-    }
-
-    public void addXYItem(PlotItemGroup item, boolean isVisibleInLegend) {
         List<PlotItem> items = item.getPlotItems();
-        addXYItems(items, isVisibleInLegend);
+        addXYItems(items);
     }
 
     public void addXYItems(List<? extends PlotItem> items) {
-        addXYItems(items, true);
+        for (PlotItem i : items) {
+            addXYItem(i);
+        }
     }
 
-    public void addXYItems(List<? extends PlotItem> items, boolean isVisibleInLegend) {
-        for (PlotItem i : items) {
-            addXYItem(i, isVisibleInLegend);
+    private int getPlotItemIndex(PlotItem item) {
+        int index = -1;
+        for (int k = 0; k < items.size(); k++) {
+            if (items.get(k).equals(item)) {
+                index = k;
+                break;
+            }
+        }
+        return index;
+    }
+
+    public int removeXYItem(PlotItem item) {
+        int index = getPlotItemIndex(item);
+        if (index < 0) {
+            return -1;
+        }
+        items.remove(index);
+        plot.setDataset(index, null);
+        plot.setRenderer(index, null);
+        return index;
+    }
+
+    public void reorderXYItems(List<PlotItem> plotItems) {
+        List<PlotItem> existingPlotItems = new ArrayList<>();
+        for (int k = 0; k < plotItems.size(); k++) {
+            int index = getPlotItemIndex(plotItems.get(k));
+            if (index >= 0) {
+                existingPlotItems.add(items.get(index));
+            }
+        }
+        int counter = 0;
+        for (int k = 0; k < items.size(); k++) {
+            int index = plotItems.indexOf(items.get(k));
+            if (index < 0) {
+                continue;
+            }
+            PlotItem pic = existingPlotItems.get(counter);
+            items.set(k, pic);
+            plot.setDataset(k, pic.getDataset());
+            plot.setRenderer(k, pic.getRenderer());
+            counter++;
         }
     }
 
@@ -195,12 +264,10 @@ public class Plot implements LegendItemSource {
     public Range getDomainBounds() {
         Range range = null;
         for (int k = 0; k < items.size(); k++) {
-            PlotItemConfig itemConfig = items.get(k);
-            if (itemConfig.useBounds) {
-                Range r = itemConfig.item.getDomainBounds();
-                if (r != null) {
-                    range = range == null ? r : Range.combine(range, r);
-                }
+            PlotItem itemConfig = items.get(k);
+            Range r = itemConfig.getDomainBounds();
+            if (r != null) {
+                range = range == null ? r : Range.combine(range, r);
             }
         }
         return applyBufferToRange(range, bufferPercentageLeft, bufferPercentageRight);
@@ -209,40 +276,59 @@ public class Plot implements LegendItemSource {
     public Range getRangeBounds() {
         Range range = null;
         for (int k = 0; k < items.size(); k++) {
-            PlotItemConfig itemConfig = items.get(k);
-            if (itemConfig.useBounds) {
-                Range r = itemConfig.item.getRangeBounds();
-                if (r != null) {
-                    range = range == null ? r : Range.combine(range, r);
-                }
+            PlotItem pi = items.get(k);
+            Range r = pi.getRangeBounds();
+            if (r != null) {
+                range = range == null ? r : Range.combine(range, r);
             }
         }
         return applyBufferToRange(range, bufferPercentageBottom, bufferPercentageTop);
     }
 
-    public void setDomainZoom(double start, double end) {
-        plot.getDomainAxis().setRange(start, end);
+    public Range getDomainZoom() {
+        return plot.getDomainAxis().getRange();
     }
 
-    public void setRangeZoom(double start, double end) {
-        plot.getRangeAxis().setRange(start, end);
+    public Range getRangeZoom() {
+        return plot.getRangeAxis().getRange();
+    }
+
+    public void setDomainZoom(Range range) {
+        plot.getDomainAxis().setRange(range);
+    }
+
+    public void setRangeZoom(Range range) {
+        plot.getRangeAxis().setRange(range);
     }
 
     @Override
     public LegendItemCollection getLegendItems() {
         LegendItemCollection lic = new LegendItemCollection();
-        for (PlotItemConfig pic : items) {
-            if (pic.visibleInLegend) {
-                lic.add(pic.item.getLegendItem());
+        for (PlotItem pi : items.reversed()) {
+            if (pi.getLegendVisible()) {
+                lic.add(pi.getLegendItem());
             }
         }
         return lic;
     }
 
+    private static AbstractXYItemRenderer emptyRenderer = new AbstractXYItemRenderer() {
+
+        @Override
+        public void drawItem(Graphics2D arg0, XYItemRendererState arg1, Rectangle2D arg2, PlotRenderingInfo arg3,
+                XYPlot arg4, ValueAxis arg5, ValueAxis arg6, XYDataset arg7, int arg8, int arg9,
+                CrosshairState arg10, int arg11) {
+            // do nothing
+        }
+
+    };
+
     public void update() {
+
         for (int k = 0; k < items.size(); k++) {
-            plot.setDataset(k, items.get(k).item.getDataset());
-            plot.setRenderer(k, items.get(k).item.getRenderer());
+            PlotItem plotItem = items.get(k);
+            plot.setDataset(k, plotItem.getDataset());
+            plot.setRenderer(k, plotItem.getVisible() ? plotItem.getRenderer() : emptyRenderer);
         }
         chart.fireChartChanged();
         updateFont();
@@ -267,8 +353,8 @@ public class Plot implements LegendItemSource {
         if (plot.getRangeAxis() instanceof LogAxis) {
             plotCopy.plot.setRangeAxis(plotCopy.axisYlog);
         }
-        for (PlotItemConfig item : items) {
-            plotCopy.addXYItem(item.item(), item.visibleInLegend());
+        for (PlotItem item : items) {
+            plotCopy.addXYItem(item.getCopy());
         }
         plotCopy.chart.removeLegend();
         plotCopy.chart.addLegend(chart.getLegend());

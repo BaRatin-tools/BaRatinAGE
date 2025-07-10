@@ -1,8 +1,10 @@
 package org.baratinage.ui.plot;
 
+import java.awt.Font;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.baratinage.AppSetup;
 import org.jfree.chart.LegendItem;
 import org.jfree.chart.LegendItemCollection;
 import org.jfree.chart.LegendItemSource;
@@ -18,6 +20,16 @@ public class Legend implements LegendItemSource {
     // private LegendItemCollection legendItems = new LegendItemCollection();
     private final List<LegendItem> legendItems = new ArrayList<>();
     private Plot plot;
+    private LegendTitle legendTitle;
+
+    public Legend() {
+    }
+
+    public Legend(LegendItemCollection legends) {
+        for (int k = 0; k < legends.getItemCount(); k++) {
+            legendItems.add(legends.get(k));
+        }
+    }
 
     public void addLegendItem(LegendItem legendItem) {
         legendItems.add(legendItem);
@@ -31,6 +43,14 @@ public class Legend implements LegendItemSource {
 
     public void clearLegend() {
         legendItems.clear();
+    }
+
+    public void update() {
+        if (legendTitle == null) {
+            return;
+        }
+        Font font = new Font("SansSerif", Font.PLAIN, AppSetup.CONFIG.FONT_SIZE.get());
+        legendTitle.setItemFont(font);
     }
 
     @Override
@@ -51,7 +71,6 @@ public class Legend implements LegendItemSource {
     }
 
     public LegendTitle getLegendTitle(RectangleEdge position, boolean vertical) {
-        LegendTitle legendTitle;
         if (vertical) {
             legendTitle = new LegendTitle(this);
         } else {
@@ -59,10 +78,12 @@ public class Legend implements LegendItemSource {
             legendTitle = new LegendTitle(this, arrangement, arrangement);
         }
         legendTitle.setPosition(position);
+        update();
         return legendTitle;
     }
 
     public XYAnnotation getAnnotation(double x, double y, RectangleAnchor anchor) {
+
         return new XYTitleAnnotation(x, y, getLegendTitle(), anchor);
     }
 

@@ -36,8 +36,8 @@ import org.jfree.chart.JFreeChart;
 
 public class PlotExporter {
 
-  public static interface ExportablePlot {
-    public ExportablePlot getCopy();
+  public static interface IExportablePlot {
+    public IExportablePlot getCopy();
 
     public JPanel getPanel();
 
@@ -46,7 +46,7 @@ public class PlotExporter {
     public BufferedImage getBufferedImage();
   }
 
-  public static SimpleFlowPanel buildExportPanel(ExportablePlot plot) {
+  public static SimpleFlowPanel buildExportPanel(IExportablePlot plot) {
 
     JButton btnWindowPlot = new JButton();
     btnWindowPlot.setIcon(AppSetup.ICONS.EXTERNAL);
@@ -93,7 +93,7 @@ public class PlotExporter {
     return panel;
   }
 
-  public static JPopupMenu buildExportPopupMenu(ExportablePlot plot) {
+  public static JPopupMenu buildExportPopupMenu(IExportablePlot plot) {
 
     JPopupMenu popupMenu = new JPopupMenu();
     JMenuItem menuWindowPlot = new JMenuItem();
@@ -172,8 +172,8 @@ public class PlotExporter {
     return image;
   }
 
-  private static void windowPlot(ExportablePlot plot) {
-    ExportablePlot ep = plot.getCopy();
+  private static void windowPlot(IExportablePlot plot) {
+    IExportablePlot ep = plot.getCopy();
 
     JFrame f = new JFrame();
     f.add(ep.getPanel());
@@ -192,7 +192,7 @@ public class PlotExporter {
     f.setVisible(true);
   }
 
-  private static void saveAsSvg(ExportablePlot plot) {
+  private static void saveAsSvg(IExportablePlot plot) {
     String svgString = plot.getSvgString();
     File f = CommonDialog.saveFileDialog(
         null,
@@ -205,7 +205,7 @@ public class PlotExporter {
     saveToSvg(svgString, f.getAbsolutePath());
   }
 
-  private static void saveAsPng(ExportablePlot plot) {
+  private static void saveAsPng(IExportablePlot plot) {
     BufferedImage img = plot.getBufferedImage();
     File f = CommonDialog.saveFileDialog(
         null,

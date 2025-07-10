@@ -20,8 +20,15 @@ public class PlotLine extends PlotItem {
     private Stroke stroke;
     private Shape shape;
 
+    private double[] x;
+    private double[] y;
+
     protected DefaultXYDataset dataset;
     protected XYLineAndShapeRenderer renderer;
+
+    public PlotLine(String label, double[] x, double[] y) {
+        this(label, x, y, Color.BLACK, buildStroke());
+    }
 
     public PlotLine(String label, double[] x, double[] y, Paint paint) {
         this(label, x, y, paint, buildStroke());
@@ -40,8 +47,7 @@ public class PlotLine extends PlotItem {
         this.stroke = stroke;
         this.shape = buildEmptyShape();
 
-        dataset = new DefaultXYDataset();
-        dataset.addSeries(label, new double[][] { x, y });
+        updateDataset(x, y);
 
         renderer = new DefaultXYItemRenderer();
         renderer.setDrawSeriesLineAsPath(true);
@@ -72,6 +78,13 @@ public class PlotLine extends PlotItem {
         renderer.setSeriesPaint(0, paint);
     }
 
+    public void updateDataset(double[] x, double[] y) {
+        dataset = new DefaultXYDataset();
+        dataset.addSeries(getLabel(), new double[][] { x, y });
+        this.x = x;
+        this.y = y;
+    }
+
     @Override
     public XYDataset getDataset() {
         return dataset;
@@ -84,7 +97,7 @@ public class PlotLine extends PlotItem {
 
     @Override
     public LegendItem getLegendItem() {
-        return PlotLine.buildLegendItem(label, paint, stroke);
+        return PlotLine.buildLegendItem(getLabel(), paint, stroke);
     }
 
     public static LegendItem buildLegendItem(String label, Paint paint, Stroke stroke) {
@@ -104,6 +117,11 @@ public class PlotLine extends PlotItem {
         renderer.setSeriesPaint(0, paint);
         renderer.setSeriesStroke(0, stroke);
         renderer.setSeriesShape(0, shape);
+    }
+
+    @Override
+    public PlotLine getCopy() {
+        return new PlotLine(getLabel(), x, y, paint, stroke);
     }
 
 }

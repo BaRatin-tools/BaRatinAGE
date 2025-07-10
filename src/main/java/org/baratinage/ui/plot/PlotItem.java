@@ -18,9 +18,33 @@ import org.jfree.data.xy.XYDataset;
 
 public abstract class PlotItem {
 
-    protected String label;
+    private boolean visible = true;
+    private boolean legend = true;
+    private String label = "";
 
-    protected Plot plot;
+    public void setVisible(boolean visible) {
+        this.visible = visible;
+    }
+
+    public boolean getVisible() {
+        return visible;
+    }
+
+    public void setLegendVisible(boolean visible) {
+        legend = visible;
+    }
+
+    public boolean getLegendVisible() {
+        return legend;
+    }
+
+    public void setLabel(String label) {
+        this.label = label;
+    }
+
+    public String getLabel() {
+        return label;
+    }
 
     public abstract XYDataset getDataset();
 
@@ -28,15 +52,9 @@ public abstract class PlotItem {
 
     public abstract LegendItem getLegendItem();
 
-    public void setLabel(String label) {
-        this.label = label;
-    }
-
-    public String getLabel() {
-        return this.label;
-    }
-
     public abstract void configureRenderer(IPlotItemRendererSettings rendererSettings);
+
+    public abstract PlotItem getCopy();
 
     public Range getDomainBounds() {
         return DatasetUtils.findDomainBounds(getDataset());
@@ -66,6 +84,16 @@ public abstract class PlotItem {
             if (this == SQUARE)
                 return "SQUARE";
             return "CIRCLE";
+        }
+
+        public Shape getShape(int size) {
+            if (this == CIRCLE) {
+                return buildCircleShape(size);
+            } else if (this == SQUARE) {
+                return buildSquareShape(size);
+            } else {
+                return buildEmptyShape();
+            }
         }
 
     }
@@ -185,7 +213,11 @@ public abstract class PlotItem {
                 1, dashArray, 0);
     }
 
-    public static LegendItem buildLegendItem(String label, Paint linePaint, Stroke lineStroke, Shape shape,
+    public static LegendItem buildLegendItem(
+            String label,
+            Paint linePaint,
+            Stroke lineStroke,
+            Shape shape,
             Paint shapePaint) {
         boolean showLine = true;
         boolean showShape = true;

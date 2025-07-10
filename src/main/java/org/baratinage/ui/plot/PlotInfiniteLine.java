@@ -1,5 +1,6 @@
 package org.baratinage.ui.plot;
 
+import java.awt.Color;
 import java.awt.Paint;
 import java.awt.Shape;
 import java.awt.Stroke;
@@ -32,12 +33,20 @@ public class PlotInfiniteLine extends PlotItem {
     private Stroke stroke;
     private Shape shape;
 
+    public PlotInfiniteLine(String label, double x) {
+        this(label, x, Color.BLACK, 1);
+    }
+
     public PlotInfiniteLine(String label, double x, Paint paint, int lineWidth) {
         this(label, x, paint, buildStroke(lineWidth));
     }
 
     public PlotInfiniteLine(String label, double x, Paint paint, Stroke stroke) {
         this(label, Double.POSITIVE_INFINITY, x, paint, stroke);
+    }
+
+    public PlotInfiniteLine(String label, double coeffDir, double offset) {
+        this(label, coeffDir, offset, Color.BLACK, 1);
     }
 
     public PlotInfiniteLine(String label, double coeffDir, double offset, Paint paint, int lineWidth) {
@@ -104,16 +113,11 @@ public class PlotInfiniteLine extends PlotItem {
 
     @Override
     public Range getDomainBounds() {
-        // return isVerticalLine ? new Range(b, b) : null;
         return null;
     }
 
     @Override
     public Range getRangeBounds() {
-        // if (plot == null || isVerticalLine) {
-        // return null;
-        // }
-        // return DatasetUtils.findRangeBounds(getDataset());
         return null;
     }
 
@@ -154,7 +158,7 @@ public class PlotInfiniteLine extends PlotItem {
             }
         }
         DefaultXYDataset dataset = new DefaultXYDataset();
-        dataset.addSeries(label, new double[][] { xValues, yValues });
+        dataset.addSeries(getLabel(), new double[][] { xValues, yValues });
         return dataset;
     }
 
@@ -165,7 +169,7 @@ public class PlotInfiniteLine extends PlotItem {
 
     @Override
     public LegendItem getLegendItem() {
-        return buildLegendItem(label, paint, stroke, null, null);
+        return buildLegendItem(getLabel(), paint, stroke, null, null);
     }
 
     @Override
@@ -182,6 +186,11 @@ public class PlotInfiniteLine extends PlotItem {
         renderer.setSeriesShapesVisible(0, false);
         renderer.setSeriesPaint(0, paint);
         renderer.setSeriesStroke(0, stroke);
+    }
+
+    @Override
+    public PlotInfiniteLine getCopy() {
+        return new PlotInfiniteLine(getLabel(), a, b, paint, stroke);
     }
 
 }

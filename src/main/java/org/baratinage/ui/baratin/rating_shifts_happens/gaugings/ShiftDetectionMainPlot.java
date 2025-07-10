@@ -97,18 +97,18 @@ public class ShiftDetectionMainPlot extends SimpleFlowPanel {
     ht.get(n - 1).setPaint(colors[n - 1]);
     Qt.get(n - 1).setPaint(colors[n - 1]);
 
-    Plot shiftsPlot = new Plot(true, true);
-    shiftsPlot.addXYItems(shiftBars, true);
-    shiftsPlot.addXYItems(shiftLines, false);
+    Plot shiftsPlot = new Plot(false, true);
+    shiftsPlot.addXYItems(shiftBars);
+    shiftsPlot.addXYItems(shiftLines);
     shiftsPlot.plot.getRangeAxis().setVisible(false);
 
     Plot stagePlot = new Plot(true, true);
-    stagePlot.addXYItems(ht, true);
-    stagePlot.addXYItems(shiftLines, false);
+    stagePlot.addXYItems(ht);
+    stagePlot.addXYItems(shiftLines);
 
     Plot dischargePlot = new Plot(true, true);
-    dischargePlot.addXYItems(Qt, true);
-    dischargePlot.addXYItems(shiftLines, false);
+    dischargePlot.addXYItems(Qt);
+    dischargePlot.addXYItems(shiftLines);
 
     Range range = null;
     if (mainStagePlot != null) {

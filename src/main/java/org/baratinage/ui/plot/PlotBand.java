@@ -1,5 +1,6 @@
 package org.baratinage.ui.plot;
 
+import java.awt.Color;
 import java.awt.Paint;
 import java.awt.Shape;
 import java.awt.Stroke;
@@ -15,11 +16,29 @@ public class PlotBand extends PlotItem {
     private Shape shape;
     private float alpha;
 
+    private double[] ref;
+    private double[] low;
+    private double[] high;
+    private boolean vertical;
+
     private CustomAreaDataset dataset;
     private CustomAreaRenderer renderer;
 
-    public PlotBand(String label,
-            double[] ref, double[] low, double[] high, boolean vertical,
+    public PlotBand(
+            String label,
+            double[] ref,
+            double[] low,
+            double[] high,
+            boolean vertical) {
+        this(label, ref, low, high, vertical, Color.BLACK);
+    }
+
+    public PlotBand(
+            String label,
+            double[] ref,
+            double[] low,
+            double[] high,
+            boolean vertical,
             Paint fillPaint) {
         this(
                 label,
@@ -28,9 +47,14 @@ public class PlotBand extends PlotItem {
                 fillPaint, 0.9f, fillPaint, buildEmptyStroke());
     }
 
-    public PlotBand(String label,
-            double[] ref, double[] low, double[] high, boolean vertical,
-            Paint fillPaint, float alpha) {
+    public PlotBand(
+            String label,
+            double[] ref,
+            double[] low,
+            double[] high,
+            boolean vertical,
+            Paint fillPaint,
+            float alpha) {
         this(
                 label,
                 ref, low, high,
@@ -38,10 +62,16 @@ public class PlotBand extends PlotItem {
                 fillPaint, alpha, fillPaint, buildEmptyStroke());
     }
 
-    public PlotBand(String label,
-            double[] ref, double[] low, double[] high, boolean vertical,
-            Paint fillPaint, float alpha,
-            Paint linePaint, Stroke lineStroke) {
+    public PlotBand(
+            String label,
+            double[] ref,
+            double[] low,
+            double[] high,
+            boolean vertical,
+            Paint fillPaint,
+            float alpha,
+            Paint linePaint,
+            Stroke lineStroke) {
 
         int n = ref.length;
 
@@ -59,12 +89,7 @@ public class PlotBand extends PlotItem {
         this.shape = buildEmptyShape();
         this.alpha = alpha;
 
-        dataset = new CustomAreaDataset();
-        if (vertical) {
-            dataset.addVerticalBandSeries("", ref, low, high);
-        } else {
-            dataset.addHorizontalBandSeries("", ref, low, high);
-        }
+        updateDataset(ref, low, high, vertical);
 
         renderer = new CustomAreaRenderer();
         renderer.setAlpha(alpha);
@@ -74,6 +99,19 @@ public class PlotBand extends PlotItem {
         renderer.setSeriesPaint(0, linePaint);
         renderer.setSeriesShape(0, shape);
 
+    }
+
+    public void updateDataset(double[] ref, double[] low, double[] high, boolean vertical) {
+        dataset = new CustomAreaDataset();
+        if (vertical) {
+            dataset.addVerticalBandSeries("", ref, low, high);
+        } else {
+            dataset.addHorizontalBandSeries("", ref, low, high);
+        }
+        this.ref = ref;
+        this.low = low;
+        this.high = high;
+        this.vertical = vertical;
     }
 
     @Override
@@ -89,7 +127,7 @@ public class PlotBand extends PlotItem {
     @Override
     public LegendItem getLegendItem() {
 
-        return buildLegendItem(label, fillPaint, linePaint, lineStroke);
+        return buildLegendItem(getLabel(), fillPaint, linePaint, lineStroke);
     }
 
     public static LegendItem buildLegendItem(String label, Paint fillPaint,
@@ -118,6 +156,11 @@ public class PlotBand extends PlotItem {
         renderer.setSeriesFillPaint(0, fillPaint);
         renderer.setSeriesPaint(0, linePaint);
         renderer.setSeriesShape(0, shape);
+    }
+
+    @Override
+    public PlotBand getCopy() {
+        return new PlotBand(getLabel(), ref, low, high, vertical, fillPaint, alpha, linePaint, lineStroke);
     }
 
 }

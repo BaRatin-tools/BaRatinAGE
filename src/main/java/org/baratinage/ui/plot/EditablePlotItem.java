@@ -17,6 +17,7 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 
 import org.baratinage.translation.T;
+import org.baratinage.ui.component.SimpleCheckbox;
 import org.baratinage.ui.component.SimpleColorField;
 import org.baratinage.ui.component.SimpleComboBox;
 import org.baratinage.ui.component.SimpleSlider;
@@ -43,12 +44,12 @@ public class EditablePlotItem implements IPlotItemRendererSettings {
     private float lineWidth;
     private LineType lineType;
     private ShapeType shapeType;
-    private double shapeSize;
+    private int shapeSize;
     private Color fillColor;
     private float fillAlpha;
 
-    public boolean visible = true;
-    public boolean showLegend = true;
+    private boolean visible = true;
+    private boolean legend = true;
 
     private static TYPE getTypeFromInstance(PlotItem plotItem) {
         if (plotItem instanceof PlotLine |
@@ -88,14 +89,14 @@ public class EditablePlotItem implements IPlotItemRendererSettings {
 
         Shape shape = renderer.getSeriesShape(0);
         shapeType = null;
-        shapeSize = shape.getBounds().getWidth();
+        shapeSize = (int) shape.getBounds().getWidth();
         if (shape != null) {
             if (shape instanceof Ellipse2D.Double) {
                 shapeType = ShapeType.CIRCLE;
-                shapeSize = ((Ellipse2D.Double) shape).getWidth();
+                shapeSize = (int) ((Ellipse2D.Double) shape).getWidth();
             } else if (shape instanceof Rectangle) {
                 shapeType = ShapeType.SQUARE;
-                shapeSize = ((Rectangle) shape).getWidth();
+                shapeSize = (int) ((Rectangle) shape).getWidth();
             }
         }
 
@@ -160,7 +161,7 @@ public class EditablePlotItem implements IPlotItemRendererSettings {
         changeListeners.remove(l);
     }
 
-    private void fireChangeListeners() {
+    public void fireChangeListeners() {
         for (ChangeListener l : changeListeners) {
             l.stateChanged(new ChangeEvent(this));
         }
@@ -169,14 +170,32 @@ public class EditablePlotItem implements IPlotItemRendererSettings {
     /**
      * - create a SimpleSliderField component
      * - create a LineDashArrayField component extending a SimpleComboboxField
-     * -
-     * 
-     * @return
      */
 
     public SimpleFlowPanel getEditionPanel() {
         SimpleFlowPanel editionPanel = new SimpleFlowPanel(true);
-        editionPanel.setPadding(0, 0, 5, 0);
+        editionPanel.setGap(5);
+        editionPanel.setPadding(5);
+
+        SimpleCheckbox visibleInPlotCb = new SimpleCheckbox();
+        visibleInPlotCb.setText(T.text("display"));
+        visibleInPlotCb.setSelected(visible);
+        visibleInPlotCb.addChangeListener(l -> {
+            visible = visibleInPlotCb.isSelected();
+            updatePlotItems();
+            fireChangeListeners();
+        });
+        SimpleCheckbox visibleInLegendCb = new SimpleCheckbox();
+        visibleInLegendCb.setText(T.text("include_legend"));
+        visibleInLegendCb.setSelected(legend);
+        visibleInLegendCb.addChangeListener(l -> {
+            legend = visibleInLegendCb.isSelected();
+            updatePlotItems();
+            fireChangeListeners();
+        });
+
+        editionPanel.addChild(visibleInPlotCb, false);
+        editionPanel.addChild(visibleInLegendCb, false);
 
         JLabel labelFieldLabel = new JLabel();
         labelFieldLabel.setText(T.text("legend_text"));
@@ -290,24 +309,118 @@ public class EditablePlotItem implements IPlotItemRendererSettings {
             editionPanel.addChild(fillAlphaLabel, false);
             editionPanel.addChild(fillAlphaSlider, false);
 
-        } else {
-            JLabel nothingLabel = new JLabel("<NOT IMPLEMENTED>");
+        } else if (type == TYPE.POINT) {
+
+            JLabel pointPaintFieldLabel = new JLabel();
+            pointPaintFieldLabel.setText(T.text("point_color"));
+            SimpleColorField pointPaintChooser = new SimpleColorField();
+            pointPaintChooser.setColor(lineColor);
+            pointPaintChooser.addChangeListener(l -> {
+                lineColor = pointPaintChooser.getColor();
+                updatePlotItems();
+                fireChangeListeners();
+            });
+
+            editionPanel.addChild(pointPaintFieldLabel, false);
+            editionPanel.addChild(pointPaintChooser, false);
+
+            PlotPoints plotPoints = (PlotPoints) plotItem;
+            if (plotPoints.hasErrorBars()) {
+
+                JLabel lineWidthLabel = new JLabel();
+                lineWidthLabel.setText(T.text("line_width"));
+                SimpleSlider lineWidthSlider = new SimpleSlider(1, 10, 1);
+                lineWidthSlider.setValue((double) lineWidth);
+                lineWidthSlider.addChangeListener(l -> {
+                    lineWidth = (float) lineWidthSlider.getValue();
+                    updatePlotItems();
+                    fireChangeListeners();
+                });
+
+                editionPanel.addChild(lineWidthLabel, false);
+                editionPanel.addChild(lineWidthSlider, false);
+
+            }
+
+            JLabel shapeSizeLabel = new JLabel();
+            shapeSizeLabel.setText(T.text("shape_size"));
+            SimpleSlider shapeSizeSlider = new SimpleSlider(1, 20, 1);
+            shapeSizeSlider.setValue((double) shapeSize);
+            shapeSizeSlider.addChangeListener(l -> {
+                shapeSize = (int) shapeSizeSlider.getValue();
+                updatePlotItems();
+                fireChangeListeners();
+            });
+
+            editionPanel.addChild(shapeSizeLabel, false);
+            editionPanel.addChild(shapeSizeSlider, false);
+
+            JLabel pointShapeFieldLabel = new JLabel();
+            pointShapeFieldLabel.setText(T.text("point_type"));
+
+            SimpleComboBox pointShapeCombobox = new SimpleComboBox();
+            JLabel circleShapeLabel = new JLabel();
+            circleShapeLabel.setText(T.text("shape_circle"));
+            circleShapeLabel.setIcon(new ImageIcon(PlotUtils.buildImageFromShape(
+                    PlotItem.buildCircleShape(),
+                    Color.BLACK,
+                    20, 20)));
+
+            JLabel squareShapeLabel = new JLabel();
+            squareShapeLabel.setText(T.text("shape_square"));
+            squareShapeLabel.setIcon(new ImageIcon(PlotUtils.buildImageFromShape(
+                    PlotItem.buildSquareShape(),
+                    Color.BLACK,
+                    20, 20)));
+
+            pointShapeCombobox.setItems(new JLabel[] {
+                    circleShapeLabel,
+                    squareShapeLabel,
+            },
+                    false);
+            if (shapeType == ShapeType.CIRCLE)
+                pointShapeCombobox.setSelectedItem(0, true);
+            if (shapeType == ShapeType.SQUARE)
+                pointShapeCombobox.setSelectedItem(1, true);
+            pointShapeCombobox.addChangeListener(l -> {
+                int i = pointShapeCombobox.getSelectedIndex();
+                if (i == 0)
+                    shapeType = ShapeType.CIRCLE;
+                if (i == 1)
+                    shapeType = ShapeType.SQUARE;
+                updatePlotItems();
+                fireChangeListeners();
+            });
+
+            editionPanel.addChild(pointShapeFieldLabel, false);
+            editionPanel.addChild(pointShapeCombobox, false);
+
+        }
+
+        else {
+            JLabel nothingLabel = new JLabel("<NOT SUPPORTED>");
             editionPanel.addChild(nothingLabel, false);
         }
 
         return editionPanel;
     }
 
-    private void updatePlotItems() {
-        plotItem.configureRenderer(this);
+    public void updatePlotItems() {
         plotItem.setLabel(label);
+        plotItem.setLegendVisible(legend);
+        plotItem.setVisible(visible);
+        plotItem.configureRenderer(this);
         for (PlotItem pi : siblings) {
-            pi.configureRenderer(this);
             pi.setLabel(label);
+            pi.setLegendVisible(legend);
+            pi.setVisible(visible);
+            pi.configureRenderer(this);
         }
     }
 
     public void applyState(EditablePlotItem other) {
+        visible = other.visible;
+        legend = other.legend;
         label = other.label;
         lineColor = other.lineColor;
         lineWidth = other.lineWidth;
@@ -316,8 +429,24 @@ public class EditablePlotItem implements IPlotItemRendererSettings {
         shapeSize = other.shapeSize;
         fillColor = other.fillColor;
         fillAlpha = other.fillAlpha;
-        visible = other.visible;
-        showLegend = other.showLegend;
+        updatePlotItems();
+    }
+
+    public boolean showLegend() {
+        return legend;
+    }
+
+    public void setShowLegend(boolean showLegend) {
+        legend = showLegend;
+        updatePlotItems();
+    }
+
+    public boolean showItem() {
+        return visible;
+    }
+
+    public void setShowItem(boolean showItem) {
+        visible = showItem;
         updatePlotItems();
     }
 
@@ -325,9 +454,19 @@ public class EditablePlotItem implements IPlotItemRendererSettings {
         return label;
     }
 
+    public void setLabel(String label) {
+        this.label = label;
+        updatePlotItems();
+    }
+
     @Override
     public Paint getLinePaint() {
         return lineColor;
+    }
+
+    public void setLinePaint(Color paint) {
+        lineColor = paint;
+        updatePlotItems();
     }
 
     @Override
@@ -335,14 +474,29 @@ public class EditablePlotItem implements IPlotItemRendererSettings {
         return lineWidth;
     }
 
+    public void setLineWidth(float width) {
+        lineWidth = width;
+        updatePlotItems();
+    }
+
     @Override
     public float[] getLineDashArray() {
         return lineType.getDashArray(lineWidth);
     }
 
+    public void setLineType(LineType type) {
+        lineType = type;
+        updatePlotItems();
+    }
+
     @Override
-    public double getShapeSize() {
+    public int getShapeSize() {
         return shapeSize;
+    }
+
+    public void setShapeSize(int size) {
+        shapeSize = size;
+        updatePlotItems();
     }
 
     @Override
@@ -350,9 +504,19 @@ public class EditablePlotItem implements IPlotItemRendererSettings {
         return shapeType;
     }
 
+    public void setShapeType(ShapeType type) {
+        shapeType = type;
+        updatePlotItems();
+    }
+
     @Override
     public Paint getFillPaint() {
         return fillColor;
+    }
+
+    public void setFillPaint(Color color) {
+        fillColor = color;
+        updatePlotItems();
     }
 
     @Override
@@ -360,19 +524,10 @@ public class EditablePlotItem implements IPlotItemRendererSettings {
         return fillAlpha;
     }
 
-    // private static Paint addAlpha(Paint paint, float alpha) {
-    // Paint paintWidthAlpha = paint;
-    // if (paint instanceof Color) {
-    // Color color = ((Color) paint);
-    // Color colorWithAlpha = new Color(
-    // color.getRed(),
-    // color.getGreen(),
-    // color.getBlue(),
-    // (int) alpha * 255);
-    // return colorWithAlpha;
-    // }
-    // return paintWidthAlpha;
-    // }
+    public void setFillAlpha(float alpha) {
+        fillAlpha = alpha;
+        updatePlotItems();
+    }
 
     public JSONObject toJSON() {
         JSONObject json = new JSONObject();
@@ -385,7 +540,7 @@ public class EditablePlotItem implements IPlotItemRendererSettings {
         json.put("fillColor", colorToString(fillColor));
         json.put("fillAlpha", fillAlpha);
         json.put("visible", visible);
-        json.put("showLegend", showLegend);
+        json.put("showLegend", legend);
         return json;
     }
 
@@ -395,11 +550,11 @@ public class EditablePlotItem implements IPlotItemRendererSettings {
         lineWidth = json.optFloat("lineWidth");
         lineType = LineType.fromString(json.optString("lineType"));
         shapeType = ShapeType.fromString(json.optString("shapeType"));
-        shapeSize = json.optDouble("shapeSize");
+        shapeSize = json.optInt("shapeSize");
         fillColor = stringToColor(json.optString("fillColor"), fillColor);
         fillAlpha = json.optFloat("fillAlpha");
         visible = json.optBoolean("visible");
-        showLegend = json.optBoolean("showLegend");
+        legend = json.optBoolean("showLegend");
         updatePlotItems();
     }
 

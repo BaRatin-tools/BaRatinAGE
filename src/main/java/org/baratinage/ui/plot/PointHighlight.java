@@ -24,6 +24,10 @@ public class PointHighlight implements PlotItemGroup {
                 PlotItem.buildStroke(lineWidth));
         vLine = new PlotInfiniteLine("", Double.NaN, paint, PlotItem.buildStroke(lineWidth));
 
+        point.setLegendVisible(false);
+        hLine.setLegendVisible(false);
+        vLine.setLegendVisible(false);
+
         this.paint = paint;
         this.lineWidth = lineWidth;
         this.shapeSize = shapeSize;
@@ -76,7 +80,7 @@ public class PointHighlight implements PlotItemGroup {
         }
 
         @Override
-        public double getShapeSize() {
+        public int getShapeSize() {
             return visible ? shapeSize : 0;
         }
 

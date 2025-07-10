@@ -1,5 +1,6 @@
 package org.baratinage.ui.plot;
 
+import java.awt.Color;
 import java.awt.Paint;
 import java.awt.Shape;
 
@@ -27,7 +28,20 @@ public class PlotInfiniteBand extends PlotItem {
 
     private CustomAreaRenderer renderer;
 
-    public PlotInfiniteBand(String label, double coeffDir, double offsetLow, double offsetHigh, Paint fillPaint,
+    public PlotInfiniteBand(
+            String label,
+            double coeffDir,
+            double offsetLow,
+            double offsetHigh) {
+        this(label, coeffDir, offsetLow, offsetHigh, Color.BLACK, 1f);
+    }
+
+    public PlotInfiniteBand(
+            String label,
+            double coeffDir,
+            double offsetLow,
+            double offsetHigh,
+            Paint fillPaint,
             float alpha) {
 
         setLabel(label);
@@ -131,7 +145,7 @@ public class PlotInfiniteBand extends PlotItem {
     @Override
     public LegendItem getLegendItem() {
         Shape squareShape = buildSquareShape();
-        return buildLegendItem(label, null, null, squareShape, fillPaint);
+        return buildLegendItem(getLabel(), null, null, squareShape, fillPaint);
     }
 
     @Override
@@ -144,6 +158,16 @@ public class PlotInfiniteBand extends PlotItem {
         renderer.setAlpha(alpha);
         renderer.setSeriesFillPaint(0, fillPaint);
         renderer.setSeriesShape(0, shape);
+    }
+
+    @Override
+    public PlotInfiniteBand getCopy() {
+        return new PlotInfiniteBand(getLabel(),
+                coeffDir,
+                offsetLow,
+                offsetHigh,
+                fillPaint,
+                alpha);
     }
 
 }

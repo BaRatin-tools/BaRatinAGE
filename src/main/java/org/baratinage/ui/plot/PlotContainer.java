@@ -3,18 +3,15 @@ package org.baratinage.ui.plot;
 import java.awt.Dimension;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
-
 import javax.swing.JPanel;
 
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.svg.SVGGraphics2D;
-import org.baratinage.ui.component.SimpleCheckbox;
 import org.baratinage.ui.container.SimpleFlowPanel;
-import org.baratinage.ui.plot.PlotExporter.ExportablePlot;
-import org.baratinage.translation.T;
+import org.baratinage.ui.plot.PlotExporter.IExportablePlot;
 
-public class PlotContainer extends SimpleFlowPanel implements ExportablePlot {
+public class PlotContainer extends SimpleFlowPanel implements IExportablePlot {
 
     private Plot plot;
     private JFreeChart chart;
@@ -57,21 +54,8 @@ public class PlotContainer extends SimpleFlowPanel implements ExportablePlot {
         topPanel.addExtensor();
         topPanel.addChild(actionPanel, false);
 
-        SimpleCheckbox cbShowLegend = new SimpleCheckbox();
-        cbShowLegend.setSelected(true);
-        cbShowLegend.addChangeListener((e) -> {
-            if (plot != null) {
-                plot.setIncludeLegend(cbShowLegend.isSelected());
-            }
-        });
-
-        toolsPanel.addChild(cbShowLegend, false);
         toolsPanel.setGap(5);
         actionPanel.setGap(5);
-
-        T.t(this, () -> {
-            cbShowLegend.setText(T.text("show_legend"));
-        });
 
     }
 
@@ -81,7 +65,6 @@ public class PlotContainer extends SimpleFlowPanel implements ExportablePlot {
 
         chartPanel = new CustomChartPanel(plot);
 
-        // chartPanel.setPopupMenu(popupMenu);
         chartPanel.setPopupMenu(PlotExporter.buildExportPopupMenu(this));
 
         chartPanelContainer.removeAll();
@@ -98,7 +81,7 @@ public class PlotContainer extends SimpleFlowPanel implements ExportablePlot {
     }
 
     @Override
-    public ExportablePlot getCopy() {
+    public IExportablePlot getCopy() {
         return new PlotContainer(plot.getCopy());
     }
 
@@ -127,5 +110,4 @@ public class PlotContainer extends SimpleFlowPanel implements ExportablePlot {
                 scale,
                 scale);
     }
-
 }

@@ -14,14 +14,14 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 
 import org.baratinage.ui.container.SimpleFlowPanel;
-import org.baratinage.ui.plot.PlotExporter.ExportablePlot;
+import org.baratinage.ui.plot.PlotExporter.IExportablePlot;
 import org.baratinage.utils.Misc;
 import org.baratinage.utils.perf.TimedActions;
 import org.jfree.chart.title.LegendTitle;
 import org.jfree.data.Range;
 import org.jfree.svg.SVGGraphics2D;
 
-public class MultiPlotContainer extends SimpleFlowPanel implements ExportablePlot {
+public class MultiPlotContainer extends SimpleFlowPanel implements IExportablePlot {
 
   private static record PlotConfig(Plot plot, CustomChartPanel chart, float weight) {
 
@@ -271,7 +271,7 @@ public class MultiPlotContainer extends SimpleFlowPanel implements ExportablePlo
   }
 
   @Override
-  public ExportablePlot getCopy() {
+  public IExportablePlot getCopy() {
     MultiPlotContainer container = new MultiPlotContainer();
     for (PlotConfig p : plots) {
       container.addPlot(p.plot.getCopy(), p.weight);

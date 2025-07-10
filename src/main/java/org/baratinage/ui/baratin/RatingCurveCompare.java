@@ -403,7 +403,7 @@ public class RatingCurveCompare extends BamItem {
         plot = new Plot();
         List<EditablePlotItem> items = getEditablePlotItems(episList.getValues());
         for (int k = items.size() - 1; k >= 0; k--) {
-            if (items.get(k).visible) {
+            if (items.get(k).plotItem.getVisible()) {
                 plot.addXYItem(items.get(k).plotItem);
                 for (PlotItem pi : items.get(k).siblings) {
                     plot.addXYItem(pi);
@@ -437,7 +437,7 @@ public class RatingCurveCompare extends BamItem {
             for (EPI epi : epis) {
                 if (epi.bamItem.ID.equals(itemOne.ID)) {
                     EditablePlotItem ePltItem = knownEditablePlotItems.get(itemOne).get(epi.key);
-                    if (ePltItem != null && ePltItem.showLegend) {
+                    if (ePltItem != null && ePltItem.plotItem.getLegendVisible()) {
                         legend.addLegendItem(ePltItem.plotItem.getLegendItem());
                     }
                 }
@@ -449,7 +449,7 @@ public class RatingCurveCompare extends BamItem {
             for (EPI epi : epis) {
                 if (epi.bamItem.ID.equals(itemTwo.ID)) {
                     EditablePlotItem ePltItem = knownEditablePlotItems.get(itemTwo).get(epi.key);
-                    if (ePltItem != null && ePltItem.showLegend) {
+                    if (ePltItem != null && ePltItem.plotItem.getLegendVisible()) {
                         legend.addLegendItem(ePltItem.plotItem.getLegendItem());
                     }
                 }

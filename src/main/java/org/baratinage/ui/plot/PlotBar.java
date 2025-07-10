@@ -14,8 +14,6 @@ import org.jfree.chart.renderer.xy.XYBarPainter;
 import org.jfree.chart.renderer.xy.XYBarRenderer;
 import org.jfree.chart.renderer.xy.XYItemRenderer;
 import org.jfree.chart.ui.RectangleEdge;
-import org.jfree.data.statistics.HistogramDataset;
-import org.jfree.data.statistics.HistogramType;
 import org.jfree.data.xy.DefaultIntervalXYDataset;
 import org.jfree.data.xy.XYDataset;
 
@@ -28,30 +26,15 @@ public class PlotBar extends PlotItem {
     protected XYDataset dataset;
     protected XYItemRenderer renderer;
 
+    private double[] x;
+    private double[] y;
+
     public PlotBar(String label, double[] x, int nBins, Paint fillPaint, float alpha) {
-        this(label, x, nBins, fillPaint, alpha, HistogramType.SCALE_AREA_TO_1);
+        this(label, densityEstimate(x, nBins), fillPaint, alpha);
     }
 
-    public PlotBar(String label, double[] x, int nBins, Paint fillPaint, float alpha, HistogramType histType) {
-        HistogramDataset dataset = new HistogramDataset();
-        dataset.setType(histType);
-        dataset.addSeries(label, x, nBins);
-        this.dataset = dataset;
-
-        this.label = label;
-        this.fillPaint = fillPaint;
-        this.alpha = alpha;
-
-        XYBarRenderer renderer = new XYBarRenderer();
-        renderer.setShadowVisible(false);
-        renderer.setDrawBarOutline(false);
-        renderer.setSeriesPaint(0, fillPaint);
-        renderer.setMargin(MARGIN);
-        CustomBarPainter barPainter = new CustomBarPainter();
-        barPainter.alpha = alpha;
-        renderer.setBarPainter(barPainter);
-
-        this.renderer = renderer;
+    public PlotBar(String label, double[][] density, Paint fillPaint, float alpha) {
+        this(label, density[0], density[1], fillPaint, alpha);
     }
 
     public PlotBar(String label, double[] x, double[] y, Paint fillPaint, float alpha) {
@@ -63,6 +46,8 @@ public class PlotBar extends PlotItem {
         setLabel(label);
         this.fillPaint = fillPaint;
 
+        this.x = x;
+        this.y = y;
         double[] xLow = new double[n];
         double[] xHigh = new double[n];
         double[] xRange = Calc.range(x);
@@ -106,7 +91,7 @@ public class PlotBar extends PlotItem {
 
     @Override
     public LegendItem getLegendItem() {
-        return PlotBar.buildLegendItem(label, fillPaint);
+        return PlotBar.buildLegendItem(getLabel(), fillPaint);
     }
 
     public static LegendItem buildLegendItem(String label, Paint fillPaint) {
@@ -159,6 +144,11 @@ public class PlotBar extends PlotItem {
         this.renderer = renderer;
     }
 
+    @Override
+    public PlotBar getCopy() {
+        return new PlotBar(getLabel(), x, y, fillPaint, alpha);
+    }
+
     public static double computeOptimalBinwidth(List<double[]> data, int bins) {
         double[] binWiths = new double[data.size()];
         int k = 0;
@@ -173,7 +163,7 @@ public class PlotBar extends PlotItem {
     public static double[][] densityEstimate(double[] data, double binWidth) {
         double[] minMax = getMinMax(data);
         int bins = (int) Math.ceil((minMax[1] - minMax[0]) / binWidth);
-        return getDensityEstimate(data, bins, binWidth, minMax[0], minMax[1]);
+        return densityEstimate(data, bins, binWidth, minMax[0], minMax[1]);
     }
 
     private static double[] getMinMax(double[] data) {
@@ -190,7 +180,7 @@ public class PlotBar extends PlotItem {
         return new double[] { min, max };
     }
 
-    private static double[][] getDensityEstimate(double[] data, int bins, double binWidth, double min, double max) {
+    public static double[][] densityEstimate(double[] data, int bins, double binWidth, double min, double max) {
 
         double[] x = new double[bins];
         for (int i = 0; i < bins; i++) {
@@ -206,9 +196,15 @@ public class PlotBar extends PlotItem {
         }
 
         for (int i = 0; i < bins; i++) {
-            histogram[i] /= (data.length * binWidth);
+            histogram[i] = histogram[i] / (data.length * binWidth);
         }
 
         return new double[][] { x, histogram };
+    }
+
+    public static double[][] densityEstimate(double[] data, int bins) {
+        double[] minmax = getMinMax(data);
+        double binWidth = (minmax[1] - minmax[0]) / ((double) bins);
+        return densityEstimate(data, bins, binWidth, minmax[0], minmax[1]);
     }
 }

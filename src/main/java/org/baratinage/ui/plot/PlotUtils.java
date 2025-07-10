@@ -83,11 +83,11 @@ public class PlotUtils {
         return image;
     }
 
-    public static Icon getPlotItemIcon(PlotItem plotItem, int width, int height) {
-        return getLegendItemAsIcon(plotItem.getLegendItem(), width, height);
+    public static Icon getPlotItemIcon(PlotItem item, int width, int height) {
+        return getLegendItemIcon(item.getLegendItem(), width, height);
     }
 
-    public static Icon getLegendItemAsIcon(LegendItem legendItem, int width, int height) {
+    public static Icon getLegendItemIcon(LegendItem legendItem, int width, int height) {
         BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g2 = image.createGraphics();
 

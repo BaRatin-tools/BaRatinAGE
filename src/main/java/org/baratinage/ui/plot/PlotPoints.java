@@ -15,6 +15,13 @@ public class PlotPoints extends PlotItem {
     private Stroke errorLineStroke;
     private Shape shape;
 
+    private double[] x;
+    private double[] xLow;
+    private double[] xHigh;
+    private double[] y;
+    private double[] yLow;
+    private double[] yHigh;
+
     private XYIntervalSeriesCollection dataset;
     private XYErrorRenderer renderer;
 
@@ -51,17 +58,20 @@ public class PlotPoints extends PlotItem {
             throw new IllegalArgumentException("x, y, xStart, xEnd, yStart, yEnd must all have the same length!");
 
         setLabel(label);
+
         this.paint = paint;
         this.shape = shape;
         this.errorLineStroke = errorLineStroke;
 
-        dataset = new XYIntervalSeriesCollection();
+        updateDataset(x, xLow, xHigh, y, yLow, yHigh);
 
-        XYIntervalSeries series = new XYIntervalSeries(label);
-        dataset.addSeries(series);
-        for (int k = 0; k < n; k++) {
-            series.add(x[k], xLow[k], xHigh[k], y[k], yLow[k], yHigh[k]);
-        }
+        // dataset = new XYIntervalSeriesCollection();
+
+        // XYIntervalSeries series = new XYIntervalSeries(label);
+        // dataset.addSeries(series);
+        // for (int k = 0; k < n; k++) {
+        // series.add(x[k], xLow[k], xHigh[k], y[k], yLow[k], yHigh[k]);
+        // }
 
         renderer = new XYErrorRenderer();
 
@@ -71,15 +81,38 @@ public class PlotPoints extends PlotItem {
 
     }
 
+    public boolean hasErrorBars() {
+        XYIntervalSeries series = dataset.getSeries(0);
+        for (int k = 0; k < series.getItemCount(); k++) {
+            Number x = series.getX(k);
+            Number xL = series.getXLowValue(k);
+            Number xH = series.getXHighValue(k);
+            Number y = series.getYValue(k);
+            Number yL = series.getYLowValue(k);
+            Number yH = series.getYHighValue(k);
+            if (!x.equals(xL) || x.equals(xH) || !y.equals(yL) || !y.equals(yH)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public void setPaint(Paint paint) {
         this.paint = paint;
         renderer.setSeriesPaint(0, paint);
     }
 
     public void updateDataset(double[] x, double[] xLow, double[] xHigh, double[] y, double[] yLow, double[] yHigh) {
+        this.x = x;
+        this.xLow = xLow;
+        this.xHigh = xHigh;
+        this.y = y;
+        this.yLow = yLow;
+        this.yHigh = yHigh;
+
         int n = x.length;
         dataset = new XYIntervalSeriesCollection();
-        XYIntervalSeries series = new XYIntervalSeries(label);
+        XYIntervalSeries series = new XYIntervalSeries(getLabel());
         dataset.addSeries(series);
         for (int k = 0; k < n; k++) {
             series.add(x[k], xLow[k], xHigh[k], y[k], yLow[k], yHigh[k]);
@@ -98,7 +131,7 @@ public class PlotPoints extends PlotItem {
 
     @Override
     public LegendItem getLegendItem() {
-        return buildLegendItem(label, null, null, shape, paint);
+        return buildLegendItem(getLabel(), null, null, shape, paint);
     }
 
     @Override
@@ -109,6 +142,8 @@ public class PlotPoints extends PlotItem {
                 rendererSettings.getLineDashArray());
         paint = rendererSettings.getLinePaint();
 
+        double shapeSize = rendererSettings.getShapeSize();
+        shape = rendererSettings.getShapeType().getShape((int) shapeSize);
         renderer = new XYErrorRenderer();
 
         renderer.setSeriesPaint(0, paint);
@@ -116,4 +151,8 @@ public class PlotPoints extends PlotItem {
         renderer.setSeriesShape(0, shape);
     }
 
+    @Override
+    public PlotPoints getCopy() {
+        return new PlotPoints(getLabel(), x, xLow, xHigh, y, yLow, yHigh, paint, shape, errorLineStroke);
+    }
 }

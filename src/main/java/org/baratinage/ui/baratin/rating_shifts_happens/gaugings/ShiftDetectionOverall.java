@@ -251,9 +251,10 @@ public class ShiftDetectionOverall {
             getColor(k),
             0.7f);
 
-        plot.addXYItem(bar, false);
-        // plot.addXYItem(line, false);
-        plot.addXYItem(vLine, false);
+        bar.setLegendVisible(false);
+        vLine.setLegendVisible(false);
+        plot.addXYItem(bar);
+        plot.addXYItem(vLine);
         k++;
       }
     }

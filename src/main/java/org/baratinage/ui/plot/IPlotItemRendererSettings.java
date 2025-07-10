@@ -12,7 +12,7 @@ public interface IPlotItemRendererSettings {
 
     public float[] getLineDashArray();
 
-    public double getShapeSize();
+    public int getShapeSize();
 
     public ShapeType getShapeType();
 
