@@ -401,7 +401,7 @@ public class RatingCurveCompare extends BamItem {
 
     private void resetPlot() {
         plot = new Plot();
-        List<EditablePlotItem> items = getEditablePlotItems(episList.getValues());
+        List<EditablePlotItem> items = getEditablePlotItems(episList.getAllObjects());
         for (int k = items.size() - 1; k >= 0; k--) {
             if (items.get(k).plotItem.getVisible()) {
                 plot.addXYItem(items.get(k).plotItem);
