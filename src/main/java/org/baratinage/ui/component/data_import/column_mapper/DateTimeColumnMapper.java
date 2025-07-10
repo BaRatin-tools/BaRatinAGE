@@ -137,7 +137,7 @@ public class DateTimeColumnMapper extends BorderedSimpleFlowPanel implements IDa
     SimpleFlowPanel timePanel = new SimpleFlowPanel();
     timePanel.setGap(5);
     JLabel timeLabel = new JLabel();
-    T.t(this, timeLabel, false, "time");
+    T.t(this, timeLabel, false, "time_only");
     timeFormat.setEmptyItem(null);
     timeFormat.setEditable(true);
     timeFormat.setItems(new String[] {
