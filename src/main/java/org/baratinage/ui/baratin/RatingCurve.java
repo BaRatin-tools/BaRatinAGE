@@ -79,6 +79,8 @@ public class RatingCurve extends BamItem
 
         runBam = new RunBam(true, false, true);
 
+        resultsPanel = new RatingCurveResults(PROJECT);
+
         // **********************************************************
         // Hydraulic configuration
         // **********************************************************
@@ -115,7 +117,7 @@ public class RatingCurve extends BamItem
                 BamItemType.GAUGINGS);
         gaugingsParent.setCanBeEmpty(true);
         gaugingsParent.setComparisonJSONfilter(new JSONFilter(true, true,
-                "name", "headers", "filePath", "nested"));
+                "name", "headers", "filePath", "nested", "plotEditor"));
         gaugingsParent.addChangeListener((e) -> {
             Gaugings bamItem = (Gaugings) gaugingsParent.getCurrentBamItem();
             runBam.setCalibrationData(bamItem);
@@ -186,7 +188,6 @@ public class RatingCurve extends BamItem
             TimedActions.throttle(ID, AppSetup.CONFIG.THROTTLED_DELAY_MS, this::checkSync);
         });
 
-        resultsPanel = new RatingCurveResults(PROJECT);
         outdatedPanel = new SimpleFlowPanel(true);
         outdatedPanel.setPadding(0);
         outdatedPanel.setGap(5);
@@ -403,6 +404,8 @@ public class RatingCurve extends BamItem
             config.JSON.put("backup", backup.JSON);
         }
 
+        config.JSON.put("plotEditor", resultsPanel.ratingCurvePlot.plotEditor.toJSON());
+
         return config;
     }
 
@@ -456,6 +459,12 @@ public class RatingCurve extends BamItem
             }
         } else {
             ConsoleLogger.log("missing 'backup'");
+        }
+
+        if (json.has("plotEditor")) {
+            BamProjectLoader.addDelayedAction(() -> {
+                resultsPanel.ratingCurvePlot.plotEditor.fromJSON(json.getJSONObject("plotEditor"));
+            });
         }
 
         TimedActions.throttle(ID, AppSetup.CONFIG.THROTTLED_DELAY_MS, this::checkSync);

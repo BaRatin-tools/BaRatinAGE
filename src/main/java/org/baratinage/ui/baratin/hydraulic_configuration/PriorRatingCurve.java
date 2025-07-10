@@ -236,6 +236,8 @@ public class PriorRatingCurve<HCT extends BamItem & IModelDefinition & IPriors> 
         if (jsonBackup != null) {
             config.JSON.put("backup", jsonBackup);
         }
+        config.JSON.put("plotEditor", resultsPanel.ratingCurvePlot.plotEditor.toJSON());
+
         return config;
     }
 
@@ -260,6 +262,12 @@ public class PriorRatingCurve<HCT extends BamItem & IModelDefinition & IPriors> 
             jsonBackup = json.getJSONObject("backup");
         } else {
             ConsoleLogger.log("missing 'backup'");
+        }
+
+        if (json.has("plotEditor")) {
+            BamProjectLoader.addDelayedAction(() -> {
+                resultsPanel.ratingCurvePlot.plotEditor.fromJSON(json.getJSONObject("plotEditor"));
+            });
         }
     }
 

@@ -28,6 +28,8 @@ public class AppIcons {
     public final SvgIcon NEW_FILE;
     public final SvgIcon CLOSE;
     public final SvgIcon MORE_DOTS;
+    public final SvgIcon EDIT;
+    public final SvgIcon EDIT_SMALL;
     public final SvgIcon HELP;
     public final SvgIcon HELP_SMALL;
     public final SvgIcon WARNING;
@@ -63,6 +65,8 @@ public class AppIcons {
         NEW_FILE = addIcon(buildFeatherAppImageIcon("file-plus.svg", FEATHER_SIZE));
         CLOSE = addIcon(buildFeatherAppImageIcon("x-square.svg", FEATHER_SIZE));
         MORE_DOTS = addIcon(buildFeatherAppImageIcon("more-horizontal.svg", FEATHER_SIZE));
+        EDIT = addIcon(buildFeatherAppImageIcon("edit.svg", FEATHER_SIZE));
+        EDIT_SMALL = addIcon(buildFeatherAppImageIcon("edit.svg", FEATHER_SIZE - 8));
         HELP = addIcon(buildFeatherAppImageIcon("help-circle.svg", FEATHER_SIZE));
         HELP_SMALL = addIcon(buildFeatherAppImageIcon("help-circle.svg", FEATHER_SIZE - 8));
         WARNING = addIcon(buildFeatherAppImageIcon("alert-triangle.svg", FEATHER_SIZE));

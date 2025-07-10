@@ -3,15 +3,19 @@ package org.baratinage.ui.baratin.rating_curve;
 import java.awt.Color;
 import java.util.List;
 
+import javax.swing.JToggleButton;
+
 import org.baratinage.ui.container.SimpleFlowPanel;
 import org.baratinage.AppSetup;
 import org.baratinage.translation.T;
+import org.baratinage.ui.plot.EditablePlot;
+import org.baratinage.ui.plot.EditablePlotItem;
 import org.baratinage.ui.plot.Plot;
 import org.baratinage.ui.plot.PlotBand;
 import org.baratinage.ui.plot.PlotContainer;
+import org.baratinage.ui.plot.PlotEditor;
 import org.baratinage.ui.plot.PlotInfiniteBand;
 import org.baratinage.ui.plot.PlotInfiniteLine;
-import org.baratinage.ui.plot.PlotItem;
 import org.baratinage.ui.plot.PlotLine;
 import org.baratinage.ui.plot.PlotPoints;
 import org.baratinage.utils.Calc;
@@ -34,8 +38,12 @@ public class RatingCurvePlot extends SimpleFlowPanel {
 
     private final RatingCurvePlotToolsPanel toolsPanel;
 
+    public final PlotEditor plotEditor;
+    private final JToggleButton plotEditorToggleBtn;
+    private final SimpleFlowPanel plotArea;
+
     public RatingCurvePlot() {
-        super(true);
+        super();
 
         plotContainer = new PlotContainer(true);
         toolsPanel = new RatingCurvePlotToolsPanel();
@@ -45,8 +53,24 @@ public class RatingCurvePlot extends SimpleFlowPanel {
             }
         });
 
-        addChild(plotContainer, true);
-        addChild(toolsPanel, 0, 5);
+        plotArea = new SimpleFlowPanel(true);
+
+        plotEditor = new PlotEditor();
+        plotEditorToggleBtn = new JToggleButton();
+        plotEditorToggleBtn.setIcon(AppSetup.ICONS.EDIT);
+        plotEditorToggleBtn.addActionListener(l -> {
+            removeAll();
+            if (plotEditorToggleBtn.isSelected()) {
+                addChild(plotEditor, false);
+            }
+            addChild(plotArea, true);
+        });
+        plotContainer.toolsPanel.addChild(plotEditorToggleBtn, false);
+
+        plotArea.addChild(plotContainer, true);
+        plotArea.addChild(toolsPanel, 0, 5);
+
+        addChild(plotArea);
 
         T.updateHierarchy(this, plotContainer);
         T.updateHierarchy(this, toolsPanel);
@@ -83,35 +107,42 @@ public class RatingCurvePlot extends SimpleFlowPanel {
 
     private void updatePlot() {
 
-        // remove all translators related to old plot
-        T.clear(plot);
-
         // create new plot
         plot = new Plot(true);
-        T.updateHierarchy(this, plot);
 
         // stage transitions
         int n = transitionStages.size();
-        String stageLegendText = isPrior ? "lgd_prior_activation_stage"
-                : "lgd_posterior_activation_stage";
-        Color stageActivationValueColor = isPrior ? AppSetup.COLORS.PRIOR_STAGE_ACTIVATION_VALUE
-                : AppSetup.COLORS.POSTERIOR_STAGE_ACTIVATION_VALUE;
-        Color stageActivationUncertaintyColor = isPrior ? AppSetup.COLORS.PRIOR_STAGE_ACTIVATION_UNCERTAINTY
-                : AppSetup.COLORS.POSTERIOR_STAGE_ACTIVATION_UNCERTAINTY;
-        for (int k = 0; k < n; k++) {
-            double[] transitionStage = transitionStages.get(k);
+
+        EditablePlotItem stageTransitionBand = null;
+        EditablePlotItem stageTransitionLine = null;
+
+        if (n > 0) {
             double coeffDir = toolsPanel.axisFlipped() ? 0 : Double.POSITIVE_INFINITY;
-            addPlotItemToPlot(plot,
-                    new PlotInfiniteBand("k", coeffDir,
-                            transitionStage[1], transitionStage[2],
-                            stageActivationUncertaintyColor, 0.9f),
-                    k == 0 ? stageLegendText : null);
-            addPlotItemToPlot(plot,
-                    new PlotInfiniteLine("transition_line", coeffDir, transitionStage[0],
-                            stageActivationValueColor, 2),
-                    null);
+            double[] transitionStage = transitionStages.get(0);
+            PlotInfiniteBand band = new PlotInfiniteBand("k_band", coeffDir, transitionStage[1], transitionStage[2]);
+            PlotInfiniteLine line = new PlotInfiniteLine("k_line", coeffDir, transitionStage[0]);
+
+            plot.addXYItem(band);
+            plot.addXYItem(line);
+
+            stageTransitionBand = new EditablePlotItem(band);
+            stageTransitionLine = new EditablePlotItem(line);
+            stageTransitionLine.setShowLegend(false);
+
+            for (int k = 1; k < n; k++) {
+                transitionStage = transitionStages.get(0);
+                band = new PlotInfiniteBand("k_band", coeffDir, transitionStage[1], transitionStage[2]);
+                line = new PlotInfiniteLine("k_line", coeffDir, transitionStage[0]);
+
+                plot.addXYItem(band);
+                plot.addXYItem(line);
+
+                stageTransitionBand.addSibling(band);
+                stageTransitionLine.addSibling(line);
+            }
         }
 
+        PlotBand totalUncertaintyBand = null;
         // total uncertainty (only posterior rc)
         if (!isPrior && dischargeTotalUncertainty != null) {
             double[] smoothedTotalQUlow = dischargeTotalUncertainty.get(0);
@@ -124,88 +155,186 @@ public class RatingCurvePlot extends SimpleFlowPanel {
                 smoothedTotalQUlow = Calc.smoothArray(smoothedTotalQUlow, nSmooth);
                 smoothedTotalQUhigh = Calc.smoothArray(smoothedTotalQUhigh, nSmooth);
             }
-            Color totalColor = isPrior ? null : AppSetup.COLORS.RATING_CURVE_TOTAL_UNCERTAINTY;
-            addPlotItemToPlot(
-                    plot,
-                    new PlotBand("post_total_uncertainty",
-                            stage,
-                            smoothedTotalQUlow,
-                            smoothedTotalQUhigh,
-                            toolsPanel.axisFlipped(),
-                            totalColor),
-                    "lgd_posterior_parametric_structural_uncertainty");
+
+            totalUncertaintyBand = new PlotBand("post_total_uncertainty",
+                    stage,
+                    smoothedTotalQUlow,
+                    smoothedTotalQUhigh,
+                    toolsPanel.axisFlipped());
+
+            plot.addXYItem(totalUncertaintyBand);
         }
 
         // parametric uncertainty
+        PlotBand paramUncertaintyBand = new PlotBand("param_uncertainty",
+                stage,
+                dischargeParamUncertainty.get(0),
+                dischargeParamUncertainty.get(1),
+                toolsPanel.axisFlipped());
+        plot.addXYItem(paramUncertaintyBand);
+
+        // maxpost
+        double[] mpX = toolsPanel.axisFlipped() ? dischargeMaxpost : stage;
+        double[] mpY = toolsPanel.axisFlipped() ? stage : dischargeMaxpost;
+
+        PlotLine mpPlotLine = new PlotLine("mp", mpX, mpY);
+
+        plot.addXYItem(mpPlotLine);
+
+        // gaugings (only if posterior rc)
+        PlotPoints gaugingsPoints = null;
+        if (!isPrior && gaugings != null) {
+            if (toolsPanel.axisFlipped()) {
+                gaugingsPoints = new PlotPoints(
+                        "gaugings",
+                        gaugings.get(1),
+                        gaugings.get(2),
+                        gaugings.get(3),
+                        gaugings.get(0),
+                        gaugings.get(0),
+                        gaugings.get(0),
+                        AppSetup.COLORS.GAUGING);
+            } else {
+                gaugingsPoints = new PlotPoints(
+                        "gaugings",
+                        gaugings.get(0),
+                        gaugings.get(0),
+                        gaugings.get(0),
+                        gaugings.get(1),
+                        gaugings.get(2),
+                        gaugings.get(3),
+                        AppSetup.COLORS.GAUGING);
+
+            }
+            plot.addXYItem(gaugingsPoints);
+        }
+
+        plotContainer.setPlot(plot);
+
+        if (gaugingsPoints != null) {
+            plotEditor.addEditablePlotItem(
+                    "gaugingsPoints",
+                    gaugingsPoints.getLabel(),
+                    gaugingsPoints);
+        }
+
+        plotEditor.addEditablePlotItem(
+                "maxpostLine",
+                mpPlotLine.getLabel(),
+                mpPlotLine);
+
+        plotEditor.addEditablePlotItem(
+                "paramUncertaintyBand",
+                paramUncertaintyBand.getLabel(),
+                paramUncertaintyBand);
+
+        if (totalUncertaintyBand != null) {
+            plotEditor.addEditablePlotItem(
+                    "totalUncertaintyBand",
+                    totalUncertaintyBand.getLabel(),
+                    totalUncertaintyBand);
+        }
+
+        if (n > 0) {
+            plotEditor.addEditablePlotItem(
+                    "stageLine",
+                    stageTransitionLine.getLabel(),
+                    stageTransitionLine);
+
+            plotEditor.addEditablePlotItem(
+                    "stageBand",
+                    stageTransitionBand.getLabel(),
+                    stageTransitionBand);
+
+        }
+
+        plotEditor.addPlot(plot);
+
+        plotEditor.updateEditor();
+
+        setDefaultPlotEditorConfig();
+
+        plot.update();
+
+    }
+
+    private void setDefaultPlotEditorConfig() {
+
+        EditablePlotItem gaugings = plotEditor.getEditablePlotItem("gaugingsPoints");
+        if (gaugings != null) {
+            gaugings.setLabel(T.text("lgd_active_gaugings"));
+            gaugings.setFillPaint(AppSetup.COLORS.GAUGING);
+        }
+
+        EditablePlotItem maxpost = plotEditor.getEditablePlotItem("maxpostLine");
+        if (maxpost != null) {
+            String mpLegendKey = isPrior ? "lgd_prior_rating_curve" : "lgd_posterior_rating_curve";
+            Color mpColor = isPrior ? AppSetup.COLORS.PRIOR_LINE : AppSetup.COLORS.RATING_CURVE;
+            maxpost.setLabel(T.text(mpLegendKey));
+            maxpost.setLinePaint(mpColor);
+            maxpost.setLineWidth(5);
+        }
+
+        // stage transition
+        String stageLegendText = isPrior ? "lgd_prior_activation_stage"
+                : "lgd_posterior_activation_stage";
+        Color stageActivationValueColor = isPrior ? AppSetup.COLORS.PRIOR_STAGE_ACTIVATION_VALUE
+                : AppSetup.COLORS.POSTERIOR_STAGE_ACTIVATION_VALUE;
+        Color stageActivationUncertaintyColor = isPrior ? AppSetup.COLORS.PRIOR_STAGE_ACTIVATION_UNCERTAINTY
+                : AppSetup.COLORS.POSTERIOR_STAGE_ACTIVATION_UNCERTAINTY;
+
+        EditablePlotItem stageTransitionBand = plotEditor.getEditablePlotItem("stageBand");
+        EditablePlotItem stageTransitionLine = plotEditor.getEditablePlotItem("stageLine");
+        stageTransitionBand.setLabel(T.text(stageLegendText));
+        stageTransitionBand.setFillAlpha(0.9f);
+        stageTransitionBand.setFillPaint(stageActivationUncertaintyColor);
+        stageTransitionLine.setLabel(T.text(stageLegendText));
+        stageTransitionLine.setLineWidth(2);
+        stageTransitionLine.setLinePaint(stageActivationValueColor);
+
+        // total uncertainty
+        EditablePlotItem totalUncertainty = plotEditor.getEditablePlotItem("totalUncertaintyBand");
+        if (totalUncertainty != null) {
+            Color totalColor = isPrior ? null : AppSetup.COLORS.RATING_CURVE_TOTAL_UNCERTAINTY;
+            totalUncertainty.setFillPaint(totalColor);
+            totalUncertainty.setLabel(T.text("lgd_posterior_parametric_structural_uncertainty"));
+        }
+
+        // param uncertainty
         Color paramColor = isPrior ? AppSetup.COLORS.PRIOR_ENVELOP
                 : AppSetup.COLORS.RATING_CURVE_PARAM_UNCERTAINTY;
         String paramLegendKey = isPrior ? "lgd_prior_parametric_uncertainty"
                 : "lgd_posterior_parametric_uncertainty";
-        addPlotItemToPlot(
-                plot,
-                new PlotBand("param_uncertainty",
-                        stage,
-                        dischargeParamUncertainty.get(0),
-                        dischargeParamUncertainty.get(1),
-                        toolsPanel.axisFlipped(),
-                        paramColor),
-                paramLegendKey);
 
-        // maxpost
-        String mpLegendKey = isPrior ? "lgd_prior_rating_curve" : "lgd_posterior_rating_curve";
-        Color mpColor = isPrior ? AppSetup.COLORS.PRIOR_LINE : AppSetup.COLORS.RATING_CURVE;
-        double[] mpX = toolsPanel.axisFlipped() ? dischargeMaxpost : stage;
-        double[] mpY = toolsPanel.axisFlipped() ? stage : dischargeMaxpost;
+        EditablePlotItem paramUncertainty = plotEditor.getEditablePlotItem("paramUncertaintyBand");
+        paramUncertainty.setFillPaint(paramColor);
+        paramUncertainty.setLabel(T.text(paramLegendKey));
 
-        addPlotItemToPlot(
-                plot,
-                new PlotLine("mp", mpX, mpY, mpColor, 5),
-                mpLegendKey);
-        // gaugings (only if posterior rc)
+        // plot axis legend items order
+        EditablePlot p = plotEditor.getEditablePlot();
 
-        if (!isPrior && gaugings != null) {
-            if (toolsPanel.axisFlipped()) {
-                addPlotItemToPlot(
-                        plot, new PlotPoints(
-                                "gaugings",
-                                gaugings.get(1),
-                                gaugings.get(2),
-                                gaugings.get(3),
-                                gaugings.get(0),
-                                gaugings.get(0),
-                                gaugings.get(0),
-                                AppSetup.COLORS.GAUGING),
-                        "lgd_active_gaugings");
-            } else {
-                addPlotItemToPlot(
-                        plot, new PlotPoints(
-                                "gaugings",
-                                gaugings.get(0),
-                                gaugings.get(0),
-                                gaugings.get(0),
-                                gaugings.get(1),
-                                gaugings.get(2),
-                                gaugings.get(3),
-                                AppSetup.COLORS.GAUGING),
-                        "lgd_active_gaugings");
-            }
+        if (toolsPanel.axisFlipped()) {
+            p.setXAxisLabel(T.text("discharge") + " [m3/s]");
+            p.setYAxisLabel(T.text("stage") + " [m]");
+        } else {
+            p.setXAxisLabel(T.text("stage") + " [m]");
+            p.setYAxisLabel(T.text("discharge") + " [m3/s]");
         }
 
-        // dealing with axis translations
-        T.t(plot, () -> {
-            toolsPanel.updatePlotAxis(plot);
-        });
+        if (isPrior) {
+            p.updateLegendItems("maxpostLine",
+                    "paramUncertaintyBand",
+                    "stageBand");
+        } else {
 
-        plotContainer.setPlot(plot);
-    }
-
-    private static void addPlotItemToPlot(Plot plot, PlotItem item, String legendKey) {
-        plot.addXYItem(item, legendKey != null);
-        if (legendKey != null) {
-            T.t(plot, () -> {
-                item.setLabel(T.text(legendKey));
-            });
+            p.updateLegendItems("gaugingsPoints",
+                    "maxpostLine",
+                    "paramUncertaintyBand",
+                    "totalUncertaintyBand",
+                    "stageBand");
         }
-    }
 
+        plotEditor.updateEditor();
+        plotEditor.saveAsDefault(false);
+    }
 }

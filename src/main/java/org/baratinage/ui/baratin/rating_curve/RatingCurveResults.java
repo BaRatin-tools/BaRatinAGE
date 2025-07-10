@@ -18,7 +18,7 @@ import org.baratinage.translation.T;
 
 public class RatingCurveResults extends TabContainer {
 
-    private final RatingCurvePlot ratingCurvePlot;
+    public final RatingCurvePlot ratingCurvePlot;
     private final DensityPlotGrid paramDensityPlots;
 
     private final RatingCurveTable rcGridTable;

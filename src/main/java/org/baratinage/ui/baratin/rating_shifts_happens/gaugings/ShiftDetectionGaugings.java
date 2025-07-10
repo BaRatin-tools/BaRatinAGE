@@ -126,7 +126,7 @@ public class ShiftDetectionGaugings extends SimpleFlowPanel {
 
   private static Gaugings addGaugingBamItemFromPeriod(ResultPeriod period) {
     Gaugings item = (Gaugings) AppSetup.MAIN_FRAME.currentProject.addBamItem(BamItemType.GAUGINGS);
-    item.setGaugingDataset(period.dataset());
+    item.setGaugingDataset(period.dataset(), T.text(BamItemType.RATING_SHIFT_HAPPENS.id));
     item.bamItemNameField.setText(period.name());
     return item;
   }

@@ -14,7 +14,6 @@ import org.baratinage.ui.bam.BamItemType;
 import org.baratinage.ui.bam.IPlotDataProvider;
 import org.baratinage.ui.baratin.rating_curve.RatingCurvePlotData;
 import org.baratinage.ui.baratin.rating_curve.RatingCurvePlotToolsPanel;
-import org.baratinage.ui.component.SimpleCheckbox;
 import org.baratinage.ui.component.SimpleList;
 import org.baratinage.ui.component.SimpleSep;
 import org.baratinage.ui.component.SimpleTextField;
@@ -252,40 +251,9 @@ public class RatingCurveCompare extends BamItem {
 
             List<EditablePlotItem> ePltItemList = getEditablePlotItems(epis);
 
-            // EditablePlotItem e = plotItemsList.getSelectedObject();
-            SimpleCheckbox showPlotItem = new SimpleCheckbox();
-            showPlotItem.setText(T.text("display"));
-            SimpleCheckbox showPlotItemLegend = new SimpleCheckbox();
-            showPlotItemLegend.setText(T.text("include_legend"));
-
             if (ePltItemList.size() > 1) {
-                showPlotItem.addChangeListener(l2 -> {
-                    ePltItemList.stream().forEach(i -> i.visible = showPlotItem.isSelected());
-                    resetPlot();
-                });
-                showPlotItem.setSelected(ePltItemList.stream().allMatch(i -> i.visible));
-                showPlotItemLegend.addChangeListener(l2 -> {
-                    ePltItemList.stream().forEach(i -> i.showLegend = showPlotItemLegend.isSelected());
-                    resetPlot();
-                });
-                showPlotItemLegend.setSelected(ePltItemList.stream().allMatch(i -> i.showLegend));
-
-                plotItemEditionPanel.addChild(showPlotItem, false);
-                plotItemEditionPanel.addChild(showPlotItemLegend, false);
 
             } else {
-                showPlotItem.addChangeListener(l2 -> {
-                    e.visible = showPlotItem.isSelected();
-                    resetPlot();
-                });
-                showPlotItem.setSelected(e.visible);
-                showPlotItemLegend.addChangeListener(l2 -> {
-                    e.showLegend = showPlotItemLegend.isSelected();
-                    resetPlot();
-                });
-                showPlotItemLegend.setSelected(e.showLegend);
-                plotItemEditionPanel.addChild(showPlotItem, false);
-                plotItemEditionPanel.addChild(showPlotItemLegend, false);
                 SimpleFlowPanel ePanel = e.getEditionPanel();
                 ePanel.setGap(5);
                 ePanel.setPadding(5, 0, 5, 0);
