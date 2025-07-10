@@ -105,7 +105,9 @@ public class SimpleColorField extends SimpleFlowPanel {
         colorChooserPanel.addChild(colorChooser, true);
         colorChooserPanel.addChild(previewPanel, false);
 
-        SimpleDialog colorChooserDialog = SimpleDialog.buildOkCancelDialog(T.text("choose_a_color"), colorChooserPanel,
+        SimpleDialog colorChooserDialog = SimpleDialog.buildOkCancelDialog(
+                this,
+                T.text("choose_a_color"), colorChooserPanel,
                 (l) -> {
                     currentColor = colorChooser.getColor();
                     button.setIcon(buildColorIcon(currentColor, colorIconSize));
