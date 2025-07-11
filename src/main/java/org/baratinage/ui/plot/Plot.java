@@ -357,7 +357,10 @@ public class Plot implements LegendItemSource {
             plotCopy.addXYItem(item.getCopy());
         }
         plotCopy.chart.removeLegend();
-        plotCopy.chart.addLegend(chart.getLegend());
+        LegendTitle legend = chart.getLegend();
+        if (legend != null) {
+            plotCopy.chart.addLegend(legend);
+        }
         plotCopy.update();
         return plotCopy;
     }
