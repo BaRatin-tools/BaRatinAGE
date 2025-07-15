@@ -88,6 +88,12 @@ public class PlotEditor extends SimpleFlowPanel {
     defaultPlotConfig = saved;
   }
 
+  public void reset() {
+    editablePlotItems.clear();
+    editablePlots.clear();
+    itemExplorer.clearList();
+  }
+
   private void updateEditionPanel() {
     editionPanel.removeAll();
     String epiId = itemExplorer.getSelectedObject();
