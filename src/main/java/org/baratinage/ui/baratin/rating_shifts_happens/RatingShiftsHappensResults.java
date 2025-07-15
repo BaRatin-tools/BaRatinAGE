@@ -52,16 +52,11 @@ public class RatingShiftsHappensResults extends SimpleFlowPanel {
 
   public void setGaugingsBasedDetectionResults(ShiftDetectionOverall shiftDetectionOverall) {
     TabContainer tabContainer = new TabContainer();
-    tabContainer.addChangeListener(l -> {
-      updateResults();
-    });
-
     results = new ShiftDetectionResults(
         shiftDetectionOverall.getRootRatingShiftDetection(),
         false);
 
     // Q=f(t) or h=f(t) + shifts
-    // results.get
     TitledPanel mainResTab = new TitledPanel(results.mainPlot);
     mainResTab.setText(T.text("periods_and_shifts"));
     tabContainer.addTab(mainResTab);
