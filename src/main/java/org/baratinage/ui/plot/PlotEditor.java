@@ -218,7 +218,7 @@ public class PlotEditor extends SimpleFlowPanel {
 
       JButton openPlotEditorBtn = new JButton();
       String btnLbl = T.text("plot_axis_and_legend");
-      openPlotEditorBtn.setText(editablePlots.size() > 1 ? String.format("%s (%i)", btnLbl, k) : btnLbl);
+      openPlotEditorBtn.setText(editablePlots.size() > 1 ? String.format("%s (%d)", btnLbl, k) : btnLbl);
       openPlotEditorBtn.addActionListener(l -> {
         SimpleDialog d = SimpleDialog.buildInfoDialog(
             this,
