@@ -24,7 +24,7 @@ public class PlotBar extends PlotItem {
     private float alpha;
 
     protected XYDataset dataset;
-    protected XYItemRenderer renderer;
+    protected XYBarRenderer renderer;
 
     private double[] x;
     private double[] y;
@@ -45,6 +45,7 @@ public class PlotBar extends PlotItem {
 
         setLabel(label);
         this.fillPaint = fillPaint;
+        this.alpha = alpha;
 
         this.x = x;
         this.y = y;
@@ -74,9 +75,24 @@ public class PlotBar extends PlotItem {
 
     }
 
+    public Paint getPaint() {
+        return fillPaint;
+    }
+
     public void setPaint(Paint paint) {
         this.fillPaint = paint;
         renderer.setSeriesPaint(0, paint);
+    }
+
+    public float getAlpha() {
+        return alpha;
+    }
+
+    public void setAlpha(float alpha) {
+        this.alpha = alpha;
+        CustomBarPainter barPainter = new CustomBarPainter();
+        barPainter.alpha = alpha;
+        renderer.setBarPainter(barPainter);
     }
 
     @Override
