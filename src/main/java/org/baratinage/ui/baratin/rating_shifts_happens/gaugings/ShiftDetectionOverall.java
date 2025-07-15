@@ -94,6 +94,7 @@ public class ShiftDetectionOverall {
 
     int nMaxIterSafeguard = 100;
     int nMaxIter = estimateRemainingSteps(ratingShiftToDo, ratingShiftDone);
+
     int currentIter = 0;
 
     while (currentIter < nMaxIterSafeguard && ratingShiftToDo.size() > 0) {
@@ -277,38 +278,20 @@ public class ShiftDetectionOverall {
   }
 
   public static float computeProgress(int currentStep, int totalSteps, float stepProgress) {
-    float stepPart = 1f / totalSteps;
-    return stepPart * (currentStep - 1) + stepPart * stepProgress;
-  }
-
-  public static int getMaxIterations(int nObs, int nObsMin, int nSegMax) {
-    if (nObs <= nObsMin)
-      return 0;
-    int maxSplits = 0;
-    for (int k = 2; k <= nSegMax; k++) {
-      if (nObs > k * nObsMin) {
-        int baseSize = nObs / k;
-        int extra = nObs % k;
-        int splits = 1;
-        for (int i = 0; i < k; i++) {
-          int groupSize = baseSize + (i < extra ? 1 : 0);
-          splits += getMaxIterations(groupSize, nObsMin, nSegMax);
-        }
-        maxSplits = Math.max(maxSplits, splits);
-      }
-    }
-
-    return maxSplits;
+    float stepPart = 1f / (float) totalSteps;
+    return stepPart * ((float) currentStep - 1f) + stepPart * stepProgress;
   }
 
   private static int estimateRemainingSteps(
       ArrayDeque<ShiftDetectionIteration> todo,
       List<ShiftDetectionIteration> done) {
-    int n = 0;
+    double s = 0;
     for (ShiftDetectionIteration rsd : todo) {
-      n += getMaxIterations(rsd.ratingCurveEstimation.time.length, rsd.nObsMin, rsd.nSegmentMax);
+      double x = (double) rsd.ratingCurveEstimation.time.length / (double) rsd.nSegmentMax;
+      s += x;
+      s -= 1;
     }
-    return n + done.size();
+    return ((int) Math.ceil(s)) + done.size();
   }
 
 }

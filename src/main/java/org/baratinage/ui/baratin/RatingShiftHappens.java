@@ -7,7 +7,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import javax.swing.JButton;
-import javax.swing.JLabel;
 import javax.swing.JProgressBar;
 
 import org.baratinage.AppSetup;
@@ -27,7 +26,6 @@ import org.baratinage.ui.baratin.rating_shifts_happens.RatingShiftsHappensResult
 import org.baratinage.ui.baratin.rating_shifts_happens.gaugings.ShiftDetectionOverall;
 import org.baratinage.ui.commons.MsgPanel;
 import org.baratinage.ui.baratin.rating_shifts_happens.gaugings.ShiftDetectionConfig;
-import org.baratinage.ui.component.CommonDialog;
 import org.baratinage.ui.component.SimpleDialog;
 import org.baratinage.ui.container.SimpleFlowPanel;
 
@@ -274,51 +272,69 @@ public class RatingShiftHappens extends BamItem {
 
     SimpleDialog dialog = new SimpleDialog(AppSetup.MAIN_FRAME, true);
     JProgressBar pbOverall = new JProgressBar();
+    pbOverall.setStringPainted(true);
     pbOverall.setMaximum(100);
-    pbOverall.setString("0%");
+    pbOverall.setString("0 %");
 
     JProgressBar pbStep = new JProgressBar();
+    pbStep.setStringPainted(true);
     pbStep.setMaximum(100);
-    pbStep.setString("0%");
+    pbStep.setString("0 %");
 
     Dimension dim = new Dimension(300, 20);
     pbOverall.setPreferredSize(dim);
     pbStep.setPreferredSize(dim);
 
     JButton cancelBtn = new JButton();
-    cancelBtn.setText("Cancel");
+    cancelBtn.setText(T.text("cancel"));
     cancelBtn.addActionListener(l -> {
       ratingShiftDetection.cancel();
     });
 
-    JLabel lbl = new JLabel("Starting...");
     SimpleFlowPanel pbPanel = new SimpleFlowPanel(true);
     pbPanel.setGap(5);
-    pbPanel.addChild(lbl, false);
     pbPanel.addChild(pbOverall, false);
     pbPanel.addChild(pbStep, false);
     pbPanel.addChild(cancelBtn, false);
     dialog.setContent(pbPanel);
+    dialog.setTitle(T.text("rating_shift_dectection_running"));
 
     ratingShiftDetection.runShiftDetection(
         o -> {
-          int pbOverallPercent = (int) (o.overallProgress() * 100);
+          float p = o.overallProgress() * 100;
+
+          // estimation that compromize between the maximum number of steps and what is
+          // currently planned.
+          float nStepsEstimate = ((float) o.plannedSteps() + (float) o.doneSteps() + (float) o.numberOfStepsEstimated())
+              / 2f;
+          float pSteps = (float) o.doneSteps() / nStepsEstimate * 100f;
+          p = pSteps;
+
+          int pbOverallPercent = (int) (p);
           pbOverall.setValue(pbOverallPercent);
           int pbPercent = (int) (o.stepProgress() * 100);
           pbStep.setValue(pbPercent);
-          lbl.setText(
-              String.format(
-                  "<html>Step done: <strong>%d</strong><br>Step planned: <strong>%d</strong><br>Maximum number of steps: <strong>%d</strong></html>",
-                  o.doneSteps(), o.plannedSteps(), o.numberOfStepsEstimated()));
+
+          String overallString = String.format("%.0f %% - %d / %d (%d)",
+              p,
+              o.doneSteps(),
+              o.numberOfStepsEstimated(),
+              o.plannedSteps() + o.doneSteps());
+
+          pbOverall.setString(overallString);
+          pbOverall.repaint();
+
+          String stepString = String.format("%.0f %%", o.stepProgress() * 100);
+          pbStep.setString(stepString);
+          pbStep.repaint();
+
           dialog.update();
         },
         () -> {
           updateResultsPanel();
-          CommonDialog.infoDialog("Done!");
           dialog.closeDialog();
         },
         () -> {
-          CommonDialog.infoDialog("Canceled!");
           dialog.closeDialog();
         }
 
