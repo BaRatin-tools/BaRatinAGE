@@ -41,6 +41,7 @@ public class PlotEditor extends SimpleFlowPanel {
     editablePlots = new HashMap<>();
 
     globalEditionPanel = new SimpleFlowPanel(true);
+    globalEditionPanel.setGap(5);
 
     editionPanel = new SimpleFlowPanel(true);
 
