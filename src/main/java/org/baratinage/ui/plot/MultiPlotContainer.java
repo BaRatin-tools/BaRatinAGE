@@ -77,7 +77,7 @@ public class MultiPlotContainer extends SimpleFlowPanel implements IExportablePl
     addComponentListener(new ComponentAdapter() {
       @Override
       public void componentResized(ComponentEvent e) {
-        TimedActions.throttle(id, 50, () -> {
+        TimedActions.throttle(id + "_resized", 50, () -> {
           updateMargins();
         });
       }
@@ -96,27 +96,43 @@ public class MultiPlotContainer extends SimpleFlowPanel implements IExportablePl
 
     plotPanel.addChild(chart, weight);
 
-    updateDomainRange(getMaxDomainRange());
+    updateDomainBounds(getMaxDomainBounds());
+
     plot.getChart().addChangeListener((l) -> {
       if (listenersDisabled) {
         return;
       }
-      Range newDomainBounds = plot.plot.getDomainAxis().getRange();
-      updateDomainRange(newDomainBounds);
-
-      double legendWidth = 0;
-      for (PlotConfig p : plots) {
-        LegendTitle t = p.plot.getChart().getLegend();
-        if (t == null) {
-          continue;
-        }
-        double w = t.getBounds().getWidth();
-        if (w > legendWidth) {
-          legendWidth = w;
-        }
-      }
+      TimedActions.throttle(id + "_plot_changed", 50, () -> {
+        listenersDisabled = true;
+        updatePlotDomaineBounds(plot);
+        updateMargins();
+        listenersDisabled = false;
+      });
     });
+
     updateMargins();
+
+    TimedActions.throttle(id + "_fixing_misalignment", 1000, () -> {
+      updateMargins();
+    });
+
+  }
+
+  private void updatePlotDomaineBounds(Plot plot) {
+    Range newDomainBounds = plot.plot.getDomainAxis().getRange();
+    updateDomainBounds(newDomainBounds);
+
+    double legendWidth = 0;
+    for (PlotConfig p : plots) {
+      LegendTitle t = p.plot.getChart().getLegend();
+      if (t == null) {
+        continue;
+      }
+      double w = t.getBounds().getWidth();
+      if (w > legendWidth) {
+        legendWidth = w;
+      }
+    }
   }
 
   // ****************************************************************
@@ -179,10 +195,10 @@ public class MultiPlotContainer extends SimpleFlowPanel implements IExportablePl
   }
 
   public void setDomainRange(Range range) {
-    updateDomainRange(range);
+    updateDomainBounds(range);
   }
 
-  private Range getMaxDomainRange() {
+  private Range getMaxDomainBounds() {
     double min = Double.MAX_VALUE, max = -Double.MAX_VALUE;
     for (PlotConfig p : plots) {
       Range r = p.plot.plot.getDomainAxis().getRange();
@@ -196,8 +212,7 @@ public class MultiPlotContainer extends SimpleFlowPanel implements IExportablePl
     return new Range(min, max);
   }
 
-  private void updateDomainRange(Range targetRange) {
-    listenersDisabled = true;
+  private void updateDomainBounds(Range targetRange) {
     targetDomainBounds = targetRange;
     for (PlotConfig p : plots) {
       Range r = p.plot.plot.getDomainAxis().getRange();
@@ -206,7 +221,6 @@ public class MultiPlotContainer extends SimpleFlowPanel implements IExportablePl
       }
     }
     currentDomainBounds = targetRange;
-    listenersDisabled = false;
   }
 
   // ****************************************************************
