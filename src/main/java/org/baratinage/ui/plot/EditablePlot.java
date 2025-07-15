@@ -272,7 +272,6 @@ public class EditablePlot implements LegendItemSource {
     this.yAxisLabel = other.yAxisLabel;
     this.legendItemsOrder.clearList();
     for (String id : other.legendItemsOrder.getAllObjects()) {
-      System.out.println(id);
       JLabel lbl = other.legendItemsOrder.getLabel(id);
       this.legendItemsOrder.addItem(lbl.getText(), lbl.getIcon(), id);
     }
