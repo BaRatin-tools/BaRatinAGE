@@ -230,14 +230,6 @@ public abstract class PlotItem {
             Paint shapePaint) {
         boolean showLine = true;
         boolean showShape = true;
-        if (shapePaint == null) {
-            shapePaint = linePaint;
-            showShape = false;
-        }
-        if (shape == null) {
-            shape = buildEmptyShape();
-            showShape = false;
-        }
         if (linePaint == null) {
             linePaint = Color.BLACK;
             showLine = false;
@@ -245,6 +237,14 @@ public abstract class PlotItem {
         if (lineStroke == null) {
             lineStroke = new BasicStroke();
             showLine = false;
+        }
+        if (shapePaint == null) {
+            shapePaint = linePaint;
+            showShape = false;
+        }
+        if (shape == null) {
+            shape = buildEmptyShape();
+            showShape = false;
         }
         Shape lineShape = showLine ? buildLineShape(7) : buildEmptyShape();
         return new LegendItem(
