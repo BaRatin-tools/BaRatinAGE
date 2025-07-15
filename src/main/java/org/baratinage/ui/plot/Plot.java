@@ -324,7 +324,6 @@ public class Plot implements LegendItemSource {
     };
 
     public void update() {
-
         for (int k = 0; k < items.size(); k++) {
             PlotItem plotItem = items.get(k);
             plot.setDataset(k, plotItem.getDataset());
@@ -343,19 +342,32 @@ public class Plot implements LegendItemSource {
 
     public Plot getCopy() {
         Plot plotCopy = new Plot(includeLegend, timeseries);
+        // axis labels
         plotCopy.axisX.setLabel(axisX.getLabel());
         plotCopy.axisXlog.setLabel(axisXlog.getLabel());
         plotCopy.axisY.setLabel(axisY.getLabel());
         plotCopy.axisYlog.setLabel(axisYlog.getLabel());
-        if (plot.getDomainAxis() instanceof LogAxis) {
+        // x axis / domain axis: log and visibility
+        ValueAxis domaineAxis = plot.getDomainAxis();
+        if (domaineAxis instanceof LogAxis) {
             plotCopy.plot.setDomainAxis(plotCopy.axisXlog);
         }
-        if (plot.getRangeAxis() instanceof LogAxis) {
+        if (domaineAxis != null && plotCopy.plot.getDomainAxis() != null) {
+            plotCopy.plot.getDomainAxis().setVisible(domaineAxis.isVisible());
+        }
+        // y axis / range axis: log and visibility
+        ValueAxis rangeAxis = plot.getRangeAxis();
+        if (rangeAxis instanceof LogAxis) {
             plotCopy.plot.setRangeAxis(plotCopy.axisYlog);
         }
+        if (rangeAxis != null && plotCopy.plot.getRangeAxis() != null) {
+            plotCopy.plot.getRangeAxis().setVisible(rangeAxis.isVisible());
+        }
+        // plot items
         for (PlotItem item : items) {
             plotCopy.addXYItem(item.getCopy());
         }
+        // plot legend
         plotCopy.chart.removeLegend();
         LegendTitle legend = chart.getLegend();
         if (legend != null) {
