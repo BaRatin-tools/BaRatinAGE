@@ -89,8 +89,8 @@ public class EditablePlotItem implements IPlotItemRendererSettings {
 
         Shape shape = renderer.getSeriesShape(0);
         shapeType = null;
-        shapeSize = (int) shape.getBounds().getWidth();
         if (shape != null) {
+            shapeSize = (int) shape.getBounds().getWidth();
             if (shape instanceof Ellipse2D.Double) {
                 shapeType = ShapeType.CIRCLE;
                 shapeSize = (int) ((Ellipse2D.Double) shape).getWidth();
@@ -105,6 +105,11 @@ public class EditablePlotItem implements IPlotItemRendererSettings {
         if (renderer instanceof CustomAreaRenderer) {
             CustomAreaRenderer r = (CustomAreaRenderer) renderer;
             fillAlpha = r.getFillAlpha();
+        }
+        if (plotItem instanceof PlotBar) {
+            PlotBar i = (PlotBar) plotItem;
+            fillAlpha = i.getAlpha();
+            fillColor = paintToColor(i.getPaint());
         }
 
     }
