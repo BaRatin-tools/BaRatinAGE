@@ -4,7 +4,9 @@ import java.awt.Color;
 import java.util.List;
 
 import javax.swing.JRadioButton;
+import javax.swing.JToggleButton;
 
+import org.baratinage.AppSetup;
 import org.baratinage.translation.T;
 import org.baratinage.ui.baratin.rating_curve.RatingCurvePlotToolsPanel;
 import org.baratinage.ui.baratin.rating_shifts_happens.gaugings.ShiftDetectionResults.ResultPeriod;
@@ -12,9 +14,11 @@ import org.baratinage.ui.baratin.rating_shifts_happens.gaugings.ShiftDetectionRe
 import org.baratinage.ui.component.SimpleRadioButtons;
 import org.baratinage.ui.container.SimpleFlowPanel;
 import org.baratinage.ui.plot.ColorPalette;
+import org.baratinage.ui.plot.EditablePlotItem;
 import org.baratinage.ui.plot.MultiPlotContainer;
 import org.baratinage.ui.plot.Plot;
 import org.baratinage.ui.plot.PlotBar;
+import org.baratinage.ui.plot.PlotEditor;
 import org.baratinage.ui.plot.PlotInfiniteLine;
 import org.baratinage.ui.plot.PlotPoints;
 import org.jfree.data.Range;
@@ -25,21 +29,37 @@ public class ShiftDetectionMainPlot extends SimpleFlowPanel {
   private final List<ResultPeriod> periods;
 
   private ColorPalette palette;
+  private final SimpleFlowPanel plotArea;
   private final SimpleFlowPanel plotPanel;
   private final RatingCurvePlotToolsPanel toolsPanel;
   private final SimpleRadioButtons<String> radioDischargeOrStage;
 
-  private MultiPlotContainer mainStagePlot;
-  private MultiPlotContainer mainDischargePlot;
+  public final PlotEditor plotEditor;
+  private final JToggleButton plotEditorToggleBtn;
+
+  private MultiPlotContainer mainPlot;
 
   public ShiftDetectionMainPlot(
       List<ResultShift> shifts,
       List<ResultPeriod> periods) {
-    super(true);
+    super(false);
 
     this.palette = ColorPalette.VIRIDIS;
     this.shifts = shifts;
     this.periods = periods;
+
+    plotArea = new SimpleFlowPanel(true);
+
+    plotEditor = new PlotEditor();
+    plotEditorToggleBtn = new JToggleButton();
+    plotEditorToggleBtn.setIcon(AppSetup.ICONS.EDIT);
+    plotEditorToggleBtn.addActionListener(l -> {
+      removeAll();
+      if (plotEditorToggleBtn.isSelected()) {
+        addChild(plotEditor, false);
+      }
+      addChild(plotArea, true);
+    });
 
     plotPanel = new SimpleFlowPanel();
 
@@ -66,8 +86,9 @@ public class ShiftDetectionMainPlot extends SimpleFlowPanel {
     radioDischargeOrStage.setSelected("h");
     toolsPanel.logScaleDischargeAxis.setEnabled(false);
 
-    addChild(plotPanel, true);
-    addChild(toolsPanel, false);
+    plotArea.addChild(plotPanel, true);
+    plotArea.addChild(toolsPanel, false);
+    addChild(plotArea, true);
 
     stageBtn.setText(T.text("stage"));
     dischargeBtn.setText(T.text("discharge"));
@@ -77,6 +98,9 @@ public class ShiftDetectionMainPlot extends SimpleFlowPanel {
 
   public void setPalette(ColorPalette palette) {
     this.palette = palette;
+    plotEditor.reset();
+    updatePlot();
+    plotEditor.saveAsDefault(true);
   }
 
   public void updatePlot() {
@@ -111,42 +135,52 @@ public class ShiftDetectionMainPlot extends SimpleFlowPanel {
     dischargePlot.addXYItems(shiftLines);
 
     Range range = null;
-    if (mainStagePlot != null) {
-      range = mainDischargePlot.getCurrentDomainRange();
+    if (mainPlot != null) {
+      range = mainPlot.getCurrentDomainRange();
     }
 
-    mainStagePlot = new MultiPlotContainer();
-    mainStagePlot.addPlot(stagePlot, 3);
-    if (shiftBars.size() > 0) {
-      mainStagePlot.addPlot(shiftsPlot, 1);
-    }
-
-    mainDischargePlot = new MultiPlotContainer();
-    mainDischargePlot.addPlot(dischargePlot, 3);
-    if (shiftBars.size() > 0) {
-      mainDischargePlot.addPlot(shiftsPlot, 1);
-    }
+    mainPlot = new MultiPlotContainer();
 
     if (range != null) {
-      mainStagePlot.setDomainRange(range);
-      mainDischargePlot.setDomainRange(range);
+      mainPlot.setDomainRange(range);
     }
 
     plotPanel.removeAll();
     boolean isDischargePlot = radioDischargeOrStage.getSelectedId().equals("q");
 
-    // String id = radioDischargeOrStage.getSelectedId();
     if (!isDischargePlot) {
-      plotPanel.addChild(mainStagePlot, true);
-      mainStagePlot.setDomainRange(mainDischargePlot.getCurrentDomainRange());
+      mainPlot.addPlot(stagePlot, 3);
     } else {
-      plotPanel.addChild(mainDischargePlot, true);
-      mainDischargePlot.setDomainRange(mainStagePlot.getCurrentDomainRange());
+      mainPlot.addPlot(dischargePlot, 3);
     }
 
-    stagePlot.setYAxisLabel(String.format("%s [m]", T.text("stage")));
-    dischargePlot.setYAxisLabel(String.format("%s [m3/s]", T.text("discharge")));
+    mainPlot.addPlot(shiftsPlot, 1);
+    mainPlot.topLeftPanel.addChild(plotEditorToggleBtn, false);
+    mainPlot.setDomainRange(mainPlot.getCurrentDomainRange());
+
+    plotPanel.addChild(mainPlot, true);
 
     toolsPanel.updatePlotAxis(dischargePlot);
+
+    plotEditor.addPlot("mainPlot", isDischargePlot ? dischargePlot : stagePlot);
+    plotEditor.addPlot("shiftPlot", shiftsPlot);
+
+    plotEditor.getEditablePlot("mainPlot").setYAxisLabel(
+        isDischargePlot ? String.format("%s [m3/s]", T.text("discharge")) : String.format("%s [m]", T.text("stage")));
+
+    for (int k = 0; k < shiftBars.size(); k++) {
+      plotEditor.addEditablePlotItem("shift_bar_" + k, shiftBars.get(k).getLabel(),
+          shiftBars.get(k));
+    }
+    for (int k = 0; k < shiftLines.size(); k++) {
+      plotEditor.addEditablePlotItem("shift_line_" + k, shiftLines.get(k).getLabel(), shiftLines.get(k));
+    }
+    for (int k = 0; k < ht.size(); k++) {
+      EditablePlotItem gaugingsEpi = new EditablePlotItem(ht.get(k));
+      gaugingsEpi.addSibling(Qt.get(k));
+      plotEditor.addEditablePlotItem("gaugings" + k, ht.get(k).getLabel(), gaugingsEpi);
+    }
+    plotEditor.updateEditor();
+
   }
 }
