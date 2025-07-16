@@ -10,6 +10,7 @@ import java.io.PrintWriter;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 import org.baratinage.jbam.utils.BamFilesHelpers;
@@ -284,8 +285,10 @@ public class BaM {
             throw new BamRunException(String.join("\n", errMsg));
         }
 
-        if (bamExecutionProcess.exitValue() != 0) {
-            throw new BamRunException("BaM encountered an uncaugth Fatal Error!");
+        if (bamExecutionProcess.waitFor(2, TimeUnit.SECONDS)) {
+            if (bamExecutionProcess.exitValue() != 0) {
+                throw new BamRunException("BaM encountered an uncaugth Fatal Error!");
+            }
         }
 
         bamExecutionProcess = null;
