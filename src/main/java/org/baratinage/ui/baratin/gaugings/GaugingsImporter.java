@@ -15,6 +15,7 @@ import org.baratinage.utils.ConsoleLogger;
 import org.baratinage.utils.Misc;
 import org.baratinage.utils.fs.ReadFile;
 import org.baratinage.utils.perf.TimedActions;
+import org.json.JSONObject;
 import org.baratinage.ui.commons.MsgPanel;
 import org.baratinage.ui.component.CommonDialog;
 import org.baratinage.ui.component.DataFileReader;
@@ -37,6 +38,8 @@ public class GaugingsImporter extends DataImporter {
     private final BooleanColumnMapper validityColMapper;
     private final DateTimeColumnMapper dateTimeColMapper;
     private final DoubleColumnMapper stageUColMapper;
+
+    private static JSONObject lastGlobalImporterConfig = null;
 
     public GaugingsImporter() {
         super();
@@ -141,7 +144,27 @@ public class GaugingsImporter extends DataImporter {
         dateTimeColMapper.addChangeListener(cbChangeListener);
         stageUColMapper.combobox.addChangeListener(cbChangeListener);
 
+        if (lastGlobalImporterConfig != null) {
+            fromJSON(lastGlobalImporterConfig);
+        }
+
         updateValidityStatus();
+
+    }
+
+    private JSONObject toJSON() {
+        JSONObject json = new JSONObject();
+        json.put("dataFileReader", dataFileReader.toJSON());
+        json.put("validityCode", validityColMapper.trueStringField.getText());
+        json.put("dateTime", dateTimeColMapper.toJSON());
+        return json;
+    }
+
+    private void fromJSON(JSONObject json) {
+        dataFileReader.fromJSON(json.getJSONObject("dataFileReader"));
+        validityColMapper.trueStringField.setText(json.getString("validityCode"));
+        validityColMapper.trueStringField.setText(json.getString("validityCode"));
+        dateTimeColMapper.fromJSON(json.getJSONObject("dateTime"));
     }
 
     private static boolean isBaremeBadFile(String fileName) {
@@ -156,6 +179,8 @@ public class GaugingsImporter extends DataImporter {
 
     private void updateValidityStatus() {
         errorPanel.removeAll();
+
+        lastGlobalImporterConfig = toJSON();
 
         if (dataFileReader.getFile() == null) {
             validateButton.setEnabled(false);
