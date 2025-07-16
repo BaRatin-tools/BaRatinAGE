@@ -46,7 +46,8 @@ public class BamRun extends BaM {
 
   public void executeSync(
       Consumer<BamRunProgress> onProgress,
-      Consumer<String> onConsoleLog) {
+      Consumer<String> onConsoleLog,
+      Consumer<Exception> onError) {
     isRunning = true;
     try {
       BamMonitoring monitoring = new BamMonitoring(this);
@@ -57,6 +58,7 @@ public class BamRun extends BaM {
       updateResults();
     } catch (Exception e) {
       ConsoleLogger.error(e);
+      onError.accept(e);
     }
     isRunning = false;
   }

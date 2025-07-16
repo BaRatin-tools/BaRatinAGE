@@ -25,9 +25,12 @@ import org.baratinage.jbam.PredictionState;
 import org.baratinage.jbam.StructuralErrorModel;
 import org.baratinage.jbam.UncertainData;
 import org.baratinage.jbam.utils.BamFilesHelpers;
+import org.baratinage.translation.T;
 import org.baratinage.ui.bam.PredExp;
 import org.baratinage.ui.bam.PredExpSet;
 import org.baratinage.ui.bam.run.BamRun;
+import org.baratinage.ui.bam.run.BamRunException;
+import org.baratinage.ui.component.CommonDialog;
 
 public class BamRatingCurveRun {
 
@@ -162,6 +165,16 @@ public class BamRatingCurveRun {
         },
         p -> {
           System.out.println("baratin: " + p);
+        },
+        e -> {
+          if (e instanceof BamRunException) {
+            BamRunException bre = (BamRunException) e;
+            bre.errorMessageDialog();
+          } else {
+            CommonDialog.errorDialog(
+                T.text("bam_run_error_unknown_error"),
+                T.text("bam_run_error_unknown_error"));
+          }
         });
 
   }

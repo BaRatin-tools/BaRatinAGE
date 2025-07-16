@@ -25,7 +25,10 @@ import org.baratinage.jbam.StructuralErrorModel;
 import org.baratinage.jbam.UncertainData;
 import org.baratinage.jbam.utils.BamFilesHelpers;
 import org.baratinage.jbam.utils.ConfigFile;
+import org.baratinage.translation.T;
 import org.baratinage.ui.bam.run.BamRun;
+import org.baratinage.ui.bam.run.BamRunException;
+import org.baratinage.ui.component.CommonDialog;
 import org.baratinage.utils.Calc;
 
 public class BamSegmentation {
@@ -199,6 +202,16 @@ public class BamSegmentation {
         },
         p -> {
           System.out.println("segmentation: " + p);
+        },
+        e -> {
+          if (e instanceof BamRunException) {
+            BamRunException bre = (BamRunException) e;
+            bre.errorMessageDialog();
+          } else {
+            CommonDialog.errorDialog(
+                T.text("bam_run_error_unknown_error"),
+                T.text("bam_run_error_unknown_error"));
+          }
         });
   }
 
