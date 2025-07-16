@@ -21,7 +21,7 @@ public class BooleanColumnMapper extends BorderedSimpleFlowPanel implements IDat
   // private final JLabel columnMapperLabel = new JLabel();
   private final StringColumnMapper columnMapper = new StringColumnMapper();
   private final JLabel trueStringFieldLabel = new JLabel();
-  private final SimpleTextField trueStringField = new SimpleTextField();
+  public final SimpleTextField trueStringField = new SimpleTextField();
 
   private String id = Misc.getTimeStampedId();
 
