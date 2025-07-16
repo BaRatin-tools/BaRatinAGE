@@ -23,6 +23,7 @@ import org.baratinage.ui.container.GridPanel;
 import org.baratinage.ui.container.SimpleFlowPanel;
 import org.baratinage.utils.Misc;
 import org.baratinage.utils.perf.TimedActions;
+import org.json.JSONObject;
 
 public class DateTimeColumnMapper extends BorderedSimpleFlowPanel implements IDataTableColumn {
 
@@ -229,6 +230,32 @@ public class DateTimeColumnMapper extends BorderedSimpleFlowPanel implements IDa
     });
 
     modeCombobox.setSelectedItem(0);
+  }
+
+  public JSONObject toJSON() {
+    JSONObject json = new JSONObject();
+
+    json.put("mode", modeCombobox.getSelectedIndex());
+    json.put("datetimeIndex", dateTimeFormat.getSelectedIndex());
+    json.put("datetimeString", dateTimeFormat.getCurrentText());
+
+    json.put("dateIndex", dateFormat.getSelectedIndex());
+    json.put("dateString", dateFormat.getCurrentText());
+    json.put("timeIndex", timeFormat.getSelectedIndex());
+    json.put("timeString", timeFormat.getCurrentText());
+
+    return json;
+  }
+
+  public void fromJSON(JSONObject json) {
+    modeCombobox.setSelectedItem(json.getInt("mode"));
+    dateTimeFormat.setSelectedItem(json.getInt("datetimeIndex"));
+    dateTimeFormat.setCurrentText(json.getString("datetimeString"));
+
+    dateFormat.setSelectedItem(json.getInt("dateIndex"));
+    dateFormat.setCurrentText(json.getString("dateString"));
+    timeFormat.setSelectedItem(json.getInt("timeIndex"));
+    timeFormat.setCurrentText(json.getString("timeString"));
   }
 
   private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
