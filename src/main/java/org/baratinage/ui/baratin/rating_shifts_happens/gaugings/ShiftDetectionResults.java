@@ -99,7 +99,7 @@ public class ShiftDetectionResults {
       endShift = shifts.get(k);
       GaugingsDataset dataset = buildGaugingDataset(
           time, stage, discharge, dischargeStd,
-          startShift == null ? - Double.MAX_VALUE : startShift.parameter().getMaxpost(),
+          startShift == null ? -Double.MAX_VALUE : startShift.parameter().getMaxpost(),
           endShift.parameter().getMaxpost());
       Color color = palette[k];
       periods.add(buildResultPeriod(dataset, startShift, endShift, color));
@@ -107,7 +107,7 @@ public class ShiftDetectionResults {
     }
     GaugingsDataset dataset = buildGaugingDataset(
         time, stage, discharge, dischargeStd,
-        startShift == null ?  - Double.MAX_VALUE : startShift.parameter().getMaxpost(),
+        startShift == null ? -Double.MAX_VALUE : startShift.parameter().getMaxpost(),
         Double.MAX_VALUE);
     Color color = palette[shifts.size()];
     periods.add(buildResultPeriod(dataset, startShift, null, color));
@@ -208,12 +208,13 @@ public class ShiftDetectionResults {
     String endTimeString = endTime == Double.MAX_VALUE
         ? dateFormatter.format(DateTime.doubleToDateTime(time[time.length - 1]))
         : dateFormatter.format(DateTime.doubleToDateTime(endTime));
-    String startTimeString = startTime == - Double.MAX_VALUE
+    String startTimeString = startTime == -Double.MAX_VALUE
         ? dateFormatter.format(DateTime.doubleToDateTime(time[0]))
         : dateFormatter.format(DateTime.doubleToDateTime(startTime));
-    if ((startTime == - Double.MAX_VALUE && endTime == Double.MAX_VALUE) || (startTime !=  - Double.MAX_VALUE  && endTime != Double.MAX_VALUE)) {
+    if ((startTime == -Double.MAX_VALUE && endTime == Double.MAX_VALUE)
+        || (startTime != -Double.MAX_VALUE && endTime != Double.MAX_VALUE)) {
       name = String.format("%s - %s", startTimeString, endTimeString);
-    } else if (startTime == - Double.MAX_VALUE) {
+    } else if (startTime == -Double.MAX_VALUE) {
       name = String.format("< %s", dateFormatter.format(DateTime.doubleToDateTime(endTime)));
     } else if (endTime == Double.MAX_VALUE) {
       name = String.format("> %s", dateFormatter.format(DateTime.doubleToDateTime(startTime)));
