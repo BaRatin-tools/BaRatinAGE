@@ -15,9 +15,9 @@ import javax.swing.SwingWorker;
 
 import org.baratinage.AppSetup;
 import org.baratinage.jbam.BaM;
-import org.baratinage.jbam.BaM.BamRunException;
 import org.baratinage.jbam.utils.Monitoring;
 import org.baratinage.translation.T;
+import org.baratinage.ui.bam.run.BamRunException;
 import org.baratinage.ui.component.ProgressBar;
 import org.baratinage.ui.component.SimpleLogger;
 import org.baratinage.ui.container.SimpleFlowPanel;
@@ -192,7 +192,7 @@ public class RunDialog extends JDialog {
                     setTitle(T.text("bam_error"));
                     progressBar.setString(T.text("bam_error"));
                     if (exception != null) {
-                        BamRunError bre = new BamRunError(exception);
+                        BamRunException bre = new BamRunException(exception);
                         bre.errorMessageDialog();
                     }
                 } else {

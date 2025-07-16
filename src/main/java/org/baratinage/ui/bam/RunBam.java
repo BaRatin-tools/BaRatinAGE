@@ -13,7 +13,6 @@ import javax.swing.SwingWorker;
 
 import org.baratinage.AppSetup;
 import org.baratinage.jbam.BaM;
-import org.baratinage.jbam.BaM.BamRunException;
 import org.baratinage.jbam.CalDataResidualConfig;
 import org.baratinage.jbam.CalibrationConfig;
 import org.baratinage.jbam.CalibrationData;
@@ -30,6 +29,7 @@ import org.baratinage.jbam.UncertainData;
 import org.baratinage.jbam.utils.BamFilesHelpers;
 import org.baratinage.jbam.utils.Monitoring;
 import org.baratinage.translation.T;
+import org.baratinage.ui.bam.run.BamRunException;
 import org.baratinage.ui.commons.DefaultStructuralErrorModels;
 import org.baratinage.utils.ConsoleLogger;
 import org.baratinage.utils.Misc;

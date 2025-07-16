@@ -1,4 +1,4 @@
-package org.baratinage.ui.bam;
+package org.baratinage.ui.bam.run;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -7,7 +7,7 @@ import java.util.function.Predicate;
 import org.baratinage.translation.T;
 import org.baratinage.ui.component.CommonDialog;
 
-public class BamRunError {
+public class BamRunException extends Exception {
 
     private record KnownBamRunError(Predicate<String> isKnownError, String errorMsgKey) {
 
@@ -33,14 +33,22 @@ public class BamRunError {
 
     }
 
+    public final Exception originalException;
     public final String originalErrorMessage;
+
     private KnownBamRunError knownBamRunError;
 
-    public BamRunError(Exception exception) {
+    public BamRunException(Exception exception) {
+        originalException = exception;
         originalErrorMessage = exception.getMessage();
+    }
+
+    public BamRunException(String consoleMessage) {
+        originalException = this;
+        originalErrorMessage = consoleMessage;
         knownBamRunError = null;
         for (KnownBamRunError kbre : knownBamRunErrors) {
-            if (kbre.isKnownError.test(exception.getMessage())) {
+            if (kbre.isKnownError.test(consoleMessage)) {
                 knownBamRunError = kbre;
                 break;
             }

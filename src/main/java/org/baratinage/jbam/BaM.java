@@ -14,6 +14,7 @@ import java.util.function.Consumer;
 
 import org.baratinage.jbam.utils.BamFilesHelpers;
 import org.baratinage.jbam.utils.ConfigFile;
+import org.baratinage.ui.bam.run.BamRunException;
 import org.baratinage.utils.ConsoleLogger;
 
 public class BaM {
@@ -208,12 +209,6 @@ public class BaM {
 
     public Process getBaMexecutionProcess() {
         return this.bamExecutionProcess;
-    }
-
-    public static class BamRunException extends Exception {
-        public BamRunException(String errMessage) {
-            super(errMessage);
-        }
     }
 
     // FIXME: refactor to use ExeRun class?
