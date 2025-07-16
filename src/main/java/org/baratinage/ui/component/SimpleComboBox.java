@@ -207,6 +207,10 @@ public class SimpleComboBox extends SimpleFlowPanel {
         return lbl == null ? "" : lbl.getText();
     }
 
+    public void setCurrentText(String text) {
+        comboBox.getEditor().setItem(text);
+    }
+
     public int getItemCount() {
         return remEmptyLabelOffset(model.getSize());
     }
