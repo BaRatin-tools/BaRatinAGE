@@ -4,8 +4,8 @@ import java.awt.Font;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Set;
 
@@ -19,18 +19,20 @@ import org.baratinage.ui.container.SimpleFlowPanel;
 import org.baratinage.translation.T;
 import org.baratinage.utils.ConsoleLogger;
 import org.baratinage.utils.fs.ReadFile;
+import org.json.JSONObject;
 
 public class DataFileReader extends SimpleFlowPanel {
-    public File file = null;
-    public String filePath = null;
-    public String sep = ";";
-    public int nRowSkip = 0;
-    public String missingValueString = "";
-    public boolean hasHeaderRow = true;
+
+    private File file = null;
+
+    private final LinkedHashMap<String, String> colSepOptions = new LinkedHashMap<>();
+
+    private final SimpleComboBox colSepChooser;
+    private final JCheckBox hasHeaderCheckBox;
+    private final SimpleIntegerField nSkipRowField;
+    private final SimpleTextField missingValueCodeField;
 
     private CommonDialog.CustomFileFilter[] fileFilters = new CommonDialog.CustomFileFilter[0];
-
-    // public int nPreload = 15;
 
     private JLabel selectedFilePathLabel;
     private String[] fileLines;
@@ -79,49 +81,42 @@ public class DataFileReader extends SimpleFlowPanel {
 
         JLabel separatorLabel = new JLabel("column_separator");
 
-        SimpleComboBox colSepChooser = new SimpleComboBox();
-        colSepChooser.setEmptyItem(null);
-        HashMap<String, String> colSepOptions = new HashMap<>();
         colSepOptions.put("sep_tab", "\\t");
         colSepOptions.put("sep_semicolon", ";");
         colSepOptions.put("sep_comma", ",");
         colSepOptions.put("sep_space", " ");
-        String[] colSepOptionsKeys = new String[] {
-                "sep_tab",
-                "sep_semicolon",
-                "sep_comma",
-                "sep_space" };
 
-        colSepChooser.setItems(colSepOptionsKeys);
+        colSepChooser = new SimpleComboBox();
+        colSepChooser.setEmptyItem(null);
+
+        colSepChooser.setItems(colSepOptions
+                .keySet()
+                .stream()
+                .map(key -> T.text(key))
+                .toList()
+                .toArray(new String[] {}));
         colSepChooser.setSelectedItem(1);
         colSepChooser.addChangeListener(l -> {
-            int index = colSepChooser.getSelectedIndex();
-            if (index >= 0 && index < colSepOptionsKeys.length) {
-                sep = colSepOptions.get(colSepOptionsKeys[index]);
-                fireChangeListeners();
-            }
+            fireChangeListeners();
         });
 
-        JCheckBox hasHeaderCheckBox = new JCheckBox("has_header_row");
-        hasHeaderCheckBox.setSelected(hasHeaderRow);
+        hasHeaderCheckBox = new JCheckBox("has_header_row");
+        hasHeaderCheckBox.setSelected(true);
         hasHeaderCheckBox.addActionListener((e) -> {
-            hasHeaderRow = hasHeaderCheckBox.isSelected();
             fireChangeListeners();
         });
 
         JLabel nSkipRowLabel = new JLabel("n_rows_to_skip");
-        SimpleIntegerField nSkipRowField = new SimpleIntegerField(0, Integer.MAX_VALUE, 1);
+        nSkipRowField = new SimpleIntegerField(0, Integer.MAX_VALUE, 1);
         nSkipRowField.setValue(0);
         nSkipRowField.addChangeListener((e) -> {
-            nRowSkip = nSkipRowField.getIntValue();
             fireChangeListeners();
         });
 
         JLabel missingValueCodeLabel = new JLabel("missing_value_code");
-        SimpleTextField missingValueCodeField = new SimpleTextField();
-        missingValueCodeField.setText(missingValueString);
+        missingValueCodeField = new SimpleTextField();
+        missingValueCodeField.setText("");
         missingValueCodeField.addChangeListener((chEvt) -> {
-            missingValueString = missingValueCodeField.getText();
             fireChangeListeners();
         });
 
@@ -167,14 +162,16 @@ public class DataFileReader extends SimpleFlowPanel {
         addChild(new SimpleSep(), false);
         addChild(importSettingsPanel, true);
 
+        // FIXME: no need of dynamic i18n here
+
         T.t(this, explainLabel, false, "select_file_to_import");
         T.t(this, browseFileSystemButon, false, "browse");
         T.t(this, separatorLabel, false, "column_separator");
 
         T.t(this, () -> {
-            String[] colSepOptionsLabels = new String[colSepOptionsKeys.length];
-            for (int k = 0; k < colSepOptionsKeys.length; k++) {
-                colSepOptionsLabels[k] = T.text(colSepOptionsKeys[k]);
+            String[] colSepOptionsLabels = getColSepOptionKeys();
+            for (int k = 0; k < colSepOptions.size(); k++) {
+                colSepOptionsLabels[k] = T.text(colSepOptionsLabels[k]);
             }
             int index = colSepChooser.getSelectedIndex();
             colSepChooser.setItems(colSepOptionsLabels);
@@ -184,6 +181,24 @@ public class DataFileReader extends SimpleFlowPanel {
         T.t(this, nSkipRowLabel, false, "n_rows_to_skip");
         T.t(this, missingValueCodeLabel, false, "missing_value_code");
 
+    }
+
+    private String[] getColSepOptionKeys() {
+        return colSepOptions.keySet().stream().toList().toArray(new String[] {});
+    }
+
+    public String getSep() {
+
+        int index = colSepChooser.getSelectedIndex();
+        String[] colSepOptionsKeys = getColSepOptionKeys();
+        if (index >= 0 && index < colSepOptionsKeys.length) {
+            return colSepOptions.get(colSepOptionsKeys[index]);
+        }
+        return null;
+    }
+
+    public File getFile() {
+        return file;
     }
 
     private void readFilesLines(String filePath) {
@@ -197,7 +212,7 @@ public class DataFileReader extends SimpleFlowPanel {
             ConsoleLogger.error("Error while trying to read file!");
             return;
         }
-        this.filePath = filePath;
+        // this.filePath = filePath;
         String displayPath = filePath;
         try {
             displayPath = (new File(filePath)).getCanonicalPath();
@@ -227,7 +242,7 @@ public class DataFileReader extends SimpleFlowPanel {
     }
 
     public String getFilePath() {
-        return filePath;
+        return file == null ? null : file.getAbsolutePath();
     }
 
     public List<String[]> getData() {
@@ -239,7 +254,7 @@ public class DataFileReader extends SimpleFlowPanel {
     }
 
     private void updateParsedData() {
-        if (fileLines == null || fileLines.length <= nRowSkip) {
+        if (fileLines == null || fileLines.length <= nSkipRowField.getIntValue()) {
             // when there is no data to parse
             parsedHeaders = new String[0];
             List<String[]> dataString = new ArrayList<>();
@@ -250,16 +265,16 @@ public class DataFileReader extends SimpleFlowPanel {
         // headers
         List<String[]> headersDataString = ReadFile.linesToStringMatrix(
                 fileLines,
-                sep,
-                nRowSkip,
+                getSep(),
+                nSkipRowField.getIntValue(),
                 1,
                 true);
 
         // data
         List<String[]> dataString = ReadFile.linesToStringMatrix(
                 fileLines,
-                sep,
-                nRowSkip + (hasHeaderRow ? 1 : 0),
+                getSep(),
+                nSkipRowField.getIntValue() + (hasHeaderCheckBox.isSelected() ? 1 : 0),
                 Integer.MAX_VALUE,
                 true);
 
@@ -267,7 +282,7 @@ public class DataFileReader extends SimpleFlowPanel {
         if (headersDataString.size() != dataString.size()) {
             ConsoleLogger.error("Mismatch between header length and the number of column infered from first data row!");
             parsedData = new ArrayList<>();
-            int nRowStart = nRowSkip + (hasHeaderRow ? 1 : 0);
+            int nRowStart = nSkipRowField.getIntValue() + (hasHeaderCheckBox.isSelected() ? 1 : 0);
             int nRow = fileLines.length - nRowStart;
             String[] singleColumn = new String[nRow];
             for (int k = nRowStart; k < fileLines.length; k++) {
@@ -282,7 +297,7 @@ public class DataFileReader extends SimpleFlowPanel {
         // update parsed headers
         int nCol = headersDataString.size();
         String[] headers = new String[nCol];
-        if (hasHeaderRow) {
+        if (hasHeaderCheckBox.isSelected()) {
             headers = ReadFile.getStringRow(headersDataString, 0);
         } else {
             for (int k = 0; k < nCol; k++) {
@@ -304,7 +319,7 @@ public class DataFileReader extends SimpleFlowPanel {
     }
 
     public String getMissingValue() {
-        return missingValueString;
+        return missingValueCodeField.getText();
     }
 
     private final List<ChangeListener> changeListeners = new ArrayList<>();

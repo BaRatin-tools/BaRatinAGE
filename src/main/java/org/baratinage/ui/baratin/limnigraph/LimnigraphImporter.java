@@ -130,7 +130,7 @@ public class LimnigraphImporter extends DataImporter {
 
     errorPanel.removeAll();
 
-    if (dataFileReader.file == null) {
+    if (dataFileReader.getFile() == null) {
       return;
     }
 
@@ -222,7 +222,7 @@ public class LimnigraphImporter extends DataImporter {
   @Override
   protected void buildDataset() {
 
-    String fileName = dataFileReader.file.getName();
+    String fileName = dataFileReader.getFile().getName();
 
     LocalDateTime[] dateTime = dateTimeColMapper.getParsedColumn();
     double[] stage = stageColMapper.getParsedColumn();

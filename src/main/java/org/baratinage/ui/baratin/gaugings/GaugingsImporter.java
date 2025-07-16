@@ -157,7 +157,7 @@ public class GaugingsImporter extends DataImporter {
     private void updateValidityStatus() {
         errorPanel.removeAll();
 
-        if (dataFileReader.file == null) {
+        if (dataFileReader.getFile() == null) {
             validateButton.setEnabled(false);
             return;
         }
@@ -284,10 +284,10 @@ public class GaugingsImporter extends DataImporter {
     @Override
     protected void applyInputFileChange(List<String[]> data, String[] headers, String missingValue) {
 
-        String fileName = dataFileReader.file.getName();
+        String fileName = dataFileReader.getFile().getName();
 
         if (isBaremeBadFile(fileName)) {
-            GaugingsDataset gaugings = buildGaugingDatasetFromBaremeFile(fileName, dataFileReader.filePath);
+            GaugingsDataset gaugings = buildGaugingDatasetFromBaremeFile(fileName, dataFileReader.getFilePath());
             if (gaugings == null) {
                 CommonDialog.errorDialog(T.text("bareme_bad_import_error"));
                 return;
@@ -313,7 +313,7 @@ public class GaugingsImporter extends DataImporter {
     @Override
     protected void buildDataset() {
 
-        String fileName = dataFileReader.file.getName();
+        String fileName = dataFileReader.getFile().getName();
 
         double[] h = stageColMapper.getParsedColumn();
         double[] Q = dischargeColMapper.getParsedColumn();

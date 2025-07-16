@@ -65,7 +65,7 @@ public abstract class DataImporter extends SimpleFlowPanel {
     // when file selection changes
 
     dataFileReader.addChangeListener(l -> {
-      if (dataFileReader.file == null) {
+      if (dataFileReader.getFile() == null) {
         return;
       }
 
@@ -86,7 +86,7 @@ public abstract class DataImporter extends SimpleFlowPanel {
 
     validateButton.addActionListener(e -> {
       dialog.setVisible(false);
-      if (dataFileReader.file == null) {
+      if (dataFileReader.getFile() == null) {
         return;
       }
       buildDataset();
