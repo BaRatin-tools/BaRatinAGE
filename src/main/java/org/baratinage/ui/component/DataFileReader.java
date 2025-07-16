@@ -183,6 +183,30 @@ public class DataFileReader extends SimpleFlowPanel {
 
     }
 
+    public JSONObject toJSON() {
+        JSONObject json = new JSONObject();
+        json.put("sepIndex", colSepChooser.getSelectedIndex());
+        json.put("nSkip", nSkipRowField.getIntValue());
+        json.put("mvCode", missingValueCodeField.getText());
+        json.put("hasHeaderRow", hasHeaderCheckBox.isSelected());
+        return json;
+    }
+
+    public void fromJSON(JSONObject json) {
+        if (json.has("sepIndex")) {
+            colSepChooser.setSelectedItem(json.getInt("sepIndex"));
+        }
+        if (json.has("nSkip")) {
+            nSkipRowField.setValue(json.getInt("nSkip"));
+        }
+        if (json.has("mvCode")) {
+            missingValueCodeField.setText(json.getString("mvCode"));
+        }
+        if (json.has("hasHeaderRow")) {
+            hasHeaderCheckBox.setSelected(json.getBoolean("hasHeaderRow"));
+        }
+    }
+
     private String[] getColSepOptionKeys() {
         return colSepOptions.keySet().stream().toList().toArray(new String[] {});
     }
