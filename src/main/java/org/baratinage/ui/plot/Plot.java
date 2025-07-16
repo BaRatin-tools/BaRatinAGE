@@ -68,22 +68,17 @@ public class Plot implements LegendItemSource {
         axisX.setAutoRangeIncludesZero(false);
 
         axisXlog = new LogAxis();
-        axisXlog.setAutoRangeIncludesZero(false);
-        axisXlog.setAutoRange(true);
-        axisXlog.setAllowNegativesFlag(true);
 
         axisY = new NumberAxis();
         axisY.setAutoRangeIncludesZero(false);
 
         axisYlog = new LogAxis();
-        axisYlog.setAutoRangeIncludesZero(false);
-        axisYlog.setAutoRange(true);
-        axisYlog.setAllowNegativesFlag(true);
 
         axisXdate = new DateAxis();
         axisXdate.setDateFormatOverride(new SimpleDateFormat(dateTimeFormat));
 
         plot = new XYPlot() {
+
             @Override
             public XYDataset getDataset(int index) {
                 if (index < items.size()) {
@@ -94,6 +89,21 @@ public class Plot implements LegendItemSource {
                     return super.getDataset(index);
                 }
             }
+
+            @Override
+            public Range getDataRange(ValueAxis axis) {
+                Range r = super.getDataRange(axis);
+                if (r == null) {
+                    return null;
+                }
+                if (axis instanceof LogAxis) {
+                    if (r.getLowerBound() <= 0) {
+                        return new Range(1e-10, r.getUpperBound());
+                    }
+                }
+                return r;
+            }
+
         };
 
         plot.setDatasetRenderingOrder(DatasetRenderingOrder.FORWARD);
@@ -275,27 +285,75 @@ public class Plot implements LegendItemSource {
     }
 
     public Range getDomainBounds() {
+        boolean isLog = plot.getDomainAxis() instanceof LogAxis;
         Range range = null;
         for (int k = 0; k < items.size(); k++) {
-            PlotItem itemConfig = items.get(k);
-            Range r = itemConfig.getDomainBounds();
+            PlotItem pi = items.get(k);
+            Range r = pi.getDomainBounds();
             if (r != null) {
+                if (isLog) {
+                    r = findPositiveDomain(pi.getDataset());
+                }
                 range = range == null ? r : Range.combine(range, r);
             }
         }
-        return applyBufferToRange(range, bufferPercentageLeft, bufferPercentageRight);
+        return isLog ? range : applyBufferToRange(range, bufferPercentageLeft, bufferPercentageRight);
     }
 
     public Range getRangeBounds() {
+        boolean isLog = plot.getRangeAxis() instanceof LogAxis;
         Range range = null;
         for (int k = 0; k < items.size(); k++) {
             PlotItem pi = items.get(k);
             Range r = pi.getRangeBounds();
             if (r != null) {
+                if (isLog) {
+                    r = findPositiveRange(pi.getDataset());
+                }
                 range = range == null ? r : Range.combine(range, r);
             }
         }
-        return applyBufferToRange(range, bufferPercentageBottom, bufferPercentageTop);
+        return isLog ? range : applyBufferToRange(range, bufferPercentageBottom, bufferPercentageTop);
+    }
+
+    private static Range findPositiveRange(XYDataset dataset) {
+        double min = Double.POSITIVE_INFINITY;
+        double max = Double.NEGATIVE_INFINITY;
+
+        for (int series = 0; series < dataset.getSeriesCount(); series++) {
+            for (int item = 0; item < dataset.getItemCount(series); item++) {
+                Number y = dataset.getY(series, item);
+                if (y != null) {
+                    double yVal = y.doubleValue();
+                    if (yVal > 0) {
+                        min = Math.min(min, yVal);
+                        max = Math.max(max, yVal);
+                    }
+                }
+            }
+        }
+
+        return (min <= max) ? new Range(min, max) : null;
+    }
+
+    private static Range findPositiveDomain(XYDataset dataset) {
+        double min = Double.POSITIVE_INFINITY;
+        double max = Double.NEGATIVE_INFINITY;
+
+        for (int series = 0; series < dataset.getSeriesCount(); series++) {
+            for (int item = 0; item < dataset.getItemCount(series); item++) {
+                Number x = dataset.getX(series, item);
+                if (x != null) {
+                    double xVal = x.doubleValue();
+                    if (xVal > 0) {
+                        min = Math.min(min, xVal);
+                        max = Math.max(max, xVal);
+                    }
+                }
+            }
+        }
+
+        return (min <= max) ? new Range(min, max) : null;
     }
 
     public Range getDomainZoom() {

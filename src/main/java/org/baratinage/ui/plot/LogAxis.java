@@ -13,8 +13,24 @@ import org.jfree.data.Range;
 
 public class LogAxis extends LogarithmicAxis {
 
+    /**
+     * this class overrides switchedLog10 to remove negative values
+     * and refreshTicksVertical and refreshTicksHorizontal to get
+     * intermediate ticks when zoom is precise.
+     */
+
     public LogAxis() {
         super("-");
+    }
+
+    private final double minValue = 1e-20;
+
+    @Override
+    protected double switchedLog10(double value) {
+        if (value <= 0) {
+            value = minValue;
+        }
+        return super.switchedLog10(value);
     }
 
     @Override
@@ -23,6 +39,21 @@ public class LogAxis extends LogarithmicAxis {
 
         @SuppressWarnings("unchecked")
         List<NumberTick> rawTicks = super.refreshTicksVertical(g2, dataArea, edge);
+
+        return processTicks(rawTicks);
+    }
+
+    @Override
+    protected List<NumberTick> refreshTicksHorizontal(Graphics2D g2, Rectangle2D dataArea,
+            RectangleEdge edge) {
+
+        @SuppressWarnings("unchecked")
+        List<NumberTick> rawTicks = super.refreshTicksHorizontal(g2, dataArea, edge);
+
+        return processTicks(rawTicks);
+    }
+
+    private List<NumberTick> processTicks(List<NumberTick> rawTicks) {
 
         int nTicks = rawTicks.size();
 
@@ -67,7 +98,7 @@ public class LogAxis extends LogarithmicAxis {
                 addedLabelsTicks.add(new NumberTick(
                         t.getTickType(),
                         d,
-                        d.toString(),
+                        String.format("%f", d).replaceAll("([.]*0+)(?!.*\\d)", ""),
                         t.getTextAnchor(),
                         t.getRotationAnchor(),
                         t.getAngle()));
@@ -76,34 +107,6 @@ public class LogAxis extends LogarithmicAxis {
         }
 
         return rawTicks;
-
-        // Range range = getRange();
-        // int n = (int) Math.floor(Math.log10(range.getLength()));
-
-        // if (n <= 2) {
-        // double lowerBound = range.getLowerBound();
-        // double upperBound = range.getUpperBound();
-        // double boundRange = range.getLength();
-        // double val = boundRange;
-        // for (int offset = 0; offset < 2; offset++) {
-        // double step = Math.pow(10, Math.floor(Math.log10(val)) - offset);
-        // String template = "%." + (Math.max(0, (n - offset) * -1)) + "f";
-        // List<NumberTick> arr = new ArrayList<>();
-        // for (Double k = step; k < upperBound; k += step) {
-        // if (k >= lowerBound) {
-        // arr.add(new NumberTick(k, String.format(template, k),
-        // TextAnchor.CENTER_RIGHT,
-        // TextAnchor.CENTER_RIGHT,
-        // 0));
-        // }
-        // }
-        // if (arr.size() >= 3) {
-        // return arr;
-        // }
-        // }
-        // }
-
-        // return res;
     }
 
 }

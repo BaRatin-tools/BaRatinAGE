@@ -67,6 +67,8 @@ public class PlotContainer extends SimpleFlowPanel implements IExportablePlot {
 
         chartPanel.setPopupMenu(PlotExporter.buildExportPopupMenu(this));
 
+        chartPanel.restoreAutoBounds();
+
         chartPanelContainer.removeAll();
         chartPanelContainer.addChild(chartPanel, true);
 
