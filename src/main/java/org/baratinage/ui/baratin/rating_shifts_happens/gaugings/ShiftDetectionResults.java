@@ -193,13 +193,13 @@ public class ShiftDetectionResults {
     LocalDateTime[] t = new LocalDateTime[n];
     double[] h = new double[n];
     double[] q = new double[n];
-    double[] qstd = new double[n];
+    double[] qupercent = new double[n];
     boolean[] active = new boolean[n];
     for (int k = startIndex; k < endIndex; k++) {
       t[k - startIndex] = DateTime.doubleToDateTime(time[k]);
       h[k - startIndex] = stage[k];
       q[k - startIndex] = discharge[k];
-      qstd[k - startIndex] = dischargeStd[k];
+      qupercent[k - startIndex] = dischargeStd[k] / discharge[k] * 100 * 2;
       active[k - startIndex] = true;
     }
 
@@ -223,7 +223,7 @@ public class ShiftDetectionResults {
         name,
         h,
         q,
-        qstd,
+        qupercent,
         active,
         t,
         null);
