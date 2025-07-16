@@ -185,6 +185,19 @@ public class Plot implements LegendItemSource {
         axisXlog.setLabel(label);
     }
 
+    public void setXAxisLog(boolean log) {
+        if (timeseries) {
+            return;
+        }
+        plot.setDomainAxis(log ? axisXlog : axisX);
+        plot.setDomainPannable(!log);
+    }
+
+    public void setYAxisLog(boolean log) {
+        plot.setRangeAxis(log ? axisYlog : axisY);
+        plot.setRangePannable(!log);
+    }
+
     public void setYAxisLabel(String label) {
         axisY.setLabel(label);
         axisYlog.setLabel(label);
