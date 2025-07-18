@@ -58,7 +58,25 @@ public class Misc {
     }
 
     public static String formatNumber(double num, int nSignif) {
-        return String.format(String.format("%%.%dg", nSignif), num);
+        return formatNumber(num, nSignif, false);
+    }
+
+    public static String formatNumber(double num, int nSignif, boolean scientific) {
+        if (scientific) {
+            String format = "0." + "#".repeat(Math.max(0, nSignif - 1)) + "E" + "0";
+            return new DecimalFormat(format).format(num);
+        } else {
+            return String.format(String.format("%%.%dg", nSignif), num);
+        }
+    }
+
+    public static String formatNumber(double num, int nSignif, double sciLow, double sciHigh) {
+        double abs = Math.abs(num);
+        if (abs <= sciLow || abs >= sciHigh) {
+            return formatNumber(num, nSignif, true);
+        } else {
+            return formatNumber(num, nSignif);
+        }
     }
 
     public static String sanitizeName(String input) {
