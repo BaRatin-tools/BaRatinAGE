@@ -469,7 +469,7 @@ public class DataTable extends SimpleFlowPanel {
             } else if (value instanceof Double) {
                 Double d = (Double) value;
                 if (!d.isNaN()) {
-                    value = Misc.formatNumber(d, losslessDoubles);
+                    value = losslessDoubles ? Misc.formatNumber(d) : Misc.formatNumber(d, 4);
                 } else {
                     value = "";
                 }

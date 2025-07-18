@@ -35,7 +35,7 @@ public class SimpleNumberField extends SimpleTextField {
         if (value == null) {
             return "";
         } else {
-            return Misc.formatNumber(value, true);
+            return Misc.formatNumber(value);
         }
     }
 
