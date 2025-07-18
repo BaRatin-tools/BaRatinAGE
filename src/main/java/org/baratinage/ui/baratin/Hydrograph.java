@@ -325,7 +325,7 @@ public class Hydrograph extends BamItem implements IPredictionMaster {
         totalU = results.subList(3, 5);
 
         plotPanel.updatePlot(dateTimeVector, maxpost, limniU, paramU, totalU);
-        tablePanel.updateTable(dateTimeVector, maxpost, paramU, totalU);
+        tablePanel.updateTable(dateTimeVector, maxpost, limniU, paramU, totalU);
 
     }
 
