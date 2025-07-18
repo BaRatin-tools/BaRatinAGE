@@ -58,7 +58,11 @@ public class BamRunException extends Exception {
     public void errorMessageDialog() {
         String msg = "";
         if (knownBamRunError == null) {
-            msg = T.html("bam_run_error_unknown_error", originalErrorMessage.replace("\n", "<br>"));
+            if (originalErrorMessage == null) {
+                msg = T.html("bam_run_error_unknown_error", "-");
+            } else {
+                msg = T.html("bam_run_error_unknown_error", originalErrorMessage.replace("\n", "<br>"));
+            }
         } else {
             msg = T.html(knownBamRunError.errorMsgKey);
         }
