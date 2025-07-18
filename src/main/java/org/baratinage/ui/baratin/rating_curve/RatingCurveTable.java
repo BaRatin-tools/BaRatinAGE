@@ -18,16 +18,16 @@ public class RatingCurveTable extends DataTable {
             return String.format("%s (%s)", T.text("discharge"), T.text("maxpost_desc"));
         });
         colHeaderDescRCGridTable.addColumnDesc("Q_param_low [m3/s]", () -> {
-            return T.text("low_bound_uncertainty", T.text("parametric_uncertainty"));
+            return T.html("low_bound_uncertainty", T.text("parametric_uncertainty"));
         });
         colHeaderDescRCGridTable.addColumnDesc("Q_param_high [m3/s]", () -> {
-            return T.text("high_bound_uncertainty", T.text("parametric_uncertainty"));
+            return T.html("high_bound_uncertainty", T.text("parametric_uncertainty"));
         });
         colHeaderDescRCGridTable.addColumnDesc("Q_total_low [m3/s]", () -> {
-            return T.text("low_bound_uncertainty", T.text("parametric_structural_uncertainty"));
+            return T.html("low_bound_uncertainty", T.text("parametric_structural_uncertainty"));
         });
         colHeaderDescRCGridTable.addColumnDesc("Q_total_high [m3/s]", () -> {
-            return T.text("high_bound_uncertainty", T.text("parametric_structural_uncertainty"));
+            return T.html("high_bound_uncertainty", T.text("parametric_structural_uncertainty"));
         });
 
         JButton showHeaderDescription = new JButton();
