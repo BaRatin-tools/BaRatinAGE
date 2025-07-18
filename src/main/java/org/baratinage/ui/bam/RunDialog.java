@@ -218,6 +218,7 @@ public class RunDialog extends JDialog {
             @Override
             protected Void doInBackground() throws Exception {
                 Monitoring monitoring = new Monitoring(bam, workspacePath.toString());
+                monitoring.setBamWorker(runningWorker);
                 monitoring.addMonitoringConsumer((m) -> {
                     progressBar.update(m.id, m.progress, m.total, m.currenStep, m.totalSteps);
                 });
@@ -232,6 +233,7 @@ public class RunDialog extends JDialog {
         };
 
         runningWorker.execute();
+
         monitoringWorker.execute();
 
         pack();

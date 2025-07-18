@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
+import javax.swing.SwingWorker;
+
 import org.baratinage.jbam.BaM;
 import org.baratinage.jbam.PredictionConfig;
 
@@ -69,6 +71,12 @@ public class Monitoring {
         }
     }
 
+    private SwingWorker<Void, String> bamWorker = null;
+
+    public void setBamWorker(SwingWorker<Void, String> worker) {
+        bamWorker = worker;
+    }
+
     public void startMonitoring() throws InterruptedException {
 
         final int CHECK_INTERVAL = 50;
@@ -83,6 +91,12 @@ public class Monitoring {
             while (k < N_MAX) {
                 k++;
                 Thread.sleep(CHECK_INTERVAL);
+
+                if (bamWorker != null && bamWorker.isDone()) {
+                    System.out.println("Associated BaM process no longer running");
+                    break;
+                }
+
                 if (Files.exists(ms.monitorFilePath)) {
 
                     int[] res = getProgressFromFile(ms.monitorFilePath);
