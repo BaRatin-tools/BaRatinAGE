@@ -270,13 +270,19 @@ public class BaratinageV2Builders {
             // we assume only gaussian distribution
             // String distName = controlConfigStrings[k * 4 + offset + 2];
             String[] parStr = controlConfigStrings[k * 4 + offset + 3].split(",");
-            double[] pars = new double[parStr.length];
+            double[] pars = new double[parStr.length == 1 && parStr[0].equals("") ? 0 : parStr.length];
             for (int i = 0; i < pars.length; i++) {
                 pars[i] = Double.parseDouble(parStr[i]);
             }
+            if (pars.length == 0) {
+                parameters[k] = new Parameter(name, 0, new Distribution(DistributionType.FLAT));
+            } else {
+                parameters[k] = new Parameter(
+                        name,
+                        initialGuess,
+                        new Distribution(DistributionType.GAUSSIAN, pars));
+            }
 
-            parameters[k] = new Parameter(name, initialGuess,
-                    new Distribution(DistributionType.GAUSSIAN, pars));
         }
         return parameters;
     }
