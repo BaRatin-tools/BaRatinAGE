@@ -283,6 +283,11 @@ public class BaratinageV2Importer implements IProjectImporter {
 
         List<double[]> limnigraph = BaratinageV2Builders.readMatrixConfigFile(folder, "Limnigraph.txt");
 
+        if (limnigraph.size() == 0) {
+            // we assume that there's no limnigraph and build an empty item
+            onDone.run();
+            return;
+        }
         if (limnigraph.size() < 11) {
             ConsoleLogger.error(
                     "Limnigraph.txt file should contain at least 11 columns.");
