@@ -128,11 +128,29 @@ public class ConsoleLogger {
     }
 
     public static void error(Exception exception) {
-        String callerClassName = getCallerClassName();
-        String parsedMessage = parseMessage(callerClassName, "ERROR", "");
-        System.err.println(parsedMessage);
-        System.err.println(exception);
+        error(exception, false);
+    }
 
+    public static void error(Exception exception, boolean fullErrorStack) {
+        String traceMsg = exception.toString();
+
+        StackTraceElement[] trace = exception.getStackTrace();
+        boolean lastItem = false;
+        for (StackTraceElement e : trace) {
+            String msg = e.toString();
+            if (!msg.startsWith("org.baratinage") && !fullErrorStack) {
+                lastItem = true;
+            }
+            traceMsg += ("\n > " + msg);
+            if (lastItem) {
+                traceMsg += ("\n > ...");
+                break;
+            }
+        }
+
+        String callerClassName = getCallerClassName();
+        String parsedMessage = parseMessage(callerClassName, "ERROR", traceMsg);
+        System.err.println(parsedMessage);
         addLogToLogFile(parsedMessage + exception.toString());
     }
 
