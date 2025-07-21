@@ -455,6 +455,12 @@ public class BaratinageV2Importer implements IProjectImporter {
         // ***********************
         // gaugingDataset
 
+        if (gaugings.size() == 0) {
+            // we assume there's no gaugings imported, an empty gauging bamitem is build
+            onDone.run();
+            return;
+        }
+
         if (gaugings.size() < 10) {
             ConsoleLogger.error(
                     "Gaugings.txt file should contain at least 10 columns.");
