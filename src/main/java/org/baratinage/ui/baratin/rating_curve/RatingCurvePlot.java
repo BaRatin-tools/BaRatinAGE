@@ -36,7 +36,7 @@ public class RatingCurvePlot extends SimpleFlowPanel {
     private List<double[]> transitionStages;
     private List<double[]> gaugings;
 
-    private final RatingCurvePlotToolsPanel toolsPanel;
+    public final RatingCurvePlotToolsPanel toolsPanel;
 
     public final PlotEditor plotEditor;
     private final JToggleButton plotEditorToggleBtn;
@@ -87,7 +87,7 @@ public class RatingCurvePlot extends SimpleFlowPanel {
         this.transitionStages = ratingCurveData.stageTransitions;
         this.gaugings = null;
 
-        toolsPanel.configure(true, true, false);
+        toolsPanel.configure(true, true, false, false);
         updatePlot();
     }
 
@@ -101,7 +101,7 @@ public class RatingCurvePlot extends SimpleFlowPanel {
         this.transitionStages = ratingCurveData.stageTransitions;
         this.gaugings = ratingCurveData.gaugings;
 
-        toolsPanel.configure(true, true, true);
+        toolsPanel.configure(true, true, true, true);
         updatePlot();
     }
 

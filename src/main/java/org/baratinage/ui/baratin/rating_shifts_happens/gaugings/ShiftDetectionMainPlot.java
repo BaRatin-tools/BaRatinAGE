@@ -64,7 +64,7 @@ public class ShiftDetectionMainPlot extends SimpleFlowPanel {
     plotPanel = new SimpleFlowPanel();
 
     toolsPanel = new RatingCurvePlotToolsPanel();
-    toolsPanel.configure(true, false, false);
+    toolsPanel.configure(true, false, false, false);
 
     radioDischargeOrStage = new SimpleRadioButtons<>();
     JRadioButton stageBtn = radioDischargeOrStage.addOption("h", T.text("stage"), "h");

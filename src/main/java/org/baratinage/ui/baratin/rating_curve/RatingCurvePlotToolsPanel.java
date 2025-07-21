@@ -16,6 +16,7 @@ public class RatingCurvePlotToolsPanel extends SimpleFlowPanel {
     public final JCheckBox logScaleDischargeAxis;
     public final JCheckBox switchAxisCheckbox;
     public final JCheckBox smoothTotalEnvelopCheckbox;
+    public final JCheckBox cropTotalEnvelopCheckbox;
 
     public RatingCurvePlotToolsPanel() {
         super();
@@ -32,6 +33,10 @@ public class RatingCurvePlotToolsPanel extends SimpleFlowPanel {
         smoothTotalEnvelopCheckbox.setSelected(true);
         smoothTotalEnvelopCheckbox.setText("smooth_total_envelop");
 
+        cropTotalEnvelopCheckbox = new JCheckBox();
+        cropTotalEnvelopCheckbox.setSelected(false);
+        cropTotalEnvelopCheckbox.setText("crop_total_envelop_zero");
+
         logScaleDischargeAxis.addActionListener((e) -> {
             fireChangeListeners();
         });
@@ -43,18 +48,24 @@ public class RatingCurvePlotToolsPanel extends SimpleFlowPanel {
         smoothTotalEnvelopCheckbox.addActionListener((e) -> {
             fireChangeListeners();
         });
+        cropTotalEnvelopCheckbox.addActionListener((e) -> {
+            fireChangeListeners();
+        });
 
         setGap(5);
         addChild(logScaleDischargeAxis, false);
         addChild(switchAxisCheckbox, false);
         addChild(smoothTotalEnvelopCheckbox, false);
+        addChild(cropTotalEnvelopCheckbox, false);
 
         T.t(this, switchAxisCheckbox, false, "swap_xy_axis");
         T.t(this, logScaleDischargeAxis, false, "log_scale_discharge_axis");
         T.t(this, smoothTotalEnvelopCheckbox, false, "smooth_total_envelop");
+        T.t(this, cropTotalEnvelopCheckbox, false, "crop_total_envelop_zero");
     }
 
-    public void configure(boolean logDischargeAxis, boolean axisFlipped, boolean totalEnvSmoothed) {
+    public void configure(boolean logDischargeAxis, boolean axisFlipped, boolean totalEnvSmoothed,
+            boolean cropTotalEnv) {
         removeAll();
         if (logDischargeAxis) {
             addChild(logScaleDischargeAxis, false);
@@ -64,6 +75,9 @@ public class RatingCurvePlotToolsPanel extends SimpleFlowPanel {
         }
         if (totalEnvSmoothed) {
             addChild(smoothTotalEnvelopCheckbox, false);
+        }
+        if (cropTotalEnv) {
+            addChild(cropTotalEnvelopCheckbox, false);
         }
     }
 
@@ -102,6 +116,14 @@ public class RatingCurvePlotToolsPanel extends SimpleFlowPanel {
 
     public void setTotalEnvSmoothed(boolean value) {
         smoothTotalEnvelopCheckbox.setSelected(value);
+    }
+
+    public boolean cropTotalEnv() {
+        return cropTotalEnvelopCheckbox.isSelected();
+    }
+
+    public void setCropTotalEnv(boolean value) {
+        cropTotalEnvelopCheckbox.setSelected(value);
     }
 
     public boolean logDischargeAxis() {

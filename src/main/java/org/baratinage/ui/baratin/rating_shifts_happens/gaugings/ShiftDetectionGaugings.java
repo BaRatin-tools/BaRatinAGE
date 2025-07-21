@@ -32,7 +32,7 @@ public class ShiftDetectionGaugings extends SimpleFlowPanel {
     setGap(5);
 
     toolsPanel = new RatingCurvePlotToolsPanel();
-    toolsPanel.configure(true, true, false);
+    toolsPanel.configure(true, true, false, false);
 
     SimpleFlowPanel periodSelectionPanel = new SimpleFlowPanel(true);
     periodSelectionPanel.setPadding(5);

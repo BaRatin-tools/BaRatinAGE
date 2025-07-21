@@ -152,7 +152,7 @@ public class RatingCurveCompare extends BamItem {
         // main plot
         plotContainer = new PlotContainer(true);
         plotToolsPanel = new RatingCurvePlotToolsPanel();
-        plotToolsPanel.configure(true, true, true);
+        plotToolsPanel.configure(true, true, true, true);
 
         SimpleFlowPanel plotArea = new SimpleFlowPanel(true);
         plotArea.setGap(5);
