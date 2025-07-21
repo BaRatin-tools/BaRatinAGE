@@ -108,7 +108,7 @@ public class PlotContainer extends SimpleFlowPanel implements IExportablePlot {
         return PlotExporter.buildImgFromChart(
                 chart,
                 d.width,
-                d.width,
+                d.height,
                 scale,
                 scale);
     }
