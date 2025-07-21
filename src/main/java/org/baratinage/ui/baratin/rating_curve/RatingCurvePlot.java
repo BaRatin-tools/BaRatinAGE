@@ -138,7 +138,7 @@ public class RatingCurvePlot extends SimpleFlowPanel {
             stageTransitionLine.setShowLegend(false);
 
             for (int k = 1; k < n; k++) {
-                transitionStage = transitionStages.get(0);
+                transitionStage = transitionStages.get(k);
                 band = new PlotInfiniteBand("k_band", coeffDir, transitionStage[1], transitionStage[2]);
                 line = new PlotInfiniteLine("k_line", coeffDir, transitionStage[0]);
 
