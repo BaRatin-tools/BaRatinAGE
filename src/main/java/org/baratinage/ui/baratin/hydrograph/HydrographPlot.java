@@ -4,6 +4,8 @@ import java.awt.BasicStroke;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import javax.swing.JCheckBox;
+
 import org.baratinage.ui.container.SimpleFlowPanel;
 import org.baratinage.AppSetup;
 import org.baratinage.translation.T;
@@ -14,6 +16,15 @@ import org.baratinage.ui.plot.PlotLine;
 import org.baratinage.ui.plot.PlotBand;
 
 public class HydrographPlot extends SimpleFlowPanel {
+
+        public final JCheckBox cropNegativeValuesCB;
+
+        public HydrographPlot() {
+                super(true);
+                cropNegativeValuesCB = new JCheckBox();
+                T.t(this, cropNegativeValuesCB, false, "crop_total_envelop_zero");
+        }
+
         public void updatePlot(
                         LocalDateTime[] dateTime,
                         double[] dischargeMaxpost,
@@ -84,5 +95,6 @@ public class HydrographPlot extends SimpleFlowPanel {
 
                 removeAll();
                 addChild(plotContainer, true);
+                addChild(cropNegativeValuesCB, false, 5);
         }
 }

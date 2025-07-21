@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 
 import org.baratinage.translation.T;
 import org.baratinage.ui.commons.ColumnHeaderDescription;
@@ -13,7 +14,12 @@ public class HydrographTable extends DataTable {
 
     private boolean hasStageUncertainty = false;
 
+    public final JCheckBox cropNegativeValuesCB;
+
     public HydrographTable() {
+
+        cropNegativeValuesCB = new JCheckBox();
+        T.t(this, cropNegativeValuesCB, false, "crop_total_envelop_zero");
 
         JButton showHeaderDescription = new JButton();
         showHeaderDescription.addActionListener(l -> {
@@ -21,6 +27,7 @@ public class HydrographTable extends DataTable {
         });
         T.t(this, showHeaderDescription, false, "table_headers_desc");
         toolsPanel.addChild(showHeaderDescription, false);
+        toolsPanel.addChild(cropNegativeValuesCB, false);
 
     }
 

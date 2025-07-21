@@ -25,6 +25,7 @@ import org.baratinage.ui.baratin.hydrograph.HydrographTable;
 import org.baratinage.ui.bam.RunBam;
 import org.baratinage.ui.commons.ExtraDataset;
 import org.baratinage.ui.commons.MsgPanel;
+import org.baratinage.ui.commons.ReactiveValue;
 import org.baratinage.ui.component.SimpleSep;
 import org.baratinage.ui.container.SimpleFlowPanel;
 import org.baratinage.ui.container.TabContainer;
@@ -45,6 +46,8 @@ public class Hydrograph extends BamItem implements IPredictionMaster {
 
     private final BamItemParent ratingCurveParent;
     private final BamItemParent limnigraphParent;
+
+    private final ReactiveValue<Boolean> cropNegativeValues = new ReactiveValue<Boolean>(false);
 
     private Limnigraph currentLimnigraph;
     private RunConfigAndRes currentConfigAndRes;
@@ -81,7 +84,7 @@ public class Hydrograph extends BamItem implements IPredictionMaster {
                     currentLimnigraph.getDateTimeExtraData(),
                     currentLimnigraph.getMissingValuesExtraData());
             currentConfigAndRes = res;
-            buildPlot();
+            updateResults();
             ratingCurveParent.updateBackup();
             limnigraphParent.updateBackup();
             TimedActions.throttle(ID, AppSetup.CONFIG.THROTTLED_DELAY_MS, this::checkSync);
@@ -116,12 +119,25 @@ public class Hydrograph extends BamItem implements IPredictionMaster {
 
         T.updateHierarchy(this, runBam);
         T.updateHierarchy(this, plotPanel);
+        T.updateHierarchy(this, tablePanel);
         T.updateHierarchy(this, ratingCurveParent);
         T.updateHierarchy(this, limnigraphParent);
         T.t(runBam, runBam.runButton, false, "compute_qt");
         T.t(this, () -> {
             tabs.setTitleAt(0, T.text("chart"));
             tabs.setTitleAt(1, T.text("table"));
+        });
+
+        cropNegativeValues.addListener(newValue -> {
+            plotPanel.cropNegativeValuesCB.setSelected(newValue);
+            tablePanel.cropNegativeValuesCB.setSelected(newValue);
+            updateResults();
+        });
+        plotPanel.cropNegativeValuesCB.addChangeListener(l -> {
+            cropNegativeValues.set(plotPanel.cropNegativeValuesCB.isSelected());
+        });
+        tablePanel.cropNegativeValuesCB.addChangeListener(l -> {
+            cropNegativeValues.set(tablePanel.cropNegativeValuesCB.isSelected());
         });
 
         initializeBamItem();
@@ -219,7 +235,7 @@ public class Hydrograph extends BamItem implements IPredictionMaster {
             String bamRunId = json.getString("bamRunId");
             currentConfigAndRes = RunConfigAndRes.buildFromTempZipArchive(bamRunId);
             BamProjectLoader.addDelayedAction(() -> {
-                buildPlot();
+                updateResults();
             });
         } else {
             ConsoleLogger.log("missing 'bamRunId'");
@@ -282,7 +298,7 @@ public class Hydrograph extends BamItem implements IPredictionMaster {
         return new PredExpSet(experiments);
     }
 
-    public void buildPlot() {
+    private void updateResults() {
         if (currentConfigAndRes == null) {
             ConsoleLogger.error("No results to plot! Aborting.");
             return;
@@ -311,6 +327,18 @@ public class Hydrograph extends BamItem implements IPredictionMaster {
         List<double[]> paramU = predResults[index].outputResults.get(0).get95UncertaintyInterval();
         index++;
         List<double[]> totalU = predResults[index].outputResults.get(0).get95UncertaintyInterval();
+        if (cropNegativeValues.get()) {
+            double[] minValues = totalU.get(0).clone();
+            double[] maxValues = totalU.get(1).clone();
+            int n = minValues.length;
+            for (int k = 0; k < n; k++) {
+                minValues[k] = Math.max(0, minValues[k]);
+                maxValues[k] = Math.max(0, maxValues[k]);
+            }
+            totalU = new ArrayList<>();
+            totalU.add(minValues);
+            totalU.add(maxValues);
+        }
 
         results.add(maxpost);
         results.addAll(paramU);
