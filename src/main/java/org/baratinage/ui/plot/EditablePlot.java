@@ -1,5 +1,6 @@
 package org.baratinage.ui.plot;
 
+import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -21,6 +22,7 @@ import org.jfree.chart.LegendItem;
 import org.jfree.chart.LegendItemCollection;
 import org.jfree.chart.LegendItemSource;
 import org.jfree.chart.axis.ValueAxis;
+import org.jfree.chart.title.LegendTitle;
 import org.jfree.chart.ui.RectangleEdge;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -189,9 +191,11 @@ public class EditablePlot implements LegendItemSource {
     legendPlotBtn.addActionListener(l -> {
       LegendItemCollection legendItems = getLegendItems();
       Legend legend = new Legend(legendItems);
-      Plot plot = legend.getLegendPlot();
+      LegendTitle legendTitle = legend.getLegendTitle();
+      Dimension dim = Legend.getSize(legendTitle);
+      Plot plot = Legend.getLegendPlot(legendTitle);
       PlotContainer pc = new PlotContainer(plot, true);
-      SimpleFrame sf = new SimpleFrame(legendPlotBtn, 300, 300);
+      SimpleFrame sf = new SimpleFrame(legendPlotBtn, dim.width, dim.height + 150);
       sf.showContent(pc);
     });
 

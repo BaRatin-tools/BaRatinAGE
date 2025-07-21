@@ -1,6 +1,9 @@
 package org.baratinage.ui.plot;
 
+import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,12 +11,12 @@ import org.baratinage.AppSetup;
 import org.jfree.chart.LegendItem;
 import org.jfree.chart.LegendItemCollection;
 import org.jfree.chart.LegendItemSource;
-import org.jfree.chart.annotations.XYAnnotation;
 import org.jfree.chart.annotations.XYTitleAnnotation;
 import org.jfree.chart.block.FlowArrangement;
 import org.jfree.chart.title.LegendTitle;
 import org.jfree.chart.ui.RectangleAnchor;
 import org.jfree.chart.ui.RectangleEdge;
+import org.jfree.chart.ui.Size2D;
 
 public class Legend implements LegendItemSource {
 
@@ -82,21 +85,27 @@ public class Legend implements LegendItemSource {
         return legendTitle;
     }
 
-    public XYAnnotation getAnnotation(double x, double y, RectangleAnchor anchor) {
-
-        return new XYTitleAnnotation(x, y, getLegendTitle(), anchor);
-    }
-
     public Plot getLegendPlot() {
         if (plot != null) {
             return plot;
         }
-        plot = new Plot(false, false);
+        return getLegendPlot(getLegendTitle());
+    }
+
+    public static Plot getLegendPlot(LegendTitle legendTitle) {
+        Plot plot = new Plot(false, false);
         plot.axisX.setVisible(false);
         plot.axisY.setVisible(false);
         plot.plot.setOutlinePaint(null);
-        plot.plot.addAnnotation(getAnnotation(0.5, 0.5, RectangleAnchor.CENTER));
+        plot.plot.addAnnotation(new XYTitleAnnotation(0.5, 0.5, legendTitle, RectangleAnchor.CENTER));
         return plot;
+    }
+
+    public static Dimension getSize(LegendTitle legendTitle) {
+        BufferedImage img = new BufferedImage(1, 1, BufferedImage.TYPE_INT_RGB);
+        Graphics2D g2 = img.createGraphics();
+        Size2D size = legendTitle.arrange(g2);
+        return new Dimension((int) size.width + 50, (int) size.height + 50);
     }
 
 }
