@@ -92,7 +92,8 @@ public class BaratinageV2Importer implements IProjectImporter {
                             onDone.run();
                         } catch (Exception e) {
                             // FIXME: probably a useless try catch
-                            ConsoleLogger.error("Error import item '" + type + "' from '" + f + "'...\n" + e);
+                            ConsoleLogger.error("Error import item '" + type + "' from '" + f + "'...");
+                            ConsoleLogger.error(e);
                             CommonDialog.errorDialog(T.text("import_v2_project_error"));
                             mainProgressFrame.done();
                         }
