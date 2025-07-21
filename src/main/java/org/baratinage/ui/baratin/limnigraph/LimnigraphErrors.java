@@ -35,8 +35,6 @@ public class LimnigraphErrors extends SimpleFlowPanel {
         T.t(this, () -> {
             tableTabs.setTitleAt(0, T.text("stage_and_uncertainty"));
             tableTabs.setTitleAt(1, T.text("stage_samples_width_errors"));
-            errConfigTable.updateCellRenderer();
-            errMatrixTable.updateCellRenderer();
         });
 
         addChild(tableTabs, true);

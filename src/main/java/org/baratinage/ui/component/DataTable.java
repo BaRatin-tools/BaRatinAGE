@@ -112,6 +112,7 @@ public class DataTable extends SimpleFlowPanel {
         addChild(scrollpane, true);
         addChild(toolsPanel, false);
 
+        updateCellRenderer();
     }
 
     public int getColumnCount() {
@@ -129,7 +130,7 @@ public class DataTable extends SimpleFlowPanel {
         table.repaint();
     }
 
-    public void updateCellRenderer() {
+    private void updateCellRenderer() {
         cellRenderer = new CustomCellRenderer("yyyy-MM-dd HH:mm:ss");
         table.setDefaultRenderer(LocalDateTime.class, cellRenderer);
         table.setDefaultRenderer(Double.class, cellRenderer);
@@ -203,12 +204,10 @@ public class DataTable extends SimpleFlowPanel {
     }
 
     public void updateData() {
-        updateCellRenderer();
         model.fireTableStructureChanged();
     }
 
     public void updateHeader() {
-        updateCellRenderer();
         table.getTableHeader().updateUI();
     }
 
