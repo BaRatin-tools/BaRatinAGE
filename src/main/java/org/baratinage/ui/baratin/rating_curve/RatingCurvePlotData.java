@@ -1,5 +1,6 @@
 package org.baratinage.ui.baratin.rating_curve;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -130,6 +131,24 @@ public class RatingCurvePlotData implements IPlotDataProvider {
         }
 
         return plotItems;
+    }
+
+    public RatingCurvePlotData cropTotalEnvelopValues() {
+        List<double[]> cropedTotalUncertainty = null;
+        if (totalUncertainty != null) {
+            cropedTotalUncertainty = new ArrayList<>();
+            int n = totalUncertainty.get(0).length;
+            double[] min = new double[n];
+            double[] max = new double[n];
+            cropedTotalUncertainty.add(min);
+            cropedTotalUncertainty.add(max);
+            for (int k = 0; k < n; k++) {
+                min[k] = Math.max(0, totalUncertainty.get(0)[k]);
+                max[k] = Math.max(0, totalUncertainty.get(1)[k]);
+            }
+        }
+        return new RatingCurvePlotData(stage, discharge, parametricUncertainty, cropedTotalUncertainty,
+                stageTransitions, gaugings);
     }
 
 }

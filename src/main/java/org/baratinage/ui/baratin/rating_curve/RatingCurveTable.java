@@ -1,6 +1,7 @@
 package org.baratinage.ui.baratin.rating_curve;
 
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 
 import org.baratinage.translation.T;
 import org.baratinage.ui.commons.ColumnHeaderDescription;
@@ -8,7 +9,13 @@ import org.baratinage.ui.component.DataTable;
 
 public class RatingCurveTable extends DataTable {
 
+    public final JCheckBox cropTotalEnvelopCheckbox;
+
     public RatingCurveTable() {
+
+        cropTotalEnvelopCheckbox = new JCheckBox();
+        cropTotalEnvelopCheckbox.setSelected(false);
+        cropTotalEnvelopCheckbox.setText("crop_total_envelop_zero");
 
         ColumnHeaderDescription colHeaderDescRCGridTable = new ColumnHeaderDescription();
         colHeaderDescRCGridTable.addColumnDesc("h [m]", () -> {
@@ -36,7 +43,10 @@ public class RatingCurveTable extends DataTable {
         });
         T.t(this, showHeaderDescription, false, "table_headers_desc");
 
+        T.t(this, cropTotalEnvelopCheckbox, false, "crop_total_envelop_zero");
+
         toolsPanel.addChild(showHeaderDescription, false);
+        toolsPanel.addChild(cropTotalEnvelopCheckbox, false);
     }
 
     public void updateTable(RatingCurvePlotData ratingCurveData) {

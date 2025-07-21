@@ -12,11 +12,14 @@ import org.baratinage.ui.bam.BamProject;
 import org.baratinage.ui.commons.DensityPlotGrid;
 import org.baratinage.ui.commons.McmcTraceResultsPanel;
 import org.baratinage.ui.commons.ParameterSummaryTable;
+import org.baratinage.ui.commons.ReactiveValue;
 import org.baratinage.ui.container.TabContainer;
 
 import org.baratinage.translation.T;
 
 public class RatingCurveResults extends TabContainer {
+
+    public final ReactiveValue<Boolean> cropTotalUncertaintyToZero = new ReactiveValue<Boolean>(false);
 
     public final RatingCurvePlot ratingCurvePlot;
     private final DensityPlotGrid paramDensityPlots;
@@ -44,9 +47,23 @@ public class RatingCurveResults extends TabContainer {
 
         ratingCurvePlot = new RatingCurvePlot();
 
+        ratingCurvePlot.toolsPanel.addChangeListener(l -> {
+            cropTotalUncertaintyToZero.set(ratingCurvePlot.toolsPanel.cropTotalEnv());
+        });
+
         paramDensityPlots = new DensityPlotGrid();
 
         rcGridTable = new RatingCurveTable();
+
+        rcGridTable.cropTotalEnvelopCheckbox.addChangeListener(l -> {
+            cropTotalUncertaintyToZero.set(rcGridTable.cropTotalEnvelopCheckbox.isSelected());
+        });
+
+        cropTotalUncertaintyToZero.addListener(newValue -> {
+            ratingCurvePlot.toolsPanel.cropTotalEnvelopCheckbox.setSelected(newValue);
+            rcGridTable.cropTotalEnvelopCheckbox.setSelected(newValue);
+            updateResults(rcPlotData, parameters);
+        });
 
         baremeExporter = new BaremExporter();
 
@@ -104,18 +121,30 @@ public class RatingCurveResults extends TabContainer {
         });
     }
 
-    public void updateResults(
-            RatingCurvePlotData rcPlotData, RatingCurveCalibrationResults parameters) {
+    private RatingCurvePlotData rcPlotData;
+    private RatingCurveCalibrationResults parameters;
 
-        if (rcPlotData.isPriorRatingCurve()) {
-            ratingCurvePlot.setPriorPlot(rcPlotData);
-        } else {
-            ratingCurvePlot.setPosteriorPlot(rcPlotData);
+    public void updateResults(
+            RatingCurvePlotData rcPlotData,
+            RatingCurveCalibrationResults parameters) {
+
+        this.rcPlotData = rcPlotData;
+        this.parameters = parameters;
+
+        RatingCurvePlotData rcPlotDataModified = rcPlotData;
+        if (cropTotalUncertaintyToZero.get()) {
+            rcPlotDataModified = rcPlotDataModified.cropTotalEnvelopValues();
         }
 
-        rcGridTable.updateTable(rcPlotData);
+        if (rcPlotDataModified.isPriorRatingCurve()) {
+            ratingCurvePlot.setPriorPlot(rcPlotDataModified);
+        } else {
+            ratingCurvePlot.setPosteriorPlot(rcPlotDataModified);
+        }
 
-        baremeExporter.updateRatingCurveValues(rcPlotData);
+        rcGridTable.updateTable(rcPlotDataModified);
+
+        baremeExporter.updateRatingCurveValues(rcPlotDataModified);
 
         rcEquation.updateEquation(parameters.getEquationString());
 
