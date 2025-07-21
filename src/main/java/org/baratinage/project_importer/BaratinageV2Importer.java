@@ -500,12 +500,10 @@ public class BaratinageV2Importer implements IProjectImporter {
 
         BamItem bamItem = project.addBamItem(BamItemType.HYDRAULIC_CONFIG);
 
-        String[] properties = BaratinageV2Builders.readConfigFileLines(folder, "Properties.txt");
-
-        List<double[]> matrix = BaratinageV2Builders.readMatrixConfigFile(folder, "BonnifaitMatrix.txt");
-
         // ***********************
         // name & description
+        String[] properties = BaratinageV2Builders.readConfigFileLines(folder, "Properties.txt");
+
         if (properties.length < 3) {
             ConsoleLogger.error("Properties.txt file should contain at least 3 rows (name, description, ncontrols).");
             onError.run();
@@ -517,6 +515,15 @@ public class BaratinageV2Importer implements IProjectImporter {
 
         // ***********************
         // main configuration
+
+        List<double[]> matrix = BaratinageV2Builders.readMatrixConfigFile(folder, "BonnifaitMatrix.txt");
+
+        if (matrix == null) {
+            // there nothing specified, an empty item is returned
+            onDone.run();
+            return;
+        }
+
         JSONObject json = new JSONObject();
         // > controlMatrix
         JSONObject controlMatrix = new JSONObject();
