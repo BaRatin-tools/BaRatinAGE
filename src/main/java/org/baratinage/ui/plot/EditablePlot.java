@@ -12,6 +12,7 @@ import javax.swing.JLabel;
 import org.baratinage.AppSetup;
 import org.baratinage.translation.T;
 import org.baratinage.ui.component.SimpleCheckbox;
+import org.baratinage.ui.component.SimpleFrame;
 import org.baratinage.ui.component.SimpleList;
 import org.baratinage.ui.component.SimpleSep;
 import org.baratinage.ui.component.SimpleTextField;
@@ -183,6 +184,17 @@ public class EditablePlot implements LegendItemSource {
       legendItemsOrder.addItem(defaultTitle, AppSetup.ICONS.EDIT, defaultTitle);
     });
 
+    JButton legendPlotBtn = new JButton();
+    legendPlotBtn.setText(T.text("plot_legend"));
+    legendPlotBtn.addActionListener(l -> {
+      LegendItemCollection legendItems = getLegendItems();
+      Legend legend = new Legend(legendItems);
+      Plot plot = legend.getLegendPlot();
+      PlotContainer pc = new PlotContainer(plot, true);
+      SimpleFrame sf = new SimpleFrame(legendPlotBtn, 300, 300);
+      sf.showContent(pc);
+    });
+
     SimpleCheckbox showLegendCb = new SimpleCheckbox();
     showLegendCb.setText(T.text("show_legend"));
     showLegendCb.setSelected(showLegend);
@@ -220,6 +232,7 @@ public class EditablePlot implements LegendItemSource {
     editionPanel.addChild(legendItemsLabel, false);
     editionPanel.addChild(legendItemsOrder, false);
     editionPanel.addChild(addTitleInLegendBtn, false);
+    editionPanel.addChild(legendPlotBtn, false);
     editionPanel.addChild(legendItemEditorPanel, false);
     editionPanel.addChild(new SimpleSep(), false);
     editionPanel.addChild(showLegendCb, false);
