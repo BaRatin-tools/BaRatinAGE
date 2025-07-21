@@ -289,7 +289,7 @@ public class PriorRatingCurve<HCT extends BamItem & IModelDefinition & IPriors> 
 
         RatingCurveCalibrationResults rcParameters = getRatingCurveCalibrationResults();
 
-        List<double[]> stageTransitions = rcParameters.getStageTransitions();
+        List<double[]> stageTransitions = rcParameters.getPriorStageTransitions();
 
         double[] stage = predResults[0].predictionConfig.inputs[0].dataColumns.get(0);
         double[] dischargeMaxpost = predResults[0].outputResults.get(0).spag().get(0);

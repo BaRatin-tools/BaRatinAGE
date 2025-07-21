@@ -145,6 +145,16 @@ public class RatingCurveCalibrationResults extends CalibrationResultsWrapper {
                 }).collect(Collectors.toList());
     }
 
+    public List<double[]> getPriorStageTransitions() {
+        return allParameters
+                .stream()
+                .filter(p -> p.symbol.startsWith("k_"))
+                .map(bep -> {
+                    double[] values = bep.parameter.parameterConfig.distribution.getPercentiles(0.025, 0.975, 3);
+                    return new double[] { values[1], values[0], values[2] };
+                }).collect(Collectors.toList());
+    }
+
     public String getEquationString() {
         return equationString;
     }
