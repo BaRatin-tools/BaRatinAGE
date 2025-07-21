@@ -138,8 +138,9 @@ public class BaremExporter extends SimpleFlowPanel {
             dialog.setVisible(false);
 
             File f = CommonDialog.saveFileDialog(
+                    "",
                     T.text("export_to_bareme_format"),
-                    T.text("bareme_format"), "dat");
+                    new CommonDialog.CustomFileFilter(T.text("bareme_format"), "dat"));
             if (f != null) {
                 verifyAndDoExport(f);
             } else {

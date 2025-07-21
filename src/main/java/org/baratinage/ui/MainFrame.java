@@ -248,8 +248,9 @@ public class MainFrame extends JFrame {
         if (confirmLoosingUnsavedChanges()) {
             File f = CommonDialog.openFileDialog(
                     null,
-                    T.text("baratinage_file"),
-                    "bam", "BAM");
+                    new CommonDialog.CustomFileFilter(
+                            T.text("baratinage_file"),
+                            "bam", "BAM"));
 
             if (f == null) {
                 ConsoleLogger.error("loading project failed! Selected file is null.");
@@ -289,9 +290,10 @@ public class MainFrame extends JFrame {
             }
         }
         File f = CommonDialog.saveFileDialog(
+                "",
                 null,
-                T.text("baratinage_file"),
-                "bam", "BAM");
+                new CommonDialog.CustomFileFilter(T.text("baratinage_file"),
+                        "bam", "BAM"));
 
         if (f == null) {
             ConsoleLogger.error("saving project failed! Selected file is null.");
@@ -312,7 +314,9 @@ public class MainFrame extends JFrame {
     public void importV2Project() {
         if (confirmLoosingUnsavedChanges()) {
             File f = CommonDialog.openFileDialog(T.text("import_baratinage_v2_project"),
-                    T.text("bar_zip_file_format"), "bar.zip", "BAR.ZIP");
+                    new CommonDialog.CustomFileFilter(
+                            T.text("bar_zip_file_format"),
+                            "bar.zip", "BAR.ZIP"));
             if (f != null) {
                 BaratinageV2Importer projConver = new BaratinageV2Importer();
                 try {

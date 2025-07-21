@@ -1,5 +1,6 @@
 package org.baratinage.ui.component;
 
+import java.awt.Component;
 import java.io.File;
 
 import javax.swing.JFileChooser;
@@ -67,7 +68,11 @@ public class CommonDialog {
     }
 
     public static void errorDialog(String message, String title) {
-        JOptionPane.showOptionDialog(AppSetup.MAIN_FRAME,
+        errorDialog(AppSetup.MAIN_FRAME, message, null);
+    }
+
+    public static void errorDialog(Component parent, String message, String title) {
+        JOptionPane.showOptionDialog(parent,
                 message,
                 title == null ? T.text("error") : title,
                 JOptionPane.OK_OPTION,
@@ -82,6 +87,10 @@ public class CommonDialog {
     }
 
     public static void warnDialog(String message, String title) {
+        warnDialog(AppSetup.MAIN_FRAME, message, null);
+    }
+
+    public static void warnDialog(Component parent, String message, String title) {
         JOptionPane.showOptionDialog(AppSetup.MAIN_FRAME,
                 message,
                 title == null ? T.text("warning") : title,
@@ -97,10 +106,14 @@ public class CommonDialog {
     }
 
     public static void infoDialog(String message, String title) {
+        infoDialog(AppSetup.MAIN_FRAME, message, null);
+    }
+
+    public static void infoDialog(Component parent, String message, String title) {
         String[] okOption = new String[] {
                 T.text("ok")
         };
-        JOptionPane.showOptionDialog(AppSetup.MAIN_FRAME,
+        JOptionPane.showOptionDialog(parent,
                 message,
                 title == null ? T.text("info") : title,
                 JOptionPane.OK_OPTION,
@@ -113,11 +126,15 @@ public class CommonDialog {
     }
 
     public static boolean confirmDialog(String message, String title) {
+        return confirmDialog(AppSetup.MAIN_FRAME, message, title);
+    }
+
+    public static boolean confirmDialog(Component parent, String message, String title) {
         String[] yesNoOptions = new String[] {
                 T.text("ok"),
                 T.text("cancel")
         };
-        int response = JOptionPane.showOptionDialog(AppSetup.MAIN_FRAME,
+        int response = JOptionPane.showOptionDialog(parent,
                 message,
                 title == null ? T.text("warning") : title,
                 JOptionPane.YES_NO_OPTION,
@@ -126,28 +143,64 @@ public class CommonDialog {
         return response == JOptionPane.YES_OPTION;
     }
 
-    public static File saveFileDialog(String title, String formatName, String... extensions) {
+    public static File openFileDialog(String title, CustomFileFilter... fileFilters) {
+        return openFileDialog(AppSetup.MAIN_FRAME, title, fileFilters);
+    }
+
+    public static File openFileDialog(Component parent, String title, CustomFileFilter... fileFilters) {
+        JFileChooser fileChooser = configureFileChooser(
+                title == null ? defaultOpenTitle : title,
+                new File(""),
+                fileFilters);
+        int result = fileChooser.showOpenDialog(parent);
+        if (result != JFileChooser.APPROVE_OPTION) {
+            return null;
+        }
+        return fileChooser.getSelectedFile(); // can be null
+    }
+
+    public static File saveFileDialog(
+            String defaultFileName,
+            String dialogTitle,
+            CustomFileFilter... fileFilters) {
+        return saveFileDialog(AppSetup.MAIN_FRAME, defaultFileName, dialogTitle, fileFilters);
+    }
+
+    public static File saveFileDialog(
+            Component parent,
+            String defaultFileName,
+            String dialogTitle,
+            CustomFileFilter... fileFilters) {
 
         JFileChooser fileChooser = configureFileChooser(
-                title == null ? defaultSaveTitle : title,
-                new CustomFileFilter(formatName, extensions));
+                dialogTitle == null ? defaultSaveTitle : dialogTitle,
+                defaultFileName == null ? new File("") : new File(defaultFileName),
+                fileFilters);
 
-        int result = fileChooser.showSaveDialog(AppSetup.MAIN_FRAME);
+        int result = fileChooser.showSaveDialog(parent);
+
         if (result != JFileChooser.APPROVE_OPTION) {
             return null;
         }
         File file = fileChooser.getSelectedFile();
-        if (file == null)
+        if (file == null) {
             return null;
+        }
+
+        CustomFileFilter cff = (CustomFileFilter) fileChooser.getFileFilter();
+        if (cff != null) {
+            String[] extensions = cff.getExtensions();
+            file = addExtension(file, extensions);
+        }
+
         if (file.exists()) {
             if (!confirmDialog(T.html("file_already_exists_overwrite"),
                     T.text("overwrite_file"))) {
                 return null;
             }
         }
-        file = addExtension(file, extensions);
-        return file;
 
+        return file;
     }
 
     private static boolean hasExtension(File file, String... extensions) {
@@ -170,19 +223,6 @@ public class CommonDialog {
         return file;
     }
 
-    public static File openFileDialog(String title, String formatName, String... extensions) {
-        return openFileDialog(title, new CustomFileFilter(formatName, extensions));
-    }
-
-    public static File openFileDialog(String title, CustomFileFilter... fileFilters) {
-        JFileChooser fileChooser = configureFileChooser(title == null ? defaultOpenTitle : title, fileFilters);
-        int result = fileChooser.showOpenDialog(AppSetup.MAIN_FRAME);
-        if (result != JFileChooser.APPROVE_OPTION) {
-            return null;
-        }
-        return fileChooser.getSelectedFile(); // can be null
-    }
-
     private static void resetFileChooser() {
         fileChooser = new JFileChooser();
         fileChooser.setCurrentDirectory(new File(AppSetup.PATH_APP_ROOT_DIR));
@@ -191,11 +231,11 @@ public class CommonDialog {
         fileChooser.setApproveButtonToolTipText(defaultApproveButtonToolTipText);
     }
 
-    private static JFileChooser configureFileChooser(String title, CustomFileFilter... fileFilters) {
+    private static JFileChooser configureFileChooser(String title, File defaultFile, CustomFileFilter... fileFilters) {
         if (fileChooser == null) {
             resetFileChooser();
         }
-        fileChooser.setSelectedFile(new File(""));
+        fileChooser.setSelectedFile(defaultFile);
         fileChooser.setDialogTitle(title);
         fileChooser.resetChoosableFileFilters();
         for (CustomFileFilter ff : fileFilters) {
@@ -238,44 +278,4 @@ public class CommonDialog {
         }
 
     }
-
-    public static File saveFileDialog(String defaultFileName, String dialogTitle, CustomFileFilter... fileFilters) {
-
-        if (fileChooser == null) {
-            resetFileChooser();
-        }
-
-        fileChooser.setSelectedFile(new File(defaultFileName == null ? "" : defaultFileName));
-        fileChooser.setDialogTitle(dialogTitle);
-        fileChooser.resetChoosableFileFilters();
-        for (CustomFileFilter ff : fileFilters) {
-            fileChooser.addChoosableFileFilter(ff);
-        }
-
-        int result = fileChooser.showSaveDialog(AppSetup.MAIN_FRAME);
-
-        if (result != JFileChooser.APPROVE_OPTION) {
-            return null;
-        }
-        File file = fileChooser.getSelectedFile();
-        if (file == null) {
-            return null;
-        }
-
-        CustomFileFilter cff = (CustomFileFilter) fileChooser.getFileFilter();
-        if (cff != null) {
-            String[] extensions = cff.getExtensions();
-            file = addExtension(file, extensions);
-        }
-
-        if (file.exists()) {
-            if (!confirmDialog(T.html("file_already_exists_overwrite"),
-                    T.text("overwrite_file"))) {
-                return null;
-            }
-        }
-
-        return file;
-    }
-
 }
