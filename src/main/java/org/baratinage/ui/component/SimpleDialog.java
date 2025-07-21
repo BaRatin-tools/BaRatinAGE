@@ -1,6 +1,7 @@
 package org.baratinage.ui.component;
 
 import java.awt.Component;
+import java.awt.Dialog;
 import java.awt.Dimension;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
@@ -24,7 +25,7 @@ public class SimpleDialog {
 
     public SimpleDialog(Component parent, boolean modal) {
         dialog = new JDialog(SwingUtilities.getWindowAncestor(parent));
-        dialog.setModal(modal);
+        dialog.setModalityType(Dialog.ModalityType.DOCUMENT_MODAL);
         header = new SimpleFlowPanel();
         content = new SimpleFlowPanel();
         footer = new SimpleFlowPanel();
