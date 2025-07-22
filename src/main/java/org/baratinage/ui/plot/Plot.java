@@ -193,6 +193,7 @@ public class Plot implements LegendItemSource {
     public void setXAxisLabel(String label) {
         axisX.setLabel(label);
         axisXlog.setLabel(label);
+        axisXdate.setLabel(label);
     }
 
     public void setXAxisLog(boolean log) {
