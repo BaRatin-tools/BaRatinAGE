@@ -114,7 +114,9 @@ public class EditablePlot implements LegendItemSource {
   public void updateLegendItems(String... idsOrTitles) {
     List<String> idsOrTitleArr = new ArrayList<>();
     for (String idOrTitle : idsOrTitles) {
-      idsOrTitleArr.add(idOrTitle);
+      if (idOrTitle != null) {
+        idsOrTitleArr.add(idOrTitle);
+      }
     }
     updateLegendItems(idsOrTitleArr);
   }
