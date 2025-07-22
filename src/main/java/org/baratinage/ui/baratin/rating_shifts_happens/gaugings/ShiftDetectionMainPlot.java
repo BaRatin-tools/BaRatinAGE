@@ -162,8 +162,8 @@ public class ShiftDetectionMainPlot extends SimpleFlowPanel {
 
     toolsPanel.updatePlotAxis(dischargePlot);
 
-    plotEditor.addPlot("mainPlot", isDischargePlot ? dischargePlot : stagePlot);
-    plotEditor.addPlot("shiftPlot", shiftsPlot);
+    plotEditor.addEditablePlot("mainPlot", isDischargePlot ? dischargePlot : stagePlot);
+    plotEditor.addEditablePlot("shiftPlot", shiftsPlot);
 
     plotEditor.getEditablePlot("mainPlot").setYAxisLabel(
         isDischargePlot ? String.format("%s [m3/s]", T.text("discharge")) : String.format("%s [m]", T.text("stage")));

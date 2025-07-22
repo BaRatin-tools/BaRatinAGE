@@ -128,11 +128,11 @@ public class PlotEditor extends SimpleFlowPanel {
     }
   }
 
-  public void addPlot(Plot plot) {
-    addPlot("main", plot);
+  public void addEditablePlot(Plot plot) {
+    addEditablePlot("main", plot);
   }
 
-  public void addPlot(String id, Plot plot) {
+  public void addEditablePlot(String id, Plot plot) {
     EditablePlot ep = new EditablePlot(plot);
     // ep.setConfig(editablePlotItems, itemExplorer.getAllObjects());
     ep.updateEditablePlotItems(editablePlotItems);

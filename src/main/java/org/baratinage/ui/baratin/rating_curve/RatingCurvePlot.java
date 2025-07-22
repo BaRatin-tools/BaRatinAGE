@@ -256,7 +256,7 @@ public class RatingCurvePlot extends SimpleFlowPanel {
 
         }
 
-        plotEditor.addPlot(plot);
+        plotEditor.addEditablePlot(plot);
 
         plotEditor.updateEditor();
 
