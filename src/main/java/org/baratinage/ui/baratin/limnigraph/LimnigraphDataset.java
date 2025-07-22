@@ -12,7 +12,6 @@ import org.baratinage.ui.commons.AbstractDataset;
 import org.baratinage.ui.commons.DatasetConfig;
 import org.baratinage.ui.commons.UncertaintyDataset;
 import org.baratinage.ui.plot.PlotBand;
-import org.baratinage.ui.plot.PlotItem;
 import org.baratinage.ui.plot.PlotLine;
 import org.baratinage.utils.DateTime;
 
@@ -171,16 +170,25 @@ public class LimnigraphDataset extends AbstractDataset {
         return errorMatrixDataset != null;
     }
 
-    public PlotItem getPlotLine() {
-        PlotLine plotLine = new PlotLine(name, dateTimeMillis, getStage(), AppSetup.COLORS.PLOT_LINE,
+    public PlotLine getPlotLine() {
+        PlotLine plotLine = new PlotLine(
+                name,
+                dateTimeMillis,
+                getStage(),
+                AppSetup.COLORS.PLOT_LINE,
                 new BasicStroke(2));
         return plotLine;
     }
 
-    public PlotItem getPlotEnv() {
+    public PlotBand getPlotEnv() {
         List<double[]> errEnv = getStageErrUncertaintyEnvelop();
-        PlotBand plotBand = new PlotBand(name, dateTimeMillis,
-                errEnv.get(0), errEnv.get(1), false, AppSetup.COLORS.LIMNIGRAPH_STAGE_UNCERTAINTY);
+        PlotBand plotBand = new PlotBand(
+                name,
+                dateTimeMillis,
+                errEnv.get(0),
+                errEnv.get(1),
+                false,
+                AppSetup.COLORS.LIMNIGRAPH_STAGE_UNCERTAINTY);
         return plotBand;
     }
 
