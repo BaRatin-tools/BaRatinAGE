@@ -231,7 +231,7 @@ public class PlotEditor extends SimpleFlowPanel {
             this,
             T.text("plot_axis_and_legend"),
             new JScrollPane(ep.getEditionPanel()));
-        d.setSize(400, 500);
+        d.setSize(400, 700);
         d.openDialog();
       });
       plotPanel.addChild(openPlotEditorBtn, false);
