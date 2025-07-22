@@ -41,37 +41,59 @@ public class AbstractDataset {
 
     protected AbstractDataset(String name, String[] headers, double[]... columns) {
 
-        this.name = name;
-        this.data = columns;
-        this.headersMap = new TreeMap<>();
-        this.headers = headers;
-
         if (columns.length != headers.length) {
             throw new IllegalArgumentException(
                     "'headers' length is different than the number of columns! Headers are ignored.");
-        } else {
-            for (int k = 0; k < headers.length; k++) {
-                this.headersMap.put(headers[k], k);
-            }
         }
 
-        this.nCol = this.data.length;
-        if (this.nCol <= 0) {
-            this.nRow = 0;
-        } else {
-            int n = this.data[0].length;
-            for (int k = 0; k < this.data.length; k++) {
-                int m = this.data[k].length;
-                if (m != n) {
-                    ConsoleLogger.warn(
-                            String.format(
-                                    "Mismatch in the number of rows per column! " +
-                                            " Column #%d has %d rows wile %d rows are expected",
-                                    k, m, n));
-                    n = Math.max(n, m);
+        this.name = name;
+        this.headersMap = new TreeMap<>();
+        this.headers = headers;
+
+        int nCol = 0;
+        int nRow = -1;
+        for (int k = 0; k < columns.length; k++) {
+            if (columns[k] != null) {
+                nCol++;
+                if (nRow < 0) {
+                    nRow = columns[k].length;
                 }
             }
-            this.nRow = n;
+        }
+        this.nCol = nCol;
+        this.nRow = nRow < 0 ? 0 : nRow;
+
+        if (nCol != columns.length) {
+            System.out.println("There are some NULL columns !");
+        }
+
+        int index = 0;
+        for (int k = 0; k < headers.length; k++) {
+            if (columns[k] == null) {
+                continue;
+            }
+            this.headersMap.put(headers[k], index);
+            index++;
+        }
+
+        this.data = new double[nCol][];
+
+        index = 0;
+        for (int k = 0; k < columns.length; k++) {
+            if (columns[k] == null) {
+                ConsoleLogger.warn(String.format("Column %d ('%s') is null !", k, headers[k]));
+                continue;
+            }
+            int m = columns[k].length;
+            if (m != nRow) {
+                ConsoleLogger.warn(
+                        String.format(
+                                "Mismatch in the number of rows per column! " +
+                                        " Column #%d has %d rows wile %d rows are expected",
+                                k, m, nRow));
+            }
+            this.data[index] = columns[k];
+            index++;
         }
 
     }
@@ -346,8 +368,9 @@ public class AbstractDataset {
             for (int row = 0; row < rows; row++) {
                 StringBuilder sb = new StringBuilder();
                 for (int col = 0; col < cols; col++) {
-                    if (col > 0)
+                    if (col > 0) {
                         sb.append(";");
+                    }
                     Double d = matrix[col][row];
                     sb.append(Double.isNaN(d) || Double.isInfinite(d) ? "NA" : d);
                 }
