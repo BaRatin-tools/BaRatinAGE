@@ -187,8 +187,10 @@ public class Hydrograph extends BamItem implements IPredictionMaster {
 
         BamConfig config = new BamConfig(0);
 
-        config.JSON.put("ratingCurve", ratingCurveParent.toJSON());
-        config.JSON.put("limnigraph", limnigraphParent.toJSON());
+        config.JSON.put("ratingCurve", ratingCurveParent.saveConfig().JSON);
+        BamConfig limnigraphConfig = limnigraphParent.saveConfig();
+        config.FILE_PATHS.addAll(limnigraphConfig.FILE_PATHS);
+        config.JSON.put("limnigraph", limnigraphConfig.JSON);
 
         if (currentConfigAndRes != null) {
             config.JSON.put("bamRunId", currentConfigAndRes.id);

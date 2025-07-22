@@ -382,9 +382,13 @@ public class RatingCurve extends BamItem
 
         BamConfig config = new BamConfig(0);
 
-        config.JSON.put("hydrauConfig", hydrauConfParent.toJSON());
-        config.JSON.put("gaugings", gaugingsParent.toJSON());
-        config.JSON.put("structError", structErrorParent.toJSON());
+        BamConfig gaugingsConfig = gaugingsParent.saveConfig();
+        // the file should exist, this line only ensure it is saved
+        // along the rest of the project
+        config.FILE_PATHS.addAll(gaugingsConfig.FILE_PATHS);
+        config.JSON.put("hydrauConfig", hydrauConfParent.saveConfig().JSON);
+        config.JSON.put("gaugings", gaugingsConfig.JSON);
+        config.JSON.put("structError", structErrorParent.saveConfig().JSON);
 
         // **********************************************************
         // Stage grid configuration

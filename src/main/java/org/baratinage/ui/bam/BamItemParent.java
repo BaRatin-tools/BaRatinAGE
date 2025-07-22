@@ -315,16 +315,17 @@ public class BamItemParent extends SimpleFlowPanel {
         return panel;
     }
 
-    public JSONObject toJSON() {
-        JSONObject json = new JSONObject();
+    public BamConfig saveConfig() {
+        BamConfig config = new BamConfig(0);
         if (currentBamItem != null) {
-            json.put("bamItemId", currentBamItem.ID);
+            config.JSON.put("bamItemId", currentBamItem.ID);
         }
         if (bamItemBackup != null) {
-            json.put("bamItemBackup", bamItemBackup.JSON);
-            json.put("bamItemBackupId", bamItemBackupId);
+            config.JSON.put("bamItemBackup", bamItemBackup.JSON);
+            config.JSON.put("bamItemBackupId", bamItemBackupId);
+            config.FILE_PATHS.addAll(bamItemBackup.FILE_PATHS);
         }
-        return json;
+        return config;
     }
 
     private boolean doNotFireChangeListeners = false;

@@ -398,8 +398,10 @@ public class RatingShiftHappens extends BamItem {
     BamConfig config = new BamConfig(0);
 
     // parents
-    config.JSON.put("hydrauConfig", hydrauConfParent.toJSON());
-    config.JSON.put("gaugings", gaugingsParent.toJSON());
+    config.JSON.put("hydrauConfig", hydrauConfParent.saveConfig().JSON);
+    BamConfig gaugingsConfig = gaugingsParent.saveConfig();
+    config.FILE_PATHS.addAll(gaugingsConfig.FILE_PATHS);
+    config.JSON.put("gaugings", gaugingsConfig.JSON);
 
     // recursive rating shift detection
     if (ratingShiftDetection != null) {

@@ -527,8 +527,8 @@ public class RatingCurveCompare extends BamItem {
         config.JSON.put("knownEditablePlotItems", jsonKnownEditablePlotItems);
         config.JSON.put("knownLabels", jsonKnownLabels);
         config.JSON.put("episList", jsonEPIList);
-        config.JSON.put("rcOne", rcOne.toJSON());
-        config.JSON.put("rcTwo", rcTwo.toJSON());
+        config.JSON.put("rcOne", rcOne.saveConfig().JSON);
+        config.JSON.put("rcTwo", rcTwo.saveConfig().JSON);
         config.JSON.put("rcOneNameLabel", rcOneNameLabel.getText());
         config.JSON.put("rcTwoNameLabel", rcTwoNameLabel.getText());
         config.JSON.put("logDischargeAxis", plotToolsPanel.logDischargeAxis());
