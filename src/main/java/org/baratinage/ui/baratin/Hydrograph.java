@@ -72,7 +72,7 @@ public class Hydrograph extends BamItem implements IPredictionMaster {
 
         limnigraphParent = new BamItemParent(this, BamItemType.LIMNIGRAPH);
         limnigraphParent.setComparisonJSONfilter(new JSONFilter(true, true,
-                "name", "headers", "filePath", "nested"));
+                "name", "headers", "filePath", "nested", "plotEditor"));
         limnigraphParent.addChangeListener((chEvt) -> {
             Limnigraph l = (Limnigraph) limnigraphParent.getCurrentBamItem();
             currentLimnigraph = l;
