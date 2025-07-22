@@ -17,14 +17,12 @@ import org.baratinage.ui.baratin.limnigraph.LimnigraphDataset;
 import org.baratinage.ui.baratin.limnigraph.LimnigraphErrors;
 import org.baratinage.ui.baratin.limnigraph.LimnigraphTable;
 import org.baratinage.ui.baratin.limnigraph.LimnigraphImporter;
+import org.baratinage.ui.baratin.limnigraph.LimnigraphPlot;
 import org.baratinage.ui.commons.DatasetConfig;
 import org.baratinage.ui.container.SimpleFlowPanel;
 import org.baratinage.ui.container.SplitContainer;
 import org.baratinage.ui.container.TabContainer;
 import org.baratinage.translation.T;
-import org.baratinage.ui.plot.Plot;
-import org.baratinage.ui.plot.PlotContainer;
-import org.baratinage.ui.plot.PlotItem;
 import org.baratinage.utils.Misc;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -34,16 +32,16 @@ public class Limnigraph extends BamItem {
     private Icon chartIcon = AppSetup.ICONS.getCustomAppImageIcon("limnigraph.svg");
     private Icon errorIcon = AppSetup.ICONS.getCustomAppImageIcon("errors.svg");
 
-    private LimnigraphErrors limniErrors;
+    private final LimnigraphErrors limniErrors;
 
-    private LimnigraphTable limniTable;
+    private final LimnigraphTable limniTable;
+
+    private final LimnigraphPlot limniPlot;
 
     private LimnigraphDataset limniDataset;
-    private JLabel importedDataSetSourceLabel;
+    private final JLabel importedDataSetSourceLabel;
 
-    private SimpleFlowPanel plotPanel;
-
-    private LimnigraphImporter limniImporter;
+    private final LimnigraphImporter limniImporter;
 
     public Limnigraph(String uuid, BaratinProject project) {
         super(BamItemType.LIMNIGRAPH, uuid, project);
@@ -62,7 +60,10 @@ public class Limnigraph extends BamItem {
             fireChangeListeners();
         });
 
-        plotPanel = new SimpleFlowPanel();
+        limniPlot = new LimnigraphPlot();
+
+        // plotPanel = new SimpleFlowPanel();
+        // plotEditor = new PlotEditor();
 
         limniTable = new LimnigraphTable();
         limniTable.setPadding(0);
@@ -81,7 +82,7 @@ public class Limnigraph extends BamItem {
 
         TabContainer limniTablesAndPlots = new TabContainer();
 
-        limniTablesAndPlots.addTab("Plot", chartIcon, plotPanel);
+        limniTablesAndPlots.addTab("Plot", chartIcon, limniPlot);
         limniTablesAndPlots.addTab("Limnigraph errors", errorIcon, limniErrors);
 
         SplitContainer content = new SplitContainer(
@@ -95,7 +96,7 @@ public class Limnigraph extends BamItem {
         T.updateHierarchy(this, limniImporter);
         T.updateHierarchy(this, limniTable);
         T.updateHierarchy(this, limniErrors);
-        T.updateHierarchy(this, plotPanel);
+        T.updateHierarchy(this, limniPlot);
         T.t(this, importDataButton, false, "import_limnigraph");
         T.t(this, () -> {
             limniTablesAndPlots.setTitleAt(0, T.text("chart"));
@@ -118,7 +119,7 @@ public class Limnigraph extends BamItem {
         limniDataset = newDataset;
         limniErrors.updateDataset(newDataset);
         updateTables();
-        updatePlot();
+        limniPlot.updatePlot(limniDataset);
         updateImportedDatasetLabel();
         save(true);
     }
@@ -136,35 +137,6 @@ public class Limnigraph extends BamItem {
             stage_high = errEnv.get(1);
         }
         limniTable.updateTable(limniDataset.getDateTime(), limniDataset.getStage(), stage_low, stage_high);
-    }
-
-    private void updatePlot() {
-        // FIXME: shouldn't this be handled in a proper TimeSeriesPlot class?
-
-        Plot plot = new Plot(true, true);
-
-        PlotItem envelop = limniDataset.hasStageErrMatrix() ? limniDataset.getPlotEnv() : null;
-        if (envelop != null) {
-            plot.addXYItem(envelop);
-        }
-        PlotItem limnigraph = limniDataset.getPlotLine();
-        plot.addXYItem(limnigraph);
-
-        T.clear(plotPanel);
-        T.t(plotPanel, () -> {
-            plot.axisXdate.setLabel(T.text("time"));
-            plot.axisY.setLabel(T.text("stage") + " [m]");
-            plot.axisYlog.setLabel(T.text("stage") + " [m]");
-            if (envelop != null) {
-                envelop.setLabel(T.text("stage_uncertainty"));
-            }
-            limnigraph.setLabel(T.text("limnigraph"));
-        });
-        PlotContainer plotContainer = new PlotContainer(plot);
-        T.updateHierarchy(this, plotContainer);
-
-        plotPanel.removeAll();
-        plotPanel.addChild(plotContainer, true);
     }
 
     public PredictionInput getErrorFreePredictionInput() {
@@ -213,6 +185,8 @@ public class Limnigraph extends BamItem {
                 config.FILE_PATHS.add(dfp);
             }
         }
+
+        config.JSON.put("plotEditor", limniPlot.plotEditor.toJSON());
         return config;
     }
 
@@ -243,6 +217,10 @@ public class Limnigraph extends BamItem {
             if (newLimniDataset != null) {
                 updateDataset(newLimniDataset);
             }
+        }
+
+        if (json.has("plotEditor")) {
+            limniPlot.plotEditor.fromJSON(json.getJSONObject("plotEditor"));
         }
     }
 
