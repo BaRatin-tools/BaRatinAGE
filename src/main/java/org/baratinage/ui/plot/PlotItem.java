@@ -151,7 +151,7 @@ public abstract class PlotItem {
             }
             BasicStroke basicStroke = (BasicStroke) stroke;
             float[] dashArray = basicStroke.getDashArray();
-            if (dashArray.length > 1) {
+            if (dashArray != null && dashArray.length > 1) {
                 float refDash = dashArray[0];
                 if (refDash > 3F) {
                     return DASHED;
