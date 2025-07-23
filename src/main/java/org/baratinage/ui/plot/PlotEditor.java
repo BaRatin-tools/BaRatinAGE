@@ -81,6 +81,10 @@ public class PlotEditor extends SimpleFlowPanel {
     }
   }
 
+  public void removeDefaultConfig() {
+    defaultPlotConfig = null;
+  }
+
   private void saveAsDefault() {
     JSONObject saved = toJSON();
     if (saved.has("default")) {
