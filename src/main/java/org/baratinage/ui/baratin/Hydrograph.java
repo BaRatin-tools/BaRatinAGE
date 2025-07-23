@@ -206,6 +206,7 @@ public class Hydrograph extends BamItem implements IPredictionMaster {
             }
         }
 
+        config.JSON.put("plotEditor", plotPanel.plotEditor.toJSON());
         return config;
     }
 
@@ -241,6 +242,12 @@ public class Hydrograph extends BamItem implements IPredictionMaster {
             });
         } else {
             ConsoleLogger.log("missing 'bamRunId'");
+        }
+
+        if (json.has("plotEditor")) {
+            BamProjectLoader.addDelayedAction(() -> {
+                plotPanel.plotEditor.fromJSON(json.getJSONObject("plotEditor"));
+            });
         }
 
         TimedActions.throttle(ID, AppSetup.CONFIG.THROTTLED_DELAY_MS, this::checkSync);

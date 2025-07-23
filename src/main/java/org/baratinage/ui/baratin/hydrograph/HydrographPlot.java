@@ -5,24 +5,54 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import javax.swing.JCheckBox;
+import javax.swing.JToggleButton;
 
 import org.baratinage.ui.container.SimpleFlowPanel;
 import org.baratinage.AppSetup;
 import org.baratinage.translation.T;
+import org.baratinage.ui.plot.EditablePlot;
+import org.baratinage.ui.plot.EditablePlotItem;
 import org.baratinage.ui.plot.Plot;
 import org.baratinage.ui.plot.PlotContainer;
+import org.baratinage.ui.plot.PlotEditor;
 import org.baratinage.utils.DateTime;
 import org.baratinage.ui.plot.PlotLine;
 import org.baratinage.ui.plot.PlotBand;
 
 public class HydrographPlot extends SimpleFlowPanel {
+        public final PlotEditor plotEditor;
+
+        private final JToggleButton openPlotEditorBtn;
 
         public final JCheckBox cropNegativeValuesCB;
 
+        private final PlotContainer plotContainer;
+
+        private final SimpleFlowPanel plotArea;
+
         public HydrographPlot() {
-                super(true);
+                super();
                 cropNegativeValuesCB = new JCheckBox();
                 T.t(this, cropNegativeValuesCB, false, "crop_total_envelop_zero");
+
+                plotEditor = new PlotEditor();
+
+                plotContainer = new PlotContainer();
+
+                plotArea = new SimpleFlowPanel(true);
+
+                openPlotEditorBtn = new JToggleButton();
+                openPlotEditorBtn.setIcon(AppSetup.ICONS.EDIT);
+                openPlotEditorBtn.addActionListener(l -> {
+                        removeAll();
+                        if (openPlotEditorBtn.isSelected()) {
+                                addChild(plotEditor, false);
+                        }
+                        addChild(plotArea, true);
+                });
+
+                plotContainer.toolsPanel.addChild(openPlotEditorBtn, false);
+
         }
 
         public void updatePlot(
@@ -77,24 +107,68 @@ public class HydrographPlot extends SimpleFlowPanel {
                 }
                 plot.addXYItem(mpLine);
 
-                T.t(this, () -> {
-                        mpLine.setLabel(T.text("lgd_discharge_maxpost"));
-                        paramBand.setLabel(T.text(
-                                        includeLimniBand ? "lgd_discharge_limni_param_u" : "lgd_discharge_param_u"));
-                        totalBand.setLabel(T.text("lgd_discharge_total_u"));
-                        if (includeLimniBand) {
-                                limniBand.setLabel(T.text("lgd_discharge_limni_u"));
-                        }
-                        plot.axisXdate.setLabel(T.text("time"));
-                        plot.axisY.setLabel(T.text("discharge") + " [m3/s]");
-                        plot.axisYlog.setLabel(T.text("discharge") + " [m3/s]");
-                });
+                plotContainer.setPlot(plot);
 
-                PlotContainer plotContainer = new PlotContainer(plot);
-                T.updateHierarchy(this, plotContainer);
+                boolean firstDraw = plotEditor.getEditablePlot() == null;
+
+                plotEditor.addEditablePlot(plot);
+                plotEditor.addEditablePlotItem("maxpost", "maxpost", mpLine);
+                if (includeLimniBand) {
+                        plotEditor.addEditablePlotItem("limniu", "limniu", limniBand);
+                }
+                plotEditor.addEditablePlotItem("paramu", "paramu", paramBand);
+                plotEditor.addEditablePlotItem("totalu", "totalu", totalBand);
+
+                plotArea.removeAll();
+                plotArea.addChild(plotContainer, true);
+                plotArea.addChild(cropNegativeValuesCB, false, 5);
 
                 removeAll();
-                addChild(plotContainer, true);
-                addChild(cropNegativeValuesCB, false, 5);
+                if (openPlotEditorBtn.isSelected()) {
+                        addChild(plotEditor, false);
+                }
+                addChild(plotArea, true);
+
+                if (firstDraw) {
+                        setDefaultPlotEditorConfig();
+                }
+
+                plotEditor.updateEditor();
+                plotEditor.saveAsDefault(false);
+
+        }
+
+        private final void setDefaultPlotEditorConfig() {
+
+                EditablePlotItem maxpost = plotEditor.getEditablePlotItem("maxpost");
+                EditablePlotItem paramu = plotEditor.getEditablePlotItem("paramu");
+                EditablePlotItem limniu = plotEditor.getEditablePlotItem("limniu");
+                EditablePlotItem totalu = plotEditor.getEditablePlotItem("totalu");
+
+                boolean includeLimniBand = limniu != null;
+
+                maxpost.setLabel(T.text("lgd_discharge_maxpost"));
+                maxpost.setLinePaint(AppSetup.COLORS.PLOT_LINE);
+                maxpost.setLineWidth(2);
+
+                paramu.setLabel(T.text(includeLimniBand ? "lgd_discharge_limni_param_u" : "lgd_discharge_param_u"));
+                paramu.setFillPaint(AppSetup.COLORS.RATING_CURVE_PARAM_UNCERTAINTY);
+
+                if (includeLimniBand) {
+                        limniu.setLabel(T.text("lgd_discharge_limni_u"));
+                        limniu.setFillPaint(AppSetup.COLORS.LIMNIGRAPH_STAGE_UNCERTAINTY);
+                }
+
+                totalu.setLabel(T.text("lgd_discharge_total_u"));
+                totalu.setFillPaint(AppSetup.COLORS.RATING_CURVE_TOTAL_UNCERTAINTY);
+
+                // plot axis legend items order
+                EditablePlot p = plotEditor.getEditablePlot();
+
+                p.updateLegendItems("maxpost", "paramu", includeLimniBand ? "limniu" : null, "totalu");
+
+                p.setXAxisLabel(T.text("time"));
+                p.setYAxisLabel(T.text("discharge") + " [m3/s]");
+
         }
 }
