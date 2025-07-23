@@ -62,7 +62,7 @@ public class DataFileReader extends SimpleFlowPanel {
         browseFileSystemButon.addActionListener(e -> {
             file = CommonDialog.openFileDialog(
                     T.text("select_data_text_file"),
-                    fileFilters);
+                    fileFilters.length == 0 ? null : fileFilters[0]);
 
             if (file == null) {
                 ConsoleLogger.error("selected file is null.");

@@ -195,9 +195,9 @@ public class PlotExporter {
   private static void saveAsSvg(IExportablePlot plot) {
     String svgString = plot.getSvgString();
     File f = CommonDialog.saveFileDialog(
-        null,
-        T.text("svg_format"),
-        "svg");
+        "",
+        T.text("to_png"),
+        new CommonDialog.CustomFileFilter(T.text("svg_format"), "svg"));
     if (f == null) {
       ConsoleLogger.error("cannot save to SVG, selected file is null.");
       return;
@@ -208,9 +208,9 @@ public class PlotExporter {
   private static void saveAsPng(IExportablePlot plot) {
     BufferedImage img = plot.getBufferedImage();
     File f = CommonDialog.saveFileDialog(
-        null,
-        T.text("png_format"),
-        "png");
+        "",
+        T.text("to_png"),
+        new CommonDialog.CustomFileFilter(T.text("png_format"), "png"));
 
     if (f == null) {
       ConsoleLogger.error("cannot save to PNG, selected file is null.");

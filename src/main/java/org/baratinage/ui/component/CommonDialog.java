@@ -7,6 +7,7 @@ import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 import javax.swing.filechooser.FileFilter;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 import org.baratinage.AppSetup;
 import org.baratinage.translation.T;
@@ -143,15 +144,20 @@ public class CommonDialog {
         return response == JOptionPane.YES_OPTION;
     }
 
-    public static File openFileDialog(String title, CustomFileFilter... fileFilters) {
-        return openFileDialog(AppSetup.MAIN_FRAME, title, fileFilters);
+    public static File openFileDialog(String title, CustomFileFilter fileFilter, CustomFileFilter... otherFileFilters) {
+        return openFileDialog(AppSetup.MAIN_FRAME, title, fileFilter, otherFileFilters);
     }
 
-    public static File openFileDialog(Component parent, String title, CustomFileFilter... fileFilters) {
+    public static File openFileDialog(
+            Component parent,
+            String title,
+            CustomFileFilter fileFilter,
+            CustomFileFilter... otherFileFilters) {
         JFileChooser fileChooser = configureFileChooser(
                 title == null ? defaultOpenTitle : title,
                 new File(""),
-                fileFilters);
+                fileFilter,
+                otherFileFilters);
         int result = fileChooser.showOpenDialog(parent);
         if (result != JFileChooser.APPROVE_OPTION) {
             return null;
@@ -162,20 +168,23 @@ public class CommonDialog {
     public static File saveFileDialog(
             String defaultFileName,
             String dialogTitle,
-            CustomFileFilter... fileFilters) {
-        return saveFileDialog(AppSetup.MAIN_FRAME, defaultFileName, dialogTitle, fileFilters);
+            CustomFileFilter fileFilter,
+            CustomFileFilter... otherFileFilters) {
+        return saveFileDialog(AppSetup.MAIN_FRAME, defaultFileName, dialogTitle, fileFilter, otherFileFilters);
     }
 
     public static File saveFileDialog(
             Component parent,
             String defaultFileName,
             String dialogTitle,
-            CustomFileFilter... fileFilters) {
+            CustomFileFilter fileFilter,
+            CustomFileFilter... otherFileFilters) {
 
         JFileChooser fileChooser = configureFileChooser(
                 dialogTitle == null ? defaultSaveTitle : dialogTitle,
                 defaultFileName == null ? new File("") : new File(defaultFileName),
-                fileFilters);
+                fileFilter,
+                otherFileFilters);
 
         int result = fileChooser.showSaveDialog(parent);
 
@@ -231,15 +240,25 @@ public class CommonDialog {
         fileChooser.setApproveButtonToolTipText(defaultApproveButtonToolTipText);
     }
 
-    private static JFileChooser configureFileChooser(String title, File defaultFile, CustomFileFilter... fileFilters) {
+    private static JFileChooser configureFileChooser(
+            String title,
+            File defaultFile,
+            CustomFileFilter fileFilter,
+            CustomFileFilter... otherFileFilters) {
         if (fileChooser == null) {
             resetFileChooser();
         }
         fileChooser.setSelectedFile(defaultFile);
         fileChooser.setDialogTitle(title);
         fileChooser.resetChoosableFileFilters();
-        for (CustomFileFilter ff : fileFilters) {
+        if (fileFilter != null) {
+            fileChooser.addChoosableFileFilter(fileFilter);
+        }
+        for (CustomFileFilter ff : otherFileFilters) {
             fileChooser.addChoosableFileFilter(ff);
+        }
+        if (fileFilter == null) {
+            fileChooser.addChoosableFileFilter(new FileNameExtensionFilter(T.text("all_files_format"), "*"));
         }
         return fileChooser;
     }

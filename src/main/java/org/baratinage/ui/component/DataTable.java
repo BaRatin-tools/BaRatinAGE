@@ -156,7 +156,10 @@ public class DataTable extends SimpleFlowPanel {
     }
 
     private void saveAsCSV() {
-        File file = CommonDialog.saveFileDialog(null, T.text("csv_format"), "csv");
+        File file = CommonDialog.saveFileDialog(
+                "",
+                T.text("to_csv"),
+                new CommonDialog.CustomFileFilter(T.text("csv_format"), "csv"));
         if (file == null) {
             ConsoleLogger.error("chosen file is null.");
             return;
