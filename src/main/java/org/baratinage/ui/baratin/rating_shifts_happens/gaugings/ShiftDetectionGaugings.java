@@ -6,6 +6,7 @@ import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JToggleButton;
 
 import org.baratinage.AppSetup;
 import org.baratinage.translation.T;
@@ -18,9 +19,13 @@ import org.baratinage.ui.container.SimpleFlowPanel;
 import org.baratinage.ui.plot.ColorPalette;
 import org.baratinage.ui.plot.Plot;
 import org.baratinage.ui.plot.PlotContainer;
+import org.baratinage.ui.plot.PlotEditor;
 import org.baratinage.ui.plot.PlotPoints;
 
 public class ShiftDetectionGaugings extends SimpleFlowPanel {
+
+  public final PlotEditor plotEditor;
+  private final JToggleButton plotEditorToggleBtn;
 
   private final List<ResultPeriodAndActions> periods;
   private final RatingCurvePlotToolsPanel toolsPanel;
@@ -45,6 +50,19 @@ public class ShiftDetectionGaugings extends SimpleFlowPanel {
     toolsPanel.addChangeListener(l -> {
       updatePlot();
     });
+
+    plotEditor = new PlotEditor();
+    plotEditorToggleBtn = new JToggleButton();
+    plotEditorToggleBtn.setIcon(AppSetup.ICONS.EDIT);
+    plotEditorToggleBtn.addActionListener(l -> {
+      removeAll();
+      addChild(periodSelectionPanel, false);
+      if (plotEditorToggleBtn.isSelected()) {
+        addChild(plotEditor, false);
+      }
+      addChild(plotPanel, true);
+    });
+    plotContainer.toolsPanel.addChild(plotEditorToggleBtn, false);
 
     plotPanel.addChild(plotContainer, true);
     plotPanel.addChild(toolsPanel, false);
@@ -76,6 +94,7 @@ public class ShiftDetectionGaugings extends SimpleFlowPanel {
 
   public void setPalette(ColorPalette palette) {
     this.palette = palette;
+    plotEditor.removeDefaultConfig();
   }
 
   public void updatePlot() {
@@ -90,12 +109,23 @@ public class ShiftDetectionGaugings extends SimpleFlowPanel {
       PlotPoints points = toolsPanel.axisFlipped() ? p.period().hQPoints() : p.period().QhPoints();
       points.setPaint(colors[k]);
       gaugingsPoints.add(points);
+
     }
+    // plotEditor.set
 
     Plot plot = new Plot();
+
     plot.addXYItems(gaugingsPoints);
     toolsPanel.updatePlotAxis(plot);
     plotContainer.setPlot(plot);
+
+    plotEditor.addEditablePlot(plot);
+    for (int k = 0; k < n; k++) {
+      plotEditor.addEditablePlotItem("gaugings_" + k, "Gaugings - " + k, gaugingsPoints.get(k));
+    }
+    plotEditor.saveAsDefault(false);
+    plotEditor.updateEditor();
+
   }
 
   private static record ResultPeriodAndActions(

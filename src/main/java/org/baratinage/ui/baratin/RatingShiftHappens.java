@@ -410,6 +410,9 @@ public class RatingShiftHappens extends BamItem {
       config.JSON.put("ratingShiftDetection", rcdConfig.getFullConfig());
     }
 
+    // saving results panel
+    config.JSON.put("results", ratingShiftResults.toJSON());
+
     return config;
   }
 
@@ -434,6 +437,10 @@ public class RatingShiftHappens extends BamItem {
       JSONObject rcdConfig = json.getJSONObject("ratingShiftDetection");
       ratingShiftDetection = ShiftDetectionOverall.load(new ShiftDetectionConfig(rcdConfig));
       updateResultsPanel();
+    }
+
+    if (json.has("results")) {
+      ratingShiftResults.fromJSON(json.getJSONObject("results"));
     }
   }
 

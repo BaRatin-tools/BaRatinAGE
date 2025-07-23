@@ -11,6 +11,7 @@ import org.baratinage.ui.container.SimpleFlowPanel;
 import org.baratinage.ui.container.TabContainer;
 import org.baratinage.ui.container.TitledPanel;
 import org.baratinage.ui.plot.ColorPalette;
+import org.json.JSONObject;
 
 public class RatingShiftsHappensResults extends SimpleFlowPanel {
 
@@ -86,6 +87,30 @@ public class RatingShiftsHappensResults extends SimpleFlowPanel {
     addChild(optionsPanel, false);
 
     updateResults();
+  }
+
+  public JSONObject toJSON() {
+    JSONObject json = new JSONObject();
+    if (results == null) {
+      return json;
+    }
+    json.put("mainPlot", results.mainPlot.plotEditor.toJSON());
+    json.put("gaugings", results.gaugings.plotEditor.toJSON());
+
+    return json;
+  }
+
+  public void fromJSON(JSONObject json) {
+    if (results == null) {
+      return;
+    }
+    if (json.has("mainPlot")) {
+      results.mainPlot.plotEditor.fromJSON(json.getJSONObject("mainPlot"));
+    }
+
+    if (json.has("gaugings")) {
+      results.gaugings.plotEditor.fromJSON(json.getJSONObject("gaugings"));
+    }
   }
 
 }
