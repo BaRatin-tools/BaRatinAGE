@@ -335,8 +335,8 @@ public class EditablePlot implements LegendItemSource {
     updateLegendItems(idsOrTitles);
 
     showLegend = json.getBoolean("showLegend");
-    xAxisLabel = json.getString("xAxis");
-    yAxisLabel = json.getString("yAxis");
+    xAxisLabel = json.optString("xAxis", null);
+    yAxisLabel = json.optString("yAxis", null);
 
     updatePlot();
   }
