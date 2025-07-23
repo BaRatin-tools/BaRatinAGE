@@ -26,6 +26,20 @@ public class BaremExporter extends SimpleFlowPanel {
 
     private boolean canceled;
 
+    /**
+     * - the hydro code and hydro name is synced accross all BaremExporter i.e.
+     * modifying the value of one instance will modify the values of all the other
+     * instances
+     * - validity dates are also synced in the same way as long as they haven't been
+     * manually changed for this particular BaremExporter instance; once modified,
+     * it is no longer in sync with the other instances.
+     * 
+     */
+    private static String globalHydroCode = null;
+    private static String globalHydroName = null;
+    private static LocalDateTime globalValidityStartTime = null;
+    private static LocalDateTime globalValidityEndTime = null;
+
     private String hydroCode;
     private String hydroName;
     private LocalDateTime validityStartTime;
@@ -37,9 +51,11 @@ public class BaremExporter extends SimpleFlowPanel {
     private double[] Qhigh;
 
     private final SimpleTextField hydroCodeField;
-    private final SimpleTextField hyroNameField;
+    private final SimpleTextField hydroNameField;
     private final SimpleDateTimeField startDateField;
     private final SimpleDateTimeField endDateField;
+
+    private boolean haveValidityDatesBeenModified = false;
 
     public BaremExporter() {
         this("", "", LocalDateTime.now(), LocalDateTime.of(
@@ -58,7 +74,7 @@ public class BaremExporter extends SimpleFlowPanel {
         // creating dialog content
 
         hydroCodeField = new SimpleTextField();
-        hyroNameField = new SimpleTextField();
+        hydroNameField = new SimpleTextField();
         startDateField = new SimpleDateTimeField(this, false);
         endDateField = new SimpleDateTimeField(this, false);
 
@@ -80,7 +96,7 @@ public class BaremExporter extends SimpleFlowPanel {
         addChild(hydroCodeLabel, false);
         addChild(hydroCodeField, false);
         addChild(hydroNameLabel, false);
-        addChild(hyroNameField, false);
+        addChild(hydroNameField, false);
         addChild(startDateLabel, false);
         addChild(startDateField, false);
         addChild(endDateLabel, false);
@@ -104,7 +120,7 @@ public class BaremExporter extends SimpleFlowPanel {
         this.validityStartTime = validityStartTime;
         this.validityEndTime = validityEndTime;
         hydroCodeField.setText(hydroCode);
-        hyroNameField.setText(hydroName);
+        hydroNameField.setText(hydroName);
         startDateField.setDateTime(validityStartTime);
         endDateField.setDateTime(validityEndTime);
 
@@ -122,12 +138,23 @@ public class BaremExporter extends SimpleFlowPanel {
             if (txt.length() > 8) {
                 hydroCodeField.setTextDelayed(txt.substring(0, 8), false);
             }
+            globalHydroCode = txt;
         });
-        hyroNameField.addChangeListener((e) -> {
-            String txt = hyroNameField.getText();
+        hydroNameField.addChangeListener((e) -> {
+            String txt = hydroNameField.getText();
             if (txt.length() > 6) {
-                hyroNameField.setTextDelayed(txt.substring(0, 6), false);
+                hydroNameField.setTextDelayed(txt.substring(0, 6), false);
             }
+            globalHydroName = txt;
+        });
+
+        startDateField.addChangeListener(l -> {
+            haveValidityDatesBeenModified = true;
+            globalValidityStartTime = startDateField.getDateTime();
+        });
+        endDateField.addChangeListener(l -> {
+            haveValidityDatesBeenModified = true;
+            globalValidityEndTime = endDateField.getDateTime();
         });
 
         canceled = true;
@@ -153,6 +180,24 @@ public class BaremExporter extends SimpleFlowPanel {
             ConsoleLogger.warn("xport canceled.");
         });
 
+    }
+
+    public void syncWithAllOtherInstances() {
+        if (globalHydroCode != null) {
+            hydroCodeField.setText(globalHydroCode);
+        }
+        if (globalHydroName != null) {
+            hydroNameField.setText(globalHydroName);
+        }
+        if (!haveValidityDatesBeenModified) {
+            if (globalValidityStartTime != null) {
+                startDateField.setDateTime(globalValidityStartTime);
+            }
+            if (globalValidityEndTime != null) {
+                endDateField.setDateTime(globalValidityEndTime);
+            }
+            haveValidityDatesBeenModified = false;
+        }
     }
 
     public String getHydroCode() {
@@ -220,7 +265,7 @@ public class BaremExporter extends SimpleFlowPanel {
 
     private void verifyAndDoExport(File f) {
         hydroCode = hydroCodeField.getText();
-        hydroName = hyroNameField.getText();
+        hydroName = hydroNameField.getText();
         validityStartTime = startDateField.getDateTime();
         validityEndTime = endDateField.getDateTime();
         if (hydroCode == "") {

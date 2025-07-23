@@ -69,6 +69,7 @@ public class RatingCurveResults extends TabContainer {
 
         JButton exportToBaremeButton = new JButton();
         exportToBaremeButton.addActionListener((e) -> {
+            baremeExporter.syncWithAllOtherInstances();
             baremeExporter.exportRatingCurve();
         });
         rcGridTable.actionPanel.addChild(exportToBaremeButton, false);
