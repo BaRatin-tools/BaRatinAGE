@@ -58,7 +58,12 @@ public class LimnigraphDataset extends AbstractDataset {
                 getColumn(SYSERR_IND));
 
         if (nonSysErrStd != null || (sysErrStd != null && sysErrInd != null)) {
-            UncertainData uncertainData = new UncertainData(name, stage, nonSysErrStd, sysErrStd, sysErrInd);
+            UncertainData uncertainData = new UncertainData(
+                    name,
+                    stage,
+                    nonSysErrStd == null ? new double[] {} : nonSysErrStd,
+                    sysErrStd == null ? new double[] {} : sysErrStd,
+                    sysErrInd == null ? new int[] {} : sysErrInd);
             errorMatrixDataset = new UncertaintyDataset(
                     "stageErrorMatrix",
                     uncertainData.getErrorMatrix(AppSetup.CONFIG.N_SAMPLES_LIMNI_ERRORS.get()));
