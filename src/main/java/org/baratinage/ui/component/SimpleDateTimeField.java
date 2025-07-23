@@ -5,8 +5,11 @@ import java.awt.Font;
 import java.time.DateTimeException;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.JLabel;
+import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import org.baratinage.AppSetup;
@@ -72,6 +75,7 @@ public class SimpleDateTimeField extends GridPanel {
                     dayField.setValue(nDays);
                 }
             });
+            fireChangeListeners();
         };
 
         yearField.addChangeListener(changeListener);
@@ -174,5 +178,21 @@ public class SimpleDateTimeField extends GridPanel {
             ConsoleLogger.error(e);
         }
         return null;
+    }
+
+    private final List<ChangeListener> changeListeners = new ArrayList<>();
+
+    public void addChangeListener(ChangeListener l) {
+        changeListeners.add(l);
+    }
+
+    public void removeChangeListener(ChangeListener l) {
+        changeListeners.remove(l);
+    }
+
+    private void fireChangeListeners() {
+        for (ChangeListener l : changeListeners) {
+            l.stateChanged(new ChangeEvent(this));
+        }
     }
 }
