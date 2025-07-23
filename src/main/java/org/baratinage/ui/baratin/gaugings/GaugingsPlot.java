@@ -75,6 +75,11 @@ public class GaugingsPlot extends SimpleFlowPanel {
         "active_gaugings",
         activeGaugings.getLabel(),
         activeGaugings);
+
+    if (plotEditor.getEditablePlot() == null) {
+      plotEditor.saveAsDefault(true); // first draw
+    }
+
     plotEditor.addEditablePlot(plot);
     plotEditor.updateEditor();
 

@@ -68,7 +68,6 @@ public class Gaugings extends BamItem implements ICalibrationData {
             if (newGaugingDataset != null && newGaugingDataset.getNumberOfColumns() >= 4) {
                 gaugingDataset = newGaugingDataset;
                 updateTable();
-                plotPanel.plotEditor.saveAsDefault(true);
             }
         });
 
@@ -230,7 +229,6 @@ public class Gaugings extends BamItem implements ICalibrationData {
                     gaugingDatasetJson.getString("name"),
                     gaugingDatasetJson.getString("hashString"));
             updateTable(); // this fires associated listeners which update the plot
-            plotPanel.plotEditor.saveAsDefault(true);
         }
 
         if (json.has("plotEditor")) {

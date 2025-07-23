@@ -51,11 +51,9 @@ public class LimnigraphPlot extends SimpleFlowPanel {
     PlotLine limnigraph = limniDataset.getPlotLine();
     plot.addXYItem(limnigraph);
 
-    // PlotContainer plotContainer = new PlotContainer(plot);
     plotContainer.setPlot(plot);
 
-    // EditablePlot p = plotEditor.getEditablePlot();
-    // boolean firstDraw = p == null;
+    boolean firstDraw = plotEditor.getEditablePlot() == null;
 
     plotEditor.addEditablePlotItem("stage", "stage", limnigraph);
     if (envelop != null) {
@@ -69,7 +67,9 @@ public class LimnigraphPlot extends SimpleFlowPanel {
     }
     addChild(plotContainer, true);
 
-    setDefaultPlotEditorConfig();
+    if (firstDraw) {
+      setDefaultPlotEditorConfig();
+    }
 
     plot.update();
   }

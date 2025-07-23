@@ -219,6 +219,8 @@ public class RatingCurvePlot extends SimpleFlowPanel {
 
         plotContainer.setPlot(plot);
 
+        boolean firstDraw = plotEditor.getEditablePlot() == null;
+
         if (gaugingsPoints != null) {
             plotEditor.addEditablePlotItem(
                     "gaugingsPoints",
@@ -260,7 +262,9 @@ public class RatingCurvePlot extends SimpleFlowPanel {
 
         plotEditor.updateEditor();
 
-        setDefaultPlotEditorConfig();
+        if (firstDraw) {
+            setDefaultPlotEditorConfig();
+        }
 
         plot.update();
 
