@@ -193,6 +193,7 @@ public class GaugingsImporter extends DataImporter {
         dataPreview.setColumnMapper(dischargeColMapper.getIndex(), dischargeColMapper);
         dataPreview.setColumnMapper(dischargeUColMapper.getIndex(), dischargeUColMapper);
         dataPreview.setColumnMapper(validityColMapper.getIndex(), validityColMapper);
+        dataPreview.setColumnMapper(stageUColMapper.getIndex(), stageUColMapper);
         int[] dateTimeIndices = dateTimeColMapper.getIndices();
         for (int i : dateTimeIndices) {
             dataPreview.setColumnMapper(i, dateTimeColMapper);
