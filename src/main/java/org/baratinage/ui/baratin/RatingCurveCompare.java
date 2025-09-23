@@ -124,9 +124,9 @@ public class RatingCurveCompare extends BamItem {
         plotConfigPanel.setPadding(5);
 
         JLabel xAxisLabel = new JLabel();
-        T.t(this, xAxisLabel, false, "discharge_label");
+        T.t(this, xAxisLabel, false, "stage_label");
         xAxisLabelField = new SimpleTextField();
-        xAxisLabelField.setText(T.text("discharge") + " [m3/s]");
+        xAxisLabelField.setText(T.text("stage") + " [m]");
         xAxisLabelField.addChangeListener(l -> {
             resetPlot();
         });
@@ -137,9 +137,9 @@ public class RatingCurveCompare extends BamItem {
         plotConfigPanel.addChild(xAxisConfigPanel, true);
 
         JLabel yAxisLabel = new JLabel();
-        T.t(this, yAxisLabel, false, "stage_label");
+        T.t(this, yAxisLabel, false, "discharge_label");
         yAxisLabelField = new SimpleTextField();
-        yAxisLabelField.setText(T.text("stage") + " [m]");
+        yAxisLabelField.setText(T.text("discharge") + " [m3/s]");
         yAxisLabelField.addChangeListener(l -> {
             resetPlot();
         });
