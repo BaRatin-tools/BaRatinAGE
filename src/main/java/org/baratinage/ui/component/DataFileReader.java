@@ -4,6 +4,7 @@ import java.awt.Font;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -62,7 +63,8 @@ public class DataFileReader extends SimpleFlowPanel {
         browseFileSystemButon.addActionListener(e -> {
             file = CommonDialog.openFileDialog(
                     T.text("select_data_text_file"),
-                    fileFilters.length == 0 ? null : fileFilters[0]);
+                    fileFilters.length == 0 ? null : fileFilters[0],
+                    Arrays.copyOfRange(fileFilters, 1, fileFilters.length));
 
             if (file == null) {
                 ConsoleLogger.error("selected file is null.");
