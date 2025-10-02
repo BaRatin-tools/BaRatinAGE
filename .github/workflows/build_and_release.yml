@@ -44,12 +44,12 @@ jobs:
       - name: Package app with jpackage
         run: >
           jpackage --type app-image
-          --app-version $env:VERSION_NUMBER
-          --name $env:NAME
-          --dest $env:OUT_DIR
+          --app-version ${{ env.VERSION_NUMBER }}
+          --name ${{ env.NAME }}
+          --dest ${{ env.OUT_DIR }}
           --input target/${{ env.NAME }}-${{ env.VERSION_NUMBER }}.jar
-          --main-jar "$env:NAME.jar"
-          --icon $env:ICON_PATH
+          --main-jar ${{ env.NAME }}-${{ env.VERSION_NUMBER }}.jar
+          --icon ${{ env.ICON_PATH }}
 
       - name: Create required directories and copy required files
         run: |
