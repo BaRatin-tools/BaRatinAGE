@@ -32,7 +32,7 @@ jobs:
           java-version: 21
 
       - name: Set version in pom.xml
-        run: mvn versions:set -DnewVersion=${{ env.VERSION }}
+        run: mvn versions:set -DnewVersion="${{ env.VERSION }}"
 
       - name: Build JAR
         run: mvn clean package
