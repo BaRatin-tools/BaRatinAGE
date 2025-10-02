@@ -17,7 +17,7 @@ jobs:
       EXT_EXE_DIR: exe
       DIRS_TO_CREATE: "log exe/bam_workspace"
       DIRS_TO_COPY: "resources/fonts resources/i18n resources/icons example"
-      JAR_DIR: target
+      FILES_TO_COPY: "resources/credits.csv resources/baratin_qfh_presets.json"
       VERSION: ${{ github.event.inputs.version }}
       OS: Windows
       VERSION_NUMBER: ${{ github.event.inputs.version != '' && startsWith(github.event.inputs.version, 'v') && github.event.inputs.version[1:] || '' }}
@@ -44,23 +44,29 @@ jobs:
           --app-version $env:VERSION_NUMBER
           --name $env:NAME
           --dest $env:OUT_DIR
-          --input $env:JAR_DIR
+          --input target/${{ env.NAME }}-${{ env.VERSION_NUMBER }}.jar
           --main-jar "$env:NAME.jar"
           --icon $env:ICON_PATH
 
-      - name: Create required directories
+      - name: Create required directories and copy required files
         run: |
           $appDir = Join-Path "${{ env.OUT_DIR }}" "${{ env.NAME }}"
           foreach ($d in $env:DIRS_TO_CREATE.Split(" ")) {
             New-Item -ItemType Directory -Force -Path (Join-Path $appDir $d) | Out-Null
           }
           New-Item -ItemType Directory -Force -Path (Join-Path $appDir $env:EXT_EXE_DIR) | Out-Null
+          foreach ($d in $env:DIRS_TO_COPY.Split(" ")) {
+            Copy-item -Force -Recurse $d -Destination (Join-Path $appDir $d)
+          }
+          foreach ($d in $env:FILES_TO_COPY.Split(" ")) {
+            Copy-item -Force $d -Destination (Join-Path $appDir $d)
+          }
 
       - name: Download external executable from latest release
         run: |
           gh release download --repo BaM-tools/BaM --pattern "BaM-*_${{ env.OS }}.zip" --dir .
           $zipPath = Get-ChildItem -Filter "BaM-*_${{ env.OS }}.zip" | Select-Object -First 1
-          Expand-Archive $zipPath.FullName -DestinationPath (Join-Path "${{ env.OUT_DIR }}" "${{ env.NAME }}" $env:EXT_EXE_DIR) -Force
+          Expand-Archive $zipPath.FullName -DestinationPath (Join-Path "${{ env.OUT_DIR }}" "${{ env.NAME }}" "${{ env.EXT_EXE_DIR }}") -Force
 
       - name: Zip packaged app
         run: |
