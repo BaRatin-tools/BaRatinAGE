@@ -20,6 +20,7 @@ jobs:
       JAR_DIR: target
       VERSION: ${{ github.event.inputs.version }}
       OS: Windows
+      VERSION_NUMBER: ${{ github.event.inputs.version != '' && startsWith(github.event.inputs.version, 'v') && github.event.inputs.version[1:] || '' }}
 
     steps:
       - name: Checkout repo
