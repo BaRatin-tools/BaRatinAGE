@@ -13,7 +13,7 @@ jobs:
     env:
       NAME: BaRatinAGE
       OUT_DIR: out
-      ICON_PATH: icon.ico
+      ICON_PATH: resources/icons/icon.ico
       EXT_EXE_DIR: exe
       DIRS_TO_CREATE: "log exe/bam_workspace"
       DIRS_TO_COPY: "resources/fonts resources/i18n resources/icons example"
@@ -49,7 +49,7 @@ jobs:
 
       - name: Create required directories
         run: |
-          $appDir = Join-Path "$env:OUT_DIR" "$env:NAME"
+          $appDir = Join-Path "${{ env.OUT_DIR }}" "${{ env.NAME }}"
           foreach ($d in $env:DIRS_TO_CREATE.Split(" ")) {
             New-Item -ItemType Directory -Force -Path (Join-Path $appDir $d) | Out-Null
           }
@@ -57,13 +57,13 @@ jobs:
 
       - name: Download external executable from latest release
         run: |
-          gh release download --repo BaM-tools/BaM --pattern "BaM-*_$env:OS.zip" --dir .
-          $zipPath = Get-ChildItem -Filter "BaM-*_$env:OS.zip" | Select-Object -First 1
-          Expand-Archive $zipPath.FullName -DestinationPath (Join-Path "$env:OUT_DIR" "$env:NAME" $env:EXT_EXE_DIR) -Force
+          gh release download --repo BaM-tools/BaM --pattern "BaM-*_${{ env.OS }}.zip" --dir .
+          $zipPath = Get-ChildItem -Filter "BaM-*_${{ env.OS }}.zip" | Select-Object -First 1
+          Expand-Archive $zipPath.FullName -DestinationPath (Join-Path "${{ env.OUT_DIR }}" "${{ env.NAME }}" $env:EXT_EXE_DIR) -Force
 
       - name: Zip packaged app
         run: |
-          $zipFile = "$env:NAME-$env:VERSION.zip"
+          $zipFile = "${{ env.NAME }}-${{ env.VERSION }}.zip"
           Compress-Archive -Path (Join-Path $env:OUT_DIR $env:NAME) -DestinationPath $zipFile -Force
 
       - name: Upload artifact
