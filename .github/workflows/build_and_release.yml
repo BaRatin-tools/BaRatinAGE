@@ -33,7 +33,7 @@ jobs:
 
       - name: Derive other environment variables
         run: |
-          echo "VERSION_NUMBER=${{ github.event.inputs.version }}" | sed 's/^v//' >> $GITHUB_ENV
+          echo "VERSION_NUMBER=$($env:VERSION.Substring(1))" >> $env:GITHUB_ENV
 
       - name: Set version in pom.xml
         run: mvn versions:set -DnewVersion="${{ env.VERSION_NUMBER }}"
