@@ -32,7 +32,7 @@ jobs:
           java-version: 21
 
       - name: Set version in pom.xml
-        run: mvn versions:set -DnewVersion=$env:VERSION
+        run: mvn versions:set -DnewVersion=${{ env:VERSION }}
 
       - name: Build JAR
         run: mvn clean package
@@ -40,31 +40,31 @@ jobs:
       - name: Package app with jpackage
         run: >
           jpackage --type app-image
-          --app-version $env:VERSION
-          --name $env:NAME
-          --dest $env:OUT_DIR
-          --input $env:JAR_DIR
-          --main-jar "$env:NAME.jar"
-          --icon $env:ICON_PATH
+          --app-version ${{ env:VERSION  }}
+          --name ${{ env:NAME  }}
+          --dest ${{ env:OUT_DIR  }}
+          --input ${{ env:JAR_DIR  }}
+          --main-jar "${{ env:NAME }}.jar"
+          --icon ${{ env:ICON_PATH }}
 
       - name: Create required directories
         run: |
           $appDir = Join-Path "${{ env.OUT_DIR }}" "${{ env.NAME }}"
-          foreach ($d in $env:DIRS_TO_CREATE.Split(" ")) {
+          foreach ($d in ${{ env:DIRS_TO_CREATE}}.Split(" ")) {
             New-Item -ItemType Directory -Force -Path (Join-Path $appDir $d) | Out-Null
           }
-          New-Item -ItemType Directory -Force -Path (Join-Path $appDir $env:EXT_EXE_DIR) | Out-Null
+          New-Item -ItemType Directory -Force -Path (Join-Path $appDir ${{ env:EXT_EXE_DIR }}) | Out-Null
 
       - name: Download external executable from latest release
         run: |
           gh release download --repo BaM-tools/BaM --pattern "BaM-*_${{ env.OS }}.zip" --dir .
           $zipPath = Get-ChildItem -Filter "BaM-*_${{ env.OS }}.zip" | Select-Object -First 1
-          Expand-Archive $zipPath.FullName -DestinationPath (Join-Path "${{ env.OUT_DIR }}" "${{ env.NAME }}" $env:EXT_EXE_DIR) -Force
+          Expand-Archive $zipPath.FullName -DestinationPath (Join-Path "${{ env.OUT_DIR }}" "${{ env.NAME }}" ${{ env:EXT_EXE_DIR }}) -Force
 
       - name: Zip packaged app
         run: |
           $zipFile = "${{ env.NAME }}-${{ env.VERSION }}.zip"
-          Compress-Archive -Path (Join-Path $env:OUT_DIR $env:NAME) -DestinationPath $zipFile -Force
+          Compress-Archive -Path (Join-Path ${{ env:OUT_DIR }} ${{ env:NAME }}) -DestinationPath $zipFile -Force
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
