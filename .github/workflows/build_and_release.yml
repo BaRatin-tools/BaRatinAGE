@@ -47,7 +47,7 @@ jobs:
           --app-version ${{ env.VERSION_NUMBER }}
           --name ${{ env.NAME }}
           --dest ${{ env.OUT_DIR }}
-          --input target/${{ env.NAME }}-${{ env.VERSION_NUMBER }}.jar
+          --input target
           --main-jar ${{ env.NAME }}-${{ env.VERSION_NUMBER }}.jar
           --icon ${{ env.ICON_PATH }}
 
