@@ -32,16 +32,20 @@ jobs:
           java-version: 21
 
       - name: Derive other environment variables
+        shell: pwsh
         run: |
           echo "VERSION_NUMBER=$($env:VERSION.Substring(1))" >> $env:GITHUB_ENV
 
       - name: Set version in pom.xml
+        shell: pwsh
         run: mvn versions:set -DnewVersion="${{ env.VERSION_NUMBER }}"
 
       - name: Build JAR
+        shell: pwsh
         run: mvn clean package
 
       - name: Package app with jpackage
+        shell: pwsh
         run: >
           jpackage --type app-image
           --app-version ${{ env.VERSION_NUMBER }}
@@ -52,6 +56,7 @@ jobs:
           --icon ${{ env.ICON_PATH }}
 
       - name: Create required directories and copy required files
+        shell: pwsh
         run: |
           $appDir = Join-Path "${{ env.OUT_DIR }}" "${{ env.NAME }}"
           foreach ($d in $env:DIRS_TO_CREATE.Split(" ")) {
@@ -66,6 +71,7 @@ jobs:
           }
 
       - name: Download external executable from latest release
+        shell: pwsh
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
@@ -74,8 +80,9 @@ jobs:
           Expand-Archive $zipPath.FullName -DestinationPath (Join-Path "${{ env.OUT_DIR }}" "${{ env.NAME }}" "${{ env.EXT_EXE_DIR }}") -Force
 
       - name: Zip packaged app
+        shell: pwsh
         run: |
-          $zipFile = "${{ env.NAME }}-${{ env.VERSION }}.zip"
+          $zipFile = "${{ env.NAME }}-${{ env.VERSION }}_${{ env.OS }}.zip"
           Compress-Archive -Path (Join-Path $env:OUT_DIR $env:NAME) -DestinationPath $zipFile -Force
 
       - name: Upload artifact
