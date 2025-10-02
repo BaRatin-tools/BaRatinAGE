@@ -1,0 +1,73 @@
+name: Build App
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version (format v*)"
+        required: true
+
+jobs:
+  build:
+    runs-on: windows-latest
+    env:
+      NAME: BaRatinAGE
+      OUT_DIR: out
+      ICON_PATH: icon.ico
+      EXT_EXE_DIR: exe
+      DIRS_TO_CREATE: "log exe/bam_workspace"
+      DIRS_TO_COPY: "resources/fonts resources/i18n resources/icons example"
+      JAR_DIR: target
+      VERSION: ${{ github.event.inputs.version }}
+      OS: Windows
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Set up Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - name: Set version in pom.xml
+        run: mvn versions:set -DnewVersion=$env:VERSION
+
+      - name: Build JAR
+        run: mvn clean package
+
+      - name: Package app with jpackage
+        run: >
+          jpackage --type app-image
+          --app-version $env:VERSION
+          --name $env:NAME
+          --dest $env:OUT_DIR
+          --input $env:JAR_DIR
+          --main-jar "$env:NAME.jar"
+          --icon $env:ICON_PATH
+
+      - name: Create required directories
+        run: |
+          $appDir = Join-Path "${{ env.OUT_DIR }}" "${{ env.NAME }}"
+          foreach ($d in $env:DIRS_TO_CREATE.Split(" ")) {
+            New-Item -ItemType Directory -Force -Path (Join-Path $appDir $d) | Out-Null
+          }
+          New-Item -ItemType Directory -Force -Path (Join-Path $appDir $env:EXT_EXE_DIR) | Out-Null
+
+      - name: Download external executable from latest release
+        run: |
+          gh release download --repo BaM-tools/BaM --pattern "BaM-*_${{ env.OS }}.zip" --dir .
+          $zipPath = Get-ChildItem -Filter "BaM-*_${{ env.OS }}.zip" | Select-Object -First 1
+          Expand-Archive $zipPath.FullName -DestinationPath (Join-Path "${{ env.OUT_DIR }}" "${{ env.NAME }}" $env:EXT_EXE_DIR) -Force
+
+      - name: Zip packaged app
+        run: |
+          $zipFile = "${{ env.NAME }}-${{ env.VERSION }}.zip"
+          Compress-Archive -Path (Join-Path $env:OUT_DIR $env:NAME) -DestinationPath $zipFile -Force
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ env.NAME }}-${{ env.VERSION }}_${{ env.OS }}
+          path: ${{ env.NAME }}-${{ env.VERSION }}_${{ env.OS }}.zip
