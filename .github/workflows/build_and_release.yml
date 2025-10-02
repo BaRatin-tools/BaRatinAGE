@@ -67,7 +67,7 @@ jobs:
           Compress-Archive -Path (Join-Path $env:OUT_DIR $env:NAME) -DestinationPath $zipFile -Force
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ env.NAME }}-${{ env.VERSION }}_${{ env.OS }}
           path: ${{ env.NAME }}-${{ env.VERSION }}_${{ env.OS }}.zip
