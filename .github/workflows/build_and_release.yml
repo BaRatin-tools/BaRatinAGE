@@ -33,7 +33,7 @@ jobs:
           java-version: 21
 
       - name: Set version in pom.xml
-        run: mvn versions:set -DnewVersion="${{ env.VERSION }}"
+        run: mvn versions:set -DnewVersion="${{ env.VERSION_NUMBER }}"
 
       - name: Build JAR
         run: mvn clean package
@@ -41,7 +41,7 @@ jobs:
       - name: Package app with jpackage
         run: >
           jpackage --type app-image
-          --app-version $env:VERSION
+          --app-version $env:VERSION_NUMBER
           --name $env:NAME
           --dest $env:OUT_DIR
           --input $env:JAR_DIR
