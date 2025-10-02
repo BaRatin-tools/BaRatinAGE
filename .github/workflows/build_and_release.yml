@@ -66,6 +66,8 @@ jobs:
           }
 
       - name: Download external executable from latest release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           gh release download --repo BaM-tools/BaM --pattern "BaM-*_${{ env.OS }}.zip" --dir .
           $zipPath = Get-ChildItem -Filter "BaM-*_${{ env.OS }}.zip" | Select-Object -First 1
