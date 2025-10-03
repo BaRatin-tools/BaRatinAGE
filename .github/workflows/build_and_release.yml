@@ -1,0 +1,178 @@
+name: Build App
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version (X.Y.Z) ONLY digits seperated by dots (e.g. 3.2.1)"
+        required: true
+      beta-version:
+        description: "A single digit indicating the beta version number (e.g. 6)"
+
+jobs:
+  build:
+
+    env:
+      EXT_EXE_DIR: exe
+      EXAMPLES_DIR: example
+      DIRS_TO_CREATE: "log exe/bam_workspace"
+      DIRS_TO_COPY: "resources/fonts resources/i18n resources/icons example"
+      FILES_TO_COPY: "resources/credits.csv resources/baratin_qfh_presets.json"
+      VERSION: ${{ github.event.inputs.version }}
+
+    runs-on:  ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [windows-latest, ubuntu-latest]
+        include:
+          - os: windows-latest
+            ICON_PATH: resources/icons/icon.ico
+            MAIN_DIR: out/BaRatinAGE
+          - os: ubuntu-latest
+            ICON_PATH: resources/icons/icon.png
+            MAIN_DIR: out/BaRatinAGE/bin
+
+    steps:
+      - name: Derive other environment variables
+        shell: pwsh
+        run: |
+          if ("${{ github.event.inputs.beta-version }}") {
+            $versionFull = "${{ github.event.inputs.version }}-Beta-${{ github.event.inputs.beta-version }}"
+          } else {
+            $versionFull = "${{ github.event.inputs.version }}"
+          }
+          echo "VERSION_FULL=$versionFull" >> $env:GITHUB_ENV
+
+      - name: Checkout repo
+        uses: actions/checkout@v5
+
+      - name: Set up Java
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - name: Set version in pom.xml
+        shell: pwsh
+        run: mvn versions:set -DnewVersion="${{ env.VERSION_FULL }}" -q
+
+      - name: Build JAR
+        shell: pwsh
+        run: mvn clean package -q
+
+      - name: Package app with jpackage
+        shell: pwsh
+        run: >
+          jpackage --type app-image
+          --app-version ${{ env.VERSION }}
+          --name BaRatinAGE
+          --dest out
+          --input target
+          --main-jar BaRatinAGE-${{ env.VERSION_FULL }}.jar
+          --icon ${{ matrix.ICON_PATH }}
+
+      - name: Create required directories and copy required files
+        shell: pwsh
+        run: |
+          $appDir = "${{ matrix.MAIN_DIR }}"
+          foreach ($d in $env:DIRS_TO_CREATE.Split(" ")) {
+            New-Item -ItemType Directory -Force -Path (Join-Path $appDir $d) | Out-Null
+          }
+          New-Item -ItemType Directory -Force -Path (Join-Path $appDir $env:EXT_EXE_DIR) | Out-Null
+          foreach ($d in $env:DIRS_TO_COPY.Split(" ")) {
+            Copy-item -Force -Recurse $d -Destination (Join-Path $appDir $d)
+          }
+          foreach ($d in $env:FILES_TO_COPY.Split(" ")) {
+            Copy-item -Force $d -Destination (Join-Path $appDir $d)
+          }
+
+      - name: Download latest example project files
+        shell: bash # necessary
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          tag=$(gh release list --repo ${{ github.repository }} --limit 100 \
+            --json tagName,isPrerelease \
+            --jq '.[] | select(.isPrerelease and (.tagName | startswith("examples-"))) 
+                  | .tagName' \
+            | sort -Vr | head -n1)
+
+          echo "Using release tag: $tag"
+
+          gh release download "$tag" \
+            --repo ${{ github.repository }} \
+            --pattern "*.bam"
+
+          dest="./${{ matrix.MAIN_DIR }}/${{ env.EXAMPLES_DIR }}"
+            mkdir -p "$dest"
+            mv *.bam "$dest"/
+
+      - name: Download BaM executable from latest release
+        shell: pwsh
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release download --repo BaM-tools/BaM --pattern "BaM-*_${{ runner.OS }}.zip" --dir .
+          $zipPath = Get-ChildItem -Filter "BaM-*_${{ runner.OS }}.zip" | Select-Object -First 1
+          Expand-Archive $zipPath.FullName -DestinationPath (Join-Path "${{ matrix.MAIN_DIR }}" "${{ env.EXT_EXE_DIR }}") -Force
+
+      - name: Download distribution CLI executable from latest release
+        shell: pwsh
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release download --repo benRenard/BMSL --pattern "distribution-*_${{ runner.OS }}.zip" --dir .
+          $zipPath = Get-ChildItem -Filter "distribution-*_${{ runner.OS }}.zip" | Select-Object -First 1
+          Expand-Archive $zipPath.FullName -DestinationPath (Join-Path "${{ matrix.MAIN_DIR }}" "${{ env.EXT_EXE_DIR }}") -Force
+
+      - name: Zip packaged app
+        shell: pwsh
+        run: |
+          $zipFile = "BaRatinAGE-${{ env.VERSION_FULL }}_${{ runner.OS }}.zip"
+          Compress-Archive -Path out/BaRatinAGE -DestinationPath $zipFile -Force
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: BaRatinAGE-${{ env.VERSION_FULL }}_${{ runner.OS }}
+          path: BaRatinAGE-${{ env.VERSION }}_${{ runner.OS }}.zip
+
+  create_release:
+      needs: [build]
+      runs-on: ubuntu-latest
+      steps:
+        - name: Derive other environment variables
+          shell: pwsh
+          run: |
+            if ("${{ github.event.inputs.beta-version }}") {
+              $versionFull = "${{ github.event.inputs.version }}-Beta-${{ github.event.inputs.beta-version }}"
+            } else {
+              $versionFull = "${{ github.event.inputs.version }}"
+            }
+            echo "VERSION_FULL=$versionFull" >> $env:GITHUB_ENV
+
+        - name: Checkout code
+          uses: actions/checkout@v4
+
+        - name: Download Artifacts
+          uses: actions/download-artifact@v4
+          with:
+            path: artifacts
+
+        # - name: Unzip Artifacts
+        #   run: |
+        #     mkdir -p release_content
+        #     # Find all zip files and unzip them into release_content
+        #     find artifacts -name "*.zip" -exec unzip {} -d release_content \;
+
+        - name: Create Release
+          uses: softprops/action-gh-release@v1
+          with:
+            tag_name: ${{ env.VERSION_FULL }}
+            name: BaRatinAGE ${{ env.VERSION_FULL }}
+            generate_release_notes: true
+            files: |
+              artifacts/**/*
+            prerelease: true
+          env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
