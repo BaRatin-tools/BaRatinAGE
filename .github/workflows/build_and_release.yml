@@ -129,7 +129,7 @@ jobs:
       - name: Zip packaged app
         shell: pwsh
         run: |
-          $zipFile = "BaRatinAGE-${{ env.VERSION_FULL }}_${{ runner.OS }}.zip"
+          $zipFile = "BaRatinAGE-${{ env.VERSION_FULL }}_${{ runner.OS }}"
           Compress-Archive -Path out/BaRatinAGE -DestinationPath $zipFile -Force
 
       - name: Upload artifact
