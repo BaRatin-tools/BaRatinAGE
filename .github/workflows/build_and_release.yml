@@ -9,18 +9,18 @@ on:
       beta-version:
         description: "A single digit indicating the beta version number (e.g. 6)"
 
-env:
-  NAME: BaRatinAGE
-  OUT_DIR: out
-  EXT_EXE_DIR: exe
-  EXAMPLES_DIR: example
-  DIRS_TO_CREATE: "log exe/bam_workspace"
-  DIRS_TO_COPY: "resources/fonts resources/i18n resources/icons example"
-  FILES_TO_COPY: "resources/credits.csv resources/baratin_qfh_presets.json"
-  VERSION: ${{ github.event.inputs.version }}
-
 jobs:
   build:
+
+    env:
+      NAME: BaRatinAGE
+      OUT_DIR: out
+      EXT_EXE_DIR: exe
+      EXAMPLES_DIR: example
+      DIRS_TO_CREATE: "log exe/bam_workspace"
+      DIRS_TO_COPY: "resources/fonts resources/i18n resources/icons example"
+      FILES_TO_COPY: "resources/credits.csv resources/baratin_qfh_presets.json"
+      VERSION: ${{ github.event.inputs.version }}
 
     runs-on:  ${{ matrix.os }}
     strategy:
