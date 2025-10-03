@@ -135,4 +135,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: BaRatinAGE-${{ env.VERSION_FULL }}_${{ runner.OS }}
-          path: BaRatinAGE-${{ env.VERSION }}_${{ runner.OS }}.zip
+          path: BaRatinAGE-${{ env.VERSION }}_${{ runner.OS }}
