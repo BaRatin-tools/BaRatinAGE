@@ -13,7 +13,6 @@ jobs:
   build:
 
     env:
-      NAME: BaRatinAGE
       OUT_DIR: out
       EXT_EXE_DIR: exe
       EXAMPLES_DIR: example
@@ -29,10 +28,10 @@ jobs:
         include:
           - os: windows-latest
             ICON_PATH: resources/icons/icon.ico
-            MAIN_DIR: ${{ env.OUT_DIR }}/${{ env.NAME }}
+            MAIN_DIR: out/BaRatinAGE
           - os: ubuntu-latest
             ICON_PATH: resources/icons/icon.png
-            MAIN_DIR: ${{ env.OUT_DIR }}/${{ env.NAME }}/bin
+            MAIN_DIR: out/BaRatinAGE/bin
 
     steps:
       - name: Derive other environment variables
@@ -67,10 +66,10 @@ jobs:
         run: >
           jpackage --type app-image
           --app-version ${{ env.VERSION }}
-          --name ${{ env.NAME }}
-          --dest ${{ env.OUT_DIR }}
+          --name BaRatinAGE
+          --dest out
           --input target
-          --main-jar ${{ env.NAME }}-${{ env.VERSION_FULL }}.jar
+          --main-jar BaRatinAGE-${{ env.VERSION_FULL }}.jar
           --icon ${{ matrix.ICON_PATH }}
 
       - name: Create required directories and copy required files
@@ -130,11 +129,11 @@ jobs:
       - name: Zip packaged app
         shell: pwsh
         run: |
-          $zipFile = "${{ env.NAME }}-${{ env.VERSION_FULL }}_${{ runner.OS }}.zip"
-          Compress-Archive -Path (Join-Path $env:OUT_DIR $env:NAME) -DestinationPath $zipFile -Force
+          $zipFile = "BaRatinAGE-${{ env.VERSION_FULL }}_${{ runner.OS }}.zip"
+          Compress-Archive -Path out/BaRatinAGE -DestinationPath $zipFile -Force
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ env.NAME }}-${{ env.VERSION_FULL }}_${{ runner.OS }}
-          path: ${{ env.NAME }}-${{ env.VERSION }}_${{ runner.OS }}.zip
+          name: BaRatinAGE-${{ env.VERSION_FULL }}_${{ runner.OS }}
+          path: BaRatinAGE-${{ env.VERSION }}_${{ runner.OS }}.zip
