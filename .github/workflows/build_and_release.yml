@@ -4,8 +4,10 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: "Version (format v*)"
+        description: "Version (X.Y.Z) ONLY digits seperated by dots (e.g. 3.2.1)"
         required: true
+      beta-version:
+        description: "A single digit indicating the beta version number (e.g. 6)"
 
 jobs:
   build:
@@ -23,6 +25,16 @@ jobs:
       OS: Windows
 
     steps:
+      - name: Derive other environment variables
+        shell: pwsh
+        run: |
+          if ("${{ github.event.inputs.beta-version }}") {
+            $versionFull = "${{ github.event.inputs.version }}-Beta-${{ github.event.inputs.beta-version }}"
+          } else {
+            $versionFull = "${{ github.event.inputs.version }}"
+          }
+          echo "VERSION_FULL=$versionFull" >> $env:GITHUB_ENV
+
       - name: Checkout repo
         uses: actions/checkout@v5
 
@@ -32,14 +44,9 @@ jobs:
           distribution: temurin
           java-version: 21
 
-      - name: Derive other environment variables
-        shell: pwsh
-        run: |
-          echo "VERSION_NUMBER=$($env:VERSION.Substring(1))" >> $env:GITHUB_ENV
-
       - name: Set version in pom.xml
         shell: pwsh
-        run: mvn versions:set -DnewVersion="${{ env.VERSION_NUMBER }}"
+        run: mvn versions:set -DnewVersion="${{ env.VERSION_FULL }}"
 
       - name: Build JAR
         shell: pwsh
@@ -49,11 +56,11 @@ jobs:
         shell: pwsh
         run: >
           jpackage --type app-image
-          --app-version ${{ env.VERSION_NUMBER }}
+          --app-version ${{ env.VERSION }}
           --name ${{ env.NAME }}
           --dest ${{ env.OUT_DIR }}
           --input target
-          --main-jar ${{ env.NAME }}-${{ env.VERSION_NUMBER }}.jar
+          --main-jar ${{ env.NAME }}-${{ env.VERSION_FULL }}.jar
           --icon ${{ env.ICON_PATH }}
 
       - name: Create required directories and copy required files
@@ -110,14 +117,15 @@ jobs:
           $zipPath = Get-ChildItem -Filter "distribution-*_${{ env.OS }}.zip" | Select-Object -First 1
           Expand-Archive $zipPath.FullName -DestinationPath (Join-Path "${{ env.OUT_DIR }}" "${{ env.NAME }}" "${{ env.EXT_EXE_DIR }}") -Force
 
-      - name: Zip packaged app
-        shell: pwsh
-        run: |
-          $zipFile = "${{ env.NAME }}-${{ env.VERSION }}_${{ env.OS }}.zip"
-          Compress-Archive -Path (Join-Path $env:OUT_DIR $env:NAME) -DestinationPath $zipFile -Force
+      # - name: Zip packaged app
+      #   shell: pwsh
+      #   run: |
+      #     $zipFile = "${{ env.NAME }}-${{ env.VERSION }}_${{ env.OS }}.zip"
+      #     Compress-Archive -Path (Join-Path $env:OUT_DIR $env:NAME) -DestinationPath $zipFile -Force
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: ${{ env.NAME }}-${{ env.VERSION }}_${{ env.OS }}
-          path: ${{ env.NAME }}-${{ env.VERSION }}_${{ env.OS }}.zip
+          path: ${{ env.OUT_DIR }}/${{ env.NAME }}/*
+          # path: ${{ env.NAME }}-${{ env.VERSION }}_${{ env.OS }}.zip
