@@ -13,7 +13,6 @@ jobs:
   build:
 
     env:
-      OUT_DIR: out
       EXT_EXE_DIR: exe
       EXAMPLES_DIR: example
       DIRS_TO_CREATE: "log exe/bam_workspace"
@@ -104,7 +103,7 @@ jobs:
             --repo ${{ github.repository }} \
             --pattern "*.bam"
 
-          dest="./${{ env.MAIN_DIR }}/${{ env.EXAMPLES_DIR }}"
+          dest="./${{ matrix.MAIN_DIR }}/${{ env.EXAMPLES_DIR }}"
             mkdir -p "$dest"
             mv *.bam "$dest"/
 
@@ -115,7 +114,7 @@ jobs:
         run: |
           gh release download --repo BaM-tools/BaM --pattern "BaM-*_${{ runner.OS }}.zip" --dir .
           $zipPath = Get-ChildItem -Filter "BaM-*_${{ runner.OS }}.zip" | Select-Object -First 1
-          Expand-Archive $zipPath.FullName -DestinationPath (Join-Path "${{ env.MAIN_DIR }}" "${{ env.EXT_EXE_DIR }}") -Force
+          Expand-Archive $zipPath.FullName -DestinationPath (Join-Path "${{ matrix.MAIN_DIR }}" "${{ env.EXT_EXE_DIR }}") -Force
 
       - name: Download distribution CLI executable from latest release
         shell: pwsh
@@ -124,7 +123,7 @@ jobs:
         run: |
           gh release download --repo benRenard/BMSL --pattern "distribution-*_${{ runner.OS }}.zip" --dir .
           $zipPath = Get-ChildItem -Filter "distribution-*_${{ runner.OS }}.zip" | Select-Object -First 1
-          Expand-Archive $zipPath.FullName -DestinationPath (Join-Path "${{ env.MAIN_DIR }}" "${{ env.EXT_EXE_DIR }}") -Force
+          Expand-Archive $zipPath.FullName -DestinationPath (Join-Path "${{ matrix.MAIN_DIR }}" "${{ env.EXT_EXE_DIR }}") -Force
 
       - name: Zip packaged app
         shell: pwsh
