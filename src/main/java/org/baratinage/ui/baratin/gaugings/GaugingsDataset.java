@@ -110,7 +110,7 @@ public class GaugingsDataset extends AbstractDataset implements IPlotDataProvide
         // build derived arrays
         double[] q = getColumn(DISCHARGE);
         double[] u = getColumn(DISCHARGE_U);
-        double[] std = getStd(q, u);
+        double[] std = getStdRelative(q, u);
         double[][] env = getEnv(q, std);
 
         derived.clear();
@@ -121,7 +121,7 @@ public class GaugingsDataset extends AbstractDataset implements IPlotDataProvide
         double[] uh = getColumn(STAGE_U);
         if (uh != null) {
             double[] h = getColumn(STAGE);
-            double[] stdh = getStd(h, uh);
+            double[] stdh = getStdAbsolute(uh);
             double[][] envh = getEnv(h, stdh);
             derived.put(STAGE_STD, stdh);
             derived.put(STAGE_LOW, envh[0]);
@@ -150,7 +150,15 @@ public class GaugingsDataset extends AbstractDataset implements IPlotDataProvide
 
     }
 
-    private static double[] getStd(double[] v, double[] u) {
+    private static double[] getStdAbsolute(double[] u) {
+        double[] std = new double[u.length];
+        for (int k = 0; k < u.length; k++) {
+            std[k] = u[k] / 2;
+        }
+        return std;
+    }
+
+    private static double[] getStdRelative(double[] v, double[] u) {
         double[] std = new double[v.length];
         for (int k = 0; k < v.length; k++) {
             std[k] = v[k] * u[k] / 100 / 2;
