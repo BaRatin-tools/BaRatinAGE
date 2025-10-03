@@ -120,4 +120,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ${{ env.NAME }}-${{ env.VERSION }}_${{ env.OS }}
-          path: ${{ env:OUT_DIR }}/${{ env.NAME }}
+          path: ${{ env.OUT_DIR }}/${{ env.NAME }}
