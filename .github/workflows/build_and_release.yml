@@ -128,11 +128,39 @@ jobs:
       - name: Zip packaged app
         shell: pwsh
         run: |
-          $zipFile = "BaRatinAGE-${{ env.VERSION_FULL }}_${{ runner.OS }}"
+          $zipFile = "BaRatinAGE-${{ env.VERSION_FULL }}_${{ runner.OS }}.zip"
           Compress-Archive -Path out/BaRatinAGE -DestinationPath $zipFile -Force
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: BaRatinAGE-${{ env.VERSION_FULL }}_${{ runner.OS }}
-          path: BaRatinAGE-${{ env.VERSION }}_${{ runner.OS }}
+          path: BaRatinAGE-${{ env.VERSION }}_${{ runner.OS }}.zip
+
+create_release:
+    needs: [build]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Download Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Unzip Artifacts
+        run: |
+          mkdir -p release_content
+          # Find all zip files and unzip them into release_content
+          find artifacts -name "*.zip" -exec unzip {} -d release_content \;
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ github.event.inputs.version }}
+          files: |
+            release_content/*
+          prerelease: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
