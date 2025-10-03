@@ -46,11 +46,11 @@ jobs:
 
       - name: Set version in pom.xml
         shell: pwsh
-        run: mvn versions:set -DnewVersion="${{ env.VERSION_FULL }}"
+        run: mvn versions:set -DnewVersion="${{ env.VERSION_FULL }}" -q
 
       - name: Build JAR
         shell: pwsh
-        run: mvn clean package
+        run: mvn clean package -q
 
       - name: Package app with jpackage
         shell: pwsh
