@@ -117,15 +117,14 @@ jobs:
           $zipPath = Get-ChildItem -Filter "distribution-*_${{ env.OS }}.zip" | Select-Object -First 1
           Expand-Archive $zipPath.FullName -DestinationPath (Join-Path "${{ env.OUT_DIR }}" "${{ env.NAME }}" "${{ env.EXT_EXE_DIR }}") -Force
 
-      # - name: Zip packaged app
-      #   shell: pwsh
-      #   run: |
-      #     $zipFile = "${{ env.NAME }}-${{ env.VERSION }}_${{ env.OS }}.zip"
-      #     Compress-Archive -Path (Join-Path $env:OUT_DIR $env:NAME) -DestinationPath $zipFile -Force
+      - name: Zip packaged app
+        shell: pwsh
+        run: |
+          $zipFile = "${{ env.NAME }}-${{ env.VERSION_FULL }}_${{ env.OS }}.zip"
+          Compress-Archive -Path (Join-Path $env:OUT_DIR $env:NAME) -DestinationPath $zipFile -Force
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ env.NAME }}-${{ env.VERSION }}_${{ env.OS }}
-          path: ${{ env.OUT_DIR }}/${{ env.NAME }}/*
-          # path: ${{ env.NAME }}-${{ env.VERSION }}_${{ env.OS }}.zip
+          name: ${{ env.NAME }}-${{ env.VERSION_FULL }}_${{ env.OS }}
+          path: ${{ env.NAME }}-${{ env.VERSION }}_${{ env.OS }}.zip
