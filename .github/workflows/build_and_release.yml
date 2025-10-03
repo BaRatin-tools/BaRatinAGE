@@ -104,7 +104,7 @@ jobs:
             --repo ${{ github.repository }} \
             --pattern "*.bam"
 
-          dest="${{ env.MAIN_DIR }}/${{ env.EXAMPLES_DIR }}"
+          dest="./${{ env.MAIN_DIR }}/${{ env.EXAMPLES_DIR }}"
             mkdir -p "$dest"
             mv *.bam "$dest"/
 
