@@ -13,16 +13,16 @@ To have the development environment ready for BaRatinAGE V3, you'll need the fol
 
 For your development environment, you'll need a recent enough [version of Java Standard Edition](https://en.wikipedia.org/wiki/Java_version_history).
 It is recommended to have the most recent Long Term Support (LTS) release.
-You need at least the Java SE 10 but we recommand you use Java 19.
+The minimum version required is 21.
 
 Also note that you need the JDK (the JRE isn't enough) since some of the necessary tools only come with the JDK.
 For example, on linux, if you're using OpenJDK, make sure you install the jdk by running this command (adapt to the desired version):
 
 ```sh
-apt install openjdk-19-jdk
+apt install openjdk-21-jdk
 ```
 
-... and not `apt install openjdk-19-jre`
+... and not `apt install openjdk-21-jre`
 
 ## Getting Maven
 
@@ -52,12 +52,13 @@ cd BaRatinAGE
 
 Alternatively, simply download the source code from GitHub as a `.zip` archive file that you unzip in a directory of your choice.
 
-## Getting BaM executable
+## Getting BaM executable and the distribution CLI executables
 
-To get the BaM executable, refere to the instructions in the readme of the [GitHub BaM repository](https://github.com/BaM-tools/BaM).
-_Note: you need a version that doesn't wait for a user input to exit at the end of the execution!_
+Both executable can be found in the release sections of their respective repository:
+- [BaM](https://github.com/BaM-tools/BaM).
+- [distribution CLI](https://github.com/benRenard/BMSL).
 
-It can be compiled from source as described below.
+In case you need to build BaM on your local environment, here are instruction for Windows
 
 ### Prerequisit for compiling BaM on Windows
 
@@ -81,11 +82,10 @@ git clone https://github.com/benRenard/miniDMSL.git
 To build, BaM, navigate with the console to `BaM/makefile` and run: `make`.
 This will build the executable file, named `BaM` (`BaM.exe` on windows).
 
-You'll also need the `distribution` CLI tool that is located in `BMSL/cli/distribution` which can be compiled run the `make` command in this directory.
 
 ## BaRatinAGE directory final setup
 
-After getting the BaRatinAGE source code, you need to add a directory named `exe` at the root of the project where you copy/past the BaM executable.
+After getting the BaRatinAGE source code, you need to add a directory named `exe` at the root of the project where you copy/past the BaM and distribution CLI executables.
 
 ## IDE setup
 
@@ -112,8 +112,9 @@ If you're using [VS Codium](https://vscodium.com/), you may need to download the
 
 Packaging BaRatinAGE refers to both creating the executable `jar` file and using `jpackage` to create a standalone, platform specific, executable.
 
-A powershell script `build.ps1` should be used.
-On Linux, you probably need to install powershell to run the script.
+There are two options: 
+- using the github action dedicated to building and releasing the app
+- use the `build.ps1` powershell script (On Linux, you probably need to install powershell to run the script)
 
 The `build.ps1` script takes one mandatory arguments, the version number.
 Optionnaly, you can use it to also create the final archive (`*.zip` or `*.tar.gz` file) using the `-archive` flag.
