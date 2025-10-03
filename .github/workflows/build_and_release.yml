@@ -15,7 +15,7 @@ jobs:
       OUT_DIR: out
       ICON_PATH: resources/icons/icon.ico
       EXT_EXE_DIR: exe
-      EXAMPLES_DIR: examples
+      EXAMPLES_DIR: example
       DIRS_TO_CREATE: "log exe/bam_workspace"
       DIRS_TO_COPY: "resources/fonts resources/i18n resources/icons example"
       FILES_TO_COPY: "resources/credits.csv resources/baratin_qfh_presets.json"
@@ -120,4 +120,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ${{ env.NAME }}-${{ env.VERSION }}_${{ env.OS }}
-          path: ${{ env.OUT_DIR }}/${{ env.NAME }}
+          path: ${{ env.NAME }}-${{ env.VERSION }}_${{ env.OS }}.zip
