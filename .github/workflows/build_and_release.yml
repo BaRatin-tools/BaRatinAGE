@@ -15,6 +15,7 @@ jobs:
       OUT_DIR: out
       ICON_PATH: resources/icons/icon.ico
       EXT_EXE_DIR: exe
+      EXAMPLES_DIR: examples
       DIRS_TO_CREATE: "log exe/bam_workspace"
       DIRS_TO_COPY: "resources/fonts resources/i18n resources/icons example"
       FILES_TO_COPY: "resources/credits.csv resources/baratin_qfh_presets.json"
@@ -70,13 +71,43 @@ jobs:
             Copy-item -Force $d -Destination (Join-Path $appDir $d)
           }
 
-      - name: Download external executable from latest release
+      - name: Download latest example project files
+        shell: bash # necessary
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          tag=$(gh release list --repo ${{ github.repository }} --limit 100 \
+            --json tagName,isPrerelease \
+            --jq '.[] | select(.isPrerelease and (.tagName | startswith("examples-"))) 
+                  | .tagName' \
+            | sort -Vr | head -n1)
+
+          echo "Using release tag: $tag"
+
+          gh release download "$tag" \
+            --repo ${{ github.repository }} \
+            --pattern "*.bam"
+
+          dest="${{ env.OUT_DIR }}/${{ env.NAME }}/${{ env.EXAMPLES_DIR }}"
+            mkdir -p "$dest"
+            mv *.bam "$dest"/
+
+      - name: Download BaM executable from latest release
         shell: pwsh
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           gh release download --repo BaM-tools/BaM --pattern "BaM-*_${{ env.OS }}.zip" --dir .
           $zipPath = Get-ChildItem -Filter "BaM-*_${{ env.OS }}.zip" | Select-Object -First 1
+          Expand-Archive $zipPath.FullName -DestinationPath (Join-Path "${{ env.OUT_DIR }}" "${{ env.NAME }}" "${{ env.EXT_EXE_DIR }}") -Force
+
+      - name: Download distribution CLI executable from latest release
+        shell: pwsh
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release download --repo benRenard/BMSL --pattern "distribution-*_${{ env.OS }}.zip" --dir .
+          $zipPath = Get-ChildItem -Filter "distribution-*_${{ env.OS }}.zip" | Select-Object -First 1
           Expand-Archive $zipPath.FullName -DestinationPath (Join-Path "${{ env.OUT_DIR }}" "${{ env.NAME }}" "${{ env.EXT_EXE_DIR }}") -Force
 
       - name: Zip packaged app
@@ -89,4 +120,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ${{ env.NAME }}-${{ env.VERSION }}_${{ env.OS }}
-          path: ${{ env.NAME }}-${{ env.VERSION }}_${{ env.OS }}.zip
+          path: ${{ env:OUT_DIR }}/${{ env.NAME }}
