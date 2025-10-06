@@ -147,12 +147,20 @@ jobs:
           $zipPath = Get-ChildItem -Filter "distribution-*_${{ runner.OS }}.zip" | Select-Object -First 1
           Expand-Archive $zipPath.FullName -DestinationPath (Join-Path "${{ matrix.MAIN_DIR }}" "${{ env.EXT_EXE_DIR }}") -Force
 
+      - name: Rename main directory
+        shell: pwsh
+        run: >
+          Rename-Item
+           -Path out/BaRatinAGE 
+           -NewName "BaRatinAGE-${{ env.VERSION_FULL }}"
+      
       - name: Zip packaged app
         shell: pwsh
-        run: |
-          Rename-Item -Path out/BaRatinAGE -NewName "BaRatinAGE-${{ env.VERSION_FULL }}"
-          $zipFile = "BaRatinAGE-${{ env.VERSION_FULL }}_${{ runner.OS }}.zip"
-          Compress-Archive -Path "out/BaRatinAGE-${{ env.VERSION_FULL }}" -DestinationPath $zipFile -Force
+        run: >
+          Compress-Archive 
+          -Path "out/BaRatinAGE-${{ env.VERSION_FULL }}" 
+          -DestinationPath "BaRatinAGE-${{ env.VERSION_FULL }}_${{ runner.OS }}.zip" 
+          -Force
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
