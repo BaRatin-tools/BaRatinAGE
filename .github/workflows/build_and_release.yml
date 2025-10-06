@@ -151,8 +151,8 @@ jobs:
         shell: pwsh
         run: >
           Rename-Item
-           -Path out/BaRatinAGE 
-           -NewName "BaRatinAGE-${{ env.VERSION_FULL }}"
+          -Path out/BaRatinAGE 
+          -NewName "BaRatinAGE-${{ env.VERSION_FULL }}"
       
       - name: Zip packaged app
         shell: pwsh
