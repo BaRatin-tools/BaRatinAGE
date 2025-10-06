@@ -175,7 +175,7 @@ jobs:
 
       env:
         VERSION_FULL: ${{ needs.inputs_processing.outputs.VERSION_FULL }}
-        IS_BETA:  ${{ needs.inputs_processing.outputs.IS_BETA == "True"}}
+        IS_BETA:  ${{ needs.inputs_processing.outputs.IS_BETA == 'True'}}
       steps:
 
         - name: Checkout code
