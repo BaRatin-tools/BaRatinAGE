@@ -152,7 +152,7 @@ jobs:
         run: |
           Rename-Item -Path out/BaRatinAGE -NewName "BaRatinAGE-${{ env.VERSION_FULL }}"
           $zipFile = "BaRatinAGE-${{ env.VERSION_FULL }}_${{ runner.OS }}.zip"
-          Compress-Archive -Path "out/"BaRatinAGE-${{ env.VERSION_FULL }}" -DestinationPath $zipFile -Force
+          Compress-Archive -Path "out/BaRatinAGE-${{ env.VERSION_FULL }}" -DestinationPath $zipFile -Force
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
