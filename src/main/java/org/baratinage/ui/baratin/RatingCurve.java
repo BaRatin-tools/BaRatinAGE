@@ -91,15 +91,13 @@ public class RatingCurve extends BamItem
         String[] hydraulicConfigFilterKeys = new String[] {
                 "ui", "bamRunId", "backup", "jsonStringBackup", "priorRatingCurve",
                 "stageGridConfig", "allControlOptions", "controlTypeIndex", "isKACmode",
-                "isLocked", "isReversed", "description", "autoInitialValue" };
+                "isLocked", "isReversed", "description", "autoInitialValue", "eqConfigsAndPriors" };
         hydrauConfParent.setComparisonJSONfilter(
                 BamItemType.HYDRAULIC_CONFIG, new JSONFilter(true, true, hydraulicConfigFilterKeys));
         hydrauConfParent.setComparisonJSONfilter(
                 BamItemType.HYDRAULIC_CONFIG_BAC, new JSONFilter(true, true, hydraulicConfigFilterKeys));
-
         hydrauConfParent.setComparisonJSONfilter(
-                BamItemType.HYDRAULIC_CONFIG_QFH, new JSONFilter(true, true,
-                        "eqConfigsAndPriors"));
+                BamItemType.HYDRAULIC_CONFIG_QFH, new JSONFilter(true, true, hydraulicConfigFilterKeys));
 
         hydrauConfParent.addChangeListener((e) -> {
             BamItem bamItem = hydrauConfParent.getCurrentBamItem();
