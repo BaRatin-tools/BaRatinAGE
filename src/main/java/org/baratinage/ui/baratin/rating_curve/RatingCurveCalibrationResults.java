@@ -150,8 +150,16 @@ public class RatingCurveCalibrationResults extends CalibrationResultsWrapper {
                 .stream()
                 .filter(p -> p.symbol.startsWith("k_"))
                 .map(bep -> {
-                    double[] values = bep.parameter.parameterConfig.distribution.getPercentiles(0.025, 0.975, 3);
-                    return new double[] { values[1], values[0], values[2] };
+                    double[] values = new double[] { 0, 0, 0 };
+                    if (bep.parameter.parameterConfig != null) {
+                        values = bep.parameter.parameterConfig.distribution.getPercentiles(0.025, 0.975, 3);
+                        values = new double[] { values[1], values[0], values[2] };
+                    } else {
+                        double[] u95 = bep.parameter.get95interval();
+                        double mp = bep.parameter.getMaxpost();
+                        values = new double[] { mp, u95[0], u95[1] };
+                    }
+                    return values;
                 }).collect(Collectors.toList());
     }
 
