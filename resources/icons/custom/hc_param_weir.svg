@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="24" height="24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" version="1.1" viewBox="0 0 24 24" xml:space="preserve" xmlns="http://www.w3.org/2000/svg">
+  <g transform="matrix(1.2161 0 0 1.1664 -.79315 -.88659)" stroke-width="1.2595">
+    <rect x="2.0745" y="11.048" width="16.837" height="6.5477" fill="#7cb4df" stroke="none" stroke-width="1.2595"/>
+  </g><g fill="none" stroke-linecap="round">
+  <path d="m1.75 4.4814c0 5.1792-0.40968 15.085 10.294 15.085 10.397 0 10.294-10.407 10.294-15.159" stroke-dasharray="2,2.46"/><path d="m1.7332 4.58c8.2919 1.703 8.879 4.569 10.257 14.343 1.4789-9.6941 2.0077-12.78 9.9228-14.324" stroke-dasharray="2,2.135"/><path d="m1.7077 4.4571v15.089h20.625v-15.07" stroke-dasharray="1.99999, 2.09999"/><path d="m1.7169 4.7309s7.0335 10.517 10.294 14.955c3.3906-4.9745 10.294-14.955 10.294-14.955" stroke-dasharray="1.99999797,2.29999767"/>
+</g></svg>
