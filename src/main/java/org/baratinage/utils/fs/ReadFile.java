@@ -133,7 +133,7 @@ public class ReadFile {
      */
     public static String[] parseString(String str, String sep, boolean trim) {
         if (trim) {
-            return trimStringArray(str.trim().split(sep));
+            return trimStringArray(str.trim().split(sep, -1));
         } else {
             return str.split(sep);
         }
