@@ -319,6 +319,7 @@ public class GaugingsImporter extends DataImporter {
                 return;
             }
             dataset = gaugings;
+            dialog.setVisible(false);
             return;
         }
 
