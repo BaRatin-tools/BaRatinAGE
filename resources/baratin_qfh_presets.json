@@ -1,5 +1,5 @@
 [
-    {
+  {
     "id": "param_weir",
     "icon_id": "hc_param_weir",
     "formula": "C_0 / sqrt( 2 ) * k^(k-1) / (k+1/2)^(k+1/2) * B_s / H_s^(k-1) * (ispos( h - b ) * ( h - b )) ^ (k+1/2)",
@@ -15,14 +15,17 @@
         "default_distribution": {
           "initial_guess": 1,
           "type": "Gaussian",
-          "parameters": [1, 0.025]
+          "parameters": [
+            1,
+            0.025
+          ]
         }
       },
       {
         "symbole": "B_s",
         "type": "distance"
       },
-	        {
+      {
         "symbole": "H_s",
         "type": "distance"
       },
@@ -32,7 +35,10 @@
         "default_distribution": {
           "initial_guess": 9.81,
           "type": "Gaussian",
-          "parameters": [9.81, 0.005]
+          "parameters": [
+            9.81,
+            0.005
+          ]
         }
       },
       {
@@ -41,12 +47,15 @@
         "default_distribution": {
           "initial_guess": 1.5,
           "type": "Uniform",
-          "parameters": [1, 2]
+          "parameters": [
+            1,
+            2
+          ]
         }
       }
     ]
   },
-    {
+  {
     "id": "trapezoid_weir",
     "icon_id": "hc_trapezoid_weir",
     "formula": "C_t * tan( v / 2 ) * sqrt( 2 * g ) * (ispos( h - k_1 ) * ( h - k_1 )) ^ c_t +  C_r * B_r * sqrt( 2 * g ) * (ispos( h - k_1 ) * ( h - k_1 )) ^ c_r",
@@ -62,7 +71,10 @@
         "default_distribution": {
           "initial_guess": 0.31,
           "type": "Gaussian",
-          "parameters": [0.31, 0.025]
+          "parameters": [
+            0.31,
+            0.025
+          ]
         }
       },
       {
@@ -75,7 +87,10 @@
         "default_distribution": {
           "initial_guess": 9.81,
           "type": "Gaussian",
-          "parameters": [9.81, 0.005]
+          "parameters": [
+            9.81,
+            0.005
+          ]
         }
       },
       {
@@ -84,7 +99,10 @@
         "default_distribution": {
           "initial_guess": 2.5,
           "type": "Gaussian",
-          "parameters": [2.5, 0.025]
+          "parameters": [
+            2.5,
+            0.025
+          ]
         }
       },
       {
@@ -93,7 +111,10 @@
         "default_distribution": {
           "initial_guess": 0.4,
           "type": "Gaussian",
-          "parameters": [0.4, 0.025]
+          "parameters": [
+            0.4,
+            0.025
+          ]
         }
       },
       {
@@ -106,12 +127,15 @@
         "default_distribution": {
           "initial_guess": 1.5,
           "type": "Gaussian",
-          "parameters": [1.5, 0.025]
+          "parameters": [
+            1.5,
+            0.025
+          ]
         }
       }
     ]
   },
-    {
+  {
     "id": "circular_weir",
     "icon_id": "hc_circular_weir",
     "formula": "0.001 * (C_c + (110*(ispos( h - b ) * ispos( D - h ) * ( h - b ) / D) )^(-1) + 0.041*(ispos( h - b ) * ispos( D - h ) * ( h - b ) / D) ) * (10*D)^2.5 * (a_1 * (ispos( h - b ) * ispos( D - h ) * ( h - b ) / D ) ^ c_1 - a_2 * (ispos( h - b ) * ispos( D - h ) * ( h - b ) / D ) ^ c_2)",
@@ -127,7 +151,10 @@
         "default_distribution": {
           "initial_guess": 0.5550,
           "type": "Gaussian",
-          "parameters": [0.5550, 0.025]
+          "parameters": [
+            0.5550,
+            0.025
+          ]
         }
       },
       {
@@ -140,7 +167,10 @@
         "default_distribution": {
           "initial_guess": 1.975,
           "type": "Gaussian",
-          "parameters": [1.975, 0.0005]
+          "parameters": [
+            1.975,
+            0.0005
+          ]
         }
       },
       {
@@ -149,7 +179,10 @@
         "default_distribution": {
           "initial_guess": 10.12,
           "type": "Gaussian",
-          "parameters": [10.12, 0.05]
+          "parameters": [
+            10.12,
+            0.05
+          ]
         }
       },
       {
@@ -158,7 +191,10 @@
         "default_distribution": {
           "initial_guess": 3.78,
           "type": "Gaussian",
-          "parameters": [3.78, 0.0005]
+          "parameters": [
+            3.78,
+            0.0005
+          ]
         }
       },
       {
@@ -167,11 +203,14 @@
         "default_distribution": {
           "initial_guess": 2.66,
           "type": "Gaussian",
-          "parameters": [2.66, 0.015]
+          "parameters": [
+            2.66,
+            0.015
+          ]
         }
       }
     ]
-  }, 
+  },
   {
     "id": "rect_triangle",
     "icon_id": "hc_rect_triangle_weir",
@@ -188,7 +227,10 @@
         "default_distribution": {
           "initial_guess": 0.31,
           "type": "Gaussian",
-          "parameters": [0.31, 0.025]
+          "parameters": [
+            0.31,
+            0.025
+          ]
         }
       },
       {
@@ -201,7 +243,10 @@
         "default_distribution": {
           "initial_guess": 9.81,
           "type": "Gaussian",
-          "parameters": [9.81, 0.005]
+          "parameters": [
+            9.81,
+            0.005
+          ]
         }
       },
       {
@@ -210,7 +255,10 @@
         "default_distribution": {
           "initial_guess": 2.5,
           "type": "Gaussian",
-          "parameters": [2.5, 0.025]
+          "parameters": [
+            2.5,
+            0.025
+          ]
         }
       },
       {
@@ -223,7 +271,10 @@
         "default_distribution": {
           "initial_guess": 0.4,
           "type": "Gaussian",
-          "parameters": [0.4, 0.025]
+          "parameters": [
+            0.4,
+            0.025
+          ]
         }
       },
       {
@@ -236,12 +287,15 @@
         "default_distribution": {
           "initial_guess": 1.5,
           "type": "Gaussian",
-          "parameters": [1.5, 0.025]
+          "parameters": [
+            1.5,
+            0.025
+          ]
         }
       }
     ]
   },
-    {
+  {
     "id": "rect_trapezoid",
     "icon_id": "hc_rect_trapezoid_weir",
     "formula": "C_t * tan( v / 2 ) * sqrt( 2 * g ) * (ispos( h - k_1 ) * ( h - k_1 )) ^ c_t  - C_t * tan( v / 2 ) * sqrt( 2 * g ) * (ispos( h - k_2 ) * ( h - k_2 )) ^ c_t +  C_r1 * B_r1 * sqrt( 2 * g ) * (ispos( h - k_1 ) * ( h - k_1 )) ^ c_r +  C_r2 * B_r2 * sqrt( 2 * g ) * (ispos( h - k_2 ) * ( h - k_2 )) ^ c_r",
@@ -257,7 +311,10 @@
         "default_distribution": {
           "initial_guess": 0.31,
           "type": "Gaussian",
-          "parameters": [0.31, 0.025]
+          "parameters": [
+            0.31,
+            0.025
+          ]
         }
       },
       {
@@ -270,7 +327,10 @@
         "default_distribution": {
           "initial_guess": 9.81,
           "type": "Gaussian",
-          "parameters": [9.81, 0.005]
+          "parameters": [
+            9.81,
+            0.005
+          ]
         }
       },
       {
@@ -279,7 +339,10 @@
         "default_distribution": {
           "initial_guess": 2.5,
           "type": "Gaussian",
-          "parameters": [2.5, 0.025]
+          "parameters": [
+            2.5,
+            0.025
+          ]
         }
       },
       {
@@ -292,7 +355,10 @@
         "default_distribution": {
           "initial_guess": 0.4,
           "type": "Gaussian",
-          "parameters": [0.4, 0.025]
+          "parameters": [
+            0.4,
+            0.025
+          ]
         }
       },
       {
@@ -301,7 +367,10 @@
         "default_distribution": {
           "initial_guess": 0.4,
           "type": "Gaussian",
-          "parameters": [0.4, 0.025]
+          "parameters": [
+            0.4,
+            0.025
+          ]
         }
       },
       {
@@ -318,7 +387,10 @@
         "default_distribution": {
           "initial_guess": 1.5,
           "type": "Gaussian",
-          "parameters": [1.5, 0.025]
+          "parameters": [
+            1.5,
+            0.025
+          ]
         }
       }
     ]
@@ -332,26 +404,33 @@
       {
         "symbole": "k_1",
         "type": "activation_stage"
-      },      {
+      },
+      {
         "symbole": "C_t1",
         "type": "weir_coefficient",
         "default_distribution": {
           "initial_guess": 0.31,
           "type": "Gaussian",
-          "parameters": [0.31, 0.025]
+          "parameters": [
+            0.31,
+            0.025
+          ]
         }
       },
-        {
+      {
         "symbole": "v_1",
         "type": "angle"
       },
-        {
+      {
         "symbole": "g",
         "type": "gravity_acceleration",
         "default_distribution": {
           "initial_guess": 9.81,
           "type": "Gaussian",
-          "parameters": [9.81, 0.005]
+          "parameters": [
+            9.81,
+            0.005
+          ]
         }
       },
       {
@@ -360,10 +439,13 @@
         "default_distribution": {
           "initial_guess": 2.5,
           "type": "Gaussian",
-          "parameters": [2.5, 0.025]
+          "parameters": [
+            2.5,
+            0.025
+          ]
         }
       },
-	  {
+      {
         "symbole": "k_2",
         "type": "activation_stage"
       },
@@ -373,13 +455,16 @@
         "default_distribution": {
           "initial_guess": 0.31,
           "type": "Gaussian",
-          "parameters": [0.31, 0.025]
+          "parameters": [
+            0.31,
+            0.025
+          ]
         }
       },
       {
         "symbole": "v_2",
         "type": "angle"
-      },
+      }
     ]
   },
   {
@@ -402,7 +487,10 @@
         "default_distribution": {
           "initial_guess": 0.4,
           "type": "Gaussian",
-          "parameters": [0.4, 0.025]
+          "parameters": [
+            0.4,
+            0.025
+          ]
         }
       },
       {
@@ -415,7 +503,10 @@
         "default_distribution": {
           "initial_guess": 9.81,
           "type": "Gaussian",
-          "parameters": [9.81, 0.005]
+          "parameters": [
+            9.81,
+            0.005
+          ]
         }
       },
       {
@@ -424,11 +515,14 @@
         "default_distribution": {
           "initial_guess": 2.5,
           "type": "Gaussian",
-          "parameters": [2.5, 0.025]
+          "parameters": [
+            2.5,
+            0.025
+          ]
         }
       }
     ]
-  },  
+  },
   {
     "id": "trapezoid_channel",
     "icon_id": "hc_trapezoid_channel",
@@ -461,7 +555,10 @@
         "default_distribution": {
           "initial_guess": 0.67,
           "type": "Gaussian",
-          "parameters": [0.67, 0.025]
+          "parameters": [
+            0.67,
+            0.025
+          ]
         }
       }
     ]
@@ -494,7 +591,10 @@
         "default_distribution": {
           "initial_guess": 0.67,
           "type": "Gaussian",
-          "parameters": [0.67, 0.025]
+          "parameters": [
+            0.67,
+            0.025
+          ]
         }
       }
     ]
