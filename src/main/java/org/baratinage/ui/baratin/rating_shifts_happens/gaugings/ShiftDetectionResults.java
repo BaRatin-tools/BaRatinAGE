@@ -88,6 +88,7 @@ public class ShiftDetectionResults {
     // build the gauging dataset associated with each period
     double[] time = rcShiftsDetectionRun.ratingCurveEstimation.time;
     double[] stage = rcShiftsDetectionRun.ratingCurveEstimation.stage;
+    double[] stageStd = rcShiftsDetectionRun.ratingCurveEstimation.stageStd;
     double[] discharge = rcShiftsDetectionRun.ratingCurveEstimation.discharge;
     double[] dischargeStd = rcShiftsDetectionRun.ratingCurveEstimation.dischargeStd;
 
@@ -98,7 +99,7 @@ public class ShiftDetectionResults {
     for (int k = 0; k < shifts.size(); k++) {
       endShift = shifts.get(k);
       GaugingsDataset dataset = buildGaugingDataset(
-          time, stage, discharge, dischargeStd,
+          time, stage, stageStd, discharge, dischargeStd,
           startShift == null ? -Double.MAX_VALUE : startShift.parameter().getMaxpost(),
           endShift.parameter().getMaxpost());
       Color color = palette[k];
@@ -106,7 +107,7 @@ public class ShiftDetectionResults {
       startShift = endShift;
     }
     GaugingsDataset dataset = buildGaugingDataset(
-        time, stage, discharge, dischargeStd,
+        time, stage, stageStd, discharge, dischargeStd,
         startShift == null ? -Double.MAX_VALUE : startShift.parameter().getMaxpost(),
         Double.MAX_VALUE);
     Color color = palette[shifts.size()];
@@ -164,6 +165,7 @@ public class ShiftDetectionResults {
   private static GaugingsDataset buildGaugingDataset(
       double[] time,
       double[] stage,
+      double[] stageStd,
       double[] discharge,
       double[] dischargeStd,
       double startTime,
@@ -203,6 +205,14 @@ public class ShiftDetectionResults {
       active[k - startIndex] = true;
     }
 
+    double[] huabsolute = null;
+    if (stageStd != null) {
+      huabsolute = new double[n];
+      for (int k = startIndex; k < endIndex; k++) {
+        huabsolute[k - startIndex] = stageStd[k] * 2;
+      }
+    }
+
     String name = "";
 
     String endTimeString = endTime == Double.MAX_VALUE
@@ -227,7 +237,7 @@ public class ShiftDetectionResults {
         qupercent,
         active,
         t,
-        null);
+        huabsolute);
   }
 
   public static record ResultPeriod(
