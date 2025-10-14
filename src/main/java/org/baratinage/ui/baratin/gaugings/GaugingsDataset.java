@@ -26,7 +26,7 @@ public class GaugingsDataset extends AbstractDataset implements IPlotDataProvide
     private static final String DISCHARGE_STD = "dischargeStd";
     private static final String DISCHARGE_LOW = "dischargeLow";
     private static final String DISCHARGE_HIGH = "dischargeHigh";
-    private static final String STAGE_U = "stagePercentUncertainty";
+    private static final String STAGE_U = "stageAbsoluteUncertainty";
     private static final String STAGE_STD = "stageStd";
     private static final String STAGE_LOW = "stageLow";
     private static final String STAGE_HIGH = "stageHigh";
@@ -47,7 +47,7 @@ public class GaugingsDataset extends AbstractDataset implements IPlotDataProvide
             double[] dischargePercentUncertainty,
             boolean[] active,
             LocalDateTime[] datetime,
-            double[] stagePercentUncertainty) {
+            double[] stageAbsoluteUncertainty) {
         if (active == null) {
             active = new boolean[stage.length];
             for (int k = 0; k < stage.length; k++) {
@@ -57,12 +57,12 @@ public class GaugingsDataset extends AbstractDataset implements IPlotDataProvide
         String[] headers = new String[] {
                 STAGE, DISCHARGE, DISCHARGE_U, STATE,
                 datetime == null ? null : DATETIME,
-                stagePercentUncertainty == null ? null : STAGE_U
+                stageAbsoluteUncertainty == null ? null : STAGE_U
         };
         double[][] columns = new double[][] {
                 stage, discharge, dischargePercentUncertainty, toDouble(active),
                 datetime == null ? null : DateTime.dateTimeToDoubleArray(datetime),
-                stagePercentUncertainty == null ? null : stagePercentUncertainty,
+                stageAbsoluteUncertainty == null ? null : stageAbsoluteUncertainty,
         };
         headers = Arrays.stream(headers)
                 .filter(Objects::nonNull)
@@ -102,6 +102,9 @@ public class GaugingsDataset extends AbstractDataset implements IPlotDataProvide
         double[] datetime = getColumn(DATETIME);
         this.datetime = datetime == null ? null : DateTime.doubleToDateTimeArray(datetime);
 
+        // for back compatibility
+        super.renameColumn("stagePercentUncertainty", STAGE_U);
+
         updateDerivedValues();
     }
 
@@ -134,7 +137,7 @@ public class GaugingsDataset extends AbstractDataset implements IPlotDataProvide
 
         int[] tfn = getTrueFalseLengths(this.state);
 
-        for (String header : super.headers) {
+        for (String header : getHeaders()) {
             double[] v = getColumn(header);
             double[][] tf = getTrueFalse(this.state, v, tfn[0], tfn[1]);
             gaugingsTrue.put(header, tf[0]);
