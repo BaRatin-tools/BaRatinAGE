@@ -12,6 +12,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.TreeMap;
 
 import org.baratinage.AppSetup;
@@ -23,7 +24,7 @@ public class AbstractDataset {
     protected final String name;
     protected final double[][] data;
     private final TreeMap<String, Integer> headersMap;
-    protected final String[] headers;
+    // private final String[] headers;
     protected final int nRow;
     protected final int nCol;
 
@@ -48,7 +49,6 @@ public class AbstractDataset {
 
         this.name = name;
         this.headersMap = new TreeMap<>();
-        this.headers = headers;
 
         int nCol = 0;
         int nRow = -1;
@@ -117,7 +117,7 @@ public class AbstractDataset {
 
         if (!Files.exists(dataFilePath)) {
             ConsoleLogger.error("File '" + dataFilePath + "' not found!");
-            this.headers = _headers;
+            // this.headers = _headers;
             this.headersMap = _headersMap;
             this.nCol = _nCol;
             this.nRow = _nRow;
@@ -158,7 +158,7 @@ public class AbstractDataset {
         }
 
         this.headersMap = _headersMap;
-        this.headers = _headers;
+        // this.headers = _headers;
         this.nCol = _nCol;
         this.nRow = _nRow;
         this.data = _data;
@@ -169,6 +169,10 @@ public class AbstractDataset {
     }
 
     public String[] getHeaders() {
+        String[] headers = headersMap.entrySet().stream()
+                .sorted(Map.Entry.<String, Integer>comparingByValue())
+                .map(Map.Entry::getKey)
+                .toArray(String[]::new);
         return headers;
     }
 
@@ -182,6 +186,16 @@ public class AbstractDataset {
 
     public boolean containsColumn(String colname) {
         return headersMap.containsKey(colname);
+    }
+
+    public void renameColumn(String oldName, String newName) {
+        if (!headersMap.containsKey(oldName)) {
+            return;
+        }
+        int columnIndex = headersMap.get(oldName);
+        headersMap.remove(oldName);
+        headersMap.put(newName, columnIndex);
+
     }
 
     public double[] getColumn(String colname) {
@@ -206,7 +220,7 @@ public class AbstractDataset {
 
     private String computeHashString() {
         List<Integer> hashCodes = new ArrayList<>();
-        for (String h : headers) {
+        for (String h : getHeaders()) {
             hashCodes.add(h.hashCode());
             Integer i = headersMap.get(h);
             double[] d = i == null ? null : data[i];
