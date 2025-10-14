@@ -393,8 +393,8 @@ public class GaugingsDataset extends AbstractDataset implements IPlotDataProvide
             xH = x;
             if (plotType.equals(PlotType.ht)) {
                 y = stage;
-                yL = y;
-                yH = y;
+                yL = stageLow;
+                yH = stageHigh;
             }
         }
 
