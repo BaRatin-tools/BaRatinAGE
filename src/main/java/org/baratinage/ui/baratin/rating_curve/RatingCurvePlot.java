@@ -296,13 +296,17 @@ public class RatingCurvePlot extends SimpleFlowPanel {
                 : AppSetup.COLORS.POSTERIOR_STAGE_ACTIVATION_UNCERTAINTY;
 
         EditablePlotItem stageTransitionBand = plotEditor.getEditablePlotItem("stageBand");
+        if (stageTransitionBand != null) {
+            stageTransitionBand.setLabel(T.text(stageLegendText));
+            stageTransitionBand.setFillAlpha(0.9f);
+            stageTransitionBand.setFillPaint(stageActivationUncertaintyColor);
+        }
         EditablePlotItem stageTransitionLine = plotEditor.getEditablePlotItem("stageLine");
-        stageTransitionBand.setLabel(T.text(stageLegendText));
-        stageTransitionBand.setFillAlpha(0.9f);
-        stageTransitionBand.setFillPaint(stageActivationUncertaintyColor);
-        stageTransitionLine.setLabel(T.text(stageLegendText));
-        stageTransitionLine.setLineWidth(2);
-        stageTransitionLine.setLinePaint(stageActivationValueColor);
+        if (stageTransitionLine != null) {
+            stageTransitionLine.setLabel(T.text(stageLegendText));
+            stageTransitionLine.setLineWidth(2);
+            stageTransitionLine.setLinePaint(stageActivationValueColor);
+        }
 
         // total uncertainty
         EditablePlotItem totalUncertainty = plotEditor.getEditablePlotItem("totalUncertaintyBand");
