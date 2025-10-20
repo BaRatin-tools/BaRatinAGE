@@ -94,7 +94,8 @@ public class ShiftDetectionGaugings extends SimpleFlowPanel {
 
   public void setPalette(ColorPalette palette) {
     this.palette = palette;
-    plotEditor.removeDefaultConfig();
+    plotEditor.reset();
+    updatePlot();
   }
 
   public void updatePlot() {
