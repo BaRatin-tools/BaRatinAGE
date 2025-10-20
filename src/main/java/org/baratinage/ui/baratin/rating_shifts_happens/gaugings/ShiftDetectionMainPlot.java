@@ -100,7 +100,6 @@ public class ShiftDetectionMainPlot extends SimpleFlowPanel {
     this.palette = palette;
     plotEditor.reset();
     updatePlot();
-    plotEditor.saveAsDefault(true);
   }
 
   public void updatePlot() {
