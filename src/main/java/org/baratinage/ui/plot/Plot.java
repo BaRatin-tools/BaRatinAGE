@@ -201,12 +201,10 @@ public class Plot implements LegendItemSource {
             return;
         }
         plot.setDomainAxis(log ? axisXlog : axisX);
-        plot.setDomainPannable(!log);
     }
 
     public void setYAxisLog(boolean log) {
         plot.setRangeAxis(log ? axisYlog : axisY);
-        plot.setRangePannable(!log);
     }
 
     public void setYAxisLabel(String label) {
@@ -218,6 +216,8 @@ public class Plot implements LegendItemSource {
         plot.setDataset(items.size(), item.getDataset());
         plot.setRenderer(items.size(), item.getRenderer());
         items.add(item);
+        axisYlog.setMinValue(getRangeBounds().getLowerBound());
+        axisXlog.setMinValue(getDomainBounds().getLowerBound());
     }
 
     public void addXYItem(PlotItemGroup item) {
@@ -250,6 +250,8 @@ public class Plot implements LegendItemSource {
         items.remove(index);
         plot.setDataset(index, null);
         plot.setRenderer(index, null);
+        axisYlog.setMinValue(getRangeBounds().getLowerBound());
+        axisXlog.setMinValue(getDomainBounds().getLowerBound());
         return index;
     }
 
@@ -275,14 +277,29 @@ public class Plot implements LegendItemSource {
         }
     }
 
-    private static Range applyBufferToRange(Range r, double lowerBufferPercentage, double upperBufferPercentage) {
+    private static Range applyBufferToRange(Range r, double lowerBufferPercentage, double upperBufferPercentage,
+            boolean isLogScale) {
         if (r == null) {
             return r;
         }
-        double d = r.getLength();
-        double lower = d * lowerBufferPercentage;
-        double upper = d * upperBufferPercentage;
-        return new Range(r.getLowerBound() - lower, r.getUpperBound() + upper);
+        double lower = r.getLowerBound();
+        double upper = r.getUpperBound();
+        if (isLogScale) {
+            if (lower <= 0 || upper <= 0) {
+                return r;
+            }
+            double logLower = Math.log10(lower);
+            double logUpper = Math.log10(upper);
+            double logRange = logUpper - logLower;
+            double newLogLower = logLower - logRange * lowerBufferPercentage;
+            double newLogUpper = logUpper + logRange * upperBufferPercentage;
+            return new Range(Math.pow(10, newLogLower), Math.pow(10, newLogUpper));
+        } else {
+            double d = r.getLength();
+            double lowerBuffer = d * lowerBufferPercentage;
+            double upperBuffer = d * upperBufferPercentage;
+            return new Range(lower - lowerBuffer, upper + upperBuffer);
+        }
     }
 
     public Range getDomainBounds() {
@@ -298,7 +315,10 @@ public class Plot implements LegendItemSource {
                 range = range == null ? r : Range.combine(range, r);
             }
         }
-        return isLog ? range : applyBufferToRange(range, bufferPercentageLeft, bufferPercentageRight);
+        if (range == null) {
+            return isLog ? new Range(1, 10) : new Range(0, 1);
+        }
+        return applyBufferToRange(range, bufferPercentageLeft, bufferPercentageRight, isLog);
     }
 
     public Range getRangeBounds() {
@@ -314,7 +334,10 @@ public class Plot implements LegendItemSource {
                 range = range == null ? r : Range.combine(range, r);
             }
         }
-        return isLog ? range : applyBufferToRange(range, bufferPercentageBottom, bufferPercentageTop);
+        if (range == null) {
+            return isLog ? new Range(1, 10) : new Range(0, 1);
+        }
+        return applyBufferToRange(range, bufferPercentageBottom, bufferPercentageTop, isLog);
     }
 
     private static Range findPositiveRange(XYDataset dataset) {
@@ -388,8 +411,8 @@ public class Plot implements LegendItemSource {
 
         @Override
         public void drawItem(Graphics2D arg0, XYItemRendererState arg1, Rectangle2D arg2, PlotRenderingInfo arg3,
-                XYPlot arg4, ValueAxis arg5, ValueAxis arg6, XYDataset arg7, int arg8, int arg9,
-                CrosshairState arg10, int arg11) {
+                XYPlot arg4, ValueAxis arg5, ValueAxis arg6, XYDataset arg7, int arg8, int arg9, CrosshairState arg10,
+                int arg11) {
             // do nothing
         }
 

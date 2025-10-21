@@ -2,8 +2,10 @@ package org.baratinage.ui.plot;
 
 import java.awt.Graphics2D;
 import java.awt.geom.Rectangle2D;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.math.RoundingMode;
 
 import org.jfree.chart.axis.LogarithmicAxis;
 import org.jfree.chart.axis.NumberTick;
@@ -23,7 +25,8 @@ public class LogAxis extends LogarithmicAxis {
         super("-");
     }
 
-    private final double minValue = 1e-20;
+    static private final double MIN_VALUE = 1e-20;
+    private double minValue = MIN_VALUE;
 
     @Override
     protected double switchedLog10(double value) {
@@ -53,11 +56,28 @@ public class LogAxis extends LogarithmicAxis {
         return processTicks(rawTicks);
     }
 
+    public void setMinValue(double minValue) {
+        if (minValue > 0) {
+            this.minValue = minValue;
+        }
+    }
+
+    public Range getRange() {
+        Range range = super.getRange();
+        if (range.getLowerBound() < 0) {
+            return new Range(minValue, range.getUpperBound());
+        }
+        return range;
+    }
+
     private List<NumberTick> processTicks(List<NumberTick> rawTicks) {
+
+        int minimumTicks = 2;
+        int minimumLabels = 3;
 
         int nTicks = rawTicks.size();
 
-        if (nTicks < 3) {
+        if (nTicks < minimumTicks) {
 
             Range range = getRange();
             int n = (int) Math.floor(Math.log10(range.getLength()));
@@ -79,7 +99,7 @@ public class LogAxis extends LogarithmicAxis {
                                 0));
                     }
                 }
-                if (newTicks.size() >= 3) {
+                if (newTicks.size() >= minimumTicks) {
                     return newTicks;
                 }
 
@@ -91,14 +111,16 @@ public class LogAxis extends LogarithmicAxis {
             nLabels += t.getText().equals("") ? 0 : 1;
         }
 
-        if (nLabels < 2) {
+        if (nLabels < minimumLabels) {
             List<NumberTick> addedLabelsTicks = new ArrayList<>();
             for (NumberTick t : rawTicks) {
                 Double d = t.getValue();
+                // String s = String.format("%f", d).replaceAll("([.]*0+)(?!.*\\d)", "");
+                String s = BigDecimal.valueOf(d).setScale(7, RoundingMode.HALF_UP).stripTrailingZeros().toPlainString();
                 addedLabelsTicks.add(new NumberTick(
                         t.getTickType(),
                         d,
-                        String.format("%f", d).replaceAll("([.]*0+)(?!.*\\d)", ""),
+                        s,
                         t.getTextAnchor(),
                         t.getRotationAnchor(),
                         t.getAngle()));
