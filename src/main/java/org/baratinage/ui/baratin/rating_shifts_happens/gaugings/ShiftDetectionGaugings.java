@@ -115,9 +115,9 @@ public class ShiftDetectionGaugings extends SimpleFlowPanel {
     // plotEditor.set
 
     Plot plot = new Plot();
+    toolsPanel.updatePlotAxis(plot);
 
     plot.addXYItems(gaugingsPoints);
-    toolsPanel.updatePlotAxis(plot);
     plotContainer.setPlot(plot);
 
     plotEditor.addEditablePlot(plot);

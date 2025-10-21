@@ -369,6 +369,7 @@ public class RatingCurveCompare extends BamItem {
 
     private void resetPlot() {
         plot = new Plot();
+        plotToolsPanel.updatePlotAxis(plot);
         List<EditablePlotItem> items = getEditablePlotItems(episList.getAllObjects());
         for (int k = items.size() - 1; k >= 0; k--) {
             if (items.get(k).plotItem.getVisible()) {
@@ -380,18 +381,6 @@ public class RatingCurveCompare extends BamItem {
         }
         plot.chart.removeLegend();
         plot.chart.addLegend(getLegendTitle());
-
-        if (plotToolsPanel.logDischargeAxis()) {
-            if (plotToolsPanel.axisFlipped()) {
-                plot.plot.setDomainAxis(plot.axisXlog);
-            } else {
-                plot.plot.setRangeAxis(plot.axisYlog);
-            }
-        }
-
-        plot.setXAxisLabel(plotToolsPanel.axisFlipped() ? yAxisLabelField.getText() : xAxisLabelField.getText());
-        plot.setYAxisLabel(plotToolsPanel.axisFlipped() ? xAxisLabelField.getText() : yAxisLabelField.getText());
-        plot.update();
         plotContainer.setPlot(plot);
     }
 
