@@ -85,9 +85,9 @@ public class RatingCurvePlotToolsPanel extends SimpleFlowPanel {
         // apply log/linear scale
         if (logScaleDischargeAxis.isSelected()) {
             if (switchAxisCheckbox.isSelected()) {
-                plot.plot.setDomainAxis(plot.axisXlog);
+                plot.setXAxisLog(true);
             } else {
-                plot.plot.setRangeAxis(plot.axisYlog);
+                plot.setYAxisLog(true);
             }
         }
         // update labels
