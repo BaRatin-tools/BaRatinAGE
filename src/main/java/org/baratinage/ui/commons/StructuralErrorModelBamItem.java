@@ -48,7 +48,7 @@ public class StructuralErrorModelBamItem extends BamItem implements IStructuralE
             JLabel infoLabel = new JLabel();
             infoLabel.setText(
                     String.format(
-                            "<html><code>N&sim;(&gamma;<sub>1</sub> + &gamma;<sub>2</sub>%s)</code></html>",
+                            "<html><code>&sim;N(0, | &gamma;<sub>1</sub> + &gamma;<sub>2</sub>%s |)</code></html>",
                             nameSymbolUnits[k].symbol()));
 
             // support only linear model, but with fixed gamma2 set to 0, it is equivalent
