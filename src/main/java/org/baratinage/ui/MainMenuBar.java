@@ -19,6 +19,7 @@ import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
 
 import org.baratinage.AppSetup;
+import org.baratinage.report_exporter.ReportExporter;
 import org.baratinage.translation.T;
 import org.baratinage.ui.component.CommonDialog;
 import org.baratinage.utils.ConsoleLogger;
@@ -136,6 +137,20 @@ public class MainMenuBar extends JMenuBar {
             AppSetup.MAIN_FRAME.importV2Project();
         });
         fileMenu.add(importBaratinageV2projectMenuItem);
+
+        fileMenu.addSeparator();
+
+        JMenuItem exportReportMenuItem = new JMenuItem("Export report");
+        add(exportReportMenuItem);
+        exportReportMenuItem.addActionListener((e) -> {
+            if (AppSetup.MAIN_FRAME.currentProject == null) {
+                System.out.println("No project");
+                return;
+            }
+            ReportExporter reportExport = new ReportExporter(AppSetup.MAIN_FRAME.currentProject);
+            reportExport.showDialog();
+        });
+        fileMenu.add(exportReportMenuItem);
 
         fileMenu.addSeparator();
 

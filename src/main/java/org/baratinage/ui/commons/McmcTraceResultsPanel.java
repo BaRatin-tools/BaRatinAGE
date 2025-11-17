@@ -17,7 +17,7 @@ import org.baratinage.utils.ConsoleLogger;
 import org.baratinage.utils.fs.WriteFile;
 
 public class McmcTraceResultsPanel extends SimpleFlowPanel {
-    private final TracePlotGrid paramTracePlots;
+    public final TracePlotGrid paramTracePlots;
     private final BamProject project;
 
     private List<EstimatedParameterWrapper> parameters;

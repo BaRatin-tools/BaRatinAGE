@@ -45,7 +45,7 @@ public class PriorRatingCurve<HCT extends BamItem & IModelDefinition & IPriors> 
     private final RatingCurveStageGrid priorRatingCurveStageGrid;
     private final SimpleFlowPanel outOufSyncPanel;
     public final RunBam runBam;
-    private final RatingCurveResults resultsPanel;
+    public final RatingCurveResults resultsPanel;
 
     private final HCT hydraulicConfiguration;
     private RunConfigAndRes bamRunConfigAndRes;

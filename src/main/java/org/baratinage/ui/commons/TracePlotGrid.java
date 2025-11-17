@@ -20,7 +20,8 @@ import org.baratinage.utils.Calc;
 
 public class TracePlotGrid extends SimpleFlowPanel {
 
-    private final List<EstimatedParameterWrapper> estimatedParameters = new ArrayList<>();
+    public final List<EstimatedParameterWrapper> estimatedParameters = new ArrayList<>();
+    public final List<PlotContainer> plotContainers = new ArrayList<>();
 
     public void addPlot(EstimatedParameterWrapper estimatedParameter) {
         estimatedParameters.add(estimatedParameter);
@@ -31,6 +32,9 @@ public class TracePlotGrid extends SimpleFlowPanel {
     }
 
     public void updatePlots() {
+
+        plotContainers.clear();
+
         GridPanel gridPanel = new GridPanel();
         int nColMax = 4;
         int nPlots = estimatedParameters.size();
@@ -76,6 +80,7 @@ public class TracePlotGrid extends SimpleFlowPanel {
             plot.addXYItem(trace);
 
             PlotContainer pc = new PlotContainer(plot, false);
+            plotContainers.add(pc);
             T.updateHierarchy(this, pc);
             gridPanel.insertChild(pc, c, r);
 
@@ -89,6 +94,7 @@ public class TracePlotGrid extends SimpleFlowPanel {
         Legend legend = new Legend();
 
         PlotContainer pc = new PlotContainer(legend.getLegendPlot(), false);
+        plotContainers.add(pc);
         T.updateHierarchy(this, pc);
 
         gridPanel.insertChild(pc, c, r);

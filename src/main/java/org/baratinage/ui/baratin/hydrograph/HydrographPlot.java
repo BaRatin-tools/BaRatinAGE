@@ -26,7 +26,7 @@ public class HydrographPlot extends SimpleFlowPanel {
 
         public final JCheckBox cropNegativeValuesCB;
 
-        private final PlotContainer plotContainer;
+        public final PlotContainer plotContainer;
 
         private final SimpleFlowPanel plotArea;
 

@@ -31,6 +31,8 @@ public class GaugingsPlot extends SimpleFlowPanel {
   public final PlotEditor plotEditor;
   private final JToggleButton plotEditorToggleBtn;
 
+  public final PlotContainer plotContainer;
+
   public GaugingsPlot(DataTable table) {
     super();
     setGap(5);
@@ -61,6 +63,9 @@ public class GaugingsPlot extends SimpleFlowPanel {
     });
 
     addChild(plotArea, true);
+
+    plotContainer = new PlotContainer();
+    plotContainer.toolsPanel.addChild(plotEditorToggleBtn, false);
 
     T.updateHierarchy(this, plotEditor);
   }
@@ -115,8 +120,7 @@ public class GaugingsPlot extends SimpleFlowPanel {
     plot.addXYItem(activeGaugings);
     plot.addXYItem(inactiveGaugings);
 
-    PlotContainer plotContainer = new PlotContainer(plot);
-    plotContainer.toolsPanel.addChild(plotEditorToggleBtn, false);
+    plotContainer.setPlot(plot);
 
     ChartPanel chartPanel = plotContainer.getChartPanel();
 

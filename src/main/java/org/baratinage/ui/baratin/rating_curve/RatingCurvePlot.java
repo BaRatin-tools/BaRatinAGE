@@ -23,7 +23,7 @@ import org.baratinage.utils.ConsoleLogger;
 
 public class RatingCurvePlot extends SimpleFlowPanel {
 
-    private final PlotContainer plotContainer;
+    public final PlotContainer plotContainer;
 
     private Plot plot;
 

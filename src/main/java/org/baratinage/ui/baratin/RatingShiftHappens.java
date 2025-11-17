@@ -37,8 +37,8 @@ import org.json.JSONObject;
 
 public class RatingShiftHappens extends BamItem {
 
-  private final BamItemParent hydrauConfParent;
-  private final BamItemParent gaugingsParent;
+  public final BamItemParent hydrauConfParent;
+  public final BamItemParent gaugingsParent;
 
   private final SimpleFlowPanel errorMsgPanel;
 
@@ -46,7 +46,7 @@ public class RatingShiftHappens extends BamItem {
 
   private ShiftDetectionOverall ratingShiftDetection;
 
-  private final RatingShiftsHappensResults ratingShiftResults;
+  public final RatingShiftsHappensResults ratingShiftResults;
 
   public RatingShiftHappens(String uuid, BamProject project) {
     super(BamItemType.RATING_SHIFT_HAPPENS, uuid, project);

@@ -29,7 +29,7 @@ public class Gaugings extends BamItem implements ICalibrationData {
 
     private final DataTable gaugingsTable;
     private GaugingsDataset gaugingDataset;
-    private final GaugingsPlot plotPanel;
+    public final GaugingsPlot plotPanel;
     private final JLabel importedDataSetSourceLabel;
 
     private final GaugingsImporter gaugingsImporter;

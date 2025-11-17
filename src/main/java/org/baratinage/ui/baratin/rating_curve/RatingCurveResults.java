@@ -22,12 +22,12 @@ public class RatingCurveResults extends TabContainer {
     public final ReactiveValue<Boolean> cropTotalUncertaintyToZero = new ReactiveValue<Boolean>(false);
 
     public final RatingCurvePlot ratingCurvePlot;
-    private final DensityPlotGrid paramDensityPlots;
+    public final DensityPlotGrid paramDensityPlots;
 
     private final RatingCurveTable rcGridTable;
-    private final RatingCurveEquation rcEquation;
-    private final McmcTraceResultsPanel mcmcResultPanel;
-    private final ParameterSummaryTable paramSummaryTable;
+    public final RatingCurveEquation rcEquation;
+    public final McmcTraceResultsPanel mcmcResultPanel;
+    public final ParameterSummaryTable paramSummaryTable;
 
     private static Icon rcPriorIcon = AppSetup.ICONS.getCustomAppImageIcon("prior_rating_curve.svg");
     private static Icon rcIcon = AppSetup.ICONS.getCustomAppImageIcon("rating_curve.svg");

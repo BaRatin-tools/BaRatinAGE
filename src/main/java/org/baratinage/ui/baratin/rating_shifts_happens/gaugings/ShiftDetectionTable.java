@@ -15,6 +15,8 @@ import org.baratinage.utils.DateTime;
 
 public class ShiftDetectionTable extends SimpleFlowPanel {
 
+  public final DataTable dataTable;
+
   private static ColumnHeaderDescription buildColumnDescs() {
 
     ColumnHeaderDescription headerDesc = new ColumnHeaderDescription();
@@ -54,7 +56,7 @@ public class ShiftDetectionTable extends SimpleFlowPanel {
       postHight[k] = DateTime.doubleToDateTime(interval[1]);
     }
 
-    DataTable dataTable = new DataTable();
+    dataTable = new DataTable();
     dataTable.addColumn(names);
     dataTable.addColumn(postMaxpost);
     dataTable.addColumn(postLow);

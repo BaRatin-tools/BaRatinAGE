@@ -40,7 +40,7 @@ public class DataTable extends SimpleFlowPanel {
     public final SimpleFlowPanel toolsPanel;
 
     private final CustomTableModel model;
-    private final JTable table;
+    public final JTable table;
     private CustomCellRenderer cellRenderer;
 
     public DataTable() {
@@ -326,7 +326,7 @@ public class DataTable extends SimpleFlowPanel {
         }
     }
 
-    private static class CustomTableModel extends AbstractTableModel {
+    public static class CustomTableModel extends AbstractTableModel {
 
         private static record Column(Object[] values, boolean editable) {
             public Class<?> getColumnClass() {

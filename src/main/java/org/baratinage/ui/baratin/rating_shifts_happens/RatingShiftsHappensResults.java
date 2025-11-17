@@ -17,7 +17,7 @@ public class RatingShiftsHappensResults extends SimpleFlowPanel {
 
   public final SimpleComboBox colorPaletteSelector;
 
-  private ShiftDetectionResults results = null;
+  public ShiftDetectionResults results = null;
 
   public RatingShiftsHappensResults() {
     super(true);

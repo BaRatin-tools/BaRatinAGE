@@ -22,7 +22,7 @@ import org.json.JSONObject;
 
 public class BamItemParent extends SimpleFlowPanel {
 
-    private final BamItemType TYPE;
+    public final BamItemType TYPE;
     private final BamItemType[] TYPES;
     private final BamItem CHILD;
 

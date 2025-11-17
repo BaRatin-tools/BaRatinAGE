@@ -47,9 +47,9 @@ public class RatingCurveCompare extends BamItem {
     private final SimpleTextField xAxisLabelField;
     private final SimpleTextField yAxisLabelField;
 
-    private final BamItemParent rcOne;
-    private final BamItemParent rcTwo;
-    private final PlotContainer plotContainer;
+    public final BamItemParent rcOne;
+    public final BamItemParent rcTwo;
+    public final PlotContainer plotContainer;
     private final RatingCurvePlotToolsPanel plotToolsPanel;
 
     private Plot plot;

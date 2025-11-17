@@ -18,7 +18,7 @@ import org.json.JSONArray;
 
 public class StructuralErrorModelPanel extends GridPanel implements ChangeListener {
 
-    private final List<ParameterPriorDist> parameters;
+    public final List<ParameterPriorDist> parameters;
 
     public StructuralErrorModelPanel() {
         setColWeight(3, 1);

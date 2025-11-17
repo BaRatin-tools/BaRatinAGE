@@ -22,6 +22,9 @@ import org.baratinage.ui.baratin.hydraulic_control.control_panel.WeirOrifice;
 import org.baratinage.ui.baratin.hydraulic_control.control_panel.WeirParabola;
 import org.baratinage.ui.baratin.hydraulic_control.control_panel.WeirRect;
 import org.baratinage.ui.baratin.hydraulic_control.control_panel.WeirTriangle;
+import org.baratinage.ui.commons.AbstractParameterPriorDist;
+import org.baratinage.ui.commons.ParameterPriorDist;
+import org.baratinage.ui.commons.ParameterPriorDistSimplified;
 import org.baratinage.ui.baratin.hydraulic_control.control_panel.ChannelParabola;
 import org.baratinage.ui.baratin.hydraulic_control.control_panel.ChannelRect;
 import org.baratinage.ui.baratin.hydraulic_control.control_panel.ChannelTriangle;
@@ -85,7 +88,7 @@ public class OneHydraulicControl extends JScrollPane {
     private final List<HydraulicControlOption> allControlOptions;
     private int currentPriorControlPanelIndex = 0;
 
-    private final SimpleTextField descriptionField;
+    public final SimpleTextField descriptionField;
 
     public OneHydraulicControl(int controlNumber) {
         this(true, controlNumber);
@@ -304,6 +307,38 @@ public class OneHydraulicControl extends JScrollPane {
 
     public Parameter[] getParameters() {
         return kbacControlPanel.getParameters();
+    }
+
+    public String getPhysicalControlTypeKey() {
+        int index = controlTypeComboBox.getSelectedIndex();
+        HydraulicControlOption option = allControlOptions.get(index);
+        return option.lgKey;
+    }
+
+    public List<ParameterPriorDistSimplified> getPhysicalParPriorDist() {
+        if (bkacMode) {
+            return null;
+        }
+        int index = controlTypeComboBox.getSelectedIndex();
+        HydraulicControlOption option = allControlOptions.get(index);
+        // List<AbstractParameterPriorDist> parameters =;
+        List<ParameterPriorDistSimplified> parameters = new ArrayList<>();
+        for (AbstractParameterPriorDist par : option.panel.parameters) {
+            if (par instanceof ParameterPriorDistSimplified) {
+                parameters.add((ParameterPriorDistSimplified) par);
+            }
+        }
+        return parameters;
+    }
+
+    public List<ParameterPriorDist> getBKACParPriorDist() {
+        List<ParameterPriorDist> parameters = new ArrayList<>();
+        for (AbstractParameterPriorDist par : kbacControlPanel.parameters) {
+            if (par instanceof ParameterPriorDist) {
+                parameters.add((ParameterPriorDist) par);
+            }
+        }
+        return parameters;
     }
 
     public void fromJSON(JSONObject json) {

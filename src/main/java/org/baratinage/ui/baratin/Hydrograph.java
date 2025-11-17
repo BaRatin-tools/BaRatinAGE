@@ -40,12 +40,12 @@ import org.json.JSONObject;
 public class Hydrograph extends BamItem implements IPredictionMaster {
 
     public final RunBam runBam;
-    private final HydrographPlot plotPanel;
+    public final HydrographPlot plotPanel;
     private final HydrographTable tablePanel;
     private final SimpleFlowPanel outdatedPanel;
 
-    private final BamItemParent ratingCurveParent;
-    private final BamItemParent limnigraphParent;
+    public final BamItemParent ratingCurveParent;
+    public final BamItemParent limnigraphParent;
 
     private final ReactiveValue<Boolean> cropNegativeValues = new ReactiveValue<Boolean>(false);
 

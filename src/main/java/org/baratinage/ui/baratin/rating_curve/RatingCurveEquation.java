@@ -39,4 +39,8 @@ public class RatingCurveEquation extends SimpleFlowPanel {
     public void updateEquation(String equationString) {
         equationTextArea.setText(equationString);
     }
+
+    public String getEquationString() {
+        return equationTextArea.getText();
+    }
 }

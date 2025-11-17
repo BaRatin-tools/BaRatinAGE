@@ -20,9 +20,9 @@ import org.json.JSONArray;
 
 public class StructuralErrorModelBamItem extends BamItem implements IStructuralErrorModels {
 
-    private final int nOutputs;
-    private NameSymbolUnit[] nameSymbolUnits;
-    private final StructuralErrorModelPanel[] strucErrModelPanels;
+    public final int nOutputs;
+    public final NameSymbolUnit[] nameSymbolUnits;
+    public final StructuralErrorModelPanel[] strucErrModelPanels;
 
     private final JLabel parameterNameLabels[];
 

@@ -37,7 +37,7 @@ public class ShiftDetectionMainPlot extends SimpleFlowPanel {
   public final PlotEditor plotEditor;
   private final JToggleButton plotEditorToggleBtn;
 
-  private MultiPlotContainer mainPlot;
+  public MultiPlotContainer mainPlot;
 
   public ShiftDetectionMainPlot(
       List<ResultShift> shifts,

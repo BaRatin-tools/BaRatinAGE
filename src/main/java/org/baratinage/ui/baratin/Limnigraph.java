@@ -36,7 +36,7 @@ public class Limnigraph extends BamItem {
 
     private final LimnigraphTable limniTable;
 
-    private final LimnigraphPlot limniPlot;
+    public final LimnigraphPlot limniPlot;
 
     private LimnigraphDataset limniDataset;
     private final JLabel importedDataSetSourceLabel;

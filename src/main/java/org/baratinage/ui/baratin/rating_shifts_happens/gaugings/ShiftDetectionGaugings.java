@@ -30,7 +30,7 @@ public class ShiftDetectionGaugings extends SimpleFlowPanel {
   private final List<ResultPeriodAndActions> periods;
   private final RatingCurvePlotToolsPanel toolsPanel;
 
-  private final PlotContainer plotContainer;
+  public final PlotContainer plotContainer;
   private ColorPalette palette;
 
   public ShiftDetectionGaugings(List<ResultPeriod> periods) {

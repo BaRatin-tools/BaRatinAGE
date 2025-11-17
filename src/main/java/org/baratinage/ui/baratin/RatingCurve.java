@@ -61,13 +61,13 @@ import org.json.JSONObject;
 public class RatingCurve extends BamItem
         implements IPredictionMaster, ICalibratedModel, IMcmc, IPlotDataProvider {
 
-    private final BamItemParent hydrauConfParent;
-    private final BamItemParent gaugingsParent;
-    private final BamItemParent structErrorParent;
+    public final BamItemParent hydrauConfParent;
+    public final BamItemParent gaugingsParent;
+    public final BamItemParent structErrorParent;
 
     private final RatingCurveStageGrid ratingCurveStageGrid;
     public final RunBam runBam;
-    private final RatingCurveResults resultsPanel;
+    public final RatingCurveResults resultsPanel;
     private final SimpleFlowPanel outdatedPanel;
 
     private RunConfigAndRes bamRunConfigAndRes;

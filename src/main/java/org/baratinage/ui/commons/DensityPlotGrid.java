@@ -22,7 +22,8 @@ import org.baratinage.translation.T;
 
 public class DensityPlotGrid extends SimpleFlowPanel {
 
-    private final List<EstimatedParameterWrapper> estimatedParameters = new ArrayList<>();
+    public final List<EstimatedParameterWrapper> estimatedParameters = new ArrayList<>();
+    public final List<PlotContainer> plotContainers = new ArrayList<>();
 
     public boolean isTimeSeries = false;
 
@@ -36,6 +37,7 @@ public class DensityPlotGrid extends SimpleFlowPanel {
 
     public void updatePlots() {
 
+        plotContainers.clear();
         GridPanel gridPanel = new GridPanel();
         int nColMax = 4;
         int nPlots = estimatedParameters.size();
@@ -104,6 +106,7 @@ public class DensityPlotGrid extends SimpleFlowPanel {
             plot.addXYItem(maxpostLine);
 
             PlotContainer pc = new PlotContainer(plot, false);
+            plotContainers.add(pc);
             T.updateHierarchy(this, pc);
             gridPanel.insertChild(pc, c, r);
 
@@ -117,6 +120,7 @@ public class DensityPlotGrid extends SimpleFlowPanel {
         Legend legend = new Legend();
 
         PlotContainer pc = new PlotContainer(legend.getLegendPlot(), false);
+        plotContainers.add(pc);
         T.updateHierarchy(this, pc);
 
         gridPanel.insertChild(pc, c, r);

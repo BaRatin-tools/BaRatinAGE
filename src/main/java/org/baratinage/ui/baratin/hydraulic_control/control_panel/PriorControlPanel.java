@@ -35,7 +35,7 @@ public abstract class PriorControlPanel extends GridPanel implements ChangeListe
         protected final JLabel lockLabel;
 
         private final List<JLabel> columnHeaders;
-        private final List<AbstractParameterPriorDist> parameters = new ArrayList<>();
+        public final List<AbstractParameterPriorDist> parameters = new ArrayList<>();
 
         public PriorControlPanel(int nColumns, String equation) {
                 setPadding(0);
