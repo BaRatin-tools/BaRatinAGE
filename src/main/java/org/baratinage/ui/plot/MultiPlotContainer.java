@@ -236,19 +236,23 @@ public class MultiPlotContainer extends SimpleFlowPanel implements IExportablePl
 
   @Override
   public String getSvgString() {
+    return getSvgString(getSize());
+  }
+
+  @Override
+  public String getSvgString(Dimension dim) {
     float totalWeight = 0;
     for (PlotConfig p : plots) {
       totalWeight += p.weight;
     }
-    Dimension d = getSize();
-    SVGGraphics2D svg2d = new SVGGraphics2D(d.width, d.height);
+    SVGGraphics2D svg2d = new SVGGraphics2D(dim.width, dim.height);
     int currentHeight = 0;
     for (PlotConfig p : plots) {
-      int h = (int) (d.height * p.weight / totalWeight);
+      int h = (int) (dim.height * p.weight / totalWeight);
       p.chart.getChart().draw(
           svg2d, new Rectangle2D.Double(
               0, currentHeight,
-              d.width, h));
+              dim.width, h));
       currentHeight += h;
     }
     return svg2d.getSVGElement();
@@ -256,26 +260,28 @@ public class MultiPlotContainer extends SimpleFlowPanel implements IExportablePl
 
   @Override
   public BufferedImage getBufferedImage() {
+    return getBufferedImage(getSize(), 2);
+  }
+
+  @Override
+  public BufferedImage getBufferedImage(Dimension dim, int scale) {
     float totalWeight = 0;
     for (PlotConfig p : plots) {
       totalWeight += p.weight;
     }
-
-    Dimension d = getSize();
-    int scale = 2;
     List<BufferedImage> images = new ArrayList<>();
     for (PlotConfig p : plots) {
       BufferedImage img = PlotExporter.buildImgFromChart(
           p.chart.getChart(),
-          d.width,
-          (int) (d.height * p.weight / totalWeight),
+          dim.width,
+          (int) (dim.height * p.weight / totalWeight),
           scale,
           scale);
       images.add(img);
     }
     BufferedImage combined = new BufferedImage(
-        d.width * scale,
-        d.height * scale,
+        dim.width * scale,
+        dim.height * scale,
         BufferedImage.TYPE_INT_ARGB);
     Graphics2D g2d = combined.createGraphics();
     int currentHeight = 0;

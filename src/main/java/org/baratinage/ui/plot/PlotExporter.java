@@ -43,7 +43,11 @@ public class PlotExporter {
 
     public String getSvgString();
 
+    public String getSvgString(Dimension dim);
+
     public BufferedImage getBufferedImage();
+
+    public BufferedImage getBufferedImage(Dimension dim, int scale);
   }
 
   public static SimpleFlowPanel buildExportPanel(IExportablePlot plot) {

@@ -95,6 +95,11 @@ public class PlotContainer extends SimpleFlowPanel implements IExportablePlot {
     @Override
     public String getSvgString() {
         Dimension dim = getSize();
+        return getSvgString(dim);
+    }
+
+    @Override
+    public String getSvgString(Dimension dim) {
         SVGGraphics2D svg2d = new SVGGraphics2D(dim.width, dim.height);
         chart.draw(svg2d, new Rectangle2D.Double(0, 0, dim.width, dim.height));
         String svgElement = svg2d.getSVGElement();
@@ -105,10 +110,15 @@ public class PlotContainer extends SimpleFlowPanel implements IExportablePlot {
     public BufferedImage getBufferedImage() {
         int scale = 2;
         Dimension d = getSize();
+        return getBufferedImage(d, scale);
+    }
+
+    @Override
+    public BufferedImage getBufferedImage(Dimension dim, int scale) {
         return PlotExporter.buildImgFromChart(
                 chart,
-                d.width,
-                d.height,
+                dim.width,
+                dim.height,
                 scale,
                 scale);
     }
