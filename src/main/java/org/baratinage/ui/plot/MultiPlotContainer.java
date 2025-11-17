@@ -19,6 +19,7 @@ import org.baratinage.utils.Misc;
 import org.baratinage.utils.perf.TimedActions;
 import org.jfree.chart.title.LegendTitle;
 import org.jfree.data.Range;
+import org.jfree.data.time.DateRange;
 import org.jfree.svg.SVGGraphics2D;
 
 public class MultiPlotContainer extends SimpleFlowPanel implements IExportablePlot {
@@ -202,6 +203,13 @@ public class MultiPlotContainer extends SimpleFlowPanel implements IExportablePl
     double min = Double.MAX_VALUE, max = -Double.MAX_VALUE;
     for (PlotConfig p : plots) {
       Range r = p.plot.plot.getDomainAxis().getRange();
+      if (r instanceof DateRange) {
+        DateRange dr = (DateRange) r;
+        if (dr.getLength() == 1) {
+          continue; // hacky fix for default date axis range (when there's no data)
+        }
+      }
+
       if (r.getLowerBound() < min) {
         min = r.getLowerBound();
       }
