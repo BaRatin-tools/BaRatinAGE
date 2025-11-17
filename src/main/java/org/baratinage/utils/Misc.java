@@ -71,6 +71,9 @@ public class Misc {
     }
 
     public static String formatNumber(double num, int nSignif, double sciLow, double sciHigh) {
+        if (num == 0) {
+            return "0";
+        }
         double abs = Math.abs(num);
         if (abs <= sciLow || abs >= sciHigh) {
             return formatNumber(num, nSignif, true);
