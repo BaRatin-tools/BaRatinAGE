@@ -87,11 +87,14 @@ public enum ColorPalette {
       rgb = TURBO_RGB;
     }
 
-    for (int i = 0; i < n; i++) {
-      double t = i / (double) (n - 1);
-      colors[i] = interpolate(rgb, t);
+    if (n == 1) {
+      colors[0] = interpolate(rgb, 0.5);
+    } else {
+      for (int i = 0; i < n; i++) {
+        double t = i / (double) (n - 1);
+        colors[i] = interpolate(rgb, t);
+      }
     }
-
     return colors;
   }
 
