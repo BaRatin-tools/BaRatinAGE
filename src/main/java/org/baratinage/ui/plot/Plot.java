@@ -212,8 +212,14 @@ public class Plot implements IPlot, LegendItemSource {
         plot.setDataset(items.size(), item.getDataset());
         plot.setRenderer(items.size(), item.getRenderer());
         items.add(item);
-        axisYlog.setMinValue(getRangeBounds().getLowerBound());
-        axisXlog.setMinValue(getDomainBounds().getLowerBound());
+        Range rangeBounds = getRangeBounds();
+        if (rangeBounds != null) {
+            axisYlog.setMinValue(rangeBounds.getLowerBound());
+        }
+        Range domainBounds = getDomainBounds();
+        if (domainBounds != null) {
+            axisXlog.setMinValue(domainBounds.getLowerBound());
+        }
     }
 
     public void addXYItem(PlotItemGroup item) {
@@ -246,8 +252,14 @@ public class Plot implements IPlot, LegendItemSource {
         items.remove(index);
         plot.setDataset(index, null);
         plot.setRenderer(index, null);
-        axisYlog.setMinValue(getRangeBounds().getLowerBound());
-        axisXlog.setMinValue(getDomainBounds().getLowerBound());
+        Range rangeBounds = getRangeBounds();
+        if (rangeBounds != null) {
+            axisYlog.setMinValue(rangeBounds.getLowerBound());
+        }
+        Range domainBounds = getDomainBounds();
+        if (domainBounds != null) {
+            axisXlog.setMinValue(domainBounds.getLowerBound());
+        }
         return index;
     }
 
@@ -315,7 +327,7 @@ public class Plot implements IPlot, LegendItemSource {
             }
         }
         if (range == null) {
-            return isLog ? new Range(1, 10) : new Range(0, 1);
+            return null;
         }
         return applyBufferToRange(range, bufferPercentageLeft, bufferPercentageRight, isLog);
     }
@@ -334,7 +346,7 @@ public class Plot implements IPlot, LegendItemSource {
             }
         }
         if (range == null) {
-            return isLog ? new Range(1, 10) : new Range(0, 1);
+            return null;
         }
         return applyBufferToRange(range, bufferPercentageBottom, bufferPercentageTop, isLog);
     }
