@@ -71,8 +71,22 @@ public class StackedPlot implements IPlot, LegendItemSource {
     return chart;
   }
 
+  public Range getDomainBounds() {
+    Range range = mainPlot.getDomainBounds();
+    if (range == null) {
+      return null;
+    }
+    for (Plot p : subplots) {
+      Range r = p.getDomainBounds();
+      if (r != null) {
+        range = Range.combine(range, r);
+      }
+    }
+    return range;
+  }
+
   public void restoreAutoBounds() {
-    Range domainBounds = mainPlot.getDomainBounds();
+    Range domainBounds = getDomainBounds();
     StackedPlot.restoreAutoDomainBounds(mainPlot, domainBounds);
     StackedPlot.restoreAutoRangeBounds(mainPlot);
     for (Plot p : subplots) {
@@ -82,7 +96,6 @@ public class StackedPlot implements IPlot, LegendItemSource {
   }
 
   private static void restoreAutoDomainBounds(Plot plot, Range domainBounds) {
-    // Range domainBounds = plot.getDomainBounds();
     if (domainBounds != null) {
       if (domainBounds.getLength() == 0) {
         double value = domainBounds.getCentralValue();
