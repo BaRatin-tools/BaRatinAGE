@@ -133,36 +133,20 @@ public class ShiftDetectionMainPlot extends SimpleFlowPanel {
     dischargePlot.addXYItems(Qt);
     dischargePlot.addXYItems(shiftLines);
 
-    // Range range = null;
-    // if (mainPlot != null) {
-    // range = mainPlot.getCurrentDomainRange();
-    // }
-
-    // mainPlot = new MultiPlotContainer();
     mainPlot = new PlotContainer();
-
     StackedPlot stackedPlot = null;
-
-    // if (range != null) {
-    // mainPlot.setDomainRange(range);
-    // }
 
     plotPanel.removeAll();
     boolean isDischargePlot = radioDischargeOrStage.getSelectedId().equals("q");
 
     if (!isDischargePlot) {
-      // mainPlot.addPlot(stagePlot, 3);
       stackedPlot = new StackedPlot(stagePlot, 3);
     } else {
-      // mainPlot.addPlot(dischargePlot, 3);
       stackedPlot = new StackedPlot(dischargePlot, 3);
     }
 
     stackedPlot.addSubplot(shiftsPlot, 1);
-    // mainPlot.addPlot(shiftsPlot, 1);
-    // mainPlot.topLeftPanel.addChild(plotEditorToggleBtn, false);
     mainPlot.toolsPanel.addChild(plotEditorToggleBtn, false);
-    // mainPlot.setDomainRange(mainPlot.getCurrentDomainRange());
     mainPlot.setPlot(stackedPlot);
 
     plotPanel.addChild(mainPlot, true);
