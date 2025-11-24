@@ -13,7 +13,6 @@ import javax.swing.ImageIcon;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.LegendItem;
 import org.jfree.chart.axis.ValueAxis;
-
 import java.awt.RenderingHints;
 import java.awt.Image;
 import java.awt.Paint;
@@ -24,7 +23,12 @@ public class PlotUtils {
     public static double[] getDistancesFromPoint(PlotContainer plotContainer, double[] x, double[] y,
             Point screenPoint) {
 
-        Plot plot = plotContainer.getPlot();
+        IPlot iplot = plotContainer.getPlot();
+        if (!(iplot instanceof Plot)) {
+            return new double[] {};
+        }
+        Plot plot = (Plot) iplot;
+
         ChartPanel chartPanel = plotContainer.getChartPanel();
 
         ValueAxis domainAxis = plot.plot.getDomainAxis();

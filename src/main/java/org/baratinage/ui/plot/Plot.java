@@ -26,7 +26,7 @@ import org.jfree.chart.ui.RectangleEdge;
 import org.jfree.data.Range;
 import org.jfree.data.xy.XYDataset;
 
-public class Plot implements LegendItemSource {
+public class Plot implements IPlot, LegendItemSource {
 
     public final XYPlot plot;
     public final JFreeChart chart;
@@ -186,10 +186,6 @@ public class Plot implements LegendItemSource {
         update();
     }
 
-    public JFreeChart getChart() {
-        return this.chart;
-    }
-
     public void setXAxisLabel(String label) {
         axisX.setLabel(label);
         axisXlog.setLabel(label);
@@ -277,7 +273,10 @@ public class Plot implements LegendItemSource {
         }
     }
 
-    private static Range applyBufferToRange(Range r, double lowerBufferPercentage, double upperBufferPercentage,
+    private static Range applyBufferToRange(
+            Range r,
+            double lowerBufferPercentage,
+            double upperBufferPercentage,
             boolean isLogScale) {
         if (r == null) {
             return r;
@@ -435,6 +434,12 @@ public class Plot implements LegendItemSource {
         bufferPercentageRight = right;
     }
 
+    @Override
+    public JFreeChart getChart() {
+        return this.chart;
+    }
+
+    @Override
     public Plot getCopy() {
         Plot plotCopy = new Plot(includeLegend, timeseries);
         // axis labels
@@ -470,6 +475,28 @@ public class Plot implements LegendItemSource {
         }
         plotCopy.update();
         return plotCopy;
+    }
+
+    @Override
+    public void restoreAutoBounds() {
+        Range domainBounds = getDomainBounds();
+        if (domainBounds != null) {
+            if (domainBounds.getLength() == 0) {
+                double value = domainBounds.getCentralValue();
+                double offset = Math.abs(value * 0.1);
+                domainBounds = new Range(value - offset, value + offset);
+            }
+            plot.getDomainAxis().setRange(domainBounds);
+        }
+        Range rangeBounds = getRangeBounds();
+        if (rangeBounds != null) {
+            if (rangeBounds.getLength() == 0) {
+                double value = rangeBounds.getCentralValue();
+                double offset = Math.abs(value * 0.1);
+                rangeBounds = new Range(value - offset, value + offset);
+            }
+            plot.getRangeAxis().setRange(rangeBounds);
+        }
     }
 
 }

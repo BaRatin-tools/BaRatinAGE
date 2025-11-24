@@ -13,7 +13,7 @@ import org.baratinage.ui.plot.PlotExporter.IExportablePlot;
 
 public class PlotContainer extends SimpleFlowPanel implements IExportablePlot {
 
-    private Plot plot;
+    private IPlot plot;
     private JFreeChart chart;
     private SimpleFlowPanel chartPanelContainer;
     private CustomChartPanel chartPanel;
@@ -25,11 +25,11 @@ public class PlotContainer extends SimpleFlowPanel implements IExportablePlot {
         this(true);
     }
 
-    public PlotContainer(Plot plot) {
+    public PlotContainer(IPlot plot) {
         this(plot, true);
     }
 
-    public PlotContainer(Plot plot, boolean toolbar) {
+    public PlotContainer(IPlot plot, boolean toolbar) {
         this(toolbar);
         setPlot(plot);
     }
@@ -59,7 +59,7 @@ public class PlotContainer extends SimpleFlowPanel implements IExportablePlot {
 
     }
 
-    public void setPlot(Plot plot) {
+    public void setPlot(IPlot plot) {
         this.plot = plot;
         chart = plot.getChart();
 
@@ -78,7 +78,7 @@ public class PlotContainer extends SimpleFlowPanel implements IExportablePlot {
         return chartPanel;
     }
 
-    public Plot getPlot() {
+    public IPlot getPlot() {
         return plot;
     }
 

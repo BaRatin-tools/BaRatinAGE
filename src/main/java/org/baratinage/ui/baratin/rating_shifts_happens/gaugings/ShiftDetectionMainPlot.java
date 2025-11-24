@@ -15,13 +15,13 @@ import org.baratinage.ui.component.SimpleRadioButtons;
 import org.baratinage.ui.container.SimpleFlowPanel;
 import org.baratinage.ui.plot.ColorPalette;
 import org.baratinage.ui.plot.EditablePlotItem;
-import org.baratinage.ui.plot.MultiPlotContainer;
 import org.baratinage.ui.plot.Plot;
 import org.baratinage.ui.plot.PlotBar;
+import org.baratinage.ui.plot.PlotContainer;
 import org.baratinage.ui.plot.PlotEditor;
 import org.baratinage.ui.plot.PlotInfiniteLine;
 import org.baratinage.ui.plot.PlotPoints;
-import org.jfree.data.Range;
+import org.baratinage.ui.plot.StackedPlot;
 
 public class ShiftDetectionMainPlot extends SimpleFlowPanel {
 
@@ -37,7 +37,7 @@ public class ShiftDetectionMainPlot extends SimpleFlowPanel {
   public final PlotEditor plotEditor;
   private final JToggleButton plotEditorToggleBtn;
 
-  public MultiPlotContainer mainPlot;
+  public PlotContainer mainPlot;
 
   public ShiftDetectionMainPlot(
       List<ResultShift> shifts,
@@ -133,29 +133,37 @@ public class ShiftDetectionMainPlot extends SimpleFlowPanel {
     dischargePlot.addXYItems(Qt);
     dischargePlot.addXYItems(shiftLines);
 
-    Range range = null;
-    if (mainPlot != null) {
-      range = mainPlot.getCurrentDomainRange();
-    }
+    // Range range = null;
+    // if (mainPlot != null) {
+    // range = mainPlot.getCurrentDomainRange();
+    // }
 
-    mainPlot = new MultiPlotContainer();
+    // mainPlot = new MultiPlotContainer();
+    mainPlot = new PlotContainer();
 
-    if (range != null) {
-      mainPlot.setDomainRange(range);
-    }
+    StackedPlot stackedPlot = null;
+
+    // if (range != null) {
+    // mainPlot.setDomainRange(range);
+    // }
 
     plotPanel.removeAll();
     boolean isDischargePlot = radioDischargeOrStage.getSelectedId().equals("q");
 
     if (!isDischargePlot) {
-      mainPlot.addPlot(stagePlot, 3);
+      // mainPlot.addPlot(stagePlot, 3);
+      stackedPlot = new StackedPlot(stagePlot, 3);
     } else {
-      mainPlot.addPlot(dischargePlot, 3);
+      // mainPlot.addPlot(dischargePlot, 3);
+      stackedPlot = new StackedPlot(dischargePlot, 3);
     }
 
-    mainPlot.addPlot(shiftsPlot, 1);
-    mainPlot.topLeftPanel.addChild(plotEditorToggleBtn, false);
-    mainPlot.setDomainRange(mainPlot.getCurrentDomainRange());
+    stackedPlot.addSubplot(shiftsPlot, 1);
+    // mainPlot.addPlot(shiftsPlot, 1);
+    // mainPlot.topLeftPanel.addChild(plotEditorToggleBtn, false);
+    mainPlot.toolsPanel.addChild(plotEditorToggleBtn, false);
+    // mainPlot.setDomainRange(mainPlot.getCurrentDomainRange());
+    mainPlot.setPlot(stackedPlot);
 
     plotPanel.addChild(mainPlot, true);
 
