@@ -40,8 +40,14 @@ public class DistributionCLI {
     }
   }
 
-  private static ExeRun runDistributionCommand(String distributionName, double[] distributionParameters, ACTION action,
-      Double gridMin, Double gridMax, Integer nGrid, Integer nSim) {
+  private static ExeRun runDistributionCommand(
+      String distributionName,
+      double[] distributionParameters,
+      ACTION action,
+      Double gridMin,
+      Double gridMax,
+      Integer nGrid,
+      Integer nSim) {
 
     String parametersArg = doubleArrToStringArg(distributionParameters);
 
@@ -103,10 +109,6 @@ public class DistributionCLI {
       }
       ConsoleLogger.error(e);
       ConsoleLogger.error(msg);
-      // List<double[]> defaultResult = new ArrayList<>();
-      // defaultResult.add(new double[n]);
-      // defaultResult.add(new double[n]);
-      // return defaultResult;
       return Optional.empty();
     }
   }
@@ -141,7 +143,6 @@ public class DistributionCLI {
       double[] distributionParameters,
       int nValues) {
     try {
-
       ExeRun run = runDistributionCommand(distributionName,
           distributionParameters,
           ACTION.RANDOM,

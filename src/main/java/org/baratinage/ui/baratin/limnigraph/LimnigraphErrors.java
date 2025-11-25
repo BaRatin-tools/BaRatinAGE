@@ -125,7 +125,7 @@ public class LimnigraphErrors extends SimpleFlowPanel {
     private void updateErrMatrixTable() {
         errMatrixTable.clearColumns();
         if (dataset.hasStageErrMatrix()) {
-            List<double[]> matrix = dataset.getStageErrMatrix();
+            List<double[]> matrix = dataset.getStageErrMatrix(false);
             for (int k = 0; k < matrix.size() - 2; k++) {
                 errMatrixTable.addColumn(matrix.get(k));
             }

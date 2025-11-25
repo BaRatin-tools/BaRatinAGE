@@ -9,8 +9,6 @@ import java.util.List;
 import org.baratinage.AppSetup;
 import org.baratinage.jbam.UncertainData;
 import org.baratinage.ui.commons.AbstractDataset;
-import org.baratinage.ui.commons.DatasetConfig;
-import org.baratinage.ui.commons.UncertaintyDataset;
 import org.baratinage.ui.plot.PlotBand;
 import org.baratinage.ui.plot.PlotLine;
 import org.baratinage.utils.DateTime;
@@ -27,7 +25,7 @@ public class LimnigraphDataset extends AbstractDataset {
     private final LocalDateTime[] dateTime;
     private final int[] sysErrInd;
 
-    private final UncertaintyDataset errorMatrixDataset;
+    private final UncertainData uncertainData;
 
     private final BitSet invalidRowsIndices;
 
@@ -58,29 +56,20 @@ public class LimnigraphDataset extends AbstractDataset {
                 getColumn(SYSERR_IND));
 
         if (nonSysErrStd != null || (sysErrStd != null && sysErrInd != null)) {
-            UncertainData uncertainData = new UncertainData(
+            uncertainData = new UncertainData(
                     name,
                     stage,
                     nonSysErrStd == null ? new double[] {} : nonSysErrStd,
                     sysErrStd == null ? new double[] {} : sysErrStd,
                     sysErrInd == null ? new int[] {} : sysErrInd);
-            errorMatrixDataset = new UncertaintyDataset(
-                    "stageErrorMatrix",
-                    uncertainData.getErrorMatrix(AppSetup.CONFIG.N_SAMPLES_LIMNI_ERRORS.get()));
         } else {
-            errorMatrixDataset = null;
+            uncertainData = null;
         }
-    }
-
-    public LimnigraphDataset(String name, String hashString) {
-        this(name, hashString, null, null);
     }
 
     public LimnigraphDataset(
             String name,
-            String hashString,
-            String errMatrixName,
-            String errMatrixHashString) {
+            String hashString) {
         super(name, hashString, NONSYSERR_STD, SYSERR_STD, SYSERR_IND);
 
         this.dateTime = DateTime.doubleToDateTimeArray(getColumn(DATETIME));
@@ -88,9 +77,21 @@ public class LimnigraphDataset extends AbstractDataset {
         double[] sysErrIndAsDouble = getColumn(SYSERR_IND);
         this.sysErrInd = sysErrIndAsDouble == null ? null : toInt(sysErrIndAsDouble);
 
-        errorMatrixDataset = errMatrixName != null && errMatrixHashString != null
-                ? new UncertaintyDataset(errMatrixName, errMatrixHashString)
-                : null;
+        double[] nonSysErrStd = getColumn(NONSYSERR_STD);
+        double[] sysErrStd = getColumn(SYSERR_STD);
+        double[] sysErrInd = getColumn(SYSERR_IND);
+
+        if (nonSysErrStd != null || (sysErrStd != null && sysErrInd != null)) {
+            uncertainData = new UncertainData(
+                    name,
+                    getColumn(STAGE),
+                    getColumn(NONSYSERR_STD),
+                    getColumn(SYSERR_STD),
+                    sysErrInd == null ? null : toInt(getColumn(SYSERR_IND)));
+
+        } else {
+            uncertainData = null;
+        }
 
         this.invalidRowsIndices = getMissingValuesIndices(
                 this.dateTime.length,
@@ -133,18 +134,19 @@ public class LimnigraphDataset extends AbstractDataset {
         return sysErrInd;
     }
 
-    public List<double[]> getStageErrMatrix() {
-        return getStageErrMatrix(false);
-    }
-
     public List<double[]> getStageErrMatrix(boolean removeMissingValues) {
         if (!hasStageErrMatrix()) {
             return null;
         }
+        double[][] errorMatrix = uncertainData.getErrorMatrix(AppSetup.CONFIG.N_SAMPLES_LIMNI_ERRORS.get());
+        List<double[]> errorMatrixList = new ArrayList<>();
+        for (int k = 0; k < errorMatrix.length; k++) {
+            errorMatrixList.add(errorMatrix[k]);
+        }
         if (removeMissingValues) {
-            return removeMissingValues(invalidRowsIndices, errorMatrixDataset.getMatrix());
+            return removeMissingValues(invalidRowsIndices, errorMatrixList);
         } else {
-            return errorMatrixDataset.getMatrix();
+            return errorMatrixList;
         }
     }
 
@@ -160,7 +162,7 @@ public class LimnigraphDataset extends AbstractDataset {
     }
 
     public List<double[]> getStageErrUncertaintyEnvelop() {
-        return errorMatrixDataset.getUncertaintyEnvelop();
+        return uncertainData.getUncertaintyEnvelop(AppSetup.CONFIG.N_SAMPLES_LIMNI_ERRORS.get());
     }
 
     public boolean hasNonSysErr() {
@@ -172,7 +174,7 @@ public class LimnigraphDataset extends AbstractDataset {
     }
 
     public boolean hasStageErrMatrix() {
-        return errorMatrixDataset != null;
+        return uncertainData != null;
     }
 
     public PlotLine getPlotLine() {
@@ -195,16 +197,6 @@ public class LimnigraphDataset extends AbstractDataset {
                 false,
                 AppSetup.COLORS.LIMNIGRAPH_STAGE_UNCERTAINTY);
         return plotBand;
-    }
-
-    @Override
-    public DatasetConfig save(boolean writeToFile) {
-        DatasetConfig adcr = super.save(writeToFile);
-        if (hasStageErrMatrix()) {
-            DatasetConfig errMatrixSaveRecord = errorMatrixDataset.save(writeToFile);
-            adcr.nested.add(errMatrixSaveRecord);
-        }
-        return adcr;
     }
 
     // **************************************************************

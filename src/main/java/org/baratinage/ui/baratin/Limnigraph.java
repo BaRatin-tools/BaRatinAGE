@@ -24,7 +24,6 @@ import org.baratinage.ui.container.SplitContainer;
 import org.baratinage.ui.container.TabContainer;
 import org.baratinage.translation.T;
 import org.baratinage.utils.Misc;
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class Limnigraph extends BamItem {
@@ -197,23 +196,10 @@ public class Limnigraph extends BamItem {
 
         if (json.has("limniDataset")) {
             JSONObject limniDatasetJson = json.getJSONObject("limniDataset");
-            JSONObject limniErrMatrixJson = null;
-            if (limniDatasetJson.has("nested")) {
-                JSONArray nestedJson = limniDatasetJson.getJSONArray("nested");
-                limniErrMatrixJson = nestedJson.getJSONObject(0);
-            }
             LimnigraphDataset newLimniDataset = null;
-            if (limniErrMatrixJson == null) {
-                newLimniDataset = new LimnigraphDataset(
-                        limniDatasetJson.getString("name"),
-                        limniDatasetJson.getString("hashString"));
-            } else {
-                newLimniDataset = new LimnigraphDataset(
-                        limniDatasetJson.getString("name"),
-                        limniDatasetJson.getString("hashString"),
-                        limniErrMatrixJson.getString("name"),
-                        limniErrMatrixJson.getString("hashString"));
-            }
+            newLimniDataset = new LimnigraphDataset(
+                    limniDatasetJson.getString("name"),
+                    limniDatasetJson.getString("hashString"));
             if (newLimniDataset != null) {
                 updateDataset(newLimniDataset);
             }

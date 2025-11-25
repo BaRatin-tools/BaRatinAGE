@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.baratinage.utils.Calc;
 import org.baratinage.utils.ConsoleLogger;
 
 public class UncertainData {
@@ -19,10 +20,21 @@ public class UncertainData {
     private Boolean valuesHasMissingValues;
     private Boolean uncertaintyHasMissingValues;
 
+    private Integer nReplicates = 200;
     private double[][] errorMatrix = null;
+    private List<double[]> uncertaintyEnvelop = null;
 
     public UncertainData(String name, double[] values, double[] nonSysStd, double[] sysStd, int[] sysIndices) {
         int n = values.length;
+        if (nonSysStd == null) {
+            nonSysStd = new double[] {};
+        }
+        if (sysStd == null) {
+            sysStd = new double[] {};
+        }
+        if (sysIndices == null) {
+            sysIndices = new int[] {};
+        }
         if (nonSysStd.length != n && nonSysStd.length != 0) {
             ConsoleLogger.error("nonSysStd is not the correct length, set to empty");
             nonSysStd = new double[] {};
@@ -95,16 +107,33 @@ public class UncertainData {
         return this.values.length;
     }
 
+    public int getNumberOfReplicates() {
+        return this.nReplicates;
+    }
+
+    public List<double[]> getUncertaintyEnvelop(int nReplicates) {
+        buildErrorMatrix(nReplicates);
+
+        return uncertaintyEnvelop;
+    }
+
     public double[][] getErrorMatrix(int nReplicates) {
-        if (errorMatrix != null) {
-            return errorMatrix;
+        buildErrorMatrix(nReplicates);
+        return errorMatrix;
+    }
+
+    private void buildErrorMatrix(int nReplicates) {
+        if (errorMatrix != null && nReplicates == this.nReplicates) {
+            return;
         }
+        this.nReplicates = nReplicates;
 
         boolean hasNonSysErr = nonSysStd != null;
         boolean hasSysErr = sysStd != null && sysIndices != null;
 
         if (!hasNonSysErr && !hasSysErr) {
-            return null;
+            errorMatrix = null;
+            return;
         }
 
         int nRow = values.length;
@@ -118,7 +147,7 @@ public class UncertainData {
             }
         } catch (OutOfMemoryError E) {
             ConsoleLogger.error("cannot create error matrix because memory is insufficient.");
-            return null;
+            return;
         }
 
         if (hasNonSysErr) {
@@ -128,8 +157,9 @@ public class UncertainData {
         if (hasSysErr) {
             addSysError(matrix, sysStd, sysIndices);
         }
+
         errorMatrix = matrix;
-        return errorMatrix;
+        uncertaintyEnvelop = computeUncertaintyEnvelop(matrix, 0.025, 0.975);
     }
 
     // Note: this is coded to limit the number of calls to get the very slow method
@@ -223,6 +253,30 @@ public class UncertainData {
         return distribution.getRandomValues(n);
     }
 
+    private static List<double[]> computeUncertaintyEnvelop(double[][] errorMatrix, double pLow, double pHigh) {
+        if (errorMatrix.length == 0) {
+            return null;
+        }
+        int nCol = errorMatrix.length;
+        int nRow = errorMatrix[0].length;
+        double[] lower = new double[nRow];
+        double[] upper = new double[nRow];
+        List<double[]> uncertaintyEnvelop = new ArrayList<>();
+        for (int k = 0; k < nRow; k++) {
+            double[] row = new double[nCol];
+            for (int i = 0; i < nCol; i++) {
+                row[i] = errorMatrix[i][k];
+            }
+            double[] perc = Calc.percentiles(row, false, pLow, pHigh);
+
+            lower[k] = perc[0];
+            upper[k] = perc[1];
+        }
+        uncertaintyEnvelop.add(lower);
+        uncertaintyEnvelop.add(upper);
+        return uncertaintyEnvelop;
+    }
+
     @Override
     public String toString() {
         boolean hasSysError = this.sysStd.length > 0;
@@ -241,4 +295,5 @@ public class UncertainData {
         }
         return str;
     }
+
 }

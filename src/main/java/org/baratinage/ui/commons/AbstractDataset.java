@@ -271,7 +271,10 @@ public class AbstractDataset {
             writeDataFile(dataFilePath);
         }
         return new DatasetConfig(
-                name, hashString, headers, dataFilePath);
+                name,
+                hashString,
+                headers,
+                dataFilePath);
     }
 
     private static String buildDataFileName(String name, String hashString) {
