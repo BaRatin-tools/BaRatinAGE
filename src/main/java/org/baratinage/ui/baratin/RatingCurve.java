@@ -29,7 +29,6 @@ import org.baratinage.translation.T;
 import org.baratinage.ui.bam.BamItem;
 import org.baratinage.ui.bam.BamConfig;
 import org.baratinage.ui.bam.BamItemType;
-import org.baratinage.ui.bam.BamProjectLoader;
 import org.baratinage.ui.bam.BamItemParent;
 import org.baratinage.ui.bam.ICalibratedModel;
 import org.baratinage.ui.bam.IMcmc;
@@ -446,9 +445,7 @@ public class RatingCurve extends BamItem
         if (json.has("bamRunId")) {
             String bamRunId = json.getString("bamRunId");
             bamRunConfigAndRes = RunConfigAndRes.buildFromTempZipArchive(bamRunId);
-            BamProjectLoader.addDelayedAction(() -> {
-                updateResults();
-            });
+            updateResults();
         } else {
             ConsoleLogger.log("missing 'bamRunId'");
         }
@@ -464,9 +461,7 @@ public class RatingCurve extends BamItem
         }
 
         if (json.has("plotEditor")) {
-            BamProjectLoader.addDelayedAction(() -> {
-                resultsPanel.ratingCurvePlot.plotEditor.fromJSON(json.getJSONObject("plotEditor"));
-            });
+            resultsPanel.ratingCurvePlot.plotEditor.fromJSON(json.getJSONObject("plotEditor"));
         }
 
         TimedActions.throttle(ID, AppSetup.CONFIG.THROTTLED_DELAY_MS, this::checkSync);

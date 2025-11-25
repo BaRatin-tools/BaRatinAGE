@@ -16,7 +16,6 @@ import org.baratinage.jbam.PredictionState;
 import org.baratinage.translation.T;
 import org.baratinage.ui.bam.BamConfig;
 import org.baratinage.ui.bam.BamItem;
-import org.baratinage.ui.bam.BamProjectLoader;
 import org.baratinage.ui.bam.IModelDefinition;
 import org.baratinage.ui.bam.IPlotDataProvider;
 import org.baratinage.ui.bam.IPriors;
@@ -251,9 +250,7 @@ public class PriorRatingCurve<HCT extends BamItem & IModelDefinition & IPriors> 
         if (json.has("bamRunId")) {
             String bamRunId = json.getString("bamRunId");
             bamRunConfigAndRes = RunConfigAndRes.buildFromTempZipArchive(bamRunId);
-            BamProjectLoader.addDelayedAction(() -> {
-                buildPlot();
-            });
+            buildPlot();
         } else {
             ConsoleLogger.log("missing 'bamRunZipFileName'");
         }
@@ -265,9 +262,7 @@ public class PriorRatingCurve<HCT extends BamItem & IModelDefinition & IPriors> 
         }
 
         if (json.has("plotEditor")) {
-            BamProjectLoader.addDelayedAction(() -> {
-                resultsPanel.ratingCurvePlot.plotEditor.fromJSON(json.getJSONObject("plotEditor"));
-            });
+            resultsPanel.ratingCurvePlot.plotEditor.fromJSON(json.getJSONObject("plotEditor"));
         }
     }
 

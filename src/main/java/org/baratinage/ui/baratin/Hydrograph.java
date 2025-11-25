@@ -15,7 +15,6 @@ import org.baratinage.ui.bam.BamItem;
 import org.baratinage.ui.bam.BamConfig;
 import org.baratinage.ui.bam.BamItemParent;
 import org.baratinage.ui.bam.BamItemType;
-import org.baratinage.ui.bam.BamProjectLoader;
 import org.baratinage.ui.bam.IPredictionMaster;
 import org.baratinage.ui.bam.PredExp;
 import org.baratinage.ui.bam.PredExpSet;
@@ -237,17 +236,13 @@ public class Hydrograph extends BamItem implements IPredictionMaster {
         if (json.has("bamRunId")) {
             String bamRunId = json.getString("bamRunId");
             currentConfigAndRes = RunConfigAndRes.buildFromTempZipArchive(bamRunId);
-            BamProjectLoader.addDelayedAction(() -> {
-                updateResults();
-            });
+            updateResults();
         } else {
             ConsoleLogger.log("missing 'bamRunId'");
         }
 
         if (json.has("plotEditor")) {
-            BamProjectLoader.addDelayedAction(() -> {
-                plotPanel.plotEditor.fromJSON(json.getJSONObject("plotEditor"));
-            });
+            plotPanel.plotEditor.fromJSON(json.getJSONObject("plotEditor"));
         }
 
         TimedActions.throttle(ID, AppSetup.CONFIG.THROTTLED_DELAY_MS, this::checkSync);
