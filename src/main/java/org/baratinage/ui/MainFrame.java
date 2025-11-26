@@ -11,8 +11,8 @@ import org.baratinage.project_importer.BaratinageV2Importer;
 import org.baratinage.translation.T;
 import org.baratinage.ui.bam.BamProject;
 import org.baratinage.ui.bam.BamProjectLoader;
+import org.baratinage.ui.bam.BamProjectSaver;
 import org.baratinage.ui.baratin.BaratinProject;
-import org.baratinage.ui.commons.ToasterMessage;
 import org.baratinage.ui.component.CommonDialog;
 import org.baratinage.ui.component.SvgIcon;
 import org.baratinage.ui.container.SimpleFlowPanel;
@@ -304,11 +304,17 @@ public class MainFrame extends JFrame {
     }
 
     public void saveProject(String projectFilePath) {
-        currentProject.saveProject(projectFilePath);
-        currentProject.setProjectPath(projectFilePath);
-        currentProject.checkUnsavedChange();
-        updateFrameTitle();
-        ToasterMessage.info(T.text("project_saved"));
+
+        BamProjectSaver.saveProject(currentProject, projectFilePath, (bamConfig) -> {
+            currentProject.setLastSavedConfig(bamConfig);
+            currentProject.setProjectPath(projectFilePath);
+            currentProject.checkUnsavedChange();
+            updateFrameTitle();
+        }, () -> {
+            CommonDialog.errorDialog(T.text("error_saving_project"));
+        }, () -> {
+            ConsoleLogger.warn("Project saving canceled");
+        });
     }
 
     public void importV2Project() {
