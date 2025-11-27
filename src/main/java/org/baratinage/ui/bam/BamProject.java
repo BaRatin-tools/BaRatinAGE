@@ -63,8 +63,8 @@ public abstract class BamProject extends SimpleFlowPanel {
         lastSavedConfig = null;
     }
 
-    public void setLastSavedConfig(BamConfig config) {
-        lastSavedConfig = config;
+    public void setLastSavedConfig() {
+        lastSavedConfig = BamProjectSaver.getBamConfig(this);
     }
 
     public boolean checkUnsavedChange() {

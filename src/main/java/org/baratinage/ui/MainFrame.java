@@ -190,7 +190,6 @@ public class MainFrame extends JFrame {
 
         updateFrameTitle();
         T.updateTranslations();
-        // projectPanel.updateUI();
 
         SimpleFlowPanel framePanel = new SimpleFlowPanel(true);
         framePanel.setGap(5);
@@ -268,10 +267,13 @@ public class MainFrame extends JFrame {
                     projectFilePath,
                     (bamProject) -> {
                         bamProject.setProjectPath(projectFilePath);
+                        bamProject.setLastSavedConfig();
                         setCurrentProject(bamProject);
                     },
                     () -> {
                         CommonDialog.errorDialog(T.text("error_opening_project"));
+                    }, () -> {
+                        ConsoleLogger.log("Project load canceled");
                     });
         }
     }
@@ -299,14 +301,13 @@ public class MainFrame extends JFrame {
             ConsoleLogger.error("saving project failed! Selected file is null.");
             return;
         }
-        // currentProject.saveProject();
         saveProject(f.getAbsolutePath());
     }
 
     public void saveProject(String projectFilePath) {
 
         BamProjectSaver.saveProject(currentProject, projectFilePath, (bamConfig) -> {
-            currentProject.setLastSavedConfig(bamConfig);
+            currentProject.setLastSavedConfig();
             currentProject.setProjectPath(projectFilePath);
             currentProject.checkUnsavedChange();
             updateFrameTitle();
