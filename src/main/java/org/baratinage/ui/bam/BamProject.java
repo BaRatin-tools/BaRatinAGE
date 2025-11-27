@@ -17,6 +17,7 @@ import org.baratinage.utils.Misc;
 import org.baratinage.utils.json.JSONCompare;
 import org.baratinage.utils.json.JSONCompareResult;
 import org.baratinage.utils.json.JSONFilter;
+import org.baratinage.utils.perf.Performance;
 import org.json.JSONObject;
 
 public abstract class BamProject extends SimpleFlowPanel {
@@ -33,7 +34,6 @@ public abstract class BamProject extends SimpleFlowPanel {
     protected final SimpleFlowPanel currentPanel;
 
     private BamConfig lastSavedConfig;
-    private boolean unsavedChanges = false;
 
     public BamProject(BamProjectType projectType) {
         super(true);
@@ -69,23 +69,19 @@ public abstract class BamProject extends SimpleFlowPanel {
 
     public boolean checkUnsavedChange() {
         if (lastSavedConfig == null) {
-            unsavedChanges = true;
             return true;
         }
+        Performance.startTimeMonitoring("checkUnsavedChange");
         BamConfig currentConfig = BamProjectSaver.getBamConfig(this);
         JSONFilter filter = new JSONFilter(true, true, "selectedItemId");
         JSONObject curr = filter.apply(currentConfig.JSON);
         JSONObject saved = filter.apply(lastSavedConfig.JSON);
         JSONCompareResult compareRes = JSONCompare.compare(curr, saved);
-        if (!compareRes.matching() != unsavedChanges) {
-            unsavedChanges = !compareRes.matching();
+        Performance.endTimeMonitoring("checkUnsavedChange");
+        if (!compareRes.matching()) {
             return true;
         }
         return false;
-    }
-
-    public boolean hasUnsavedChange() {
-        return unsavedChanges;
     }
 
     private void setupExplorer() {

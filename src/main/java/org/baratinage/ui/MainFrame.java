@@ -156,15 +156,6 @@ public class MainFrame extends JFrame {
         });
     }
 
-    // FIXME: disabled / currently unused
-    public void checkIfUnsavedChanges() {
-        if (currentProject != null) {
-            if (currentProject.checkUnsavedChange()) {
-                updateFrameTitle();
-            }
-        }
-    }
-
     public void setCurrentProject(BamProject project) {
         if (currentProject != null) {
             T.clear(currentProject);
@@ -202,8 +193,7 @@ public class MainFrame extends JFrame {
 
     public boolean confirmLoosingUnsavedChanges() {
         if (currentProject != null) {
-            currentProject.checkUnsavedChange();
-            if (currentProject.hasUnsavedChange()) {
+            if (currentProject.checkUnsavedChange()) {
                 return CommonDialog.confirmDialog(
                         T.text("unsaved_changes_will_be_lost") + "\n" +
                                 T.text("proceed_question"),
@@ -227,8 +217,7 @@ public class MainFrame extends JFrame {
             String projectPath = currentProject.getProjectPath();
             if (projectPath != null) {
                 String projectName = Path.of(projectPath).getFileName().toString();
-                // String unsavedString = currentProject.hasUnsavedChange() ? "*" : "";
-                String unsavedString = ""; // FIXME: disabled for now
+                String unsavedString = currentProject.checkUnsavedChange() ? "*" : "";
                 setTitle(AppSetup.APP_NAME + " - " + projectName + " - " + projectPath + unsavedString);
             }
         }
@@ -309,7 +298,6 @@ public class MainFrame extends JFrame {
         BamProjectSaver.saveProject(currentProject, projectFilePath, (bamConfig) -> {
             currentProject.setLastSavedConfig();
             currentProject.setProjectPath(projectFilePath);
-            currentProject.checkUnsavedChange();
             updateFrameTitle();
         }, () -> {
             CommonDialog.errorDialog(T.text("error_saving_project"));
@@ -343,8 +331,7 @@ public class MainFrame extends JFrame {
 
     public void close() {
         if (currentProject != null) {
-            currentProject.checkUnsavedChange();
-            if (currentProject.hasUnsavedChange()) {
+            if (currentProject.checkUnsavedChange()) {
                 String text = String.format("<html>%s<br>%s</html>",
                         T.text("confirm_closing_app"),
                         T.text("unsaved_changes_will_be_lost"));
