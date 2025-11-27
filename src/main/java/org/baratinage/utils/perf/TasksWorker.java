@@ -5,51 +5,77 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 import javax.swing.SwingWorker;
 
-public class TasksWorker<T> {
+public class TasksWorker<A, B> {
 
-  private final List<T> objects = new ArrayList<>();
-  private final Map<T, Consumer<T>> tasks = new HashMap<>();
-  private final Map<T, Consumer<T>> befores = new HashMap<>();
-  private final Map<T, Consumer<T>> afters = new HashMap<>();
+  private boolean canceled = false;
 
-  private record Listener<T>(Map<T, Consumer<T>> consumers, T object) {
+  private final List<A> objects = new ArrayList<>();
+  private final Map<A, Function<A, B>> tasks = new HashMap<>();
+  private final Map<A, Consumer<A>> befores = new HashMap<>();
+  private final Map<A, Consumer<B>> afters = new HashMap<>();
+  private Runnable onDone = () -> {
+  };
+
+  private record Listener<A, B>(A input, B output) {
 
   }
 
-  public void addTask(T object, Consumer<T> task, Consumer<T> before, Consumer<T> after) {
+  public void addTask(A object, Function<A, B> task, Consumer<A> before, Consumer<B> after) {
     objects.add(object);
     tasks.put(object, task);
     befores.put(object, before);
     afters.put(object, after);
   }
 
+  public void setOnDoneAction(Runnable onDone) {
+    this.onDone = onDone;
+  }
+
   public void run() {
-    SwingWorker<Void, Listener<T>> worker = new SwingWorker<>() {
+
+    SwingWorker<Void, Listener<A, B>> worker = new SwingWorker<>() {
 
       @Override
       protected Void doInBackground() throws Exception {
 
+        canceled = false;
         for (int k = 0; k < tasks.size(); k++) {
-          T object = objects.get(k);
-          Consumer<T> task = tasks.get(k);
-          publish(new Listener<T>(befores, object));
-          task.accept(object);
-          publish(new Listener<T>(afters, object));
+          if (canceled) {
+            publish(new Listener<A, B>(null, null));
+            return null;
+          }
+          A input = objects.get(k);
+          Function<A, B> task = tasks.get(input);
+          publish(new Listener<A, B>(input, null));
+          B output = task.apply(input);
+          publish(new Listener<A, B>(input, output));
         }
 
+        publish(new Listener<A, B>(null, null));
         return null;
       }
 
       @Override
-      protected void process(List<Listener<T>> listeners) {
-        for (Listener<T> listener : listeners) {
-          T object = listener.object;
-          Consumer<T> consumer = listener.consumers.get(object);
-          if (consumer != null) {
-            listener.consumers.get(object).accept(object);
+      protected void process(List<Listener<A, B>> listeners) {
+        for (Listener<A, B> listener : listeners) {
+          if (listener.input == null) {
+            onDone.run();
+            return;
+          }
+          if (listener.output == null) {
+            Consumer<A> before = befores.get(listener.input);
+            if (before != null) {
+              before.accept(listener.input);
+            }
+          } else {
+            Consumer<B> after = afters.get(listener.input);
+            if (after != null) {
+              after.accept(listener.output);
+            }
           }
         }
       }
@@ -57,6 +83,14 @@ public class TasksWorker<T> {
     };
 
     worker.execute();
+  }
+
+  public void cancel() {
+    canceled = true;
+  }
+
+  public boolean wasCanceled() {
+    return canceled;
   }
 
 }

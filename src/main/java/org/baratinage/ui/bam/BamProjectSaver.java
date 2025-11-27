@@ -4,7 +4,9 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 
 import javax.swing.JLabel;
@@ -99,34 +101,48 @@ public class BamProjectSaver {
 
     bamProjectSavingFrame.updateProgress(savingMessage, 0);
     bamProjectSavingFrame.clearOnCancelActions();
-    bamProjectSavingFrame.addOnCancelAction(
-        onCancel);
 
-    TasksWorker<Integer> tasksWorker = new TasksWorker<>();
+    TasksWorker<BamItem, Void> tasksWorker = new TasksWorker<>();
+
+    bamProjectSavingFrame.addOnCancelAction(
+        () -> {
+          tasksWorker.cancel();
+        });
+
+    Map<BamItem, Boolean> hasError = new HashMap<>();
 
     List<String> files = new ArrayList<>();
     JSONArray bamItemsJson = new JSONArray();
 
     int n = bamItemList.size();
     for (int k = 0; k < n; k++) {
-      tasksWorker.addTask(k, (index) -> {
-        BamItem item = bamItemList.get(index);
-        BamConfigItem itemConfig = getBamConfigItem(item, true);
-        bamItemsJson.put(index, itemConfig.json);
-        for (String file : itemConfig.files) {
-          files.add(file);
-        }
-      }, (index) -> {
-        BamItem item = bamItemList.get(index);
-        String itemName = item.bamItemNameField.getText();
-        String progressMsg = T.html(
-            "saving_project_component",
-            T.text(item.TYPE.id), itemName);
-        bamProjectSavingFrame.updateProgress(progressMsg, index);
-      }, null);
+      BamItem bamItem = bamItemList.get(k);
+      Integer index = k;
+      tasksWorker.addTask(bamItem,
+          (item) -> {
+            try {
+              BamConfigItem itemConfig = getBamConfigItem(item, true);
+              bamItemsJson.put(index, itemConfig.json);
+              for (String file : itemConfig.files) {
+                files.add(file);
+              }
+              hasError.put(item, false);
+            } catch (Exception e) {
+              hasError.put(item, true);
+            }
+            return null;
+          }, (item) -> {
+            String itemName = item.bamItemNameField.getText();
+            String progressMsg = T.html(
+                "saving_project_component",
+                T.text(item.TYPE.id), itemName);
+            bamProjectSavingFrame.updateProgress(progressMsg, index);
+          },
+          null);
     }
 
-    tasksWorker.addTask(n, (index) -> {
+    tasksWorker.setOnDoneAction(() -> {
+
       // ------------------------------------------------------------
       // saving main config file
       Performance.startTimeMonitoring("bam main config file");
@@ -152,12 +168,24 @@ public class BamProjectSaver {
       } else {
         ConsoleLogger.error("an error occured while saving project!");
       }
-    }, (index) -> {
-      String progressMsg = T.text("saving_project_zipping");
-      bamProjectSavingFrame.updateProgress(progressMsg, bamItemList.size());
 
-    }, (index) -> {
       bamProjectSavingFrame.done();
+
+      boolean anyError = hasError
+          .values()
+          .stream()
+          .anyMatch(Boolean::booleanValue);
+
+      if (anyError) {
+        onError.run();
+      }
+
+      if (!tasksWorker.wasCanceled()) {
+        onSaved.accept(bamConfig);
+      } else {
+        onCancel.run();
+      }
+
     });
 
     tasksWorker.run();
