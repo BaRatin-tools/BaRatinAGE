@@ -1,5 +1,6 @@
 package org.baratinage.ui.component;
 
+import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -12,6 +13,7 @@ import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JProgressBar;
+import javax.swing.SwingConstants;
 
 import org.baratinage.AppSetup;
 import org.baratinage.translation.T;
@@ -63,6 +65,7 @@ public class ProgressFrame extends JDialog {
         });
 
         setContentPane(contentPanel);
+        setResizable(false);
     }
 
     public void openProgressFrame(
@@ -77,6 +80,7 @@ public class ProgressFrame extends JDialog {
         progressBar.setMaximum(progressMax);
 
         progressMsg.setText(" ".repeat(150));
+        progressMsg.setVerticalAlignment(SwingConstants.TOP);
 
         cancelCloseButton.setText(T.text("cancel"));
 
@@ -86,6 +90,8 @@ public class ProgressFrame extends JDialog {
         this.autoClose = autoClose;
         canceled = false;
         done = false;
+
+        progressMsg.setPreferredSize(new Dimension(500, 50));
 
         setTitle(titleString);
         pack();
@@ -126,6 +132,11 @@ public class ProgressFrame extends JDialog {
             progressBar.setValue(progress);
             progressBar.repaint();
         }
+
+        revalidate();
+        pack();
+        repaint();
+
     }
 
     public void done() {
