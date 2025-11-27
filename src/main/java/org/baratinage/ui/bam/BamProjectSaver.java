@@ -14,6 +14,7 @@ import javax.swing.JLabel;
 import org.baratinage.AppSetup;
 import org.baratinage.translation.T;
 import org.baratinage.ui.commons.ExplorerItem;
+import org.baratinage.ui.component.CommonDialog;
 import org.baratinage.ui.component.ProgressFrame;
 import org.baratinage.ui.container.SimpleFlowPanel;
 import org.baratinage.utils.ConsoleLogger;
@@ -68,13 +69,15 @@ public class BamProjectSaver {
     return getBamConfig(project, bamItemsJson, files);
   }
 
-  public static void saveProject(BamProject project, String saveFilePath, Consumer<BamConfig> onSaved,
+  private static void saveProject(
+      ProgressFrame progressFrame,
+      BamProject project,
+      String saveFilePath,
+      Consumer<BamConfig> onSaved,
       Runnable onCancel,
       Runnable onError) {
 
     BamItemList bamItemList = project.getOrderedBamItemList();
-
-    ProgressFrame bamProjectSavingFrame = new ProgressFrame();
 
     // Initalize loading monitoring frame
     SimpleFlowPanel p = new SimpleFlowPanel(true);
@@ -91,7 +94,7 @@ public class BamProjectSaver {
 
     p.addChild(lMessage);
 
-    bamProjectSavingFrame.openProgressFrame(
+    progressFrame.openProgressFrame(
         AppSetup.MAIN_FRAME,
         p,
         savingMessage,
@@ -99,12 +102,12 @@ public class BamProjectSaver {
         bamItemList.size(),
         true);
 
-    bamProjectSavingFrame.updateProgress(savingMessage, 0);
-    bamProjectSavingFrame.clearOnCancelActions();
+    progressFrame.updateProgress(savingMessage, 0);
+    progressFrame.clearOnCancelActions();
 
     TasksWorker<BamItem, Void> tasksWorker = new TasksWorker<>();
 
-    bamProjectSavingFrame.addOnCancelAction(
+    progressFrame.addOnCancelAction(
         () -> {
           tasksWorker.cancel();
         });
@@ -136,7 +139,7 @@ public class BamProjectSaver {
             String progressMsg = T.html(
                 "saving_project_component",
                 T.text(item.TYPE.id), itemName);
-            bamProjectSavingFrame.updateProgress(progressMsg, index);
+            progressFrame.updateProgress(progressMsg, index);
           },
           null);
     }
@@ -169,7 +172,7 @@ public class BamProjectSaver {
         ConsoleLogger.error("an error occured while saving project!");
       }
 
-      bamProjectSavingFrame.done();
+      progressFrame.done();
 
       boolean anyError = hasError
           .values()
@@ -189,6 +192,48 @@ public class BamProjectSaver {
     });
 
     tasksWorker.run();
+
+  }
+
+  public static void saveProject(ProgressFrame progressFrame, BamProject project, boolean saveAs, Runnable onSuccess,
+      Runnable onFailure) {
+
+    Runnable _onFailure = onFailure != null ? onFailure : () -> {
+    };
+    Runnable _onSuccess = onSuccess != null ? onSuccess : () -> {
+    };
+
+    String projectFilePath = project.getProjectPath();
+    if (saveAs || projectFilePath == null) {
+      File f = CommonDialog.saveFileDialog(
+          "",
+          null,
+          new CommonDialog.CustomFileFilter(T.text("baratinage_file"),
+              "bam", "BAM"));
+      if (f == null) {
+        ConsoleLogger.error("saving project failed! Selected file is null.");
+
+        return;
+      }
+      projectFilePath = f.getAbsolutePath();
+    }
+
+    String filePath = projectFilePath;
+    BamProjectSaver.saveProject(
+        progressFrame,
+        project,
+        projectFilePath,
+        (bamConfig) -> {
+          project.setLastSavedConfig();
+          project.setProjectPath(filePath);
+          _onSuccess.run();
+        }, () -> {
+          CommonDialog.errorDialog(T.text("error_saving_project"));
+          _onFailure.run();
+        }, () -> {
+          ConsoleLogger.warn("Project saving canceled");
+          _onFailure.run();
+        });
 
   }
 

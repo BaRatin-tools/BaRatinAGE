@@ -14,6 +14,8 @@ import org.baratinage.ui.bam.BamProjectLoader;
 import org.baratinage.ui.bam.BamProjectSaver;
 import org.baratinage.ui.baratin.BaratinProject;
 import org.baratinage.ui.component.CommonDialog;
+import org.baratinage.ui.component.ConfirmSaveDialog;
+import org.baratinage.ui.component.ProgressFrame;
 import org.baratinage.ui.component.SvgIcon;
 import org.baratinage.ui.container.SimpleFlowPanel;
 import org.baratinage.utils.ConsoleLogger;
@@ -191,20 +193,28 @@ public class MainFrame extends JFrame {
         setContentPane(framePanel);
     }
 
-    public boolean confirmLoosingUnsavedChanges() {
+    private boolean isClosingConfirmed() {
         if (currentProject != null) {
             if (currentProject.checkUnsavedChange()) {
-                return CommonDialog.confirmDialog(
-                        T.text("unsaved_changes_will_be_lost") + "\n" +
-                                T.text("proceed_question"),
-                        T.text("are_you_sure"));
+                ConfirmSaveDialog confirmSaveDialog = new ConfirmSaveDialog(AppSetup.MAIN_FRAME, currentProject);
+                confirmSaveDialog.setVisible(true);
+                switch (confirmSaveDialog.getResult()) {
+                    case ConfirmSaveDialog.Result.SAVE:
+                        return true;
+                    case ConfirmSaveDialog.Result.SAVE_AS:
+                        return true;
+                    case ConfirmSaveDialog.Result.DO_NO_SAVE:
+                        return true;
+                    case CANCEL:
+                        return false;
+                }
             }
         }
         return true;
     }
 
     public boolean closeProject() {
-        boolean confirmed = confirmLoosingUnsavedChanges();
+        boolean confirmed = isClosingConfirmed();
         if (confirmed) {
             setCurrentProject(null);
         }
@@ -224,7 +234,7 @@ public class MainFrame extends JFrame {
     }
 
     public void newProject() {
-        if (confirmLoosingUnsavedChanges()) {
+        if (isClosingConfirmed()) {
             AppSetup.clearTempDir();
             BaratinProject newProject = new BaratinProject();
             newProject.addDefaultBamItems();
@@ -233,7 +243,7 @@ public class MainFrame extends JFrame {
     }
 
     public void loadProject() {
-        if (confirmLoosingUnsavedChanges()) {
+        if (isClosingConfirmed()) {
             File f = CommonDialog.openFileDialog(
                     null,
                     new CommonDialog.CustomFileFilter(
@@ -268,46 +278,12 @@ public class MainFrame extends JFrame {
     }
 
     public void saveProject(boolean saveAs) {
-
-        if (currentProject == null) {
-            ConsoleLogger.error("no project to save.");
-            return;
-        }
-        if (!saveAs) {
-            String pp = currentProject.getProjectPath();
-            if (pp != null) {
-                saveProject(pp);
-                return;
-            }
-        }
-        File f = CommonDialog.saveFileDialog(
-                "",
-                null,
-                new CommonDialog.CustomFileFilter(T.text("baratinage_file"),
-                        "bam", "BAM"));
-
-        if (f == null) {
-            ConsoleLogger.error("saving project failed! Selected file is null.");
-            return;
-        }
-        saveProject(f.getAbsolutePath());
-    }
-
-    public void saveProject(String projectFilePath) {
-
-        BamProjectSaver.saveProject(currentProject, projectFilePath, (bamConfig) -> {
-            currentProject.setLastSavedConfig();
-            currentProject.setProjectPath(projectFilePath);
-            updateFrameTitle();
-        }, () -> {
-            CommonDialog.errorDialog(T.text("error_saving_project"));
-        }, () -> {
-            ConsoleLogger.warn("Project saving canceled");
-        });
+        ProgressFrame progressFrame = new ProgressFrame(AppSetup.MAIN_FRAME);
+        BamProjectSaver.saveProject(progressFrame, currentProject, saveAs, null, null);
     }
 
     public void importV2Project() {
-        if (confirmLoosingUnsavedChanges()) {
+        if (isClosingConfirmed()) {
             File f = CommonDialog.openFileDialog(T.text("import_baratinage_v2_project"),
                     new CommonDialog.CustomFileFilter(
                             T.text("bar_zip_file_format"),
