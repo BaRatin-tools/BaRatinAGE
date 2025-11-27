@@ -3,12 +3,11 @@ package org.baratinage.ui.bam;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.Consumer;
 
 import javax.swing.JLabel;
-import javax.swing.SwingUtilities;
 
 import org.baratinage.AppSetup;
 import org.baratinage.translation.T;
@@ -20,247 +19,179 @@ import org.baratinage.utils.ConsoleLogger;
 import org.baratinage.utils.fs.ReadFile;
 import org.baratinage.utils.fs.ReadWriteZip;
 import org.baratinage.utils.perf.Performance;
+import org.baratinage.utils.perf.TasksWorker;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class BamProjectLoader {
 
-    static private boolean bamProjectLoadingCanceled;
-    static private Runnable doAfterBamItemsLoaded = () -> {
-    };
-    static private Runnable doOnError = () -> {
+  static public void loadProject(
+      String projectFilePath,
+      Consumer<BamProject> onLoaded,
+      Runnable onError,
+      Runnable onCancel) {
 
-    };
-    static private ProgressFrame bamProjectLoadingFrame;
-    static final private List<BamItem> bamProjectBamItemsToLoad = new ArrayList<>();
-    static final private List<BamConfig> bamProjectBamItemsToLoadConfig = new ArrayList<>();
-    static private int bamProjectLoadingProgress = -1;
+    File projectFile = new File(projectFilePath);
 
-    private static void load(JSONObject json, File sourceFile, Consumer<BamProject> onLoaded, Runnable onError) {
+    // checking that file exists
 
-        bamProjectLoadingFrame = new ProgressFrame();
+    if (!projectFile.exists()) {
+      ConsoleLogger.error("Project file doesn't exist! (%s)".formatted(projectFilePath));
+      onError.run();
+      return;
+    }
 
-        doOnError = onError;
+    // clearing temp directory
+    AppSetup.clearTempDir();
 
-        // get bam items configs
-        JSONArray bamItemsJson = json.getJSONArray("bamItems");
-        int n = bamItemsJson.length();
+    // unzipping project file
+    try {
+      ReadWriteZip.unzip(projectFilePath, AppSetup.PATH_APP_TEMP_DIR);
+    } catch (Exception e) {
+      ConsoleLogger.error(e);
+      onError.run();
+      return;
+    }
 
-        // Initalize loading monitoring frame
-        SimpleFlowPanel p = new SimpleFlowPanel(true);
-        p.setGap(5);
-        JLabel lMessage = new JLabel();
-        String loadingMessage = T.text("loading_project");
+    // reading main config file
+    JSONObject json;
+    try {
+      String jsonContent = ReadFile
+          .readTextFile(Path.of(AppSetup.PATH_APP_TEMP_DIR, "main_config.json").toString());
+      json = new JSONObject(jsonContent);
 
-        lMessage.setText("<html>" +
-                "<b>" + sourceFile.getName() + "</b>" + "<br>" +
-                "<code>" + sourceFile.getAbsolutePath() + "</code>" +
-                "</html>");
+    } catch (IOException e) {
+      ConsoleLogger.error(e);
+      onError.run();
+      return;
+    }
 
-        p.addChild(lMessage);
+    // getting BaM items json array
+    JSONArray bamItemsJson = json.getJSONArray("bamItems");
+    int n = bamItemsJson.length();
 
-        bamProjectLoadingFrame.openProgressFrame(
-                AppSetup.MAIN_FRAME,
-                p,
-                loadingMessage,
-                0,
-                n,
-                true);
+    // initializing loading progress frame
 
-        bamProjectLoadingFrame.updateProgress(loadingMessage, 0);
-        bamProjectLoadingFrame.clearOnCancelActions();
-        bamProjectLoadingFrame.addOnCancelAction(
-                () -> {
-                    bamProjectLoadingCanceled = true;
-                });
-        bamProjectLoadingProgress = 0;
-        bamProjectLoadingCanceled = false;
+    ProgressFrame bamProjectLoadingFrame = new ProgressFrame();
+    SimpleFlowPanel p = new SimpleFlowPanel(true);
+    p.setGap(5);
+    JLabel lMessage = new JLabel();
+    String loadingMessage = T.text("loading_project");
+    lMessage.setText("<html>" +
+        "<b>" + projectFile.getName() + "</b>" + "<br>" +
+        "<code>" + projectFile.getAbsolutePath() + "</code>" +
+        "</html>");
 
-        // get project type and create appropriate project
-        BamProjectType projectType = BamProjectType.valueOf(json.getString("bamProjectType"));
-        BamProject bamProject;
-        if (projectType == BamProjectType.BARATIN) {
-            bamProject = new BaratinProject();
-        } else {
-            return;
-        }
+    p.addChild(lMessage);
+    bamProjectLoadingFrame.openProgressFrame(
+        AppSetup.MAIN_FRAME,
+        p,
+        loadingMessage,
+        0,
+        n,
+        true);
+    bamProjectLoadingFrame.updateProgress(loadingMessage, 0);
+    bamProjectLoadingFrame.clearOnCancelActions();
 
-        SwingUtilities.invokeLater(() -> {
-            // create BamItems and prepare their configuration for actual loading
-            bamProjectBamItemsToLoad.clear();
-            bamProjectBamItemsToLoadConfig.clear();
+    BamProjectType projectType = BamProjectType.valueOf(json.getString("bamProjectType"));
+    BamProject bamProject;
+    if (projectType == BamProjectType.BARATIN) {
+      bamProject = new BaratinProject();
+    } else {
+      return;
+    }
 
-            for (int k = 0; k < n; k++) {
+    TasksWorker<Integer, BamItem> tasksWorker = new TasksWorker<>();
 
-                JSONObject bamItemJson = bamItemsJson.getJSONObject(k);
-
-                BamItemType itemType = BamItemType.valueOf(bamItemJson.getString("type"));
-                String id = bamItemJson.getString("id");
-                BamItem item = bamProject.addBamItem(itemType, id);
-
-                item.bamItemNameField.setText(bamItemJson.getString("name"));
-                item.bamItemDescriptionField.setText(bamItemJson.getString("description"));
-
-                bamProjectBamItemsToLoad.add(item);
-                bamProjectBamItemsToLoadConfig.add(new BamConfig(bamItemJson.getJSONObject("config")));
-            }
+    bamProjectLoadingFrame.addOnCancelAction(
+        () -> {
+          tasksWorker.cancel();
         });
 
-        // set loading of BamItems as next task to perform on EDT (eventDispatchThread)
-        SwingUtilities.invokeLater(BamProjectLoader::loadNextBamItem); // invokeLater loop
+    Map<BamItem, Boolean> hasError = new HashMap<>();
 
-        // sets the last step
-        doAfterBamItemsLoaded = () -> {
-            ExplorerItem exItem = bamProject.EXPLORER.getLastSelectedPathComponent();
-            if (exItem != null) {
-                json.put("selectedItem", exItem.id);
+    for (int k = 0; k < n; k++) {
+
+      JSONObject bamItemJson = bamItemsJson.getJSONObject(k);
+
+      BamItemType itemType = BamItemType.valueOf(bamItemJson.getString("type"));
+      String id = bamItemJson.getString("id");
+      BamItem item = bamProject.addBamItem(itemType, id);
+
+      tasksWorker.addTask(
+          k,
+          (index) -> {
+
+            item.bamItemNameField.setText(bamItemJson.getString("name"));
+            item.bamItemDescriptionField.setText(bamItemJson.getString("description"));
+
+            BamConfig config = new BamConfig(bamItemJson.getJSONObject("config"));
+
+            ConsoleLogger.log("Loading item " + item);
+
+            String loadingString = String.format("loading %s", item.TYPE.toString());
+            Performance.startTimeMonitoring(loadingString);
+            try {
+              item.load(config);
+            } catch (Exception e) {
+              ConsoleLogger.error(e);
+              e.printStackTrace();
+              hasError.put(item, true);
             }
-            BamItem toSelectItem = null;
-            if (json.has("selectedItemId")) {
-                String id = json.getString("selectedItemId");
-                if (id != null) {
-                    toSelectItem = bamProject.getBamItem(id);
+            hasError.put(item, false);
+            return item;
 
-                }
-            }
-            if (toSelectItem == null && bamProject.BAM_ITEMS.size() > 0) {
-                toSelectItem = bamProject.BAM_ITEMS.get(0);
-            }
-            if (toSelectItem != null) {
-                bamProject.setCurrentBamItem(toSelectItem);
-            }
-
-            bamProjectLoadingProgress = -1;
-            bamProjectLoadingFrame.done();
-
-            if (!bamProjectLoadingCanceled) {
-                onLoaded.accept(bamProject);
-            }
-
-            Performance.endTimeMonitoring("loading bam items");
-        };
-
-        return;
-    }
-
-    static private void loadNextBamItem() {
-        if (bamProjectLoadingCanceled) {
-            ConsoleLogger.log("loading was canceled.");
-            return;
-        }
-        if (bamProjectLoadingProgress == -1) {
-            ConsoleLogger.log("no BamItem to load.");
-            return;
-        }
-        if (bamProjectLoadingProgress >= bamProjectBamItemsToLoad.size()) {
-            ConsoleLogger.log("all BamItem loaded.");
-            doAfterBamItemsLoaded.run();
-            return;
-        }
-
-        BamConfig config = bamProjectBamItemsToLoadConfig.get(bamProjectLoadingProgress);
-        BamItem item = bamProjectBamItemsToLoad.get(bamProjectLoadingProgress);
-
-        ConsoleLogger.log("Loading item " + item);
-
-        String itemName = item.bamItemNameField.getText();
-        String progressMsg = T.html(
+          },
+          (index) -> {
+            String itemName = item.bamItemNameField.getText();
+            String progressMsg = T.html(
                 "loading_project_component",
                 T.text(item.TYPE.id), itemName);
-        bamProjectLoadingFrame.updateProgress(progressMsg, bamProjectLoadingProgress);
-
-        String loadingString = String.format("loading %s", item.TYPE.toString());
-        Performance.startTimeMonitoring(loadingString);
-        try {
-            item.load(config);
-        } catch (Exception e) {
-            ConsoleLogger.error(e);
-            e.printStackTrace();
-            doOnError.run();
-            doOnError = () -> {
-            }; // no need to recall the method
-        }
-        Performance.endTimeMonitoring(loadingString);
-        bamProjectLoadingFrame.updateProgress(progressMsg, bamProjectLoadingProgress + 1);
-
-        bamProjectLoadingProgress++;
-        SwingUtilities.invokeLater(BamProjectLoader::loadNextBamItem);
+            bamProjectLoadingFrame.updateProgress(progressMsg, index);
+          },
+          null);
     }
 
-    private static List<Runnable> delayedActions = new ArrayList<>();
-    private static boolean isInLoad = false;
+    tasksWorker.setOnDoneAction(() -> {
 
-    private static void runDelayedActions() {
+      ExplorerItem exItem = bamProject.EXPLORER.getLastSelectedPathComponent();
+      if (exItem != null) {
+        json.put("selectedItem", exItem.id);
+      }
+      BamItem toSelectItem = null;
+      if (json.has("selectedItemId")) {
+        String id = json.getString("selectedItemId");
+        if (id != null) {
+          toSelectItem = bamProject.getBamItem(id);
 
-        for (Runnable action : delayedActions) {
-            SwingUtilities.invokeLater(action);
         }
-        delayedActions.clear();
-    }
+      }
+      if (toSelectItem == null && bamProject.BAM_ITEMS.size() > 0) {
+        toSelectItem = bamProject.BAM_ITEMS.get(0);
+      }
+      if (toSelectItem != null) {
+        bamProject.setCurrentBamItem(toSelectItem);
+      }
 
-    public static void addDelayedAction(Runnable action) {
-        if (isInLoad) {
-            delayedActions.add(action);
-        } else {
-            action.run();
-        }
-    }
+      bamProjectLoadingFrame.done();
 
-    static public void loadProject(String projectFilePath, Consumer<BamProject> onLoaded, Runnable onError) {
+      boolean anyError = hasError
+          .values()
+          .stream()
+          .anyMatch(Boolean::booleanValue);
 
-        isInLoad = true;
+      if (anyError) {
+        onError.run();
+      }
 
-        Performance.startTimeMonitoring("clearing temp directory");
+      if (!tasksWorker.wasCanceled()) {
+        onLoaded.accept(bamProject);
+      } else {
+        onCancel.run();
+      }
+    });
 
-        AppSetup.clearTempDir();
+    tasksWorker.run();
 
-        Performance.endTimeMonitoring("clearing temp directory");
-
-        Performance.startTimeMonitoring("unzipping project file");
-
-        File projectFile = new File(projectFilePath);
-
-        if (!projectFile.exists()) {
-            ConsoleLogger.error("Project file doesn't exist! (" +
-                    projectFilePath + ")");
-            onError.run();
-            return;
-        }
-        try {
-            ReadWriteZip.unzip(projectFilePath, AppSetup.PATH_APP_TEMP_DIR);
-        } catch (Exception e) {
-            ConsoleLogger.error(e);
-            onError.run();
-            return;
-        }
-
-        Performance.endTimeMonitoring("unzipping project file");
-
-        Performance.startTimeMonitoring("reading main JSON config file");
-
-        try {
-
-            String jsonContent = ReadFile
-                    .readTextFile(Path.of(AppSetup.PATH_APP_TEMP_DIR, "main_config.json").toString());
-            JSONObject json = new JSONObject(jsonContent);
-
-            Performance.endTimeMonitoring("reading main JSON config file");
-
-            Performance.startTimeMonitoring("loading bam items");
-
-            load(json, projectFile, (bamProject) -> {
-                isInLoad = false;
-                runDelayedActions();
-                onLoaded.accept(bamProject);
-
-            },
-                    onError);
-        } catch (IOException e) {
-            ConsoleLogger.error(e);
-            onError.run();
-            return;
-        }
-        return;
-    }
-
+  }
 }
