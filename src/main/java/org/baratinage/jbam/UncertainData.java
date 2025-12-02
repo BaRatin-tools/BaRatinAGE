@@ -45,7 +45,6 @@ public class UncertainData {
             sysStd = new double[] {};
             sysIndices = new int[] {};
         }
-        // FIXME should check data consistency
 
         this.name = name;
         this.values = values;
