@@ -441,4 +441,10 @@ public class Misc {
         }
         return reordered;
     }
+
+    public static boolean matchesTemplate(String template, String str) {
+        String regex = "^%s$".formatted(template.replace("%s", "(.+)"));
+        Pattern pattern = Pattern.compile(regex);
+        return pattern.matcher(str).matches();
+    }
 }
