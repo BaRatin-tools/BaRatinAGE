@@ -235,7 +235,7 @@ public class GaugingsDataset extends AbstractDataset implements IPlotDataProvide
         return getColumn(STAGE);
     }
 
-    public double[] getStagePercentUncertainty() {
+    public double[] getStageAbsoluteUncertainty() {
         return getColumn(STAGE_U);
     }
 
