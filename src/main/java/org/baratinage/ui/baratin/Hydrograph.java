@@ -193,7 +193,7 @@ public class Hydrograph extends BamItem implements IPredictionMaster {
 
         if (currentConfigAndRes != null) {
             config.JSON.put("bamRunId", currentConfigAndRes.id);
-            String zipPath = currentConfigAndRes.zipRun(writeFiles);
+            String zipPath = currentConfigAndRes.zipRun(writeFiles, Limnigraph.LIMNI_ERROR_FILENAME_TEMPLATE);
             config.FILE_PATHS.add(zipPath);
         }
 

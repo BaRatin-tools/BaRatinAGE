@@ -28,6 +28,9 @@ import org.json.JSONObject;
 
 public class Limnigraph extends BamItem {
 
+    public static final String LIMNI_FILENAME_TEMPLATE = "limni_%s"; // timestamp id
+    public static final String LIMNI_ERROR_FILENAME_TEMPLATE = "limni_errors_%s"; // timestamp id
+
     private Icon chartIcon = AppSetup.ICONS.getCustomAppImageIcon("limnigraph.svg");
     private Icon errorIcon = AppSetup.ICONS.getCustomAppImageIcon("errors.svg");
 
@@ -148,7 +151,7 @@ public class Limnigraph extends BamItem {
         stageVector.add(stage);
 
         return new PredictionInput(
-                "limni_" + Misc.getTimeStampedId(),
+                LIMNI_FILENAME_TEMPLATE.formatted(Misc.getTimeStampedId()),
                 stageVector);
     }
 
@@ -160,7 +163,7 @@ public class Limnigraph extends BamItem {
             return null;
         }
         return new PredictionInput(
-                "limni_errors_" + Misc.getTimeStampedId(),
+                LIMNI_ERROR_FILENAME_TEMPLATE.formatted(Misc.getTimeStampedId()),
                 limniDataset.getStageErrMatrix(true));
     }
 
