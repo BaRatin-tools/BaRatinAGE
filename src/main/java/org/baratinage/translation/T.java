@@ -230,15 +230,17 @@ public class T {
     }
 
     static private void clearOwnerFromOthersChildrenList(Object owner) {
-        for (Object o : hierarchy.keySet()) {
+        // Take a snapshot because WeakHashMap keys may disappear during iteration
+        List<Object> keysSnapshot = new ArrayList<>(hierarchy.keySet());
+        for (Object o : keysSnapshot) {
             List<WeakReference<Object>> children = hierarchy.get(o);
+            if (children == null)
+                continue;
             children.removeIf(weakRef -> {
                 Object wro = weakRef.get();
-                if (wro != null && wro.equals(owner)) {
-                    return true;
-                }
-                return false;
+                return wro != null && wro.equals(owner);
             });
         }
     }
+
 }
