@@ -189,8 +189,10 @@ public class BamProjectSaver {
         onCancel.run();
       }
 
+      Performance.endTimeMonitoring("saving_project");
     });
 
+    Performance.startTimeMonitoring("saving_project");
     tasksWorker.run();
 
   }

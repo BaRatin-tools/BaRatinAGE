@@ -189,8 +189,11 @@ public class BamProjectLoader {
       } else {
         onCancel.run();
       }
+
+      Performance.endTimeMonitoring("loading_project");
     });
 
+    Performance.startTimeMonitoring("loading_project");
     tasksWorker.run();
 
   }
