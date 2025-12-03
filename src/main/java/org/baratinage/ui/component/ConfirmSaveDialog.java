@@ -6,6 +6,7 @@ import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.UIManager;
 
 import org.baratinage.AppSetup;
 import org.baratinage.translation.T;
@@ -26,7 +27,12 @@ public class ConfirmSaveDialog extends JDialog {
     SimpleFlowPanel dialogPanel = new SimpleFlowPanel(true);
     dialogPanel.setPadding(10);
     dialogPanel.setGap(5);
+    JLabel iconLabel = new JLabel(UIManager.getIcon("OptionPane.warningIcon"));
     JLabel messageLabel = new JLabel(T.text("save_change_before_closing"));
+    SimpleFlowPanel messagePanel = new SimpleFlowPanel();
+    messagePanel.setGap(20);
+    messagePanel.addChild(iconLabel, 0);
+    messagePanel.addChild(messageLabel, 1);
     SimpleFlowPanel actionsPanel = new SimpleFlowPanel(true);
     actionsPanel.setGap(5);
     JButton saveBtn = new JButton(T.text("save_project"));
@@ -38,7 +44,7 @@ public class ConfirmSaveDialog extends JDialog {
     actionsPanel.addChild(saveAsBtn, 0);
     actionsPanel.addChild(doNotSaveBtn, 0);
     actionsPanel.addChild(cancelBtn, 0);
-    dialogPanel.addChild(messageLabel, 1);
+    dialogPanel.addChild(messagePanel, 1);
     dialogPanel.addChild(actionsPanel, 0);
 
     setMinimumSize(new Dimension(500, 1));
