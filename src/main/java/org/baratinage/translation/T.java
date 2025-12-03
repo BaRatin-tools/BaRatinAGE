@@ -206,9 +206,14 @@ public class T {
     // - removeChildren() which remove children
     // - removeOwnerAndChildren() which remove both children and owner
     static public void clear(Object owner) {
-        clearOwnerRecursively(owner);
-        // remove owners from children list of other owners
-        clearOwnerFromOthersChildrenList(owner);
+        try {
+            clearOwnerRecursively(owner);
+            // remove owners from children list of other owners
+            clearOwnerFromOthersChildrenList(owner);
+        } catch (Exception e) {
+            ConsoleLogger.error("Clearing owner '%s' failed !".formatted(owner.toString()));
+            ConsoleLogger.error(e);
+        }
     }
 
     static private void clearOwnerRecursively(Object owner) {
