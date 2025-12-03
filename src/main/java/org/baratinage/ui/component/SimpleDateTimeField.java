@@ -1,198 +1,76 @@
 package org.baratinage.ui.component;
 
-import java.awt.Component;
-import java.awt.Font;
-import java.time.DateTimeException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.YearMonth;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.JLabel;
+import javax.swing.JFormattedTextField;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import org.baratinage.AppSetup;
-import org.baratinage.translation.T;
-import org.baratinage.ui.container.GridPanel;
-import org.baratinage.utils.ConsoleLogger;
-import org.baratinage.utils.Misc;
-import org.baratinage.utils.perf.TimedActions;
+import org.baratinage.ui.container.SimpleFlowPanel;
 
-public class SimpleDateTimeField extends GridPanel {
+import raven.datetime.DatePicker;
+import raven.datetime.TimePicker;
 
-    private final SimpleIntegerField yearField;
-    private final SimpleIntegerField monthField;
-    private final SimpleIntegerField dayField;
-    private final SimpleIntegerField hourField;
-    private final SimpleIntegerField minutField;
-    private final SimpleIntegerField secondField;
+public class SimpleDateTimeField extends SimpleFlowPanel {
 
-    private final JLabel yearLabField;
-    private final JLabel monthLabField;
-    private final JLabel dayLabField;
-    private final JLabel hourLabField;
-    private final JLabel minutLabField;
-    private final JLabel secondLabField;
+  public final DatePicker datePicker;
+  public final TimePicker timePicker;
 
-    private final ChangeListener changeListener;
+  public SimpleDateTimeField() {
+    super();
+    setGap(5);
 
-    private final String id;
+    datePicker = new DatePicker();
+    timePicker = new TimePicker();
+    timePicker.set24HourView(true);
+    datePicker.setEditor(new JFormattedTextField());
+    timePicker.setEditor(new JFormattedTextField());
 
-    private boolean showSeconds;
+    addChild(datePicker.getEditor());
+    addChild(timePicker.getEditor());
 
-    public SimpleDateTimeField(Component owner) {
-        this(owner, true);
+    datePicker.addDateSelectionListener(e -> {
+      fireChangeListeners();
+    });
+    timePicker.addTimeSelectionListener(e -> {
+      fireChangeListeners();
+    });
+
+  }
+
+  public void setDateTime(LocalDateTime dateTime) {
+    datePicker.setSelectedDate(dateTime.toLocalDate());
+    timePicker.setSelectedTime(dateTime.toLocalTime());
+
+  }
+
+  public LocalDateTime getDateTime() {
+    LocalDate date = datePicker.getSelectedDate();
+    LocalTime time = timePicker.getSelectedTime();
+    if (date != null && time != null) {
+      LocalDateTime dateTime = LocalDateTime.of(date, time);
+      return dateTime;
     }
+    return null;
+  }
 
-    public SimpleDateTimeField(Component owner, boolean showSeconds) {
-        setGap(5);
-        for (int k = 0; k < 6; k++) {
-            setColWeight(k, 1);
-        }
+  private final List<ChangeListener> changeListeners = new ArrayList<>();
 
-        this.showSeconds = showSeconds;
+  public void addChangeListener(ChangeListener l) {
+    changeListeners.add(l);
+  }
 
-        id = Misc.getTimeStampedId();
+  public void removeChangeListener(ChangeListener l) {
+    changeListeners.remove(l);
+  }
 
-        yearField = new SimpleIntegerField(1000, 2100, 1);
-
-        monthField = new SimpleIntegerField(1, 12, 1);
-
-        dayField = new SimpleIntegerField(1, 31, 1);
-
-        hourField = new SimpleIntegerField(0, 23, 1);
-
-        minutField = new SimpleIntegerField(0, 59, 1);
-
-        secondField = new SimpleIntegerField(0, 59, 1);
-
-        changeListener = (e) -> {
-            TimedActions.throttle(id, AppSetup.CONFIG.THROTTLED_DELAY_MS, () -> {
-                int nDays = getNumberOfDaysInMonth();
-                dayField.configure(1, nDays, 1);
-                if (dayField.getIntValue() > nDays) {
-                    dayField.setValue(nDays);
-                }
-            });
-            fireChangeListeners();
-        };
-
-        yearField.addChangeListener(changeListener);
-        monthField.addChangeListener(changeListener);
-        dayField.addChangeListener(changeListener);
-        hourField.addChangeListener(changeListener);
-        minutField.addChangeListener(changeListener);
-        secondField.addChangeListener(changeListener);
-
-        yearLabField = buildLabel();
-        monthLabField = buildLabel();
-        dayLabField = buildLabel();
-        hourLabField = buildLabel();
-        minutLabField = buildLabel();
-        secondLabField = buildLabel();
-
-        setRowLayout();
-
-        T.updateHierarchy(owner, this);
-        T.t(this, () -> {
-            yearLabField.setText(T.text("year"));
-            monthLabField.setText(T.text("month"));
-            dayLabField.setText(T.text("day"));
-            hourLabField.setText(T.text("hour"));
-            minutLabField.setText(T.text("minute"));
-            secondLabField.setText(T.text("second"));
-        });
+  private void fireChangeListeners() {
+    for (ChangeListener l : changeListeners) {
+      l.stateChanged(new ChangeEvent(this));
     }
-
-    private static JLabel buildLabel() {
-        JLabel label = new JLabel();
-        Font f = label.getFont();
-        label.setFont(f.deriveFont(f.getSize() * 0.9f));
-        return label;
-    }
-
-    private void setRowLayout() {
-        clear();
-
-        insertChild(yearLabField, 0, 0);
-        insertChild(monthLabField, 1, 0);
-        insertChild(dayLabField, 2, 0);
-        insertChild(hourLabField, 3, 0);
-        insertChild(minutLabField, 4, 0);
-        if (showSeconds) {
-            insertChild(secondLabField, 5, 0);
-        }
-
-        insertChild(yearField, 0, 1);
-        insertChild(monthField, 1, 1);
-        insertChild(dayField, 2, 1);
-        insertChild(hourField, 3, 1);
-        insertChild(minutField, 4, 1);
-        if (showSeconds) {
-            insertChild(secondField, 5, 1);
-        }
-
-    }
-
-    public void setDateTime(LocalDateTime dateTime) {
-        yearField.setValue(dateTime.getYear());
-        monthField.setValue(dateTime.getMonthValue());
-        dayField.setValue(dateTime.getDayOfMonth());
-        hourField.setValue(dateTime.getHour());
-        minutField.setValue(dateTime.getMinute());
-        secondField.setValue(dateTime.getSecond());
-    }
-
-    private int getNumberOfDaysInMonth() {
-        int y = yearField.getIntValue();
-        int M = monthField.getIntValue();
-        int h = hourField.getIntValue();
-        int m = minutField.getIntValue();
-        int s = secondField.getIntValue();
-        LocalDateTime ldt = null;
-        try {
-            ldt = LocalDateTime.of(y, M, 1, h, m, s);
-
-        } catch (DateTimeException e) {
-            ConsoleLogger.error(e);
-        }
-        if (ldt == null) {
-            return 31;
-        }
-        YearMonth yearMonth = YearMonth.from(ldt);
-        int nDays = yearMonth.lengthOfMonth();
-        return nDays;
-    }
-
-    public LocalDateTime getDateTime() {
-        int y = yearField.getIntValue();
-        int M = monthField.getIntValue();
-        int d = dayField.getIntValue();
-        int h = hourField.getIntValue();
-        int m = minutField.getIntValue();
-        int s = secondField.getIntValue();
-        try {
-            return LocalDateTime.of(y, M, d, h, m, s);
-        } catch (DateTimeException e) {
-            ConsoleLogger.error(e);
-        }
-        return null;
-    }
-
-    private final List<ChangeListener> changeListeners = new ArrayList<>();
-
-    public void addChangeListener(ChangeListener l) {
-        changeListeners.add(l);
-    }
-
-    public void removeChangeListener(ChangeListener l) {
-        changeListeners.remove(l);
-    }
-
-    private void fireChangeListeners() {
-        for (ChangeListener l : changeListeners) {
-            l.stateChanged(new ChangeEvent(this));
-        }
-    }
+  }
 }

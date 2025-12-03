@@ -75,8 +75,8 @@ public class BaremExporter extends SimpleFlowPanel {
 
         hydroCodeField = new SimpleTextField();
         hydroNameField = new SimpleTextField();
-        startDateField = new SimpleDateTimeField(this, false);
-        endDateField = new SimpleDateTimeField(this, false);
+        startDateField = new SimpleDateTimeField();
+        endDateField = new SimpleDateTimeField();
 
         JButton okButton = new JButton();
         JButton cancelButton = new JButton();
