@@ -1,5 +1,6 @@
 package org.baratinage.ui.baratin.rating_curve;
 
+import java.awt.Dimension;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -257,6 +258,7 @@ public class BaremExporter extends SimpleFlowPanel {
             CommonDialog.infoDialog(T.text("export_to_bareme_max_value_warning"), T.text("warning"));
         }
 
+        dialog.setMinimumSize(new Dimension(500, 1));
         dialog.pack();
         dialog.setLocationRelativeTo(AppSetup.MAIN_FRAME);
         dialog.setVisible(true);

@@ -1,5 +1,7 @@
 package org.baratinage.ui.component;
 
+import java.awt.Dimension;
+
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
@@ -38,6 +40,8 @@ public class ConfirmSaveDialog extends JDialog {
     actionsPanel.addChild(cancelBtn, 0);
     dialogPanel.addChild(messageLabel, 1);
     dialogPanel.addChild(actionsPanel, 0);
+
+    setMinimumSize(new Dimension(500, 1));
 
     ProgressFrame progressFrame = new ProgressFrame(this);
 
