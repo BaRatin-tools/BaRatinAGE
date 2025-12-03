@@ -60,7 +60,7 @@ public class DataTable extends SimpleFlowPanel {
 
         table.setModel(model);
         table.getTableHeader().setReorderingAllowed(false);
-        table.setCellSelectionEnabled(true);
+        table.setCellSelectionEnabled(false);
         table.setRowSelectionAllowed(true);
         table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 
