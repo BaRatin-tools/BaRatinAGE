@@ -144,7 +144,7 @@ public class MainMenuBar extends JMenuBar {
         add(exportReportMenuItem);
         exportReportMenuItem.addActionListener((e) -> {
             if (AppSetup.MAIN_FRAME.currentProject == null) {
-                System.out.println("No project");
+                ConsoleLogger.log("No project");
                 return;
             }
             ReportExporter reportExport = new ReportExporter(AppSetup.MAIN_FRAME.currentProject);

@@ -31,6 +31,7 @@ import org.baratinage.ui.bam.PredExpSet;
 import org.baratinage.ui.bam.run.BamRun;
 import org.baratinage.ui.bam.run.BamRunException;
 import org.baratinage.ui.component.CommonDialog;
+import org.baratinage.utils.ConsoleLogger;
 
 public class BamRatingCurveRun {
 
@@ -164,7 +165,7 @@ public class BamRatingCurveRun {
           progress.accept(p.totalProgress());
         },
         p -> {
-          System.out.println("baratin: " + p);
+          ConsoleLogger.log("baratin run > " + p);
         },
         e -> {
           if (e instanceof BamRunException) {

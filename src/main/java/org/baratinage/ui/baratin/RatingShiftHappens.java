@@ -77,8 +77,6 @@ public class RatingShiftHappens extends BamItem {
             "eqConfigsAndPriors"));
 
     hydrauConfParent.addChangeListener((e) -> {
-      BamItem bamItem = hydrauConfParent.getCurrentBamItem();
-      System.out.println(bamItem);
       TimedActions.throttle(ID, AppSetup.CONFIG.THROTTLED_DELAY_MS, this::checkSync);
     });
 
@@ -89,8 +87,6 @@ public class RatingShiftHappens extends BamItem {
     gaugingsParent.setComparisonJSONfilter(new JSONFilter(true, true,
         "name", "headers", "filePath", "nested"));
     gaugingsParent.addChangeListener((e) -> {
-      Gaugings bamItem = (Gaugings) gaugingsParent.getCurrentBamItem();
-      System.out.println(bamItem);
       TimedActions.throttle(ID, AppSetup.CONFIG.THROTTLED_DELAY_MS, this::checkSync);
     });
 

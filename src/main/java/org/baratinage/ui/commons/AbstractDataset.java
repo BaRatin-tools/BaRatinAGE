@@ -24,7 +24,6 @@ public class AbstractDataset {
     protected final String name;
     protected final double[][] data;
     private final TreeMap<String, Integer> headersMap;
-    // private final String[] headers;
     protected final int nRow;
     protected final int nCol;
 
@@ -64,7 +63,7 @@ public class AbstractDataset {
         this.nRow = nRow < 0 ? 0 : nRow;
 
         if (nCol != columns.length) {
-            System.out.println("There are some NULL columns !");
+            ConsoleLogger.warn("There are some NULL columns !");
         }
 
         int index = 0;
@@ -117,7 +116,6 @@ public class AbstractDataset {
 
         if (!Files.exists(dataFilePath)) {
             ConsoleLogger.error("File '" + dataFilePath + "' not found!");
-            // this.headers = _headers;
             this.headersMap = _headersMap;
             this.nCol = _nCol;
             this.nRow = _nRow;
@@ -158,7 +156,6 @@ public class AbstractDataset {
         }
 
         this.headersMap = _headersMap;
-        // this.headers = _headers;
         this.nCol = _nCol;
         this.nRow = _nRow;
         this.data = _data;

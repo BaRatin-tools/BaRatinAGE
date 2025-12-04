@@ -10,6 +10,7 @@ import javax.swing.SwingWorker;
 
 import org.baratinage.jbam.BaM;
 import org.baratinage.jbam.PredictionConfig;
+import org.baratinage.utils.ConsoleLogger;
 
 public class Monitoring {
 
@@ -93,7 +94,7 @@ public class Monitoring {
                 Thread.sleep(CHECK_INTERVAL);
 
                 if (bamWorker != null && bamWorker.isDone()) {
-                    System.out.println("Associated BaM process no longer running");
+                    ConsoleLogger.log("Associated BaM process no longer running");
                     break;
                 }
 
@@ -101,7 +102,7 @@ public class Monitoring {
 
                     int[] res = getProgressFromFile(ms.monitorFilePath);
                     if (res == null) {
-                        System.out.println("Invalid monitoring file");
+                        ConsoleLogger.log("Invalid monitoring file");
                         res = new int[] { 1, 1 };
                         continue;
                     }

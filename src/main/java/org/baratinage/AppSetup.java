@@ -191,10 +191,10 @@ public class AppSetup {
             if (manifestStream != null) {
                 return new Manifest(manifestStream).getMainAttributes();
             } else {
-                System.out.println("Manifest file not found.");
+                ConsoleLogger.error("Manifest file not found");
             }
         } catch (IOException e) {
-            System.out.println("Error reading manifest file: " + e.getMessage());
+            ConsoleLogger.error("Error reading manifest file: %s".formatted(e.getMessage()));
         }
         return null;
     }
