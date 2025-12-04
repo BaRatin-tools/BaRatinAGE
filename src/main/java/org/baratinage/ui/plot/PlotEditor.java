@@ -13,6 +13,7 @@ import org.baratinage.translation.T;
 import org.baratinage.ui.component.SimpleDialog;
 import org.baratinage.ui.component.SimpleList;
 import org.baratinage.ui.container.SimpleFlowPanel;
+import org.baratinage.utils.ConsoleLogger;
 import org.baratinage.utils.Misc;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -283,7 +284,7 @@ public class PlotEditor extends SimpleFlowPanel {
     JSONArray itemsOrderJson = json.optJSONArray("itemsOrder");
 
     if (episJson == null || epsJson == null || itemsOrderJson == null) {
-      System.out.println("Invalid configuration");
+      ConsoleLogger.error("Invalid plot item configuration !");
       return;
     }
 
