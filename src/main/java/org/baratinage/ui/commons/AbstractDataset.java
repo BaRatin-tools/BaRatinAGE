@@ -24,8 +24,6 @@ public class AbstractDataset {
     protected final String name;
     protected final double[][] data;
     private final TreeMap<String, Integer> headersMap;
-    protected final int nRow;
-    protected final int nCol;
 
     private static String[] buildDefaultHeaders(int n) {
         String[] headers = new String[n];
@@ -59,8 +57,6 @@ public class AbstractDataset {
                 }
             }
         }
-        this.nCol = nCol;
-        this.nRow = nRow < 0 ? 0 : nRow;
 
         if (nCol != columns.length) {
             ConsoleLogger.warn("There are some NULL columns !");
@@ -117,8 +113,6 @@ public class AbstractDataset {
         if (!Files.exists(dataFilePath)) {
             ConsoleLogger.error("File '" + dataFilePath + "' not found!");
             this.headersMap = _headersMap;
-            this.nCol = _nCol;
-            this.nRow = _nRow;
             this.data = _data;
             return;
         }
@@ -156,8 +150,6 @@ public class AbstractDataset {
         }
 
         this.headersMap = _headersMap;
-        this.nCol = _nCol;
-        this.nRow = _nRow;
         this.data = _data;
     }
 
@@ -207,12 +199,32 @@ public class AbstractDataset {
         return null;
     }
 
+    protected void setColumn(String colname, double[] values) {
+        Integer index = headersMap.containsKey(colname) ? headersMap.get(colname) : null;
+        if (index >= 0 && index < data.length) {
+            data[index] = values;
+        }
+    }
+
+    protected boolean areColumnsLengthsMatching() {
+        if (data.length < 2) {
+            return true;
+        }
+        int nRow = data[0].length;
+        for (int k = 1; k < data.length; k++) {
+            if (data[k].length != nRow) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     public int getNumberOfColumns() {
-        return nCol;
+        return data.length;
     }
 
     public int getNumberOfRows() {
-        return nRow;
+        return data.length == 0 ? 0 : data[0].length;
     }
 
     private String computeHashString() {
