@@ -271,6 +271,9 @@ public class SimpleFlowPanel extends JPanel {
     if (isVertical) {
       for (int k = 0; k < nComp; k++) {
         Component comp = components[k];
+        if (!comp.isVisible()) {
+          continue;
+        }
         ChildCompConfig childConfig = childrenConfigs.get(comp);
         width = Math.max(width,
             childConfig.getTotalWidth() + insets.left + insets.right + padding.left + padding.right);
@@ -280,6 +283,9 @@ public class SimpleFlowPanel extends JPanel {
     } else {
       for (int k = 0; k < nComp; k++) {
         Component comp = components[k];
+        if (!comp.isVisible()) {
+          continue;
+        }
         ChildCompConfig childConfig = childrenConfigs.get(comp);
         height = Math.max(height,
             childConfig.getTotalHeight() + insets.top + insets.bottom + padding.top + padding.bottom);
