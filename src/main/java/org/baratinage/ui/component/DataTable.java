@@ -326,6 +326,10 @@ public class DataTable extends SimpleFlowPanel {
         }
     }
 
+    public void setValueAt(Object value, int rowIndex, int colIndex) {
+        model.setValueAtForced(value, rowIndex, colIndex);
+    }
+
     public static class CustomTableModel extends AbstractTableModel {
 
         private static record Column(Object[] values, boolean editable) {
@@ -411,14 +415,12 @@ public class DataTable extends SimpleFlowPanel {
 
         @Override
         public void setValueAt(Object value, int rowIndex, int colIndex) {
-
             if (rowIndex >= 0 && rowIndex < getRowCount() && colIndex >= 0 && colIndex < getColumnCount()) {
                 Column c = columns.get(colIndex);
                 if (!c.editable) {
                     ConsoleLogger.error("Cannot set a value in a non-editable column.");
                     return;
                 }
-
                 if (c.getColumnClass() != value.getClass()) {
                     ConsoleLogger.error("Cannot set a value of a type different from the column type.");
                     return;
@@ -426,7 +428,18 @@ public class DataTable extends SimpleFlowPanel {
                 c.values()[rowIndex] = value;
                 fireTableCellUpdated(rowIndex, colIndex);
             }
+        }
 
+        public void setValueAtForced(Object value, int rowIndex, int colIndex) {
+            if (rowIndex >= 0 && rowIndex < getRowCount() && colIndex >= 0 && colIndex < getColumnCount()) {
+                Column c = columns.get(colIndex);
+                if (c.getColumnClass() != value.getClass()) {
+                    ConsoleLogger.error("Cannot set a value of a type different from the column type.");
+                    return;
+                }
+                c.values()[rowIndex] = value;
+                fireTableCellUpdated(rowIndex, colIndex);
+            }
         }
 
         @Override
