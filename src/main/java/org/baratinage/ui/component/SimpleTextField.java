@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
 
+import javax.swing.JFormattedTextField;
 import javax.swing.JTextField;
 import javax.swing.border.Border;
 import javax.swing.border.CompoundBorder;
@@ -22,7 +23,7 @@ import javax.swing.event.DocumentListener;
 import org.baratinage.AppSetup;
 import org.baratinage.utils.perf.TimedActions;
 
-public class SimpleTextField extends JTextField {
+public class SimpleTextField extends JFormattedTextField {
 
     private static Color REGULAR_BG;
     private static Color INVALID_BG;
@@ -155,7 +156,7 @@ public class SimpleTextField extends JTextField {
 
     protected void setTextWithoutFiringChangeListeners(String text) {
         doNotFireChange = true;
-        setText(text);
+        setValue(text);
         doNotFireChange = false;
     }
 
