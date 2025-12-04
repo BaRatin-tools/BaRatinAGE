@@ -42,7 +42,16 @@ public class SimpleDateTimeField extends SimpleFlowPanel {
 
   }
 
+  public void clearDateTime() {
+    datePicker.clearSelectedDate();
+    timePicker.clearSelectedTime();
+  }
+
   public void setDateTime(LocalDateTime dateTime) {
+    if (dateTime == null) {
+      clearDateTime();
+      return;
+    }
     datePicker.setSelectedDate(dateTime.toLocalDate());
     timePicker.setSelectedTime(dateTime.toLocalTime());
 
