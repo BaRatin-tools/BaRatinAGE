@@ -13,6 +13,10 @@ public class DateTime {
         return dateTime.format(DateTimeFormatter.ofPattern(format));
     }
 
+    public static double dateTimeToDouble(LocalDateTime dateTime) {
+        return dateTime.toEpochSecond(ZoneOffset.UTC);
+    }
+
     public static double[] dateTimeToDoubleArray(LocalDateTime[] dateTime) {
         int n = dateTime.length;
         double[] dateTimeDouble = new double[n];
