@@ -163,6 +163,9 @@ public class SimpleFlowPanel extends JPanel {
     int fixedSize = 0;
     float flexCount = 0f;
     for (Component comp : components) {
+      if (!comp.isVisible()) {
+        continue;
+      }
       ChildCompConfig childConfig = childrenConfigs.get(comp);
       if (comp instanceof JComponent && childConfig.isSizeFixed()) {
         fixedSize += isVertical ? childConfig.getTotalHeight() : childConfig.getTotalWidth();
@@ -178,6 +181,9 @@ public class SimpleFlowPanel extends JPanel {
     if (isVertical) {
       for (int k = 0; k < nComp; k++) {
         Component comp = components[k];
+        if (!comp.isVisible()) {
+          continue;
+        }
         ChildCompConfig childConfig = childrenConfigs.get(comp);
         Float size = eachSize * childConfig.weight;
         int h = childConfig.isSizeFixed() ? childConfig.getPrefHeight() : size.intValue();
@@ -193,6 +199,9 @@ public class SimpleFlowPanel extends JPanel {
     } else {
       for (int k = 0; k < nComp; k++) {
         Component comp = components[k];
+        if (!comp.isVisible()) {
+          continue;
+        }
         ChildCompConfig childConfig = childrenConfigs.get(comp);
         Float size = eachSize * childConfig.weight;
         int w = childConfig.isSizeFixed() ? childConfig.getPrefWidth() : size.intValue();
