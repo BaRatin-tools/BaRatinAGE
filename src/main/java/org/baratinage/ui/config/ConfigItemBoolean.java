@@ -34,7 +34,7 @@ public class ConfigItemBoolean extends ConfigItem {
 
         JCheckBox field = new JCheckBox();
         field.setSelected(value);
-        field.addChangeListener(l -> {
+        field.addItemListener(l -> {
             value = field.isSelected();
         });
 

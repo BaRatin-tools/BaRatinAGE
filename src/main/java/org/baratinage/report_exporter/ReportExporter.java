@@ -3,7 +3,6 @@ package org.baratinage.report_exporter;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
-import javax.swing.event.ChangeListener;
 
 import org.baratinage.AppSetup;
 import org.baratinage.report_exporter.item_exporters.GaugingsREI;
@@ -198,11 +197,6 @@ public class ReportExporter {
   }
 
   private SimpleFlowPanel buildProjectComponentPicker() {
-    ChangeListener cl = l -> {
-      TimedActions.debounce("report_exporter", 100, () -> {
-        updateReport();
-      });
-    };
 
     SimpleFlowPanel cbsPanel = new SimpleFlowPanel(true);
     cbsPanel.setGap(5);
@@ -211,7 +205,11 @@ public class ReportExporter {
       SimpleCheckbox cb = new SimpleCheckbox();
       cb.setText(item.bamItemNameField.getText());
       cb.setSelected(true);
-      cb.addChangeListener(cl);
+      cb.addItemListener(l -> {
+        TimedActions.debounce("report_exporter", 100, () -> {
+          updateReport();
+        });
+      });
       bamItemsCheckboxes.put(item, cb);
       cbsPanel.addChild(cb, 0);
     }

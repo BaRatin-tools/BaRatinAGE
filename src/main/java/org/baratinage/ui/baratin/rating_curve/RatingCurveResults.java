@@ -55,7 +55,7 @@ public class RatingCurveResults extends TabContainer {
 
         rcGridTable = new RatingCurveTable();
 
-        rcGridTable.cropTotalEnvelopCheckbox.addChangeListener(l -> {
+        rcGridTable.cropTotalEnvelopCheckbox.addItemListener(l -> {
             cropTotalUncertaintyToZero.set(rcGridTable.cropTotalEnvelopCheckbox.isSelected());
         });
 

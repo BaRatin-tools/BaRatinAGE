@@ -132,10 +132,10 @@ public class Hydrograph extends BamItem implements IPredictionMaster {
             tablePanel.cropNegativeValuesCB.setSelected(newValue);
             updateResults();
         });
-        plotPanel.cropNegativeValuesCB.addChangeListener(l -> {
+        plotPanel.cropNegativeValuesCB.addItemListener(l -> {
             cropNegativeValues.set(plotPanel.cropNegativeValuesCB.isSelected());
         });
-        tablePanel.cropNegativeValuesCB.addChangeListener(l -> {
+        tablePanel.cropNegativeValuesCB.addItemListener(l -> {
             cropNegativeValues.set(tablePanel.cropNegativeValuesCB.isSelected());
         });
 

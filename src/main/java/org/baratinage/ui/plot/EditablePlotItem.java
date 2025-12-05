@@ -185,7 +185,7 @@ public class EditablePlotItem implements IPlotItemRendererSettings {
         SimpleCheckbox visibleInPlotCb = new SimpleCheckbox();
         visibleInPlotCb.setText(T.text("display"));
         visibleInPlotCb.setSelected(visible);
-        visibleInPlotCb.addChangeListener(l -> {
+        visibleInPlotCb.addItemListener(l -> {
             visible = visibleInPlotCb.isSelected();
             updatePlotItems();
             fireChangeListeners();
@@ -193,7 +193,7 @@ public class EditablePlotItem implements IPlotItemRendererSettings {
         SimpleCheckbox visibleInLegendCb = new SimpleCheckbox();
         visibleInLegendCb.setText(T.text("include_legend"));
         visibleInLegendCb.setSelected(legend);
-        visibleInLegendCb.addChangeListener(l -> {
+        visibleInLegendCb.addItemListener(l -> {
             legend = visibleInLegendCb.isSelected();
             updatePlotItems();
             fireChangeListeners();

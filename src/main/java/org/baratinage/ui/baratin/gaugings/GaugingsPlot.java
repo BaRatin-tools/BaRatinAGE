@@ -41,7 +41,7 @@ public class GaugingsPlot extends SimpleFlowPanel {
 
     toolsPanel = new RatingCurvePlotToolsPanel();
     toolsPanel.configure(true, true, false, false);
-    toolsPanel.switchAxisCheckbox.addChangeListener(l -> {
+    toolsPanel.switchAxisCheckbox.addItemListener(l -> {
       currentPlot = null; // disable keeping the axis bounds
     });
     toolsPanel.addChangeListener(l -> {

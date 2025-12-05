@@ -96,7 +96,7 @@ public class DataTable extends SimpleFlowPanel {
             displayFullPrecision.setText(T.text("display_full_precision"));
         });
         displayFullPrecision.setSelected(false);
-        displayFullPrecision.addChangeListener(
+        displayFullPrecision.addItemListener(
                 l -> {
                     cellRenderer.losslessDoubles = displayFullPrecision.isSelected();
                     repaint();

@@ -204,7 +204,7 @@ public class EditablePlot implements LegendItemSource {
     SimpleCheckbox showLegendCb = new SimpleCheckbox();
     showLegendCb.setText(T.text("show_legend"));
     showLegendCb.setSelected(showLegend);
-    showLegendCb.addChangeListener(l -> {
+    showLegendCb.addItemListener(l -> {
       showLegend = showLegendCb.isSelected();
       updatePlot();
     });
