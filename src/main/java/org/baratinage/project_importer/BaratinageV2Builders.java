@@ -71,6 +71,7 @@ public class BaratinageV2Builders {
                     Path.of(folder.getAbsolutePath(), filename).toString(),
                     ";", 0, Integer.MAX_VALUE, "",
                     true, true);
+            matrix.removeLast();
             return matrix;
         } catch (IOException e) {
             ConsoleLogger.error(e);
