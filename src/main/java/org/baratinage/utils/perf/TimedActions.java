@@ -7,6 +7,7 @@ import java.util.TimerTask;
 
 import javax.swing.SwingUtilities;
 
+import org.baratinage.utils.ConsoleLogger;
 import org.baratinage.utils.Misc;
 
 public class TimedActions {
@@ -33,7 +34,7 @@ public class TimedActions {
                         () -> {
                             Runnable throttledAction = throttledActions.get(id);
                             if (throttledAction != null) {
-                                // ConsoleLogger.log("Running throttled action ... (" + id + ")");
+                                ConsoleLogger.log("Running throttled action... (" + id + ")");
                                 throttledAction.run();
                             }
                             throttledActions.remove(id);
@@ -65,7 +66,7 @@ public class TimedActions {
             public void run() {
                 SwingUtilities.invokeLater(
                         () -> {
-                            // ConsoleLogger.log("Running debounced action... (" + id + ")");
+                            ConsoleLogger.log("Running debounced action... (" + id + ")");
                             action.run();
                             debouncedActions.remove(id);
                         });
@@ -90,7 +91,7 @@ public class TimedActions {
             public void run() {
                 SwingUtilities.invokeLater(
                         () -> {
-                            // ConsoleLogger.log("Running delayed action... (" + id + ")");
+                            ConsoleLogger.log("Running delayed action... (" + id + ")");
                             action.run();
                             delayedActions.remove(id);
                         });
