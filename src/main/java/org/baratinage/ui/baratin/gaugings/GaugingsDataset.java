@@ -15,8 +15,10 @@ import org.baratinage.ui.bam.IPlotDataProvider;
 import org.baratinage.ui.commons.AbstractDataset;
 import org.baratinage.ui.plot.PlotItem;
 import org.baratinage.ui.plot.PlotPoints;
+import org.baratinage.utils.Arr;
 import org.baratinage.utils.ConsoleLogger;
 import org.baratinage.utils.DateTime;
+import org.baratinage.utils.perf.TimedActions;
 
 public class GaugingsDataset extends AbstractDataset implements IPlotDataProvider {
 
@@ -33,8 +35,8 @@ public class GaugingsDataset extends AbstractDataset implements IPlotDataProvide
     private static final String STATE = "active";
     private static final String DATETIME = "dateTime";
 
-    final private boolean[] state;
-    final private LocalDateTime[] datetime;
+    private boolean[] state;
+    private LocalDateTime[] datetime;
 
     private final Map<String, double[]> derived = new HashMap<>();
     private final Map<String, double[]> gaugingsTrue = new HashMap<>();
@@ -60,7 +62,7 @@ public class GaugingsDataset extends AbstractDataset implements IPlotDataProvide
                 stageAbsoluteUncertainty == null ? null : STAGE_U
         };
         double[][] columns = new double[][] {
-                stage, discharge, dischargePercentUncertainty, toDouble(active),
+                stage, discharge, dischargePercentUncertainty, Arr.toDouble(active),
                 datetime == null ? null : DateTime.dateTimeToDoubleArray(datetime),
                 stageAbsoluteUncertainty == null ? null : stageAbsoluteUncertainty,
         };
@@ -98,7 +100,7 @@ public class GaugingsDataset extends AbstractDataset implements IPlotDataProvide
                 hashString);
 
         double[] state = getColumn(STATE);
-        this.state = toBoolean(state);
+        this.state = Arr.toBoolean(state);
         double[] datetime = getColumn(DATETIME);
         this.datetime = datetime == null ? null : DateTime.doubleToDateTimeArray(datetime);
 
@@ -222,13 +224,191 @@ public class GaugingsDataset extends AbstractDataset implements IPlotDataProvide
             ConsoleLogger.error("Cannot update active state values because the numbers of rows don't match!");
             return;
         }
-        double[] d = getColumn("active");
+        double[] d = getColumn(STATE);
         for (int k = 0; k < getNumberOfRows(); k++) {
             d[k] = newValues[k] ? 1d : 0d;
             this.state[k] = newValues[k];
         }
         writeDataFile();
         updateDerivedValues();
+    }
+
+    public GaugingData getGauging(int index) {
+        if (index < 0 || index >= getNumberOfRows()) {
+            return null;
+        }
+        GaugingData g = new GaugingData();
+        g.stage = getColumn(STAGE)[index];
+        g.discharge = getColumn(DISCHARGE)[index];
+        g.dischargeUncertainty = getColumn(DISCHARGE_U)[index];
+        g.isActive = state[index];
+        double[] stageUncertainty = getColumn(STAGE_U);
+        if (stageUncertainty != null) {
+            g.stageUncertainty = stageUncertainty[index];
+        }
+        if (datetime != null) {
+            g.dataTime = datetime[index];
+        }
+        return g;
+    }
+
+    public void deleteGaugings(List<Integer> indices) {
+        // datetime
+        double[] oldValues = getColumn(DATETIME);
+        if (oldValues != null) {
+            double[] newValues = Arr.removeElements(oldValues, indices);
+            setColumn(DATETIME, newValues);
+            datetime = Arr.removeElements(datetime, indices);
+        }
+        // stage
+        double[] stage = getColumn(STAGE);
+        double[] newStage = Arr.removeElements(stage, indices);
+        setColumn(STAGE, newStage);
+        // dicharge uncertainty
+        double[] stageUncertainty = getColumn(STAGE_U);
+        if (stageUncertainty != null) {
+            double[] newStageUncertainty = Arr.removeElements(stageUncertainty, indices);
+            setColumn(STAGE_U, newStageUncertainty);
+        }
+        // discharge
+        double[] discharge = getColumn(DISCHARGE);
+        double[] newDischarge = Arr.removeElements(discharge, indices);
+        setColumn(DISCHARGE, newDischarge);
+        // discharge uncertainty
+        double[] dischargeUncertainty = getColumn(DISCHARGE_U);
+        double[] newDischargeUncertainty = Arr.removeElements(dischargeUncertainty,
+                indices);
+        setColumn(DISCHARGE_U, newDischargeUncertainty);
+        // state
+        state = Arr.removeElements(state, indices);
+        double[] stateDouble = getColumn(STATE);
+        double[] newStateDouble = Arr.removeElements(stateDouble, indices);
+        setColumn(STATE, newStateDouble);
+
+        writeDataFile();
+        updateDerivedValues();
+        fireGaugingDeletedListeners(indices);
+    }
+
+    public void addGauging(GaugingData gauging) {
+        // datetime
+        double[] oldValues = getColumn(DATETIME);
+        if (oldValues != null) {
+            double[] newValues = Arr.push(oldValues, DateTime.dateTimeToDouble(gauging.dataTime));
+            datetime = Arr.push(datetime, gauging.dataTime);
+            setColumn(DATETIME, newValues);
+        }
+        // stage
+        double[] stage = getColumn(STAGE);
+        double[] newStage = Arr.push(stage, gauging.stage);
+        setColumn(STAGE, newStage);
+        // dicharge uncertainty
+        double[] stageUncertainty = getColumn(STAGE_U);
+        if (stageUncertainty != null) {
+            double[] newStageUncertainty = Arr.push(stageUncertainty, gauging.stageUncertainty);
+            setColumn(STAGE_U, newStageUncertainty);
+        }
+        // discharge
+        double[] discharge = getColumn(DISCHARGE);
+        double[] newDischarge = Arr.push(discharge, gauging.discharge);
+        setColumn(DISCHARGE, newDischarge);
+        // discharge uncertainty
+        double[] dischargeUncertainty = getColumn(DISCHARGE_U);
+        double[] newDischargeUncertainty = Arr.push(dischargeUncertainty, gauging.dischargeUncertainty);
+        setColumn(DISCHARGE_U, newDischargeUncertainty);
+        // state
+        state = Arr.push(state, gauging.isActive);
+        double[] stateDouble = getColumn(STATE);
+        double[] newStateDouble = Arr.push(stateDouble, gauging.isActive ? 1 : 0);
+        setColumn(STATE, newStateDouble);
+
+        writeDataFile();
+        updateDerivedValues();
+        fireGaugingAddedListeners(gauging, newStage.length - 1);
+    }
+
+    public void updateGauging(int index, GaugingData gauging) {
+        if (index < 0 || index >= getNumberOfRows()) {
+            return;
+        }
+        if (gauging.dataTime != null) {
+            double[] datetimeAsDouble = getDateTimeAsDouble();
+            if (getDateTimeAsDouble() != null) {
+                datetime[index] = gauging.dataTime;
+                datetimeAsDouble[index] = DateTime.dateTimeToDouble(gauging.dataTime);
+            }
+        }
+        if (gauging.stage != null) {
+            double[] values = getStageValues();
+            values[index] = gauging.stage;
+        }
+        if (gauging.stageUncertainty != null) {
+            double[] values = getStageAbsoluteUncertainty();
+            if (values != null) {
+                values[index] = gauging.stageUncertainty;
+            }
+        }
+        if (gauging.discharge != null) {
+            double[] values = getDischargeValues();
+            values[index] = gauging.discharge;
+        }
+        if (gauging.dischargeUncertainty != null) {
+            double[] values = getDischargePercentUncertainty();
+            values[index] = gauging.dischargeUncertainty;
+        }
+        if (gauging.isActive != null) {
+            double[] stateAsDouble = getStateAsDouble();
+            stateAsDouble[index] = gauging.isActive ? 1 : 0;
+            state[index] = gauging.isActive;
+        }
+        writeDataFile();
+        updateDerivedValues();
+        fireGaugingModifiedListeners(gauging, index);
+    }
+
+    @Override
+    protected void writeDataFile() {
+        TimedActions.throttle(
+                "gauging_dataset_write_filre",
+                AppSetup.CONFIG.THROTTLED_DELAY_MS, () -> {
+                    super.writeDataFile();
+                });
+    }
+
+    public static interface IGaugingDatasetChangeListener {
+        public void onGaugingModified(int index, GaugingData g);
+
+        public void onGaugingAdded(int index, GaugingData g);
+
+        public void onGaugingsDeleted(List<Integer> indices);
+    }
+
+    private final List<IGaugingDatasetChangeListener> changeListeners = new ArrayList<>();
+
+    public void addChangeListener(IGaugingDatasetChangeListener l) {
+        changeListeners.add(l);
+    }
+
+    public void removeChangeListener(IGaugingDatasetChangeListener l) {
+        changeListeners.remove(l);
+    }
+
+    private void fireGaugingAddedListeners(GaugingData g, int index) {
+        for (IGaugingDatasetChangeListener l : changeListeners) {
+            l.onGaugingAdded(index, g);
+        }
+    }
+
+    private void fireGaugingDeletedListeners(List<Integer> indices) {
+        for (IGaugingDatasetChangeListener l : changeListeners) {
+            l.onGaugingsDeleted(indices);
+        }
+    }
+
+    private void fireGaugingModifiedListeners(GaugingData g, int index) {
+        for (IGaugingDatasetChangeListener l : changeListeners) {
+            l.onGaugingModified(index, g);
+        }
     }
 
     public double[] getStageValues() {
