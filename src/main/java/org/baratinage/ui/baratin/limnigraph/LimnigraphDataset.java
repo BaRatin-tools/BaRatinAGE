@@ -11,6 +11,7 @@ import org.baratinage.jbam.UncertainData;
 import org.baratinage.ui.commons.AbstractDataset;
 import org.baratinage.ui.plot.PlotBand;
 import org.baratinage.ui.plot.PlotLine;
+import org.baratinage.utils.Arr;
 import org.baratinage.utils.DateTime;
 
 public class LimnigraphDataset extends AbstractDataset {
@@ -43,7 +44,7 @@ public class LimnigraphDataset extends AbstractDataset {
                 stage,
                 nonSysErrStd,
                 sysErrStd,
-                sysErrInd == null ? null : toDouble(sysErrInd));
+                sysErrInd == null ? null : Arr.toDouble(sysErrInd));
 
         this.dateTime = dateTime;
         this.dateTimeMillis = DateTime.dateTimeToDoubleArrayMilliseconds(dateTime);
@@ -75,7 +76,7 @@ public class LimnigraphDataset extends AbstractDataset {
         this.dateTime = DateTime.doubleToDateTimeArray(getColumn(DATETIME));
         this.dateTimeMillis = DateTime.dateTimeToDoubleArrayMilliseconds(dateTime);
         double[] sysErrIndAsDouble = getColumn(SYSERR_IND);
-        this.sysErrInd = sysErrIndAsDouble == null ? null : toInt(sysErrIndAsDouble);
+        this.sysErrInd = sysErrIndAsDouble == null ? null : Arr.toInt(sysErrIndAsDouble);
 
         double[] nonSysErrStd = getColumn(NONSYSERR_STD);
         double[] sysErrStd = getColumn(SYSERR_STD);
@@ -87,7 +88,7 @@ public class LimnigraphDataset extends AbstractDataset {
                     getColumn(STAGE),
                     getColumn(NONSYSERR_STD),
                     getColumn(SYSERR_STD),
-                    sysErrInd == null ? null : toInt(getColumn(SYSERR_IND)));
+                    sysErrInd == null ? null : Arr.toInt(getColumn(SYSERR_IND)));
 
         } else {
             uncertainData = null;
