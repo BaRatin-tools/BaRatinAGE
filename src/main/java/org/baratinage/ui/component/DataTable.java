@@ -39,7 +39,7 @@ public class DataTable extends SimpleFlowPanel {
     public final SimpleFlowPanel actionPanel;
     public final SimpleFlowPanel toolsPanel;
 
-    private final CustomTableModel model;
+    protected final CustomTableModel model;
     public final JTable table;
     private CustomCellRenderer cellRenderer;
 
@@ -50,10 +50,7 @@ public class DataTable extends SimpleFlowPanel {
 
         model = new CustomTableModel();
 
-        model.addTableModelListener(
-                (e) -> {
-                    fireChangeListeners(e);
-                });
+        model.addTableModelListener((e) -> fireChangeListeners(e));
         table = new JTable();
 
         table.setRowHeight(20);
@@ -320,7 +317,7 @@ public class DataTable extends SimpleFlowPanel {
         changeListeners.remove(l);
     }
 
-    private void fireChangeListeners(TableModelEvent e) {
+    protected void fireChangeListeners(TableModelEvent e) {
         for (TableModelListener l : changeListeners) {
             l.tableChanged(e);
         }
