@@ -295,42 +295,6 @@ public class AbstractDataset {
                 buildDataFileName(name, hashString));
     }
 
-    protected static double[] toDouble(boolean[] src) {
-        int n = src.length;
-        double[] tgt = new double[n];
-        for (int k = 0; k < n; k++) {
-            tgt[k] = src[k] ? 1d : 0d;
-        }
-        return tgt;
-    }
-
-    protected static boolean[] toBoolean(double[] src) {
-        int n = src.length;
-        boolean[] tgt = new boolean[n];
-        for (int k = 0; k < n; k++) {
-            tgt[k] = src[k] == 1d;
-        }
-        return tgt;
-    }
-
-    protected static double[] toDouble(int[] src) {
-        int n = src.length;
-        double[] tgt = new double[n];
-        for (int k = 0; k < n; k++) {
-            tgt[k] = (double) src[k];
-        }
-        return tgt;
-    }
-
-    protected static int[] toInt(double[] src) {
-        int n = src.length;
-        int[] tgt = new int[n];
-        for (int k = 0; k < n; k++) {
-            tgt[k] = ((Double) src[k]).intValue();
-        }
-        return tgt;
-    }
-
     private static String[] readHeaders(String filePath) throws IOException {
         String[] headers = new String[0];
         try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
