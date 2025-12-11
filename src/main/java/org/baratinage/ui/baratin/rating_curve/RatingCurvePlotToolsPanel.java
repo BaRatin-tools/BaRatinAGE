@@ -72,19 +72,10 @@ public class RatingCurvePlotToolsPanel extends SimpleFlowPanel {
 
     public void configure(boolean logDischargeAxis, boolean axisFlipped, boolean totalEnvSmoothed,
             boolean cropTotalEnv) {
-        removeAll();
-        if (logDischargeAxis) {
-            addChild(logScaleDischargeAxis, false);
-        }
-        if (axisFlipped) {
-            addChild(switchAxisCheckbox, false);
-        }
-        if (totalEnvSmoothed) {
-            addChild(smoothTotalEnvelopCheckbox, false);
-        }
-        if (cropTotalEnv) {
-            addChild(cropTotalEnvelopCheckbox, false);
-        }
+        logScaleDischargeAxis.setVisible(logDischargeAxis);
+        switchAxisCheckbox.setVisible(axisFlipped);
+        smoothTotalEnvelopCheckbox.setVisible(totalEnvSmoothed);
+        cropTotalEnvelopCheckbox.setVisible(cropTotalEnv);
     }
 
     public void updatePlotAxis(Plot plot) {
