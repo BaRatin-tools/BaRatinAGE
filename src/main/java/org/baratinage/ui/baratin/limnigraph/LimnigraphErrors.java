@@ -47,7 +47,7 @@ public class LimnigraphErrors extends SimpleFlowPanel {
         });
         T.t(this, showHeaderDescription, false, "table_headers_desc");
 
-        errConfigTable.toolsPanel.addChild(showHeaderDescription, false);
+        errConfigTable.toolsPanel.add(showHeaderDescription);
 
     }
 

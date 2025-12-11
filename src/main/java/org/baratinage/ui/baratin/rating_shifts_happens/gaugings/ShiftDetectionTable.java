@@ -74,7 +74,7 @@ public class ShiftDetectionTable extends SimpleFlowPanel {
       resultsColumnsDescritption.openDialog(T.text("shifts"));
     });
     T.t(this, showHeaderDescription, false, "table_headers_desc");
-    dataTable.toolsPanel.addChild(showHeaderDescription, false);
+    dataTable.toolsPanel.add(showHeaderDescription);
 
     addChild(dataTable, true);
   }

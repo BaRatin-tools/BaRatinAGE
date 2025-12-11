@@ -48,7 +48,7 @@ public class GaugingsTable extends DataTable {
       editableGaugingsToggle.setToolTipText(T.text("make_gaugings_editable"));
     });
 
-    toolsPanel.addChild(editableGaugingsToggle, 0);
+    toolsPanel.add(editableGaugingsToggle);
   }
 
   public void updateGauging(int index, GaugingData gauging) {

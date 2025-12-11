@@ -45,8 +45,8 @@ public class RatingCurveTable extends DataTable {
 
         T.t(this, cropTotalEnvelopCheckbox, false, "crop_total_envelop_zero");
 
-        toolsPanel.addChild(showHeaderDescription, false);
-        toolsPanel.addChild(cropTotalEnvelopCheckbox, false);
+        toolsPanel.add(showHeaderDescription);
+        toolsPanel.add(cropTotalEnvelopCheckbox);
     }
 
     public void updateTable(RatingCurvePlotData ratingCurveData) {

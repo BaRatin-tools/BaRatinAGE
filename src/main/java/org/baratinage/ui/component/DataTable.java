@@ -17,6 +17,7 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.JToolBar;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.TableModelEvent;
@@ -36,8 +37,8 @@ public class DataTable extends SimpleFlowPanel {
 
     // should create a specific action to export using specific formats
     // (e.g. bareme rating curve format)
-    public final SimpleFlowPanel actionPanel;
-    public final SimpleFlowPanel toolsPanel;
+    public final JToolBar actionPanel;
+    public final JToolBar toolsPanel;
 
     protected final CustomTableModel model;
     public final JTable table;
@@ -63,8 +64,7 @@ public class DataTable extends SimpleFlowPanel {
 
         JScrollPane scrollpane = new JScrollPane(table);
 
-        actionPanel = new SimpleFlowPanel();
-        actionPanel.setGap(5);
+        actionPanel = new JToolBar();
         JButton exportButton = new JButton();
         exportButton.addActionListener((e) -> {
             saveAsCSV();
@@ -74,7 +74,7 @@ public class DataTable extends SimpleFlowPanel {
         T.t(this, () -> {
             exportButton.setToolTipText(T.text("to_csv"));
         });
-        actionPanel.addChild(exportButton, false);
+        actionPanel.add(exportButton);
         JButton copyToClipboardButton = new JButton();
         copyToClipboardButton.addActionListener((e) -> {
             copyToCliboard();
@@ -83,10 +83,9 @@ public class DataTable extends SimpleFlowPanel {
         T.t(this, () -> {
             copyToClipboardButton.setToolTipText(T.text("to_clipboard"));
         });
-        actionPanel.addChild(copyToClipboardButton, 0);
+        actionPanel.add(copyToClipboardButton);
 
-        toolsPanel = new SimpleFlowPanel();
-        toolsPanel.setGap(5);
+        toolsPanel = new JToolBar();
 
         SimpleCheckbox displayFullPrecision = new SimpleCheckbox();
         T.t(this, () -> {
@@ -98,7 +97,7 @@ public class DataTable extends SimpleFlowPanel {
                     cellRenderer.losslessDoubles = displayFullPrecision.isSelected();
                     repaint();
                 });
-        toolsPanel.addChild(displayFullPrecision, false);
+        toolsPanel.add(displayFullPrecision);
 
         Dimension defaultPrefDim = scrollpane.getPreferredSize();
         defaultPrefDim.height = 300;
