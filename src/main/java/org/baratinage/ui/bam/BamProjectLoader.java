@@ -53,13 +53,28 @@ public class BamProjectLoader {
       return;
     }
 
+    // reading setting config file
+    File settingsConfigFile = Path.of(AppSetup.PATH_APP_TEMP_DIR, "settings_config.json").toFile();
+    if (settingsConfigFile.exists()) {
+      try {
+        String settingsConfigString = ReadFile.getStringContent(settingsConfigFile.toString(), true);
+        AppSetup.CONFIG.loadProjectConfig(settingsConfigString);
+        ConsoleLogger.log("Settings config files loaded.");
+      } catch (IOException e) {
+        ConsoleLogger.error(e);
+      }
+    } else {
+      AppSetup.CONFIG.resetProjectDefaultConfig();
+      ConsoleLogger.log("No settings config files found.");
+    }
+
     // reading main config file
     JSONObject json;
     try {
       String jsonContent = ReadFile
           .readTextFile(Path.of(AppSetup.PATH_APP_TEMP_DIR, "main_config.json").toString());
       json = new JSONObject(jsonContent);
-
+      ConsoleLogger.log("Main config files loaded.");
     } catch (IOException e) {
       ConsoleLogger.error(e);
       onError.run();
@@ -101,6 +116,7 @@ public class BamProjectLoader {
       return;
     }
 
+    ConsoleLogger.log("Initializing items loading ...");
     TasksWorker<Integer, BamItem> tasksWorker = new TasksWorker<>();
 
     bamProjectLoadingFrame.addOnCancelAction(
@@ -194,6 +210,7 @@ public class BamProjectLoader {
     });
 
     Performance.startTimeMonitoring("loading_project");
+    ConsoleLogger.log("Loading items ...");
     tasksWorker.run();
 
   }

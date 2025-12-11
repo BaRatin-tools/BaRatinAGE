@@ -1,6 +1,7 @@
 package org.baratinage.ui.config;
 
 import java.awt.Dimension;
+import java.awt.Graphics;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
@@ -10,13 +11,18 @@ import java.util.Locale;
 import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JDialog;
+import javax.swing.JEditorPane;
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
+import javax.swing.text.DefaultCaret;
 
 import org.baratinage.AppSetup;
 import org.baratinage.translation.T;
+import org.baratinage.ui.component.SimpleSep;
+import org.baratinage.ui.config.ConfigItem.SCOPE;
 import org.baratinage.ui.container.GridPanel;
 import org.baratinage.ui.container.SimpleFlowPanel;
+import org.baratinage.ui.container.TabContainer;
 import org.baratinage.ui.container.TitledPanel;
 import org.baratinage.utils.ConsoleLogger;
 import org.baratinage.utils.fs.ReadFile;
@@ -32,18 +38,22 @@ public class ConfigSet {
     public final int DEBOUNCED_DELAY_MS = 250;
     public final String FALLBACK_LANGUAGE_KEY = "en";
 
-    private final HashMap<String, ConfigItem> configItems = new HashMap<>();
+    private final HashMap<String, ConfigItem<?, ?>> configItems = new HashMap<>();
 
     // UI PREFERENCES
 
-    public final ConfigItemBoolean DARK_MODE = addConfigItem(new ConfigItemBoolean("dark_mode", false, true));
+    public final ConfigItemBoolean DARK_MODE = addConfigItem(
+            new ConfigItemBoolean("dark_mode", true, false));
 
-    public final ConfigItemInteger FONT_SIZE = addConfigItem(new ConfigItemInteger("font_size", 14, true));
+    public final ConfigItemInteger FONT_SIZE = addConfigItem(
+            new ConfigItemInteger("font_size", true, 14));
 
-    public final ConfigItemInteger ICON_SIZE = addConfigItem(new ConfigItemInteger("icon_size", 28, true));
+    public final ConfigItemInteger ICON_SIZE = addConfigItem(
+            new ConfigItemInteger("icon_size", true, 28));
 
     public final ConfigItemList LANGUAGE_KEY = addConfigItem(
-            new ConfigItemList("lg_key", Locale.getDefault().getLanguage(),
+            new ConfigItemList("lg_key", false,
+                    Locale.getDefault().getLanguage(),
                     () -> {
                         Locale[] locales = T.getAvailableLocales();
                         String[] ids = new String[locales.length];
@@ -59,60 +69,81 @@ public class ConfigSet {
                             labels[k] = new JLabel(T.getLocaleLabelString(locales[k]));
                         }
                         return labels;
-                    }, false));
+                    }));
 
     public final ConfigItemBoolean HIDE_BAM_CONSOLE = addConfigItem(
             new ConfigItemBoolean("hide_bam_console", false, false));
     public final ConfigItemBoolean CLOSE_BAM_DIALOG_ON_SUCCESS = addConfigItem(
             new ConfigItemBoolean("close_bam_console_on_success", false, false));
 
+    public final ConfigItemBoolean LOG_DISCHARGE_AXIS = addConfigItem(
+            new ConfigItemBoolean("log_discharge_axis", false, false));
+
     // BAM PREFERENCES
 
     public final ConfigItemInteger N_SAMPLES_LIMNI_ERRORS = addConfigItem(
-            new ConfigItemInteger("n_samples_limni_error", 200, false));
+            new ConfigItemInteger("n_samples_limni_error", false, 200));
     public final ConfigItemInteger N_SAMPLES_PRIOR_RUN = addConfigItem(
-            new ConfigItemInteger("n_samples_prior_run", 200, false));
-
-    //
+            new ConfigItemInteger("n_samples_prior_run", false, 200));
 
     public ConfigSet() {
-        loadConfiguration();
+        loadConfig();
     }
 
-    private <A extends ConfigItem> A addConfigItem(A item) {
+    private <A extends ConfigItem<?, ?>> A addConfigItem(A item) {
         configItems.put(item.id, item);
         return item;
     }
 
-    public void loadConfiguration() {
+    public void resetProjectDefaultConfig() {
+        resetDefault(SCOPE.PROJECT);
+    }
+
+    private void resetDefault(SCOPE scope) {
+        for (ConfigItem<?, ?> item : configItems.values()) {
+            item.unset(scope);
+        }
+    }
+
+    public void loadProjectConfig(String config) {
+        loadFromString(config, SCOPE.PROJECT);
+    }
+
+    public void loadConfig() {
         try {
             String jsonString = ReadFile.getStringContent(AppSetup.PATH_CONFIGURATION_FILE, true);
-            loadFromString(jsonString);
+            loadFromString(jsonString, SCOPE.GLOBAL);
         } catch (IOException e) {
             ConsoleLogger.warn(e);
         }
     }
 
-    private void loadFromString(String configString) {
-        JSONObject configuration = new JSONObject();
-        configuration = new JSONObject(configString);
-        for (ConfigItem item : configItems.values()) {
-            item.setFromJSON(configuration);
+    private void loadFromString(String configString, SCOPE scope) {
+        JSONObject config = new JSONObject();
+        config = new JSONObject(configString);
+        for (ConfigItem<?, ?> item : configItems.values()) {
+            item.setFromJSON(config, scope);
         }
     }
 
-    public void saveConfiguration() {
+    public String getProjectConfigString() {
+        return saveToString(SCOPE.PROJECT);
+    }
+
+    public void saveConfig() {
         try {
-            WriteFile.writeStringContent(AppSetup.PATH_CONFIGURATION_FILE, saveToString());
+            WriteFile.writeStringContent(AppSetup.PATH_CONFIGURATION_FILE, saveToString(SCOPE.GLOBAL));
         } catch (IOException e) {
             ConsoleLogger.error(e);
         }
     }
 
-    private String saveToString() {
+    private String saveToString(SCOPE scope) {
         JSONObject configuration = new JSONObject();
-        for (ConfigItem item : configItems.values()) {
-            configuration.put(item.id, item.get());
+        for (ConfigItem<?, ?> item : configItems.values()) {
+            if (item.isSet(scope)) {
+                configuration.put(item.id, item.get(scope));
+            }
         }
         return configuration.toString(4);
     }
@@ -120,55 +151,138 @@ public class ConfigSet {
     public void openConfigDialog() {
         JDialog dialog = new JDialog(AppSetup.MAIN_FRAME, true);
 
-        String stringBackup = saveToString();
+        String stringBackupGlobal = saveToString(SCOPE.GLOBAL);
+        String stringBackupProject = saveToString(SCOPE.PROJECT);
 
         SimpleFlowPanel panel = new SimpleFlowPanel(true);
         panel.setGap(5);
         panel.setPadding(5);
 
-        TitledPanel p = buildConfigPanel(T.text("pref_ui"), null,
-                LANGUAGE_KEY,
+        TabContainer tab = new TabContainer();
+
+        // global settings
+        SimpleFlowPanel globalPanelContent = new SimpleFlowPanel(true);
+        globalPanelContent.setPadding(5);
+        globalPanelContent.setGap(5);
+        JScrollPane globalPanelContentScroller = new JScrollPane();
+        globalPanelContentScroller.setViewportView(globalPanelContent);
+
+        TitledPanel globalPanel = new TitledPanel(globalPanelContentScroller);
+        globalPanel.setText(T.text("pref_global"));
+        tab.addTab(globalPanel);
+
+        TitledPanel globalLook = buildConfigPanel(
+                T.text("pref_look"),
+                null,
+                SCOPE.GLOBAL,
                 DARK_MODE,
                 FONT_SIZE,
-                ICON_SIZE,
+                ICON_SIZE);
+        globalPanelContent.addChild(globalLook.getTitle(), false);
+        globalPanelContent.addChild(globalLook.getContent(), false);
+
+        TitledPanel globalBehavior = buildConfigPanel(
+                T.text("pref_behavior"),
+                null,
+                SCOPE.GLOBAL,
                 HIDE_BAM_CONSOLE,
                 CLOSE_BAM_DIALOG_ON_SUCCESS);
-        panel.addChild(p.getContent(), true);
+        globalPanelContent.addChild(globalBehavior.getTitle(), false);
+        globalPanelContent.addChild(globalBehavior.getContent(), false);
+
+        TitledPanel globalBaM = buildConfigPanel(
+                T.text("pref_bam"),
+                null,
+                SCOPE.GLOBAL,
+                N_SAMPLES_LIMNI_ERRORS,
+                N_SAMPLES_PRIOR_RUN);
+        globalPanelContent.addChild(globalBaM.getTitle(), false);
+        globalPanelContent.addChild(globalBaM.getContent(), false);
+
+        // project settings
+        SimpleFlowPanel projectPanelContent = new SimpleFlowPanel(true);
+        projectPanelContent.setPadding(5);
+        projectPanelContent.setGap(5);
+        JScrollPane projectPanelContentScroller = new JScrollPane();
+        projectPanelContentScroller.setViewportView(projectPanelContent);
+
+        TitledPanel projectPanel = new TitledPanel(projectPanelContentScroller);
+        projectPanel.setText(T.text("pref_project"));
+        tab.addTab(projectPanel);
+
+        TitledPanel projectBehavior = buildConfigPanel(
+                T.text("pref_behavior"),
+                null,
+                SCOPE.PROJECT,
+                HIDE_BAM_CONSOLE,
+                CLOSE_BAM_DIALOG_ON_SUCCESS);
+
+        projectPanelContent.addChild(projectBehavior.getTitle(), false);
+        projectPanelContent.addChild(projectBehavior.getContent(), false);
+
+        TitledPanel projectBaM = buildConfigPanel(
+                T.text("pref_bam"),
+                null,
+                SCOPE.PROJECT,
+                N_SAMPLES_LIMNI_ERRORS,
+                N_SAMPLES_PRIOR_RUN);
+        projectPanelContent.addChild(projectBaM.getTitle(), false);
+        projectPanelContent.addChild(projectBaM.getContent(), false);
+
+        // Overall panel
+        String text = "<html><body><p align='justify'>%s %s</p></body></html>".formatted(
+                T.text("pref_message"),
+                T.text("pref_default_pref"));
+        JEditorPane topMessageLabel = new JEditorPane("text/html", text);
+        topMessageLabel.setEditable(false);
+        topMessageLabel.setCaret(new DefaultCaret() {
+            @Override
+            public void paint(Graphics g) {
+                // do nothing to hide the caret
+            }
+        });
 
         JLabel requireRestartLabel = new JLabel("* " + T.text("require_restart"));
-        panel.addChild(requireRestartLabel, 0);
+
+        panel.addChild(topMessageLabel, false);
+        panel.addChild(tab, true);
+        panel.addChild(requireRestartLabel, false);
 
         SimpleFlowPanel actionsPanel = new SimpleFlowPanel();
         actionsPanel.setGap(5);
         JButton cancelButton = new JButton();
         cancelButton.setText(T.text("cancel"));
         cancelButton.addActionListener(l -> {
-            loadFromString(stringBackup);
+            loadFromString(stringBackupGlobal, SCOPE.GLOBAL);
+            loadFromString(stringBackupProject, SCOPE.PROJECT);
             dialog.dispose();
         });
         JButton saveButton = new JButton();
         saveButton.setText(T.text("save"));
         saveButton.addActionListener(l -> {
-            saveConfiguration();
+            saveConfig();
             T.setLocale();
             dialog.dispose();
         });
+
         actionsPanel.addChild(saveButton, false);
         actionsPanel.addExtensor();
         actionsPanel.addChild(cancelButton, false);
         panel.addChild(actionsPanel, false);
+
+        tab.setEnabledAt(1, AppSetup.MAIN_FRAME.currentProject != null);
 
         dialog.setContentPane(panel);
 
         dialog.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
-                loadFromString(stringBackup);
+                loadFromString(stringBackupGlobal, SCOPE.GLOBAL);
             }
         });
 
         dialog.setTitle(T.text("preferences"));
-        Dimension dim = new Dimension(700, 400);
+        Dimension dim = new Dimension(700, 600);
         dialog.setPreferredSize(dim);
         dialog.pack();
         dialog.setLocationRelativeTo(AppSetup.MAIN_FRAME);
@@ -176,32 +290,55 @@ public class ConfigSet {
 
     }
 
-    private TitledPanel buildConfigPanel(String title, Icon icon, ConfigItem... items) {
+    private TitledPanel buildConfigPanel(String title, Icon icon, SCOPE scope, ConfigItem<?, ?>... items) {
         GridPanel configItemsPanel = new GridPanel();
-        configItemsPanel.setPadding(5);
         configItemsPanel.setGap(5);
         configItemsPanel.setColWeight(0, 0);
         configItemsPanel.setColWeight(1, 1);
+        configItemsPanel.setColWeight(2, 0);
         configItemsPanel.setAnchor(GridPanel.ANCHOR.N);
         int k = 0;
-        for (ConfigItem item : items) {
-            String labelString = T.text(String.format("pref_%s", item.id));
-            labelString = item.requireRestart ? labelString + " *" : labelString;
-            JLabel label = new JLabel(labelString);
-            label.setText(String.format("<html><div style='width: 250px'>%s</div></html>", labelString));
+        configItemsPanel.insertChild(new SimpleSep(), 0, k, 3, 1);
+        k++;
+        for (int index = 0; index < items.length; index++) {
+            ConfigItem<?, ?> item = items[index];
+            JLabel label = new JLabel();
+            label.setText(confirItemLabelString(
+                    T.text("pref_%s".formatted(item.id)),
+                    item.requireRestart,
+                    !item.isSet(scope)));
+            JButton resetButton = new JButton(T.text("reset"));
+            resetButton.addActionListener(l -> item.unset(scope));
+            resetButton.setEnabled(item.isSet(scope));
+            item.addChangeListener(l -> {
+                resetButton.setEnabled(item.isSet(scope));
+                label.setText(confirItemLabelString(
+                        T.text("pref_%s".formatted(item.id)),
+                        item.requireRestart,
+                        !item.isSet(scope)));
+            });
             configItemsPanel.insertChild(label, 0, k);
-            configItemsPanel.insertChild(item.getField(), 1, k);
+            configItemsPanel.insertChild(item.getField(scope), 1, k,
+                    1, 1,
+                    GridPanel.ANCHOR.C, GridPanel.FILL.H);
+            configItemsPanel.insertChild(resetButton, 2, k,
+                    1, 1,
+                    GridPanel.ANCHOR.C, GridPanel.FILL.NONE);
+            k++;
+            configItemsPanel.insertChild(new SimpleSep(), 0, k, 3, 1);
             k++;
         }
 
-        JScrollPane content = new JScrollPane();
-        content.setViewportView(configItemsPanel);
-
-        TitledPanel panel = new TitledPanel(content);
+        TitledPanel panel = new TitledPanel(configItemsPanel);
         panel.setText(title);
         panel.setIcon(icon);
 
         return panel;
+    }
+
+    private static String confirItemLabelString(String rawString, boolean star, boolean italic) {
+        String i = italic ? "<i>%s</i>".formatted(rawString) : rawString;
+        return "<html><div style='width: 250px'>%s%s</div></html>".formatted(i, star ? "*" : "");
     }
 
 }

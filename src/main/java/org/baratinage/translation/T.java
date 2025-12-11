@@ -14,6 +14,8 @@ import javax.swing.JLabel;
 import org.baratinage.AppSetup;
 import org.baratinage.utils.ConsoleLogger;
 
+import org.baratinage.ui.config.ConfigItem;
+
 public class T {
 
     static private class TranslatableList extends ArrayList<Translatable> {
@@ -59,7 +61,8 @@ public class T {
     static public void setLocale(Locale locale) {
         currentLocale = locale;
         Locale.setDefault(locale);
-        AppSetup.CONFIG.LANGUAGE_KEY.set(locale.getLanguage());
+        AppSetup.CONFIG.LANGUAGE_KEY.set(locale.getLanguage(), ConfigItem.SCOPE.GLOBAL);
+        AppSetup.CONFIG.saveConfig();
         updateTranslations();
     }
 

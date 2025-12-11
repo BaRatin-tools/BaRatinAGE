@@ -22,6 +22,7 @@ import org.baratinage.AppSetup;
 import org.baratinage.report_exporter.ReportExporter;
 import org.baratinage.translation.T;
 import org.baratinage.ui.component.CommonDialog;
+import org.baratinage.ui.config.ConfigItem;
 import org.baratinage.utils.ConsoleLogger;
 
 public class MainMenuBar extends JMenuBar {
@@ -201,8 +202,8 @@ public class MainMenuBar extends JMenuBar {
                     CommonDialog.infoDialog(T.text("restart_needed_msg"));
                 }
                 T.setLocale(targetLocaleKey);
-                AppSetup.CONFIG.LANGUAGE_KEY.set(targetLocaleKey);
-                AppSetup.CONFIG.saveConfiguration();
+                AppSetup.CONFIG.LANGUAGE_KEY.set(targetLocaleKey, ConfigItem.SCOPE.GLOBAL);
+                AppSetup.CONFIG.saveConfig();
             });
             switchLanguageMenuItem.add(item);
         }

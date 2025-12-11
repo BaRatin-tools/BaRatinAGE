@@ -146,23 +146,39 @@ public class BamProjectSaver {
 
     tasksWorker.setOnDoneAction(() -> {
 
+      Performance.startTimeMonitoring("bam config files");
+      BamConfig bamConfig = getBamConfig(project, bamItemsJson, files);
+
+      // ------------------------------------------------------------
+      // saving project settings
+      // ConfigSet.save
+      String settingsConfigFilePath = Path.of(
+          AppSetup.PATH_APP_TEMP_DIR,
+          "settings_config.json").toString();
+      bamConfig.FILE_PATHS.add(settingsConfigFilePath);
+      try {
+        WriteFile.writeStringContent(settingsConfigFilePath, AppSetup.CONFIG.getProjectConfigString());
+      } catch (IOException saveError) {
+        ConsoleLogger.error("Failed to write settings config JSON file!\n" + saveError);
+      }
+
       // ------------------------------------------------------------
       // saving main config file
-      Performance.startTimeMonitoring("bam main config file");
-      BamConfig bamConfig = getBamConfig(project, bamItemsJson, files);
+
       ConsoleLogger.log("saving project...");
       String mainConfigFilePath = Path.of(AppSetup.PATH_APP_TEMP_DIR,
           "main_config.json").toString();
       bamConfig.FILE_PATHS.add(mainConfigFilePath);
       JSONObject json = bamConfig.JSON;
       String mainJsonString = json.toString(4);
-      File mainConfigFile = new File(mainConfigFilePath);
+      // File mainConfigFile = new File(mainConfigFilePath);
       try {
-        WriteFile.writeLines(mainConfigFile, new String[] { mainJsonString });
+        // WriteFile.writeLines(mainConfigFile, new String[] { mainJsonString });
+        WriteFile.writeStringContent(mainConfigFilePath, mainJsonString);
       } catch (IOException saveError) {
         ConsoleLogger.error("Failed to write main config JSON file!\n" + saveError);
       }
-      Performance.endTimeMonitoring("bam main config file");
+      Performance.endTimeMonitoring("bam config files");
       // ------------------------------------------------------------
       // zipping all files
       boolean success = ReadWriteZip.flatZip(saveFilePath, bamConfig.FILE_PATHS);
@@ -197,7 +213,11 @@ public class BamProjectSaver {
 
   }
 
-  public static void saveProject(ProgressFrame progressFrame, BamProject project, boolean saveAs, Runnable onSuccess,
+  public static void saveProject(
+      ProgressFrame progressFrame,
+      BamProject project,
+      boolean saveAs,
+      Runnable onSuccess,
       Runnable onFailure) {
 
     Runnable _onFailure = onFailure != null ? onFailure : () -> {
