@@ -280,6 +280,7 @@ public class MainFrame extends JFrame {
   public void saveProject(boolean saveAs) {
     ProgressFrame progressFrame = new ProgressFrame(AppSetup.MAIN_FRAME);
     BamProjectSaver.saveProject(progressFrame, currentProject, saveAs, null, null);
+    updateFrameTitle();
   }
 
   public void importV2Project() {

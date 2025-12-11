@@ -218,6 +218,7 @@ public class BamProjectSaver {
         return;
       }
       projectFilePath = f.getAbsolutePath();
+      project.setProjectPath(projectFilePath);
     }
 
     String filePath = projectFilePath;
