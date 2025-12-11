@@ -146,7 +146,8 @@ public class ShiftDetectionMainPlot extends SimpleFlowPanel {
     }
 
     stackedPlot.addSubplot(shiftsPlot, 1);
-    mainPlot.toolsPanel.addChild(plotEditorToggleBtn, false);
+    // mainPlot.toolsPanel.addChild(plotEditorToggleBtn, false);
+    mainPlot.toolsPanel.add(plotEditorToggleBtn);
     mainPlot.setPlot(stackedPlot);
 
     plotPanel.addChild(mainPlot, true);

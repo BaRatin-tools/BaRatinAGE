@@ -36,7 +36,7 @@ public class LimnigraphPlot extends SimpleFlowPanel {
       addChild(plotContainer, true);
     });
 
-    plotContainer.toolsPanel.addChild(openPlotEditorBtn, false);
+    plotContainer.toolsPanel.add(openPlotEditorBtn);
 
   }
 

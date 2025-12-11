@@ -51,7 +51,7 @@ public class HydrographPlot extends SimpleFlowPanel {
                         addChild(plotArea, true);
                 });
 
-                plotContainer.toolsPanel.addChild(openPlotEditorBtn, false);
+                plotContainer.toolsPanel.add(openPlotEditorBtn);
 
         }
 
@@ -66,7 +66,6 @@ public class HydrographPlot extends SimpleFlowPanel {
 
                 Plot plot = new Plot(true, true);
 
-                // Second[] time = PlotItem.localDateTimeToSecond(dateTime);
                 double[] time = DateTime.dateTimeToDoubleArrayMilliseconds(dateTime);
 
                 PlotLine mpLine = new PlotLine(

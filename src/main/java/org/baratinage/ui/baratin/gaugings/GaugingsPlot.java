@@ -65,7 +65,7 @@ public class GaugingsPlot extends SimpleFlowPanel {
     addChild(plotArea, true);
 
     plotContainer = new PlotContainer();
-    plotContainer.toolsPanel.addChild(plotEditorToggleBtn, false);
+    plotContainer.toolsPanel.add(plotEditorToggleBtn);
 
     T.updateHierarchy(this, plotEditor);
   }

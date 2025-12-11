@@ -62,7 +62,8 @@ public class ShiftDetectionGaugings extends SimpleFlowPanel {
       }
       addChild(plotPanel, true);
     });
-    plotContainer.toolsPanel.addChild(plotEditorToggleBtn, false);
+    // plotContainer.toolsPanel.addChild(plotEditorToggleBtn, false);
+    plotContainer.toolsPanel.add(plotEditorToggleBtn);
 
     plotPanel.addChild(plotContainer, true);
     plotPanel.addChild(toolsPanel, false);

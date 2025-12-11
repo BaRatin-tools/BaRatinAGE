@@ -4,9 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JCheckBox;
+import javax.swing.JToolBar;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import org.baratinage.AppSetup;
 import org.baratinage.translation.T;
 import org.baratinage.ui.container.SimpleFlowPanel;
 import org.baratinage.ui.plot.Plot;
@@ -22,7 +24,7 @@ public class RatingCurvePlotToolsPanel extends SimpleFlowPanel {
         super();
 
         logScaleDischargeAxis = new JCheckBox();
-        logScaleDischargeAxis.setSelected(false);
+        logScaleDischargeAxis.setSelected(AppSetup.CONFIG.LOG_DISCHARGE_AXIS.get());
         logScaleDischargeAxis.setText("log_scale_discharge_axis");
 
         switchAxisCheckbox = new JCheckBox();
@@ -53,10 +55,14 @@ public class RatingCurvePlotToolsPanel extends SimpleFlowPanel {
         });
 
         setGap(5);
-        addChild(logScaleDischargeAxis, false);
-        addChild(switchAxisCheckbox, false);
-        addChild(smoothTotalEnvelopCheckbox, false);
-        addChild(cropTotalEnvelopCheckbox, false);
+        JToolBar toolbar = new JToolBar();
+
+        toolbar.add(logScaleDischargeAxis);
+        toolbar.add(switchAxisCheckbox);
+        toolbar.add(smoothTotalEnvelopCheckbox);
+        toolbar.add(cropTotalEnvelopCheckbox);
+
+        addChild(toolbar, true);
 
         T.t(this, switchAxisCheckbox, false, "swap_xy_axis");
         T.t(this, logScaleDischargeAxis, false, "log_scale_discharge_axis");

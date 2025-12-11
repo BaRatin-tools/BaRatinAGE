@@ -65,7 +65,7 @@ public class RatingCurvePlot extends SimpleFlowPanel {
             }
             addChild(plotArea, true);
         });
-        plotContainer.toolsPanel.addChild(plotEditorToggleBtn, false);
+        plotContainer.toolsPanel.add(plotEditorToggleBtn, false);
 
         plotArea.addChild(plotContainer, true);
         plotArea.addChild(toolsPanel, 0, 5);

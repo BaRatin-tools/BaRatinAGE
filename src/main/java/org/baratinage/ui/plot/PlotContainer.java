@@ -4,6 +4,7 @@ import java.awt.Dimension;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import javax.swing.JPanel;
+import javax.swing.JToolBar;
 
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -18,8 +19,8 @@ public class PlotContainer extends SimpleFlowPanel implements IExportablePlot {
     private SimpleFlowPanel chartPanelContainer;
     private CustomChartPanel chartPanel;
 
-    public final SimpleFlowPanel toolsPanel;
-    private final SimpleFlowPanel actionPanel;
+    public final JToolBar toolsPanel;
+    private final JToolBar actionPanel;
 
     public PlotContainer() {
         this(true);
@@ -47,16 +48,12 @@ public class PlotContainer extends SimpleFlowPanel implements IExportablePlot {
         chartPanelContainer = new SimpleFlowPanel();
         addChild(chartPanelContainer, true);
 
-        toolsPanel = new SimpleFlowPanel();
-        actionPanel = PlotExporter.buildExportPanel(this);
+        toolsPanel = new JToolBar();
+        actionPanel = PlotExporter.buildExportToolBar(this);
 
         topPanel.addChild(toolsPanel, false);
         topPanel.addExtensor();
         topPanel.addChild(actionPanel, false);
-
-        toolsPanel.setGap(5);
-        actionPanel.setGap(5);
-
     }
 
     public void setPlot(IPlot plot) {
