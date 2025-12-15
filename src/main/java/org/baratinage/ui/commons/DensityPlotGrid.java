@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.baratinage.AppSetup;
+import org.baratinage.jbam.DistributionType;
 import org.baratinage.ui.bam.EstimatedParameterWrapper;
 import org.baratinage.ui.container.GridPanel;
 import org.baratinage.ui.container.SimpleFlowPanel;
@@ -101,6 +102,12 @@ public class DensityPlotGrid extends SimpleFlowPanel {
                     20,
                     AppSetup.COLORS.POSTERIOR_ENVELOP,
                     0.7f);
+
+            if (estimParam.parameter.parameterConfig != null) {
+                if (estimParam.parameter.parameterConfig.distribution.type == DistributionType.FIXED) {
+                    plot.plot.getRangeAxis().setVisible(false);
+                }
+            }
 
             plot.addXYItem(postDensity);
             plot.addXYItem(maxpostLine);

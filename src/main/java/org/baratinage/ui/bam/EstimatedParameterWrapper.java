@@ -1,5 +1,6 @@
 package org.baratinage.ui.bam;
 
+import org.baratinage.jbam.DistributionType;
 import org.baratinage.jbam.EstimatedParameter;
 
 public class EstimatedParameterWrapper {
@@ -23,8 +24,6 @@ public class EstimatedParameterWrapper {
 
     public final TYPE type;
 
-    private boolean displayPrior = false;
-
     public EstimatedParameterWrapper(
             EstimatedParameter parameter,
             String symbol,
@@ -36,10 +35,6 @@ public class EstimatedParameterWrapper {
         this.htmlName = htmlName;
 
         this.type = type;
-
-        if (type == MODEL) {
-            setDisplayPrior(true);
-        }
     }
 
     public EstimatedParameterWrapper(
@@ -51,10 +46,6 @@ public class EstimatedParameterWrapper {
         this.htmlName = buildGuessedHtmlName(parameter.name);
 
         this.type = type;
-
-        if (type == MODEL) {
-            setDisplayPrior(true);
-        }
     }
 
     public EstimatedParameterWrapper copyAndModify(String symbol,
@@ -62,16 +53,8 @@ public class EstimatedParameterWrapper {
         return new EstimatedParameterWrapper(parameter, symbol, htmlName, type);
     }
 
-    public void setDisplayPrior(boolean displayPrior) {
-        if (parameter.parameterConfig == null && displayPrior) {
-            displayPrior = false;
-            return;
-        }
-        this.displayPrior = displayPrior;
-    }
-
     public boolean shouldDisplayPrior() {
-        return displayPrior;
+        return type == MODEL && parameter.parameterConfig.distribution.type != DistributionType.FIXED;
     }
 
     public static String buildGuessedHtmlName(String symbol) {

@@ -7,6 +7,7 @@ import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 import org.baratinage.jbam.CalibrationResult;
+import org.baratinage.jbam.DistributionType;
 import org.baratinage.jbam.utils.ConfigFile;
 import org.baratinage.ui.bam.EstimatedParameterWrapper;
 import org.baratinage.ui.bam.CalibrationResultsWrapper;
@@ -152,8 +153,15 @@ public class RatingCurveCalibrationResults extends CalibrationResultsWrapper {
                 .map(bep -> {
                     double[] values = new double[] { 0, 0, 0 };
                     if (bep.parameter.parameterConfig != null) {
-                        values = bep.parameter.parameterConfig.distribution.getPercentiles(0.025, 0.975, 3);
-                        values = new double[] { values[1], values[0], values[2] };
+                        if (bep.parameter.parameterConfig.distribution.type == DistributionType.FIXED) {
+                            values = new double[] {
+                                    bep.parameter.mcmc[0],
+                                    bep.parameter.mcmc[0],
+                                    bep.parameter.mcmc[0] };
+                        } else {
+                            values = bep.parameter.parameterConfig.distribution.getPercentiles(0.025, 0.975, 3);
+                            values = new double[] { values[1], values[0], values[2] };
+                        }
                     } else {
                         double[] u95 = bep.parameter.get95interval();
                         double mp = bep.parameter.getMaxpost();

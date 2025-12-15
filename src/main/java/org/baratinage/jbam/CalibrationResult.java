@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import org.baratinage.jbam.utils.BamFilesHelpers;
-
+import org.baratinage.utils.Arr;
 import org.baratinage.utils.ConsoleLogger;
 import org.baratinage.utils.fs.ReadFile;
 import org.baratinage.utils.fs.WriteFile;
@@ -179,6 +179,7 @@ public class CalibrationResult {
 
         List<EstimatedParameter> estimatedParameters = new ArrayList<>();
 
+        int nSamples = 1;
         for (int k = 0; k < headers.length; k++) {
             double[] summary = mcmcSummary == null || k >= mcmcSummary.size() ? null : mcmcSummary.get(k);
             Parameter parameterConfig = null;
@@ -188,17 +189,30 @@ public class CalibrationResult {
                     break;
                 }
             }
+            double[] mcmcValues = mcmc.get(k);
+            nSamples = mcmcValues.length;
             estimatedParameters.add(new EstimatedParameter(
                     headers[k],
-                    mcmc.get(k),
+                    mcmcValues,
                     summary,
                     maxpostIndex,
                     parameterConfig));
 
         }
 
+        // handle special FIX distribution case
+        for (Parameter p : parameters) {
+            if (p.distribution.type != DistributionType.FIXED) {
+                continue;
+            }
+            estimatedParameters.add(new EstimatedParameter(
+                    p.name,
+                    Arr.makeDoubleArray(nSamples, p.initalGuess),
+                    null,
+                    maxpostIndex,
+                    p));
+        }
         return estimatedParameters;
-
     }
 
     private int retrieveMaxPostIndex(double[] logPost) {
