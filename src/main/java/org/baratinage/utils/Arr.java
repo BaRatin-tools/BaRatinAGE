@@ -65,10 +65,10 @@ public class Arr {
     return newArray;
   }
 
-  public static double[] ones(int n) {
+  public static double[] makeDoubleArray(int n, double defaultValue) {
     double[] d = new double[n];
     for (int k = 0; k < n; k++) {
-      d[k] = 1;
+      d[k] = defaultValue;
     }
     return d;
   }
