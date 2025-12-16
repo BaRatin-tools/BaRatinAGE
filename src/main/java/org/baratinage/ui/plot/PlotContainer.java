@@ -119,4 +119,9 @@ public class PlotContainer extends SimpleFlowPanel implements IExportablePlot {
                 scale,
                 scale);
     }
+
+    @Override
+    public boolean isPlotValid() {
+        return chart != null;
+    }
 }

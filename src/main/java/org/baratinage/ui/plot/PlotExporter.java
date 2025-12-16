@@ -48,6 +48,8 @@ public class PlotExporter {
     public BufferedImage getBufferedImage();
 
     public BufferedImage getBufferedImage(Dimension dim, int scale);
+
+    public boolean isPlotValid();
   }
 
   public static JToolBar buildExportToolBar(IExportablePlot plot) {
