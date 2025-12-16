@@ -65,9 +65,10 @@ public class RunConfigAndRes extends BaM {
             // each run being unique, if the zip file exist, there is no need
             // to recreate it; no modification could have occured
             List<String> filesToZip = new ArrayList<>();
-            for (File f : workspace.toFile().listFiles()) {
+            File[] allFiles = workspace.toFile().listFiles();
+            for (File f : allFiles) {
                 String filename = f.getName();
-                if (matchTemplates(filename, _filenamesToIgnore)) {
+                if (matchTemplates(filename, _filenamesToIgnore) && !filename.contains("maxpost")) {
                     ConsoleLogger.log("BaM file '%s' was ignored.".formatted(filename));
                     continue;
                 }
