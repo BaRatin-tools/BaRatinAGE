@@ -34,7 +34,6 @@ import org.baratinage.ui.container.SimpleFlowPanel;
 import org.baratinage.utils.ConsoleLogger;
 import org.baratinage.utils.perf.TimedActions;
 
-import java.awt.Font;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -44,8 +43,6 @@ import java.util.function.Function;
 import java.awt.Desktop;
 
 public class ReportExporter {
-
-  // private final SimpleFlowPanel mainPanel;
 
   private final ReportExportWriter reportWriter;
 
@@ -62,22 +59,15 @@ public class ReportExporter {
 
     dialog = new SimpleDialog(AppSetup.MAIN_FRAME, true);
     dialog.setTitle(T.text("report_exporter"));
-    // dialog.setF
-    dialog.setSize(900, 600);
+    dialog.setSize(700, 400);
 
     reportWriter = new ReportExportWriter("default");
 
     SimpleFlowPanel topPanel = new SimpleFlowPanel();
     topPanel.setGap(5);
-    topPanel.addChild(buildProjectComponentPicker(), 0);
-    topPanel.addChild(buildMarkdownEditor());
-    SimpleFlowPanel bottomPanel = buildActionsPanel();
-    SimpleFlowPanel mainPanel = new SimpleFlowPanel(true);
-    mainPanel.setGap(5);
-    mainPanel.setPadding(5);
-    mainPanel.addChild(topPanel, 1);
-    mainPanel.addChild(bottomPanel, 0);
-    dialog.setContent(mainPanel);
+    topPanel.addChild(buildProjectComponentPicker(), 1);
+    topPanel.addChild(buildActionsPanel(), 1);
+    dialog.setContent(topPanel);
 
     updateReport();
   }
@@ -243,28 +233,8 @@ public class ReportExporter {
     SimpleFlowPanel mainPanel = new SimpleFlowPanel(true);
     mainPanel.setGap(5);
     mainPanel.addChild(componentLabels, 0);
-    mainPanel.addChild(actionsPanel, 0);
     mainPanel.addChild(cbsScrollPane);
-
-    return mainPanel;
-  }
-
-  private SimpleFlowPanel buildMarkdownEditor() {
-
-    mdTextField.setEditable(false);
-    mdTextField.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 14));
-
-    // mdTextField.addChangeListener(l -> {
-    // String md = mdTextField.getText();
-    // reportWriter.setMardown(md);
-    // });
-
-    JScrollPane mdScrollPane = new JScrollPane(mdTextField);
-    mdScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-
-    SimpleFlowPanel mainPanel = new SimpleFlowPanel(true);
-    mainPanel.addChild(mdScrollPane);
-    mainPanel.setGap(5);
+    mainPanel.addChild(actionsPanel, 0);
 
     return mainPanel;
   }
@@ -272,7 +242,7 @@ public class ReportExporter {
   public SimpleFlowPanel buildActionsPanel() {
 
     JButton cancelButton = new JButton();
-    cancelButton.setText(T.text("cancel"));
+    cancelButton.setText(T.text("exit"));
     cancelButton.addActionListener(l -> {
       dialog.closeDialog();
     });
@@ -295,7 +265,6 @@ public class ReportExporter {
       reportWriter.writeImages(selectedDirectory.toPath());
       reportWriter.writeMardown(selectedDirectory.toPath());
       openDirectory(selectedDirectory);
-      dialog.closeDialog();
     });
 
     JButton exportHTMLButton = new JButton();
@@ -308,7 +277,6 @@ public class ReportExporter {
       reportWriter.writeImages(selectedDirectory.toPath());
       reportWriter.writeHTML(selectedDirectory.toPath());
       openDirectory(selectedDirectory);
-      dialog.closeDialog();
     });
 
     JButton exportDOCXButton = new JButton();
@@ -323,16 +291,18 @@ public class ReportExporter {
         return;
       }
       reportWriter.writeDOCX(selectedFile.toPath());
-      dialog.closeDialog();
     });
 
-    SimpleFlowPanel actionsPanel = new SimpleFlowPanel();
+    JLabel label = new JLabel();
+    label.setText(T.text("report_exporter"));
+    SimpleFlowPanel actionsPanel = new SimpleFlowPanel(true);
     actionsPanel.setGap(5);
-    actionsPanel.addChild(cancelButton, 0);
-    actionsPanel.addChild(previewButton, 0);
-    actionsPanel.addChild(exportMarkdownButton, 1);
-    actionsPanel.addChild(exportHTMLButton, 1);
-    actionsPanel.addChild(exportDOCXButton, 1);
+    actionsPanel.addChild(label, false);
+    actionsPanel.addChild(previewButton, false);
+    actionsPanel.addChild(exportMarkdownButton, false);
+    actionsPanel.addChild(exportHTMLButton, false);
+    actionsPanel.addChild(exportDOCXButton, false);
+    actionsPanel.addChild(cancelButton, false);
 
     return actionsPanel;
   }
