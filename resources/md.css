@@ -25,12 +25,11 @@ h6 {
 /* customization */
 .plot-caption {
   counter-reset: plot-caption;
-  --caption-prefix: "Fig.";
 }
 
 .plot-caption::before {
   counter-increment: plot-caption;
-  content: var(--caption-prefix) " " counter(plot-caption) " : ";
+  content: "Fig.  " counter(plot-caption) " : ";
 }
 
 
