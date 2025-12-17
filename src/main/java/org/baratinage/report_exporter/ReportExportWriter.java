@@ -137,4 +137,36 @@ public class ReportExportWriter {
     return String.format(template, name, html, "md.css");
   }
 
+  public File writeDOCX(Path targetDir) {
+
+    writeImages();
+
+    Parser parser = Parser
+        .builder()
+        .extensions(List.of(TablesExtension.create()))
+        .build();
+    Node document = parser.parse(getMarkdown());
+
+    Path mainPath = getMainPath();
+
+    DOCX docx = new DOCX(document, mainPath);
+
+    Path docxPath = mainPath.resolve(Path.of(String.format("%s.docx", id)));
+    System.out.println(docxPath);
+    File docxFile = docxPath.toFile();
+    docx.writeToFile(docxFile);
+
+    File file = targetDir.toFile();
+    try {
+      if (Files.exists(targetDir)) {
+        Files.delete(targetDir);
+      }
+      Files.copy(docxPath, targetDir);
+    } catch (IOException e) {
+      ConsoleLogger.error(e);
+    }
+
+    return file;
+  }
+
 }

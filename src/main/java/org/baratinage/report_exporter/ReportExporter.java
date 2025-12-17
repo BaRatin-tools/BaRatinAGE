@@ -271,64 +271,95 @@ public class ReportExporter {
 
   public SimpleFlowPanel buildActionsPanel() {
 
-    JButton previewButton = new JButton();
-    previewButton.setText(T.text("preview_html"));
-    previewButton.addActionListener(l -> {
-      reportWriter.writeImages();
-      File htmlFile = reportWriter.writeHTML();
-      try {
-        if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
-          Desktop.getDesktop().browse(htmlFile.toURI());
-        } else {
-          System.err.println("Desktop is not supported");
-        }
-      } catch (IOException e) {
-        ConsoleLogger.error(e);
-      }
-    });
-
     JButton cancelButton = new JButton();
     cancelButton.setText(T.text("cancel"));
     cancelButton.addActionListener(l -> {
       dialog.closeDialog();
     });
 
-    JButton exportReportButton = new JButton();
-    exportReportButton.setText(T.text("export_to_md_and_html"));
-    exportReportButton.addActionListener(l -> {
+    JButton previewButton = new JButton();
+    previewButton.setText(T.text("preview_html"));
+    previewButton.addActionListener(l -> {
+      reportWriter.writeImages();
+      File htmlFile = reportWriter.writeHTML();
+      browsePage(htmlFile);
+    });
 
+    JButton exportMarkdownButton = new JButton();
+    exportMarkdownButton.setText(T.text("export_to_md"));
+    exportMarkdownButton.addActionListener(l -> {
       File selectedDirectory = CommonDialog.saveDirDialog(T.text("select_target_dir"));
-
       if (selectedDirectory == null) {
         return;
       }
-
+      reportWriter.writeImages(selectedDirectory.toPath());
       reportWriter.writeMardown(selectedDirectory.toPath());
+      openDirectory(selectedDirectory);
+      dialog.closeDialog();
+    });
+
+    JButton exportHTMLButton = new JButton();
+    exportHTMLButton.setText(T.text("export_to_html"));
+    exportHTMLButton.addActionListener(l -> {
+      File selectedDirectory = CommonDialog.saveDirDialog(T.text("select_target_dir"));
+      if (selectedDirectory == null) {
+        return;
+      }
       reportWriter.writeImages(selectedDirectory.toPath());
       reportWriter.writeHTML(selectedDirectory.toPath());
-
-      if (Desktop.isDesktopSupported() &&
-          Desktop.getDesktop().isSupported(Desktop.Action.OPEN)) {
-        try {
-          Desktop.getDesktop().open(selectedDirectory);
-        } catch (IOException e) {
-          ConsoleLogger.error(e);
-        }
-      } else {
-        ConsoleLogger.error("Desktop is not supported");
-      }
-
+      openDirectory(selectedDirectory);
       dialog.closeDialog();
+    });
 
+    JButton exportDOCXButton = new JButton();
+    exportDOCXButton.setText(T.text("export_to_docx"));
+    exportDOCXButton.addActionListener(l -> {
+      File selectedFile = CommonDialog.saveFileDialog(
+          "",
+          null,
+          new CommonDialog.CustomFileFilter(
+              T.text("docx_format"), "docx"));
+      if (selectedFile == null) {
+        return;
+      }
+      reportWriter.writeDOCX(selectedFile.toPath());
+      dialog.closeDialog();
     });
 
     SimpleFlowPanel actionsPanel = new SimpleFlowPanel();
     actionsPanel.setGap(5);
     actionsPanel.addChild(cancelButton, 0);
     actionsPanel.addChild(previewButton, 0);
-    actionsPanel.addChild(exportReportButton, 1);
+    actionsPanel.addChild(exportMarkdownButton, 1);
+    actionsPanel.addChild(exportHTMLButton, 1);
+    actionsPanel.addChild(exportDOCXButton, 1);
 
     return actionsPanel;
+  }
+
+  private static void openDirectory(File dir) {
+    if (Desktop.isDesktopSupported() &&
+        Desktop.getDesktop().isSupported(Desktop.Action.OPEN)) {
+      try {
+        Desktop.getDesktop().open(dir);
+      } catch (IOException e) {
+        ConsoleLogger.error(e);
+      }
+    } else {
+      ConsoleLogger.error("Desktop is not supported");
+    }
+  }
+
+  private static void browsePage(File htmlFile) {
+    try {
+      if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
+        Desktop.getDesktop().browse(htmlFile.toURI());
+      } else {
+        System.err.println("Desktop is not supported");
+      }
+    } catch (IOException e) {
+      ConsoleLogger.error(e);
+    }
   }
 
   public void showDialog() {
