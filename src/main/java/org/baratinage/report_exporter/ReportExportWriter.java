@@ -124,20 +124,20 @@ public class ReportExportWriter {
         <!DOCTYPE html>
         <html lang="en">
         <head>
-          <meta charset="UTF-8">
-          <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          <title>%1$s</title>
-          <link rel="stylesheet" href="assets/%3$s">
+          <meta charset="UTF-8" />
+          <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+          <title>%s</title>
+          <link rel="stylesheet" href="assets/%s" />
         </head>
         <body>
-        %2$s
+        %s
         </body>
         </html>
         """;
-    return String.format(template, name, html, "md.css");
+    return String.format(template, name, "md.css", html);
   }
 
-  public File writeDOCX(Path targetDir) {
+  public File writeDOCX(Path targetFile) {
 
     writeImages();
 
@@ -156,12 +156,12 @@ public class ReportExportWriter {
     File docxFile = docxPath.toFile();
     docx.writeToFile(docxFile);
 
-    File file = targetDir.toFile();
+    File file = targetFile.toFile();
     try {
-      if (Files.exists(targetDir)) {
-        Files.delete(targetDir);
+      if (Files.exists(targetFile)) {
+        Files.delete(targetFile);
       }
-      Files.copy(docxPath, targetDir);
+      Files.copy(docxPath, targetFile);
     } catch (IOException e) {
       ConsoleLogger.error(e);
     }
