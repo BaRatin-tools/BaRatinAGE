@@ -61,7 +61,7 @@ public class ReportExporter {
     this.project = project;
 
     dialog = new SimpleDialog(AppSetup.MAIN_FRAME, true);
-    dialog.setTitle("Report Exporter");
+    dialog.setTitle(T.text("report_exporter"));
     // dialog.setF
     dialog.setSize(900, 600);
 

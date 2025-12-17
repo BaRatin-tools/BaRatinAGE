@@ -141,7 +141,8 @@ public class MainMenuBar extends JMenuBar {
 
         fileMenu.addSeparator();
 
-        JMenuItem exportReportMenuItem = new JMenuItem("Export report");
+        JMenuItem exportReportMenuItem = new JMenuItem();
+        T.t(this, exportReportMenuItem, false, "report_exporter");
         add(exportReportMenuItem);
         exportReportMenuItem.addActionListener((e) -> {
             if (AppSetup.MAIN_FRAME.currentProject == null) {
