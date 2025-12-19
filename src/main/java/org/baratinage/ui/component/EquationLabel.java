@@ -50,7 +50,7 @@ public class EquationLabel extends JLabel {
       Expr expr = ep.parse();
       latex = expr.toLatex();
     } catch (Exception e) {
-      ConsoleLogger.warn(e);
+      ConsoleLogger.log("Cannot parse equation '%s'".formatted(plainEquation));
     }
     return latex;
   }
