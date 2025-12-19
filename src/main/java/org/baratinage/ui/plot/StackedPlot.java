@@ -122,12 +122,8 @@ public class StackedPlot implements IPlot, LegendItemSource {
   @Override
   public IPlot getCopy() {
     Plot mainPlotCopy = mainPlot.getCopy();
-    List<Plot> subplotsCopy = new ArrayList<>();
-    for (Plot p : subplots) {
-      subplotsCopy.add(p.getCopy());
-    }
     StackedPlot stackedPlotCopy = new StackedPlot(mainPlotCopy, weights.get(mainPlot));
-    for (Plot p : subplotsCopy) {
+    for (Plot p : subplots) {
       stackedPlotCopy.addSubplot(p, weights.get(p));
     }
     return stackedPlotCopy;
