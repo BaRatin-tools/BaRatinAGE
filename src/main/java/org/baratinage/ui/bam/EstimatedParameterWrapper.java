@@ -54,7 +54,10 @@ public class EstimatedParameterWrapper {
     }
 
     public boolean shouldDisplayPrior() {
-        return type == MODEL && parameter.parameterConfig.distribution.type != DistributionType.FIXED;
+        return type == MODEL
+                && parameter.parameterConfig.distribution.type != DistributionType.FIXED
+                && parameter.parameterConfig.distribution.type != DistributionType.FLAT
+                && parameter.parameterConfig.distribution.type != DistributionType.FLAT_POSITIVE;
     }
 
     public static String buildGuessedHtmlName(String symbol) {
