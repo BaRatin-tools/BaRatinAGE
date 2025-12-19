@@ -58,28 +58,51 @@ public class Misc {
     }
 
     public static String formatNumber(double num, int nSignif) {
-        return formatNumber(num, nSignif, false);
+        return formatNumber(num, nSignif, false, false);
     }
 
-    public static String formatNumber(double num, int nSignif, boolean scientific) {
-        if (scientific) {
-            String format = "0." + "#".repeat(Math.max(0, nSignif - 1)) + "E" + "0";
-            return new DecimalFormat(format).format(num);
-        } else {
-            return String.format(String.format("%%.%dg", nSignif), num);
+    public static String formatNumber(
+            double num,
+            int precision,
+            boolean decimalPlaces,
+            boolean scientific) {
+        if (Double.isNaN(num) || Double.isInfinite(num)) {
+            return String.valueOf(num);
         }
+
+        DecimalFormat df;
+
+        if (!decimalPlaces) {
+            if (scientific) {
+                String pattern = "0." + "#".repeat(Math.max(0, precision - 1)) + "E0";
+                df = new DecimalFormat(pattern);
+            } else {
+                return String.format("%." + precision + "g", num);
+            }
+        } else { // DECIMAL_PLACES
+            String pattern = scientific
+                    ? "0." + "0".repeat(precision) + "E0"
+                    : "0." + "0".repeat(precision);
+            df = new DecimalFormat(pattern);
+        }
+
+        return df.format(num);
     }
 
-    public static String formatNumber(double num, int nSignif, double sciLow, double sciHigh) {
+    public static String formatNumber(
+            double num,
+            int precision,
+            boolean decimalPlaces,
+            double sciLow,
+            double sciHigh) {
         if (num == 0) {
-            return "0";
+            return decimalPlaces
+                    ? String.format("%." + precision + "f", 0.0)
+                    : "0";
         }
         double abs = Math.abs(num);
-        if (abs <= sciLow || abs >= sciHigh) {
-            return formatNumber(num, nSignif, true);
-        } else {
-            return formatNumber(num, nSignif);
-        }
+        boolean scientific = abs <= sciLow || abs >= sciHigh;
+        return formatNumber(num, precision, decimalPlaces, scientific);
     }
 
     public static String sanitizeName(String input) {

@@ -134,6 +134,14 @@ public class DataTable extends SimpleFlowPanel {
         table.setDefaultRenderer(String.class, cellRenderer);
     }
 
+    public void setColumnNumberPrecision(int colIndex, int precision, boolean decimalPlaces) {
+        TableColumn column = table.getColumnModel().getColumn(colIndex);
+        CustomCellRenderer customCellRenderer = new CustomCellRenderer("yyyy-MM-dd HH:mm:ss");
+        customCellRenderer.precision = precision;
+        customCellRenderer.decimalPlaces = decimalPlaces;
+        column.setCellRenderer(customCellRenderer);
+    }
+
     private String getStringValue(int row, int col) {
         Object obj = table.getValueAt(row, col);
         if (obj == null) {
@@ -459,6 +467,8 @@ public class DataTable extends SimpleFlowPanel {
 
         private DateTimeFormatter dateTimeFormatter;
         public boolean losslessDoubles = false;
+        public int precision = 4;
+        public boolean decimalPlaces = false;
 
         public CustomCellRenderer(String printFormat) {
             dateTimeFormatter = DateTimeFormatter.ofPattern(printFormat);
@@ -480,7 +490,9 @@ public class DataTable extends SimpleFlowPanel {
             } else if (value instanceof Double) {
                 Double d = (Double) value;
                 if (!d.isNaN()) {
-                    value = losslessDoubles ? Misc.formatNumber(d) : Misc.formatNumber(d, 4, 0.001, 10000);
+                    value = losslessDoubles
+                            ? Misc.formatNumber(d)
+                            : Misc.formatNumber(d, precision, decimalPlaces, 0.001, 10000);
                 } else {
                     value = "";
                 }

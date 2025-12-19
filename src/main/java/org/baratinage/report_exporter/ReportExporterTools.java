@@ -50,13 +50,13 @@ public class ReportExporterTools {
 
       List<String> distParametersStr = new ArrayList<>();
       for (Double d : distParameters) {
-        distParametersStr.add(Misc.formatNumber(d, 4, 0.001, 10000));
+        distParametersStr.add(Misc.formatNumber(d, 4, false, 0.001, 10000));
       }
       String priorDistString = T.text("dist_" + distType.bamName) + "(" + String.join(", ", distParametersStr) + ")";
       parTable.add(new String[] {
           par.getParameter().name == "k" ? "&kappa;" : par.getParameter().name,
           priorDistString,
-          Misc.formatNumber(initialValue, 4, 0.001, 10000)
+          Misc.formatNumber(initialValue, 4, false, 0.001, 10000)
       });
     }
     return parTable;
