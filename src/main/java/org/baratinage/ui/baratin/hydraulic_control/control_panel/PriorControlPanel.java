@@ -1,6 +1,5 @@
 package org.baratinage.ui.baratin.hydraulic_control.control_panel;
 
-import java.awt.Font;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,6 +13,7 @@ import org.baratinage.translation.T;
 import org.baratinage.ui.commons.AbstractParameterPriorDist;
 import org.baratinage.ui.commons.ParameterPriorDist;
 import org.baratinage.ui.commons.ParameterPriorDistSimplified;
+import org.baratinage.ui.component.EquationLabel;
 import org.baratinage.ui.component.SimpleNumberField;
 import org.baratinage.ui.component.SimpleSep;
 import org.baratinage.ui.container.GridPanel;
@@ -27,10 +27,6 @@ public abstract class PriorControlPanel extends GridPanel implements ChangeListe
                         Double cMean, Double cStd) {
         }; // FIXME: rename to KBACGaussianConfig, rename kMean and kStd
 
-        private static String vAlignFixString = "<sup>&nbsp;</sup><sub>&nbsp;</sub>";
-
-        private static final Font MONOSPACE_FONT = new Font(Font.MONOSPACED, Font.PLAIN, 14);
-
         private final JLabel equationLabel;
         protected final JLabel lockLabel;
 
@@ -41,9 +37,7 @@ public abstract class PriorControlPanel extends GridPanel implements ChangeListe
                 setPadding(0);
                 setGap(5);
 
-                equationLabel = new JLabel();
-                equationLabel.setText(String.format("<html>%s %s</html>", equation, vAlignFixString));
-                equationLabel.setFont(MONOSPACE_FONT);
+                equationLabel = new EquationLabel(equation);
 
                 insertLabel(equationLabel, 0, 0, 3);
 

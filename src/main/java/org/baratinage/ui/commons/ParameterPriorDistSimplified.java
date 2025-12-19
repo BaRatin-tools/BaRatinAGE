@@ -10,18 +10,17 @@ import org.baratinage.jbam.Distribution;
 import org.baratinage.jbam.DistributionType;
 import org.baratinage.jbam.Parameter;
 import org.baratinage.translation.T;
+import org.baratinage.ui.component.EquationLabel;
 import org.baratinage.ui.component.SimpleNumberField;
 
 public class ParameterPriorDistSimplified extends AbstractParameterPriorDist {
 
     public final JLabel iconLabel;
-    public final JLabel symbolUnitLabel;
+    public final EquationLabel symbolUnitLabel;
     public final JLabel nameLabel;
     public final SimpleNumberField meanValueField;
     public final SimpleNumberField uncertaintyValueField;
     public final JCheckBox lockCheckbox;
-
-    private static String vAlignFixString = "<sup>&nbsp;</sup><sub>&nbsp;</sub>";
 
     private static final Font MONOSPACE_FONT = new Font(Font.MONOSPACED, Font.PLAIN, 14);
 
@@ -31,7 +30,7 @@ public class ParameterPriorDistSimplified extends AbstractParameterPriorDist {
     public ParameterPriorDistSimplified() {
 
         iconLabel = new JLabel();
-        symbolUnitLabel = new JLabel();
+        symbolUnitLabel = new EquationLabel();
         nameLabel = new JLabel();
         symbolUnitLabel.setFont(MONOSPACE_FONT);
 
@@ -61,7 +60,10 @@ public class ParameterPriorDistSimplified extends AbstractParameterPriorDist {
 
     @Override
     public void setSymbolUnitLabels(String symbol, String unit) {
-        symbolUnitLabel.setText(String.format("<html>%s[%s]%s</html>", symbol, unit, vAlignFixString));
+        symbolUnitLabel.setLatexEquation(
+                "%s \\quad [%s]".formatted(
+                        EquationLabel.convertToLatex(symbol),
+                        EquationLabel.convertToLatex(unit)));
     }
 
     @Override
@@ -113,7 +115,7 @@ public class ParameterPriorDistSimplified extends AbstractParameterPriorDist {
         double mean = meanValueField.getDoubleValue();
         double std = uncertaintyValueField.getDoubleValue() / 2;
         Distribution d = new Distribution(DistributionType.GAUSSIAN, mean, std);
-        return new Parameter(vAlignFixString, mean, d);
+        return new Parameter(nameLabel.getText(), mean, d);
     }
 
     @Override

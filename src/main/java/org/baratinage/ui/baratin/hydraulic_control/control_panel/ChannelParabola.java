@@ -15,7 +15,9 @@ public class ChannelParabola extends PriorControlPanel {
     private final ParameterPriorDistSimplified exponent;
 
     public ChannelParabola() {
-        super(2, "Q=K<sub>s</sub>B<sub>p</sub>H<sub>p</sub><sup>-1/2</sup>(2/3)<sup>5/3</sup>S<sup>1/2</sup>(h-b)<sup>c</sup>&nbsp;(h>\u03BA)");
+        super(2,
+                "Q = K_s * B_p * H_p ^ (-1/2) * (2/3) ^ (5/3) * S ^ (1/2) * (h-b) ^ c");// \\quad (h > κ)");
+        // "Q=K<sub>s</sub>B<sub>p</sub>H<sub>p</sub><sup>-1/2</sup>(2/3)<sup>5/3</sup>S<sup>1/2</sup>(h-b)<sup>c</sup>&nbsp;(h>\u03BA)");
 
         activationHeight = CommonParameterDistSimplified.getActivationHeight();
         stricklerCoef = CommonParameterDistSimplified.getStricklerCoeff();

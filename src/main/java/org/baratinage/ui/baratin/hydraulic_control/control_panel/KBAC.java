@@ -22,16 +22,15 @@ public class KBAC extends PriorControlPanel {
             .getCustomAppImageIcon("coefficient.svg");
 
     public KBAC(boolean kMode) {
-        super(
-                3, "Q=a(h-b)<sup>c</sup> (h>\u03BA)");
+        super(3, "Q = a * (h-b) ^ c");// \\quad (h > κ)");
 
         kb = new ParameterPriorDist("k");
         kb.setIcon(activationHeightIcon);
-        kb.setSymbolUnitLabels(kMode ? "\u03BA" : "b", "m");
+        kb.setSymbolUnitLabels(kMode ? "κ" : "b", "m");
 
         a = new ParameterPriorDist("a");
         a.setIcon(coefficientIcon);
-        a.setSymbolUnitLabels("a", "m<sup>3</sup>.s<sup>-1</sup>");
+        a.setSymbolUnitLabels("a", "m ^ 3 * s ^ (-1)");
 
         c = new ParameterPriorDist("c");
         c.setIcon(exponentIcon);

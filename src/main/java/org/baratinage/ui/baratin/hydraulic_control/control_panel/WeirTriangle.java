@@ -13,9 +13,8 @@ public class WeirTriangle extends PriorControlPanel {
     private final ParameterPriorDistSimplified exponent;
 
     public WeirTriangle() {
-        super(
-                2,
-                "Q=C<sub>t</sub>tan(v/2)(2g)<sup>1/2</sup>(h-b)<sup>c</sup>&nbsp;(h>\u03BA)");
+        super(2, "Q = C_t * tan(v/2) * (2 * g) ^ (1/2) * (h-b) ^ c");// \\quad (h > κ)");
+        // "Q=C<sub>t</sub>tan(v/2)(2g)<sup>1/2</sup>(h-b)<sup>c</sup>&nbsp;(h>\u03BA)");
 
         activationHeight = CommonParameterDistSimplified.getActivationHeight();
         weirCoef = CommonParameterDistSimplified.getWeirCoeff("t");
