@@ -61,6 +61,13 @@ public class Misc {
         return formatNumber(num, nSignif, false, false);
     }
 
+    private static int decimalPlacesForSignificant(double num, int precision) {
+        if (num == 0)
+            return precision - 1;
+        int magnitude = (int) Math.floor(Math.log10(Math.abs(num)));
+        return Math.max(0, precision - magnitude - 1);
+    }
+
     public static String formatNumber(
             double num,
             int precision,
@@ -77,7 +84,13 @@ public class Misc {
                 String pattern = "0." + "#".repeat(Math.max(0, precision - 1)) + "E0";
                 df = new DecimalFormat(pattern);
             } else {
-                return String.format("%." + precision + "g", num);
+                int decimals = decimalPlacesForSignificant(num, precision);
+                String pattern = (decimals > 0)
+                        ? "0." + "#".repeat(decimals)
+                        : "0";
+                df = new DecimalFormat(pattern);
+                return df.format(num);
+
             }
         } else { // DECIMAL_PLACES
             String pattern = scientific
