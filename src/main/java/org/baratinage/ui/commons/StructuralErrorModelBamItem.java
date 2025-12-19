@@ -48,7 +48,8 @@ public class StructuralErrorModelBamItem extends BamItem implements IStructuralE
 
             EquationLabel infoLabel = new EquationLabel();
             infoLabel.setLatexEquation(
-                    "\\sim \\mathcal{N} (0, | γ_1  + γ_2 \\cdot %s |)".formatted(nameSymbolUnits[k].symbol()));
+                    "\\epsilon \\sim \\mathcal{N} (0, | γ_1  + γ_2 \\cdot %s |)"
+                            .formatted(nameSymbolUnits[k].symbol()));
             // "<html><code>&sim;N(0, | &gamma;<sub>1</sub> + &gamma;<sub>2</sub>%s
             // |)</code></html>",
             // nameSymbolUnits[k].symbol()));
