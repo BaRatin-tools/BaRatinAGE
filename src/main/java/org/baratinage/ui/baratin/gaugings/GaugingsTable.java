@@ -99,6 +99,15 @@ public class GaugingsTable extends DataTable {
 
     updateData();
 
+    int i = hasDateTime ? 1 : 0;
+    setColumnNumberPrecision(i, 3, true); // stage
+    if (hasStageUncertainty) {
+      setColumnNumberPrecision(i + 1, 1, false); // stage uncertainty
+    }
+    i = (hasDateTime ? 1 : 0) + (hasStageUncertainty ? 1 : 0);
+    setColumnNumberPrecision(i + 1, 3, false);
+    setColumnNumberPrecision(i + 2, 1, false);
+
     T.clear(table);
     T.t(table, () -> {
       int offset = 0;

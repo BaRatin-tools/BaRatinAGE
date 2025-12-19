@@ -47,6 +47,8 @@ public class RatingCurveTable extends DataTable {
 
         toolsPanel.add(showHeaderDescription);
         toolsPanel.add(cropTotalEnvelopCheckbox);
+
+        setDefaultNumberPrecision(2, false);
     }
 
     public void updateTable(RatingCurvePlotData ratingCurveData) {
@@ -61,6 +63,7 @@ public class RatingCurveTable extends DataTable {
             addColumn(ratingCurveData.totalUncertainty.get(1));
         }
         updateData();
+        setColumnNumberPrecision(0, 3, true);
 
         setHeaderWidth(200);
         setHeader(0, "h [m]");

@@ -95,6 +95,14 @@ public class DataTable extends SimpleFlowPanel {
         displayFullPrecision.addItemListener(
                 l -> {
                     cellRenderer.losslessDoubles = displayFullPrecision.isSelected();
+                    int nCol = model.getColumnCount();
+                    for (int k = 0; k < nCol; k++) {
+                        TableColumn tableColumn = table.getColumnModel().getColumn(k);
+                        TableCellRenderer tcr = tableColumn.getCellRenderer();
+                        if (tcr instanceof CustomCellRenderer r) {
+                            r.losslessDoubles = displayFullPrecision.isSelected();
+                        }
+                    }
                     repaint();
                 });
         toolsPanel.add(displayFullPrecision);
@@ -140,6 +148,11 @@ public class DataTable extends SimpleFlowPanel {
         customCellRenderer.precision = precision;
         customCellRenderer.decimalPlaces = decimalPlaces;
         column.setCellRenderer(customCellRenderer);
+    }
+
+    public void setDefaultNumberPrecision(int precision, boolean decimalPlaces) {
+        cellRenderer.precision = precision;
+        cellRenderer.decimalPlaces = decimalPlaces;
     }
 
     private String getStringValue(int row, int col) {

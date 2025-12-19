@@ -23,7 +23,9 @@ public class LimnigraphErrors extends SimpleFlowPanel {
         super(true);
 
         errConfigTable = new DataTable();
+        errConfigTable.setDefaultNumberPrecision(3, true);
         errMatrixTable = new DataTable();
+        errMatrixTable.setDefaultNumberPrecision(3, true);
 
         TabContainer tableTabs = new TabContainer();
         tableTabs.addTab("Error configuration", errConfigTable);
