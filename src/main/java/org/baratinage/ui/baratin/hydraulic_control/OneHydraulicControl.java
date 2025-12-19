@@ -86,7 +86,6 @@ public class OneHydraulicControl extends JScrollPane {
     };
 
     private final List<HydraulicControlOption> allControlOptions;
-    private int currentPriorControlPanelIndex = 0;
 
     public final SimpleTextField descriptionField;
 
@@ -95,7 +94,6 @@ public class OneHydraulicControl extends JScrollPane {
     }
 
     public OneHydraulicControl(boolean kMode, int controlNumber) {
-        // super(AXIS.COL, ALIGN.START);
         super();
 
         setBorder(new EmptyBorder(0, 0, 0, 0));
@@ -184,12 +182,7 @@ public class OneHydraulicControl extends JScrollPane {
         hydraulicControlPanel = new SimpleFlowPanel(true);
 
         controlTypeComboBox = new SimpleComboBox();
-        controlTypeComboBox.setEmptyItem(null);
-        controlTypeComboBox.addChangeListener((chEvt) -> {
-            int index = controlTypeComboBox.getSelectedIndex();
-            currentPriorControlPanelIndex = index;
-            updatePhysicalControl();
-        });
+        controlTypeComboBox.addChangeListener((chEvt) -> updatePhysicalControl());
         setControlTypeCombobox();
 
         physicalParametersPanel.addChild(controlTypeComboBox, false);
@@ -221,16 +214,12 @@ public class OneHydraulicControl extends JScrollPane {
             }
         });
 
-        // SimpleFlowPanel buttonsPanel = new SimpleFlowPanel();
-        // buttonsPanel.setPadding(5);
-        // buttonsPanel.addChild(switchModeButton, true);
-
         descriptionField = new SimpleTextField();
         T.t(this, () -> {
             descriptionField.setPlaceholder(T.text("description"));
         });
 
-        controlTypeComboBox.setSelectedItem(0);
+        controlTypeComboBox.setSelectedItem(-1);
         updatePhysicalControl();
 
         updateMode();
@@ -263,16 +252,26 @@ public class OneHydraulicControl extends JScrollPane {
     }
 
     private void updatePhysicalControl() {
-        if (currentPriorControlPanelIndex >= 0) {
+        int index = controlTypeComboBox.getSelectedIndex();
+        if (index >= 0) {
             hydraulicControlPanel.removeAll();
-            hydraulicControlPanel.addChild(allControlOptions.get(currentPriorControlPanelIndex).panel, false);
+            hydraulicControlPanel.addChild(allControlOptions.get(index).panel, false);
+            updateKACfromPhysicalControl();
+            hydraulicControlPanel.setVisible(true);
+            kbacControlPanel.setVisible(true);
+        } else {
+            hydraulicControlPanel.setVisible(false);
+            kbacControlPanel.setVisible(false);
         }
-        updateKACfromPhysicalControl();
         updateUI();
     }
 
     private void updateKACfromPhysicalControl() {
-        PriorControlPanel panel = allControlOptions.get(currentPriorControlPanelIndex).panel;
+        int index = controlTypeComboBox.getSelectedIndex();
+        if (index < 0) {
+            return;
+        }
+        PriorControlPanel panel = allControlOptions.get(index).panel;
         kbacControlPanel.setFromKACGaussianConfig(panel.toKACGaussianConfig());
     }
 
@@ -311,6 +310,9 @@ public class OneHydraulicControl extends JScrollPane {
 
     public String getPhysicalControlTypeKey() {
         int index = controlTypeComboBox.getSelectedIndex();
+        if (index < 0) {
+            return "";
+        }
         HydraulicControlOption option = allControlOptions.get(index);
         return option.lgKey;
     }
@@ -320,6 +322,9 @@ public class OneHydraulicControl extends JScrollPane {
             return null;
         }
         int index = controlTypeComboBox.getSelectedIndex();
+        if (index < 0) {
+            return null;
+        }
         HydraulicControlOption option = allControlOptions.get(index);
         // List<AbstractParameterPriorDist> parameters =;
         List<ParameterPriorDistSimplified> parameters = new ArrayList<>();
