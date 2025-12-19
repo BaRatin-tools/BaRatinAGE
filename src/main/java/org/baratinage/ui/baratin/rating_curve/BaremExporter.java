@@ -106,8 +106,12 @@ public class BaremExporter extends SimpleFlowPanel {
         addChild(actionPanel, false);
 
         T.t(this, () -> {
-            hydroCodeLabel.setText(T.text("hydro_code"));
-            hydroNameLabel.setText(T.text("name"));
+            hydroCodeLabel.setText("%s (%s)".formatted(
+                    T.text("hydro_code"),
+                    T.text("n_char_max", 8)));
+            hydroNameLabel.setText("%s (%s)".formatted(
+                    T.text("name"),
+                    T.text("n_char_max", 6)));
             startDateLabel.setText(T.text("validity_start"));
             endDateLabel.setText(T.text("validity_end"));
             okButton.setText(T.text("ok"));
