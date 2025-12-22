@@ -33,7 +33,6 @@ import org.baratinage.ui.component.SimpleSep;
 import org.baratinage.ui.component.SimpleTextAreaField;
 import org.baratinage.ui.container.SimpleFlowPanel;
 import org.baratinage.utils.ConsoleLogger;
-import org.baratinage.utils.perf.TimedActions;
 
 import java.io.File;
 import java.io.IOException;
@@ -70,7 +69,6 @@ public class ReportExporter {
     topPanel.addChild(buildActionsPanel(), 1);
     dialog.setContent(topPanel);
 
-    updateReport();
   }
 
   private void updateReport() {
@@ -200,11 +198,6 @@ public class ReportExporter {
       BamItem item = project.BAM_ITEMS.get(k);
       SimpleCheckbox cb = new SimpleCheckbox();
       cb.setSelected(true);
-      cb.addItemListener(l -> {
-        TimedActions.debounce("report_exporter", 100, () -> {
-          updateReport();
-        });
-      });
       if (item.TYPE == BamItemType.STRUCTURAL_ERROR) {
         cb.setSelected(false);
       }
@@ -271,6 +264,7 @@ public class ReportExporter {
     JButton previewButton = new JButton();
     previewButton.setText(T.text("preview_html"));
     previewButton.addActionListener(l -> {
+      updateReport();
       reportWriter.writeImages();
       File htmlFile = reportWriter.writeHTML();
       browsePage(htmlFile);
@@ -283,6 +277,7 @@ public class ReportExporter {
       if (selectedDirectory == null) {
         return;
       }
+      updateReport();
       reportWriter.writeImages(selectedDirectory.toPath());
       reportWriter.writeMardown(selectedDirectory.toPath());
       openDirectory(selectedDirectory);
@@ -295,6 +290,7 @@ public class ReportExporter {
       if (selectedDirectory == null) {
         return;
       }
+      updateReport();
       reportWriter.writeImages(selectedDirectory.toPath());
       reportWriter.writeHTML(selectedDirectory.toPath());
       openDirectory(selectedDirectory);
@@ -311,6 +307,7 @@ public class ReportExporter {
       if (selectedFile == null) {
         return;
       }
+      updateReport();
       reportWriter.writeDOCX(selectedFile.toPath());
     });
 
