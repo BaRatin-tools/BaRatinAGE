@@ -29,6 +29,7 @@ import org.baratinage.ui.commons.StructuralErrorModelBamItem;
 import org.baratinage.ui.component.CommonDialog;
 import org.baratinage.ui.component.SimpleCheckbox;
 import org.baratinage.ui.component.SimpleDialog;
+import org.baratinage.ui.component.SimpleSep;
 import org.baratinage.ui.component.SimpleTextAreaField;
 import org.baratinage.ui.container.SimpleFlowPanel;
 import org.baratinage.utils.ConsoleLogger;
@@ -191,17 +192,37 @@ public class ReportExporter {
     SimpleFlowPanel cbsPanel = new SimpleFlowPanel(true);
     cbsPanel.setGap(5);
 
-    for (BamItem item : project.BAM_ITEMS) {
+    // for (BamItem item : project.BAM_ITEMS) {
+    for (int k = 0; k < project.BAM_ITEMS.size(); k++) {
+      if (k != 0) {
+        cbsPanel.addChild(new SimpleSep(), 0);
+      }
+      BamItem item = project.BAM_ITEMS.get(k);
       SimpleCheckbox cb = new SimpleCheckbox();
-      cb.setText(item.bamItemNameField.getText());
       cb.setSelected(true);
       cb.addItemListener(l -> {
         TimedActions.debounce("report_exporter", 100, () -> {
           updateReport();
         });
       });
+      if (item.TYPE == BamItemType.STRUCTURAL_ERROR) {
+        cb.setSelected(false);
+      }
+      JLabel cbLabel = new JLabel();
+      cbLabel.setText(item.bamItemNameField.getText());
+      cbLabel.setIcon(item.TYPE.getIcon());
+      // cb.addItemListener(l -> {
+      // TimedActions.debounce("report_exporter", 100, () -> {
+      // updateReport();
+      // });
+      // });
+      SimpleFlowPanel cbPanel = new SimpleFlowPanel();
+      cbPanel.setGap(5);
+      cbPanel.addChild(cbLabel, false);
+      cbPanel.addExtensor();
+      cbPanel.addChild(cb, false);
       bamItemsCheckboxes.put(item, cb);
-      cbsPanel.addChild(cb, 0);
+      cbsPanel.addChild(cbPanel, 0);
     }
 
     JScrollPane cbsScrollPane = new JScrollPane(cbsPanel);
