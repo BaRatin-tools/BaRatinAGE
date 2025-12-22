@@ -31,7 +31,7 @@ public class HydraulicConfiguration
     private final TitledPanel hydraulicControlsTitledPanel;
     private final TitledPanel priorRatingCurveTitledPanel;
 
-    private final ControlMatrix controlMatrix;
+    public final ControlMatrix controlMatrix;
     public final HydraulicControlPanels hydraulicControls;
     public final PriorRatingCurve<HydraulicConfiguration> priorRatingCurve;
 

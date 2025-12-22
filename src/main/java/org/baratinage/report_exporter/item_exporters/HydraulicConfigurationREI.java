@@ -1,7 +1,10 @@
 package org.baratinage.report_exporter.item_exporters;
 
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.swing.JPanel;
 
 import org.baratinage.report_exporter.IReportExporterItem;
 import org.baratinage.report_exporter.MD;
@@ -13,12 +16,14 @@ import org.baratinage.ui.baratin.hydraulic_control.OneHydraulicControl;
 import org.baratinage.ui.commons.ParameterPriorDist;
 import org.baratinage.ui.commons.ParameterPriorDistSimplified;
 import org.baratinage.ui.plot.PlotContainer;
+import org.baratinage.utils.ConsoleLogger;
 import org.baratinage.utils.Misc;
 
 public class HydraulicConfigurationREI implements IReportExporterItem {
 
   private String md = "";
   private ReportExporterPlot plot = null;
+  private ReportExporterPlot cmPlot = null;
 
   public HydraulicConfigurationREI(HydraulicConfiguration hc) {
 
@@ -34,6 +39,16 @@ public class HydraulicConfigurationREI implements IReportExporterItem {
         T.text("prior_rating_curve"),
         pc);
 
+    // controls matrix
+    JPanel cm = hc.controlMatrix.controlCheckBoxPanel;
+    BufferedImage bi;
+    try {
+      bi = ReportExporterPlot.createImage(cm, 2);
+      cmPlot = new ReportExporterPlot(desc, name, bi);
+    } catch (Exception e) {
+      ConsoleLogger.error(e);
+    }
+
     // hydraulic controls
     List<OneHydraulicControl> controls = hc.hydraulicControls.getHydraulicControls();
     List<List<String[]>> controlsPhysicalTables = new ArrayList<>();
@@ -43,12 +58,17 @@ public class HydraulicConfigurationREI implements IReportExporterItem {
       controlsKACTables.add(getKACParametersTable(control));
     }
 
+    // building markdown
     List<String> md = new ArrayList<>();
 
     md.add(MD.h(3, name));
     if (desc != null && !desc.equals("")) {
       md.add(desc);
     }
+
+    md.add(MD.h(4, T.text("control_matrix")));
+    md.add(cmPlot.getMarkdownPNG("assets"));
+
     md.add(MD.h(4, T.text("prior_parameter_specification")));
     for (int k = 0; k < controls.size(); k++) {
       md.add(MD.h(5, T.text("control_nbr", k + 1)));
@@ -89,6 +109,9 @@ public class HydraulicConfigurationREI implements IReportExporterItem {
     List<ReportExporterPlot> plots = new ArrayList<>();
     if (plot != null) {
       plots.add(plot);
+    }
+    if (cmPlot != null) {
+      plots.add(cmPlot);
     }
     return plots;
   }

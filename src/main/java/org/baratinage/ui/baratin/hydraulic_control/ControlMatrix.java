@@ -22,7 +22,7 @@ import org.json.JSONObject;
 public class ControlMatrix extends SimpleFlowPanel implements ChangeListener {
 
     private final List<ControlMatrixColumn> controls;
-    private final GridPanel controlCheckBoxPanel;
+    public final GridPanel controlCheckBoxPanel;
     private final JButton addControlButton;
     private final JButton removeControlButton;
     private final JCheckBox reversedOrderCheckBox;

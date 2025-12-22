@@ -8,6 +8,9 @@ import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 
+import javax.swing.JPanel;
+import javax.swing.RepaintManager;
+
 import org.baratinage.ui.plot.PlotExporter.IExportablePlot;
 
 public class ReportExporterPlot {
@@ -31,6 +34,13 @@ public class ReportExporterPlot {
       svg = "";
       png = createNoImageIcon();
     }
+  }
+
+  public ReportExporterPlot(String id, String name, BufferedImage image) {
+    this.id = id;
+    this.name = name;
+    svg = "";
+    png = image;
   }
 
   public String getMarkdownPNG(String assetDirName) {
@@ -68,4 +78,54 @@ public class ReportExporterPlot {
     g.dispose();
     return img;
   }
+
+  public static BufferedImage createImage(JPanel panel, double scale)
+      throws Exception {
+
+    final BufferedImage[] result = new BufferedImage[1];
+
+    Dimension size = panel.getPreferredSize();
+    panel.setSize(size);
+    panel.setOpaque(false);
+
+    BufferedImage image = new BufferedImage(
+        (int) (size.width * scale),
+        (int) (size.height * scale),
+        BufferedImage.TYPE_INT_ARGB);
+
+    Graphics2D g2 = image.createGraphics();
+
+    // Clear background (transparent)
+    g2.setComposite(AlphaComposite.Clear);
+    g2.fillRect(0, 0, image.getWidth(), image.getHeight());
+    g2.setComposite(AlphaComposite.SrcOver);
+
+    // High quality
+    g2.scale(scale, scale);
+    g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+        RenderingHints.VALUE_ANTIALIAS_ON);
+    g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
+        RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+    g2.setRenderingHint(RenderingHints.KEY_RENDERING,
+        RenderingHints.VALUE_RENDER_QUALITY);
+    g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
+        RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+
+    // Disable double buffering
+    RepaintManager rm = RepaintManager.currentManager(panel);
+    boolean db = rm.isDoubleBufferingEnabled();
+    rm.setDoubleBufferingEnabled(false);
+
+    panel.revalidate();
+    panel.doLayout();
+    panel.printAll(g2);
+
+    rm.setDoubleBufferingEnabled(db);
+    g2.dispose();
+
+    result[0] = image;
+
+    return result[0];
+  }
+
 }
