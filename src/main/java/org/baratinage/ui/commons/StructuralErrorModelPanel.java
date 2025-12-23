@@ -61,7 +61,17 @@ public class StructuralErrorModelPanel extends GridPanel implements ChangeListen
     public void addParameter(String symbol, String unit, DistributionType distribution, double initialGuess,
             double... parameterValues) {
 
+        List<DistributionType> validDistributions = new ArrayList<>();
+        validDistributions.add(DistributionType.GAUSSIAN);
+        validDistributions.add(DistributionType.LOG_NORMAL);
+        validDistributions.add(DistributionType.UNIFORM);
+        validDistributions.add(DistributionType.EXPONENTIAL);
+        validDistributions.add(DistributionType.TRANGLE);
+        validDistributions.add(DistributionType.FLAT);
+        validDistributions.add(DistributionType.FLAT_POSITIVE);
+
         ParameterPriorDist gamma = new ParameterPriorDist("gamma_" + parameters.size());
+        gamma.distributionField.setSupportedDistribution(validDistributions);
         gamma.autoInitialValueBtn.setSelected(false);
         gamma.setNameLabel("");
         gamma.setSymbolUnitLabels(symbol, unit);
