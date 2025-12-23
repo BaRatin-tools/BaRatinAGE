@@ -76,5 +76,6 @@ public class RatingCurveTable extends DataTable {
         }
         updateHeader();
 
+        cropTotalEnvelopCheckbox.setVisible(!ratingCurveData.isPriorRatingCurve());
     }
 }
