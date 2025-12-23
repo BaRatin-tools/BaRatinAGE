@@ -148,6 +148,7 @@ public class RatingCurveResults extends TabContainer {
         baremeExporter.updateRatingCurveValues(rcPlotDataModified);
 
         rcEquation.updateEquation(parameters.getEquationString());
+        rcEquation.updateEquationLatex(parameters.getEquationLatex());
 
         paramDensityPlots.clearPlots();
         for (EstimatedParameterWrapper p : parameters.getAllParameters()) {
