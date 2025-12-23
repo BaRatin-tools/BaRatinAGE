@@ -338,7 +338,7 @@ public class Plot implements IPlot, LegendItemSource {
         for (int k = 0; k < items.size(); k++) {
             PlotItem pi = items.get(k);
             Range r = pi.getRangeBounds();
-            if (r != null) {
+            if (r != null && pi.getVisible()) {
                 if (isLog) {
                     r = findPositiveRange(pi.getDataset());
                 }
