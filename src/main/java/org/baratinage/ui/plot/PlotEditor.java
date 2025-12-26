@@ -155,7 +155,7 @@ public class PlotEditor extends SimpleFlowPanel {
     return editablePlots.containsKey(id) ? editablePlots.get(id) : null;
   }
 
-  public void addEditablePlotItem(String id, String title, EditablePlotItem editablePlotItem) {
+  public EditablePlotItem addEditablePlotItem(String id, String title, EditablePlotItem editablePlotItem) {
     editablePlotItem.addChangeListener(l -> {
       for (EditablePlot ep : editablePlots.values()) {
         ep.plot.update();
@@ -183,11 +183,12 @@ public class PlotEditor extends SimpleFlowPanel {
       // ep.setConfig(editablePlotItems, itemExplorer.getAllObjects());
       ep.updateEditablePlotItems(editablePlotItems);
     }
+    return editablePlotItem;
   }
 
-  public void addEditablePlotItem(String id, String title, PlotItem plotItem) {
+  public EditablePlotItem addEditablePlotItem(String id, String title, PlotItem plotItem) {
     EditablePlotItem editablePlotItem = new EditablePlotItem(plotItem);
-    addEditablePlotItem(id, title, editablePlotItem);
+    return addEditablePlotItem(id, title, editablePlotItem);
   }
 
   public EditablePlotItem getEditablePlotItem(String id) {
