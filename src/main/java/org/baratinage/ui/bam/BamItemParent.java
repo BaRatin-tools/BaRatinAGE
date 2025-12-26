@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.event.ChangeEvent;
@@ -130,7 +131,8 @@ public class BamItemParent extends SimpleFlowPanel {
 
     private void syncWithBamItemList() {
         String[] itemsName = BamItemList.getBamItemNames(allItems);
-        cb.setItems(itemsName, true);
+        Icon[] itemsIcon = BamItemList.getBamItemIcons(allItems);
+        cb.setItems(itemsName, itemsIcon, true);
         if (currentBamItem == null) {
             cb.setSelectedItem(-1, true);
         } else {
