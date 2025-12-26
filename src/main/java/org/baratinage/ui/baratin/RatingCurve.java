@@ -248,7 +248,7 @@ public class RatingCurve extends BamItem
         IPriors priors = (IPriors) hc;
         Gaugings g = (Gaugings) gaugingsParent.getCurrentBamItem();
         StructuralErrorModelBamItem se = (StructuralErrorModelBamItem) structErrorParent.getCurrentBamItem();
-        if (hc == null || g == null || se == null) {
+        if (hc == null || se == null) {
             return null;
         }
 
@@ -272,7 +272,7 @@ public class RatingCurve extends BamItem
         return new CalibrationConfig(
                 model,
                 modelOutputs,
-                g.getCalibrationData(),
+                g == null ? null : g.getCalibrationData(),
                 getMcmcConfig(),
                 getMcmcCookingConfig(),
                 new McmcSummaryConfig(),
