@@ -105,7 +105,11 @@ public class RatingCurvePlot extends SimpleFlowPanel {
             this.gaugings = null;
         }
 
-        toolsPanel.configure(true, true, true, true);
+        toolsPanel.configure(
+                true,
+                true,
+                true,
+                true);
         updatePlot();
     }
 
@@ -243,10 +247,12 @@ public class RatingCurvePlot extends SimpleFlowPanel {
                 paramUncertaintyBand);
 
         if (totalUncertaintyBand != null) {
-            plotEditor.addEditablePlotItem(
+            EditablePlotItem epiTotalUncertainty = plotEditor.addEditablePlotItem(
                     "totalUncertaintyBand",
                     totalUncertaintyBand.getLabel(),
                     totalUncertaintyBand);
+            epiTotalUncertainty.setShowItem(gaugings != null);
+            epiTotalUncertainty.setShowLegend(gaugings != null);
         }
 
         if (n > 0) {
@@ -271,6 +277,7 @@ public class RatingCurvePlot extends SimpleFlowPanel {
         }
 
         plot.update();
+        plot.restoreAutoBounds();
 
     }
 
@@ -318,11 +325,6 @@ public class RatingCurvePlot extends SimpleFlowPanel {
             Color totalColor = isPrior ? null : AppSetup.COLORS.RATING_CURVE_TOTAL_UNCERTAINTY;
             totalUncertainty.setFillPaint(totalColor);
             totalUncertainty.setLabel(T.text("lgd_posterior_parametric_structural_uncertainty"));
-            if (gaugings == null) {
-                totalUncertainty.setShowItem(false);
-                totalUncertainty.setShowLegend(false);
-                plot.restoreAutoBounds();
-            }
         }
 
         // param uncertainty
