@@ -3,6 +3,7 @@ package org.baratinage.ui.bam;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.Icon;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
@@ -71,6 +72,15 @@ public class BamItemList extends ArrayList<BamItem> {
             }
         }
         return null;
+    }
+
+    public static Icon[] getBamItemIcons(BamItemList bamItemList) {
+        int n = bamItemList.size();
+        Icon[] icons = new Icon[n];
+        for (int k = 0; k < n; k++) {
+            icons[k] = bamItemList.get(k).TYPE.getIcon();
+        }
+        return icons;
     }
 
     public static String[] getBamItemNames(BamItemList bamItemList) {
