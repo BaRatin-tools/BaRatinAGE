@@ -30,7 +30,7 @@ import org.baratinage.ui.container.SimpleFlowPanel;
 
 public class GaugingsImporter extends DataImporter {
 
-    private GaugingDataset gaugingDataset;
+    private GaugingsDataset gaugingDataset;
     private GaugingsDataset dataset;
 
     private final DoubleColumnMapper stageColMapper;
@@ -265,11 +265,11 @@ public class GaugingsImporter extends DataImporter {
         dataPreview.updatePreviewTable();
     }
 
-    public GaugingDataset getGaugingDataset() {
+    public GaugingsDataset getGaugingDataset() {
         return gaugingDataset;
     }
 
-    private static GaugingDataset baremeFileToGaugingDataset(String fileName, String filePath) {
+    private static GaugingsDataset baremeFileToGaugingDataset(String fileName, String filePath) {
         try {
             List<double[]> data = ReadFile.readMatrix(
                     filePath,
@@ -290,7 +290,7 @@ public class GaugingsImporter extends DataImporter {
                 uQ[k] = uQpercent;
             }
 
-            return new GaugingDataset(
+            return GaugingsDataset.buildGaugingsDataset(
                     fileName,
                     h,
                     Q,
@@ -299,7 +299,7 @@ public class GaugingsImporter extends DataImporter {
                     null,
                     null);
         } catch (IOException e) {
-            ConsoleLogger.error("Failed to read Barème .bad file!");
+            ConsoleLogger.error("Failed to read Bareme .bad file!");
             ConsoleLogger.error(e);
         }
 
@@ -401,7 +401,7 @@ public class GaugingsImporter extends DataImporter {
                 dateTime,
                 uh);
 
-        gaugingDataset = new GaugingDataset(fileName,
+        gaugingDataset = GaugingsDataset.buildGaugingsDataset(fileName,
                 h,
                 Q,
                 uQ,
