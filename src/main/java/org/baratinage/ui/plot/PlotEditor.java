@@ -2,6 +2,7 @@ package org.baratinage.ui.plot;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -39,7 +40,7 @@ public class PlotEditor extends SimpleFlowPanel {
     setGap(5);
 
     editablePlotItems = new HashMap<>();
-    editablePlots = new HashMap<>();
+    editablePlots = new LinkedHashMap<>();
 
     globalEditionPanel = new SimpleFlowPanel(true);
     globalEditionPanel.setGap(5);
@@ -133,11 +134,11 @@ public class PlotEditor extends SimpleFlowPanel {
     }
   }
 
-  public void addEditablePlot(Plot plot) {
-    addEditablePlot("main", plot);
+  public EditablePlot addEditablePlot(Plot plot) {
+    return addEditablePlot("main", plot);
   }
 
-  public void addEditablePlot(String id, Plot plot) {
+  public EditablePlot addEditablePlot(String id, Plot plot) {
     EditablePlot ep = new EditablePlot(plot);
     // ep.setConfig(editablePlotItems, itemExplorer.getAllObjects());
     ep.updateEditablePlotItems(editablePlotItems);
@@ -145,6 +146,7 @@ public class PlotEditor extends SimpleFlowPanel {
       ep.applyState(editablePlots.get(id));
     }
     editablePlots.put(id, ep);
+    return ep;
   }
 
   public EditablePlot getEditablePlot() {
@@ -231,7 +233,9 @@ public class PlotEditor extends SimpleFlowPanel {
 
       JButton openPlotEditorBtn = new JButton();
       String btnLbl = T.text("plot_axis_and_legend");
-      openPlotEditorBtn.setText(editablePlots.size() > 1 ? String.format("%s (%d)", btnLbl, k) : btnLbl);
+      String plotName = ep.getPlotName();
+      openPlotEditorBtn.setText(
+          editablePlots.size() > 1 ? "%s (%s)".formatted(btnLbl, plotName == null ? k : plotName) : btnLbl);
       openPlotEditorBtn.addActionListener(l -> {
         SimpleDialog d = SimpleDialog.buildInfoDialog(
             this,
