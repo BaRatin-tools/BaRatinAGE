@@ -86,6 +86,24 @@ public class Arr {
     return reordered;
   }
 
+  public static double[] makeArray(double low, double high, int n) {
+    double step = (high - low) / ((double) n - 1);
+    double[] grid = new double[n];
+    for (int k = 0; k < n; k++) {
+      grid[k] = low + step * k;
+    }
+    return grid;
+  }
+
+  public static double[] makeArray(double low, double high, double step) {
+    int n = (int) ((high - low) / step + 1);
+    double[] grid = new double[n];
+    for (int k = 0; k < n; k++) {
+      grid[k] = low + step * k;
+    }
+    return grid;
+  }
+
   public static double[] toDouble(boolean[] src) {
     int n = src.length;
     double[] tgt = new double[n];

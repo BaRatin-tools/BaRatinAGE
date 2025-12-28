@@ -132,7 +132,7 @@ public class Calc {
 
     public static List<double[]> density(double[] sorted, int bins) {
         int n = sorted.length;
-        double[] p = Misc.makeGrid(sorted[0], sorted[n - 1], bins + 1);
+        double[] p = Arr.makeArray(sorted[0], sorted[n - 1], bins + 1);
         double[] values = new double[bins];
         double[] densities = new double[bins];
 
