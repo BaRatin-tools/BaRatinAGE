@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
+import org.baratinage.jbam.CalibrationDataResiduals;
 import org.baratinage.jbam.CalibrationResult;
 import org.baratinage.jbam.DistributionType;
 import org.baratinage.jbam.utils.ConfigFile;
@@ -299,5 +300,9 @@ public class RatingCurveCalibrationResults extends CalibrationResultsWrapper {
 
     public List<EstimatedParameterWrapper> getModelAndDerivedParameters() {
         return extractParameters(allParameters, EstimatedParameterWrapper.MODEL, EstimatedParameterWrapper.DERIVED);
+    }
+
+    public CalibrationDataResiduals getResiduals() {
+        return calibrationResults.calibrationDataResiduals;
     }
 }

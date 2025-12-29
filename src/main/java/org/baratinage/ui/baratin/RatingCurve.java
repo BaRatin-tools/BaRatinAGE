@@ -40,10 +40,12 @@ import org.baratinage.ui.bam.PredExp;
 import org.baratinage.ui.bam.PredExpSet;
 import org.baratinage.ui.bam.RunConfigAndRes;
 import org.baratinage.ui.bam.RunBam;
+import org.baratinage.ui.baratin.gaugings.GaugingsDataset;
 import org.baratinage.ui.baratin.rating_curve.RatingCurveCalibrationResults;
 import org.baratinage.ui.baratin.rating_curve.RatingCurvePlotData;
 import org.baratinage.ui.baratin.rating_curve.RatingCurveResults;
 import org.baratinage.ui.baratin.rating_curve.RatingCurveStageGrid;
+import org.baratinage.ui.commons.ExtraDataset;
 import org.baratinage.ui.commons.MsgPanel;
 import org.baratinage.ui.commons.StructuralErrorModelBamItem;
 import org.baratinage.ui.component.SimpleSep;
@@ -70,6 +72,8 @@ public class RatingCurve extends BamItem
     private final SimpleFlowPanel outdatedPanel;
 
     private RunConfigAndRes bamRunConfigAndRes;
+
+    private ExtraDataset extraData;
 
     private BamConfig backup;
 
@@ -176,6 +180,14 @@ public class RatingCurve extends BamItem
             }
 
             backup = save(true);
+
+            Gaugings g = (Gaugings) gaugingsParent.getCurrentBamItem();
+            if (g != null) {
+                GaugingsDataset gds = g.getGaugingDataset();
+                double[] dateTime = gds.getActiveDateTimeAsDouble();
+                extraData = new ExtraDataset(dateTime);
+            }
+
             bamRunConfigAndRes = res;
             updateResults();
             hydrauConfParent.updateBackup();
@@ -401,11 +413,22 @@ public class RatingCurve extends BamItem
             config.FILE_PATHS.add(zipPath);
         }
 
+        if (extraData != null) {
+            config.JSON.put("extraDataId", extraData.id);
+            if (writeFiles) {
+                String extraDataPath = extraData.writeData();
+                config.FILE_PATHS.add(extraDataPath);
+                System.out.println(extraDataPath);
+            }
+        }
+
         if (backup != null) {
             config.JSON.put("backup", backup.JSON);
         }
 
         config.JSON.put("plotEditor", resultsPanel.ratingCurvePlot.plotEditor.toJSON());
+
+        config.JSON.put("residualsPlotEditor", resultsPanel.rcResiduals.plotEditor.toJSON());
 
         return config;
     }
@@ -442,6 +465,14 @@ public class RatingCurve extends BamItem
 
         // **********************************************************
         // rating curve BaM results
+
+        if (json.has("extraDataId")) {
+            String extraDataId = json.getString("extraDataId");
+            extraData = new ExtraDataset(extraDataId);
+        } else {
+            ConsoleLogger.log("missing 'extraDataId'");
+        }
+
         if (json.has("bamRunId")) {
             String bamRunId = json.getString("bamRunId");
             bamRunConfigAndRes = RunConfigAndRes.buildFromTempZipArchive(bamRunId);
@@ -462,6 +493,10 @@ public class RatingCurve extends BamItem
 
         if (json.has("plotEditor")) {
             resultsPanel.ratingCurvePlot.plotEditor.fromJSON(json.getJSONObject("plotEditor"));
+        }
+
+        if (json.has("residualsPlotEditor")) {
+            resultsPanel.rcResiduals.plotEditor.fromJSON(json.getJSONObject("residualsPlotEditor"));
         }
 
         TimedActions.throttle(ID, AppSetup.CONFIG.THROTTLED_DELAY_MS, this::checkSync);
@@ -533,6 +568,11 @@ public class RatingCurve extends BamItem
         gaugings.add(discharge);
         gaugings.add(dischargeMin);
         gaugings.add(dischargeMax);
+
+        // retrieve date time
+        if (extraData != null && extraData.data.size() > 0) {
+            gaugings.add(extraData.data.get(0));
+        }
 
         // **********************************************************
         // Parameters

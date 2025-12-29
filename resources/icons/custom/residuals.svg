@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="24" height="24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" version="1.1" viewBox="0 0 24 24" xml:space="preserve" xmlns="http://www.w3.org/2000/svg">
+    
+    
+    <g transform="translate(0 .047113)">
+        
+        
+        <g transform="translate(5.4598 .18588)" fill="currentColor" stroke="currentColor" stroke-linecap="round" stroke-width="1">
+            <path d="m-2.6695 21.055v-18.373" fill="none"/>
+            <path d="m-2.6236 1.1141 1.4868 2.8138-3.123 3.438e-4z"/>
+            <g transform="rotate(90 1.9889 16.454)">
+                <path d="m-2.6695 21.055v-18.373" fill="none"/>
+                <path d="m-2.6236 1.1141 1.4868 2.8138-3.123 3.438e-4z"/>
+            </g>
+        </g><g fill="#d08a4f" stroke="none">
+    <ellipse cx="5.777" cy="6.3644" rx="1.262" ry="1.2797"/><ellipse cx="7.2145" cy="14.64" rx="1.262" ry="1.2797"/><ellipse cx="12.658" cy="15.713" rx="1.262" ry="1.2797"/><ellipse cx="14.26" cy="6.6251" rx="1.262" ry="1.2797"/><ellipse cx="16.601" cy="9.9988" rx="1.262" ry="1.2797"/><ellipse cx="10.568" cy="14.028" rx="1.262" ry="1.2797"/><ellipse cx="18.525" cy="17.939" rx="1.262" ry="1.2797"/><ellipse cx="8.8958" cy="9.7838" rx="1.262" ry="1.2797"/></g></g>
+    
+</svg>
