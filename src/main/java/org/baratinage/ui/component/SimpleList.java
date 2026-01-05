@@ -115,6 +115,26 @@ public class SimpleList<A> extends JScrollPane {
         return null;
     }
 
+    public void setSelected(A object) {
+        List<A> list = getAllObjects();
+        int index = -1;
+        for (int k = 0; k < list.size(); k++) {
+            A o = list.get(k);
+            if (o.equals(object)) {
+                index = k;
+                break;
+            }
+        }
+        setSelected(index);
+    }
+
+    public void setSelected(int index) {
+        if (index < 0 || index >= getItemCount()) {
+            return;
+        }
+        list.setSelectedIndex(index);
+    }
+
     public int getItemCount() {
         return model.getSize();
     }
