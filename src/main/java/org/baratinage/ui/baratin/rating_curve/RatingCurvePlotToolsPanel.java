@@ -10,10 +10,9 @@ import javax.swing.event.ChangeListener;
 
 import org.baratinage.AppSetup;
 import org.baratinage.translation.T;
-import org.baratinage.ui.container.SimpleFlowPanel;
 import org.baratinage.ui.plot.Plot;
 
-public class RatingCurvePlotToolsPanel extends SimpleFlowPanel {
+public class RatingCurvePlotToolsPanel extends JToolBar {
 
     public final JCheckBox logScaleDischargeAxis;
     public final JCheckBox switchAxisCheckbox;
@@ -54,15 +53,10 @@ public class RatingCurvePlotToolsPanel extends SimpleFlowPanel {
             fireChangeListeners();
         });
 
-        setGap(5);
-        JToolBar toolbar = new JToolBar();
-
-        toolbar.add(logScaleDischargeAxis);
-        toolbar.add(switchAxisCheckbox);
-        toolbar.add(smoothTotalEnvelopCheckbox);
-        toolbar.add(cropTotalEnvelopCheckbox);
-
-        addChild(toolbar, true);
+        add(logScaleDischargeAxis);
+        add(switchAxisCheckbox);
+        add(smoothTotalEnvelopCheckbox);
+        add(cropTotalEnvelopCheckbox);
 
         T.t(this, switchAxisCheckbox, false, "swap_xy_axis");
         T.t(this, logScaleDischargeAxis, false, "log_scale_discharge_axis");
@@ -70,7 +64,10 @@ public class RatingCurvePlotToolsPanel extends SimpleFlowPanel {
         T.t(this, cropTotalEnvelopCheckbox, false, "crop_total_envelop_zero");
     }
 
-    public void configure(boolean logDischargeAxis, boolean axisFlipped, boolean totalEnvSmoothed,
+    public void configure(
+            boolean logDischargeAxis,
+            boolean axisFlipped,
+            boolean totalEnvSmoothed,
             boolean cropTotalEnv) {
         logScaleDischargeAxis.setVisible(logDischargeAxis);
         switchAxisCheckbox.setVisible(axisFlipped);
