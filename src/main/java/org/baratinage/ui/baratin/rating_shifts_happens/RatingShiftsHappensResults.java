@@ -97,6 +97,9 @@ public class RatingShiftsHappensResults extends SimpleFlowPanel {
     json.put("mainPlot", results.mainPlot.plotEditor.toJSON());
     json.put("gaugings", results.gaugings.plotEditor.toJSON());
 
+    int colorPaletteIndex = colorPaletteSelector.getSelectedIndex();
+    json.put("paletteIndex", colorPaletteIndex);
+
     return json;
   }
 
@@ -110,6 +113,11 @@ public class RatingShiftsHappensResults extends SimpleFlowPanel {
 
     if (json.has("gaugings")) {
       results.gaugings.plotEditor.fromJSON(json.getJSONObject("gaugings"));
+    }
+
+    if (json.has("paletteIndex")) {
+      int colorPaletteIndex = json.getInt("paletteIndex");
+      colorPaletteSelector.setSelectedItem(colorPaletteIndex, true);
     }
   }
 
