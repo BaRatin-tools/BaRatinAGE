@@ -424,6 +424,9 @@ public class RatingCurveCompare extends BamItem {
         HashMap<String, PlotItem> allPlotItems = new HashMap<>();
         if (item instanceof RatingCurve) {
             RatingCurvePlotData rcPlotData = ((RatingCurve) item).getRatingCurvePlotData();
+            if (plotToolsPanel.cropTotalEnv()) {
+                rcPlotData = rcPlotData.cropTotalEnvelopValues();
+            }
             rcPlotData.smoothed = plotToolsPanel.totalEnvSmoothed();
             rcPlotData.axisFliped = plotToolsPanel.axisFlipped();
             allPlotItems = rcPlotData.getPlotItems();
