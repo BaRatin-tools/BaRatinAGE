@@ -43,21 +43,23 @@ public class StackedPlot implements IPlot, LegendItemSource {
       combined.add(p.plot, weights.get(p));
     }
 
+    LegendTitle legendTitle = mainPlot.chart.getLegend();
+
     JFreeChart chart = new JFreeChart(combined);
     chart.setBackgroundPaint(Color.WHITE);
     chart.removeLegend();
+    // chart.addLegend(legendTitle);
 
-    chart.removeLegend();
-
+    // chart.removeLegend();
     RectangleEdge position = RectangleEdge.RIGHT;
-    LegendTitle currentLegend = new LegendTitle(this);
-    currentLegend.setPosition(RectangleEdge.RIGHT);
-    currentLegend.setPadding(
+    // LegendTitle currentLegend = new LegendTitle(this);
+    legendTitle.setPosition(RectangleEdge.RIGHT);
+    legendTitle.setPadding(
         position == RectangleEdge.TOP ? 10 : 0,
         position == RectangleEdge.LEFT ? 10 : 0,
         position == RectangleEdge.BOTTOM ? 10 : 0,
         position == RectangleEdge.RIGHT ? 10 : 0);
-    chart.addLegend(currentLegend);
+    chart.addLegend(legendTitle);
 
     Font font = new Font("SansSerif", Font.PLAIN, AppSetup.CONFIG.FONT_SIZE.get());
 
@@ -66,7 +68,7 @@ public class StackedPlot implements IPlot, LegendItemSource {
       p.plot.getRangeAxis().setLabelFont(font);
     }
 
-    currentLegend.setItemFont(font);
+    // currentLegend.setItemFont(font);
 
     return chart;
   }
@@ -131,7 +133,18 @@ public class StackedPlot implements IPlot, LegendItemSource {
 
   @Override
   public LegendItemCollection getLegendItems() {
-    return mainPlot.getLegendItems();
+    LegendItemCollection collection = mainPlot.getLegendItems();
+    for (Plot p : subplots) {
+      collection.addAll(p.getLegendItems());
+    }
+    return collection;
+  }
+
+  public void updatePlots() {
+    mainPlot.update();
+    for (Plot p : subplots) {
+      p.update();
+    }
   }
 
 }
