@@ -267,7 +267,7 @@ public class RatingCurveCalibrationResults extends CalibrationResultsWrapper {
             }
 
             line = kNext == null
-                    ? "%s & h < %s".formatted(line, k)
+                    ? "%s & h > %s".formatted(line, k)
                     : "%s & %s < h < %s \\\\".formatted(line, k, kNext.parameter.getMaxpost());
             equationLines.add(line);
         }
