@@ -63,6 +63,16 @@ public class PlotInfiniteBand extends PlotItem {
         renderer.setSeriesShape(0, shape);
     }
 
+    public void setAlpha(float alpha) {
+        this.alpha = alpha;
+        renderer.setAlpha(alpha);
+    }
+
+    public void setFillPaint(Paint paint) {
+        fillPaint = paint;
+        renderer.setSeriesFillPaint(0, paint);
+    }
+
     @Override
     public void setPlot(XYPlot plot) {
         this.plot = plot;
