@@ -410,6 +410,9 @@ public class Plot implements IPlot, LegendItemSource {
     @Override
     public LegendItemCollection getLegendItems() {
         LegendItemCollection lic = new LegendItemCollection();
+        if (!includeLegend) {
+            return lic;
+        }
         for (PlotItem pi : items.reversed()) {
             if (pi.getLegendVisible()) {
                 lic.add(pi.getLegendItem());
