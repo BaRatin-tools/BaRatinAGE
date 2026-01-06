@@ -27,16 +27,12 @@ public class McmcTraceResultsPanel extends SimpleFlowPanel {
         this.project = project;
         paramTracePlots = new TracePlotGrid();
 
-        SimpleFlowPanel actionPanel = new SimpleFlowPanel();
-
         JButton mcmcToCsvButton = new JButton();
         mcmcToCsvButton.setIcon(AppSetup.ICONS.SAVE);
 
         mcmcToCsvButton.addActionListener((e) -> saveMcmcFile());
+        paramTracePlots.addButton(mcmcToCsvButton);
 
-        actionPanel.addChild(mcmcToCsvButton, false);
-
-        addChild(actionPanel, 0, 5);
         addChild(paramTracePlots, 1);
 
         T.t(this, () -> {

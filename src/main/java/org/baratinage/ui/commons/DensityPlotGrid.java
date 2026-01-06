@@ -8,14 +8,14 @@ import java.util.List;
 import org.baratinage.AppSetup;
 import org.baratinage.jbam.DistributionType;
 import org.baratinage.ui.bam.EstimatedParameterWrapper;
-import org.baratinage.ui.container.GridPanel;
 import org.baratinage.ui.container.SimpleFlowPanel;
 import org.baratinage.ui.plot.Legend;
 import org.baratinage.ui.plot.FixedTextAnnotation;
+import org.baratinage.ui.plot.GridPlotContainer;
 import org.baratinage.ui.plot.Plot;
 import org.baratinage.ui.plot.PlotBand;
 import org.baratinage.ui.plot.PlotBar;
-import org.baratinage.ui.plot.PlotContainer;
+import org.baratinage.ui.plot.PlotExporter.IExportablePlot;
 import org.baratinage.ui.plot.PlotInfiniteLine;
 import org.baratinage.ui.plot.PlotLine;
 import org.baratinage.utils.Calc;
@@ -23,8 +23,8 @@ import org.baratinage.translation.T;
 
 public class DensityPlotGrid extends SimpleFlowPanel {
 
+    private GridPlotContainer gridPanel;
     public final List<EstimatedParameterWrapper> estimatedParameters = new ArrayList<>();
-    public final List<PlotContainer> plotContainers = new ArrayList<>();
 
     public boolean isTimeSeries = false;
 
@@ -38,28 +38,20 @@ public class DensityPlotGrid extends SimpleFlowPanel {
 
     public void updatePlots() {
 
-        plotContainers.clear();
-        GridPanel gridPanel = new GridPanel();
         int nColMax = 4;
         int nPlots = estimatedParameters.size();
         int nCol = nColMax;
         // since Java 18: int Math.ceilDiv(int, int) could be used
         int nRow = (int) Math.ceil(((double) nPlots) / ((double) nCol));
 
+        gridPanel = new GridPlotContainer(nRow, nCol);
+        T.updateHierarchy(this, gridPanel);
+
         removeAll();
         addChild(gridPanel, true);
 
-        for (int k = 0; k < nCol; k++) {
-            gridPanel.setColWeight(k, 1);
-        }
-        for (int k = 0; k < nRow + 1; k++) {
-            gridPanel.setRowWeight(k, 1);
-        }
-
         boolean anyPriorCurve = false;
 
-        int r = 0;
-        int c = 0;
         for (int k = 0; k < estimatedParameters.size(); k++) {
 
             EstimatedParameterWrapper estimParam = estimatedParameters.get(k);
@@ -112,25 +104,12 @@ public class DensityPlotGrid extends SimpleFlowPanel {
             plot.addXYItem(postDensity);
             plot.addXYItem(maxpostLine);
 
-            PlotContainer pc = new PlotContainer(plot, false);
-            plotContainers.add(pc);
-            T.updateHierarchy(this, pc);
-            gridPanel.insertChild(pc, c, r);
-
-            c++;
-            if (c >= nColMax) {
-                c = 0;
-                r++;
-            }
+            gridPanel.addPlot(plot);
         }
 
         Legend legend = new Legend();
 
-        PlotContainer pc = new PlotContainer(legend.getLegendPlot(), false);
-        plotContainers.add(pc);
-        T.updateHierarchy(this, pc);
-
-        gridPanel.insertChild(pc, c, r);
+        gridPanel.addPlot(legend.getLegendPlot());
 
         final boolean anyPriorCurveFinal = anyPriorCurve;
         T.t(this, () -> {
@@ -151,5 +130,9 @@ public class DensityPlotGrid extends SimpleFlowPanel {
             legend.getLegendPlot().update();
         });
 
+    }
+
+    public IExportablePlot getPlot() {
+        return gridPanel;
     }
 }
