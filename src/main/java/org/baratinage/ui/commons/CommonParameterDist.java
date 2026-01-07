@@ -19,6 +19,10 @@ public class CommonParameterDist {
                                 "strickler_coef",
                                 AppSetup.ICONS.getCustomAppImageIcon("strickler_coef.svg"),
                                 "m ^ (1/3) * s ^ (-1)", "K_s"),
+                MANNING_COEFFICIENT(
+                                "manning_coef",
+                                AppSetup.ICONS.getCustomAppImageIcon("strickler_coef.svg"),
+                                "s / m ^ (1/3)", "n"),
                 ANGLE(
                                 "angle",
                                 AppSetup.ICONS.getCustomAppImageIcon("angle.svg"),

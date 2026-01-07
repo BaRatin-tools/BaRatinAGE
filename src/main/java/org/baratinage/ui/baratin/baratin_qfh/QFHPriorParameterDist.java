@@ -25,6 +25,7 @@ public class QFHPriorParameterDist extends ParameterPriorDist {
             CommonParameterType.EXPONENT,
             CommonParameterType.GRAVITY,
             CommonParameterType.STRICKLER_COEFFICIENT,
+            CommonParameterType.MANNING_COEFFICIENT,
     };
 
     public final SimpleComboBox knownParameterType;

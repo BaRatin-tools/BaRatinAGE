@@ -148,6 +148,9 @@ public class ParameterPriorDistSimplified extends AbstractParameterPriorDist {
         if (values.length == 2) {
             meanValueField.setValue(values[0]);
             uncertaintyValueField.setValue(values[1] == null ? null : values[1] * 2);
+            // needed if there are dependent fields (e.g. Manning/Strickler fields)
+            meanValueField.fireChangeListeners();
+            uncertaintyValueField.fireChangeListeners();
         }
     }
 

@@ -2,7 +2,7 @@ package org.baratinage.ui.baratin.hydraulic_control.control_panel;
 
 import org.baratinage.ui.commons.CommonParameterDistSimplified;
 import org.baratinage.ui.commons.ParameterPriorDistSimplified;
-
+import org.baratinage.AppSetup;
 import org.baratinage.translation.T;
 
 public class ChannelParabola extends PriorControlPanel {
@@ -13,11 +13,11 @@ public class ChannelParabola extends PriorControlPanel {
     private final ParameterPriorDistSimplified height;
     private final ParameterPriorDistSimplified slope;
     private final ParameterPriorDistSimplified exponent;
+    private final ParameterPriorDistSimplified manningCoef;
 
     public ChannelParabola() {
-        super(2,
-                "Q = K_s * B_p * H_p ^ (-1/2) * (2/3) ^ (5/3) * S ^ (1/2) * (h-b) ^ c");// \\quad (h > κ)");
-        // "Q=K<sub>s</sub>B<sub>p</sub>H<sub>p</sub><sup>-1/2</sup>(2/3)<sup>5/3</sup>S<sup>1/2</sup>(h-b)<sup>c</sup>&nbsp;(h>\u03BA)");
+        super(2, 6,
+                "Q = K_s * B_p * H_p ^ (-1/2) * (2/3) ^ (5/3) * S ^ (1/2) * (h-b) ^ c");
 
         activationHeight = CommonParameterDistSimplified.getActivationHeight();
         stricklerCoef = CommonParameterDistSimplified.getStricklerCoeff();
@@ -27,6 +27,43 @@ public class ChannelParabola extends PriorControlPanel {
         exponent = CommonParameterDistSimplified.getActivationHeight();
         exponent.setLock(true);
         exponent.setDefaultValues(2.17, 0.05);
+        manningCoef = CommonParameterDistSimplified.getManningCoeff();
+
+        manningCoef.meanValueField.addChangeListener(l -> {
+            Double d = manningCoef.meanValueField.getDoubleValue();
+            stricklerCoef.meanValueField.setValue(
+                    d == null || d == 0 || d == Double.NaN ? Double.NaN : 1 / d);
+        });
+
+        stricklerCoef.meanValueField.addChangeListener(l -> {
+            Double d = stricklerCoef.meanValueField.getDoubleValue();
+            manningCoef.meanValueField.setValue(
+                    d == null || d == 0 || d == Double.NaN ? Double.NaN : 1 / d);
+        });
+
+        manningCoef.uncertaintyValueField.addChangeListener(l -> {
+            Double d = manningCoef.uncertaintyValueField.getDoubleValue();
+            Double mean = manningCoef.meanValueField.getDoubleValue();
+            if (d == null || mean == null || mean == 0) {
+                stricklerCoef.uncertaintyValueField.setValue(Double.NaN);
+                return;
+            }
+            Double std = d / 2;
+            Double stricklerStd = Math.abs(std / (mean * mean));
+            stricklerCoef.uncertaintyValueField.setValue(stricklerStd * 2);
+        });
+
+        stricklerCoef.uncertaintyValueField.addChangeListener(l -> {
+            Double d = stricklerCoef.uncertaintyValueField.getDoubleValue();
+            Double mean = stricklerCoef.meanValueField.getDoubleValue();
+            if (d == null || mean == null || mean == 0) {
+                manningCoef.uncertaintyValueField.setValue(Double.NaN);
+                return;
+            }
+            Double std = d / 2;
+            Double manningStd = Math.abs(std / (mean * mean));
+            manningCoef.uncertaintyValueField.setValue(manningStd * 2);
+        });
 
         addParameter(activationHeight);
         addParameter(stricklerCoef);
@@ -35,12 +72,17 @@ public class ChannelParabola extends PriorControlPanel {
         addParameter(slope);
         addParameter(exponent);
 
+        AppSetup.CONFIG.USE_MANNING_COEF.subscribe(this, v -> {
+            display(activationHeight, v ? manningCoef : stricklerCoef, width, height, slope, exponent);
+        });
+
         T.t(this, () -> {
             setHeaders(
                     T.html("mean_value"),
                     T.html("uncertainty_value"));
             activationHeight.setNameLabel(T.html("activation_stage"));
             stricklerCoef.setNameLabel(T.html("strickler_coef"));
+            manningCoef.setNameLabel(T.html("manning_coef"));
             width.setNameLabel(T.html("parabola_width"));
             height.setNameLabel(T.html("parabola_height"));
             slope.setNameLabel(T.html("channel_slope"));

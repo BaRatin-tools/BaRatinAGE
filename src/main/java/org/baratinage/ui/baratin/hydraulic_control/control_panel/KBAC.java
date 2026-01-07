@@ -22,7 +22,7 @@ public class KBAC extends PriorControlPanel {
             .getCustomAppImageIcon("coefficient.svg");
 
     public KBAC(boolean kMode) {
-        super(3, "Q = a * (h-b) ^ c");// \\quad (h > κ)");
+        super(3, 3, "Q = a * (h-b) ^ c");// \\quad (h > κ)");
 
         kb = new ParameterPriorDist("k");
         kb.setIcon(activationHeightIcon);
@@ -39,6 +39,8 @@ public class KBAC extends PriorControlPanel {
         addParameter(kb);
         addParameter(a);
         addParameter(c);
+
+        display();
 
         lockLabel.setIcon(null);
 

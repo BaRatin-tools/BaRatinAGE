@@ -71,6 +71,9 @@ public class ConfigSet {
                         return labels;
                     }));
 
+    public final ConfigItemBoolean USE_MANNING_COEF = addConfigItem(
+            new ConfigItemBoolean("use_manning_coef", false, false));
+
     public final ConfigItemBoolean HIDE_BAM_CONSOLE = addConfigItem(
             new ConfigItemBoolean("hide_bam_console", false, false));
     public final ConfigItemBoolean CLOSE_BAM_DIALOG_ON_SUCCESS = addConfigItem(
@@ -185,6 +188,7 @@ public class ConfigSet {
                 T.text("pref_behavior"),
                 null,
                 SCOPE.GLOBAL,
+                USE_MANNING_COEF,
                 HIDE_BAM_CONSOLE,
                 CLOSE_BAM_DIALOG_ON_SUCCESS);
         globalPanelContent.addChild(globalBehavior.getTitle(), false);
@@ -214,6 +218,7 @@ public class ConfigSet {
                 T.text("pref_behavior"),
                 null,
                 SCOPE.PROJECT,
+                USE_MANNING_COEF,
                 HIDE_BAM_CONSOLE,
                 CLOSE_BAM_DIALOG_ON_SUCCESS);
 

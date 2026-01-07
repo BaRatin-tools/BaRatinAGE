@@ -17,6 +17,9 @@ public class CommonParameterDistSimplified {
         private static final SvgIcon stricklerCoefIcon = AppSetup.ICONS
                         .getCustomAppImageIcon("strickler_coef.svg");
 
+        private static final SvgIcon manningCoefIcon = AppSetup.ICONS
+                        .getCustomAppImageIcon("strickler_coef.svg");
+
         private static final SvgIcon angleIcon = AppSetup.ICONS
                         .getCustomAppImageIcon("angle.svg");
 
@@ -66,6 +69,13 @@ public class CommonParameterDistSimplified {
                 return p;
         }
 
+        public static ParameterPriorDistSimplified getManningCoeff() {
+                ParameterPriorDistSimplified p = new ParameterPriorDistSimplified();
+                p.setIcon(manningCoefIcon);
+                p.setSymbolUnitLabels("n", "s / m ^ (1/3)");
+                return p;
+        }
+
         public static ParameterPriorDistSimplified getParabolaWidth() {
                 ParameterPriorDistSimplified p = new ParameterPriorDistSimplified();
                 p.setIcon(parabolaWidthIcon);
@@ -76,7 +86,7 @@ public class CommonParameterDistSimplified {
         public static ParameterPriorDistSimplified getRectWidth() {
                 ParameterPriorDistSimplified p = new ParameterPriorDistSimplified();
                 p.setIcon(widthIcon);
-                p.setSymbolUnitLabels("B_r", "m");
+                p.setSymbolUnitLabels("B_w", "m");
                 return p;
         }
 
