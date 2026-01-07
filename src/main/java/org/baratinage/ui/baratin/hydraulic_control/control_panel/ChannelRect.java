@@ -74,7 +74,7 @@ public class ChannelRect extends PriorControlPanel {
         addParameter(exponent);
 
         AppSetup.CONFIG.USE_MANNING_COEF.subscribe(this, v -> {
-            display(kb, v ? manningCoef : stricklerCoef, width, slope, exponent, v ? stricklerCoef : manningCoef);
+            display(kb, v ? manningCoef : stricklerCoef, width, slope, exponent);
         });
 
         T.t(this, () -> {
