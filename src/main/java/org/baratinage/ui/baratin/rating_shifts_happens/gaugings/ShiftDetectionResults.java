@@ -218,7 +218,7 @@ public class ShiftDetectionResults {
       t[k - startIndex] = DateTime.doubleToDateTime(time[k]);
       h[k - startIndex] = stage[k];
       q[k - startIndex] = discharge[k];
-      qupercent[k - startIndex] = dischargeStd[k] / discharge[k] * 100 * 2;
+      qupercent[k - startIndex] = discharge[k] == 0 ? 0 : dischargeStd[k] / discharge[k] * 100 * 2;
       active[k - startIndex] = true;
     }
 
