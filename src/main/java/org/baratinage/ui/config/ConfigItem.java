@@ -25,8 +25,6 @@ public abstract class ConfigItem<A extends Object, B extends JComponent> {
     protected final HashMap<SCOPE, A> values;
     protected final HashMap<SCOPE, B> fields;
 
-    private boolean disableChangeListeners = false;
-
     public ConfigItem(String id, boolean requireRestart, A defaultValue) {
         this.id = id;
         this.requireRestart = requireRestart;
@@ -62,14 +60,14 @@ public abstract class ConfigItem<A extends Object, B extends JComponent> {
     }
 
     public void unset(SCOPE... scopes) {
-        disableChangeListeners = true;
+        doNotNotifySubsribers = true;
         for (SCOPE scope : scopes) {
             values.remove(scope);
             if (fields.containsKey(scope)) {
                 setField(fields.get(scope), defaultValue);
             }
         }
-        disableChangeListeners = false;
+        doNotNotifySubsribers = false;
         notifySubscribers();
     }
 
@@ -93,6 +91,8 @@ public abstract class ConfigItem<A extends Object, B extends JComponent> {
     // ---------------------
     // Subscriber management
     // ---------------------
+
+    private boolean doNotNotifySubsribers = false;
 
     private class Entry {
         final WeakReference<Object> owner;
@@ -118,7 +118,7 @@ public abstract class ConfigItem<A extends Object, B extends JComponent> {
     }
 
     private void notifySubscribers() {
-        if (disableChangeListeners) {
+        if (doNotNotifySubsribers) {
             return;
         }
         Iterator<Entry> it = subscribers.iterator();
