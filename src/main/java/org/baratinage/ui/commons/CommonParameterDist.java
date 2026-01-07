@@ -26,7 +26,7 @@ public class CommonParameterDist {
                 WIDTH(
                                 "width",
                                 AppSetup.ICONS.getCustomAppImageIcon("width.svg"),
-                                "m", "B_r"),
+                                "m", "B_w"),
                 PARABOLA_WIDTH(
                                 "parabola_width",
                                 AppSetup.ICONS.getCustomAppImageIcon("parabola_width.svg"),
