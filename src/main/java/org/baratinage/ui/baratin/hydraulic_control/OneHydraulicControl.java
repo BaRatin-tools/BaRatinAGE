@@ -155,6 +155,7 @@ public class OneHydraulicControl extends JScrollPane {
 
         physicalParametersPanel = new SimpleFlowPanel(true);
         physicalParametersPanel.setPadding(5);
+        physicalParametersPanel.setGap(5);
 
         GridPanel physicalControlParametersLabelsPanel = new GridPanel();
         int gapAndPadding = 10;
