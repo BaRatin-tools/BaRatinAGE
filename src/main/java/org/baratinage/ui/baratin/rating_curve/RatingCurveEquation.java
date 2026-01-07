@@ -16,7 +16,7 @@ import org.baratinage.ui.container.SimpleFlowPanel;
 
 public class RatingCurveEquation extends SimpleFlowPanel {
     private final JTextArea plainEqLbl;
-    private final EquationLabel niceEqLbl;
+    public final EquationLabel niceEqLbl;
     private final SimpleFlowPanel latexPanel;
 
     RatingCurveEquation() {
