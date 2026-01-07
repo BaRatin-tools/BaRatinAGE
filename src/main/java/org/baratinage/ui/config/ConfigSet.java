@@ -317,11 +317,11 @@ public class ConfigSet {
             resetButton.setEnabled(item.isSet(scope));
             item.subscribe(this, l -> {
                 resetButton.setEnabled(item.isSet(scope));
-                label.setText(confirItemLabelString(
+                String txt = confirItemLabelString(
                         T.text("pref_%s".formatted(item.id)),
                         item.requireRestart,
-                        !item.isSet(scope)));
-                configItemsPanel.revalidate();
+                        !item.isSet(scope));
+                label.setText(txt);
             });
             configItemsPanel.insertChild(label, 0, k);
             configItemsPanel.insertChild(item.getField(scope), 1, k,

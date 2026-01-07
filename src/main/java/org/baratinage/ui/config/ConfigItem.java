@@ -62,10 +62,10 @@ public abstract class ConfigItem<A extends Object, B extends JComponent> {
     public void unset(SCOPE... scopes) {
         doNotNotifySubsribers = true;
         for (SCOPE scope : scopes) {
-            values.remove(scope);
             if (fields.containsKey(scope)) {
                 setField(fields.get(scope), defaultValue);
             }
+            values.remove(scope);
         }
         doNotNotifySubsribers = false;
         notifySubscribers();
