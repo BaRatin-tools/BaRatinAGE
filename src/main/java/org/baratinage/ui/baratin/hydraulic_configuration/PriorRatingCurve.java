@@ -81,7 +81,7 @@ public class PriorRatingCurve<HCT extends BamItem & IModelDefinition & IPriors> 
         Misc.setMinimumSize(resultsPanel, null, 350);
 
         addChild(priorRatingCurveStageGrid, false);
-        addChild(new SimpleSep(), false);
+        addChild(new SimpleSep(), 0, 5, 0);
         addChild(outOufSyncPanel, false);
         addChild(runBam.runButton, 0, 5);
         addChild(resultsPanel, true);
