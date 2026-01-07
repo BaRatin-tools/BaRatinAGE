@@ -1,12 +1,14 @@
 package org.baratinage.ui.config;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
+import java.util.function.Consumer;
 
 import javax.swing.JComponent;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 
 import org.json.JSONObject;
 
@@ -56,7 +58,7 @@ public abstract class ConfigItem<A extends Object, B extends JComponent> {
                 setField(fields.get(s), value);
             }
         }
-        fireChangeListeners();
+        notifySubscribers();
     }
 
     public void unset(SCOPE... scopes) {
@@ -68,7 +70,7 @@ public abstract class ConfigItem<A extends Object, B extends JComponent> {
             }
         }
         disableChangeListeners = false;
-        fireChangeListeners();
+        notifySubscribers();
     }
 
     public boolean isSet(SCOPE scope) {
@@ -88,22 +90,46 @@ public abstract class ConfigItem<A extends Object, B extends JComponent> {
         return fields.get(scope);
     }
 
-    private List<ChangeListener> changeListeners = new ArrayList<>();
+    // ---------------------
+    // Subscriber management
+    // ---------------------
 
-    public void addChangeListener(ChangeListener l) {
-        changeListeners.add(l);
+    private class Entry {
+        final WeakReference<Object> owner;
+        final Consumer<A> subscriber;
+
+        Entry(Object owner, Consumer<A> subscriber) {
+            this.owner = new WeakReference<>(owner);
+            this.subscriber = subscriber;
+        }
     }
 
-    public void removeChangeListener(ChangeListener l) {
-        changeListeners.remove(l);
+    private final List<Entry> subscribers = new ArrayList<>();
+
+    public void subscribe(Object owner, Consumer<A> subscriber) {
+        Objects.requireNonNull(owner);
+        Objects.requireNonNull(subscriber);
+        subscribers.add(new Entry(owner, subscriber));
+        subscriber.accept(get());
     }
 
-    private void fireChangeListeners() {
+    public void unsubscribe(Object owner) {
+        subscribers.removeIf(e -> e.owner.get() == owner);
+    }
+
+    private void notifySubscribers() {
         if (disableChangeListeners) {
             return;
         }
-        for (ChangeListener l : changeListeners) {
-            l.stateChanged(new ChangeEvent(this));
+        Iterator<Entry> it = subscribers.iterator();
+        while (it.hasNext()) {
+            Entry e = it.next();
+            if (e.owner.get() == null) {
+                it.remove();
+            } else {
+                e.subscriber.accept(get());
+            }
         }
     }
+
 }

@@ -310,12 +310,13 @@ public class ConfigSet {
             JButton resetButton = new JButton(T.text("reset"));
             resetButton.addActionListener(l -> item.unset(scope));
             resetButton.setEnabled(item.isSet(scope));
-            item.addChangeListener(l -> {
+            item.subscribe(this, l -> {
                 resetButton.setEnabled(item.isSet(scope));
                 label.setText(confirItemLabelString(
                         T.text("pref_%s".formatted(item.id)),
                         item.requireRestart,
                         !item.isSet(scope)));
+                configItemsPanel.revalidate();
             });
             configItemsPanel.insertChild(label, 0, k);
             configItemsPanel.insertChild(item.getField(scope), 1, k,
