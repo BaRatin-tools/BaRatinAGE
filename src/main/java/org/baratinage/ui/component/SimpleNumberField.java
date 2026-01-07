@@ -86,8 +86,6 @@ public class SimpleNumberField extends SimpleTextField {
         super();
         this.integer = integer;
 
-        // using tLasting to make sure it doesn't get overriden elsewhere
-
         addChangeListener((chEvt) -> {
             String str = getText();
             if (integer) {
