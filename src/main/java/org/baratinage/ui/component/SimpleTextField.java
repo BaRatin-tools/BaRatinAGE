@@ -156,7 +156,7 @@ public class SimpleTextField extends JFormattedTextField {
 
     protected void setTextWithoutFiringChangeListeners(String text) {
         doNotFireChange = true;
-        setValue(text);
+        setText(text);
         doNotFireChange = false;
     }
 
