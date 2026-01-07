@@ -329,7 +329,7 @@ public class GaugingsImporter extends DataImporter {
 
             int n = h.length;
             for (int k = 0; k < n; k++) {
-                double uQpercent = (uQ[k] * 2) / Q[k] * 100;
+                double uQpercent = Q[k] == 0 ? 0 : (uQ[k] * 2) / Q[k] * 100;
                 uQ[k] = uQpercent;
             }
 
