@@ -113,7 +113,7 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          tag=$(gh release list --repo ${{ github.repository }} --limit 100 \
+          tag=$(gh release list --repo BaRatin-tools/BaRatinAGE --limit 100 \
             --json tagName,isPrerelease \
             --jq '.[] | select(.isPrerelease and (.tagName | startswith("examples-"))) 
                   | .tagName' \
@@ -122,7 +122,7 @@ jobs:
           echo "Using release tag: $tag"
 
           gh release download "$tag" \
-            --repo ${{ github.repository }} \
+            --repo BaRatin-tools/BaRatinAGE \
             --pattern "*.bam"
 
           dest="./${{ matrix.MAIN_DIR }}/${{ env.EXAMPLES_DIR }}"
@@ -168,7 +168,19 @@ jobs:
           # Move and rename the executable
           Move-Item $exe.FullName -Destination $finalPath -Force
 
-
+      - name: Make executable, the different programs on Linux
+        if: runner.os == 'Linux'
+        shell: bash # necessary
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          exeDir="${{ matrix.MAIN_DIR }}/${{ env.EXT_EXE_DIR }}"
+          chmod +x "$exeDir/BaM"
+          chmod +x "$exeDir/distribution"
+          
+          rootDir="${{ matrix.MAIN_DIR }}"
+          chmod +x "$rootDir/BaRatinAGE"
+        
       - name: Rename main directory
         shell: pwsh
         run: >
@@ -176,13 +188,21 @@ jobs:
           -Path out/BaRatinAGE 
           -NewName "BaRatinAGE-${{ env.VERSION_FULL }}"
       
-      - name: Zip packaged app
+      - name: Zip packaged app (windows)
         shell: pwsh
+        if: runner.os == 'Windows'
         run: >
           Compress-Archive 
           -Path "out/BaRatinAGE-${{ env.VERSION_FULL }}" 
           -DestinationPath "BaRatinAGE-${{ env.VERSION_FULL }}_${{ runner.OS }}.zip" 
           -Force
+
+      - name: Zip packaged app (with permissions for linux)
+        shell: bash
+        if: runner.os == 'Linux'
+        run: |
+          cd out
+          zip -r "../BaRatinAGE-${{ env.VERSION_FULL }}_${{ runner.OS }}.zip" "BaRatinAGE-${{ env.VERSION_FULL }}" -@
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
