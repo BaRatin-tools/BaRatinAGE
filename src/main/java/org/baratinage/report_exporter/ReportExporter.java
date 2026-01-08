@@ -189,6 +189,7 @@ public class ReportExporter {
 
     SimpleFlowPanel cbsPanel = new SimpleFlowPanel(true);
     cbsPanel.setGap(5);
+    cbsPanel.setPadding(5);
 
     // for (BamItem item : project.BAM_ITEMS) {
     for (int k = 0; k < project.BAM_ITEMS.size(); k++) {
