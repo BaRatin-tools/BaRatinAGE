@@ -164,6 +164,16 @@ public class SimpleGridPanel extends JPanel {
     return comp;
   }
 
+  public void removeComponent(Component comp) {
+    CellConstraints cc = constraintMap.remove(comp);
+    if (cc == null) {
+      return;
+    }
+    super.remove(comp);
+    revalidate();
+    repaint();
+  }
+
   /*
    * ==========================================================
    * Layout
