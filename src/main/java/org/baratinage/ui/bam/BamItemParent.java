@@ -10,6 +10,7 @@ import javax.swing.JLabel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import org.baratinage.AppSetup;
 import org.baratinage.translation.T;
 import org.baratinage.ui.commons.MsgPanel;
 import org.baratinage.ui.component.CommonDialog;
@@ -34,6 +35,7 @@ public class BamItemParent extends SimpleFlowPanel {
 
     private BamItemList allItems = new BamItemList();
     private BamItem currentBamItem = null;
+    private BamItem backupBamItem = null;
 
     private boolean isCurrentInSyncWithBackup = false;
     private boolean canBeEmpty = false;
@@ -110,10 +112,31 @@ public class BamItemParent extends SimpleFlowPanel {
         if (currentBamItem != null) {
             bamItemBackupId = currentBamItem.ID;
             bamItemBackup = currentBamItem.save(true);
+            buildBamItemBackup();
         } else {
             bamItemBackupId = "";
             bamItemBackup = null;
         }
+    }
+
+    private void buildBamItemBackup() {
+        if (AppSetup.MAIN_FRAME.currentProject == null) {
+            return;
+        }
+        backupBamItem = AppSetup.MAIN_FRAME.currentProject.builBamItem(currentBamItem.TYPE);
+        backupBamItem.load(bamItemBackup);
+    }
+
+    public BamItem getBamItemBackup() {
+        return backupBamItem;
+    }
+
+    public BamConfig getBackupBamConfig() {
+        return bamItemBackup;
+    }
+
+    public BamItemType getBackupType() {
+        return bamItemBackup != null && bamItemBackup.TYPE != null ? bamItemBackup.TYPE : TYPE;
     }
 
     public void updateCombobox() {
@@ -173,7 +196,8 @@ public class BamItemParent extends SimpleFlowPanel {
         fireChangeListeners();
     }
 
-    private void setSyncStatus(boolean isCurrentInSyncWithBackup) {
+    // FIXME: should be private
+    public void setSyncStatus(boolean isCurrentInSyncWithBackup) {
         this.isCurrentInSyncWithBackup = isCurrentInSyncWithBackup;
     }
 
@@ -346,6 +370,7 @@ public class BamItemParent extends SimpleFlowPanel {
                 bamItemBackup = new BamConfig(backupJson.getJSONObject("jsonObject"));
             }
             bamItemBackupId = json.getString("bamItemBackupId");
+            buildBamItemBackup();
         }
     }
 
