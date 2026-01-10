@@ -179,7 +179,8 @@ public class JSONCompare {
             Double bDouble = Double.valueOf(((Number) b).doubleValue());
 
             return new JSONCompareResult(
-                    aDouble.equals(bDouble),
+                    nearlyEqual(aDouble, bDouble),
+                    // aDouble.equals(bDouble),
                     "number",
                     "",
                     null);
@@ -206,6 +207,14 @@ public class JSONCompare {
                     "",
                     null);
         }
+    }
+
+    public static boolean nearlyEqual(double a, double b) {
+        return nearlyEqual(a, b, 1e-4);
+    }
+
+    public static boolean nearlyEqual(double a, double b, double epsilon) {
+        return Math.abs(a - b) <= epsilon;
     }
 
 }
