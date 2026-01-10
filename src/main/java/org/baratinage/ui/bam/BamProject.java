@@ -178,6 +178,14 @@ public abstract class BamProject extends SimpleFlowPanel {
     }
 
     public BamItem addBamItem(BamItemType itemType, String uuid) {
+        return addBamItem(buildBamItem(itemType, uuid));
+    }
+
+    public BamItem addBamItem(BamItemType type) {
+        return addBamItem(type, Misc.getTimeStampedId());
+    }
+
+    public BamItem buildBamItem(BamItemType itemType, String uuid) {
         ProjectBamItem pBamItem = projectBamItems.get(itemType);
         if (pBamItem == null) {
             ConsoleLogger.error("Cannot find item type '" + itemType + "'!");
@@ -185,11 +193,11 @@ public abstract class BamProject extends SimpleFlowPanel {
         }
         BamItem bamItem = pBamItem.builder.apply(uuid);
         bamItem.bamItemNameField.setText(BAM_ITEMS.getDefaultName(itemType));
-        return addBamItem(bamItem);
+        return bamItem;
     }
 
-    public BamItem addBamItem(BamItemType type) {
-        return addBamItem(type, Misc.getTimeStampedId());
+    public BamItem builBamItem(BamItemType itemType) {
+        return buildBamItem(itemType, Misc.getTimeStampedId());
     }
 
     protected void deleteBamItem(BamItem bamItem) {
