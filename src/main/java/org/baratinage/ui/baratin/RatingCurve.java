@@ -315,19 +315,64 @@ public class RatingCurve extends BamItem
         return results.matching();
     }
 
-    private void checkSync() {
+    /**
+     * This method is a prototype of how synchronicity should be checked:
+     * only consider BaM relevant aspect
+     * Here, is it implement for the hydraulic configuration item only
+     */
+    private void checkHydraulicConfigSync() {
+
+        BamItem bamItemCurrent = hydrauConfParent.getCurrentBamItem();
+        BamItem bamItemBackup = hydrauConfParent.getBamItemBackup();
+        JSONObject jsonBackup = new JSONObject();
+        JSONObject jsonCurrent = new JSONObject();
+        if (bamItemCurrent == null && bamItemBackup == null) {
+            hydrauConfParent.setSyncStatus(true);
+            hydrauConfParent.updateValidityView();
+            return;
+        }
+        if (bamItemCurrent == null) {
+            hydrauConfParent.setSyncStatus(false);
+        } else if (bamItemBackup == null) {
+            hydrauConfParent.setSyncStatus(true);
+        } else {
+            try {
+                jsonBackup.put("modelDefinition", BamConfig.getConfig((IModelDefinition) bamItemBackup));
+                jsonBackup.put("priors", BamConfig.getConfig((IPriors) bamItemBackup));
+                jsonCurrent.put("modelDefinition",
+                        BamConfig.getConfig((IModelDefinition) bamItemCurrent));
+                jsonCurrent.put("priors", BamConfig.getConfig((IPriors) bamItemCurrent));
+            } catch (Exception e) {
+                ConsoleLogger.error(e);
+                return;
+            }
+            JSONCompareResult comparison = JSONCompare.compare(
+                    jsonBackup,
+                    jsonCurrent);
+
+            hydrauConfParent.setSyncStatus(comparison.matching());
+        }
+        hydrauConfParent.updateValidityView();
+    }
+
+    private void checkGaugingAndStructErrorSync() {
+
+        // hydrauConfParent.updateSyncStatus(); // this is done in the function above
+        gaugingsParent.updateSyncStatus();
+        structErrorParent.updateSyncStatus();
+
+        // hydrauConfParent.updateValidityView();
+        gaugingsParent.updateValidityView();
+        structErrorParent.updateValidityView();
+
+    }
+
+    private void updateSyncPanel() {
+
         outdatedPanel.setPadding(0);
         outdatedPanel.removeAll();
 
         T.clear(outdatedPanel);
-
-        hydrauConfParent.updateSyncStatus();
-        gaugingsParent.updateSyncStatus();
-        structErrorParent.updateSyncStatus();
-
-        hydrauConfParent.updateValidityView();
-        gaugingsParent.updateValidityView();
-        structErrorParent.updateValidityView();
 
         boolean rcGridInSync = isRatingCurveStageGridInSync();
         boolean rcGridValid = ratingCurveStageGrid.isValueValid();
@@ -384,6 +429,12 @@ public class RatingCurve extends BamItem
         runBam.runButton.setForeground(configIsInvalid | needBamRerun ? AppSetup.COLORS.INVALID_FG : null);
 
         fireChangeListeners();
+    }
+
+    private void checkSync() {
+        this.checkGaugingAndStructErrorSync();
+        this.checkHydraulicConfigSync();
+        this.updateSyncPanel();
     }
 
     @Override

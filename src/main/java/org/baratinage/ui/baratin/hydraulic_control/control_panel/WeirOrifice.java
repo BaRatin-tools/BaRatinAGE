@@ -69,14 +69,14 @@ public class WeirOrifice extends PriorControlPanel {
             return new Double[] { A, null };
         }
 
-        double Cstd = weirCoef.uncertaintyValueField.getDoubleValue() / 2;
-        double ARstd = area.uncertaintyValueField.getDoubleValue() / 2;
-        double Gstd = gravity.uncertaintyValueField.getDoubleValue() / 2;
+        double Cstd = weirCoef.uncertaintyValueField.getDoubleValue() / 2.0;
+        double ARstd = area.uncertaintyValueField.getDoubleValue() / 2.0;
+        double Gstd = gravity.uncertaintyValueField.getDoubleValue() / 2.0;
 
         double Astd = Math.sqrt(
                 Math.pow(Cstd, 2) * Math.pow(AR * sqrtOfTwoG, 2) +
                         Math.pow(ARstd, 2) * Math.pow(C * sqrtOfTwoG, 2) +
-                        Math.pow(Gstd, 2) * Math.pow(AR * C * Math.pow(2 * G, -1 / 2), 2));
+                        Math.pow(Gstd, 2) * Math.pow(AR * C * Math.pow(2 * G, -1.0 / 2.0), 2));
 
         return new Double[] { A, Astd };
 
@@ -93,9 +93,9 @@ public class WeirOrifice extends PriorControlPanel {
         Double cStd = exponent.uncertaintyValueField.getDoubleValue();
 
         return new KBACGaussianConfig(
-                kMean, kStd == null ? null : kStd / 2,
+                kMean, kStd == null ? null : kStd / 2.0,
                 AGaussianConfig[0], AGaussianConfig[1],
-                cMean, cStd == null ? null : cStd / 2);
+                cMean, cStd == null ? null : cStd / 2.0);
     }
 
 }

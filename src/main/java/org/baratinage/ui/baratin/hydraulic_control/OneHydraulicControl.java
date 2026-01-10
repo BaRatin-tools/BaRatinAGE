@@ -32,6 +32,7 @@ import org.baratinage.ui.component.SimpleComboBox;
 import org.baratinage.ui.component.SimpleTextField;
 import org.baratinage.ui.container.GridPanel;
 import org.baratinage.ui.container.SimpleFlowPanel;
+import org.baratinage.utils.ConsoleLogger;
 import org.baratinage.translation.T;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -287,6 +288,9 @@ public class OneHydraulicControl extends JScrollPane {
         }
         mainPanel.addChild(kbacControlPanel, false);
         mainPanel.addChild(switchModeButton, false);
+        if (!bkacMode) {
+            updateKACfromPhysicalControl();
+        }
     }
 
     private final List<ChangeListener> changeListeners = new ArrayList<>();
@@ -353,10 +357,29 @@ public class OneHydraulicControl extends JScrollPane {
         JSONArray allControlOptionsJSON = json.getJSONArray("allControlOptions");
         int nOptions = allControlOptionsJSON.length();
         for (int k = 0; k < nOptions; k++) {
-            allControlOptions.get(k).panel.fromJSON(allControlOptionsJSON.getJSONArray(k));
+            JSONObject obj = allControlOptionsJSON.optJSONObject(k);
+            JSONArray arr = allControlOptionsJSON.optJSONArray(k);
+            if (obj == null && arr == null) {
+                ConsoleLogger.error("Failed to load configuration!");
+                continue;
+            }
+            if (obj != null) {
+                allControlOptions.get(k).panel.fromJSON(obj);
+            } else {
+                allControlOptions.get(k).panel.fromJSON(arr);
+            }
         }
 
-        kbacControlPanel.fromJSON(json.getJSONArray("kacControl"));
+        JSONObject obj = json.optJSONObject("kacControl");
+        JSONArray arr = json.optJSONArray("kacControl");
+        if (obj == null && arr == null) {
+            ConsoleLogger.error("Failed to load configuration!");
+        }
+        if (obj != null) {
+            kbacControlPanel.fromJSON(obj);
+        } else {
+            kbacControlPanel.fromJSON(arr);
+        }
         bkacMode = json.getBoolean("isKACmode");
 
         if (json.has("description")) {

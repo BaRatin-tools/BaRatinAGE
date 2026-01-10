@@ -62,7 +62,7 @@ public class WeirTriangle extends PriorControlPanel {
         double G = gravity.meanValueField.getDoubleValue();
 
         double sqrtOfTwoG = Math.sqrt(2 * G);
-        double tanOfVoverTwo = Math.tan(V / 2);
+        double tanOfVoverTwo = Math.tan(V / 2.0);
 
         double A = C * sqrtOfTwoG * tanOfVoverTwo;
 
@@ -72,11 +72,11 @@ public class WeirTriangle extends PriorControlPanel {
             return new Double[] { A, null };
         }
 
-        double Cstd = weirCoef.uncertaintyValueField.getDoubleValue() / 2;
-        double Vstd = Math.toRadians(angle.uncertaintyValueField.getDoubleValue()) / 2;
-        double Gstd = gravity.uncertaintyValueField.getDoubleValue() / 2;
+        double Cstd = weirCoef.uncertaintyValueField.getDoubleValue() / 2.0;
+        double Vstd = Math.toRadians(angle.uncertaintyValueField.getDoubleValue()) / 2.0;
+        double Gstd = gravity.uncertaintyValueField.getDoubleValue() / 2.0;
 
-        double Vpart = Math.pow(Vstd, 2) * Math.pow(C * sqrtOfTwoG / 2 / Math.pow(Math.cos(V / 2), 2), 2);
+        double Vpart = Math.pow(Vstd, 2) * Math.pow(C * sqrtOfTwoG / 2.0 / Math.pow(Math.cos(V / 2.0), 2), 2);
         double Gpart = Math.pow(Gstd, 2) * Math.pow((C * tanOfVoverTwo / sqrtOfTwoG), 2);
         double Cpart = Math.pow(Cstd, 2) * Math.pow(sqrtOfTwoG * tanOfVoverTwo, 2);
         double Astd = Math.sqrt(Cpart + Gpart + Vpart);
@@ -95,9 +95,9 @@ public class WeirTriangle extends PriorControlPanel {
         Double cStd = exponent.uncertaintyValueField.getDoubleValue();
 
         return new KBACGaussianConfig(
-                kMean, kStd == null ? null : kStd / 2,
+                kMean, kStd == null ? null : kStd / 2.0,
                 AGaussianConfig[0], AGaussianConfig[1],
-                cMean, cStd == null ? null : cStd / 2);
+                cMean, cStd == null ? null : cStd / 2.0);
     }
 
 }

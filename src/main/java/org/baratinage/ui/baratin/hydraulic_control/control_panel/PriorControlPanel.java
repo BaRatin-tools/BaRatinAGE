@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
@@ -27,7 +28,7 @@ public abstract class PriorControlPanel extends SimpleGridPanel implements Chang
       Double cMean, Double cStd) {
   };
 
-  private final JLabel equationLabel;
+  protected final JLabel equationLabel;
   protected final JLabel lockLabel;
 
   private final List<JLabel> columnHeaders;
@@ -42,20 +43,25 @@ public abstract class PriorControlPanel extends SimpleGridPanel implements Chang
     setGaps(5, 5);
 
     equationLabel = new EquationLabel(equation);
-    add(equationLabel, SimpleGridPanel.cell(0, 0).span(3, 1));
-    add(new SimpleSep(), SimpleGridPanel.cell(0, 1).span(3, 1));
+    add(equationLabel, SimpleGridPanel
+        .cell(0, 0)
+        .span(nColumns + 4, 1)
+        .align(SimpleGridPanel.Align.CENTER, SimpleGridPanel.Align.CENTER));
+
+    // to fill the empty space;
+    add(new JPanel(), SimpleGridPanel.cell(0, 1).span(3, 2));
 
     lockLabel = new JLabel();
     lockLabel.setIcon(AppSetup.ICONS.LOCK);
-    add(lockLabel, SimpleGridPanel.cell(3 + nColumns, 0));
-    add(new SimpleSep(), SimpleGridPanel.cell(3 + nColumns, 1));
+    add(lockLabel, SimpleGridPanel.cell(3 + nColumns, 1));
+    add(new SimpleSep(), SimpleGridPanel.cell(3 + nColumns, 2));
 
     columnHeaders = new ArrayList<>();
     for (int k = 0; k < nColumns; k++) {
       JLabel label = new JLabel("column #" + k + 1);
       columnHeaders.add(label);
-      add(label, SimpleGridPanel.cell(3 + k, 0));
-      add(new SimpleSep(), SimpleGridPanel.cell(3 + k, 1));
+      add(label, SimpleGridPanel.cell(3 + k, 1));
+      add(new SimpleSep(), SimpleGridPanel.cell(3 + k, 2));
     }
 
   }
@@ -96,7 +102,7 @@ public abstract class PriorControlPanel extends SimpleGridPanel implements Chang
   }
 
   public void display(List<AbstractParameterPriorDist> parameters) {
-    removeRows(2, getRowCount());
+    removeRows(3, getRowCount());
     for (AbstractParameterPriorDist par : parameters) {
       if (par instanceof ParameterPriorDistSimplified p) {
         addParameterRow(p);
@@ -109,7 +115,7 @@ public abstract class PriorControlPanel extends SimpleGridPanel implements Chang
     repaint();
   }
 
-  private void addParameterRow(ParameterPriorDistSimplified parameter) {
+  protected void addParameterRow(ParameterPriorDistSimplified parameter) {
     add(parameter.iconLabel);
     add(parameter.nameLabel);
     add(parameter.symbolUnitLabel);
@@ -118,7 +124,7 @@ public abstract class PriorControlPanel extends SimpleGridPanel implements Chang
     add(parameter.lockCheckbox);
   }
 
-  private void addParameterRow(ParameterPriorDist parameter) {
+  protected void addParameterRow(ParameterPriorDist parameter) {
     add(parameter.iconLabel);
     add(parameter.nameLabel);
     add(parameter.symbolUnitLabel);
@@ -147,19 +153,26 @@ public abstract class PriorControlPanel extends SimpleGridPanel implements Chang
     }
   }
 
-  public JSONArray toJSON() {
-    JSONArray json = new JSONArray();
+  public JSONObject toJSON() {
+    JSONArray pars = new JSONArray();
     int n = parameters.size();
     for (int k = 0; k < n; k++) {
-      json.put(k, parameters.get(k).toJSON());
+      pars.put(k, parameters.get(k).toJSON());
     }
+    JSONObject json = new JSONObject();
+    json.put("parameters", pars);
     return json;
   }
 
-  public void fromJSON(JSONArray json) {
+  public void fromJSON(JSONObject json) {
+    JSONArray pars = json.getJSONArray("parameters");
+    fromJSON(pars);
+  }
+
+  public void fromJSON(JSONArray pars) {
     int n = parameters.size();
     for (int k = 0; k < n; k++) {
-      JSONObject obj = json.optJSONObject(k);
+      JSONObject obj = pars.optJSONObject(k);
       if (obj != null) {
         parameters.get(k).fromJSON(obj);
       }

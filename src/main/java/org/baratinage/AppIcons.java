@@ -35,6 +35,7 @@ public class AppIcons {
     public final SvgIcon WARNING;
     public final SvgIcon WARNING_SMALL;
     public final SvgIcon LATEX;
+    public final SvgIcon CONFIG;
 
     public final SvgIcon LEFT_DOWN_ARROW;
     public final SvgIcon RIGHT_DOWN_ARROW;
@@ -73,6 +74,7 @@ public class AppIcons {
         WARNING = addIcon(buildFeatherAppImageIcon("alert-triangle.svg", FEATHER_SIZE));
         WARNING_SMALL = addIcon(buildFeatherAppImageIcon("alert-triangle.svg", FEATHER_SIZE - 8));
         LATEX = addIcon(buildCustomAppImageIcon("latex.svg", FEATHER_SIZE));
+        CONFIG = addIcon(buildFeatherAppImageIcon("settings.svg", FEATHER_SIZE));
 
         LEFT_DOWN_ARROW = addIcon(buildFeatherAppImageIcon("corner-left-down.svg", FEATHER_SIZE));
         RIGHT_DOWN_ARROW = addIcon(buildFeatherAppImageIcon("corner-right-down.svg", FEATHER_SIZE));

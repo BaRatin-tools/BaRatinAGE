@@ -67,7 +67,7 @@ public class WeirParabola extends PriorControlPanel {
         double H = height.meanValueField.getDoubleValue();
         double G = gravity.meanValueField.getDoubleValue();
 
-        double sqrtOfTwoG = Math.sqrt(2 * G);
+        double sqrtOfTwoG = Math.sqrt(2.0 * G);
         double sqrtOfHeight = 1 / Math.sqrt(H);
         // double toRadFactorOverTwo = Math.PI / 180d * V / 2d;
         // double VOverTwoInRad = toRadFactorOverTwo * toRadFactorOverTwo;
@@ -82,16 +82,16 @@ public class WeirParabola extends PriorControlPanel {
             return new Double[] { A, null };
         }
 
-        double Cstd = weirCoef.uncertaintyValueField.getDoubleValue() / 2;
-        double Wstd = width.uncertaintyValueField.getDoubleValue() / 2;
-        double Hstd = height.uncertaintyValueField.getDoubleValue() / 2;
-        double Gstd = gravity.uncertaintyValueField.getDoubleValue() / 2;
+        double Cstd = weirCoef.uncertaintyValueField.getDoubleValue() / 2.0;
+        double Wstd = width.uncertaintyValueField.getDoubleValue() / 2.0;
+        double Hstd = height.uncertaintyValueField.getDoubleValue() / 2.0;
+        double Gstd = gravity.uncertaintyValueField.getDoubleValue() / 2.0;
 
         double Astd = Math.sqrt(
                 Math.pow(Cstd, 2) * Math.pow(W / sqrtOfHeight * sqrtOfTwoG, 2) +
                         Math.pow(Wstd, 2) * Math.pow(C / sqrtOfHeight * sqrtOfTwoG, 2) +
                         Math.pow(Hstd, 2) * Math.pow(C * W * sqrtOfTwoG * Math.pow(H, -1.5), 2) +
-                        Math.pow(Gstd, 2) * Math.pow(C * W * Math.pow(2 * G * H, -1 / 2), 2));
+                        Math.pow(Gstd, 2) * Math.pow(C * W * Math.pow(2 * G * H, -1.0 / 2.0), 2));
 
         return new Double[] { A, Astd };
 

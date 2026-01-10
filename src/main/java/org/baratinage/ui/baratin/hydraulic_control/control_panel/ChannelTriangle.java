@@ -2,10 +2,9 @@ package org.baratinage.ui.baratin.hydraulic_control.control_panel;
 
 import org.baratinage.ui.commons.CommonParameterDistSimplified;
 import org.baratinage.ui.commons.ParameterPriorDistSimplified;
-import org.baratinage.AppSetup;
 import org.baratinage.translation.T;
 
-public class ChannelTriangle extends PriorControlPanel {
+public class ChannelTriangle extends ChannelPriorControlPanel {
 
     private final ParameterPriorDistSimplified activationHeight;
     private final ParameterPriorDistSimplified stricklerCoef;
@@ -16,7 +15,8 @@ public class ChannelTriangle extends PriorControlPanel {
 
     public ChannelTriangle() {
         super(2, 5,
-                "Q = K_s  * tan(v/2) * 0.5 * sin(v/2) ^ (2/3)  * S ^ (1/2) * (h-b) ^ c");
+                "Q = K_s  * tan(v/2) * sqrt(S) * (sin(v/2) / 2) ^ (2/3)  * (h-b) ^ c",
+                "Q = 1 / n  * tan(v/2) * sqrt(S) * (sin(v/2) / 2) ^ (2/3)  * (h-b) ^ c");
 
         activationHeight = CommonParameterDistSimplified.getActivationHeight();
         stricklerCoef = CommonParameterDistSimplified.getStricklerCoeff();
@@ -27,51 +27,14 @@ public class ChannelTriangle extends PriorControlPanel {
         exponent.setLock(true);
         manningCoef = CommonParameterDistSimplified.getManningCoeff();
 
-        manningCoef.meanValueField.addChangeListener(l -> {
-            Double d = manningCoef.meanValueField.getDoubleValue();
-            stricklerCoef.meanValueField.setValue(
-                    d == null || d == 0 || d == Double.NaN ? Double.NaN : 1 / d);
-        });
-
-        stricklerCoef.meanValueField.addChangeListener(l -> {
-            Double d = stricklerCoef.meanValueField.getDoubleValue();
-            manningCoef.meanValueField.setValue(
-                    d == null || d == 0 || d == Double.NaN ? Double.NaN : 1 / d);
-        });
-
-        manningCoef.uncertaintyValueField.addChangeListener(l -> {
-            Double d = manningCoef.uncertaintyValueField.getDoubleValue();
-            Double mean = manningCoef.meanValueField.getDoubleValue();
-            if (d == null || mean == null || mean == 0) {
-                stricklerCoef.uncertaintyValueField.setValue(Double.NaN);
-                return;
-            }
-            Double std = d / 2;
-            Double stricklerStd = Math.abs(std / (mean * mean));
-            stricklerCoef.uncertaintyValueField.setValue(stricklerStd * 2);
-        });
-
-        stricklerCoef.uncertaintyValueField.addChangeListener(l -> {
-            Double d = stricklerCoef.uncertaintyValueField.getDoubleValue();
-            Double mean = stricklerCoef.meanValueField.getDoubleValue();
-            if (d == null || mean == null || mean == 0) {
-                manningCoef.uncertaintyValueField.setValue(Double.NaN);
-                return;
-            }
-            Double std = d / 2;
-            Double manningStd = Math.abs(std / (mean * mean));
-            manningCoef.uncertaintyValueField.setValue(manningStd * 2);
-        });
-
         addParameter(activationHeight);
         addParameter(stricklerCoef);
         addParameter(angle);
         addParameter(slope);
         addParameter(exponent);
+        addParameter(manningCoef);
 
-        AppSetup.CONFIG.USE_MANNING_COEF.subscribe(this, v -> {
-            display(activationHeight, v ? manningCoef : stricklerCoef, angle, slope, exponent);
-        });
+        display();
 
         T.t(this, () -> {
             setHeaders(
@@ -88,47 +51,135 @@ public class ChannelTriangle extends PriorControlPanel {
 
     private Double[] toAMeanAndStd() {
 
-        if (!stricklerCoef.meanValueField.isValueValid() ||
-                !angle.meanValueField.isValueValid() ||
-                !slope.meanValueField.isValueValid()) {
+        Double N = manningCoef.meanValueField.isValueValid() ? manningCoef.meanValueField.getDoubleValue() : null;
+        Double K = stricklerCoef.meanValueField.isValueValid() ? stricklerCoef.meanValueField.getDoubleValue() : null;
+        Double V = angle.meanValueField.isValueValid() ? Math.toRadians(angle.meanValueField.getDoubleValue()) : null;
+        Double S = slope.meanValueField.isValueValid() ? slope.meanValueField.getDoubleValue() : null;
+        Double Nstd = manningCoef.uncertaintyValueField.isValueValid()
+                ? manningCoef.uncertaintyValueField.getDoubleValue() / 2.0
+                : null;
+        Double Kstd = stricklerCoef.uncertaintyValueField.isValueValid()
+                ? stricklerCoef.uncertaintyValueField.getDoubleValue() / 2.0
+                : null;
+        Double Vstd = angle.uncertaintyValueField.isValueValid()
+                ? Math.toRadians(angle.uncertaintyValueField.getDoubleValue()) / 2.0
+                : null;
+        Double Sstd = slope.uncertaintyValueField.isValueValid() ? slope.uncertaintyValueField.getDoubleValue() / 2.0
+                : null;
+
+        if (useManning()) {
+            return getAandAstdManning(V, S, N, Vstd, Sstd, Nstd);
+        } else {
+            return getAandAstdStrickler(V, S, K, Vstd, Sstd, Kstd);
+        }
+    }
+
+    private static Double[] getAandAstdStrickler(
+            Double V,
+            Double S,
+            Double K,
+            Double Vstd,
+            Double Sstd,
+            Double Kstd) {
+
+        if (V == null || S == null || K == null) {
             return new Double[] { null, null };
         }
 
-        double K = stricklerCoef.meanValueField.getDoubleValue();
-        double V = Math.toRadians(angle.meanValueField.getDoubleValue());
-        double S = slope.meanValueField.getDoubleValue();
+        double halfV = V / 2.0;
 
-        double sqrtOfSlope = Math.sqrt(S);
-        double tanOfVoverTwo = Math.tan(V / 2);
-        double sinOfVoverTwo = Math.sin(V / 2);
+        double sqrtS = Math.sqrt(S);
+        double sinHalfV = Math.sin(halfV);
+        double cosHalfV = Math.cos(halfV);
+        double tanHalfV = Math.tan(halfV);
 
-        double A = K * sqrtOfSlope * tanOfVoverTwo * Math.pow(sinOfVoverTwo / 2, 2 / 3);
+        // mean value
+        double A = K *
+                sqrtS *
+                tanHalfV *
+                Math.pow(sinHalfV / 2.0, 2.0 / 3.0);
 
-        if (!stricklerCoef.uncertaintyValueField.isValueValid() ||
-                !angle.uncertaintyValueField.isValueValid() ||
-                !slope.uncertaintyValueField.isValueValid()) {
+        if (Vstd == null || Sstd == null || Kstd == null) {
             return new Double[] { A, null };
         }
 
-        double Kstd = stricklerCoef.uncertaintyValueField.getDoubleValue() / 2;
-        double Vstd = Math.toRadians(angle.uncertaintyValueField.getDoubleValue()) / 2;
-        double Sstd = slope.uncertaintyValueField.getDoubleValue() / 2;
+        // partial derivatives
 
-        double Vpart = Math.pow(Vstd, 2) * Math.pow(
-                K * sqrtOfSlope * Math.pow(0.5, 5 / 3) * Math.pow(sinOfVoverTwo, 2 / 3)
-                        * (1 / Math.pow(Math.cos(V / 2), 2) + 2 / 3),
-                2);
+        // Ks
+        double dAdKs = A / K;
 
-        double Spart = Math.pow(Sstd, 2) * Math.pow(
-                K * tanOfVoverTwo * Math.pow(sinOfVoverTwo / 2, 2 / 3) / 2 * sqrtOfSlope,
-                2);
+        // S
+        double dAdS = A / (2.0 * S);
 
-        double Kpart = Math.pow(Kstd, 2)
-                * Math.pow(sqrtOfSlope * tanOfVoverTwo * Math.pow(sinOfVoverTwo / 2, 2 / 3), 2);
+        // v
+        double dtan = 1.0 / 2.0 * 1.0 / Math.pow(cosHalfV, 2.0);
+        double dpow = 1.0 / 6.0 * cosHalfV / Math.pow(1.0 / 2.0 * sinHalfV, 1.0 / 3.0);
+        double dV = dtan * Math.pow(sinHalfV / 2.0, 2.0 / 3.0) + dpow * tanHalfV;
+        double dAdV = K * sqrtS * dV;
 
-        double Astd = Math.sqrt(Kpart + Spart + Vpart);
+        // standard deviation
+        double Astd = Math.sqrt(Math.pow(dAdKs * Kstd, 2) +
+                Math.pow(dAdS * Sstd, 2) +
+                Math.pow(dAdV * Vstd, 2));
+
         return new Double[] { A, Astd };
+    }
 
+    private static Double[] getAandAstdManning(
+            Double V,
+            Double S,
+            Double N,
+            Double Vstd,
+            Double Sstd,
+            Double Nstd) {
+
+        if (V == null || S == null || N == null) {
+            return new Double[] { null, null };
+        }
+
+        double halfV = V / 2.0;
+
+        double sqrtS = Math.sqrt(S);
+        double sinHalfV = Math.sin(halfV);
+        double cosHalfV = Math.cos(halfV);
+        double tanHalfV = Math.tan(halfV);
+
+        // Mean value
+        double A = (1.0 / N) *
+                sqrtS *
+                tanHalfV *
+                Math.pow(sinHalfV / 2.0, 2.0 / 3.0);
+
+        if (Vstd == null || Sstd == null || Nstd == null) {
+            return new Double[] { A, null };
+        }
+
+        // Partial derivatives
+
+        // N
+        double dAdN = -A / N;
+
+        // S
+        double dAdS = A / (2.0 * S);
+
+        // V (same structure as before)
+        double dtan = 1.0 / (2.0 * Math.pow(cosHalfV, 2.0));
+
+        double dpow = (1.0 / 6.0) *
+                cosHalfV /
+                Math.pow(sinHalfV / 2.0, 1.0 / 3.0);
+
+        double dV = dtan * Math.pow(sinHalfV / 2.0, 2.0 / 3.0)
+                + dpow * tanHalfV;
+
+        double dAdV = (1.0 / N) * sqrtS * dV;
+
+        // Standard deviation
+        double Astd = Math.sqrt(Math.pow(dAdN * Nstd, 2) +
+                Math.pow(dAdS * Sstd, 2) +
+                Math.pow(dAdV * Vstd, 2));
+
+        return new Double[] { A, Astd };
     }
 
     @Override
