@@ -31,9 +31,9 @@ public class BinaryExpr extends Expr {
 
     if (op.equals("/")) {
       // result = "\\frac{" + left.toLatex(0) + "}{" + right.toLatex(0) + "}";
-      result = left.toLatex(0) + " / " + right.toLatex(0);
+      result = left.toLatex(precedence()) + " / " + right.toLatex(precedence());
     } else if (op.equals("*")) {
-      result = left.toLatex(0) + " \\cdot " + right.toLatex(0);
+      result = left.toLatex(precedence()) + " " + right.toLatex(precedence());
     } else if (op.equals("^")) {
       result = left.toLatex(precedence()) +
           "^{" + right.toLatex(0) + "}";
