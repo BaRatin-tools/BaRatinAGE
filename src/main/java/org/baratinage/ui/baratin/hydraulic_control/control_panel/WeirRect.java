@@ -22,7 +22,7 @@ public class WeirRect extends PriorControlPanel {
     }
 
     public WeirRect(boolean kMode) {
-        super(2, 5, "Q = C_r * B_w * (2 * g) ^ (1 / 2)  * (h-b) ^ c");// \\quad (h > κ)");
+        super(2, 5, "Q = C_r * B_w * sqrt(2 * g) * (h-b) ^ c");// \\quad (h > κ)");
         // "Q=C<sub>r</sub>B<sub>w</sub>(2g)<sup>1/2</sup>(h-b)<sup>c</sup>&nbsp;(h>\u03BA)");
 
         kb = kMode ? CommonParameterDistSimplified.getActivationHeight()

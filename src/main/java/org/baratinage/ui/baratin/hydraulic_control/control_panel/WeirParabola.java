@@ -14,7 +14,7 @@ public class WeirParabola extends PriorControlPanel {
     private final ParameterPriorDistSimplified exponent;
 
     public WeirParabola() {
-        super(2, 6, "Q = C_p * B_p * H_p ^ (-1/2) * (2 * g) ^ (1/2) * (h-b) ^ c");// \\quad (h > κ)");
+        super(2, 6, "Q = C_p * B_p / sqrt(H_p) * sqrt(2 * g) * (h-b) ^ c");// \\quad (h > κ)");
         // "Q=C<sub>p</sub>B<sub>p</sub>H<sub>p</sub><sup>-1/2</sup>(2g)<sup>1/2</sup>(h-b)<sup>c</sup>&nbsp;(h>\u03BA)");
 
         activationHeight = CommonParameterDistSimplified.getActivationHeight();
