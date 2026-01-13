@@ -19,14 +19,6 @@ public class Lexer {
     char c = input.charAt(pos);
 
     // Numbers
-    // if (Character.isDigit(c) || c == '.') {
-    // int start = pos;
-    // while (pos < input.length() &&
-    // (Character.isDigit(input.charAt(pos)) || input.charAt(pos) == '.')) {
-    // pos++;
-    // }
-    // return new Token(TokenType.NUMBER, input.substring(start, pos));
-    // }
     if (Character.isDigit(c) || c == '.') {
       int start = pos;
       boolean seenDot = false;
