@@ -85,14 +85,14 @@ public class CommonParameterDist {
                 }
         }
 
-        public ParameterPriorDistSimplified buildParameterPriorDistSimplified(CommonParameterType type) {
+        public static ParameterPriorDistSimplified buildParameterPriorDistSimplified(CommonParameterType type) {
                 ParameterPriorDistSimplified p = new ParameterPriorDistSimplified();
                 p.setIcon(type.icon);
                 p.setSymbolUnitLabels(type.defaultSymbole, type.unit);
                 return p;
         }
 
-        public ParameterPriorDistSimplified buildParameterPriorDistSimplified(
+        public static ParameterPriorDistSimplified buildParameterPriorDistSimplified(
                         CommonParameterType type,
                         String symbole) {
                 ParameterPriorDistSimplified p = buildParameterPriorDistSimplified(type);
@@ -100,7 +100,7 @@ public class CommonParameterDist {
                 return p;
         }
 
-        public ParameterPriorDist buildParameterPriorDist(CommonParameterType type, String bamName) {
+        public static ParameterPriorDist buildParameterPriorDist(CommonParameterType type, String bamName) {
                 ParameterPriorDist p = new ParameterPriorDist(bamName);
                 p.setIcon(type.icon);
                 p.setSymbolUnitLabels(bamName, type.unit);

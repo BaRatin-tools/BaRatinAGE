@@ -65,7 +65,7 @@ public class QFHPriorParameterDist extends ParameterPriorDist {
         }
     }
 
-    private CommonParameterType getSelectedParameterType() {
+    public CommonParameterType getSelectedParameterType() {
         int index = knownParameterType.getSelectedIndex();
         if (index < 0 || index > validParameterTypes.length) {
             return null;
