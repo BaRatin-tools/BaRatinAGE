@@ -4,8 +4,17 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * Basic statistical and utility mathematical functions.
+ * <p>
+ * This class provides small helpers for common numerical operations used
+ * across the codebase, such as sum/mean/std, min/max, and simple array
+ * utilities.
+ * </p>
+ */
 public class Calc {
 
+    /** Sum of values in the array. */
     public static double sum(double[] values) {
         double s = 0;
         for (double d : values) {
@@ -14,11 +23,13 @@ public class Calc {
         return s;
     }
 
+    /** Mean (average) of the values in the array. */
     public static double mean(double[] values) {
         double s = Calc.sum(values);
         return s / values.length;
     }
 
+    /** Standard deviation of the values in the array. */
     public static double std(double[] values) {
         int n = values.length;
         double sum = sum(values);
@@ -30,6 +41,7 @@ public class Calc {
         return Math.sqrt(diffSum / n);
     }
 
+    /** Minimum value in the array. */
     public static double min(double[] values) {
         double m = Double.POSITIVE_INFINITY;
         for (double d : values) {
@@ -40,6 +52,7 @@ public class Calc {
         return m;
     }
 
+    /** Maximum value in the array. */
     public static double max(double[] values) {
         double m = Double.NEGATIVE_INFINITY;
         for (double d : values) {
@@ -50,6 +63,7 @@ public class Calc {
         return m;
     }
 
+    /** Return [min, max] range of the values. */
     public static double[] range(double[] values) {
         double min = Double.POSITIVE_INFINITY;
         double max = Double.NEGATIVE_INFINITY;
@@ -64,6 +78,7 @@ public class Calc {
         return new double[] { min, max };
     }
 
+    /** Copy the given array. */
     public static double[] copy(double[] values) {
         int n = values.length;
         double[] copy = new double[n];
@@ -73,12 +88,14 @@ public class Calc {
         return copy;
     }
 
+    /** Return a sorted copy of the array. */
     public static double[] sort(double[] values) {
         double[] sorted = copy(values);
         Arrays.sort(sorted);
         return sorted;
     }
 
+    /** Compute percentiles of the values. */
     public static double[] percentiles(double[] values, boolean isSorted, double... probabilities) {
         double[] sorted = isSorted ? values : sort(values);
         int n = values.length;
@@ -100,6 +117,7 @@ public class Calc {
         return percentiles;
     }
 
+    /** Simple moving-average smoothing with a half-window. */
     public static double[] smoothArray(double[] toSmooth, int halfWindowSize) {
         if (halfWindowSize < 1) {
             return toSmooth;
@@ -130,6 +148,7 @@ public class Calc {
         return smoothed;
     }
 
+    /** Build a simple density estimation structure from a sorted sample. */
     public static List<double[]> density(double[] sorted, int bins) {
         int n = sorted.length;
         double[] p = Arr.makeArray(sorted[0], sorted[n - 1], bins + 1);
@@ -177,6 +196,7 @@ public class Calc {
         return result;
     }
 
+    /** Create an array filled with zeros. */
     public static double[] zeroes(int n) {
         double[] x = new double[n];
         for (int k = 0; k < n; k++) {
@@ -185,6 +205,7 @@ public class Calc {
         return x;
     }
 
+    /** Create an arithmetic sequence from 'from' to 'to' with 'n' elements. */
     public static double[] sequence(double from, double to, int n) {
         double[] x = new double[n];
         double step = (to - from) / n;
