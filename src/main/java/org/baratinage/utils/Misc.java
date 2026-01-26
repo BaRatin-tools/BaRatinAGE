@@ -439,10 +439,15 @@ public class Misc {
     }
 
     public static Integer[] range(int start, int end) {
+        // Return a range of integers from start (inclusive) to end (exclusive).
+        // If end <= start, return an empty array.
+        if (end <= start) {
+            return new Integer[0];
+        }
         int n = end - start;
         Integer[] result = new Integer[n];
-        for (int k = start; k < n; k++) {
-            result[k] = k;
+        for (int i = 0; i < n; i++) {
+            result[i] = start + i;
         }
         return result;
     }
