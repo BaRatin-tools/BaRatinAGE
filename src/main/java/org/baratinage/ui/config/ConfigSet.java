@@ -308,19 +308,23 @@ public class ConfigSet {
         for (int index = 0; index < items.length; index++) {
             ConfigItem<?, ?> item = items[index];
             JLabel label = new JLabel();
-            label.setText(confirItemLabelString(
+            boolean inherited1 = (scope == SCOPE.PROJECT) && item.isInherited(scope);
+            label.setText(configItemLabelString(
                     T.text("pref_%s".formatted(item.id)),
                     item.requireRestart,
-                    !item.isSet(scope)));
+                    !item.isSet(scope),
+                    inherited1));
             JButton resetButton = new JButton(T.text("reset"));
             resetButton.addActionListener(l -> item.unset(scope));
             resetButton.setEnabled(item.isSet(scope));
             item.subscribe(this, l -> {
                 resetButton.setEnabled(item.isSet(scope));
-                String txt = confirItemLabelString(
+                boolean inherited2 = (scope == SCOPE.PROJECT) && item.isInherited(scope);
+                String txt = configItemLabelString(
                         T.text("pref_%s".formatted(item.id)),
                         item.requireRestart,
-                        !item.isSet(scope));
+                        !item.isSet(scope),
+                        inherited2);
                 label.setText(txt);
             });
             configItemsPanel.insertChild(label, 0, k);
@@ -342,9 +346,11 @@ public class ConfigSet {
         return panel;
     }
 
-    private static String confirItemLabelString(String rawString, boolean star, boolean italic) {
-        String i = italic ? "<i>%s</i>".formatted(rawString) : rawString;
-        return "<html><div style='width: 250px'>%s%s</div></html>".formatted(i, star ? "*" : "");
+    private static String configItemLabelString(String txt, boolean star, boolean italic, boolean inherited) {
+        txt = inherited ? "%s (%s)".formatted(txt, T.text("inherited")) : txt;
+        txt = italic ? "<i>%s</i>".formatted(txt) : txt;
+        txt = String.format("%s%s", txt, star ? "*" : "");
+        return "<html><div style='width: 250px'>%s</div></html>".formatted(txt);
     }
 
 }

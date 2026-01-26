@@ -15,6 +15,7 @@ public class ConfigItemBoolean extends ConfigItem<Boolean, JCheckBox> {
     @Override
     public void setFromJSON(JSONObject json, SCOPE scope) {
         if (!json.has(id)) {
+            unset(scope);
             return;
         }
         try {
@@ -28,8 +29,10 @@ public class ConfigItemBoolean extends ConfigItem<Boolean, JCheckBox> {
     @Override
     protected JCheckBox buildField(SCOPE scope) {
         JCheckBox field = new JCheckBox();
-        field.setSelected(values.containsKey(scope) ? values.get(scope) : defaultValue);
+        field.setSelected((Boolean) getValueForScope(scope));
         field.addItemListener(l -> {
+            if (suppressFieldEvents)
+                return;
             set(field.isSelected(), scope);
         });
         return field;

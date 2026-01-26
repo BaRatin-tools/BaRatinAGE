@@ -24,6 +24,8 @@ public abstract class ConfigItem<A extends Object, B extends JComponent> {
     public final A defaultValue;
     protected final HashMap<SCOPE, A> values;
     protected final HashMap<SCOPE, B> fields;
+    // Suppress field-change events during programmatic updates (e.g., unset)
+    protected boolean suppressFieldEvents = false;
 
     public ConfigItem(String id, boolean requireRestart, A defaultValue) {
         this.id = id;
@@ -61,12 +63,17 @@ public abstract class ConfigItem<A extends Object, B extends JComponent> {
 
     public void unset(SCOPE... scopes) {
         doNotNotifySubsribers = true;
+        boolean prevSuppress = suppressFieldEvents;
+        suppressFieldEvents = true;
         for (SCOPE scope : scopes) {
-            if (fields.containsKey(scope)) {
-                setField(fields.get(scope), defaultValue);
-            }
             values.remove(scope);
+            if (fields.containsKey(scope)) {
+                // Remove the scope first so that inheritance can take effect
+                A effective = getValueForScope(scope);
+                setField(fields.get(scope), effective);
+            }
         }
+        suppressFieldEvents = prevSuppress;
         doNotNotifySubsribers = false;
         notifySubscribers();
     }
@@ -132,4 +139,35 @@ public abstract class ConfigItem<A extends Object, B extends JComponent> {
         }
     }
 
+    /**
+     * Returns whether the value for the given scope is inherited from a parent
+     * scope.
+     * Currently, inheritance is defined for PROJECT scope: if PROJECT is not set
+     * but GLOBAL
+     * is set, the value is inherited from GLOBAL.
+     */
+    public boolean isInherited(SCOPE scope) {
+        if (scope == SCOPE.PROJECT) {
+            return values.containsKey(SCOPE.GLOBAL) && !values.containsKey(SCOPE.PROJECT);
+        }
+        return false;
+    }
+
+    /**
+     * Get the effective value for the given scope, considering inheritance from
+     * GLOBAL when
+     * PROJECT scope is not explicitly set.
+     */
+    public A getValueForScope(SCOPE scope) {
+        A v = values.get(scope);
+        if (scope == SCOPE.PROJECT) {
+            if (v != null)
+                return v;
+            A g = values.get(SCOPE.GLOBAL);
+            if (g != null)
+                return g;
+            return defaultValue;
+        }
+        return v != null ? v : defaultValue;
+    }
 }

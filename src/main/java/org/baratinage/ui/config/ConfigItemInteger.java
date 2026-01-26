@@ -14,6 +14,7 @@ public class ConfigItemInteger extends ConfigItem<Integer, SimpleIntegerField> {
     @Override
     public void setFromJSON(JSONObject json, SCOPE scope) {
         if (!json.has(id)) {
+            unset(scope);
             return;
         }
         try {
@@ -27,8 +28,10 @@ public class ConfigItemInteger extends ConfigItem<Integer, SimpleIntegerField> {
     @Override
     public SimpleIntegerField buildField(SCOPE scope) {
         SimpleIntegerField field = new SimpleIntegerField();
-        field.setValue(values.containsKey(scope) ? values.get(scope) : defaultValue);
+        field.setValue((Integer) getValueForScope(scope));
         field.addChangeListener(l -> {
+            if (suppressFieldEvents)
+                return;
             set(field.getIntValue(), scope);
         });
         return field;

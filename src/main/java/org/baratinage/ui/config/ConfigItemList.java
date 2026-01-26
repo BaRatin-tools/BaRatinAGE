@@ -43,6 +43,7 @@ public class ConfigItemList extends ConfigItem<String, SimpleComboBox> {
     @Override
     public void setFromJSON(JSONObject json, SCOPE scope) {
         if (!json.has(id)) {
+            unset(scope);
             return;
         }
         try {
@@ -58,10 +59,12 @@ public class ConfigItemList extends ConfigItem<String, SimpleComboBox> {
     protected SimpleComboBox buildField(SCOPE scope) {
         SimpleComboBox field = new SimpleComboBox();
         field.setItems(optionsLabelBuilder.get(), true);
-        field.setSelectedItem(
-                getIndexFromValue(
-                        values.containsKey(scope) ? values.get(scope) : defaultValue));
+        String effValue = (String) getValueForScope(scope);
+        int index = getIndexFromValue(effValue);
+        field.setSelectedItem(index);
         field.addChangeListener(l -> {
+            if (suppressFieldEvents)
+                return;
             set(getValueFromIndex(field.getSelectedIndex()), scope);
         });
 
