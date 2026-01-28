@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JScrollPane;
 
 import org.baratinage.jbam.CalibrationData;
 import org.baratinage.jbam.UncertainData;
@@ -80,16 +81,22 @@ public class Gaugings extends BamItem implements ICalibrationData, GaugingsDatas
             }
         });
 
+        JScrollPane sp = new JScrollPane();
+        sp.setViewportView(gaugingEditor);
+
         gaugingEditor.setVisible(false);
+        sp.setVisible(false);
         gaugingsTable.editableGaugingsToggle.setSelected(false);
         gaugingsTable.editableGaugingsToggle.addActionListener(l -> {
             gaugingEditor.setVisible(gaugingsTable.editableGaugingsToggle.isSelected());
+            sp.setVisible(gaugingsTable.editableGaugingsToggle.isSelected());
+            leftPanel.updateUI();
         });
 
         leftPanel.addChild(importDataButton, false);
         leftPanel.addChild(importedDataSetSourceLabel, false);
-        leftPanel.addChild(gaugingsTable, true);
-        leftPanel.addChild(gaugingEditor, false);
+        leftPanel.addChild(gaugingsTable, 2);
+        leftPanel.addChild(sp, 1);
 
         setContent(content);
 
