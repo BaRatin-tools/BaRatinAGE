@@ -56,17 +56,10 @@ public class RatingCurveResiduals extends SimpleFlowPanel {
     xAxisCombobox.setEnabled(false);
     xAxisCombobox.setEmptyItem(null);
     xAxisCombobox.addChangeListener(l -> {
-      int selectedIndex = xAxisCombobox.getSelectedIndex();
-      PlotRecord pr = switch (selectedIndex) {
-        case 0 -> plots.get("index");
-        case 1 -> gaugingsHaveTime ? plots.get("time") : plots.get("obsQ");
-        case 2 -> gaugingsHaveTime ? plots.get("obsQ") : plots.get("simQ");
-        case 3 -> gaugingsHaveTime ? plots.get("simQ") : plots.get("stage");
-        case 4 -> plots.get("stage");
-        default -> plots.get("simQ");
-      };
-      setPlot(pr);
+      setPlot();
     });
+    xAxisCombobox.setSelectedItem(gaugingsHaveTime ? 3 : 2);
+
     JLabel xAxisLabel = new JLabel();
 
     T.t(this, () -> {
@@ -180,8 +173,6 @@ public class RatingCurveResiduals extends SimpleFlowPanel {
     plots.put("obsQ", new PlotRecord(obsQPlot, obsDischargePoints));
     plots.put("stage", new PlotRecord(stagePlot, stagePoints));
 
-    setCombobox(gaugingsHaveTime);
-
     if (isFirstDraw) {
       isFirstDraw = false;
       epiIndex.setShowLegend(false);
@@ -193,20 +184,36 @@ public class RatingCurveResiduals extends SimpleFlowPanel {
         epiTime.setYAxisLabel(T.text("residuals"));
       }
       epiSimQ.setShowLegend(false);
-      epiSimQ.setXAxisLabel(T.text("sim_discharge") + "[m3/s]");
+      epiSimQ.setXAxisLabel(T.text("sim_discharge") + " [m3/s]");
       epiSimQ.setYAxisLabel(T.text("residuals"));
       epiObsQ.setShowLegend(false);
-      epiObsQ.setXAxisLabel(T.text("obs_discharge") + "[m3/s]");
+      epiObsQ.setXAxisLabel(T.text("obs_discharge") + " [m3/s]");
       epiObsQ.setYAxisLabel(T.text("residuals"));
       epiStage.setShowLegend(false);
-      epiStage.setXAxisLabel(T.text("stage") + "[m]");
+      epiStage.setXAxisLabel(T.text("stage") + " [m]");
       epiStage.setYAxisLabel(T.text("residuals"));
     }
 
-    setPlot(plots.get("obsQ"));
+    setCombobox(gaugingsHaveTime);
+    setPlot();
   }
 
-  private void setPlot(PlotRecord pr) {
+  private void setPlot() {
+
+    int selectedIndex = xAxisCombobox.getSelectedIndex();
+    PlotRecord pr = switch (selectedIndex) {
+      case 0 -> plots.get("index");
+      case 1 -> gaugingsHaveTime ? plots.get("time") : plots.get("obsQ");
+      case 2 -> gaugingsHaveTime ? plots.get("obsQ") : plots.get("simQ");
+      case 3 -> gaugingsHaveTime ? plots.get("simQ") : plots.get("stage");
+      case 4 -> plots.get("stage");
+      default -> plots.get("simQ");
+    };
+
+    if (pr == null) {
+      return;
+    }
+
     EditablePlotItem epi = plotEditor.getEditablePlotItem("residuals");
     String epiLabel = epi != null ? epi.getLabel() : T.text("residuals");
     plotContainer.setPlot(pr.plot);
