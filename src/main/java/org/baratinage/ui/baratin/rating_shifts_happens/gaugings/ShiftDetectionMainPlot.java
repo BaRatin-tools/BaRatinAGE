@@ -159,7 +159,7 @@ public class ShiftDetectionMainPlot extends SimpleFlowPanel {
 
     plotPanel.addChild(mainPlot, true);
 
-    toolsPanel.updatePlotAxis(dischargePlot);
+    toolsPanel.updatePlotAxis(dischargePlot, plotEditor.getEditablePlot("mainPlot"));
 
     plotEditor.addEditablePlot("mainPlot", isDischargePlot ? dischargePlot : stagePlot);
     plotEditor.addEditablePlot("shiftPlot", shiftsPlot);

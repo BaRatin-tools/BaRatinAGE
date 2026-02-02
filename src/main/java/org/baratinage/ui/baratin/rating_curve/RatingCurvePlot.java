@@ -118,13 +118,7 @@ public class RatingCurvePlot extends SimpleFlowPanel {
         // create new plot
         plot = new Plot(true);
 
-        if (toolsPanel.logDischargeAxis()) {
-            if (toolsPanel.axisFlipped()) {
-                plot.setXAxisLog(true);
-            } else {
-                plot.setYAxisLog(true);
-            }
-        }
+        toolsPanel.updatePlotAxis(plot, plotEditor.getEditablePlot());
 
         // stage transitions
         int n = transitionStages.size();

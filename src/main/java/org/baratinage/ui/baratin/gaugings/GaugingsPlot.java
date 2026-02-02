@@ -112,7 +112,7 @@ public class GaugingsPlot extends SimpleFlowPanel {
 
     Plot plot = new Plot(true);
 
-    toolsPanel.updatePlotAxis(plot);
+    toolsPanel.updatePlotAxis(plot, plotEditor.getEditablePlot());
     activeGaugings.setLabel(T.text("lgd_active_gaugings"));
     inactiveGaugings.setLabel(T.text("lgd_inactive_gaugings"));
 

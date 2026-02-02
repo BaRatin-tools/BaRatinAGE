@@ -10,6 +10,7 @@ import javax.swing.event.ChangeListener;
 
 import org.baratinage.AppSetup;
 import org.baratinage.translation.T;
+import org.baratinage.ui.plot.EditablePlot;
 import org.baratinage.ui.plot.Plot;
 
 public class RatingCurvePlotToolsPanel extends JToolBar {
@@ -75,7 +76,7 @@ public class RatingCurvePlotToolsPanel extends JToolBar {
         cropTotalEnvelopCheckbox.setVisible(cropTotalEnv);
     }
 
-    public void updatePlotAxis(Plot plot) {
+    public void updatePlotAxis(Plot plot, EditablePlot ep) {
         // apply log/linear scale
         if (logScaleDischargeAxis.isSelected()) {
             if (switchAxisCheckbox.isSelected()) {
@@ -89,10 +90,18 @@ public class RatingCurvePlotToolsPanel extends JToolBar {
             plot.axisY.setLabel(T.text("stage") + " [m]");
             plot.axisX.setLabel(T.text("discharge") + " [m3/s]");
             plot.axisXlog.setLabel(T.text("discharge") + " [m3/s]");
+            if (ep != null) {
+                ep.setXAxisLabel(T.text("discharge") + " [m3/s]");
+                ep.setYAxisLabel(T.text("stage") + " [m]");
+            }
         } else {
             plot.axisX.setLabel(T.text("stage") + " [m]");
             plot.axisY.setLabel(T.text("discharge") + " [m3/s]");
             plot.axisYlog.setLabel(T.text("discharge") + " [m3/s]");
+            if (ep != null) {
+                ep.setXAxisLabel(T.text("stage") + " [m]");
+                ep.setYAxisLabel(T.text("discharge") + " [m3/s]");
+            }
         }
     }
 
