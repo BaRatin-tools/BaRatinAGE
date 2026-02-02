@@ -4,6 +4,8 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStreamReader;
 import java.nio.file.Path;
+import java.util.HashMap;
+import java.util.Map.Entry;
 
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
@@ -12,6 +14,22 @@ import javax.swing.SwingUtilities;
 import org.baratinage.App;
 import org.baratinage.AppSetup;
 import org.baratinage.translation.T;
+import org.baratinage.ui.bam.BamItem;
+import org.baratinage.ui.bam.BamItemList;
+import org.baratinage.ui.bam.BamItemType;
+import org.baratinage.ui.baratin.Gaugings;
+import org.baratinage.ui.baratin.HydraulicConfiguration;
+import org.baratinage.ui.baratin.HydraulicConfigurationBAC;
+import org.baratinage.ui.baratin.HydraulicConfigurationQFH;
+import org.baratinage.ui.baratin.Hydrograph;
+import org.baratinage.ui.baratin.Limnigraph;
+import org.baratinage.ui.baratin.RatingCurve;
+import org.baratinage.ui.baratin.RatingCurveCompare;
+import org.baratinage.ui.baratin.RatingShiftHappens;
+import org.baratinage.ui.baratin.hydraulic_configuration.PriorRatingCurve;
+import org.baratinage.ui.plot.EditablePlot;
+import org.baratinage.ui.plot.EditablePlotItem;
+import org.baratinage.ui.plot.PlotEditor;
 import org.baratinage.utils.ConsoleLogger;
 import org.baratinage.utils.Misc;
 import org.baratinage.utils.fs.WriteFile;
@@ -20,6 +38,12 @@ public class DebugMenu extends JMenu {
 
     public DebugMenu() {
         super("Debug");
+
+        JMenuItem resetPlotTextsBtn = new JMenuItem("Resets legends and axis labels");
+        add(resetPlotTextsBtn);
+        resetPlotTextsBtn.addActionListener((e) -> {
+
+        });
 
         JMenuItem restartAppBtn = new JMenuItem("Restart App");
         add(restartAppBtn);
@@ -198,5 +222,252 @@ public class DebugMenu extends JMenu {
         }
 
         return exitCode == 0;
+    }
+
+    public static void resetPlotLegendsAndAxis() {
+        if (AppSetup.MAIN_FRAME.currentProject == null) {
+            return;
+        }
+        BamItemList selectedBamItems;
+        PlotEditor pe;
+        EditablePlotItem epi;
+        EditablePlot ep;
+        // gaugings
+        selectedBamItems = AppSetup.MAIN_FRAME.currentProject.BAM_ITEMS
+                .filterByType(BamItemType.GAUGINGS);
+        for (BamItem bi : selectedBamItems) {
+            if (bi instanceof Gaugings g) {
+                epi = g.plotPanel.plotEditor.getEditablePlotItem("active_gaugings");
+                if (epi != null) {
+                    epi.setLabel(T.text("lgd_active_gaugings"));
+                }
+                epi = g.plotPanel.plotEditor.getEditablePlotItem("inactive_gaugings");
+                if (epi != null) {
+                    epi.setLabel(T.text("lgd_inactive_gaugings"));
+                }
+                ep = g.plotPanel.plotEditor.getEditablePlot();
+                if (ep != null) {
+                    ep.setXAxisLabel(T.text("stage") + " [m]");
+                    ep.setYAxisLabel(T.text("discharge") + " [m]");
+                }
+            }
+        }
+        // prior rating curve
+        selectedBamItems = AppSetup.MAIN_FRAME.currentProject.BAM_ITEMS
+                .filterByType(BamItemType.HYDRAULIC_CONFIG,
+                        BamItemType.HYDRAULIC_CONFIG_BAC,
+                        BamItemType.HYDRAULIC_CONFIG_QFH);
+        for (BamItem bi : selectedBamItems) {
+            PriorRatingCurve<?> prc = null;
+            if (bi instanceof HydraulicConfiguration hc) {
+                prc = hc.priorRatingCurve;
+            } else if (bi instanceof HydraulicConfigurationBAC hc) {
+                prc = hc.priorRatingCurve;
+            } else if (bi instanceof HydraulicConfigurationQFH hc) {
+                prc = hc.priorRatingCurve;
+            }
+            if (prc != null) {
+                pe = prc.resultsPanel.ratingCurvePlot.plotEditor;
+                resetRCPlotLegendsAndAxis(pe, true);
+            }
+        }
+        // posterior rating curve
+        selectedBamItems = AppSetup.MAIN_FRAME.currentProject.BAM_ITEMS
+                .filterByType(BamItemType.RATING_CURVE);
+        for (BamItem bi : selectedBamItems) {
+            if (bi instanceof RatingCurve rc) {
+                pe = rc.resultsPanel.ratingCurvePlot.plotEditor;
+                resetRCPlotLegendsAndAxis(pe, false);
+                pe = rc.resultsPanel.rcResiduals.plotEditor;
+                ep = pe.getEditablePlot("index");
+                if (ep != null) {
+                    ep.setXAxisLabel(T.text("index"));
+                    ep.setYAxisLabel(T.text("residuals"));
+                }
+                ep = pe.getEditablePlot("time");
+                if (ep != null) {
+                    ep.setXAxisLabel(T.text("date_time"));
+                    ep.setYAxisLabel(T.text("residuals"));
+                }
+                ep = pe.getEditablePlot("simQ");
+                if (ep != null) {
+                    ep.setXAxisLabel(T.text("sim_discharge") + " [m3/s]");
+                    ep.setYAxisLabel(T.text("residuals"));
+                }
+                ep = pe.getEditablePlot("obsQ");
+                if (ep != null) {
+                    ep.setXAxisLabel(T.text("obs_discharge") + " [m3/s]");
+                    ep.setYAxisLabel(T.text("residuals"));
+                }
+                ep = pe.getEditablePlot("stage");
+                if (ep != null) {
+                    ep.setXAxisLabel(T.text("stage") + " [m]");
+                    ep.setYAxisLabel(T.text("residuals"));
+                }
+            }
+        }
+        // limnigraph
+        selectedBamItems = AppSetup.MAIN_FRAME.currentProject.BAM_ITEMS
+                .filterByType(BamItemType.LIMNIGRAPH);
+        for (BamItem bi : selectedBamItems) {
+            if (bi instanceof Limnigraph li) {
+                pe = li.limniPlot.plotEditor;
+                ep = pe.getEditablePlot();
+                if (ep != null) {
+                    ep.setXAxisLabel(T.text("time"));
+                    ep.setYAxisLabel(T.text("stage") + " [m]");
+                }
+                epi = pe.getEditablePlotItem("u");
+                if (epi != null) {
+                    epi.setLabel(T.text("stage_uncertainty"));
+                }
+                epi = pe.getEditablePlotItem("stage");
+                if (epi != null) {
+                    epi.setLabel(T.text("limnigraph"));
+                }
+            }
+        }
+        // hydrograph
+        selectedBamItems = AppSetup.MAIN_FRAME.currentProject.BAM_ITEMS
+                .filterByType(BamItemType.HYDROGRAPH);
+        for (BamItem bi : selectedBamItems) {
+            if (bi instanceof Hydrograph hy) {
+                pe = hy.plotPanel.plotEditor;
+                ep = pe.getEditablePlot();
+                if (ep != null) {
+                    ep.setXAxisLabel(T.text("time"));
+                    ep.setYAxisLabel(T.text("discharge") + " [m3/s]");
+                }
+                epi = pe.getEditablePlotItem("maxpost");
+                if (epi != null) {
+                    epi.setLabel(T.text("lgd_discharge_maxpost"));
+                }
+                epi = pe.getEditablePlotItem("limniu");
+                if (epi != null) {
+                    epi.setLabel(T.text("lgd_discharge_limni_u"));
+                }
+                epi = pe.getEditablePlotItem("paramu");
+                if (epi != null) {
+                    epi.setLabel(T.text("lgd_discharge_limni_param_u"));
+                }
+                epi = pe.getEditablePlotItem("totalu");
+                if (epi != null) {
+                    epi.setLabel(T.text("lgd_discharge_total_u"));
+                }
+            }
+        }
+        // rc comparator
+        selectedBamItems = AppSetup.MAIN_FRAME.currentProject.BAM_ITEMS
+                .filterByType(BamItemType.COMPARING_RATING_CURVES);
+        for (BamItem bi : selectedBamItems) {
+            if (bi instanceof RatingCurveCompare rcc) {
+                rcc.stageAxixLabelField.setText(
+                        T.text("stage") + " [m]");
+                rcc.dischargeAxisLabelField.setText(
+                        T.text("discharge") + " [m3/s]");
+
+                for (Entry<BamItem, HashMap<String, EditablePlotItem>> e : rcc.knownEditablePlotItems.entrySet()) {
+                    BamItem item = e.getKey();
+                    boolean isPrior = !(item instanceof RatingCurve);
+                    HashMap<String, EditablePlotItem> hm = e.getValue();
+                    epi = hm.get("stage_transition_value");
+                    String stageLegendText = isPrior ? "lgd_prior_activation_stage"
+                            : "lgd_posterior_activation_stage";
+                    if (epi != null) {
+                        epi.setLabel(T.text(stageLegendText));
+                    }
+                    epi = hm.get("stage_transition_u");
+                    if (epi != null) {
+                        epi.setLabel(T.text(stageLegendText));
+                    }
+                    epi = hm.get("param_u");
+                    if (epi != null) {
+                        String paramLegendKey = isPrior ? "lgd_prior_parametric_uncertainty"
+                                : "lgd_posterior_parametric_uncertainty";
+                        epi.setLabel(T.text(paramLegendKey));
+                    }
+                    epi = hm.get("total_u");
+                    if (epi != null) {
+                        epi.setLabel(T.text("lgd_posterior_parametric_structural_uncertainty"));
+                    }
+                    epi = hm.get("maxpost");
+                    if (epi != null) {
+                        String mpLegendKey = isPrior ? "lgd_prior_rating_curve" : "lgd_posterior_rating_curve";
+                        epi.setLabel(T.text(mpLegendKey));
+                    }
+                }
+                rcc.setPlotItemOrder(rcc.episList.getAllObjects());
+                rcc.resetPlot();
+            }
+        }
+        // rating shift detector
+        selectedBamItems = AppSetup.MAIN_FRAME.currentProject.BAM_ITEMS
+                .filterByType(BamItemType.RATING_SHIFT_HAPPENS);
+        for (BamItem bi : selectedBamItems) {
+            if (bi instanceof RatingShiftHappens rsh) {
+                pe = rsh.ratingShiftResults.results.mainPlot.plotEditor;
+                boolean isDischargePlot = rsh.ratingShiftResults.results.mainPlot.radioDischargeOrStage
+                        .getSelectedId()
+                        .equals("q");
+                if (pe != null) {
+                    ep = pe.getEditablePlot("mainPlot");
+                    if (ep != null) {
+                        ep.setYAxisLabel(
+                                isDischargePlot
+                                        ? "%s [m3/s]".formatted(T.text("discharge"))
+                                        : "%s [m]".formatted(T.text("stage")));
+                    }
+                }
+                pe = rsh.ratingShiftResults.results.gaugings.plotEditor;
+                if (pe != null) {
+                    ep = pe.getEditablePlot();
+                    if (ep != null) {
+                        ep.setXAxisLabel(T.text("stage") + " [m]");
+                        ep.setYAxisLabel(T.text("discharge") + " [m]");
+                    }
+                }
+            }
+        }
+    }
+
+    private static void resetRCPlotLegendsAndAxis(PlotEditor pe, boolean isPrior) {
+        EditablePlotItem epi;
+        EditablePlot ep;
+
+        ep = pe.getEditablePlot();
+        if (ep != null) {
+            ep.setXAxisLabel(T.text("stage") + " [m]");
+            ep.setYAxisLabel(T.text("discharge") + " [m]");
+        }
+        epi = pe.getEditablePlotItem("gaugingsPoints");
+        if (epi != null) {
+            epi.setLabel(T.text("lgd_active_gaugings"));
+        }
+        epi = pe.getEditablePlotItem("maxpostLine");
+        if (epi != null) {
+            String mpLegendKey = isPrior ? "lgd_prior_rating_curve" : "lgd_posterior_rating_curve";
+            epi.setLabel(T.text(mpLegendKey));
+        }
+        epi = pe.getEditablePlotItem("paramUncertaintyBand");
+        if (epi != null) {
+            String paramLegendKey = isPrior ? "lgd_prior_parametric_uncertainty"
+                    : "lgd_posterior_parametric_uncertainty";
+            epi.setLabel(T.text(paramLegendKey));
+        }
+        epi = pe.getEditablePlotItem("totalUncertaintyBand");
+        if (epi != null) {
+            epi.setLabel(T.text("lgd_posterior_parametric_structural_uncertainty"));
+        }
+        String stageLegendText = isPrior ? "lgd_prior_activation_stage"
+                : "lgd_posterior_activation_stage";
+        epi = pe.getEditablePlotItem("stageLine");
+        if (epi != null) {
+            epi.setLabel(T.text(stageLegendText));
+        }
+        epi = pe.getEditablePlotItem("stageBand");
+        if (epi != null) {
+
+            epi.setLabel(T.text(stageLegendText));
+        }
     }
 }

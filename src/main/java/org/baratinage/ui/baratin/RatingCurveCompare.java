@@ -46,8 +46,8 @@ public class RatingCurveCompare extends BamItem {
     private final SimpleTextField rcOneNameLabel;
     private final SimpleTextField rcTwoNameLabel;
 
-    private final SimpleTextField xAxisLabelField;
-    private final SimpleTextField yAxisLabelField;
+    public final SimpleTextField stageAxixLabelField;
+    public final SimpleTextField dischargeAxisLabelField;
 
     public final BamItemParent rcOne;
     public final BamItemParent rcTwo;
@@ -56,9 +56,9 @@ public class RatingCurveCompare extends BamItem {
 
     private Plot plot;
 
-    private final HashMap<BamItem, HashMap<String, EditablePlotItem>> knownEditablePlotItems;
+    public final HashMap<BamItem, HashMap<String, EditablePlotItem>> knownEditablePlotItems;
     private final HashMap<BamItem, String> knownLabels;
-    private final SimpleList<EPI> episList;
+    public final SimpleList<EPI> episList;
 
     private static record EPI(BamItem bamItem, String key) {
         public boolean isSame(EPI other) {
@@ -164,28 +164,28 @@ public class RatingCurveCompare extends BamItem {
 
         JLabel xAxisLabel = new JLabel();
         T.t(this, xAxisLabel, false, "stage_label");
-        xAxisLabelField = new SimpleTextField();
-        xAxisLabelField.setText(T.text("stage") + " [m]");
-        xAxisLabelField.addChangeListener(l -> {
+        stageAxixLabelField = new SimpleTextField();
+        stageAxixLabelField.setText(T.text("stage") + " [m]");
+        stageAxixLabelField.addChangeListener(l -> {
             resetPlot();
         });
         SimpleFlowPanel xAxisConfigPanel = new SimpleFlowPanel();
         xAxisConfigPanel.setGap(5);
         xAxisConfigPanel.addChild(xAxisLabel, false);
-        xAxisConfigPanel.addChild(xAxisLabelField, true);
+        xAxisConfigPanel.addChild(stageAxixLabelField, true);
         plotConfigPanel.addChild(xAxisConfigPanel, true);
 
         JLabel yAxisLabel = new JLabel();
         T.t(this, yAxisLabel, false, "discharge_label");
-        yAxisLabelField = new SimpleTextField();
-        yAxisLabelField.setText(T.text("discharge") + " [m3/s]");
-        yAxisLabelField.addChangeListener(l -> {
+        dischargeAxisLabelField = new SimpleTextField();
+        dischargeAxisLabelField.setText(T.text("discharge") + " [m3/s]");
+        dischargeAxisLabelField.addChangeListener(l -> {
             resetPlot();
         });
         SimpleFlowPanel yAxisConfigPanel = new SimpleFlowPanel();
         yAxisConfigPanel.setGap(5);
         yAxisConfigPanel.addChild(yAxisLabel, false);
-        yAxisConfigPanel.addChild(yAxisLabelField, true);
+        yAxisConfigPanel.addChild(dischargeAxisLabelField, true);
         plotConfigPanel.addChild(yAxisConfigPanel, true);
 
         // main plot
@@ -351,7 +351,7 @@ public class RatingCurveCompare extends BamItem {
         }
     }
 
-    private void setPlotItemOrder(List<EPI> epis) {
+    public void setPlotItemOrder(List<EPI> epis) {
         // reset the list
         EPI selected = episList.getSelectedObject();
         episList.clearList();
@@ -416,7 +416,7 @@ public class RatingCurveCompare extends BamItem {
         return epis;
     }
 
-    private void resetPlot() {
+    public void resetPlot() {
         plot = new Plot();
         plotToolsPanel.updatePlotAxis(plot, null);
         List<EditablePlotItem> items = getEditablePlotItems(episList.getAllObjects());
@@ -597,8 +597,8 @@ public class RatingCurveCompare extends BamItem {
         config.JSON.put("logDischargeAxis", plotToolsPanel.logDischargeAxis());
         config.JSON.put("axisFlipped", plotToolsPanel.axisFlipped());
         config.JSON.put("totalEnvSmoothed", plotToolsPanel.totalEnvSmoothed());
-        config.JSON.put("xAxisLabel", xAxisLabelField.getText());
-        config.JSON.put("yAxisLabel", yAxisLabelField.getText());
+        config.JSON.put("xAxisLabel", stageAxixLabelField.getText());
+        config.JSON.put("yAxisLabel", dischargeAxisLabelField.getText());
 
         return config;
     }
@@ -675,11 +675,11 @@ public class RatingCurveCompare extends BamItem {
         }
 
         if (config.JSON.has("xAxisLabel")) {
-            xAxisLabelField.setText(config.JSON.getString("xAxisLabel"));
+            stageAxixLabelField.setText(config.JSON.getString("xAxisLabel"));
         }
 
         if (config.JSON.has("yAxisLabel")) {
-            yAxisLabelField.setText(config.JSON.getString("yAxisLabel"));
+            dischargeAxisLabelField.setText(config.JSON.getString("yAxisLabel"));
         }
 
         if (config.JSON.has("rcOne")) {

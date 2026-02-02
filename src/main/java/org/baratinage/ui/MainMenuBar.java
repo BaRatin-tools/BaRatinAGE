@@ -205,6 +205,7 @@ public class MainMenuBar extends JMenuBar {
                 T.setLocale(targetLocaleKey);
                 AppSetup.CONFIG.LANGUAGE_KEY.set(targetLocaleKey, ConfigItem.SCOPE.GLOBAL);
                 AppSetup.CONFIG.saveConfig();
+                DebugMenu.resetPlotLegendsAndAxis(); // FIXME: this is a temporary fix
             });
             switchLanguageMenuItem.add(item);
         }
