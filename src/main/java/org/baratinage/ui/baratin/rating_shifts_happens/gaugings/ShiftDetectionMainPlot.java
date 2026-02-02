@@ -33,7 +33,7 @@ public class ShiftDetectionMainPlot extends SimpleFlowPanel {
   private final SimpleFlowPanel plotArea;
   private final SimpleFlowPanel plotPanel;
   private final RatingCurvePlotToolsPanel toolsPanel;
-  private final SimpleRadioButtons<String> radioDischargeOrStage;
+  public final SimpleRadioButtons<String> radioDischargeOrStage;
 
   public final PlotEditor plotEditor;
   private final JToggleButton plotEditorToggleBtn;
@@ -70,6 +70,11 @@ public class ShiftDetectionMainPlot extends SimpleFlowPanel {
     radioDischargeOrStage = new SimpleRadioButtons<>();
     JRadioButton stageBtn = radioDischargeOrStage.addOption("h", T.text("stage"), "h");
     JRadioButton dischargeBtn = radioDischargeOrStage.addOption("q", T.text("discharge"), "q");
+
+    T.t(this, () -> {
+      stageBtn.setText(T.text("stage"));
+      dischargeBtn.setText(T.text("discharge"));
+    });
 
     toolsPanel.add(stageBtn);
     toolsPanel.add(dischargeBtn);

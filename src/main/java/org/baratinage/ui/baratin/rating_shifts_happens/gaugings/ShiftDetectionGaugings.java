@@ -87,6 +87,10 @@ public class ShiftDetectionGaugings extends SimpleFlowPanel {
       }
     });
 
+    T.t(this, () -> {
+      buildGaugingItemBtn.setText(T.html("build_all_components", T.text(BamItemType.GAUGINGS.id)));
+    });
+
     periodSelectionPanel.addChild(buildGaugingItemBtn, false);
 
     palette = ColorPalette.CIVIDIS;
