@@ -120,7 +120,7 @@ public class BamItemParent extends SimpleFlowPanel {
     }
 
     private void buildBamItemBackup() {
-        if (AppSetup.MAIN_FRAME.currentProject == null) {
+        if (AppSetup.MAIN_FRAME.currentProject == null || currentBamItem == null) {
             return;
         }
         backupBamItem = AppSetup.MAIN_FRAME.currentProject.builBamItem(currentBamItem.TYPE);
