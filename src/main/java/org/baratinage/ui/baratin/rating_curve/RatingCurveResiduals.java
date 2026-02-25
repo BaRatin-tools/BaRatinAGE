@@ -58,7 +58,7 @@ public class RatingCurveResiduals extends SimpleFlowPanel {
     xAxisCombobox.addChangeListener(l -> {
       setPlot();
     });
-    xAxisCombobox.setSelectedItem(gaugingsHaveTime ? 3 : 2);
+    // xAxisCombobox.setSelectedItem(gaugingsHaveTime ? 2 : 1);
 
     JLabel xAxisLabel = new JLabel();
 
@@ -108,8 +108,15 @@ public class RatingCurveResiduals extends SimpleFlowPanel {
 
     PlotInfiniteLine zeroLine = new PlotInfiniteLine("zero", 0, 0);
 
+    double[] reference_discharge = res.simValues();
+    double[] absolute_residuals = res.resValues();
+    double[] relative_residuals = new double[absolute_residuals.length];
+    for (int k = 0; k < absolute_residuals.length; k++) {
+      relative_residuals[k] = absolute_residuals[k] / reference_discharge[k] * 100;
+    }
+
     PlotPoints indexPoints = new PlotPoints(
-        "residuals", Arr.makeArray(1, stage.length, stage.length), res.resValues(),
+        "residuals", Arr.makeArray(1, stage.length, stage.length), relative_residuals,
         AppSetup.COLORS.GAUGING);
     Plot indexPlot = new Plot(true);
     indexPlot.addXYItem(zeroLine);
@@ -120,7 +127,7 @@ public class RatingCurveResiduals extends SimpleFlowPanel {
     if (gaugingsHaveTime) {
       double[] dt = DateTime.dateTimeDoubleToSecondsDouble(gaugingsDateTime);
       datetimePoints = new PlotPoints(
-          "residuals", dt, res.resValues(),
+          "residuals", dt, relative_residuals,
           AppSetup.COLORS.GAUGING);
       timePlot = new Plot(true, true);
       timePlot.addXYItem(zeroLine);
@@ -128,21 +135,21 @@ public class RatingCurveResiduals extends SimpleFlowPanel {
     }
 
     PlotPoints simDischargePoints = new PlotPoints(
-        "residuals", res.simValues(), res.resValues(),
+        "residuals", res.simValues(), relative_residuals,
         AppSetup.COLORS.GAUGING);
     Plot simQPlot = new Plot();
     simQPlot.addXYItem(zeroLine);
     simQPlot.addXYItem(simDischargePoints);
 
     PlotPoints obsDischargePoints = new PlotPoints(
-        "residuals", res.obsValues(), res.resValues(),
+        "residuals", res.obsValues(), relative_residuals,
         AppSetup.COLORS.GAUGING);
     Plot obsQPlot = new Plot();
     obsQPlot.addXYItem(zeroLine);
     obsQPlot.addXYItem(obsDischargePoints);
 
     PlotPoints stagePoints = new PlotPoints(
-        "residuals", stage, res.resValues(),
+        "residuals", stage, relative_residuals,
         AppSetup.COLORS.GAUGING);
     Plot stagePlot = new Plot();
     stagePlot.addXYItem(zeroLine);
@@ -177,21 +184,21 @@ public class RatingCurveResiduals extends SimpleFlowPanel {
       isFirstDraw = false;
       epiIndex.setShowLegend(false);
       epiIndex.setXAxisLabel(T.text("index"));
-      epiIndex.setYAxisLabel(T.text("residuals"));
+      epiIndex.setYAxisLabel(T.text("residuals") + " [%]");
       if (gaugingsHaveTime) {
         epiTime.setShowLegend(false);
         epiTime.setXAxisLabel(T.text("date_time"));
-        epiTime.setYAxisLabel(T.text("residuals"));
+        epiTime.setYAxisLabel(T.text("residuals") + " [%]");
       }
       epiSimQ.setShowLegend(false);
       epiSimQ.setXAxisLabel(T.text("sim_discharge") + " [m3/s]");
-      epiSimQ.setYAxisLabel(T.text("residuals"));
+      epiSimQ.setYAxisLabel(T.text("residuals") + " [%]");
       epiObsQ.setShowLegend(false);
       epiObsQ.setXAxisLabel(T.text("obs_discharge") + " [m3/s]");
-      epiObsQ.setYAxisLabel(T.text("residuals"));
+      epiObsQ.setYAxisLabel(T.text("residuals") + " [%]");
       epiStage.setShowLegend(false);
       epiStage.setXAxisLabel(T.text("stage") + " [m]");
-      epiStage.setYAxisLabel(T.text("residuals"));
+      epiStage.setYAxisLabel(T.text("residuals") + " [%]");
     }
 
     setCombobox(gaugingsHaveTime);
@@ -234,7 +241,7 @@ public class RatingCurveResiduals extends SimpleFlowPanel {
     int selectedIndex = xAxisCombobox.getSelectedIndex();
     xAxisCombobox.setItems(xAxisOptions.toArray(new JLabel[xAxisOptions.size()]), true);
     if (selectedIndex == xAxisOptions.size() || selectedIndex < 0) {
-      selectedIndex = xAxisOptions.size() - 2; // sim_discharge
+      selectedIndex = xAxisOptions.size() - 1; // sim_discharge
     }
     xAxisCombobox.setSelectedItem(selectedIndex, true);
   }
