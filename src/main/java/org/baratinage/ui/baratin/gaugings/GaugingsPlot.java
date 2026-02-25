@@ -91,6 +91,12 @@ public class GaugingsPlot extends SimpleFlowPanel {
     plot.update();
   }
 
+  public void resetPlotZoom() {
+    if (currentPlot != null) {
+      currentPlot.restoreAutoBounds();
+    }
+  }
+
   public void setGaugingsDataset(GaugingsDataset dataset) {
     this.dataset = dataset;
     setPlot();
