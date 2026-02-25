@@ -24,9 +24,6 @@ public class AbstractDataset {
     protected final String name;
     protected final double[][] data;
     private final TreeMap<String, Integer> headersMap;
-    // private final String[] headers;
-    protected final int nRow;
-    protected final int nCol;
 
     private static String[] buildDefaultHeaders(int n) {
         String[] headers = new String[n];
@@ -60,11 +57,9 @@ public class AbstractDataset {
                 }
             }
         }
-        this.nCol = nCol;
-        this.nRow = nRow < 0 ? 0 : nRow;
 
         if (nCol != columns.length) {
-            System.out.println("There are some NULL columns !");
+            ConsoleLogger.warn("There are some NULL columns !");
         }
 
         int index = 0;
@@ -117,10 +112,7 @@ public class AbstractDataset {
 
         if (!Files.exists(dataFilePath)) {
             ConsoleLogger.error("File '" + dataFilePath + "' not found!");
-            // this.headers = _headers;
             this.headersMap = _headersMap;
-            this.nCol = _nCol;
-            this.nRow = _nRow;
             this.data = _data;
             return;
         }
@@ -158,9 +150,6 @@ public class AbstractDataset {
         }
 
         this.headersMap = _headersMap;
-        // this.headers = _headers;
-        this.nCol = _nCol;
-        this.nRow = _nRow;
         this.data = _data;
     }
 
@@ -210,12 +199,32 @@ public class AbstractDataset {
         return null;
     }
 
+    protected void setColumn(String colname, double[] values) {
+        Integer index = headersMap.containsKey(colname) ? headersMap.get(colname) : null;
+        if (index >= 0 && index < data.length) {
+            data[index] = values;
+        }
+    }
+
+    protected boolean areColumnsLengthsMatching() {
+        if (data.length < 2) {
+            return true;
+        }
+        int nRow = data[0].length;
+        for (int k = 1; k < data.length; k++) {
+            if (data[k].length != nRow) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     public int getNumberOfColumns() {
-        return nCol;
+        return data.length;
     }
 
     public int getNumberOfRows() {
-        return nRow;
+        return data.length == 0 ? 0 : data[0].length;
     }
 
     private String computeHashString() {
@@ -271,7 +280,10 @@ public class AbstractDataset {
             writeDataFile(dataFilePath);
         }
         return new DatasetConfig(
-                name, hashString, headers, dataFilePath);
+                name,
+                hashString,
+                headers,
+                dataFilePath);
     }
 
     private static String buildDataFileName(String name, String hashString) {
@@ -281,42 +293,6 @@ public class AbstractDataset {
     private static Path buildDataFilePath(String name, String hashString) {
         return Path.of(AppSetup.PATH_APP_TEMP_DIR,
                 buildDataFileName(name, hashString));
-    }
-
-    protected static double[] toDouble(boolean[] src) {
-        int n = src.length;
-        double[] tgt = new double[n];
-        for (int k = 0; k < n; k++) {
-            tgt[k] = src[k] ? 1d : 0d;
-        }
-        return tgt;
-    }
-
-    protected static boolean[] toBoolean(double[] src) {
-        int n = src.length;
-        boolean[] tgt = new boolean[n];
-        for (int k = 0; k < n; k++) {
-            tgt[k] = src[k] == 1d;
-        }
-        return tgt;
-    }
-
-    protected static double[] toDouble(int[] src) {
-        int n = src.length;
-        double[] tgt = new double[n];
-        for (int k = 0; k < n; k++) {
-            tgt[k] = (double) src[k];
-        }
-        return tgt;
-    }
-
-    protected static int[] toInt(double[] src) {
-        int n = src.length;
-        int[] tgt = new int[n];
-        for (int k = 0; k < n; k++) {
-            tgt[k] = ((Double) src[k]).intValue();
-        }
-        return tgt;
     }
 
     private static String[] readHeaders(String filePath) throws IOException {

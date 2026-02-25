@@ -14,6 +14,8 @@ import javax.swing.JLabel;
 import org.baratinage.AppSetup;
 import org.baratinage.utils.ConsoleLogger;
 
+import org.baratinage.ui.config.ConfigItem;
+
 public class T {
 
     static private class TranslatableList extends ArrayList<Translatable> {
@@ -59,7 +61,8 @@ public class T {
     static public void setLocale(Locale locale) {
         currentLocale = locale;
         Locale.setDefault(locale);
-        AppSetup.CONFIG.LANGUAGE_KEY.set(locale.getLanguage());
+        AppSetup.CONFIG.LANGUAGE_KEY.set(locale.getLanguage(), ConfigItem.SCOPE.GLOBAL);
+        AppSetup.CONFIG.saveConfig();
         updateTranslations();
     }
 
@@ -206,9 +209,14 @@ public class T {
     // - removeChildren() which remove children
     // - removeOwnerAndChildren() which remove both children and owner
     static public void clear(Object owner) {
-        clearOwnerRecursively(owner);
-        // remove owners from children list of other owners
-        clearOwnerFromOthersChildrenList(owner);
+        try {
+            clearOwnerRecursively(owner);
+            // remove owners from children list of other owners
+            clearOwnerFromOthersChildrenList(owner);
+        } catch (Exception e) {
+            ConsoleLogger.error("Clearing owner '%s' failed !".formatted(owner.toString()));
+            ConsoleLogger.error(e);
+        }
     }
 
     static private void clearOwnerRecursively(Object owner) {
@@ -230,15 +238,17 @@ public class T {
     }
 
     static private void clearOwnerFromOthersChildrenList(Object owner) {
-        for (Object o : hierarchy.keySet()) {
+        // Take a snapshot because WeakHashMap keys may disappear during iteration
+        List<Object> keysSnapshot = new ArrayList<>(hierarchy.keySet());
+        for (Object o : keysSnapshot) {
             List<WeakReference<Object>> children = hierarchy.get(o);
+            if (children == null)
+                continue;
             children.removeIf(weakRef -> {
                 Object wro = weakRef.get();
-                if (wro != null && wro.equals(owner)) {
-                    return true;
-                }
-                return false;
+                return wro != null && wro.equals(owner);
             });
         }
     }
+
 }

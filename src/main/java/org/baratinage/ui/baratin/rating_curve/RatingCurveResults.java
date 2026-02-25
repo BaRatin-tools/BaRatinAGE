@@ -22,12 +22,13 @@ public class RatingCurveResults extends TabContainer {
     public final ReactiveValue<Boolean> cropTotalUncertaintyToZero = new ReactiveValue<Boolean>(false);
 
     public final RatingCurvePlot ratingCurvePlot;
-    private final DensityPlotGrid paramDensityPlots;
+    public final DensityPlotGrid paramDensityPlots;
 
     private final RatingCurveTable rcGridTable;
-    private final RatingCurveEquation rcEquation;
-    private final McmcTraceResultsPanel mcmcResultPanel;
-    private final ParameterSummaryTable paramSummaryTable;
+    public final RatingCurveEquation rcEquation;
+    public final McmcTraceResultsPanel mcmcResultPanel;
+    public final ParameterSummaryTable paramSummaryTable;
+    public final RatingCurveResiduals rcResiduals;
 
     private static Icon rcPriorIcon = AppSetup.ICONS.getCustomAppImageIcon("prior_rating_curve.svg");
     private static Icon rcIcon = AppSetup.ICONS.getCustomAppImageIcon("rating_curve.svg");
@@ -36,6 +37,7 @@ public class RatingCurveResults extends TabContainer {
     private static Icon dpIcon = AppSetup.ICONS.getCustomAppImageIcon("densities.svg");
     private static Icon rcTblIcon = AppSetup.ICONS.getCustomAppImageIcon("rating_curve_table.svg");
     private static Icon rcEqIcon = AppSetup.ICONS.getCustomAppImageIcon("rating_curve_equation.svg");
+    private static Icon rcResIcon = AppSetup.ICONS.getCustomAppImageIcon("residuals.svg");
 
     private final BaremExporter baremeExporter;
 
@@ -55,10 +57,6 @@ public class RatingCurveResults extends TabContainer {
 
         rcGridTable = new RatingCurveTable();
 
-        rcGridTable.cropTotalEnvelopCheckbox.addChangeListener(l -> {
-            cropTotalUncertaintyToZero.set(rcGridTable.cropTotalEnvelopCheckbox.isSelected());
-        });
-
         cropTotalUncertaintyToZero.addListener(newValue -> {
             ratingCurvePlot.toolsPanel.cropTotalEnvelopCheckbox.setSelected(newValue);
             rcGridTable.cropTotalEnvelopCheckbox.setSelected(newValue);
@@ -72,11 +70,13 @@ public class RatingCurveResults extends TabContainer {
             baremeExporter.syncWithAllOtherInstances();
             baremeExporter.exportRatingCurve();
         });
-        rcGridTable.actionPanel.addChild(exportToBaremeButton, false);
+        rcGridTable.actionPanel.add(exportToBaremeButton);
 
         rcEquation = new RatingCurveEquation();
 
         paramSummaryTable = new ParameterSummaryTable();
+
+        rcResiduals = new RatingCurveResiduals();
 
         mcmcResultPanel = new McmcTraceResultsPanel(project);
 
@@ -89,6 +89,7 @@ public class RatingCurveResults extends TabContainer {
             addTab("Rating Curve equation", rcEqIcon, rcEquation);
             addTab("parameter_densities", dpIcon, paramDensityPlots);
             addTab("parameter_table", tableIcon, paramSummaryTable);
+            addTab("residuals", rcResIcon, rcResiduals);
             addTab("other_results", traceIcon, mcmcResultPanel);
         }
 
@@ -96,6 +97,7 @@ public class RatingCurveResults extends TabContainer {
         T.updateHierarchy(this, paramDensityPlots);
         T.updateHierarchy(this, rcGridTable);
         T.updateHierarchy(this, rcEquation);
+        T.updateHierarchy(this, rcResiduals);
         T.updateHierarchy(this, mcmcResultPanel);
 
         T.t(this, () -> {
@@ -108,6 +110,7 @@ public class RatingCurveResults extends TabContainer {
                 setTitleAt(2, T.html("equation"));
                 setTitleAt(3, T.html("parameter_densities"));
                 setTitleAt(4, T.html("parameter_summary_table"));
+                setTitleAt(5, T.html("residuals"));
                 setTitleAt(5, T.html("mcmc_results"));
             }
             if (priorResults) {
@@ -117,7 +120,8 @@ public class RatingCurveResults extends TabContainer {
                 setTitleAt(2, T.html("equation"));
                 setTitleAt(3, T.html("parameter_densities"));
                 setTitleAt(4, T.html("parameter_summary_table"));
-                setTitleAt(5, T.html("mcmc_results"));
+                setTitleAt(5, T.html("residuals"));
+                setTitleAt(6, T.html("mcmc_results"));
             }
         });
     }
@@ -148,6 +152,7 @@ public class RatingCurveResults extends TabContainer {
         baremeExporter.updateRatingCurveValues(rcPlotDataModified);
 
         rcEquation.updateEquation(parameters.getEquationString());
+        rcEquation.updateEquationLatex(parameters.getEquationLatex());
 
         paramDensityPlots.clearPlots();
         for (EstimatedParameterWrapper p : parameters.getAllParameters()) {
@@ -156,6 +161,13 @@ public class RatingCurveResults extends TabContainer {
         paramDensityPlots.updatePlots();
 
         paramSummaryTable.updateResults(parameters.getModelAndDerivedParameters());
+
+        if (rcPlotData.gaugings != null) {
+            rcResiduals.updateResults(parameters.getResiduals(),
+                    rcPlotData.gaugings.size() == 5
+                            ? rcPlotData.gaugings.get(4)
+                            : null);
+        }
 
         mcmcResultPanel.updateResults(parameters.getAllParameters());
 

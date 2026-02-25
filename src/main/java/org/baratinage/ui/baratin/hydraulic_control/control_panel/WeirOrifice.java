@@ -13,9 +13,8 @@ public class WeirOrifice extends PriorControlPanel {
     private final ParameterPriorDistSimplified exponent;
 
     public WeirOrifice() {
-        super(
-                2,
-                "Q=C<sub>o</sub>A<sub>o</sub>(2g)<sup>1/2</sup>(h-b)<sup>c</sup>&nbsp;(h>\u03BA)");
+        super(2, 5, "Q=C_o * A_o * sqrt(2 * g) * (h-b) ^ c");// \\quad (h > κ)");
+        // "Q=C<sub>o</sub>A<sub>o</sub>(2g)<sup>1/2</sup>(h-b)<sup>c</sup>&nbsp;(h>\u03BA)");
 
         activationHeight = CommonParameterDistSimplified.getActivationHeight();
         weirCoef = CommonParameterDistSimplified.getWeirCoeff("o");
@@ -32,6 +31,8 @@ public class WeirOrifice extends PriorControlPanel {
         addParameter(area);
         addParameter(gravity);
         addParameter(exponent);
+
+        display();
 
         T.t(this, () -> {
             setHeaders(
@@ -68,14 +69,14 @@ public class WeirOrifice extends PriorControlPanel {
             return new Double[] { A, null };
         }
 
-        double Cstd = weirCoef.uncertaintyValueField.getDoubleValue() / 2;
-        double ARstd = area.uncertaintyValueField.getDoubleValue() / 2;
-        double Gstd = gravity.uncertaintyValueField.getDoubleValue() / 2;
+        double Cstd = weirCoef.uncertaintyValueField.getDoubleValue() / 2.0;
+        double ARstd = area.uncertaintyValueField.getDoubleValue() / 2.0;
+        double Gstd = gravity.uncertaintyValueField.getDoubleValue() / 2.0;
 
         double Astd = Math.sqrt(
                 Math.pow(Cstd, 2) * Math.pow(AR * sqrtOfTwoG, 2) +
                         Math.pow(ARstd, 2) * Math.pow(C * sqrtOfTwoG, 2) +
-                        Math.pow(Gstd, 2) * Math.pow(AR * C * Math.pow(2 * G, -1 / 2), 2));
+                        Math.pow(Gstd, 2) * Math.pow(AR * C * Math.pow(2 * G, -1.0 / 2.0), 2));
 
         return new Double[] { A, Astd };
 
@@ -92,9 +93,9 @@ public class WeirOrifice extends PriorControlPanel {
         Double cStd = exponent.uncertaintyValueField.getDoubleValue();
 
         return new KBACGaussianConfig(
-                kMean, kStd == null ? null : kStd / 2,
+                kMean, kStd == null ? null : kStd / 2.0,
                 AGaussianConfig[0], AGaussianConfig[1],
-                cMean, cStd == null ? null : cStd / 2);
+                cMean, cStd == null ? null : cStd / 2.0);
     }
 
 }

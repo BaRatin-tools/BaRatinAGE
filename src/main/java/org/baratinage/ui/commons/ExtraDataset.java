@@ -20,6 +20,9 @@ public class ExtraDataset {
     public ExtraDataset(double[]... vectors) {
         data = new ArrayList<>();
         for (double[] v : vectors) {
+            if (v == null) {
+                continue;
+            }
             data.add(v);
         }
         id = Misc.getTimeStampedId();

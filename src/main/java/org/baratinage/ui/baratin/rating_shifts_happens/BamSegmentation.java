@@ -30,6 +30,7 @@ import org.baratinage.ui.bam.run.BamRun;
 import org.baratinage.ui.bam.run.BamRunException;
 import org.baratinage.ui.component.CommonDialog;
 import org.baratinage.utils.Calc;
+import org.baratinage.utils.ConsoleLogger;
 
 public class BamSegmentation {
 
@@ -201,7 +202,7 @@ public class BamSegmentation {
           progress.accept(p.totalProgress());
         },
         p -> {
-          System.out.println("segmentation: " + p);
+          ConsoleLogger.log("segmentation run > " + p);
         },
         e -> {
           if (e instanceof BamRunException) {

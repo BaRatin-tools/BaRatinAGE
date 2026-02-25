@@ -33,7 +33,7 @@ public class SimpleNumberField extends SimpleTextField {
 
     private static String doubleToString(Double value) {
         if (value == null) {
-            return "";
+            return null;
         } else {
             return Misc.formatNumber(value);
         }
@@ -56,7 +56,7 @@ public class SimpleNumberField extends SimpleTextField {
 
     private static String integerToString(Integer value) {
         if (value == null) {
-            return "";
+            return null;
         } else {
             return value.toString();
         }
@@ -85,8 +85,6 @@ public class SimpleNumberField extends SimpleTextField {
     public SimpleNumberField(boolean integer) {
         super();
         this.integer = integer;
-
-        // using tLasting to make sure it doesn't get overriden elsewhere
 
         addChangeListener((chEvt) -> {
             String str = getText();

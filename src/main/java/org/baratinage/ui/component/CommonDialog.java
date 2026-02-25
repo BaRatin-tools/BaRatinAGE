@@ -240,6 +240,32 @@ public class CommonDialog {
         fileChooser.setApproveButtonToolTipText(defaultApproveButtonToolTipText);
     }
 
+    public static File saveDirDialog(
+            String title) {
+
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setCurrentDirectory(new File(AppSetup.PATH_APP_ROOT_DIR));
+        fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        fileChooser.setDialogTitle(title);
+        fileChooser.setApproveButtonToolTipText("Ok");
+
+        int result = fileChooser.showOpenDialog(AppSetup.MAIN_FRAME);
+        if (result != JFileChooser.APPROVE_OPTION) {
+            return null;
+        }
+
+        File selectedDirectory = fileChooser.getSelectedFile();
+        if (selectedDirectory == null || !selectedDirectory.isDirectory()) {
+            return null;
+        }
+
+        if (selectedDirectory.exists()) {
+            // should check that it is empty or send a warning?
+        }
+
+        return selectedDirectory;
+    }
+
     private static JFileChooser configureFileChooser(
             String title,
             File defaultFile,

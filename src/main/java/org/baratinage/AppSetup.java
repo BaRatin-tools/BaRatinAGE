@@ -81,7 +81,7 @@ public class AppSetup {
 
     public static void setup() {
         CONFIG = new ConfigSet();
-        CONFIG.loadConfiguration();
+        CONFIG.loadConfig();
 
         ConsoleLogger.log(String.format("BaRatinAGE root directory: %s", PATH_APP_ROOT_DIR));
 
@@ -119,7 +119,7 @@ public class AppSetup {
     }
 
     public static void cleanup() {
-        CONFIG.saveConfiguration();
+        CONFIG.saveConfig();
         DirUtils.deleteDir(PATH_APP_TEMP_DIR);
         DirUtils.deleteDir(PATH_BAM_WORKSPACE_DIR);
     }
@@ -191,10 +191,10 @@ public class AppSetup {
             if (manifestStream != null) {
                 return new Manifest(manifestStream).getMainAttributes();
             } else {
-                System.out.println("Manifest file not found.");
+                ConsoleLogger.error("Manifest file not found");
             }
         } catch (IOException e) {
-            System.out.println("Error reading manifest file: " + e.getMessage());
+            ConsoleLogger.error("Error reading manifest file: %s".formatted(e.getMessage()));
         }
         return null;
     }

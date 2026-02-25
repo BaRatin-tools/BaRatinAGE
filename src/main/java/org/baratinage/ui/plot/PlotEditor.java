@@ -2,6 +2,7 @@ package org.baratinage.ui.plot;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -13,6 +14,7 @@ import org.baratinage.translation.T;
 import org.baratinage.ui.component.SimpleDialog;
 import org.baratinage.ui.component.SimpleList;
 import org.baratinage.ui.container.SimpleFlowPanel;
+import org.baratinage.utils.ConsoleLogger;
 import org.baratinage.utils.Misc;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -38,7 +40,7 @@ public class PlotEditor extends SimpleFlowPanel {
     setGap(5);
 
     editablePlotItems = new HashMap<>();
-    editablePlots = new HashMap<>();
+    editablePlots = new LinkedHashMap<>();
 
     globalEditionPanel = new SimpleFlowPanel(true);
     globalEditionPanel.setGap(5);
@@ -132,11 +134,11 @@ public class PlotEditor extends SimpleFlowPanel {
     }
   }
 
-  public void addEditablePlot(Plot plot) {
-    addEditablePlot("main", plot);
+  public EditablePlot addEditablePlot(Plot plot) {
+    return addEditablePlot("main", plot);
   }
 
-  public void addEditablePlot(String id, Plot plot) {
+  public EditablePlot addEditablePlot(String id, Plot plot) {
     EditablePlot ep = new EditablePlot(plot);
     // ep.setConfig(editablePlotItems, itemExplorer.getAllObjects());
     ep.updateEditablePlotItems(editablePlotItems);
@@ -144,6 +146,7 @@ public class PlotEditor extends SimpleFlowPanel {
       ep.applyState(editablePlots.get(id));
     }
     editablePlots.put(id, ep);
+    return ep;
   }
 
   public EditablePlot getEditablePlot() {
@@ -154,7 +157,7 @@ public class PlotEditor extends SimpleFlowPanel {
     return editablePlots.containsKey(id) ? editablePlots.get(id) : null;
   }
 
-  public void addEditablePlotItem(String id, String title, EditablePlotItem editablePlotItem) {
+  public EditablePlotItem addEditablePlotItem(String id, String title, EditablePlotItem editablePlotItem) {
     editablePlotItem.addChangeListener(l -> {
       for (EditablePlot ep : editablePlots.values()) {
         ep.plot.update();
@@ -182,11 +185,12 @@ public class PlotEditor extends SimpleFlowPanel {
       // ep.setConfig(editablePlotItems, itemExplorer.getAllObjects());
       ep.updateEditablePlotItems(editablePlotItems);
     }
+    return editablePlotItem;
   }
 
-  public void addEditablePlotItem(String id, String title, PlotItem plotItem) {
+  public EditablePlotItem addEditablePlotItem(String id, String title, PlotItem plotItem) {
     EditablePlotItem editablePlotItem = new EditablePlotItem(plotItem);
-    addEditablePlotItem(id, title, editablePlotItem);
+    return addEditablePlotItem(id, title, editablePlotItem);
   }
 
   public EditablePlotItem getEditablePlotItem(String id) {
@@ -229,7 +233,9 @@ public class PlotEditor extends SimpleFlowPanel {
 
       JButton openPlotEditorBtn = new JButton();
       String btnLbl = T.text("plot_axis_and_legend");
-      openPlotEditorBtn.setText(editablePlots.size() > 1 ? String.format("%s (%d)", btnLbl, k) : btnLbl);
+      String plotName = ep.getPlotName();
+      openPlotEditorBtn.setText(
+          editablePlots.size() > 1 ? "%s (%s)".formatted(btnLbl, plotName == null ? k : plotName) : btnLbl);
       openPlotEditorBtn.addActionListener(l -> {
         SimpleDialog d = SimpleDialog.buildInfoDialog(
             this,
@@ -283,7 +289,7 @@ public class PlotEditor extends SimpleFlowPanel {
     JSONArray itemsOrderJson = json.optJSONArray("itemsOrder");
 
     if (episJson == null || epsJson == null || itemsOrderJson == null) {
-      System.out.println("Invalid configuration");
+      ConsoleLogger.error("Invalid plot item configuration !");
       return;
     }
 

@@ -4,14 +4,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JCheckBox;
+import javax.swing.JToolBar;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import org.baratinage.AppSetup;
 import org.baratinage.translation.T;
-import org.baratinage.ui.container.SimpleFlowPanel;
+import org.baratinage.ui.plot.EditablePlot;
 import org.baratinage.ui.plot.Plot;
 
-public class RatingCurvePlotToolsPanel extends SimpleFlowPanel {
+public class RatingCurvePlotToolsPanel extends JToolBar {
 
     public final JCheckBox logScaleDischargeAxis;
     public final JCheckBox switchAxisCheckbox;
@@ -22,7 +24,7 @@ public class RatingCurvePlotToolsPanel extends SimpleFlowPanel {
         super();
 
         logScaleDischargeAxis = new JCheckBox();
-        logScaleDischargeAxis.setSelected(false);
+        logScaleDischargeAxis.setSelected(AppSetup.CONFIG.LOG_DISCHARGE_AXIS.get());
         logScaleDischargeAxis.setText("log_scale_discharge_axis");
 
         switchAxisCheckbox = new JCheckBox();
@@ -52,11 +54,10 @@ public class RatingCurvePlotToolsPanel extends SimpleFlowPanel {
             fireChangeListeners();
         });
 
-        setGap(5);
-        addChild(logScaleDischargeAxis, false);
-        addChild(switchAxisCheckbox, false);
-        addChild(smoothTotalEnvelopCheckbox, false);
-        addChild(cropTotalEnvelopCheckbox, false);
+        add(logScaleDischargeAxis);
+        add(switchAxisCheckbox);
+        add(smoothTotalEnvelopCheckbox);
+        add(cropTotalEnvelopCheckbox);
 
         T.t(this, switchAxisCheckbox, false, "swap_xy_axis");
         T.t(this, logScaleDischargeAxis, false, "log_scale_discharge_axis");
@@ -64,24 +65,18 @@ public class RatingCurvePlotToolsPanel extends SimpleFlowPanel {
         T.t(this, cropTotalEnvelopCheckbox, false, "crop_total_envelop_zero");
     }
 
-    public void configure(boolean logDischargeAxis, boolean axisFlipped, boolean totalEnvSmoothed,
+    public void configure(
+            boolean logDischargeAxis,
+            boolean axisFlipped,
+            boolean totalEnvSmoothed,
             boolean cropTotalEnv) {
-        removeAll();
-        if (logDischargeAxis) {
-            addChild(logScaleDischargeAxis, false);
-        }
-        if (axisFlipped) {
-            addChild(switchAxisCheckbox, false);
-        }
-        if (totalEnvSmoothed) {
-            addChild(smoothTotalEnvelopCheckbox, false);
-        }
-        if (cropTotalEnv) {
-            addChild(cropTotalEnvelopCheckbox, false);
-        }
+        logScaleDischargeAxis.setVisible(logDischargeAxis);
+        switchAxisCheckbox.setVisible(axisFlipped);
+        smoothTotalEnvelopCheckbox.setVisible(totalEnvSmoothed);
+        cropTotalEnvelopCheckbox.setVisible(cropTotalEnv);
     }
 
-    public void updatePlotAxis(Plot plot) {
+    public void updatePlotAxis(Plot plot, EditablePlot ep) {
         // apply log/linear scale
         if (logScaleDischargeAxis.isSelected()) {
             if (switchAxisCheckbox.isSelected()) {
@@ -95,10 +90,18 @@ public class RatingCurvePlotToolsPanel extends SimpleFlowPanel {
             plot.axisY.setLabel(T.text("stage") + " [m]");
             plot.axisX.setLabel(T.text("discharge") + " [m3/s]");
             plot.axisXlog.setLabel(T.text("discharge") + " [m3/s]");
+            if (ep != null) {
+                ep.setXAxisLabel(T.text("discharge") + " [m3/s]");
+                ep.setYAxisLabel(T.text("stage") + " [m]");
+            }
         } else {
             plot.axisX.setLabel(T.text("stage") + " [m]");
             plot.axisY.setLabel(T.text("discharge") + " [m3/s]");
             plot.axisYlog.setLabel(T.text("discharge") + " [m3/s]");
+            if (ep != null) {
+                ep.setXAxisLabel(T.text("stage") + " [m]");
+                ep.setYAxisLabel(T.text("discharge") + " [m3/s]");
+            }
         }
     }
 

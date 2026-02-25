@@ -28,7 +28,7 @@ public class RatingCurvePlotData implements IPlotDataProvider {
     public final List<double[]> parametricUncertainty; // min, max
     public final List<double[]> totalUncertainty; // min, max
     public final List<double[]> stageTransitions; // central, min, max
-    public final List<double[]> gaugings; // h, Q, Qmin, Qmax
+    public final List<double[]> gaugings; // h, Q, Qmin, Qmax, (time)
 
     public boolean axisFliped = false;
     public boolean smoothed = false;

@@ -20,7 +20,7 @@ import org.baratinage.ui.container.TitledPanel;
 import org.baratinage.ui.container.TitledPanelSplitTabContainer;
 import org.baratinage.utils.ConsoleLogger;
 import org.baratinage.utils.json.JSONFilter;
-
+import org.baratinage.utils.perf.TimedActions;
 import org.json.JSONObject;
 
 public class HydraulicConfiguration
@@ -31,8 +31,8 @@ public class HydraulicConfiguration
     private final TitledPanel hydraulicControlsTitledPanel;
     private final TitledPanel priorRatingCurveTitledPanel;
 
-    private final ControlMatrix controlMatrix;
-    private final HydraulicControlPanels hydraulicControls;
+    public final ControlMatrix controlMatrix;
+    public final HydraulicControlPanels hydraulicControls;
     public final PriorRatingCurve<HydraulicConfiguration> priorRatingCurve;
 
     public final RunBam runBam;
@@ -225,6 +225,7 @@ public class HydraulicConfiguration
             ConsoleLogger.log("missing 'priorRatingCurve'");
         }
 
+        TimedActions.throttle(ID, AppSetup.CONFIG.THROTTLED_DELAY_MS, priorRatingCurve::checkSync);
     }
 
 }

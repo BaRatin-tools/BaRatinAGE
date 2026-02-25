@@ -16,7 +16,6 @@ import org.baratinage.jbam.PredictionState;
 import org.baratinage.translation.T;
 import org.baratinage.ui.bam.BamConfig;
 import org.baratinage.ui.bam.BamItem;
-import org.baratinage.ui.bam.BamProjectLoader;
 import org.baratinage.ui.bam.IModelDefinition;
 import org.baratinage.ui.bam.IPlotDataProvider;
 import org.baratinage.ui.bam.IPriors;
@@ -45,7 +44,7 @@ public class PriorRatingCurve<HCT extends BamItem & IModelDefinition & IPriors> 
     private final RatingCurveStageGrid priorRatingCurveStageGrid;
     private final SimpleFlowPanel outOufSyncPanel;
     public final RunBam runBam;
-    private final RatingCurveResults resultsPanel;
+    public final RatingCurveResults resultsPanel;
 
     private final HCT hydraulicConfiguration;
     private RunConfigAndRes bamRunConfigAndRes;
@@ -82,7 +81,7 @@ public class PriorRatingCurve<HCT extends BamItem & IModelDefinition & IPriors> 
         Misc.setMinimumSize(resultsPanel, null, 350);
 
         addChild(priorRatingCurveStageGrid, false);
-        addChild(new SimpleSep(), false);
+        addChild(new SimpleSep(), 0, 5, 0);
         addChild(outOufSyncPanel, false);
         addChild(runBam.runButton, 0, 5);
         addChild(resultsPanel, true);
@@ -215,14 +214,14 @@ public class PriorRatingCurve<HCT extends BamItem & IModelDefinition & IPriors> 
                         new PredictionOutput[] { maxpostOutput },
                         new PredictionState[] {},
                         false,
-                        AppSetup.CONFIG.N_SAMPLES_LIMNI_ERRORS.get(), false)),
+                        AppSetup.CONFIG.N_SAMPLES_PRIOR_RUN.get(), false)),
                 new PredExp(PredictionConfig.buildPriorPrediction(
                         "u",
                         new PredictionInput[] { predInput },
                         new PredictionOutput[] { uParamOutput },
                         new PredictionState[] {},
                         true,
-                        AppSetup.CONFIG.N_SAMPLES_LIMNI_ERRORS.get(),
+                        AppSetup.CONFIG.N_SAMPLES_PRIOR_RUN.get(),
                         false)));
     }
 
@@ -251,9 +250,7 @@ public class PriorRatingCurve<HCT extends BamItem & IModelDefinition & IPriors> 
         if (json.has("bamRunId")) {
             String bamRunId = json.getString("bamRunId");
             bamRunConfigAndRes = RunConfigAndRes.buildFromTempZipArchive(bamRunId);
-            BamProjectLoader.addDelayedAction(() -> {
-                buildPlot();
-            });
+            buildPlot();
         } else {
             ConsoleLogger.log("missing 'bamRunZipFileName'");
         }
@@ -265,9 +262,7 @@ public class PriorRatingCurve<HCT extends BamItem & IModelDefinition & IPriors> 
         }
 
         if (json.has("plotEditor")) {
-            BamProjectLoader.addDelayedAction(() -> {
-                resultsPanel.ratingCurvePlot.plotEditor.fromJSON(json.getJSONObject("plotEditor"));
-            });
+            resultsPanel.ratingCurvePlot.plotEditor.fromJSON(json.getJSONObject("plotEditor"));
         }
     }
 

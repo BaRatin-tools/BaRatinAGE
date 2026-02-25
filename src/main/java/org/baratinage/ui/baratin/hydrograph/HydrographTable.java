@@ -26,9 +26,10 @@ public class HydrographTable extends DataTable {
             showColumnDescriptionDialog();
         });
         T.t(this, showHeaderDescription, false, "table_headers_desc");
-        toolsPanel.addChild(showHeaderDescription, false);
-        toolsPanel.addChild(cropNegativeValuesCB, false);
+        toolsPanel.add(showHeaderDescription);
+        toolsPanel.add(cropNegativeValuesCB);
 
+        setDefaultNumberPrecision(2, false);
     }
 
     private void showColumnDescriptionDialog() {

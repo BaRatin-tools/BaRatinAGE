@@ -25,11 +25,11 @@ import javax.swing.JFrame;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
+import javax.swing.JToolBar;
 
 import org.baratinage.AppSetup;
 import org.baratinage.translation.T;
 import org.baratinage.ui.component.CommonDialog;
-import org.baratinage.ui.container.SimpleFlowPanel;
 import org.baratinage.utils.ConsoleLogger;
 import org.jfree.chart.ChartUtils;
 import org.jfree.chart.JFreeChart;
@@ -43,10 +43,16 @@ public class PlotExporter {
 
     public String getSvgString();
 
+    public String getSvgString(Dimension dim);
+
     public BufferedImage getBufferedImage();
+
+    public BufferedImage getBufferedImage(Dimension dim, int scale);
+
+    public boolean isPlotValid();
   }
 
-  public static SimpleFlowPanel buildExportPanel(IExportablePlot plot) {
+  public static JToolBar buildExportToolBar(IExportablePlot plot) {
 
     JButton btnWindowPlot = new JButton();
     btnWindowPlot.setIcon(AppSetup.ICONS.EXTERNAL);
@@ -74,12 +80,11 @@ public class PlotExporter {
       copyToClipboard(plot.getBufferedImage());
     });
 
-    SimpleFlowPanel panel = new SimpleFlowPanel();
-    panel.setGap(5);
-    panel.addChild(btnWindowPlot, false);
-    panel.addChild(btnSaveAsSvg, false);
-    panel.addChild(btnSaveAsPng, false);
-    panel.addChild(btnCopyToClipboard, false);
+    JToolBar toolbar = new JToolBar();
+    toolbar.add(btnWindowPlot);
+    toolbar.add(btnSaveAsSvg);
+    toolbar.add(btnSaveAsPng);
+    toolbar.add(btnCopyToClipboard);
 
     T.t(plot, () -> {
       btnWindowPlot.setToolTipText(T.text("window_plot"));
@@ -90,7 +95,7 @@ public class PlotExporter {
       btnCopyToClipboard.setToolTipText(T.text("to_clipboard"));
     });
 
-    return panel;
+    return toolbar;
   }
 
   public static JPopupMenu buildExportPopupMenu(IExportablePlot plot) {

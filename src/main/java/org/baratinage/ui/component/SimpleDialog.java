@@ -1,8 +1,8 @@
 package org.baratinage.ui.component;
 
-import java.awt.Component;
 import java.awt.Dialog;
 import java.awt.Dimension;
+import java.awt.Window;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -23,8 +23,12 @@ public class SimpleDialog {
     private final SimpleFlowPanel content;
     private final SimpleFlowPanel footer;
 
-    public SimpleDialog(Component parent, boolean modal) {
-        dialog = new JDialog(SwingUtilities.getWindowAncestor(parent));
+    public SimpleDialog(JComponent parent, boolean modal) {
+        this(SwingUtilities.getWindowAncestor(parent), modal);
+    }
+
+    public SimpleDialog(Window parent, boolean modal) {
+        dialog = new JDialog(parent);
         dialog.setModalityType(Dialog.ModalityType.DOCUMENT_MODAL);
         header = new SimpleFlowPanel();
         content = new SimpleFlowPanel();
@@ -84,8 +88,18 @@ public class SimpleDialog {
         dialog.pack();
     }
 
+    public static SimpleDialog buildOkCancelDialog(JComponent parent,
+            String title,
+            JComponent content,
+            ActionListener onOk,
+            ActionListener onCancel) {
+        return buildOkCancelDialog(
+                SwingUtilities.getWindowAncestor(parent),
+                title, content, onOk, onCancel);
+    }
+
     public static SimpleDialog buildOkCancelDialog(
-            Component parent,
+            Window parent,
             String title,
             JComponent content,
             ActionListener onOk,
@@ -126,7 +140,11 @@ public class SimpleDialog {
         return dialog;
     }
 
-    public static SimpleDialog buildInfoDialog(Component parent, String title, JComponent content) {
+    public static SimpleDialog buildInfoDialog(JComponent parent, String title, JComponent content) {
+        return buildInfoDialog(SwingUtilities.getWindowAncestor(parent), title, content);
+    }
+
+    public static SimpleDialog buildInfoDialog(Window parent, String title, JComponent content) {
 
         SimpleDialog dialog = new SimpleDialog(parent, true);
 

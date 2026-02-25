@@ -26,7 +26,7 @@ import org.jfree.chart.ui.RectangleEdge;
 import org.jfree.data.Range;
 import org.jfree.data.xy.XYDataset;
 
-public class Plot implements LegendItemSource {
+public class Plot implements IPlot, LegendItemSource {
 
     public final XYPlot plot;
     public final JFreeChart chart;
@@ -186,10 +186,6 @@ public class Plot implements LegendItemSource {
         update();
     }
 
-    public JFreeChart getChart() {
-        return this.chart;
-    }
-
     public void setXAxisLabel(String label) {
         axisX.setLabel(label);
         axisXlog.setLabel(label);
@@ -216,8 +212,14 @@ public class Plot implements LegendItemSource {
         plot.setDataset(items.size(), item.getDataset());
         plot.setRenderer(items.size(), item.getRenderer());
         items.add(item);
-        axisYlog.setMinValue(getRangeBounds().getLowerBound());
-        axisXlog.setMinValue(getDomainBounds().getLowerBound());
+        Range rangeBounds = getRangeBounds();
+        if (rangeBounds != null) {
+            axisYlog.setMinValue(rangeBounds.getLowerBound());
+        }
+        Range domainBounds = getDomainBounds();
+        if (domainBounds != null) {
+            axisXlog.setMinValue(domainBounds.getLowerBound());
+        }
     }
 
     public void addXYItem(PlotItemGroup item) {
@@ -250,8 +252,14 @@ public class Plot implements LegendItemSource {
         items.remove(index);
         plot.setDataset(index, null);
         plot.setRenderer(index, null);
-        axisYlog.setMinValue(getRangeBounds().getLowerBound());
-        axisXlog.setMinValue(getDomainBounds().getLowerBound());
+        Range rangeBounds = getRangeBounds();
+        if (rangeBounds != null) {
+            axisYlog.setMinValue(rangeBounds.getLowerBound());
+        }
+        Range domainBounds = getDomainBounds();
+        if (domainBounds != null) {
+            axisXlog.setMinValue(domainBounds.getLowerBound());
+        }
         return index;
     }
 
@@ -277,7 +285,10 @@ public class Plot implements LegendItemSource {
         }
     }
 
-    private static Range applyBufferToRange(Range r, double lowerBufferPercentage, double upperBufferPercentage,
+    private static Range applyBufferToRange(
+            Range r,
+            double lowerBufferPercentage,
+            double upperBufferPercentage,
             boolean isLogScale) {
         if (r == null) {
             return r;
@@ -308,7 +319,7 @@ public class Plot implements LegendItemSource {
         for (int k = 0; k < items.size(); k++) {
             PlotItem pi = items.get(k);
             Range r = pi.getDomainBounds();
-            if (r != null) {
+            if (r != null && pi.getVisible()) {
                 if (isLog) {
                     r = findPositiveDomain(pi.getDataset());
                 }
@@ -316,7 +327,7 @@ public class Plot implements LegendItemSource {
             }
         }
         if (range == null) {
-            return isLog ? new Range(1, 10) : new Range(0, 1);
+            return null;
         }
         return applyBufferToRange(range, bufferPercentageLeft, bufferPercentageRight, isLog);
     }
@@ -327,7 +338,7 @@ public class Plot implements LegendItemSource {
         for (int k = 0; k < items.size(); k++) {
             PlotItem pi = items.get(k);
             Range r = pi.getRangeBounds();
-            if (r != null) {
+            if (r != null && pi.getVisible()) {
                 if (isLog) {
                     r = findPositiveRange(pi.getDataset());
                 }
@@ -335,7 +346,7 @@ public class Plot implements LegendItemSource {
             }
         }
         if (range == null) {
-            return isLog ? new Range(1, 10) : new Range(0, 1);
+            return null;
         }
         return applyBufferToRange(range, bufferPercentageBottom, bufferPercentageTop, isLog);
     }
@@ -399,6 +410,9 @@ public class Plot implements LegendItemSource {
     @Override
     public LegendItemCollection getLegendItems() {
         LegendItemCollection lic = new LegendItemCollection();
+        if (!includeLegend) {
+            return lic;
+        }
         for (PlotItem pi : items.reversed()) {
             if (pi.getLegendVisible()) {
                 lic.add(pi.getLegendItem());
@@ -435,6 +449,12 @@ public class Plot implements LegendItemSource {
         bufferPercentageRight = right;
     }
 
+    @Override
+    public JFreeChart getChart() {
+        return this.chart;
+    }
+
+    @Override
     public Plot getCopy() {
         Plot plotCopy = new Plot(includeLegend, timeseries);
         // axis labels
@@ -470,6 +490,28 @@ public class Plot implements LegendItemSource {
         }
         plotCopy.update();
         return plotCopy;
+    }
+
+    @Override
+    public void restoreAutoBounds() {
+        Range domainBounds = getDomainBounds();
+        if (domainBounds != null) {
+            if (domainBounds.getLength() == 0) {
+                double value = domainBounds.getCentralValue();
+                double offset = Math.abs(value * 0.1);
+                domainBounds = new Range(value - offset, value + offset);
+            }
+            plot.getDomainAxis().setRange(domainBounds);
+        }
+        Range rangeBounds = getRangeBounds();
+        if (rangeBounds != null) {
+            if (rangeBounds.getLength() == 0) {
+                double value = rangeBounds.getCentralValue();
+                double offset = Math.abs(value * 0.1);
+                rangeBounds = new Range(value - offset, value + offset);
+            }
+            plot.getRangeAxis().setRange(rangeBounds);
+        }
     }
 
 }

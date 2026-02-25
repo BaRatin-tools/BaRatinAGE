@@ -11,6 +11,7 @@ import org.baratinage.ui.baratin.gaugings.GaugingsDataset;
 import org.baratinage.ui.baratin.rating_shifts_happens.BamSegmentation;
 import org.baratinage.ui.plot.ColorPalette;
 import org.baratinage.ui.plot.PlotBar;
+import org.baratinage.ui.plot.PlotInfiniteBand;
 import org.baratinage.ui.plot.PlotInfiniteLine;
 import org.baratinage.ui.plot.PlotPoints;
 import org.baratinage.utils.DateTime;
@@ -61,12 +62,26 @@ public class ShiftDetectionResults {
       EstimatedParameter p = shiftsOrdered.get(k);
       double maxpost = p.getMaxpost();
       LocalDateTime date = DateTime.doubleToDateTime(maxpost);
+      double[] u95 = p.get95interval();
+      LocalDateTime[] u95date = new LocalDateTime[] {
+          DateTime.doubleToDateTime(u95[0]),
+          DateTime.doubleToDateTime(u95[1])
+      };
       String dateStr = dateFormatter.format(date);
       PlotInfiniteLine line = new PlotInfiniteLine(
           dateStr,
           maxpost * 1000,
           palette[k],
           4);
+      String u95dateStr = "[%s, %s]".formatted(
+          dateFormatter.format(u95date[0]),
+          dateFormatter.format(u95date[1]));
+      PlotInfiniteBand band = new PlotInfiniteBand(
+          u95dateStr,
+          Double.POSITIVE_INFINITY,
+          u95[0] * 1000,
+          u95[1] * 1000);
+
       double[][] densities = PlotBar.densityEstimate(p.mcmc, optimBinWidth);
       PlotBar dist = new PlotBar(
           dateStr,
@@ -77,10 +92,12 @@ public class ShiftDetectionResults {
 
       shifts.add(new ResultShift(
           date,
+          u95date,
           p,
           dateStr,
           palette[k],
           line,
+          band,
           dist));
     }
 
@@ -201,7 +218,7 @@ public class ShiftDetectionResults {
       t[k - startIndex] = DateTime.doubleToDateTime(time[k]);
       h[k - startIndex] = stage[k];
       q[k - startIndex] = discharge[k];
-      qupercent[k - startIndex] = dischargeStd[k] / discharge[k] * 100 * 2;
+      qupercent[k - startIndex] = discharge[k] == 0 ? 0 : dischargeStd[k] / discharge[k] * 100 * 2;
       active[k - startIndex] = true;
     }
 
@@ -254,10 +271,12 @@ public class ShiftDetectionResults {
 
   public static record ResultShift(
       LocalDateTime date,
+      LocalDateTime[] u95date,
       EstimatedParameter parameter,
       String name,
       Color color,
       PlotInfiniteLine line,
+      PlotInfiniteBand band,
       PlotBar distribution) {
 
   }

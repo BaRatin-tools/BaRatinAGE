@@ -15,11 +15,15 @@ import javax.swing.event.ChangeListener;
 import org.baratinage.translation.T;
 import org.baratinage.ui.baratin.baratin_qfh.QFHPreset.QFHPresetParameter;
 import org.baratinage.ui.commons.MsgPanel;
+import org.baratinage.ui.component.EquationLabel;
 import org.baratinage.ui.component.SimpleComboBox;
 import org.baratinage.ui.container.SimpleFlowPanel;
 import org.baratinage.ui.textfile.EquationEditor;
 import org.baratinage.utils.ConsoleLogger;
 import org.baratinage.utils.Misc;
+import org.baratinage.utils.equation.EquationParser;
+import org.baratinage.utils.equation.Expr;
+import org.baratinage.utils.equation.LatexFormatter;
 import org.baratinage.utils.perf.TimedActions;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -28,6 +32,7 @@ public class QFHTextFileEquation extends SimpleFlowPanel {
 
     private final QFHPreset preset;
     private final SimpleComboBox hSelectionCombobox;
+    private final EquationLabel equationLabel;
     private final JLabel hVariableLabel;
 
     private final EquationEditor eqEditor;
@@ -66,6 +71,8 @@ public class QFHTextFileEquation extends SimpleFlowPanel {
         hVariableLabel = new JLabel();
         hVariableLabel.setFont(hVariableLabel.getFont().deriveFont(Font.BOLD));
 
+        equationLabel = new EquationLabel();
+
         inconsistencyWarning = new MsgPanel(MsgPanel.TYPE.ERROR, true);
 
         if (preset == null) {
@@ -73,6 +80,7 @@ public class QFHTextFileEquation extends SimpleFlowPanel {
                 TimedActions.debounce(id, 250, () -> {
                     updateStageVariableCombobox(eqEditor.getVariables());
                     updateEquationParameters();
+                    updateEquationLabel();
                     fireChangeListeners(); // equation has changed
                 });
             });
@@ -122,6 +130,7 @@ public class QFHTextFileEquation extends SimpleFlowPanel {
 
         addChild(eqLabel, false);
         addChild(eqScrollPane, true);
+        addChild(equationLabel, false);
 
         if (editable) {
             addChild(hSelectionLabel, false);
@@ -187,6 +196,20 @@ public class QFHTextFileEquation extends SimpleFlowPanel {
 
     }
 
+    private void updateEquationLabel() {
+        try {
+            EquationParser eq = new EquationParser("Q = " + eqEditor.getText());
+            Expr expr = eq.parse();
+            LatexFormatter latexFormatter = new LatexFormatter(50);
+            String latexMultiLine = latexFormatter.format(expr);
+            System.out.println(latexMultiLine);
+            equationLabel.setLatexEquation(latexMultiLine);
+        } catch (Exception parserError) {
+            equationLabel.setEquation("");
+            ConsoleLogger.warn(parserError);
+        }
+    }
+
     public String getEquation() {
         return eqEditor.getText();
     }
@@ -203,6 +226,7 @@ public class QFHTextFileEquation extends SimpleFlowPanel {
         eqEditor.setText(preset.formula());
         hVariableName = preset.stageSymbole();
         hVariableLabel.setText(hVariableName);
+        updateEquationLabel();
         eqParameterNames.clear();
         for (QFHPresetParameter QFHPar : preset.parameters()) {
             eqParameterNames.add(QFHPar.symbole());

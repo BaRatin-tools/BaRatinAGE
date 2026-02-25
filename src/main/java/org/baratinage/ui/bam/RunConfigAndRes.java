@@ -3,13 +3,14 @@ package org.baratinage.ui.bam;
 import java.io.File;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.baratinage.AppSetup;
 import org.baratinage.jbam.BaM;
-import org.baratinage.jbam.PredictionResult;
-import org.baratinage.jbam.PredictionResult.PredictionOutputResult;
 import org.baratinage.jbam.utils.BamFilesHelpers;
+import org.baratinage.utils.ConsoleLogger;
+import org.baratinage.utils.Misc;
 import org.baratinage.utils.fs.ReadWriteZip;
 
 public class RunConfigAndRes extends BaM {
@@ -51,31 +52,27 @@ public class RunConfigAndRes extends BaM {
         this.workspace = workspace;
     }
 
-    public String zipRun(boolean writeToFile) {
+    public String zipRun(boolean writeToFile, String... filenamesToIgnore) {
         if (!workspace.toFile().exists()) {
             toFiles(workspace.toString());
         }
+        List<String> _filenamesToIgnore = new ArrayList<>(Arrays.asList(filenamesToIgnore));
+        _filenamesToIgnore.add(BamFilesHelpers.RESULTS_MCMC);
+        _filenamesToIgnore.add(BamFilesHelpers.RESULTS_OUTPUT_SPAG);
         String zipName = id + ".zip";
         Path zipPath = Path.of(AppSetup.PATH_APP_TEMP_DIR, zipName);
         if (writeToFile) {
             // each run being unique, if the zip file exist, there is no need
             // to recreate it; no modification could have occured
             List<String> filesToZip = new ArrayList<>();
-            for (File f : workspace.toFile().listFiles()) {
-                filesToZip.add(f.getName());
-            }
-            List<String> filesToIgnore = new ArrayList<>();
-            for (PredictionResult p : predictionResults) {
-                for (int k = 0; k < p.outputResults.size(); k++) {
-                    PredictionOutputResult r = p.outputResults.get(k);
-                    if (r.spag() != null && r.spag().size() > 1) {
-                        String s = p.predictionConfig.outputs[k].spagFileName;
-                        filesToIgnore.add(s);
-                        if (filesToZip.contains(s)) {
-                            filesToZip.remove(s);
-                        }
-                    }
+            File[] allFiles = workspace.toFile().listFiles();
+            for (File f : allFiles) {
+                String filename = f.getName();
+                if (matchTemplates(filename, _filenamesToIgnore) && !filename.contains("maxpost")) {
+                    ConsoleLogger.log("BaM file '%s' was ignored.".formatted(filename));
+                    continue;
                 }
+                filesToZip.add(f.getName());
             }
             String baseDir = workspace.toString();
             String[] filesToZipFullPath = filesToZip
@@ -85,6 +82,15 @@ public class RunConfigAndRes extends BaM {
             ReadWriteZip.flatZip(zipPath.toString(), filesToZipFullPath);
         }
         return zipPath.toString();
+    }
+
+    private final static boolean matchTemplates(String filename, List<String> templates) {
+        for (String t : templates) {
+            if (Misc.matchesTemplate(t, filename)) {
+                return true;
+            }
+        }
+        return false;
     }
 }
 //

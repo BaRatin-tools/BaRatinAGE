@@ -4,6 +4,7 @@ import java.awt.Dimension;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import javax.swing.JPanel;
+import javax.swing.JToolBar;
 
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -13,23 +14,23 @@ import org.baratinage.ui.plot.PlotExporter.IExportablePlot;
 
 public class PlotContainer extends SimpleFlowPanel implements IExportablePlot {
 
-    private Plot plot;
+    private IPlot plot;
     private JFreeChart chart;
     private SimpleFlowPanel chartPanelContainer;
     private CustomChartPanel chartPanel;
 
-    public final SimpleFlowPanel toolsPanel;
-    private final SimpleFlowPanel actionPanel;
+    public final JToolBar toolsPanel;
+    private final JToolBar actionPanel;
 
     public PlotContainer() {
         this(true);
     }
 
-    public PlotContainer(Plot plot) {
+    public PlotContainer(IPlot plot) {
         this(plot, true);
     }
 
-    public PlotContainer(Plot plot, boolean toolbar) {
+    public PlotContainer(IPlot plot, boolean toolbar) {
         this(toolbar);
         setPlot(plot);
     }
@@ -47,19 +48,15 @@ public class PlotContainer extends SimpleFlowPanel implements IExportablePlot {
         chartPanelContainer = new SimpleFlowPanel();
         addChild(chartPanelContainer, true);
 
-        toolsPanel = new SimpleFlowPanel();
-        actionPanel = PlotExporter.buildExportPanel(this);
+        toolsPanel = new JToolBar();
+        actionPanel = PlotExporter.buildExportToolBar(this);
 
         topPanel.addChild(toolsPanel, false);
         topPanel.addExtensor();
         topPanel.addChild(actionPanel, false);
-
-        toolsPanel.setGap(5);
-        actionPanel.setGap(5);
-
     }
 
-    public void setPlot(Plot plot) {
+    public void setPlot(IPlot plot) {
         this.plot = plot;
         chart = plot.getChart();
 
@@ -78,7 +75,7 @@ public class PlotContainer extends SimpleFlowPanel implements IExportablePlot {
         return chartPanel;
     }
 
-    public Plot getPlot() {
+    public IPlot getPlot() {
         return plot;
     }
 
@@ -95,6 +92,11 @@ public class PlotContainer extends SimpleFlowPanel implements IExportablePlot {
     @Override
     public String getSvgString() {
         Dimension dim = getSize();
+        return getSvgString(dim);
+    }
+
+    @Override
+    public String getSvgString(Dimension dim) {
         SVGGraphics2D svg2d = new SVGGraphics2D(dim.width, dim.height);
         chart.draw(svg2d, new Rectangle2D.Double(0, 0, dim.width, dim.height));
         String svgElement = svg2d.getSVGElement();
@@ -105,11 +107,21 @@ public class PlotContainer extends SimpleFlowPanel implements IExportablePlot {
     public BufferedImage getBufferedImage() {
         int scale = 2;
         Dimension d = getSize();
+        return getBufferedImage(d, scale);
+    }
+
+    @Override
+    public BufferedImage getBufferedImage(Dimension dim, int scale) {
         return PlotExporter.buildImgFromChart(
                 chart,
-                d.width,
-                d.height,
+                dim.width,
+                dim.height,
                 scale,
                 scale);
+    }
+
+    @Override
+    public boolean isPlotValid() {
+        return chart != null;
     }
 }

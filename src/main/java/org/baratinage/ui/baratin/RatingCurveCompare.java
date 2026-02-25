@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import javax.swing.JButton;
 import javax.swing.JLabel;
 
 import org.baratinage.translation.T;
@@ -25,6 +26,7 @@ import org.baratinage.ui.plot.Plot;
 import org.baratinage.ui.plot.PlotContainer;
 import org.baratinage.ui.plot.PlotItem;
 import org.baratinage.ui.plot.PlotUtils;
+import org.baratinage.ui.plot.PlotItem.LineType;
 import org.baratinage.utils.Misc;
 import org.jfree.chart.title.LegendTitle;
 import org.jfree.chart.ui.RectangleEdge;
@@ -44,19 +46,19 @@ public class RatingCurveCompare extends BamItem {
     private final SimpleTextField rcOneNameLabel;
     private final SimpleTextField rcTwoNameLabel;
 
-    private final SimpleTextField xAxisLabelField;
-    private final SimpleTextField yAxisLabelField;
+    public final SimpleTextField stageAxixLabelField;
+    public final SimpleTextField dischargeAxisLabelField;
 
-    private final BamItemParent rcOne;
-    private final BamItemParent rcTwo;
-    private final PlotContainer plotContainer;
+    public final BamItemParent rcOne;
+    public final BamItemParent rcTwo;
+    public final PlotContainer plotContainer;
     private final RatingCurvePlotToolsPanel plotToolsPanel;
 
     private Plot plot;
 
-    private final HashMap<BamItem, HashMap<String, EditablePlotItem>> knownEditablePlotItems;
+    public final HashMap<BamItem, HashMap<String, EditablePlotItem>> knownEditablePlotItems;
     private final HashMap<BamItem, String> knownLabels;
-    private final SimpleList<EPI> episList;
+    public final SimpleList<EPI> episList;
 
     private static record EPI(BamItem bamItem, String key) {
         public boolean isSame(EPI other) {
@@ -82,7 +84,7 @@ public class RatingCurveCompare extends BamItem {
         T.t(this, rcOneLabel, false, "rc_n", 1);
         JLabel rcTwoLabel = new JLabel();
         T.t(this, rcTwoLabel, false, "rc_n", 2);
-        SimpleFlowPanel rcChooserPanel = new SimpleFlowPanel(true);
+        SimpleFlowPanel rcChooserPanel = new SimpleFlowPanel();
 
         rcOne = new BamItemParent(this,
                 BamItemType.RATING_CURVE,
@@ -101,13 +103,50 @@ public class RatingCurveCompare extends BamItem {
         rcOneNameLabel = new SimpleTextField();
         rcTwoNameLabel = new SimpleTextField();
 
+        SimpleFlowPanel rcChooserPanel1 = new SimpleFlowPanel(true);
+        rcChooserPanel1.setGap(5);
+        rcChooserPanel1.addChild(rcOneLabel, false);
+        rcChooserPanel1.addChild(rcOne.cb, false);
+        rcChooserPanel1.addChild(rcOneNameLabel, false);
+
+        SimpleFlowPanel rcChooserPanel2 = new SimpleFlowPanel(true);
+        rcChooserPanel2.setGap(5);
+        rcChooserPanel2.addChild(rcTwoLabel, false);
+        rcChooserPanel2.addChild(rcTwo.cb, false);
+        rcChooserPanel2.addChild(rcTwoNameLabel, false);
+
         rcChooserPanel.setGap(5);
-        rcChooserPanel.addChild(rcOneLabel, false);
-        rcChooserPanel.addChild(rcOne.cb, false);
-        rcChooserPanel.addChild(rcOneNameLabel, false);
-        rcChooserPanel.addChild(rcTwoLabel, false);
-        rcChooserPanel.addChild(rcTwo.cb, false);
-        rcChooserPanel.addChild(rcTwoNameLabel, false);
+        rcChooserPanel.addChild(rcChooserPanel1, true);
+        rcChooserPanel.addChild(rcChooserPanel2, true);
+
+        SimpleFlowPanel actionPanel = new SimpleFlowPanel(true);
+        actionPanel.setGap(5);
+        JButton orderByTypeBtn = new JButton();
+        // JButton orderByRCBtn = new JButton();
+        JButton rc1AsForegroundBtn = new JButton();
+        JButton rc2AsForegroundBtn = new JButton();
+        actionPanel.addChild(rc1AsForegroundBtn, false);
+        actionPanel.addChild(rc2AsForegroundBtn, false);
+        actionPanel.addChild(orderByTypeBtn, false);
+        // actionPanel.addChild(orderByRCBtn, false);
+        rc1AsForegroundBtn.addActionListener(l -> {
+            List<EPI> epis = getPlotItemOrderByRC(true);
+            setPlotItemOrder(epis);
+            resetPlot();
+        });
+        rc2AsForegroundBtn.addActionListener(l -> {
+            List<EPI> epis = getPlotItemOrderByRC(false);
+            setPlotItemOrder(epis);
+            resetPlot();
+        });
+        orderByTypeBtn.addActionListener(l -> {
+            List<EPI> epis = getPlotItemOrderByType();
+            setPlotItemOrder(epis);
+            resetPlot();
+        });
+        T.t(this, rc1AsForegroundBtn, false, "rc_in_foreground", 1);
+        T.t(this, rc2AsForegroundBtn, false, "rc_in_foreground", 2);
+        T.t(this, orderByTypeBtn, false, "order_items_by_type");
 
         // plot items management
         SimpleFlowPanel plotItemManagementPanel = new SimpleFlowPanel();
@@ -125,28 +164,28 @@ public class RatingCurveCompare extends BamItem {
 
         JLabel xAxisLabel = new JLabel();
         T.t(this, xAxisLabel, false, "stage_label");
-        xAxisLabelField = new SimpleTextField();
-        xAxisLabelField.setText(T.text("stage") + " [m]");
-        xAxisLabelField.addChangeListener(l -> {
+        stageAxixLabelField = new SimpleTextField();
+        stageAxixLabelField.setText(T.text("stage") + " [m]");
+        stageAxixLabelField.addChangeListener(l -> {
             resetPlot();
         });
         SimpleFlowPanel xAxisConfigPanel = new SimpleFlowPanel();
         xAxisConfigPanel.setGap(5);
         xAxisConfigPanel.addChild(xAxisLabel, false);
-        xAxisConfigPanel.addChild(xAxisLabelField, true);
+        xAxisConfigPanel.addChild(stageAxixLabelField, true);
         plotConfigPanel.addChild(xAxisConfigPanel, true);
 
         JLabel yAxisLabel = new JLabel();
         T.t(this, yAxisLabel, false, "discharge_label");
-        yAxisLabelField = new SimpleTextField();
-        yAxisLabelField.setText(T.text("discharge") + " [m3/s]");
-        yAxisLabelField.addChangeListener(l -> {
+        dischargeAxisLabelField = new SimpleTextField();
+        dischargeAxisLabelField.setText(T.text("discharge") + " [m3/s]");
+        dischargeAxisLabelField.addChangeListener(l -> {
             resetPlot();
         });
         SimpleFlowPanel yAxisConfigPanel = new SimpleFlowPanel();
         yAxisConfigPanel.setGap(5);
         yAxisConfigPanel.addChild(yAxisLabel, false);
-        yAxisConfigPanel.addChild(yAxisLabelField, true);
+        yAxisConfigPanel.addChild(dischargeAxisLabelField, true);
         plotConfigPanel.addChild(yAxisConfigPanel, true);
 
         // main plot
@@ -168,6 +207,7 @@ public class RatingCurveCompare extends BamItem {
         plotItemsConfigPanel.setPadding(5);
         plotItemsConfigPanel.addChild(rcChooserPanel, false);
         plotItemsConfigPanel.addChild(new SimpleSep(), false);
+        plotItemsConfigPanel.addChild(actionPanel, false);
         plotItemsConfigPanel.addChild(plotItemManagementPanel, true);
         plotItemsConfigPanel.addChild(plotItemEditionPanel, false);
 
@@ -186,7 +226,7 @@ public class RatingCurveCompare extends BamItem {
         rcOne.addChangeListener(l -> {
 
             BamItem item = rcOne.getCurrentBamItem();
-            updateKnownEditablePlotItems(item);
+            updateKnownEditablePlotItems(item, false);
 
             if (item == null) {
                 rcOneNameLabel.setText("");
@@ -196,13 +236,15 @@ public class RatingCurveCompare extends BamItem {
                 knownLabels.put(item, label);
             }
 
-            resetPlotItemList();
+            List<EPI> epis = getPlotItemOrderByRC(false);
+            setPlotItemOrder(epis);
             resetPlot();
+
         });
 
         rcTwo.addChangeListener(l -> {
             BamItem item = rcTwo.getCurrentBamItem();
-            updateKnownEditablePlotItems(item);
+            updateKnownEditablePlotItems(item, true);
 
             if (item == null) {
                 rcTwoNameLabel.setText("");
@@ -211,8 +253,11 @@ public class RatingCurveCompare extends BamItem {
                 rcTwoNameLabel.setText(label);
                 knownLabels.put(item, label);
             }
-            resetPlotItemList();
+
+            List<EPI> epis = getPlotItemOrderByRC(false);
+            setPlotItemOrder(epis);
             resetPlot();
+
         });
 
         rcOneNameLabel.addChangeListener(l -> {
@@ -263,13 +308,9 @@ public class RatingCurveCompare extends BamItem {
         });
 
         plotToolsPanel.addChangeListener(l -> {
-
-            updateKnownEditablePlotItems(rcOne.getCurrentBamItem());
-            updateKnownEditablePlotItems(rcTwo.getCurrentBamItem());
-
-            resetPlotItemList();
+            updateKnownEditablePlotItems(rcOne.getCurrentBamItem(), false);
+            updateKnownEditablePlotItems(rcTwo.getCurrentBamItem(), true);
             resetPlot();
-
         });
 
     }
@@ -288,9 +329,11 @@ public class RatingCurveCompare extends BamItem {
         return epis.stream().map(epi -> getEditablePlotItem(epi)).filter(e -> e != null).toList();
     }
 
-    private void updateKnownEditablePlotItems(BamItem bamItem) {
+    private void updateKnownEditablePlotItems(BamItem bamItem, boolean foreground) {
         if (bamItem != null) {
-            HashMap<String, EditablePlotItem> newEditablePlotItems = buildEditableRatingCurvePlotItems(bamItem);
+            HashMap<String, EditablePlotItem> newEditablePlotItems = buildEditableRatingCurvePlotItems(
+                    bamItem,
+                    foreground);
             if (!knownEditablePlotItems.containsKey(bamItem)) {
                 knownEditablePlotItems.put(bamItem, newEditablePlotItems);
             } else {
@@ -308,68 +351,74 @@ public class RatingCurveCompare extends BamItem {
         }
     }
 
-    private void resetPlotItemList() {
-
-        List<EPI> neededEPIs = new ArrayList<>();
-        BamItem bamItemOne = rcOne.getCurrentBamItem();
-        if (bamItemOne != null && knownEditablePlotItems.containsKey(bamItemOne)) {
-            for (String key : episKeys) {
-                if (knownEditablePlotItems.get(bamItemOne).containsKey(key)) {
-                    neededEPIs.add(new EPI(bamItemOne, key));
-                }
+    public void setPlotItemOrder(List<EPI> epis) {
+        // reset the list
+        EPI selected = episList.getSelectedObject();
+        episList.clearList();
+        for (EPI epi : epis) {
+            EditablePlotItem edpi = knownEditablePlotItems.get(epi.bamItem).get(epi.key);
+            if (edpi == null) {
+                continue;
+            }
+            episList.addItem(epi.bamItem.bamItemNameField.getText() + " > " +
+                    edpi.plotItem.getLabel(),
+                    PlotUtils.getPlotItemIcon(edpi.plotItem, 30, 30),
+                    epi);
+            if (epi.equals(selected)) {
+                episList.setSelected(selected);
             }
         }
-        BamItem bamItemTwo = rcTwo.getCurrentBamItem();
-        if (bamItemTwo != null && knownEditablePlotItems.containsKey(bamItemTwo)) {
-            for (String key : episKeys) {
-                if (knownEditablePlotItems.get(bamItemTwo).containsKey(key)) {
-                    neededEPIs.add(new EPI(bamItemTwo, key));
-                }
-            }
-        }
-
-        // remove no longer necessary items
-        List<EPI> existingEPIs = episList.getAllObjects();
-        for (EPI epi1 : existingEPIs) {
-            boolean needed = false;
-            for (EPI epi2 : neededEPIs) {
-                if (epi1.equals(epi2)) {
-                    needed = true;
-                    break;
-                }
-            }
-            if (!needed) {
-                episList.removeItem(epi1);
-            }
-        }
-
-        // add missing items
-        existingEPIs = episList.getAllObjects();
-        for (EPI epi1 : neededEPIs) {
-            boolean missing = true;
-            for (EPI epi2 : existingEPIs) {
-                if (epi1.equals(epi2)) {
-                    missing = false;
-                    break;
-                }
-            }
-            if (missing) {
-                EditablePlotItem ePltItem = knownEditablePlotItems.get(epi1.bamItem).get(epi1.key);
-                if (ePltItem == null) {
-                    continue;
-                }
-                episList.addItem(
-                        epi1.bamItem.bamItemNameField.getText() + " > " + ePltItem.plotItem.getLabel(),
-                        PlotUtils.getPlotItemIcon(ePltItem.plotItem, 30, 30),
-                        epi1);
-            }
-        }
-
     }
 
-    private void resetPlot() {
+    private List<EPI> getEPIs(BamItemParent bamItemParent) {
+        List<EPI> epis = new ArrayList<>();
+        BamItem bamItem = bamItemParent.getCurrentBamItem();
+        if (bamItem != null && knownEditablePlotItems.containsKey(bamItem)) {
+            for (String key : episKeys) {
+                if (knownEditablePlotItems.get(bamItem).containsKey(key)) {
+                    epis.add(new EPI(bamItem, key));
+                }
+            }
+        }
+        return epis;
+    }
+
+    private List<EPI> getPlotItemOrderByRC(boolean rc1first) {
+        List<EPI> epis = new ArrayList<>();
+
+        if (rc1first) {
+            epis.addAll(getEPIs(rcOne));
+            epis.addAll(getEPIs(rcTwo));
+        } else {
+            epis.addAll(getEPIs(rcTwo));
+            epis.addAll(getEPIs(rcOne));
+        }
+
+        return epis;
+    }
+
+    private List<EPI> getPlotItemOrderByType() {
+        List<EPI> epis = new ArrayList<>();
+        BamItem bamItemOne = rcOne.getCurrentBamItem();
+        BamItem bamItemTwo = rcTwo.getCurrentBamItem();
+        for (String key : episKeys) {
+            if (bamItemOne != null && knownEditablePlotItems.containsKey(bamItemOne)) {
+                if (knownEditablePlotItems.get(bamItemOne).containsKey(key)) {
+                    epis.add(new EPI(bamItemOne, key));
+                }
+            }
+            if (bamItemTwo != null && knownEditablePlotItems.containsKey(bamItemTwo)) {
+                if (knownEditablePlotItems.get(bamItemTwo).containsKey(key)) {
+                    epis.add(new EPI(bamItemTwo, key));
+                }
+            }
+        }
+        return epis;
+    }
+
+    public void resetPlot() {
         plot = new Plot();
-        plotToolsPanel.updatePlotAxis(plot);
+        plotToolsPanel.updatePlotAxis(plot, null);
         List<EditablePlotItem> items = getEditablePlotItems(episList.getAllObjects());
         for (int k = items.size() - 1; k >= 0; k--) {
             if (items.get(k).plotItem.getVisible()) {
@@ -415,7 +464,9 @@ public class RatingCurveCompare extends BamItem {
         return legend.getLegendTitle(RectangleEdge.RIGHT, true);
     }
 
-    private HashMap<String, EditablePlotItem> buildEditableRatingCurvePlotItems(BamItem item) {
+    private HashMap<String, EditablePlotItem> buildEditableRatingCurvePlotItems(
+            BamItem item,
+            boolean foreground) {
         HashMap<String, EditablePlotItem> editableRatingCurvePlotItems = new HashMap<>();
         if (item == null) {
             return editableRatingCurvePlotItems;
@@ -424,6 +475,9 @@ public class RatingCurveCompare extends BamItem {
         HashMap<String, PlotItem> allPlotItems = new HashMap<>();
         if (item instanceof RatingCurve) {
             RatingCurvePlotData rcPlotData = ((RatingCurve) item).getRatingCurvePlotData();
+            if (plotToolsPanel.cropTotalEnv()) {
+                rcPlotData = rcPlotData.cropTotalEnvelopValues();
+            }
             rcPlotData.smoothed = plotToolsPanel.totalEnvSmoothed();
             rcPlotData.axisFliped = plotToolsPanel.axisFlipped();
             allPlotItems = rcPlotData.getPlotItems();
@@ -450,7 +504,9 @@ public class RatingCurveCompare extends BamItem {
             if (plotItems.size() > 0) {
 
                 EditablePlotItem ePlotItem = buildEditableRatingCurvePlotItem(
-                        plotItems.get(0), item, key);
+                        plotItems.get(0),
+                        item,
+                        key);
                 if (plotItems.size() > 1) {
                     for (int k = 1; k < plotItems.size(); k++) {
                         ePlotItem.addSibling(plotItems.get(k));
@@ -459,10 +515,28 @@ public class RatingCurveCompare extends BamItem {
                 editableRatingCurvePlotItems.put(key, ePlotItem);
             }
         }
+
+        // set default appearance depending on type and position
+        for (String key : editableRatingCurvePlotItems.keySet()) {
+            EditablePlotItem ePltItem = editableRatingCurvePlotItems.get(key);
+            if (ePltItem.type == EditablePlotItem.TYPE.LINE && foreground) {
+                ePltItem.setLineType(LineType.DOTTED);
+            } else if (ePltItem.type == EditablePlotItem.TYPE.BAND) {
+                ePltItem.setFillAlpha(0.5f);
+            }
+            if (key == RatingCurvePlotData.STAGE_TRANSITION_U) {
+                ePltItem.setShowItem(false);
+                ePltItem.setShowLegend(false);
+            }
+        }
+
         return editableRatingCurvePlotItems;
     }
 
-    private EditablePlotItem buildEditableRatingCurvePlotItem(PlotItem plotItem, BamItem bamItem, String key) {
+    private EditablePlotItem buildEditableRatingCurvePlotItem(
+            PlotItem plotItem,
+            BamItem bamItem,
+            String key) {
         EditablePlotItem ePltItem = new EditablePlotItem(plotItem);
         ePltItem.addChangeListener(l -> {
             resetPlot();
@@ -523,8 +597,8 @@ public class RatingCurveCompare extends BamItem {
         config.JSON.put("logDischargeAxis", plotToolsPanel.logDischargeAxis());
         config.JSON.put("axisFlipped", plotToolsPanel.axisFlipped());
         config.JSON.put("totalEnvSmoothed", plotToolsPanel.totalEnvSmoothed());
-        config.JSON.put("xAxisLabel", xAxisLabelField.getText());
-        config.JSON.put("yAxisLabel", yAxisLabelField.getText());
+        config.JSON.put("xAxisLabel", stageAxixLabelField.getText());
+        config.JSON.put("yAxisLabel", dischargeAxisLabelField.getText());
 
         return config;
     }
@@ -537,7 +611,7 @@ public class RatingCurveCompare extends BamItem {
             for (String bamItemId : jsonKnownEditablePlotItems.keySet()) {
                 BamItem bamItem = PROJECT.BAM_ITEMS.getBamItemWithId(bamItemId);
                 if (bamItem != null) {
-                    HashMap<String, EditablePlotItem> ePlotItems = buildEditableRatingCurvePlotItems(bamItem);
+                    HashMap<String, EditablePlotItem> ePlotItems = buildEditableRatingCurvePlotItems(bamItem, true);
                     JSONObject jsonEPI = jsonKnownEditablePlotItems.getJSONObject(bamItemId);
                     for (String key : jsonEPI.keySet()) {
                         if (ePlotItems.containsKey(key)) {
@@ -601,11 +675,11 @@ public class RatingCurveCompare extends BamItem {
         }
 
         if (config.JSON.has("xAxisLabel")) {
-            xAxisLabelField.setText(config.JSON.getString("xAxisLabel"));
+            stageAxixLabelField.setText(config.JSON.getString("xAxisLabel"));
         }
 
         if (config.JSON.has("yAxisLabel")) {
-            yAxisLabelField.setText(config.JSON.getString("yAxisLabel"));
+            dischargeAxisLabelField.setText(config.JSON.getString("yAxisLabel"));
         }
 
         if (config.JSON.has("rcOne")) {
@@ -616,7 +690,7 @@ public class RatingCurveCompare extends BamItem {
             rcTwo.fromJSON(config.JSON.getJSONObject("rcTwo"), true);
         }
 
-        resetPlotItemList();
+        // resetPlotItemList();
         resetPlot();
     }
 

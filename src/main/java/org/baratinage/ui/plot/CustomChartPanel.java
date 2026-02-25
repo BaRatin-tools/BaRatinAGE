@@ -7,22 +7,21 @@ import org.jfree.chart.ChartPanel;
 import org.jfree.chart.ChartRenderingInfo;
 import org.jfree.chart.plot.PlotRenderingInfo;
 import org.jfree.chart.ui.RectangleInsets;
-import org.jfree.data.Range;
 
 /**
  * A modification of the ChartPanel class:
  * 
  * modified restoreAutoBounds methods to ignore
- * dataset marked to be ignored in Plot.
+ * dataset marked to be ignored in IPlot.
  * 
  * modified paintComponent methods to apply a fixed
  * padding to the plot
  */
 public class CustomChartPanel extends ChartPanel {
 
-  private final Plot plot;
+  private final IPlot plot;
 
-  public CustomChartPanel(Plot plot) {
+  public CustomChartPanel(IPlot plot) {
     super(plot.getChart());
     this.plot = plot;
 
@@ -35,24 +34,7 @@ public class CustomChartPanel extends ChartPanel {
 
   @Override
   public void restoreAutoBounds() {
-    Range domainBounds = plot.getDomainBounds();
-    Range rangeBounds = plot.getRangeBounds();
-    if (domainBounds != null) {
-      if (domainBounds.getLength() == 0) {
-        double value = domainBounds.getCentralValue();
-        double offset = Math.abs(value * 0.1);
-        domainBounds = new Range(value - offset, value + offset);
-      }
-      plot.plot.getDomainAxis().setRange(domainBounds);
-    }
-    if (rangeBounds != null) {
-      if (rangeBounds.getLength() == 0) {
-        double value = rangeBounds.getCentralValue();
-        double offset = Math.abs(value * 0.1);
-        rangeBounds = new Range(value - offset, value + offset);
-      }
-      plot.plot.getRangeAxis().setRange(rangeBounds);
-    }
+    plot.restoreAutoBounds();
   }
 
   RectangleInsets fixedInsets = null;

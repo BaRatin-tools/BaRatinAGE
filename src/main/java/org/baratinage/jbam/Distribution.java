@@ -5,7 +5,6 @@ import java.util.Optional;
 import java.util.function.Consumer;
 
 import org.baratinage.jbam.utils.DistributionCLI;
-
 import org.baratinage.utils.ConsoleLogger;
 
 public class Distribution {
@@ -50,6 +49,11 @@ public class Distribution {
         if (density != null) {
             return density;
         }
+        if (type == DistributionType.FIXED
+                || type == DistributionType.FLAT
+                || type == DistributionType.FLAT_POSITIVE) {
+            return null;
+        }
 
         Optional<List<double[]>> quantilesOpt = DistributionCLI.getQuantiles(
                 type.bamName,
@@ -88,6 +92,9 @@ public class Distribution {
     }
 
     public double[] getRandomValues(int n) {
+        if (type == DistributionType.FIXED) {
+            return null;
+        }
         Optional<double[]> randomValsOpt = DistributionCLI.getRandom(
                 type.bamName,
                 parameterValues,
@@ -96,6 +103,11 @@ public class Distribution {
     }
 
     public double[] getPercentiles(double low, double high, int nsteps) {
+        if (type == DistributionType.FIXED
+                || type == DistributionType.FLAT
+                || type == DistributionType.FLAT_POSITIVE) {
+            return null;
+        }
         Optional<List<double[]>> quantilesOpt = DistributionCLI.getQuantiles(type.bamName,
                 parameterValues, low, high, nsteps);
         if (quantilesOpt.isEmpty()) {
@@ -106,6 +118,11 @@ public class Distribution {
     }
 
     public Double getMedian() {
+        if (type == DistributionType.FIXED
+                || type == DistributionType.FLAT
+                || type == DistributionType.FLAT_POSITIVE) {
+            return null;
+        }
         double[] quantiles = getPercentiles(0.5, 0.5, 1);
         if (quantiles == null) {
             return null;

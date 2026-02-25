@@ -24,10 +24,12 @@ import org.baratinage.ui.container.SplitContainer;
 import org.baratinage.ui.container.TabContainer;
 import org.baratinage.translation.T;
 import org.baratinage.utils.Misc;
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class Limnigraph extends BamItem {
+
+    public static final String LIMNI_FILENAME_TEMPLATE = "limni_%s"; // timestamp id
+    public static final String LIMNI_ERROR_FILENAME_TEMPLATE = "limni_errors_%s"; // timestamp id
 
     private Icon chartIcon = AppSetup.ICONS.getCustomAppImageIcon("limnigraph.svg");
     private Icon errorIcon = AppSetup.ICONS.getCustomAppImageIcon("errors.svg");
@@ -36,7 +38,7 @@ public class Limnigraph extends BamItem {
 
     private final LimnigraphTable limniTable;
 
-    private final LimnigraphPlot limniPlot;
+    public final LimnigraphPlot limniPlot;
 
     private LimnigraphDataset limniDataset;
     private final JLabel importedDataSetSourceLabel;
@@ -149,7 +151,7 @@ public class Limnigraph extends BamItem {
         stageVector.add(stage);
 
         return new PredictionInput(
-                "limni_" + Misc.getTimeStampedId(),
+                LIMNI_FILENAME_TEMPLATE.formatted(Misc.getTimeStampedId()),
                 stageVector);
     }
 
@@ -161,7 +163,7 @@ public class Limnigraph extends BamItem {
             return null;
         }
         return new PredictionInput(
-                "limni_errors_" + Misc.getTimeStampedId(),
+                LIMNI_ERROR_FILENAME_TEMPLATE.formatted(Misc.getTimeStampedId()),
                 limniDataset.getStageErrMatrix(true));
     }
 
@@ -197,23 +199,10 @@ public class Limnigraph extends BamItem {
 
         if (json.has("limniDataset")) {
             JSONObject limniDatasetJson = json.getJSONObject("limniDataset");
-            JSONObject limniErrMatrixJson = null;
-            if (limniDatasetJson.has("nested")) {
-                JSONArray nestedJson = limniDatasetJson.getJSONArray("nested");
-                limniErrMatrixJson = nestedJson.getJSONObject(0);
-            }
             LimnigraphDataset newLimniDataset = null;
-            if (limniErrMatrixJson == null) {
-                newLimniDataset = new LimnigraphDataset(
-                        limniDatasetJson.getString("name"),
-                        limniDatasetJson.getString("hashString"));
-            } else {
-                newLimniDataset = new LimnigraphDataset(
-                        limniDatasetJson.getString("name"),
-                        limniDatasetJson.getString("hashString"),
-                        limniErrMatrixJson.getString("name"),
-                        limniErrMatrixJson.getString("hashString"));
-            }
+            newLimniDataset = new LimnigraphDataset(
+                    limniDatasetJson.getString("name"),
+                    limniDatasetJson.getString("hashString"));
             if (newLimniDataset != null) {
                 updateDataset(newLimniDataset);
             }

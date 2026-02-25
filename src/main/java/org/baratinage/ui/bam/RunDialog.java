@@ -20,6 +20,7 @@ import org.baratinage.translation.T;
 import org.baratinage.ui.bam.run.BamRunException;
 import org.baratinage.ui.component.ProgressBar;
 import org.baratinage.ui.component.SimpleLogger;
+import org.baratinage.ui.config.ConfigItem.SCOPE;
 import org.baratinage.ui.container.SimpleFlowPanel;
 import org.baratinage.utils.ConsoleLogger;
 
@@ -74,17 +75,19 @@ public class RunDialog extends JDialog {
         showHideLoggerButton.setText(T.text("pref_hide_bam_console"));
         showHideLoggerButton.setSelected(AppSetup.CONFIG.HIDE_BAM_CONSOLE.get());
         showHideLoggerButton.addActionListener(l -> {
-            AppSetup.CONFIG.HIDE_BAM_CONSOLE.set(showHideLoggerButton.isSelected());
-            AppSetup.CONFIG.saveConfiguration();
             resetContent();
+            AppSetup.CONFIG.HIDE_BAM_CONSOLE.set(
+                    showHideLoggerButton.isSelected(),
+                    SCOPE.PROJECT);
         });
         closeBamDialogOnSuccessButton = new JCheckBox();
         closeBamDialogOnSuccessButton.setText(T.text("pref_close_bam_console_on_success"));
         closeBamDialogOnSuccessButton.setSelected(AppSetup.CONFIG.CLOSE_BAM_DIALOG_ON_SUCCESS.get());
         closeBamDialogOnSuccessButton.addActionListener(l -> {
-            AppSetup.CONFIG.CLOSE_BAM_DIALOG_ON_SUCCESS.set(closeBamDialogOnSuccessButton.isSelected());
-            AppSetup.CONFIG.saveConfiguration();
             resetContent();
+            AppSetup.CONFIG.CLOSE_BAM_DIALOG_ON_SUCCESS.set(
+                    closeBamDialogOnSuccessButton.isSelected(),
+                    SCOPE.PROJECT);
         });
 
         resetContent();
@@ -112,7 +115,8 @@ public class RunDialog extends JDialog {
         mainPanel.setGap(5);
 
         mainPanel.addChild(pbPanel, false);
-        if (!AppSetup.CONFIG.HIDE_BAM_CONSOLE.get()) {
+        // if (!AppSetup.CONFIG.HIDE_BAM_CONSOLE.get()) {
+        if (!showHideLoggerButton.isSelected()) {
             mainPanel.addChild(logger, true);
         }
 
@@ -202,7 +206,7 @@ public class RunDialog extends JDialog {
                         onSuccess.accept(RunConfigAndRes.buildFromWorkspace(id, workspacePath));
                         setTitle(T.text("bam_done"));
                         progressBar.setString(T.text("bam_done"));
-                        if (AppSetup.CONFIG.CLOSE_BAM_DIALOG_ON_SUCCESS.get()) {
+                        if (closeBamDialogOnSuccessButton.isSelected()) {
                             dispose();
                         }
                     } else {

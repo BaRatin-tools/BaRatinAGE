@@ -90,7 +90,7 @@ public class LegendEditor extends SimpleFlowPanel implements LegendItemSource {
     SimpleCheckbox visibilityCb = new SimpleCheckbox();
     visibilityCb.setText(T.text("include_legend"));
     visibilityCb.setSelected(item.visible);
-    visibilityCb.addChangeListener(e -> {
+    visibilityCb.addItemListener(e -> {
       item.visible = visibilityCb.isSelected();
       updatePlot();
     });

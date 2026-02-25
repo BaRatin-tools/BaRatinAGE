@@ -42,6 +42,9 @@ public class EstimatedParameter {
         }
         int n = mcmc.length;
         double[] priorSamples = parameterConfig.distribution.getRandomValues(n);
+        if (priorSamples == null) {
+            return 0.5f;
+        }
         int belowCount = 0;
         for (int k = 0; k < n; k++) {
             if (mcmc[k] < priorSamples[k]) {

@@ -2,43 +2,45 @@ package org.baratinage.ui.config;
 
 import javax.swing.JCheckBox;
 
+import org.baratinage.utils.ConsoleLogger;
+import org.json.JSONException;
 import org.json.JSONObject;
 
-public class ConfigItemBoolean extends ConfigItem {
+public class ConfigItemBoolean extends ConfigItem<Boolean, JCheckBox> {
 
-    private boolean defaultValue;
-    private boolean value;
-
-    public ConfigItemBoolean(String id, boolean defaultValue, boolean requireRestart) {
-        super(id, requireRestart);
-        this.defaultValue = defaultValue;
-        value = defaultValue;
-    }
-
-    public void set(boolean value) {
-        this.value = value;
+    public ConfigItemBoolean(String id, boolean requireRestart, Boolean defaultValue) {
+        super(id, requireRestart, defaultValue);
     }
 
     @Override
-    public Boolean get() {
-        return value;
+    public void setFromJSON(JSONObject json, SCOPE scope) {
+        if (!json.has(id)) {
+            unset(scope);
+            return;
+        }
+        try {
+            Boolean value = json.getBoolean(id);
+            set(value, scope);
+        } catch (JSONException e) {
+            ConsoleLogger.error(e);
+        }
     }
 
     @Override
-    public void setFromJSON(JSONObject json) {
-        value = json.optBoolean(id, defaultValue);
-    }
-
-    @Override
-    public JCheckBox getField() {
-
+    protected JCheckBox buildField(SCOPE scope) {
         JCheckBox field = new JCheckBox();
-        field.setSelected(value);
-        field.addChangeListener(l -> {
-            value = field.isSelected();
+        field.setSelected((Boolean) getValueForScope(scope));
+        field.addItemListener(l -> {
+            if (suppressFieldEvents)
+                return;
+            set(field.isSelected(), scope);
         });
-
         return field;
+    }
+
+    @Override
+    protected void setField(JCheckBox field, Boolean value) {
+        field.setSelected(value);
     }
 
 }

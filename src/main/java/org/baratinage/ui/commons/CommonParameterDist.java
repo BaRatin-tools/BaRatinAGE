@@ -10,7 +10,7 @@ public class CommonParameterDist {
                 ACTIVATION_HEIGHT(
                                 "activation_stage",
                                 AppSetup.ICONS.getCustomAppImageIcon("activation_height.svg"),
-                                "m", "\u03BA"),
+                                "m", "κ"),
                 SLOPE(
                                 "slope",
                                 AppSetup.ICONS.getCustomAppImageIcon("slope.svg"),
@@ -18,7 +18,11 @@ public class CommonParameterDist {
                 STRICKLER_COEFFICIENT(
                                 "strickler_coef",
                                 AppSetup.ICONS.getCustomAppImageIcon("strickler_coef.svg"),
-                                "m<sup>1/3</sup>.s<sup>-1</sup>", "K<sub>s</sub>"),
+                                "m ^ (1/3) * s ^ (-1)", "K_s"),
+                MANNING_COEFFICIENT(
+                                "manning_coef",
+                                AppSetup.ICONS.getCustomAppImageIcon("strickler_coef.svg"),
+                                "s / m ^ (1/3)", "n"),
                 ANGLE(
                                 "angle",
                                 AppSetup.ICONS.getCustomAppImageIcon("angle.svg"),
@@ -26,27 +30,27 @@ public class CommonParameterDist {
                 WIDTH(
                                 "width",
                                 AppSetup.ICONS.getCustomAppImageIcon("width.svg"),
-                                "m", "B<sub>r</sub>"),
+                                "m", "B_w"),
                 PARABOLA_WIDTH(
                                 "parabola_width",
                                 AppSetup.ICONS.getCustomAppImageIcon("parabola_width.svg"),
-                                "m", "B<sub>p</sub>"),
+                                "m", "B_p"),
                 PARABOLA_HEIGHT(
                                 "parabola_height",
                                 AppSetup.ICONS.getCustomAppImageIcon("parabola_height.svg"),
-                                "m", "H<sub>p</sub>"),
+                                "m", "H_p"),
                 ORIFICE_AREA(
                                 "orifice_area",
                                 AppSetup.ICONS.getCustomAppImageIcon("orifice_area.svg"),
-                                "m<sup>2</sup>", "A<sub>o</sub>"),
+                                "m ^ 2", "A_o"),
                 AREA(
                                 "area",
                                 AppSetup.ICONS.getCustomAppImageIcon("area.svg"),
-                                "m<sup>2</sup>", "A"),
+                                "m ^ 2", "A"),
                 GRAVITY(
                                 "gravity_acceleration",
                                 AppSetup.ICONS.getCustomAppImageIcon("gravity.svg"),
-                                "m.s<sup>-2</sup>", "g"),
+                                "m * s ^ (-2)", "g"),
                 EXPONENT(
                                 "exponent",
                                 AppSetup.ICONS.getCustomAppImageIcon("exponent.svg"),
@@ -54,7 +58,7 @@ public class CommonParameterDist {
                 WEIR_COEFFICIENT(
                                 "weir_coefficient",
                                 AppSetup.ICONS.getCustomAppImageIcon("weir_coeff.svg"),
-                                "-", "C<sub>r</sub>"),
+                                "-", "C_r"),
                 COEFFICIENT(
                                 "coefficient",
                                 AppSetup.ICONS.getCustomAppImageIcon("coefficient.svg"),
@@ -66,7 +70,7 @@ public class CommonParameterDist {
                 OFFSET(
                                 "offset",
                                 AppSetup.ICONS.getCustomAppImageIcon("offset.svg"),
-                                "m", "\u03B4");
+                                "m", "κ");
 
                 public final String id;
                 public final SvgIcon icon;
@@ -81,14 +85,14 @@ public class CommonParameterDist {
                 }
         }
 
-        public ParameterPriorDistSimplified buildParameterPriorDistSimplified(CommonParameterType type) {
+        public static ParameterPriorDistSimplified buildParameterPriorDistSimplified(CommonParameterType type) {
                 ParameterPriorDistSimplified p = new ParameterPriorDistSimplified();
                 p.setIcon(type.icon);
                 p.setSymbolUnitLabels(type.defaultSymbole, type.unit);
                 return p;
         }
 
-        public ParameterPriorDistSimplified buildParameterPriorDistSimplified(
+        public static ParameterPriorDistSimplified buildParameterPriorDistSimplified(
                         CommonParameterType type,
                         String symbole) {
                 ParameterPriorDistSimplified p = buildParameterPriorDistSimplified(type);
@@ -96,7 +100,7 @@ public class CommonParameterDist {
                 return p;
         }
 
-        public ParameterPriorDist buildParameterPriorDist(CommonParameterType type, String bamName) {
+        public static ParameterPriorDist buildParameterPriorDist(CommonParameterType type, String bamName) {
                 ParameterPriorDist p = new ParameterPriorDist(bamName);
                 p.setIcon(type.icon);
                 p.setSymbolUnitLabels(bamName, type.unit);

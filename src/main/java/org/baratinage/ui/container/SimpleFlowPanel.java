@@ -2,12 +2,14 @@ package org.baratinage.ui.container;
 
 import javax.swing.JComponent;
 import javax.swing.JPanel;
+import javax.swing.Scrollable;
 
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Insets;
 import java.awt.Rectangle;
+import java.awt.Toolkit;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -17,7 +19,7 @@ import java.util.Map;
  * - equally (with optional weights) shared
  * - taken by children according to their preferred size (fill = false)
  */
-public class SimpleFlowPanel extends JPanel {
+public class SimpleFlowPanel extends JPanel implements Scrollable {
 
   public boolean DEBUG_MODE = false;
 
@@ -163,6 +165,9 @@ public class SimpleFlowPanel extends JPanel {
     int fixedSize = 0;
     float flexCount = 0f;
     for (Component comp : components) {
+      if (!comp.isVisible()) {
+        continue;
+      }
       ChildCompConfig childConfig = childrenConfigs.get(comp);
       if (comp instanceof JComponent && childConfig.isSizeFixed()) {
         fixedSize += isVertical ? childConfig.getTotalHeight() : childConfig.getTotalWidth();
@@ -178,6 +183,9 @@ public class SimpleFlowPanel extends JPanel {
     if (isVertical) {
       for (int k = 0; k < nComp; k++) {
         Component comp = components[k];
+        if (!comp.isVisible()) {
+          continue;
+        }
         ChildCompConfig childConfig = childrenConfigs.get(comp);
         Float size = eachSize * childConfig.weight;
         int h = childConfig.isSizeFixed() ? childConfig.getPrefHeight() : size.intValue();
@@ -193,6 +201,9 @@ public class SimpleFlowPanel extends JPanel {
     } else {
       for (int k = 0; k < nComp; k++) {
         Component comp = components[k];
+        if (!comp.isVisible()) {
+          continue;
+        }
         ChildCompConfig childConfig = childrenConfigs.get(comp);
         Float size = eachSize * childConfig.weight;
         int w = childConfig.isSizeFixed() ? childConfig.getPrefWidth() : size.intValue();
@@ -262,6 +273,9 @@ public class SimpleFlowPanel extends JPanel {
     if (isVertical) {
       for (int k = 0; k < nComp; k++) {
         Component comp = components[k];
+        if (!comp.isVisible()) {
+          continue;
+        }
         ChildCompConfig childConfig = childrenConfigs.get(comp);
         width = Math.max(width,
             childConfig.getTotalWidth() + insets.left + insets.right + padding.left + padding.right);
@@ -271,6 +285,9 @@ public class SimpleFlowPanel extends JPanel {
     } else {
       for (int k = 0; k < nComp; k++) {
         Component comp = components[k];
+        if (!comp.isVisible()) {
+          continue;
+        }
         ChildCompConfig childConfig = childrenConfigs.get(comp);
         height = Math.max(height,
             childConfig.getTotalHeight() + insets.top + insets.bottom + padding.top + padding.bottom);
@@ -300,6 +317,34 @@ public class SimpleFlowPanel extends JPanel {
     }
     revalidate();
     repaint();
+  }
+
+  private static final int BASE_SCROLL = 16; // logical pixels
+  private final double scale = Toolkit.getDefaultToolkit().getScreenResolution() / 96.0;
+
+  @Override
+  public Dimension getPreferredScrollableViewportSize() {
+    return getPreferredSize();
+  }
+
+  @Override
+  public int getScrollableUnitIncrement(Rectangle visibleRect, int orientation, int direction) {
+    return (int) Math.round(BASE_SCROLL * scale);
+  }
+
+  @Override
+  public int getScrollableBlockIncrement(Rectangle visibleRect, int orientation, int direction) {
+    return (int) (visibleRect.height * scale);
+  }
+
+  @Override
+  public boolean getScrollableTracksViewportWidth() {
+    return true;
+  }
+
+  @Override
+  public boolean getScrollableTracksViewportHeight() {
+    return false;
   }
 
 }

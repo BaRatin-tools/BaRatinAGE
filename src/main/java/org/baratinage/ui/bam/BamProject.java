@@ -1,11 +1,7 @@
 package org.baratinage.ui.bam;
 
-import java.io.File;
-import java.io.IOException;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.function.Function;
 
 import javax.swing.JMenuItem;
@@ -18,12 +14,10 @@ import org.baratinage.ui.container.SimpleFlowPanel;
 import org.baratinage.ui.container.SplitContainer;
 import org.baratinage.utils.ConsoleLogger;
 import org.baratinage.utils.Misc;
-import org.baratinage.utils.fs.ReadWriteZip;
-import org.baratinage.utils.fs.WriteFile;
 import org.baratinage.utils.json.JSONCompare;
 import org.baratinage.utils.json.JSONCompareResult;
 import org.baratinage.utils.json.JSONFilter;
-import org.json.JSONArray;
+import org.baratinage.utils.perf.Performance;
 import org.json.JSONObject;
 
 public abstract class BamProject extends SimpleFlowPanel {
@@ -40,7 +34,6 @@ public abstract class BamProject extends SimpleFlowPanel {
     protected final SimpleFlowPanel currentPanel;
 
     private BamConfig lastSavedConfig;
-    private boolean unsavedChanges = false;
 
     public BamProject(BamProjectType projectType) {
         super(true);
@@ -70,29 +63,25 @@ public abstract class BamProject extends SimpleFlowPanel {
         lastSavedConfig = null;
     }
 
+    public void setLastSavedConfig() {
+        lastSavedConfig = BamProjectSaver.getBamConfig(this);
+    }
+
     public boolean checkUnsavedChange() {
         if (lastSavedConfig == null) {
-            unsavedChanges = true;
             return true;
         }
-        BamConfig currentConfig = save(false);
+        Performance.startTimeMonitoring("checkUnsavedChange");
+        BamConfig currentConfig = BamProjectSaver.getBamConfig(this);
         JSONFilter filter = new JSONFilter(true, true, "selectedItemId");
         JSONObject curr = filter.apply(currentConfig.JSON);
         JSONObject saved = filter.apply(lastSavedConfig.JSON);
         JSONCompareResult compareRes = JSONCompare.compare(curr, saved);
-        if (!compareRes.matching() != unsavedChanges) {
-            unsavedChanges = !compareRes.matching();
+        Performance.endTimeMonitoring("checkUnsavedChange");
+        if (!compareRes.matching()) {
             return true;
         }
         return false;
-    }
-
-    public boolean hasUnsavedChange() {
-        return unsavedChanges;
-    }
-
-    private void createProjectBackupConfigRecord() {
-        lastSavedConfig = save(false);
     }
 
     private void setupExplorer() {
@@ -189,6 +178,14 @@ public abstract class BamProject extends SimpleFlowPanel {
     }
 
     public BamItem addBamItem(BamItemType itemType, String uuid) {
+        return addBamItem(buildBamItem(itemType, uuid));
+    }
+
+    public BamItem addBamItem(BamItemType type) {
+        return addBamItem(type, Misc.getTimeStampedId());
+    }
+
+    public BamItem buildBamItem(BamItemType itemType, String uuid) {
         ProjectBamItem pBamItem = projectBamItems.get(itemType);
         if (pBamItem == null) {
             ConsoleLogger.error("Cannot find item type '" + itemType + "'!");
@@ -196,11 +193,11 @@ public abstract class BamProject extends SimpleFlowPanel {
         }
         BamItem bamItem = pBamItem.builder.apply(uuid);
         bamItem.bamItemNameField.setText(BAM_ITEMS.getDefaultName(itemType));
-        return addBamItem(bamItem);
+        return bamItem;
     }
 
-    public BamItem addBamItem(BamItemType type) {
-        return addBamItem(type, Misc.getTimeStampedId());
+    public BamItem builBamItem(BamItemType itemType) {
+        return buildBamItem(itemType, Misc.getTimeStampedId());
     }
 
     protected void deleteBamItem(BamItem bamItem) {
@@ -220,74 +217,8 @@ public abstract class BamProject extends SimpleFlowPanel {
         return null;
     }
 
-    private BamConfig save() {
-        return save(true);
-    }
-
-    private BamConfig save(boolean writeToFile) {
-        JSONObject json = new JSONObject();
-        List<String> files = new ArrayList<>();
-        JSONArray bamItemsJson = new JSONArray();
-        BamItemList bamItemList = getOrderedBamItemList();
-        int n = bamItemList.size();
-        for (int k = 0; k < n; k++) {
-            BamItem item = bamItemList.get(k);
-            BamConfig itemConfig = item.save(writeToFile);
-            JSONObject bamItemJson = new JSONObject();
-            bamItemJson.put("id", item.ID);
-            bamItemJson.put("type", item.TYPE.toString());
-            bamItemJson.put("name", item.bamItemNameField.getText());
-            bamItemJson.put("description", item.bamItemDescriptionField.getText());
-            bamItemJson.put("config", itemConfig.JSON);
-            bamItemsJson.put(k, bamItemJson);
-            for (String file : itemConfig.FILE_PATHS) {
-                files.add(file);
-            }
-        }
-        json.put("fileVersion", 0);
-        json.put("bamProjectType", PROJECT_TYPE.toString());
-        json.put("bamItems", bamItemsJson);
-        ExplorerItem exItem = EXPLORER.getLastSelectedPathComponent();
-        if (exItem != null) {
-            json.put("selectedItemId", exItem.id);
-        }
-        BamConfig projectConfig = new BamConfig(json, files);
-        return projectConfig;
-    }
-
     // needs to return the item in the order in wich they must be loaded
     public abstract BamItemList getOrderedBamItemList();
-
-    public void saveProject(String saveFilePath) {
-
-        ConsoleLogger.log("saving project...");
-        String mainConfigFilePath = Path.of(AppSetup.PATH_APP_TEMP_DIR,
-                "main_config.json").toString();
-
-        BamConfig bamConfig = save();
-        bamConfig.FILE_PATHS.add(mainConfigFilePath);
-        JSONObject json = bamConfig.JSON;
-
-        String mainJsonString = json.toString(4);
-        File mainConfigFile = new File(mainConfigFilePath);
-        try {
-            WriteFile.writeLines(mainConfigFile, new String[] { mainJsonString });
-        } catch (
-
-        IOException saveError) {
-            ConsoleLogger.error("Failed to write main config JSON file!\n" + saveError);
-            return;
-        }
-
-        boolean success = ReadWriteZip.flatZip(saveFilePath, bamConfig.FILE_PATHS);
-        if (success) {
-            ConsoleLogger.log("project saved!");
-        } else {
-            ConsoleLogger.error("an error occured while saving project!");
-        }
-
-        createProjectBackupConfigRecord();
-    }
 
     public void setProjectPath(String projectPath) {
         this.projectPath = projectPath;

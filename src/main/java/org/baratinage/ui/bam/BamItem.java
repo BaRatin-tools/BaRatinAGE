@@ -134,7 +134,7 @@ abstract public class BamItem extends SimpleFlowPanel {
     public <A extends AbstractButton> A getCloneBamItemBtn(A btn, boolean label, boolean tooltip) {
         btn.addActionListener((e) -> {
             BamItem clonedBamItem = PROJECT.addBamItem(TYPE);
-            clonedBamItem.load(save(false));
+            clonedBamItem.load(save(true));
             clonedBamItem.bamItemNameField.setText(bamItemNameField.getText());
             clonedBamItem.bamItemDescriptionField.setText(bamItemDescriptionField.getText());
             clonedBamItem.setCopyName();

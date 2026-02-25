@@ -17,6 +17,9 @@ public class CommonParameterDistSimplified {
         private static final SvgIcon stricklerCoefIcon = AppSetup.ICONS
                         .getCustomAppImageIcon("strickler_coef.svg");
 
+        private static final SvgIcon manningCoefIcon = AppSetup.ICONS
+                        .getCustomAppImageIcon("strickler_coef.svg");
+
         private static final SvgIcon angleIcon = AppSetup.ICONS
                         .getCustomAppImageIcon("angle.svg");
 
@@ -41,7 +44,7 @@ public class CommonParameterDistSimplified {
         public static ParameterPriorDistSimplified getActivationHeight() {
                 ParameterPriorDistSimplified p = new ParameterPriorDistSimplified();
                 p.setIcon(activationHeightIcon);
-                p.setSymbolUnitLabels("\u03BA", "m");
+                p.setSymbolUnitLabels("κ", "m");
                 return p;
         }
 
@@ -62,28 +65,35 @@ public class CommonParameterDistSimplified {
         public static ParameterPriorDistSimplified getStricklerCoeff() {
                 ParameterPriorDistSimplified p = new ParameterPriorDistSimplified();
                 p.setIcon(stricklerCoefIcon);
-                p.setSymbolUnitLabels("K<sub>s</sub>", "m<sup>1/3</sup>.s<sup>-1</sup>");
+                p.setSymbolUnitLabels("K_s", "m ^ (1/3) * s ^ (-1)");
+                return p;
+        }
+
+        public static ParameterPriorDistSimplified getManningCoeff() {
+                ParameterPriorDistSimplified p = new ParameterPriorDistSimplified();
+                p.setIcon(manningCoefIcon);
+                p.setSymbolUnitLabels("n", "s / m ^ (1/3)");
                 return p;
         }
 
         public static ParameterPriorDistSimplified getParabolaWidth() {
                 ParameterPriorDistSimplified p = new ParameterPriorDistSimplified();
                 p.setIcon(parabolaWidthIcon);
-                p.setSymbolUnitLabels("B<sub>p</sub>", "m");
+                p.setSymbolUnitLabels("B_p", "m");
                 return p;
         }
 
         public static ParameterPriorDistSimplified getRectWidth() {
                 ParameterPriorDistSimplified p = new ParameterPriorDistSimplified();
                 p.setIcon(widthIcon);
-                p.setSymbolUnitLabels("B<sub>r</sub>", "m");
+                p.setSymbolUnitLabels("B_w", "m");
                 return p;
         }
 
         public static ParameterPriorDistSimplified getHeight(String sub) {
                 ParameterPriorDistSimplified p = new ParameterPriorDistSimplified();
                 p.setIcon(parabolaHeightIcon);
-                p.setSymbolUnitLabels("H<sub>" + sub + "</sub>", "m");
+                p.setSymbolUnitLabels("H_" + sub, "m");
                 return p;
         }
 
@@ -104,7 +114,7 @@ public class CommonParameterDistSimplified {
         public static ParameterPriorDistSimplified getGravity() {
                 ParameterPriorDistSimplified p = new ParameterPriorDistSimplified();
                 p.setIcon(gravityIcon);
-                p.setSymbolUnitLabels("g", "m.s<sup>-2</sup>");
+                p.setSymbolUnitLabels("g", "m * s ^ (-2)");
                 p.setDefaultValues(9.81, 0.01);
                 return p;
         }
@@ -112,14 +122,14 @@ public class CommonParameterDistSimplified {
         public static ParameterPriorDistSimplified getCircleArea() {
                 ParameterPriorDistSimplified p = new ParameterPriorDistSimplified();
                 p.setIcon(circleAreaIcon);
-                p.setSymbolUnitLabels("A<sub>o</sub>", "m<sup>2</sup>");
+                p.setSymbolUnitLabels("A_o", "m ^ 2");
                 return p;
         }
 
         public static ParameterPriorDistSimplified getWeirCoeff(String sub) {
                 ParameterPriorDistSimplified p = new ParameterPriorDistSimplified();
                 p.setIcon(weirCoefIcon);
-                p.setSymbolUnitLabels("C<sub>" + sub + "</sub>", "-");
+                p.setSymbolUnitLabels("C_" + sub, "-");
                 return p;
         }
 

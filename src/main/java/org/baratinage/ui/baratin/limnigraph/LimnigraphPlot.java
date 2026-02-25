@@ -19,7 +19,7 @@ public class LimnigraphPlot extends SimpleFlowPanel {
 
   private final JToggleButton openPlotEditorBtn;
 
-  private final PlotContainer plotContainer;
+  public final PlotContainer plotContainer;
 
   public LimnigraphPlot() {
     plotEditor = new PlotEditor();
@@ -36,7 +36,7 @@ public class LimnigraphPlot extends SimpleFlowPanel {
       addChild(plotContainer, true);
     });
 
-    plotContainer.toolsPanel.addChild(openPlotEditorBtn, false);
+    plotContainer.toolsPanel.add(openPlotEditorBtn);
 
   }
 

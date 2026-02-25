@@ -15,7 +15,6 @@ import org.baratinage.ui.bam.BamItem;
 import org.baratinage.ui.bam.BamConfig;
 import org.baratinage.ui.bam.BamItemParent;
 import org.baratinage.ui.bam.BamItemType;
-import org.baratinage.ui.bam.BamProjectLoader;
 import org.baratinage.ui.bam.IPredictionMaster;
 import org.baratinage.ui.bam.PredExp;
 import org.baratinage.ui.bam.PredExpSet;
@@ -40,12 +39,12 @@ import org.json.JSONObject;
 public class Hydrograph extends BamItem implements IPredictionMaster {
 
     public final RunBam runBam;
-    private final HydrographPlot plotPanel;
+    public final HydrographPlot plotPanel;
     private final HydrographTable tablePanel;
     private final SimpleFlowPanel outdatedPanel;
 
-    private final BamItemParent ratingCurveParent;
-    private final BamItemParent limnigraphParent;
+    public final BamItemParent ratingCurveParent;
+    public final BamItemParent limnigraphParent;
 
     private final ReactiveValue<Boolean> cropNegativeValues = new ReactiveValue<Boolean>(false);
 
@@ -133,10 +132,10 @@ public class Hydrograph extends BamItem implements IPredictionMaster {
             tablePanel.cropNegativeValuesCB.setSelected(newValue);
             updateResults();
         });
-        plotPanel.cropNegativeValuesCB.addChangeListener(l -> {
+        plotPanel.cropNegativeValuesCB.addItemListener(l -> {
             cropNegativeValues.set(plotPanel.cropNegativeValuesCB.isSelected());
         });
-        tablePanel.cropNegativeValuesCB.addChangeListener(l -> {
+        tablePanel.cropNegativeValuesCB.addItemListener(l -> {
             cropNegativeValues.set(tablePanel.cropNegativeValuesCB.isSelected());
         });
 
@@ -194,7 +193,7 @@ public class Hydrograph extends BamItem implements IPredictionMaster {
 
         if (currentConfigAndRes != null) {
             config.JSON.put("bamRunId", currentConfigAndRes.id);
-            String zipPath = currentConfigAndRes.zipRun(writeFiles);
+            String zipPath = currentConfigAndRes.zipRun(writeFiles, Limnigraph.LIMNI_ERROR_FILENAME_TEMPLATE);
             config.FILE_PATHS.add(zipPath);
         }
 
@@ -237,17 +236,13 @@ public class Hydrograph extends BamItem implements IPredictionMaster {
         if (json.has("bamRunId")) {
             String bamRunId = json.getString("bamRunId");
             currentConfigAndRes = RunConfigAndRes.buildFromTempZipArchive(bamRunId);
-            BamProjectLoader.addDelayedAction(() -> {
-                updateResults();
-            });
+            updateResults();
         } else {
             ConsoleLogger.log("missing 'bamRunId'");
         }
 
         if (json.has("plotEditor")) {
-            BamProjectLoader.addDelayedAction(() -> {
-                plotPanel.plotEditor.fromJSON(json.getJSONObject("plotEditor"));
-            });
+            plotPanel.plotEditor.fromJSON(json.getJSONObject("plotEditor"));
         }
 
         TimedActions.throttle(ID, AppSetup.CONFIG.THROTTLED_DELAY_MS, this::checkSync);

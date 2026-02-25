@@ -23,7 +23,7 @@ import org.baratinage.utils.ConsoleLogger;
 
 public class RatingCurvePlot extends SimpleFlowPanel {
 
-    private final PlotContainer plotContainer;
+    public final PlotContainer plotContainer;
 
     private Plot plot;
 
@@ -65,7 +65,7 @@ public class RatingCurvePlot extends SimpleFlowPanel {
             }
             addChild(plotArea, true);
         });
-        plotContainer.toolsPanel.addChild(plotEditorToggleBtn, false);
+        plotContainer.toolsPanel.add(plotEditorToggleBtn, false);
 
         plotArea.addChild(plotContainer, true);
         plotArea.addChild(toolsPanel, 0, 5);
@@ -101,7 +101,15 @@ public class RatingCurvePlot extends SimpleFlowPanel {
         this.transitionStages = ratingCurveData.stageTransitions;
         this.gaugings = ratingCurveData.gaugings;
 
-        toolsPanel.configure(true, true, true, true);
+        if (gaugings != null && gaugings.get(0).length == 0) {
+            this.gaugings = null;
+        }
+
+        toolsPanel.configure(
+                true,
+                true,
+                true,
+                true);
         updatePlot();
     }
 
@@ -110,13 +118,7 @@ public class RatingCurvePlot extends SimpleFlowPanel {
         // create new plot
         plot = new Plot(true);
 
-        if (toolsPanel.logDischargeAxis()) {
-            if (toolsPanel.axisFlipped()) {
-                plot.setXAxisLog(true);
-            } else {
-                plot.setYAxisLog(true);
-            }
-        }
+        toolsPanel.updatePlotAxis(plot, plotEditor.getEditablePlot());
 
         // stage transitions
         int n = transitionStages.size();
@@ -239,10 +241,12 @@ public class RatingCurvePlot extends SimpleFlowPanel {
                 paramUncertaintyBand);
 
         if (totalUncertaintyBand != null) {
-            plotEditor.addEditablePlotItem(
+            EditablePlotItem epiTotalUncertainty = plotEditor.addEditablePlotItem(
                     "totalUncertaintyBand",
                     totalUncertaintyBand.getLabel(),
                     totalUncertaintyBand);
+            epiTotalUncertainty.setShowItem(gaugings != null);
+            epiTotalUncertainty.setShowLegend(gaugings != null);
         }
 
         if (n > 0) {
@@ -267,6 +271,7 @@ public class RatingCurvePlot extends SimpleFlowPanel {
         }
 
         plot.update();
+        plot.restoreAutoBounds();
 
     }
 
@@ -342,12 +347,20 @@ public class RatingCurvePlot extends SimpleFlowPanel {
                     "paramUncertaintyBand",
                     "stageBand");
         } else {
+            if (gaugings == null) {
+                p.updateLegendItems(
+                        "maxpostLine",
+                        "paramUncertaintyBand",
+                        "totalUncertaintyBand",
+                        "stageBand");
+            } else {
+                p.updateLegendItems("gaugingsPoints",
+                        "maxpostLine",
+                        "paramUncertaintyBand",
+                        "totalUncertaintyBand",
+                        "stageBand");
+            }
 
-            p.updateLegendItems("gaugingsPoints",
-                    "maxpostLine",
-                    "paramUncertaintyBand",
-                    "totalUncertaintyBand",
-                    "stageBand");
         }
 
         plotEditor.updateEditor();

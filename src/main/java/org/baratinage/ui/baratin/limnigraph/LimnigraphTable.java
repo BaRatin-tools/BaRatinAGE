@@ -33,8 +33,9 @@ public class LimnigraphTable extends DataTable {
         });
         T.t(this, showHeaderDescription, false, "table_headers_desc");
 
-        toolsPanel.addChild(showHeaderDescription, false);
+        toolsPanel.add(showHeaderDescription);
 
+        setDefaultNumberPrecision(3, true);
     }
 
     public void updateTable(LocalDateTime[] dateTimeVector, double[] stage, double[] stage_low, double[] stage_high) {

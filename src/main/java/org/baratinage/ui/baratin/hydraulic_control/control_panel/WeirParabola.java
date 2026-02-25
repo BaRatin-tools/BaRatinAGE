@@ -14,9 +14,8 @@ public class WeirParabola extends PriorControlPanel {
     private final ParameterPriorDistSimplified exponent;
 
     public WeirParabola() {
-        super(
-                2,
-                "Q=C<sub>p</sub>B<sub>p</sub>H<sub>p</sub><sup>-1/2</sup>(2g)<sup>1/2</sup>(h-b)<sup>c</sup>&nbsp;(h>\u03BA)");
+        super(2, 6, "Q = C_p * B_p / sqrt(H_p) * sqrt(2 * g) * (h-b) ^ c");// \\quad (h > κ)");
+        // "Q=C<sub>p</sub>B<sub>p</sub>H<sub>p</sub><sup>-1/2</sup>(2g)<sup>1/2</sup>(h-b)<sup>c</sup>&nbsp;(h>\u03BA)");
 
         activationHeight = CommonParameterDistSimplified.getActivationHeight();
         weirCoef = CommonParameterDistSimplified.getWeirCoeff("p");
@@ -35,6 +34,8 @@ public class WeirParabola extends PriorControlPanel {
         addParameter(height);
         addParameter(gravity);
         addParameter(exponent);
+
+        display();
 
         T.t(this, () -> {
             setHeaders(
@@ -66,7 +67,7 @@ public class WeirParabola extends PriorControlPanel {
         double H = height.meanValueField.getDoubleValue();
         double G = gravity.meanValueField.getDoubleValue();
 
-        double sqrtOfTwoG = Math.sqrt(2 * G);
+        double sqrtOfTwoG = Math.sqrt(2.0 * G);
         double sqrtOfHeight = 1 / Math.sqrt(H);
         // double toRadFactorOverTwo = Math.PI / 180d * V / 2d;
         // double VOverTwoInRad = toRadFactorOverTwo * toRadFactorOverTwo;
@@ -81,16 +82,16 @@ public class WeirParabola extends PriorControlPanel {
             return new Double[] { A, null };
         }
 
-        double Cstd = weirCoef.uncertaintyValueField.getDoubleValue() / 2;
-        double Wstd = width.uncertaintyValueField.getDoubleValue() / 2;
-        double Hstd = height.uncertaintyValueField.getDoubleValue() / 2;
-        double Gstd = gravity.uncertaintyValueField.getDoubleValue() / 2;
+        double Cstd = weirCoef.uncertaintyValueField.getDoubleValue() / 2.0;
+        double Wstd = width.uncertaintyValueField.getDoubleValue() / 2.0;
+        double Hstd = height.uncertaintyValueField.getDoubleValue() / 2.0;
+        double Gstd = gravity.uncertaintyValueField.getDoubleValue() / 2.0;
 
         double Astd = Math.sqrt(
                 Math.pow(Cstd, 2) * Math.pow(W / sqrtOfHeight * sqrtOfTwoG, 2) +
                         Math.pow(Wstd, 2) * Math.pow(C / sqrtOfHeight * sqrtOfTwoG, 2) +
                         Math.pow(Hstd, 2) * Math.pow(C * W * sqrtOfTwoG * Math.pow(H, -1.5), 2) +
-                        Math.pow(Gstd, 2) * Math.pow(C * W * Math.pow(2 * G * H, -1 / 2), 2));
+                        Math.pow(Gstd, 2) * Math.pow(C * W * Math.pow(2 * G * H, -1.0 / 2.0), 2));
 
         return new Double[] { A, Astd };
 

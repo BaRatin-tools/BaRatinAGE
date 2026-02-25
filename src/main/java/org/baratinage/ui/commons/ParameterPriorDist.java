@@ -17,13 +17,14 @@ import org.baratinage.jbam.Distribution;
 import org.baratinage.jbam.DistributionType;
 import org.baratinage.jbam.Parameter;
 import org.baratinage.translation.T;
+import org.baratinage.ui.component.EquationLabel;
 import org.baratinage.ui.component.SimpleNumberField;
 import org.json.JSONObject;
 
 public class ParameterPriorDist extends AbstractParameterPriorDist implements ChangeListener {
     public final String bamName;
     public final JLabel iconLabel;
-    public final JLabel symbolUnitLabel;
+    public final EquationLabel symbolUnitLabel;
     public final JLabel nameLabel;
     public final SimpleNumberField initialGuessField;
     public final DistributionField distributionField;
@@ -36,15 +37,13 @@ public class ParameterPriorDist extends AbstractParameterPriorDist implements Ch
     private boolean isEnabled = true;
     private boolean isLocked = false;
 
-    private static String vAlignFixString = "<sup>&nbsp;</sup><sub>&nbsp;</sub>";
-
     private static final Font MONOSPACE_FONT = new Font(Font.MONOSPACED, Font.PLAIN, 14);
 
     public ParameterPriorDist(String bamName) {
         this.bamName = bamName;
 
         iconLabel = new JLabel();
-        symbolUnitLabel = new JLabel();
+        symbolUnitLabel = new EquationLabel();
         nameLabel = new JLabel();
         symbolUnitLabel.setFont(MONOSPACE_FONT);
         initialGuessField = new SimpleNumberField();
@@ -119,7 +118,10 @@ public class ParameterPriorDist extends AbstractParameterPriorDist implements Ch
 
     @Override
     public void setSymbolUnitLabels(String symbol, String unit) {
-        symbolUnitLabel.setText(String.format("<html>%s[%s]%s</html>", symbol, unit, vAlignFixString));
+        symbolUnitLabel.setLatexEquation(
+                "%s \\quad [%s]".formatted(
+                        EquationLabel.convertToLatex(symbol),
+                        EquationLabel.convertToLatex(unit)));
     }
 
     public void setNameLabel(String name) {

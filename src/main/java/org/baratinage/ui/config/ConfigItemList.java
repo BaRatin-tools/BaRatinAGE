@@ -2,30 +2,27 @@ package org.baratinage.ui.config;
 
 import java.util.function.Supplier;
 
-import javax.swing.JComponent;
 import javax.swing.JLabel;
 
 import org.baratinage.ui.component.SimpleComboBox;
+import org.baratinage.utils.ConsoleLogger;
+import org.json.JSONException;
 import org.json.JSONObject;
 
-public class ConfigItemList extends ConfigItem {
+public class ConfigItemList extends ConfigItem<String, SimpleComboBox> {
 
     private final Supplier<String[]> optionsValueBuilder;
     private final Supplier<JLabel[]> optionsLabelBuilder;
-    private final String defaultValue;
-    private String value;
 
     public ConfigItemList(
             String id,
+            boolean requireRestart,
             String defaultValue,
             Supplier<String[]> optionsValueBuilder,
-            Supplier<JLabel[]> optionsLabelBuilder, boolean requireRestart) {
-        super(id, requireRestart);
-
+            Supplier<JLabel[]> optionsLabelBuilder) {
+        super(id, requireRestart, defaultValue);
         this.optionsValueBuilder = optionsValueBuilder;
         this.optionsLabelBuilder = optionsLabelBuilder;
-        this.defaultValue = defaultValue;
-        value = defaultValue;
     }
 
     private int getIndexFromValue(String id) {
@@ -43,34 +40,40 @@ public class ConfigItemList extends ConfigItem {
         return index >= 0 && index < ids.length ? ids[index] : "";
     }
 
-    public void set(String id) {
-        int index = getIndexFromValue(id);
-        if (index >= 0) {
-            value = id;
+    @Override
+    public void setFromJSON(JSONObject json, SCOPE scope) {
+        if (!json.has(id)) {
+            unset(scope);
+            return;
         }
+        try {
+            String value = json.getString(id);
+            set(value, scope);
+        } catch (JSONException e) {
+            ConsoleLogger.error(e);
+        }
+
     }
 
     @Override
-    public String get() {
-        return value;
-    }
-
-    @Override
-    public void setFromJSON(JSONObject json) {
-        value = json.optString(id, defaultValue);
-    }
-
-    @Override
-    public JComponent getField() {
-
+    protected SimpleComboBox buildField(SCOPE scope) {
         SimpleComboBox field = new SimpleComboBox();
         field.setItems(optionsLabelBuilder.get(), true);
-        field.setSelectedItem(getIndexFromValue(value));
+        String effValue = (String) getValueForScope(scope);
+        int index = getIndexFromValue(effValue);
+        field.setSelectedItem(index);
         field.addChangeListener(l -> {
-            value = getValueFromIndex(field.getSelectedIndex());
+            if (suppressFieldEvents)
+                return;
+            set(getValueFromIndex(field.getSelectedIndex()), scope);
         });
 
         return field;
+    }
+
+    @Override
+    protected void setField(SimpleComboBox field, String value) {
+        field.setSelectedItem(getIndexFromValue(value));
     }
 
 }

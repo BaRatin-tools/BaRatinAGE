@@ -116,6 +116,10 @@ public class SimpleComboBox extends SimpleFlowPanel {
     }
 
     public void setItems(String[] items, Icon[] icons) {
+        setItems(items, icons, false);
+    }
+
+    public void setItems(String[] items, Icon[] icons, boolean silent) {
         int n = items.length;
         int m = icons.length;
         if (m != n) {
@@ -125,7 +129,7 @@ public class SimpleComboBox extends SimpleFlowPanel {
         for (int k = 0; k < n; k++) {
             labels[k] = buildLabel(items[k], icons[k]);
         }
-        setItems(labels, false);
+        setItems(labels, silent);
     }
 
     public void setItems(JLabel[] labels, boolean silent) {

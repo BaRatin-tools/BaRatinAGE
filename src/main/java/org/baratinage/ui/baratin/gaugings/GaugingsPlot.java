@@ -31,6 +31,8 @@ public class GaugingsPlot extends SimpleFlowPanel {
   public final PlotEditor plotEditor;
   private final JToggleButton plotEditorToggleBtn;
 
+  public final PlotContainer plotContainer;
+
   public GaugingsPlot(DataTable table) {
     super();
     setGap(5);
@@ -39,7 +41,7 @@ public class GaugingsPlot extends SimpleFlowPanel {
 
     toolsPanel = new RatingCurvePlotToolsPanel();
     toolsPanel.configure(true, true, false, false);
-    toolsPanel.switchAxisCheckbox.addChangeListener(l -> {
+    toolsPanel.switchAxisCheckbox.addItemListener(l -> {
       currentPlot = null; // disable keeping the axis bounds
     });
     toolsPanel.addChangeListener(l -> {
@@ -61,6 +63,9 @@ public class GaugingsPlot extends SimpleFlowPanel {
     });
 
     addChild(plotArea, true);
+
+    plotContainer = new PlotContainer();
+    plotContainer.toolsPanel.add(plotEditorToggleBtn);
 
     T.updateHierarchy(this, plotEditor);
   }
@@ -86,6 +91,12 @@ public class GaugingsPlot extends SimpleFlowPanel {
     plot.update();
   }
 
+  public void resetPlotZoom() {
+    if (currentPlot != null) {
+      currentPlot.restoreAutoBounds();
+    }
+  }
+
   public void setGaugingsDataset(GaugingsDataset dataset) {
     this.dataset = dataset;
     setPlot();
@@ -107,7 +118,7 @@ public class GaugingsPlot extends SimpleFlowPanel {
 
     Plot plot = new Plot(true);
 
-    toolsPanel.updatePlotAxis(plot);
+    toolsPanel.updatePlotAxis(plot, plotEditor.getEditablePlot());
     activeGaugings.setLabel(T.text("lgd_active_gaugings"));
     inactiveGaugings.setLabel(T.text("lgd_inactive_gaugings"));
 
@@ -115,8 +126,7 @@ public class GaugingsPlot extends SimpleFlowPanel {
     plot.addXYItem(activeGaugings);
     plot.addXYItem(inactiveGaugings);
 
-    PlotContainer plotContainer = new PlotContainer(plot);
-    plotContainer.toolsPanel.addChild(plotEditorToggleBtn, false);
+    plotContainer.setPlot(plot);
 
     ChartPanel chartPanel = plotContainer.getChartPanel();
 

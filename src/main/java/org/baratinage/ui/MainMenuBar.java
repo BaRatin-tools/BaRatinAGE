@@ -19,8 +19,10 @@ import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
 
 import org.baratinage.AppSetup;
+import org.baratinage.report_exporter.ReportExporter;
 import org.baratinage.translation.T;
 import org.baratinage.ui.component.CommonDialog;
+import org.baratinage.ui.config.ConfigItem;
 import org.baratinage.utils.ConsoleLogger;
 
 public class MainMenuBar extends JMenuBar {
@@ -139,6 +141,21 @@ public class MainMenuBar extends JMenuBar {
 
         fileMenu.addSeparator();
 
+        JMenuItem exportReportMenuItem = new JMenuItem();
+        T.t(this, exportReportMenuItem, false, "report_exporter");
+        add(exportReportMenuItem);
+        exportReportMenuItem.addActionListener((e) -> {
+            if (AppSetup.MAIN_FRAME.currentProject == null) {
+                ConsoleLogger.log("No project");
+                return;
+            }
+            ReportExporter reportExport = new ReportExporter(AppSetup.MAIN_FRAME.currentProject);
+            reportExport.showDialog();
+        });
+        fileMenu.add(exportReportMenuItem);
+
+        fileMenu.addSeparator();
+
         JMenuItem closeMenuItem = new JMenuItem();
         T.t(this, closeMenuItem, false, "exit");
         closeMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q, KeyEvent.CTRL_DOWN_MASK));
@@ -186,8 +203,9 @@ public class MainMenuBar extends JMenuBar {
                     CommonDialog.infoDialog(T.text("restart_needed_msg"));
                 }
                 T.setLocale(targetLocaleKey);
-                AppSetup.CONFIG.LANGUAGE_KEY.set(targetLocaleKey);
-                AppSetup.CONFIG.saveConfiguration();
+                AppSetup.CONFIG.LANGUAGE_KEY.set(targetLocaleKey, ConfigItem.SCOPE.GLOBAL);
+                AppSetup.CONFIG.saveConfig();
+                DebugMenu.resetPlotLegendsAndAxis(); // FIXME: this is a temporary fix
             });
             switchLanguageMenuItem.add(item);
         }

@@ -17,6 +17,7 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.JToolBar;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.TableModelEvent;
@@ -36,11 +37,11 @@ public class DataTable extends SimpleFlowPanel {
 
     // should create a specific action to export using specific formats
     // (e.g. bareme rating curve format)
-    public final SimpleFlowPanel actionPanel;
-    public final SimpleFlowPanel toolsPanel;
+    public final JToolBar actionPanel;
+    public final JToolBar toolsPanel;
 
-    private final CustomTableModel model;
-    private final JTable table;
+    protected final CustomTableModel model;
+    public final JTable table;
     private CustomCellRenderer cellRenderer;
 
     public DataTable() {
@@ -50,24 +51,20 @@ public class DataTable extends SimpleFlowPanel {
 
         model = new CustomTableModel();
 
-        model.addTableModelListener(
-                (e) -> {
-                    fireChangeListeners(e);
-                });
+        model.addTableModelListener((e) -> fireChangeListeners(e));
         table = new JTable();
 
         table.setRowHeight(20);
 
         table.setModel(model);
         table.getTableHeader().setReorderingAllowed(false);
-        table.setCellSelectionEnabled(true);
+        table.setCellSelectionEnabled(false);
         table.setRowSelectionAllowed(true);
         table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 
         JScrollPane scrollpane = new JScrollPane(table);
 
-        actionPanel = new SimpleFlowPanel();
-        actionPanel.setGap(5);
+        actionPanel = new JToolBar();
         JButton exportButton = new JButton();
         exportButton.addActionListener((e) -> {
             saveAsCSV();
@@ -77,7 +74,7 @@ public class DataTable extends SimpleFlowPanel {
         T.t(this, () -> {
             exportButton.setToolTipText(T.text("to_csv"));
         });
-        actionPanel.addChild(exportButton, false);
+        actionPanel.add(exportButton);
         JButton copyToClipboardButton = new JButton();
         copyToClipboardButton.addActionListener((e) -> {
             copyToCliboard();
@@ -86,22 +83,29 @@ public class DataTable extends SimpleFlowPanel {
         T.t(this, () -> {
             copyToClipboardButton.setToolTipText(T.text("to_clipboard"));
         });
-        actionPanel.addChild(copyToClipboardButton, 0);
+        actionPanel.add(copyToClipboardButton);
 
-        toolsPanel = new SimpleFlowPanel();
-        toolsPanel.setGap(5);
+        toolsPanel = new JToolBar();
 
         SimpleCheckbox displayFullPrecision = new SimpleCheckbox();
         T.t(this, () -> {
             displayFullPrecision.setText(T.text("display_full_precision"));
         });
         displayFullPrecision.setSelected(false);
-        displayFullPrecision.addChangeListener(
+        displayFullPrecision.addItemListener(
                 l -> {
                     cellRenderer.losslessDoubles = displayFullPrecision.isSelected();
+                    int nCol = model.getColumnCount();
+                    for (int k = 0; k < nCol; k++) {
+                        TableColumn tableColumn = table.getColumnModel().getColumn(k);
+                        TableCellRenderer tcr = tableColumn.getCellRenderer();
+                        if (tcr instanceof CustomCellRenderer r) {
+                            r.losslessDoubles = displayFullPrecision.isSelected();
+                        }
+                    }
                     repaint();
                 });
-        toolsPanel.addChild(displayFullPrecision, false);
+        toolsPanel.add(displayFullPrecision);
 
         Dimension defaultPrefDim = scrollpane.getPreferredSize();
         defaultPrefDim.height = 300;
@@ -136,6 +140,19 @@ public class DataTable extends SimpleFlowPanel {
         table.setDefaultRenderer(Double.class, cellRenderer);
         table.setDefaultRenderer(Integer.class, cellRenderer);
         table.setDefaultRenderer(String.class, cellRenderer);
+    }
+
+    public void setColumnNumberPrecision(int colIndex, int precision, boolean decimalPlaces) {
+        TableColumn column = table.getColumnModel().getColumn(colIndex);
+        CustomCellRenderer customCellRenderer = new CustomCellRenderer("yyyy-MM-dd HH:mm:ss");
+        customCellRenderer.precision = precision;
+        customCellRenderer.decimalPlaces = decimalPlaces;
+        column.setCellRenderer(customCellRenderer);
+    }
+
+    public void setDefaultNumberPrecision(int precision, boolean decimalPlaces) {
+        cellRenderer.precision = precision;
+        cellRenderer.decimalPlaces = decimalPlaces;
     }
 
     private String getStringValue(int row, int col) {
@@ -320,13 +337,17 @@ public class DataTable extends SimpleFlowPanel {
         changeListeners.remove(l);
     }
 
-    private void fireChangeListeners(TableModelEvent e) {
+    protected void fireChangeListeners(TableModelEvent e) {
         for (TableModelListener l : changeListeners) {
             l.tableChanged(e);
         }
     }
 
-    private static class CustomTableModel extends AbstractTableModel {
+    public void setValueAt(Object value, int rowIndex, int colIndex) {
+        model.setValueAtForced(value, rowIndex, colIndex);
+    }
+
+    public static class CustomTableModel extends AbstractTableModel {
 
         private static record Column(Object[] values, boolean editable) {
             public Class<?> getColumnClass() {
@@ -411,14 +432,12 @@ public class DataTable extends SimpleFlowPanel {
 
         @Override
         public void setValueAt(Object value, int rowIndex, int colIndex) {
-
             if (rowIndex >= 0 && rowIndex < getRowCount() && colIndex >= 0 && colIndex < getColumnCount()) {
                 Column c = columns.get(colIndex);
                 if (!c.editable) {
                     ConsoleLogger.error("Cannot set a value in a non-editable column.");
                     return;
                 }
-
                 if (c.getColumnClass() != value.getClass()) {
                     ConsoleLogger.error("Cannot set a value of a type different from the column type.");
                     return;
@@ -426,7 +445,18 @@ public class DataTable extends SimpleFlowPanel {
                 c.values()[rowIndex] = value;
                 fireTableCellUpdated(rowIndex, colIndex);
             }
+        }
 
+        public void setValueAtForced(Object value, int rowIndex, int colIndex) {
+            if (rowIndex >= 0 && rowIndex < getRowCount() && colIndex >= 0 && colIndex < getColumnCount()) {
+                Column c = columns.get(colIndex);
+                if (c.getColumnClass() != value.getClass()) {
+                    ConsoleLogger.error("Cannot set a value of a type different from the column type.");
+                    return;
+                }
+                c.values()[rowIndex] = value;
+                fireTableCellUpdated(rowIndex, colIndex);
+            }
         }
 
         @Override
@@ -450,6 +480,8 @@ public class DataTable extends SimpleFlowPanel {
 
         private DateTimeFormatter dateTimeFormatter;
         public boolean losslessDoubles = false;
+        public int precision = 4;
+        public boolean decimalPlaces = false;
 
         public CustomCellRenderer(String printFormat) {
             dateTimeFormatter = DateTimeFormatter.ofPattern(printFormat);
@@ -471,7 +503,9 @@ public class DataTable extends SimpleFlowPanel {
             } else if (value instanceof Double) {
                 Double d = (Double) value;
                 if (!d.isNaN()) {
-                    value = losslessDoubles ? Misc.formatNumber(d) : Misc.formatNumber(d, 4, 0.001, 10000);
+                    value = losslessDoubles
+                            ? Misc.formatNumber(d)
+                            : Misc.formatNumber(d, precision, decimalPlaces, 0.001, 10000);
                 } else {
                     value = "";
                 }

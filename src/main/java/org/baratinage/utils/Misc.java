@@ -31,6 +31,17 @@ import org.baratinage.utils.fs.ReadFile;
 
 public class Misc {
 
+    /**
+     * Sets the minimum size of a Swing component.
+     * <p>
+     * If {@code width} or {@code height} are {@code null}, the existing
+     * dimension is preserved for that axis.
+     * </p>
+     *
+     * @param component the component to modify
+     * @param width     the new minimum width, or {@code null} to keep current
+     * @param height    the new minimum height, or {@code null} to keep current
+     */
     public static void setMinimumSize(JComponent component, Integer width, Integer height) {
         Dimension dim = component.getMinimumSize();
         if (width != null) {
@@ -42,6 +53,17 @@ public class Misc {
         component.setMinimumSize(dim);
     }
 
+    /**
+     * Sets the preferred size of a Swing component.
+     * <p>
+     * If {@code width} or {@code height} are {@code null}, the existing
+     * dimension is preserved for that axis.
+     * </p>
+     *
+     * @param component the component to modify
+     * @param width     the preferred width, or {@code null} to keep current
+     * @param height    the preferred height, or {@code null} to keep current
+     */
     public static void setPreferredSize(JComponent component, Integer width, Integer height) {
         Dimension dim = component.getMinimumSize();
         if (width != null) {
@@ -53,32 +75,125 @@ public class Misc {
         component.setPreferredSize(dim);
     }
 
+    /**
+     * Format a number with up to 10 decimals, trimming trailing zeros.
+     * Uses a fixed pattern: '#.##########'.
+     *
+     * @param num value to format
+     * @return formatted string
+     */
     public static String formatNumber(double num) {
         return new DecimalFormat("#.##########").format(num);
     }
 
+    /**
+     * Format a number using a specified number of significant digits.
+     * Delegates to the more general formatter with default decimalPlaces and
+     * scientific notation disabled.
+     *
+     * @param num     value to format
+     * @param nSignif number of significant digits
+     * @return formatted string
+     */
     public static String formatNumber(double num, int nSignif) {
-        return formatNumber(num, nSignif, false);
+        return formatNumber(num, nSignif, false, false);
     }
 
-    public static String formatNumber(double num, int nSignif, boolean scientific) {
-        if (scientific) {
-            String format = "0." + "#".repeat(Math.max(0, nSignif - 1)) + "E" + "0";
-            return new DecimalFormat(format).format(num);
-        } else {
-            return String.format(String.format("%%.%dg", nSignif), num);
+    private static int decimalPlacesForSignificant(double num, int precision) {
+        if (num == 0)
+            return precision - 1;
+        int magnitude = (int) Math.floor(Math.log10(Math.abs(num)));
+        return Math.max(0, precision - magnitude - 1);
+    }
+
+    /**
+     * General number formatter.
+     * <ul>
+     * <li>If {@code decimalPlaces} is false, formats with a variable number of
+     * significant digits unless {@code scientific} is true.</li>
+     * <li>If {@code decimalPlaces} is true, formats with a fixed number of
+     * decimals or scientific notation depending on {@code scientific}.</li>
+     * </ul>
+     * </p>
+     *
+     * @param num           the value to format
+     * @param precision     number of significant digits or decimals depending on
+     *                      mode
+     * @param decimalPlaces if true use a fixed number of decimals, else use
+     *                      significant digits
+     * @param scientific    whether to allow scientific notation
+     * @return formatted string
+     */
+    public static String formatNumber(
+            double num,
+            int precision,
+            boolean decimalPlaces,
+            boolean scientific) {
+        if (Double.isNaN(num) || Double.isInfinite(num)) {
+            return String.valueOf(num);
         }
+
+        DecimalFormat df;
+
+        if (!decimalPlaces) {
+            if (scientific) {
+                String pattern = "0." + "#".repeat(Math.max(0, precision - 1)) + "E0";
+                df = new DecimalFormat(pattern);
+            } else {
+                int decimals = decimalPlacesForSignificant(num, precision);
+                String pattern = (decimals > 0)
+                        ? "0." + "#".repeat(decimals)
+                        : "0";
+                df = new DecimalFormat(pattern);
+                return df.format(num);
+
+            }
+        } else { // DECIMAL_PLACES
+            String pattern = scientific
+                    ? "0." + "0".repeat(precision) + "E0"
+                    : "0." + "0".repeat(precision);
+            df = new DecimalFormat(pattern);
+        }
+
+        return df.format(num);
     }
 
-    public static String formatNumber(double num, int nSignif, double sciLow, double sciHigh) {
+    /**
+     * Format a number with a fixed precision and scientific threshold.
+     * The number is formatted using {@code precision} with optional
+     * {@code decimalPlaces} and scientific notation controlled by the
+     * provided {@code sciLow} and {@code sciHigh} thresholds.
+     *
+     * @param num           value to format
+     * @param precision     decimal places or significant digits depending on mode
+     * @param decimalPlaces if true use fixed decimals
+     * @param sciLow        lower bound for using scientific notation
+     * @param sciHigh       upper bound for using scientific notation
+     * @return formatted string
+     */
+    public static String formatNumber(
+            double num,
+            int precision,
+            boolean decimalPlaces,
+            double sciLow,
+            double sciHigh) {
+        if (num == 0) {
+            return decimalPlaces
+                    ? String.format("%." + precision + "f", 0.0)
+                    : "0";
+        }
         double abs = Math.abs(num);
-        if (abs <= sciLow || abs >= sciHigh) {
-            return formatNumber(num, nSignif, true);
-        } else {
-            return formatNumber(num, nSignif);
-        }
+        boolean scientific = abs <= sciLow || abs >= sciHigh;
+        return formatNumber(num, precision, decimalPlaces, scientific);
     }
 
+    /**
+     * Sanitize a name by replacing non-alphanumeric characters with '_'.
+     * If the result is empty, returns "_". Trims surrounding whitespace.
+     *
+     * @param input raw name
+     * @return sanitized name
+     */
     public static String sanitizeName(String input) {
         String sanitizedName = input.replaceAll("[^a-zA-Z0-9]", "_");
         if (sanitizedName.isEmpty()) {
@@ -88,14 +203,31 @@ public class Misc {
         return sanitizedName;
     }
 
+    /**
+     * Get a timestamp formatted with the given pattern.
+     *
+     * @param format SimpleDateFormat-compatible pattern
+     * @return formatted timestamp
+     */
     public static String getTimeStamp(String format) {
         return new SimpleDateFormat(format).format(new java.util.Date());
     }
 
+    /**
+     * Get a timestamp using the default pattern: yyyyMMdd_HHmmss.
+     *
+     * @return formatted timestamp
+     */
     public static String getTimeStamp() {
         return getTimeStamp("yyyyMMdd_HHmmss");
     }
 
+    /**
+     * Get the local timestamp formatted in the current locale.
+     * Uses MEDIUM style to include date and time components.
+     *
+     * @return localized timestamp string
+     */
     public static String getLocalTimeStamp() {
         Locale l = T.getLocale();
         LocalDateTime date = LocalDateTime.now();
@@ -104,15 +236,34 @@ public class Misc {
         return text;
     }
 
+    /**
+     * Generate an identifier composed of a timestamp and a short random id.
+     *
+     * @return combined timestamp+id string
+     */
     public static String getTimeStampedId() {
         String id = Misc.getTimeStamp() + "_" + Misc.getId();
         return id;
     }
 
+    /**
+     * Generate a short 5-character pseudo-unique identifier.
+     *
+     * @return 5-character id
+     */
     public static String getId() {
         return UUID.randomUUID().toString().substring(0, 5);
     }
 
+    /**
+     * Generate the next available name based on a default name and existing names.
+     * It selects the smallest positive integer that makes the name unique in
+     * the form "defaultName (n)".
+     *
+     * @param defaultName base name
+     * @param allNames    existing names to avoid
+     * @return unique next name
+     */
     public static String getNextName(String defaultName, String[] allNames) {
         Set<Integer> usedInts = new HashSet<>();
         for (String name : allNames) {
@@ -139,6 +290,12 @@ public class Misc {
         return defaultName + " (?)";
     }
 
+    /**
+     * Create a directory if it does not exist. Deprecated: use a higher-level
+     * file management approach.
+     *
+     * @param dirPath directory path
+     */
     @Deprecated
     public static void createDir(String dirPath) {
         File dirFile = new File(dirPath);
@@ -148,11 +305,23 @@ public class Misc {
         }
     }
 
+    /**
+     * Delete all contents of a directory. Deprecated.
+     *
+     * @param dirPath directory path
+     * @return success flag
+     */
     @Deprecated
     public static boolean deleteDirContent(String dirPath) {
         return deleteDirContent(new File(dirPath));
     }
 
+    /**
+     * Delete all contents of a directory (File variant). Deprecated.
+     *
+     * @param dirPath directory as File
+     * @return success flag
+     */
     @Deprecated
     public static boolean deleteDirContent(File dirPath) {
         File[] allContents = dirPath.listFiles();
@@ -165,6 +334,12 @@ public class Misc {
         return success;
     }
 
+    /**
+     * Recursively delete a directory and all its contents. Deprecated.
+     *
+     * @param dirPath directory to delete
+     * @return success flag
+     */
     @Deprecated
     public static boolean deleteDir(File dirPath) {
         File[] allContents = dirPath.listFiles();
@@ -180,11 +355,23 @@ public class Misc {
         return success;
     }
 
+    /**
+     * Delete a directory by path. Deprecated.
+     *
+     * @param dirPath directory path
+     * @return success flag
+     */
     @Deprecated
     public static boolean deleteDir(String dirPath) {
         return deleteDir(new File(dirPath));
     }
 
+    /**
+     * Parse a Path from an unknown or mixed OS-origin path. Deprecated.
+     *
+     * @param rawPath input path string
+     * @return Path object
+     */
     @Deprecated
     public static Path parsePathFromUnknownOSorigin(String rawPath) {
         String[] osSplitChars = new String[] { "\\\\", "/" };
@@ -205,6 +392,12 @@ public class Misc {
         return Path.of(root, bestSplit);
     }
 
+    /**
+     * Position a frame on a specific screen and make it visible.
+     *
+     * @param screen screen index
+     * @param frame  the frame to show
+     */
     public static void showOnScreen(int screen, JFrame frame) {
         // source: https://stackoverflow.com/a/39801137
         GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
@@ -220,6 +413,17 @@ public class Misc {
         }
     }
 
+    /**
+     * Guess an index in {@code strings} that matches all provided regex
+     * {@code patterns}.
+     * If none match, returns {@code defaultIndex}.
+     *
+     * @param strings      array of strings to test
+     * @param defaultIndex fallback index
+     * @param patterns     one or more regex patterns that the selected string must
+     *                     satisfy
+     * @return index of first string matching all patterns or defaultIndex
+     */
     public static int getIndexGuess(String[] strings, int defaultIndex, String... patterns) {
         Predicate<String> allPredicates = (String str) -> true;
         for (String pattern : patterns) {
@@ -233,24 +437,12 @@ public class Misc {
         return defaultIndex;
     }
 
-    public static double[] makeGrid(double low, double high, int n) {
-        double step = (high - low) / ((double) n - 1);
-        double[] grid = new double[n];
-        for (int k = 0; k < n; k++) {
-            grid[k] = low + step * k;
-        }
-        return grid;
-    }
-
-    public static double[] makeGrid(double low, double high, double step) {
-        int n = (int) ((high - low) / step + 1);
-        double[] grid = new double[n];
-        for (int k = 0; k < n; k++) {
-            grid[k] = low + step * k;
-        }
-        return grid;
-    }
-
+    /**
+     * Check whether the provided array contains any NaN (missing value).
+     *
+     * @param arr array to inspect
+     * @return true if any element is NaN
+     */
     public static boolean containsMissingValue(double[] arr) {
         int n = arr.length;
         for (int k = 0; k < n; k++) {
@@ -261,6 +453,13 @@ public class Misc {
         return false;
     }
 
+    /**
+     * Get the set of indices that contain missing values (NaN) across multiple
+     * arrays.
+     *
+     * @param arrays one or more double[] arrays
+     * @return sorted set of indices containing NaN in any input array
+     */
     public static TreeSet<Integer> getMissingValuesIndices(double[]... arrays) {
         TreeSet<Integer> mvIndices = new TreeSet<>();
         for (double[] arr : arrays) {
@@ -274,6 +473,13 @@ public class Misc {
         return mvIndices;
     }
 
+    /**
+     * Remove values at the given missing-value indices from each column of data.
+     *
+     * @param data      list of columns (double[])
+     * @param mvIndices indices to remove
+     * @return new list with specified indices removed
+     */
     public static List<double[]> removeMissingValues(List<double[]> data, TreeSet<Integer> mvIndices) {
         int nCol = data.size();
         if (nCol == 0) {
@@ -303,6 +509,13 @@ public class Misc {
         return noMvData;
     }
 
+    /**
+     * Insert NaN values at the given indices into each column, expanding the rows.
+     *
+     * @param data      list of columns (double[])
+     * @param mvIndices indices where missing values should be inserted
+     * @return new data with inserted missing values
+     */
     public static List<double[]> insertMissingValues(List<double[]> data, TreeSet<Integer> mvIndices) {
         int nMv = mvIndices.size();
         if (nMv == 0) {
@@ -336,6 +549,14 @@ public class Misc {
         return mvData;
     }
 
+    /**
+     * Convert a list of strings into a matrix of doubles using the given separator.
+     * Each string is parsed as a row of numbers.
+     *
+     * @param stringMatrix list of rows as strings
+     * @param sep          separator used to split values
+     * @return matrix as a list of double[] rows
+     */
     public static List<double[]> stringToDoubleMatrix(List<String> stringMatrix, String sep) {
         List<double[]> matrixRowWise = new ArrayList<>();
         for (int i = 0; i < stringMatrix.size(); i++) {
@@ -349,6 +570,14 @@ public class Misc {
         return matrixRowWise;
     }
 
+    /**
+     * Transpose a matrix represented as a list of double[] rows.
+     * Throws an IllegalArgumentException if the input rows have inconsistent
+     * lengths.
+     *
+     * @param matrix input matrix as list of rows
+     * @return transposed matrix as a list of columns
+     */
     public static List<double[]> transposeDoubleMatrix(List<double[]> matrix) {
         if (matrix.size() == 0) {
             ConsoleLogger.error("Cannot transpose an empty matrix");
@@ -373,6 +602,12 @@ public class Misc {
         return transposed;
     }
 
+    /**
+     * Convert a vararg array of doubles to a comma-separated string.
+     *
+     * @param values numbers to stringify
+     * @return comma-separated representation
+     */
     public static String doubleArrToStringArg(double... values) {
         int n = values.length;
         String[] valuesString = new String[n];
@@ -382,6 +617,14 @@ public class Misc {
         return String.join(",", valuesString);
     }
 
+    /**
+     * Create a human-friendly string listing integers from a list, with optional
+     * truncation using ellipsis when the list is long.
+     *
+     * @param indices   indices to display
+     * @param maxValues maximum values to show before truncating
+     * @return formatted string
+     */
     public static String createIntegerStringList(List<Integer> indices, int maxValues) {
         List<Integer> list = new ArrayList<>(indices);
         Collections.sort(list);
@@ -396,6 +639,12 @@ public class Misc {
         return result;
     }
 
+    /**
+     * Format a size in kilobytes to a human-readable string with appropriate units.
+     *
+     * @param sizeInKb size in kilobytes
+     * @return human-readable size (e.g., "1.2 MB")
+     */
     public static String formatKilobitesSize(double sizeInKb) {
         if (sizeInKb <= 0) {
             return "0 B";
@@ -409,6 +658,12 @@ public class Misc {
         return String.format("%.1f %s", sizeInBytes / Math.pow(1024, digitGroups), units[digitGroups]);
     }
 
+    /**
+     * Create an array of length {@code n} filled with 1.0.
+     *
+     * @param n length of the array
+     * @return array filled with ones
+     */
     public static double[] ones(int n) {
         double[] d = new double[n];
         for (int k = 0; k < n; k++) {
@@ -417,15 +672,36 @@ public class Misc {
         return d;
     }
 
+    /**
+     * Build a range of integers from {@code start} (inclusive) to {@code end}
+     * (exclusive).
+     *
+     * @param start start value
+     * @param end   end value (exclusive)
+     * @return array containing the range
+     */
     public static Integer[] range(int start, int end) {
+        // Return a range of integers from start (inclusive) to end (exclusive).
+        // If end <= start, return an empty array.
+        if (end <= start) {
+            return new Integer[0];
+        }
         int n = end - start;
         Integer[] result = new Integer[n];
-        for (int k = start; k < n; k++) {
-            result[k] = k;
+        for (int i = 0; i < n; i++) {
+            result[i] = start + i;
         }
         return result;
     }
 
+    /**
+     * Reorder an array according to a given index mapping.
+     * Returns null if the arrays have different lengths.
+     *
+     * @param indices index order to apply
+     * @param array   source array
+     * @return reordered array or null on mismatch
+     */
     public static double[] reorderArray(Integer[] indices, double[] array) {
         if (array.length != indices.length) {
             ConsoleLogger.error("'array' and 'indices' must have the same length!");
@@ -437,5 +713,21 @@ public class Misc {
             reordered[k] = array[indices[k]];
         }
         return reordered;
+    }
+
+    /**
+     * Check whether a string matches a template where "%s" is treated as a
+     * wildcard.
+     * The template is converted into a regular expression by replacing "%s" with
+     * a capturing group that matches one or more characters.
+     *
+     * @param template template containing "%s" as a placeholder
+     * @param str      string to test against the template
+     * @return true if the string matches the template
+     */
+    public static boolean matchesTemplate(String template, String str) {
+        String regex = "^%s$".formatted(template.replace("%s", "(.+)"));
+        Pattern pattern = Pattern.compile(regex);
+        return pattern.matcher(str).matches();
     }
 }

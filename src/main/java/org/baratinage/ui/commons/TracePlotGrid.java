@@ -5,25 +5,33 @@ import java.awt.Font;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.AbstractButton;
+
 import org.baratinage.AppSetup;
 import org.baratinage.translation.T;
 import org.baratinage.ui.bam.EstimatedParameterWrapper;
-import org.baratinage.ui.container.GridPanel;
 import org.baratinage.ui.container.SimpleFlowPanel;
 import org.baratinage.ui.plot.FixedTextAnnotation;
+import org.baratinage.ui.plot.GridPlotContainer;
 import org.baratinage.ui.plot.Legend;
 import org.baratinage.ui.plot.Plot;
-import org.baratinage.ui.plot.PlotContainer;
+import org.baratinage.ui.plot.PlotExporter.IExportablePlot;
 import org.baratinage.ui.plot.PlotInfiniteLine;
 import org.baratinage.ui.plot.PlotLine;
 import org.baratinage.utils.Calc;
 
 public class TracePlotGrid extends SimpleFlowPanel {
 
-    private final List<EstimatedParameterWrapper> estimatedParameters = new ArrayList<>();
+    GridPlotContainer gridPanel = null;
+    public final List<EstimatedParameterWrapper> estimatedParameters = new ArrayList<>();
+    private final List<AbstractButton> actionButtons = new ArrayList<>();
 
     public void addPlot(EstimatedParameterWrapper estimatedParameter) {
         estimatedParameters.add(estimatedParameter);
+    }
+
+    public void addButton(AbstractButton button) {
+        actionButtons.add(button);
     }
 
     public void clearPlots() {
@@ -31,25 +39,21 @@ public class TracePlotGrid extends SimpleFlowPanel {
     }
 
     public void updatePlots() {
-        GridPanel gridPanel = new GridPanel();
+
         int nColMax = 4;
         int nPlots = estimatedParameters.size();
         int nCol = nColMax;
         // since Java 18: int Math.ceilDiv(int, int) could be used
         int nRow = (int) Math.ceil(((double) nPlots) / ((double) nCol));
 
+        gridPanel = new GridPlotContainer(nRow, nCol);
+        for (AbstractButton btn : actionButtons) {
+            gridPanel.toolsPanel.add(btn);
+        }
+        T.updateHierarchy(this, gridPanel);
+
         removeAll();
         addChild(gridPanel, true);
-
-        for (int k = 0; k < nCol; k++) {
-            gridPanel.setColWeight(k, 1);
-        }
-        for (int k = 0; k < nRow + 1; k++) {
-            gridPanel.setRowWeight(k, 1);
-        }
-
-        int r = 0;
-        int c = 0;
 
         int nMcmc = estimatedParameters.get(0).parameter.mcmc.length;
         double[] x = Calc.sequence(0, nMcmc, nMcmc);
@@ -75,23 +79,11 @@ public class TracePlotGrid extends SimpleFlowPanel {
             plot.addXYItem(mp);
             plot.addXYItem(trace);
 
-            PlotContainer pc = new PlotContainer(plot, false);
-            T.updateHierarchy(this, pc);
-            gridPanel.insertChild(pc, c, r);
-
-            c++;
-            if (c >= nColMax) {
-                c = 0;
-                r++;
-            }
+            gridPanel.addPlot(plot);
         }
 
         Legend legend = new Legend();
-
-        PlotContainer pc = new PlotContainer(legend.getLegendPlot(), false);
-        T.updateHierarchy(this, pc);
-
-        gridPanel.insertChild(pc, c, r);
+        gridPanel.addPlot(legend.getLegendPlot());
 
         T.t(this, () -> {
             legend.clearLegend();
@@ -103,5 +95,9 @@ public class TracePlotGrid extends SimpleFlowPanel {
 
             legend.getLegendPlot().update();
         });
+    }
+
+    public IExportablePlot getPlot() {
+        return gridPanel;
     }
 }

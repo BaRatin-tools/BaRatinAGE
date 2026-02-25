@@ -22,9 +22,8 @@ public class WeirRect extends PriorControlPanel {
     }
 
     public WeirRect(boolean kMode) {
-        super(
-                2,
-                "Q=C<sub>r</sub>B<sub>w</sub>(2g)<sup>1/2</sup>(h-b)<sup>c</sup>&nbsp;(h>\u03BA)");
+        super(2, 5, "Q = C_r * B_w * sqrt(2 * g) * (h-b) ^ c");// \\quad (h > κ)");
+        // "Q=C<sub>r</sub>B<sub>w</sub>(2g)<sup>1/2</sup>(h-b)<sup>c</sup>&nbsp;(h>\u03BA)");
 
         kb = kMode ? CommonParameterDistSimplified.getActivationHeight()
                 : CommonParameterDistSimplified.getOffsetHeight();
@@ -42,6 +41,8 @@ public class WeirRect extends PriorControlPanel {
         addParameter(width);
         addParameter(gravity);
         addParameter(exponent);
+
+        display();
 
         T.t(this, () -> {
             setHeaders(
@@ -78,14 +79,15 @@ public class WeirRect extends PriorControlPanel {
             return new Double[] { A, null };
         }
 
-        double Cstd = weirCoef.uncertaintyValueField.getDoubleValue() / 2;
-        double Wstd = width.uncertaintyValueField.getDoubleValue() / 2;
-        double Gstd = gravity.uncertaintyValueField.getDoubleValue() / 2;
+        double Cstd = weirCoef.uncertaintyValueField.getDoubleValue() / 2.0;
+        double Wstd = width.uncertaintyValueField.getDoubleValue() / 2.0;
+        double Gstd = gravity.uncertaintyValueField.getDoubleValue() / 2.0;
 
         double Astd = Math.sqrt(
                 Math.pow(Cstd, 2) * Math.pow(W * sqrtOfTwoG, 2) +
                         Math.pow(Wstd, 2) * Math.pow(C * sqrtOfTwoG, 2) +
-                        Math.pow(Gstd, 2) * Math.pow(W * C * Math.pow(2 * G, -1 / 2), 2));
+                        // Math.pow(Gstd, 2) * Math.pow(W * C * Math.pow(2 * G, -1 / 2), 2));
+                        Math.pow(Gstd, 2) * Math.pow(W * C * Math.pow(2 * G, -1.0 / 2.0), 2));
 
         return new Double[] { A, Astd };
 
@@ -102,9 +104,9 @@ public class WeirRect extends PriorControlPanel {
         Double cStd = exponent.uncertaintyValueField.getDoubleValue();
 
         return new KBACGaussianConfig(
-                kMean, kStd == null ? null : kStd / 2,
+                kMean, kStd == null ? null : kStd / 2.0,
                 AGaussianConfig[0], AGaussianConfig[1],
-                cMean, cStd == null ? null : cStd / 2);
+                cMean, cStd == null ? null : cStd / 2.0);
     }
 
 }

@@ -1,10 +1,10 @@
 package org.baratinage.ui.baratin.hydraulic_control.control_panel;
 
-import java.awt.Font;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
@@ -14,193 +14,192 @@ import org.baratinage.translation.T;
 import org.baratinage.ui.commons.AbstractParameterPriorDist;
 import org.baratinage.ui.commons.ParameterPriorDist;
 import org.baratinage.ui.commons.ParameterPriorDistSimplified;
-import org.baratinage.ui.component.SimpleNumberField;
+import org.baratinage.ui.component.EquationLabel;
 import org.baratinage.ui.component.SimpleSep;
-import org.baratinage.ui.container.GridPanel;
+import org.baratinage.ui.container.SimpleGridPanel;
 import org.json.JSONArray;
+import org.json.JSONObject;
 
-public abstract class PriorControlPanel extends GridPanel implements ChangeListener {
+public abstract class PriorControlPanel extends SimpleGridPanel implements ChangeListener {
 
-        protected record KBACGaussianConfig(
-                        Double kbMean, Double kbStd,
-                        Double aMean, Double aStd,
-                        Double cMean, Double cStd) {
-        }; // FIXME: rename to KBACGaussianConfig, rename kMean and kStd
+  protected record KBACGaussianConfig(
+      Double kbMean, Double kbStd,
+      Double aMean, Double aStd,
+      Double cMean, Double cStd) {
+  };
 
-        private static String vAlignFixString = "<sup>&nbsp;</sup><sub>&nbsp;</sub>";
+  protected final JLabel equationLabel;
+  protected final JLabel lockLabel;
 
-        private static final Font MONOSPACE_FONT = new Font(Font.MONOSPACED, Font.PLAIN, 14);
+  private final List<JLabel> columnHeaders;
+  public final List<AbstractParameterPriorDist> parameters = new ArrayList<>();
 
-        private final JLabel equationLabel;
-        protected final JLabel lockLabel;
+  public PriorControlPanel(int nColumns, int nRows, String equation) {
+    setColumns(nColumns + 4);
+    setColumn(3, SimpleGridPanel.grow());
+    setColumn(4, SimpleGridPanel.grow());
 
-        private final List<JLabel> columnHeaders;
-        private final List<AbstractParameterPriorDist> parameters = new ArrayList<>();
+    setPadding(0);
+    setGaps(5, 5);
 
-        public PriorControlPanel(int nColumns, String equation) {
-                setPadding(0);
-                setGap(5);
+    equationLabel = new EquationLabel(equation);
+    add(equationLabel, SimpleGridPanel
+        .cell(0, 0)
+        .span(nColumns + 4, 1)
+        .align(SimpleGridPanel.Align.CENTER, SimpleGridPanel.Align.CENTER));
 
-                equationLabel = new JLabel();
-                equationLabel.setText(String.format("<html>%s %s</html>", equation, vAlignFixString));
-                equationLabel.setFont(MONOSPACE_FONT);
+    // to fill the empty space;
+    add(new JPanel(), SimpleGridPanel.cell(0, 1).span(3, 2));
 
-                insertLabel(equationLabel, 0, 0, 3);
+    lockLabel = new JLabel();
+    lockLabel.setIcon(AppSetup.ICONS.LOCK);
+    add(lockLabel, SimpleGridPanel.cell(3 + nColumns, 1));
+    add(new SimpleSep(), SimpleGridPanel.cell(3 + nColumns, 2));
 
-                insertChild(new SimpleSep(), 0, 1, 3, 1);
+    columnHeaders = new ArrayList<>();
+    for (int k = 0; k < nColumns; k++) {
+      JLabel label = new JLabel("column #" + k + 1);
+      columnHeaders.add(label);
+      add(label, SimpleGridPanel.cell(3 + k, 1));
+      add(new SimpleSep(), SimpleGridPanel.cell(3 + k, 2));
+    }
 
-                lockLabel = new JLabel();
-                lockLabel.setIcon(AppSetup.ICONS.LOCK);
-                insertLabel(lockLabel, 3 + nColumns, 0);
-                insertChild(new SimpleSep(), 3 + nColumns, 1);
+  }
 
-                columnHeaders = new ArrayList<>();
-                for (int k = 0; k < nColumns; k++) {
-                        JLabel label = new JLabel("column #" + k + 1);
-                        columnHeaders.add(label);
-                        insertLabel(label, 3 + k, 0);
-                        insertChild(new SimpleSep(), 3 + k, 1);
-                }
+  protected void setHeaders(String... headers) {
+    int n = headers.length;
+    if (n != columnHeaders.size()) {
+      throw new IllegalArgumentException(
+          "Number of provided headers doesn't match the number of needed headers!");
+    }
+    for (int k = 0; k < n; k++) {
+      columnHeaders.get(k).setText(headers[k]);
+    }
+    revalidate();
+  }
 
-        }
+  protected void addParameter(ParameterPriorDistSimplified parameter) {
+    parameter.meanValueField.addChangeListener(this);
+    parameter.uncertaintyValueField.addChangeListener(this);
+    parameters.add(parameter);
+    T.updateHierarchy(this, parameter);
+  }
 
-        private void insertLabel(JLabel label, int x, int y, int spanX) {
-                insertChild(label, x, y,
-                                spanX, 1, ANCHOR.C, FILL.BOTH,
-                                0, 0, -5, 0);
-        }
+  protected void addParameter(ParameterPriorDist parameter) {
+    parameter.initialGuessField.addChangeListener(this);
+    parameter.distributionField.distributionCombobox.addChangeListener(this);
+    parameters.add(parameter);
+    T.updateHierarchy(this, parameter);
+  }
 
-        private void insertLabel(JLabel label, int x, int y) {
-                insertLabel(label, x, y, 1);
-        }
+  public void display() {
+    display(parameters);
+  }
 
-        protected void setHeaders(String... headers) {
-                int n = headers.length;
-                if (n != columnHeaders.size()) {
-                        throw new IllegalArgumentException(
-                                        "Number of provided headers doesn't match the number of needed headers!");
-                }
-                for (int k = 0; k < n; k++) {
-                        columnHeaders.get(k).setText(headers[k]);
-                }
-        }
+  public void display(AbstractParameterPriorDist... parameters) {
+    List<AbstractParameterPriorDist> pars = List.of(parameters);
+    display(pars);
+  }
 
-        protected void addParameter(ParameterPriorDistSimplified parameter) {
+  public void display(List<AbstractParameterPriorDist> parameters) {
+    removeRows(3, getRowCount());
+    for (AbstractParameterPriorDist par : parameters) {
+      if (par instanceof ParameterPriorDistSimplified p) {
+        addParameterRow(p);
+      } else if (par instanceof ParameterPriorDist p) {
+        addParameterRow(p);
+      }
+    }
 
-                setColWeight(3, 1);
-                setColWeight(4, 1);
+    revalidate();
+    repaint();
+  }
 
-                int index = parameters.size() + 2;
-                int colIndex = 0;
-                insertChild(parameter.iconLabel, colIndex, index);
-                colIndex++;
-                insertChild(parameter.nameLabel, colIndex, index);
-                colIndex++;
-                insertChild(parameter.symbolUnitLabel, colIndex, index);
-                colIndex++;
-                insertChild(parameter.meanValueField, colIndex, index);
-                colIndex++;
-                insertChild(parameter.uncertaintyValueField, colIndex, index);
-                colIndex++;
-                insertChild(parameter.lockCheckbox, colIndex, index);
-                colIndex++;
+  protected void addParameterRow(ParameterPriorDistSimplified parameter) {
+    add(parameter.iconLabel);
+    add(parameter.nameLabel);
+    add(parameter.symbolUnitLabel);
+    add(parameter.meanValueField);
+    add(parameter.uncertaintyValueField);
+    add(parameter.lockCheckbox);
+  }
 
-                parameter.meanValueField.addChangeListener(this);
-                parameter.uncertaintyValueField.addChangeListener(this);
+  protected void addParameterRow(ParameterPriorDist parameter) {
+    add(parameter.iconLabel);
+    add(parameter.nameLabel);
+    add(parameter.symbolUnitLabel);
+    add(parameter.distributionField.distributionCombobox);
+    add(parameter.distributionField.parameterFieldsPanel);
+    add(parameter.initialGuessField);
+    add(parameter.menuButton);
+  }
 
-                parameters.add(parameter);
+  public Parameter[] getParameters() {
+    int n = parameters.size();
+    Parameter[] pars = new Parameter[n];
+    for (int k = 0; k < n; k++) {
+      Parameter par = parameters.get(k).getParameter();
+      if (par == null) {
+        return null;
+      }
+      pars[k] = par;
+    }
+    return pars;
+  }
 
-                T.updateHierarchy(this, parameter);
-        }
+  public void setGlobalLock(boolean lock) {
+    for (AbstractParameterPriorDist p : parameters) {
+      p.setEnabled(!lock);
+    }
+  }
 
-        protected void addParameter(ParameterPriorDist parameter) {
+  public JSONObject toJSON() {
+    JSONArray pars = new JSONArray();
+    int n = parameters.size();
+    for (int k = 0; k < n; k++) {
+      pars.put(k, parameters.get(k).toJSON());
+    }
+    JSONObject json = new JSONObject();
+    json.put("parameters", pars);
+    return json;
+  }
 
-                setColWeight(4, 2);
-                setColWeight(5, 1);
+  public void fromJSON(JSONObject json) {
+    JSONArray pars = json.getJSONArray("parameters");
+    fromJSON(pars);
+  }
 
-                int index = parameters.size() + 2;
-                int colIndex = 0;
+  public void fromJSON(JSONArray pars) {
+    int n = parameters.size();
+    for (int k = 0; k < n; k++) {
+      JSONObject obj = pars.optJSONObject(k);
+      if (obj != null) {
+        parameters.get(k).fromJSON(obj);
+      }
+    }
+  }
 
-                insertChild(parameter.iconLabel, colIndex, index);
-                colIndex++;
-                insertChild(parameter.nameLabel, colIndex, index);
-                colIndex++;
-                insertChild(parameter.symbolUnitLabel, colIndex, index);
-                colIndex++;
-                insertChild(parameter.distributionField.distributionCombobox, colIndex, index);
-                colIndex++;
-                insertChild(parameter.distributionField.parameterFieldsPanel, colIndex, index);
-                colIndex++;
-                insertChild(parameter.initialGuessField, colIndex, index);
-                colIndex++;
-                insertChild(parameter.menuButton, colIndex, index);
-                colIndex++;
+  private final List<ChangeListener> changeListeners = new ArrayList<>();
 
-                parameter.initialGuessField.addChangeListener(this);
-                parameter.distributionField.distributionCombobox.addChangeListener(this);
-                for (SimpleNumberField f : parameter.distributionField.parameterFields) {
-                        f.addChangeListener(this);
-                }
-                parameters.add(parameter);
-                T.updateHierarchy(this, parameter);
-        }
+  public void addChangeListener(ChangeListener l) {
+    changeListeners.add(l);
+  }
 
-        public Parameter[] getParameters() {
-                int n = parameters.size();
-                Parameter[] pars = new Parameter[n];
-                for (int k = 0; k < n; k++) {
-                        Parameter par = parameters.get(k).getParameter();
-                        if (par == null) {
-                                return null;
-                        }
-                        pars[k] = par;
-                }
-                return pars;
-        }
+  public void removeChangeListener(ChangeListener l) {
+    changeListeners.remove(l);
+  }
 
-        public void setGlobalLock(boolean lock) {
-                for (AbstractParameterPriorDist p : parameters) {
-                        p.setEnabled(!lock);
-                }
-        }
+  protected void fireChangeListeners() {
+    for (ChangeListener l : changeListeners) {
+      l.stateChanged(new ChangeEvent(this));
+    }
+  }
 
-        public JSONArray toJSON() {
-                JSONArray json = new JSONArray();
-                int n = parameters.size();
-                for (int k = 0; k < n; k++) {
-                        json.put(k, parameters.get(k).toJSON());
-                }
-                return json;
-        }
+  @Override
+  public void stateChanged(ChangeEvent chEvt) {
+    fireChangeListeners();
+  }
 
-        public void fromJSON(JSONArray json) {
-                int n = parameters.size();
-                for (int k = 0; k < n; k++) {
-                        parameters.get(k).fromJSON(json.getJSONObject(k));
-                }
-        }
-
-        private final List<ChangeListener> changeListeners = new ArrayList<>();
-
-        public void addChangeListener(ChangeListener l) {
-                changeListeners.add(l);
-        }
-
-        public void removeChangeListener(ChangeListener l) {
-                changeListeners.remove(l);
-        }
-
-        protected void fireChangeListeners() {
-                for (ChangeListener l : changeListeners) {
-                        l.stateChanged(new ChangeEvent(this));
-                }
-        }
-
-        @Override
-        public void stateChanged(ChangeEvent chEvt) {
-                fireChangeListeners();
-        }
-
-        public abstract KBACGaussianConfig toKACGaussianConfig();
+  public abstract KBACGaussianConfig toKACGaussianConfig();
 
 }

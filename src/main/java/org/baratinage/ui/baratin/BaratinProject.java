@@ -56,7 +56,7 @@ public class BaratinProject extends BamProject {
                     return new StructuralErrorModelBamItem(
                             uuid,
                             this,
-                            new NameSymbolUnit("Débit", "Q", "m<sup>3</sup>.s<sup>-1</sup>"));
+                            new NameSymbolUnit("Débit", "Q", "m ^ 3 * s ^ (-1)"));
 
                 });
 

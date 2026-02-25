@@ -30,7 +30,7 @@ public class ShiftDetectionGaugings extends SimpleFlowPanel {
   private final List<ResultPeriodAndActions> periods;
   private final RatingCurvePlotToolsPanel toolsPanel;
 
-  private final PlotContainer plotContainer;
+  public final PlotContainer plotContainer;
   private ColorPalette palette;
 
   public ShiftDetectionGaugings(List<ResultPeriod> periods) {
@@ -62,7 +62,8 @@ public class ShiftDetectionGaugings extends SimpleFlowPanel {
       }
       addChild(plotPanel, true);
     });
-    plotContainer.toolsPanel.addChild(plotEditorToggleBtn, false);
+    // plotContainer.toolsPanel.addChild(plotEditorToggleBtn, false);
+    plotContainer.toolsPanel.add(plotEditorToggleBtn);
 
     plotPanel.addChild(plotContainer, true);
     plotPanel.addChild(toolsPanel, false);
@@ -84,6 +85,10 @@ public class ShiftDetectionGaugings extends SimpleFlowPanel {
       for (ResultPeriod p : periods) {
         addGaugingBamItemFromPeriod(p);
       }
+    });
+
+    T.t(this, () -> {
+      buildGaugingItemBtn.setText(T.html("build_all_components", T.text(BamItemType.GAUGINGS.id)));
     });
 
     periodSelectionPanel.addChild(buildGaugingItemBtn, false);
@@ -115,7 +120,7 @@ public class ShiftDetectionGaugings extends SimpleFlowPanel {
     // plotEditor.set
 
     Plot plot = new Plot();
-    toolsPanel.updatePlotAxis(plot);
+    toolsPanel.updatePlotAxis(plot, plotEditor.getEditablePlot());
 
     plot.addXYItems(gaugingsPoints);
     plotContainer.setPlot(plot);

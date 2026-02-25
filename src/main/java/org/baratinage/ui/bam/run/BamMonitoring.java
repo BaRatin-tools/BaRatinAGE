@@ -12,6 +12,7 @@ import javax.swing.SwingWorker;
 import org.baratinage.jbam.PredictionConfig;
 import org.baratinage.jbam.utils.BamFilesHelpers;
 import org.baratinage.ui.bam.run.BamRun.BamRunProgress;
+import org.baratinage.utils.ConsoleLogger;
 
 public class BamMonitoring {
 
@@ -81,14 +82,14 @@ public class BamMonitoring {
             }
 
             if (!Files.exists(step.file())) {
-              System.out.println(String.format("missing file '%s'", step.file()));
+              ConsoleLogger.log("missing file '%s'".formatted(step.file()));
               continue;
             }
 
             int[] progress = getProgressFromFile(step.file());
 
             if (progress == null) {
-              System.out.println(String.format("invalid format in file '%s'", step.file()));
+              ConsoleLogger.log("invalid format in file '%s'".formatted(step.file()));
               continue;
             }
 

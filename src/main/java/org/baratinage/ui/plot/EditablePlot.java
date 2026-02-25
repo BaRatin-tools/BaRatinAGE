@@ -37,6 +37,8 @@ public class EditablePlot implements LegendItemSource {
 
   private final SimpleFlowPanel legendItemEditorPanel = new SimpleFlowPanel(true);
 
+  private String plotName = null;
+
   private boolean showLegend = true;
   // private boolean showPlot = true;
   private String xAxisLabel = "x axis";
@@ -141,8 +143,7 @@ public class EditablePlot implements LegendItemSource {
 
   public void update() {
     updateEditablePlotItems();
-    plot.setXAxisLabel(xAxisLabel);
-    plot.setYAxisLabel(yAxisLabel);
+    updatePlot();
   }
 
   private void updateEditablePlotItems() {
@@ -204,7 +205,7 @@ public class EditablePlot implements LegendItemSource {
     SimpleCheckbox showLegendCb = new SimpleCheckbox();
     showLegendCb.setText(T.text("show_legend"));
     showLegendCb.setSelected(showLegend);
-    showLegendCb.addChangeListener(l -> {
+    showLegendCb.addItemListener(l -> {
       showLegend = showLegendCb.isSelected();
       updatePlot();
     });
@@ -249,13 +250,19 @@ public class EditablePlot implements LegendItemSource {
   }
 
   private void updatePlot() {
+    updatePlotLegend();
     plot.setIncludeLegend(showLegend);
-    plot.axisX.setLabel(xAxisLabel);
-    plot.axisXlog.setLabel(xAxisLabel);
-    plot.axisXdate.setLabel(xAxisLabel);
-    plot.axisY.setLabel(yAxisLabel);
-    plot.axisYlog.setLabel(yAxisLabel);
+    plot.setXAxisLabel(xAxisLabel);
+    plot.setYAxisLabel(yAxisLabel);
     plot.update();
+  }
+
+  public void setPlotName(String name) {
+    this.plotName = name;
+  }
+
+  public String getPlotName() {
+    return this.plotName;
   }
 
   public boolean showLegend() {

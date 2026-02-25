@@ -17,7 +17,13 @@ public class RatingShiftsHappensResults extends SimpleFlowPanel {
 
   public final SimpleComboBox colorPaletteSelector;
 
-  private ShiftDetectionResults results = null;
+  public ShiftDetectionResults results = null;
+
+  private TitledPanel mainResTab;
+  private TitledPanel tableResTab;
+  private TitledPanel gaugingsTab;
+  private TitledPanel detailsTab;
+  private JLabel colorPaletteLabel;
 
   public RatingShiftsHappensResults() {
     super(true);
@@ -37,6 +43,24 @@ public class RatingShiftsHappensResults extends SimpleFlowPanel {
     colorPaletteSelector.setSelectedItem(4);
     colorPaletteSelector.addChangeListener(l -> {
       updateResults();
+    });
+
+    T.t(this, () -> {
+      if (mainResTab != null) {
+        mainResTab.setText(T.text("periods_and_shifts"));
+      }
+      if (tableResTab != null) {
+        tableResTab.setText(T.text("parameter_summary_table"));
+      }
+      if (gaugingsTab != null) {
+        gaugingsTab.setText(T.text("gaugings"));
+      }
+      if (detailsTab != null) {
+        detailsTab.setText(T.text("intermediate_results"));
+      }
+      if (colorPaletteLabel != null) {
+        colorPaletteLabel.setText(T.text("color_palette"));
+      }
     });
   }
 
@@ -58,25 +82,25 @@ public class RatingShiftsHappensResults extends SimpleFlowPanel {
         false);
 
     // Q=f(t) or h=f(t) + shifts
-    TitledPanel mainResTab = new TitledPanel(results.mainPlot);
+    mainResTab = new TitledPanel(results.mainPlot);
     mainResTab.setText(T.text("periods_and_shifts"));
     tabContainer.addTab(mainResTab);
 
-    TitledPanel tableResTab = new TitledPanel(results.table);
+    tableResTab = new TitledPanel(results.table);
     tableResTab.setText(T.text("parameter_summary_table"));
     tabContainer.addTab(tableResTab);
 
-    TitledPanel gaugingsTab = new TitledPanel(results.gaugings);
+    gaugingsTab = new TitledPanel(results.gaugings);
     gaugingsTab.setText(T.text("gaugings"));
     tabContainer.addTab(gaugingsTab);
 
-    TitledPanel detailsTab = new TitledPanel(results.intermediateResults);
+    detailsTab = new TitledPanel(results.intermediateResults);
     detailsTab.setText(T.text("intermediate_results"));
     tabContainer.addTab(detailsTab);
 
     SimpleFlowPanel optionsPanel = new SimpleFlowPanel();
     optionsPanel.setGap(5);
-    JLabel colorPaletteLabel = new JLabel();
+    colorPaletteLabel = new JLabel();
     colorPaletteLabel.setText(T.text("color_palette"));
 
     optionsPanel.addChild(colorPaletteLabel, false);
@@ -97,6 +121,9 @@ public class RatingShiftsHappensResults extends SimpleFlowPanel {
     json.put("mainPlot", results.mainPlot.plotEditor.toJSON());
     json.put("gaugings", results.gaugings.plotEditor.toJSON());
 
+    int colorPaletteIndex = colorPaletteSelector.getSelectedIndex();
+    json.put("paletteIndex", colorPaletteIndex);
+
     return json;
   }
 
@@ -110,6 +137,11 @@ public class RatingShiftsHappensResults extends SimpleFlowPanel {
 
     if (json.has("gaugings")) {
       results.gaugings.plotEditor.fromJSON(json.getJSONObject("gaugings"));
+    }
+
+    if (json.has("paletteIndex")) {
+      int colorPaletteIndex = json.getInt("paletteIndex");
+      colorPaletteSelector.setSelectedItem(colorPaletteIndex, true);
     }
   }
 

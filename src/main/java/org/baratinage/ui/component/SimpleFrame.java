@@ -24,7 +24,6 @@ public class SimpleFrame extends JFrame {
 
     if (parent != null) {
       Window w = SwingUtilities.getWindowAncestor(parent);
-      System.out.println(w);
       if (w != null) {
         Point p = w.getLocation();
         Dimension d = w.getSize();

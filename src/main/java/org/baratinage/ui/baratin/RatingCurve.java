@@ -29,7 +29,6 @@ import org.baratinage.translation.T;
 import org.baratinage.ui.bam.BamItem;
 import org.baratinage.ui.bam.BamConfig;
 import org.baratinage.ui.bam.BamItemType;
-import org.baratinage.ui.bam.BamProjectLoader;
 import org.baratinage.ui.bam.BamItemParent;
 import org.baratinage.ui.bam.ICalibratedModel;
 import org.baratinage.ui.bam.IMcmc;
@@ -41,10 +40,12 @@ import org.baratinage.ui.bam.PredExp;
 import org.baratinage.ui.bam.PredExpSet;
 import org.baratinage.ui.bam.RunConfigAndRes;
 import org.baratinage.ui.bam.RunBam;
+import org.baratinage.ui.baratin.gaugings.GaugingsDataset;
 import org.baratinage.ui.baratin.rating_curve.RatingCurveCalibrationResults;
 import org.baratinage.ui.baratin.rating_curve.RatingCurvePlotData;
 import org.baratinage.ui.baratin.rating_curve.RatingCurveResults;
 import org.baratinage.ui.baratin.rating_curve.RatingCurveStageGrid;
+import org.baratinage.ui.commons.ExtraDataset;
 import org.baratinage.ui.commons.MsgPanel;
 import org.baratinage.ui.commons.StructuralErrorModelBamItem;
 import org.baratinage.ui.component.SimpleSep;
@@ -61,16 +62,18 @@ import org.json.JSONObject;
 public class RatingCurve extends BamItem
         implements IPredictionMaster, ICalibratedModel, IMcmc, IPlotDataProvider {
 
-    private final BamItemParent hydrauConfParent;
-    private final BamItemParent gaugingsParent;
-    private final BamItemParent structErrorParent;
+    public final BamItemParent hydrauConfParent;
+    public final BamItemParent gaugingsParent;
+    public final BamItemParent structErrorParent;
 
     private final RatingCurveStageGrid ratingCurveStageGrid;
     public final RunBam runBam;
-    private final RatingCurveResults resultsPanel;
+    public final RatingCurveResults resultsPanel;
     private final SimpleFlowPanel outdatedPanel;
 
     private RunConfigAndRes bamRunConfigAndRes;
+
+    private ExtraDataset extraData;
 
     private BamConfig backup;
 
@@ -177,6 +180,14 @@ public class RatingCurve extends BamItem
             }
 
             backup = save(true);
+
+            Gaugings g = (Gaugings) gaugingsParent.getCurrentBamItem();
+            if (g != null) {
+                GaugingsDataset gds = g.getGaugingDataset();
+                double[] dateTime = gds.getActiveDateTimeAsDouble();
+                extraData = new ExtraDataset(dateTime);
+            }
+
             bamRunConfigAndRes = res;
             updateResults();
             hydrauConfParent.updateBackup();
@@ -249,7 +260,7 @@ public class RatingCurve extends BamItem
         IPriors priors = (IPriors) hc;
         Gaugings g = (Gaugings) gaugingsParent.getCurrentBamItem();
         StructuralErrorModelBamItem se = (StructuralErrorModelBamItem) structErrorParent.getCurrentBamItem();
-        if (hc == null || g == null || se == null) {
+        if (hc == null || se == null) {
             return null;
         }
 
@@ -273,7 +284,7 @@ public class RatingCurve extends BamItem
         return new CalibrationConfig(
                 model,
                 modelOutputs,
-                g.getCalibrationData(),
+                g == null ? null : g.getCalibrationData(),
                 getMcmcConfig(),
                 getMcmcCookingConfig(),
                 new McmcSummaryConfig(),
@@ -304,19 +315,64 @@ public class RatingCurve extends BamItem
         return results.matching();
     }
 
-    private void checkSync() {
+    /**
+     * This method is a prototype of how synchronicity should be checked:
+     * only consider BaM relevant aspect
+     * Here, is it implement for the hydraulic configuration item only
+     */
+    private void checkHydraulicConfigSync() {
+
+        BamItem bamItemCurrent = hydrauConfParent.getCurrentBamItem();
+        BamItem bamItemBackup = hydrauConfParent.getBamItemBackup();
+        JSONObject jsonBackup = new JSONObject();
+        JSONObject jsonCurrent = new JSONObject();
+        if (bamItemCurrent == null && bamItemBackup == null) {
+            hydrauConfParent.setSyncStatus(true);
+            hydrauConfParent.updateValidityView();
+            return;
+        }
+        if (bamItemCurrent == null) {
+            hydrauConfParent.setSyncStatus(false);
+        } else if (bamItemBackup == null) {
+            hydrauConfParent.setSyncStatus(true);
+        } else {
+            try {
+                jsonBackup.put("modelDefinition", BamConfig.getConfig((IModelDefinition) bamItemBackup));
+                jsonBackup.put("priors", BamConfig.getConfig((IPriors) bamItemBackup));
+                jsonCurrent.put("modelDefinition",
+                        BamConfig.getConfig((IModelDefinition) bamItemCurrent));
+                jsonCurrent.put("priors", BamConfig.getConfig((IPriors) bamItemCurrent));
+            } catch (Exception e) {
+                ConsoleLogger.error(e);
+                return;
+            }
+            JSONCompareResult comparison = JSONCompare.compare(
+                    jsonBackup,
+                    jsonCurrent);
+
+            hydrauConfParent.setSyncStatus(comparison.matching());
+        }
+        hydrauConfParent.updateValidityView();
+    }
+
+    private void checkGaugingAndStructErrorSync() {
+
+        // hydrauConfParent.updateSyncStatus(); // this is done in the function above
+        gaugingsParent.updateSyncStatus();
+        structErrorParent.updateSyncStatus();
+
+        // hydrauConfParent.updateValidityView();
+        gaugingsParent.updateValidityView();
+        structErrorParent.updateValidityView();
+
+    }
+
+    private void updateSyncPanel() {
+
         outdatedPanel.setPadding(0);
         outdatedPanel.removeAll();
 
         T.clear(outdatedPanel);
-
-        hydrauConfParent.updateSyncStatus();
-        gaugingsParent.updateSyncStatus();
-        structErrorParent.updateSyncStatus();
-
-        hydrauConfParent.updateValidityView();
-        gaugingsParent.updateValidityView();
-        structErrorParent.updateValidityView();
 
         boolean rcGridInSync = isRatingCurveStageGridInSync();
         boolean rcGridValid = ratingCurveStageGrid.isValueValid();
@@ -375,6 +431,12 @@ public class RatingCurve extends BamItem
         fireChangeListeners();
     }
 
+    private void checkSync() {
+        this.checkGaugingAndStructErrorSync();
+        this.checkHydraulicConfigSync();
+        this.updateSyncPanel();
+    }
+
     @Override
     public BamConfig save(boolean writeFiles) {
 
@@ -402,11 +464,22 @@ public class RatingCurve extends BamItem
             config.FILE_PATHS.add(zipPath);
         }
 
+        if (extraData != null) {
+            config.JSON.put("extraDataId", extraData.id);
+            if (writeFiles) {
+                String extraDataPath = extraData.writeData();
+                config.FILE_PATHS.add(extraDataPath);
+                System.out.println(extraDataPath);
+            }
+        }
+
         if (backup != null) {
             config.JSON.put("backup", backup.JSON);
         }
 
         config.JSON.put("plotEditor", resultsPanel.ratingCurvePlot.plotEditor.toJSON());
+
+        config.JSON.put("residualsPlotEditor", resultsPanel.rcResiduals.plotEditor.toJSON());
 
         return config;
     }
@@ -443,12 +516,18 @@ public class RatingCurve extends BamItem
 
         // **********************************************************
         // rating curve BaM results
+
+        if (json.has("extraDataId")) {
+            String extraDataId = json.getString("extraDataId");
+            extraData = new ExtraDataset(extraDataId);
+        } else {
+            ConsoleLogger.log("missing 'extraDataId'");
+        }
+
         if (json.has("bamRunId")) {
             String bamRunId = json.getString("bamRunId");
             bamRunConfigAndRes = RunConfigAndRes.buildFromTempZipArchive(bamRunId);
-            BamProjectLoader.addDelayedAction(() -> {
-                updateResults();
-            });
+            updateResults();
         } else {
             ConsoleLogger.log("missing 'bamRunId'");
         }
@@ -464,9 +543,11 @@ public class RatingCurve extends BamItem
         }
 
         if (json.has("plotEditor")) {
-            BamProjectLoader.addDelayedAction(() -> {
-                resultsPanel.ratingCurvePlot.plotEditor.fromJSON(json.getJSONObject("plotEditor"));
-            });
+            resultsPanel.ratingCurvePlot.plotEditor.fromJSON(json.getJSONObject("plotEditor"));
+        }
+
+        if (json.has("residualsPlotEditor")) {
+            resultsPanel.rcResiduals.plotEditor.fromJSON(json.getJSONObject("residualsPlotEditor"));
         }
 
         TimedActions.throttle(ID, AppSetup.CONFIG.THROTTLED_DELAY_MS, this::checkSync);
@@ -538,6 +619,11 @@ public class RatingCurve extends BamItem
         gaugings.add(discharge);
         gaugings.add(dischargeMin);
         gaugings.add(dischargeMax);
+
+        // retrieve date time
+        if (extraData != null && extraData.data.size() > 0) {
+            gaugings.add(extraData.data.get(0));
+        }
 
         // **********************************************************
         // Parameters

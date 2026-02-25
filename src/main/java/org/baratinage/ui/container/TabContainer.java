@@ -6,6 +6,8 @@ import javax.swing.JLabel;
 import javax.swing.JTabbedPane;
 import javax.swing.border.EmptyBorder;
 
+import org.baratinage.ui.component.Title;
+
 public class TabContainer extends JTabbedPane {
 
     private final EmptyBorder emptyBorder = new EmptyBorder(5, 5, 5, 5);
@@ -48,6 +50,10 @@ public class TabContainer extends JTabbedPane {
         super.setTabComponentAt(index, jlab);
     }
 
+    public void setTitleAt(int index, Title title) {
+        super.setTabComponentAt(index, title);
+    }
+
     @Override
     public void setTitleAt(int index, String label) {
         Component comp = super.getTabComponentAt(index);
@@ -57,6 +63,15 @@ public class TabContainer extends JTabbedPane {
         }
         jlab.setText(label);
         super.setTabComponentAt(index, jlab);
+    }
+
+    @Override
+    public void setEnabledAt(int index, boolean enabled) {
+        super.setEnabledAt(index, enabled);
+        Component comp = super.getTabComponentAt(index);
+        if (comp instanceof JLabel) {
+            comp.setEnabled(enabled);
+        }
     }
 
 }

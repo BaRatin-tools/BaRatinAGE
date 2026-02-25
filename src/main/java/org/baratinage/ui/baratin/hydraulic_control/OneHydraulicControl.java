@@ -22,6 +22,9 @@ import org.baratinage.ui.baratin.hydraulic_control.control_panel.WeirOrifice;
 import org.baratinage.ui.baratin.hydraulic_control.control_panel.WeirParabola;
 import org.baratinage.ui.baratin.hydraulic_control.control_panel.WeirRect;
 import org.baratinage.ui.baratin.hydraulic_control.control_panel.WeirTriangle;
+import org.baratinage.ui.commons.AbstractParameterPriorDist;
+import org.baratinage.ui.commons.ParameterPriorDist;
+import org.baratinage.ui.commons.ParameterPriorDistSimplified;
 import org.baratinage.ui.baratin.hydraulic_control.control_panel.ChannelParabola;
 import org.baratinage.ui.baratin.hydraulic_control.control_panel.ChannelRect;
 import org.baratinage.ui.baratin.hydraulic_control.control_panel.ChannelTriangle;
@@ -29,6 +32,7 @@ import org.baratinage.ui.component.SimpleComboBox;
 import org.baratinage.ui.component.SimpleTextField;
 import org.baratinage.ui.container.GridPanel;
 import org.baratinage.ui.container.SimpleFlowPanel;
+import org.baratinage.utils.ConsoleLogger;
 import org.baratinage.translation.T;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -83,16 +87,14 @@ public class OneHydraulicControl extends JScrollPane {
     };
 
     private final List<HydraulicControlOption> allControlOptions;
-    private int currentPriorControlPanelIndex = 0;
 
-    private final SimpleTextField descriptionField;
+    public final SimpleTextField descriptionField;
 
     public OneHydraulicControl(int controlNumber) {
         this(true, controlNumber);
     }
 
     public OneHydraulicControl(boolean kMode, int controlNumber) {
-        // super(AXIS.COL, ALIGN.START);
         super();
 
         setBorder(new EmptyBorder(0, 0, 0, 0));
@@ -154,6 +156,7 @@ public class OneHydraulicControl extends JScrollPane {
 
         physicalParametersPanel = new SimpleFlowPanel(true);
         physicalParametersPanel.setPadding(5);
+        physicalParametersPanel.setGap(5);
 
         GridPanel physicalControlParametersLabelsPanel = new GridPanel();
         int gapAndPadding = 10;
@@ -181,12 +184,7 @@ public class OneHydraulicControl extends JScrollPane {
         hydraulicControlPanel = new SimpleFlowPanel(true);
 
         controlTypeComboBox = new SimpleComboBox();
-        controlTypeComboBox.setEmptyItem(null);
-        controlTypeComboBox.addChangeListener((chEvt) -> {
-            int index = controlTypeComboBox.getSelectedIndex();
-            currentPriorControlPanelIndex = index;
-            updatePhysicalControl();
-        });
+        controlTypeComboBox.addChangeListener((chEvt) -> updatePhysicalControl());
         setControlTypeCombobox();
 
         physicalParametersPanel.addChild(controlTypeComboBox, false);
@@ -218,16 +216,12 @@ public class OneHydraulicControl extends JScrollPane {
             }
         });
 
-        // SimpleFlowPanel buttonsPanel = new SimpleFlowPanel();
-        // buttonsPanel.setPadding(5);
-        // buttonsPanel.addChild(switchModeButton, true);
-
         descriptionField = new SimpleTextField();
         T.t(this, () -> {
             descriptionField.setPlaceholder(T.text("description"));
         });
 
-        controlTypeComboBox.setSelectedItem(0);
+        controlTypeComboBox.setSelectedItem(-1);
         updatePhysicalControl();
 
         updateMode();
@@ -260,16 +254,26 @@ public class OneHydraulicControl extends JScrollPane {
     }
 
     private void updatePhysicalControl() {
-        if (currentPriorControlPanelIndex >= 0) {
+        int index = controlTypeComboBox.getSelectedIndex();
+        if (index >= 0) {
             hydraulicControlPanel.removeAll();
-            hydraulicControlPanel.addChild(allControlOptions.get(currentPriorControlPanelIndex).panel, false);
+            hydraulicControlPanel.addChild(allControlOptions.get(index).panel, false);
+            updateKACfromPhysicalControl();
+            hydraulicControlPanel.setVisible(true);
+            kbacControlPanel.setVisible(true);
+        } else {
+            hydraulicControlPanel.setVisible(false);
+            kbacControlPanel.setVisible(false);
         }
-        updateKACfromPhysicalControl();
         updateUI();
     }
 
     private void updateKACfromPhysicalControl() {
-        PriorControlPanel panel = allControlOptions.get(currentPriorControlPanelIndex).panel;
+        int index = controlTypeComboBox.getSelectedIndex();
+        if (index < 0) {
+            return;
+        }
+        PriorControlPanel panel = allControlOptions.get(index).panel;
         kbacControlPanel.setFromKACGaussianConfig(panel.toKACGaussianConfig());
     }
 
@@ -284,6 +288,9 @@ public class OneHydraulicControl extends JScrollPane {
         }
         mainPanel.addChild(kbacControlPanel, false);
         mainPanel.addChild(switchModeButton, false);
+        if (!bkacMode) {
+            updateKACfromPhysicalControl();
+        }
     }
 
     private final List<ChangeListener> changeListeners = new ArrayList<>();
@@ -306,16 +313,73 @@ public class OneHydraulicControl extends JScrollPane {
         return kbacControlPanel.getParameters();
     }
 
+    public String getPhysicalControlTypeKey() {
+        int index = controlTypeComboBox.getSelectedIndex();
+        if (index < 0) {
+            return "";
+        }
+        HydraulicControlOption option = allControlOptions.get(index);
+        return option.lgKey;
+    }
+
+    public List<ParameterPriorDistSimplified> getPhysicalParPriorDist() {
+        if (bkacMode) {
+            return null;
+        }
+        int index = controlTypeComboBox.getSelectedIndex();
+        if (index < 0) {
+            return null;
+        }
+        HydraulicControlOption option = allControlOptions.get(index);
+        // List<AbstractParameterPriorDist> parameters =;
+        List<ParameterPriorDistSimplified> parameters = new ArrayList<>();
+        for (AbstractParameterPriorDist par : option.panel.parameters) {
+            if (par instanceof ParameterPriorDistSimplified) {
+                parameters.add((ParameterPriorDistSimplified) par);
+            }
+        }
+        return parameters;
+    }
+
+    public List<ParameterPriorDist> getBKACParPriorDist() {
+        List<ParameterPriorDist> parameters = new ArrayList<>();
+        for (AbstractParameterPriorDist par : kbacControlPanel.parameters) {
+            if (par instanceof ParameterPriorDist) {
+                parameters.add((ParameterPriorDist) par);
+            }
+        }
+        return parameters;
+    }
+
     public void fromJSON(JSONObject json) {
 
         controlTypeComboBox.setSelectedItem(json.getInt("controlTypeIndex"));
         JSONArray allControlOptionsJSON = json.getJSONArray("allControlOptions");
         int nOptions = allControlOptionsJSON.length();
         for (int k = 0; k < nOptions; k++) {
-            allControlOptions.get(k).panel.fromJSON(allControlOptionsJSON.getJSONArray(k));
+            JSONObject obj = allControlOptionsJSON.optJSONObject(k);
+            JSONArray arr = allControlOptionsJSON.optJSONArray(k);
+            if (obj == null && arr == null) {
+                ConsoleLogger.error("Failed to load configuration!");
+                continue;
+            }
+            if (obj != null) {
+                allControlOptions.get(k).panel.fromJSON(obj);
+            } else {
+                allControlOptions.get(k).panel.fromJSON(arr);
+            }
         }
 
-        kbacControlPanel.fromJSON(json.getJSONArray("kacControl"));
+        JSONObject obj = json.optJSONObject("kacControl");
+        JSONArray arr = json.optJSONArray("kacControl");
+        if (obj == null && arr == null) {
+            ConsoleLogger.error("Failed to load configuration!");
+        }
+        if (obj != null) {
+            kbacControlPanel.fromJSON(obj);
+        } else {
+            kbacControlPanel.fromJSON(arr);
+        }
         bkacMode = json.getBoolean("isKACmode");
 
         if (json.has("description")) {

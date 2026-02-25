@@ -37,8 +37,8 @@ import org.json.JSONObject;
 
 public class RatingShiftHappens extends BamItem {
 
-  private final BamItemParent hydrauConfParent;
-  private final BamItemParent gaugingsParent;
+  public final BamItemParent hydrauConfParent;
+  public final BamItemParent gaugingsParent;
 
   private final SimpleFlowPanel errorMsgPanel;
 
@@ -46,7 +46,7 @@ public class RatingShiftHappens extends BamItem {
 
   private ShiftDetectionOverall ratingShiftDetection;
 
-  private final RatingShiftsHappensResults ratingShiftResults;
+  public final RatingShiftsHappensResults ratingShiftResults;
 
   public RatingShiftHappens(String uuid, BamProject project) {
     super(BamItemType.RATING_SHIFT_HAPPENS, uuid, project);
@@ -77,8 +77,6 @@ public class RatingShiftHappens extends BamItem {
             "eqConfigsAndPriors"));
 
     hydrauConfParent.addChangeListener((e) -> {
-      BamItem bamItem = hydrauConfParent.getCurrentBamItem();
-      System.out.println(bamItem);
       TimedActions.throttle(ID, AppSetup.CONFIG.THROTTLED_DELAY_MS, this::checkSync);
     });
 
@@ -89,8 +87,6 @@ public class RatingShiftHappens extends BamItem {
     gaugingsParent.setComparisonJSONfilter(new JSONFilter(true, true,
         "name", "headers", "filePath", "nested"));
     gaugingsParent.addChangeListener((e) -> {
-      Gaugings bamItem = (Gaugings) gaugingsParent.getCurrentBamItem();
-      System.out.println(bamItem);
       TimedActions.throttle(ID, AppSetup.CONFIG.THROTTLED_DELAY_MS, this::checkSync);
     });
 

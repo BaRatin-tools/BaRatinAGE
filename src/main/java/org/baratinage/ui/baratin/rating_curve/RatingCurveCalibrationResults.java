@@ -6,7 +6,9 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
+import org.baratinage.jbam.CalibrationDataResiduals;
 import org.baratinage.jbam.CalibrationResult;
+import org.baratinage.jbam.DistributionType;
 import org.baratinage.jbam.utils.ConfigFile;
 import org.baratinage.ui.bam.EstimatedParameterWrapper;
 import org.baratinage.ui.bam.CalibrationResultsWrapper;
@@ -25,6 +27,7 @@ public class RatingCurveCalibrationResults extends CalibrationResultsWrapper {
     private final List<EstimatedParameterWrapper> allParameters;
     private final EstimatedParameterWrapper logPost;
     private String equationString;
+    private String equationLatex;
 
     public RatingCurveCalibrationResults(CalibrationResult calibrationResults, double hMin, double hMax)
             throws NoSuchElementException {
@@ -39,18 +42,22 @@ public class RatingCurveCalibrationResults extends CalibrationResultsWrapper {
             int nControls = calibrationResults.calibrationConfig.model.parameters.length / 3;
             allParameters.addAll(getParametersForBaRatin(rawParameters, nControls, false));
             equationString = processControlMatrixEquation(false);
+            equationLatex = processControlMatrixEquationLatex(false);
         } else if (modelId.equals("BaRatinBAC")) {
             int nControls = calibrationResults.calibrationConfig.model.parameters.length
                     / 3;
             allParameters.addAll(getParametersForBaRatin(rawParameters, nControls, true));
             equationString = processControlMatrixEquation(true);
+            equationLatex = processControlMatrixEquationLatex(true);
         } else if (modelId.equals("TextFile")) {
             allParameters.addAll(getParametersForAnyModel(rawParameters));
             ConfigFile xTraConfig = ConfigFile.parseConfigFileString(calibrationResults.calibrationConfig.model.xTra);
             equationString = xTraConfig.getString(5);
+            equationLatex = null;
         } else {
             allParameters.addAll(getParametersForAnyModel(rawParameters));
             equationString = "";
+            equationLatex = null;
         }
 
         equationString = String.format("%s\nh_min = ", equationString) + hMin;
@@ -152,8 +159,15 @@ public class RatingCurveCalibrationResults extends CalibrationResultsWrapper {
                 .map(bep -> {
                     double[] values = new double[] { 0, 0, 0 };
                     if (bep.parameter.parameterConfig != null) {
-                        values = bep.parameter.parameterConfig.distribution.getPercentiles(0.025, 0.975, 3);
-                        values = new double[] { values[1], values[0], values[2] };
+                        if (bep.parameter.parameterConfig.distribution.type == DistributionType.FIXED) {
+                            values = new double[] {
+                                    bep.parameter.mcmc[0],
+                                    bep.parameter.mcmc[0],
+                                    bep.parameter.mcmc[0] };
+                        } else {
+                            values = bep.parameter.parameterConfig.distribution.getPercentiles(0.025, 0.975, 3);
+                            values = new double[] { values[1], values[0], values[2] };
+                        }
                     } else {
                         double[] u95 = bep.parameter.get95interval();
                         double mp = bep.parameter.getMaxpost();
@@ -167,7 +181,7 @@ public class RatingCurveCalibrationResults extends CalibrationResultsWrapper {
         return equationString;
     }
 
-    public String processControlMatrixEquation(boolean bac) {
+    private String processControlMatrixEquation(boolean bac) {
         boolean[][] controlMatrix = ControlMatrix.fromXtra(calibrationResults.calibrationConfig.model.xTra,
                 bac);
         int nCtrlSeg = controlMatrix.length;
@@ -197,6 +211,70 @@ public class RatingCurveCalibrationResults extends CalibrationResultsWrapper {
         return String.join("\n", equationLines);
     }
 
+    private EstimatedParameterWrapper getCtrlPar(int ctrl, int at) {
+        int index = ctrl * 4 + at;
+        if (index < 0 || index >= allParameters.size()) {
+            return null;
+        }
+        EstimatedParameterWrapper p = allParameters.get(index);
+        return p;
+    }
+
+    public EstimatedParameterWrapper getK(int ctrl) {
+        return getCtrlPar(ctrl, 0);
+    }
+
+    public EstimatedParameterWrapper getA(int ctrl) {
+        return getCtrlPar(ctrl, 1);
+    }
+
+    public EstimatedParameterWrapper getC(int ctrl) {
+        return getCtrlPar(ctrl, 2);
+    }
+
+    public EstimatedParameterWrapper getB(int ctrl) {
+        return getCtrlPar(ctrl, 3);
+    }
+
+    public String getEquationLatex() {
+        return equationLatex;
+    }
+
+    public String processControlMatrixEquationLatex(boolean bac) {
+        boolean[][] controlMatrix = ControlMatrix.fromXtra(calibrationResults.calibrationConfig.model.xTra,
+                bac);
+        int nCtrlSeg = controlMatrix.length;
+        List<String> equationLines = new ArrayList<>();
+        equationLines.add("Q(h)=\\left\\{\\begin{array}{l l}");
+        equationLines.add("0 & h < %s \\\\".formatted(getK(0).parameter.getMaxpost()));
+        for (int i = 0; i < nCtrlSeg; i++) { // for each segment (stage range)
+            // retrieve control stage range and initialize equation line
+            Double k = getK(i).parameter.getMaxpost();
+            EstimatedParameterWrapper kNext = getK(i + 1);
+            // Double kNext = i < nCtrlSeg - 1 ? allParameters.get((i + 1) * 4 +
+            // 0).parameter.getMaxpost() : null;
+            String line = "";
+            boolean first = true;
+            for (int j = 0; j <= i; j++) { // for each possibly active control
+                if (controlMatrix[i][j]) {
+                    Double a = getA(j).parameter.getMaxpost();
+                    Double b = getB(j).parameter.getMaxpost();
+                    Double c = getC(j).parameter.getMaxpost();
+                    line = "%s %s".formatted(line, first ? a : processAdd(a));
+                    line = "%s \\cdot (h %s) ^ {%s}".formatted(line, processSub(b), c);
+                    first = false;
+                }
+            }
+
+            line = kNext == null
+                    ? "%s & h > %s".formatted(line, k)
+                    : "%s & %s < h < %s \\\\".formatted(line, k, kNext.parameter.getMaxpost());
+            equationLines.add(line);
+        }
+        equationLines.add("\\end{array}\\right.");
+        return String.join("\n", equationLines);
+    }
+
     private static String processAdd(Double value) {
         return value < 0 ? " - " + (value * -1) : " + " + value;
     }
@@ -222,5 +300,9 @@ public class RatingCurveCalibrationResults extends CalibrationResultsWrapper {
 
     public List<EstimatedParameterWrapper> getModelAndDerivedParameters() {
         return extractParameters(allParameters, EstimatedParameterWrapper.MODEL, EstimatedParameterWrapper.DERIVED);
+    }
+
+    public CalibrationDataResiduals getResiduals() {
+        return calibrationResults.calibrationDataResiduals;
     }
 }

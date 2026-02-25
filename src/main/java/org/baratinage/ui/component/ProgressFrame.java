@@ -1,5 +1,6 @@
 package org.baratinage.ui.component;
 
+import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -10,8 +11,10 @@ import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JProgressBar;
+import javax.swing.SwingConstants;
 
 import org.baratinage.AppSetup;
 import org.baratinage.translation.T;
@@ -34,16 +37,32 @@ public class ProgressFrame extends JDialog {
     private boolean autoClose = false;
 
     public ProgressFrame() {
-        super(AppSetup.MAIN_FRAME, false);
-        SimpleFlowPanel contentPanel = new SimpleFlowPanel(true);
+        this(AppSetup.MAIN_FRAME);
+    }
 
-        contentPanel.setGap(5);
-        contentPanel.setPadding(10);
-
+    public ProgressFrame(JDialog parentDialog) {
+        super(parentDialog, false);
         customContentPanel = new SimpleFlowPanel();
         progressBar = new JProgressBar();
         progressMsg = new JLabel();
         cancelCloseButton = new JButton();
+        setup();
+    }
+
+    public ProgressFrame(JFrame parentFrame) {
+        super(parentFrame, false);
+        customContentPanel = new SimpleFlowPanel();
+        progressBar = new JProgressBar();
+        progressMsg = new JLabel();
+        cancelCloseButton = new JButton();
+        setup();
+    }
+
+    private void setup() {
+        SimpleFlowPanel contentPanel = new SimpleFlowPanel(true);
+
+        contentPanel.setGap(5);
+        contentPanel.setPadding(10);
 
         cancelCloseButton.addActionListener(e -> {
             cancelOrClose();
@@ -63,6 +82,7 @@ public class ProgressFrame extends JDialog {
         });
 
         setContentPane(contentPanel);
+        setResizable(false);
     }
 
     public void openProgressFrame(
@@ -77,6 +97,7 @@ public class ProgressFrame extends JDialog {
         progressBar.setMaximum(progressMax);
 
         progressMsg.setText(" ".repeat(150));
+        progressMsg.setVerticalAlignment(SwingConstants.TOP);
 
         cancelCloseButton.setText(T.text("cancel"));
 
@@ -86,6 +107,8 @@ public class ProgressFrame extends JDialog {
         this.autoClose = autoClose;
         canceled = false;
         done = false;
+
+        progressMsg.setPreferredSize(new Dimension(500, 50));
 
         setTitle(titleString);
         pack();
@@ -126,6 +149,11 @@ public class ProgressFrame extends JDialog {
             progressBar.setValue(progress);
             progressBar.repaint();
         }
+
+        revalidate();
+        pack();
+        repaint();
+
     }
 
     public void done() {

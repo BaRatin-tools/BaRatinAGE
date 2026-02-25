@@ -17,7 +17,7 @@ import org.baratinage.utils.ConsoleLogger;
 import org.baratinage.utils.fs.WriteFile;
 
 public class McmcTraceResultsPanel extends SimpleFlowPanel {
-    private final TracePlotGrid paramTracePlots;
+    public final TracePlotGrid paramTracePlots;
     private final BamProject project;
 
     private List<EstimatedParameterWrapper> parameters;
@@ -27,16 +27,12 @@ public class McmcTraceResultsPanel extends SimpleFlowPanel {
         this.project = project;
         paramTracePlots = new TracePlotGrid();
 
-        SimpleFlowPanel actionPanel = new SimpleFlowPanel();
-
         JButton mcmcToCsvButton = new JButton();
         mcmcToCsvButton.setIcon(AppSetup.ICONS.SAVE);
 
         mcmcToCsvButton.addActionListener((e) -> saveMcmcFile());
+        paramTracePlots.addButton(mcmcToCsvButton);
 
-        actionPanel.addChild(mcmcToCsvButton, false);
-
-        addChild(actionPanel, 0, 5);
         addChild(paramTracePlots, 1);
 
         T.t(this, () -> {

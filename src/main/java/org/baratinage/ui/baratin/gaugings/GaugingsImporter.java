@@ -30,6 +30,7 @@ import org.baratinage.ui.container.SimpleFlowPanel;
 
 public class GaugingsImporter extends DataImporter {
 
+    private GaugingsDataset gaugingDataset;
     private GaugingsDataset dataset;
 
     private final DoubleColumnMapper stageColMapper;
@@ -129,7 +130,7 @@ public class GaugingsImporter extends DataImporter {
         T.t(this, stageColMapper.label, false, "stage");
         T.t(this, dischargeColMapper.label, false, "discharge");
         T.t(this, dischargeUColMapper.label, false, "discharge_uncertainty_percent");
-        T.t(this, stageUColMapper.label, false, "stage_uncertainty_percent");
+        T.t(this, stageUColMapper.label, false, "stage_uncertainty_absolute");
 
         // **********************************************************
         // when updating a field
@@ -249,7 +250,7 @@ public class GaugingsImporter extends DataImporter {
 
         if (!uhColOk) {
             errorPanel.addChild(MsgPanel.buildMsgPanel(
-                    T.text("stage_uncertainty_percent"),
+                    T.text("stage_uncertainty_absolute"),
                     buildErrorMessage(uhInvalidIndices), MsgPanel.TYPE.ERROR));
         }
 
@@ -264,13 +265,11 @@ public class GaugingsImporter extends DataImporter {
         dataPreview.updatePreviewTable();
     }
 
-    public GaugingsDataset getDataset() {
-        return dataset;
+    public GaugingsDataset getGaugingDataset() {
+        return gaugingDataset;
     }
 
-    private static GaugingsDataset buildGaugingDatasetFromBaremeFile(String fileName, String filePath) {
-        new DataFileReader();
-
+    private static GaugingsDataset baremeFileToGaugingDataset(String fileName, String filePath) {
         try {
             List<double[]> data = ReadFile.readMatrix(
                     filePath,
@@ -300,6 +299,49 @@ public class GaugingsImporter extends DataImporter {
                     null,
                     null);
         } catch (IOException e) {
+            ConsoleLogger.error("Failed to read Bareme .bad file!");
+            ConsoleLogger.error(e);
+        }
+
+        return null;
+    }
+
+    public GaugingsDataset getDataset() {
+        return dataset;
+    }
+
+    private static GaugingsDataset buildGaugingDatasetFromBaremeFile(String fileName, String filePath) {
+        new DataFileReader();
+
+        try {
+            List<double[]> data = ReadFile.readMatrix(
+                    filePath,
+                    " ",
+                    1,
+                    Integer.MAX_VALUE,
+                    "",
+                    true,
+                    true);
+
+            double[] h = data.get(0);
+            double[] Q = data.get(2);
+            double[] uQ = data.get(3);
+
+            int n = h.length;
+            for (int k = 0; k < n; k++) {
+                double uQpercent = Q[k] == 0 ? 0 : (uQ[k] * 2) / Q[k] * 100;
+                uQ[k] = uQpercent;
+            }
+
+            return GaugingsDataset.buildGaugingsDataset(
+                    fileName,
+                    h,
+                    Q,
+                    uQ,
+                    null,
+                    null,
+                    null);
+        } catch (IOException e) {
             ConsoleLogger.error("Failed to read Barème .bad file!");
             ConsoleLogger.error(e);
         }
@@ -313,6 +355,7 @@ public class GaugingsImporter extends DataImporter {
         String fileName = dataFileReader.getFile().getName();
 
         if (isBaremeBadFile(fileName)) {
+            gaugingDataset = baremeFileToGaugingDataset(fileName, dataFileReader.getFilePath());
             GaugingsDataset gaugings = buildGaugingDatasetFromBaremeFile(fileName, dataFileReader.getFilePath());
             if (gaugings == null) {
                 CommonDialog.errorDialog(T.text("bareme_bad_import_error"));
@@ -345,15 +388,20 @@ public class GaugingsImporter extends DataImporter {
         double[] h = stageColMapper.getParsedColumn();
         double[] Q = dischargeColMapper.getParsedColumn();
         double[] uQ = dischargeUColMapper.getParsedColumn();
-        // double[] vDouble = Misc.ones(h.length);
         LocalDateTime[] dateTime = dateTimeColMapper.getParsedColumn();
-
         boolean[] v = validityColMapper.getParsedColumn();
-
         double[] uh = stageUColMapper.getParsedColumn();
 
         dataset = GaugingsDataset.buildGaugingsDataset(
                 fileName,
+                h,
+                Q,
+                uQ,
+                v,
+                dateTime,
+                uh);
+
+        gaugingDataset = GaugingsDataset.buildGaugingsDataset(fileName,
                 h,
                 Q,
                 uQ,

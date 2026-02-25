@@ -1,9 +1,10 @@
 package org.baratinage.ui.baratin;
 
-import java.time.LocalDateTime;
+import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JScrollPane;
 
 import org.baratinage.jbam.CalibrationData;
 import org.baratinage.jbam.UncertainData;
@@ -12,11 +13,13 @@ import org.baratinage.jbam.utils.BamFilesHelpers;
 import org.baratinage.ui.bam.BamItem;
 import org.baratinage.ui.bam.BamConfig;
 import org.baratinage.ui.bam.ICalibrationData;
+import org.baratinage.ui.baratin.gaugings.GaugingData;
+import org.baratinage.ui.baratin.gaugings.GaugingEditor;
 import org.baratinage.ui.baratin.gaugings.GaugingsDataset;
 import org.baratinage.ui.baratin.gaugings.GaugingsImporter;
 import org.baratinage.ui.baratin.gaugings.GaugingsPlot;
+import org.baratinage.ui.baratin.gaugings.GaugingsTable;
 import org.baratinage.ui.commons.DatasetConfig;
-import org.baratinage.ui.component.DataTable;
 import org.baratinage.ui.container.SimpleFlowPanel;
 import org.baratinage.ui.container.SplitContainer;
 import org.baratinage.translation.T;
@@ -25,11 +28,12 @@ import org.baratinage.ui.bam.BamItemType;
 
 import org.json.JSONObject;
 
-public class Gaugings extends BamItem implements ICalibrationData {
+public class Gaugings extends BamItem implements ICalibrationData, GaugingsDataset.IGaugingDatasetChangeListener {
 
-    private final DataTable gaugingsTable;
+    private final GaugingsTable gaugingsTable;
     private GaugingsDataset gaugingDataset;
-    private final GaugingsPlot plotPanel;
+    public final GaugingsPlot plotPanel;
+    private final GaugingEditor gaugingEditor;
     private final JLabel importedDataSetSourceLabel;
 
     private final GaugingsImporter gaugingsImporter;
@@ -37,21 +41,16 @@ public class Gaugings extends BamItem implements ICalibrationData {
     public Gaugings(String uuid, BaratinProject project) {
         super(BamItemType.GAUGINGS, uuid, project);
 
-        SimpleFlowPanel importGaugingsPanel = new SimpleFlowPanel(true);
-        importGaugingsPanel.setPadding(5);
-        importGaugingsPanel.setGap(5);
+        SimpleFlowPanel leftPanel = new SimpleFlowPanel(true);
+        leftPanel.setPadding(5);
+        leftPanel.setGap(5);
 
-        gaugingsTable = new DataTable();
+        gaugingsTable = new GaugingsTable();
+        gaugingEditor = new GaugingEditor();
         plotPanel = new GaugingsPlot(gaugingsTable);
 
-        // toolsPanel = new RatingCurvePlotToolsPanel();
-        // toolsPanel.configure(true, true, false);
-        // toolsPanel.addChangeListener(l -> {
-        // setPlot();
-        // });
-
         SplitContainer content = new SplitContainer(
-                importGaugingsPanel,
+                leftPanel,
                 plotPanel,
                 true,
                 0.3f);
@@ -66,25 +65,39 @@ public class Gaugings extends BamItem implements ICalibrationData {
             gaugingsImporter.showDialog(T.text("import_gauging_set"));
             GaugingsDataset newGaugingDataset = gaugingsImporter.getDataset();
             if (newGaugingDataset != null && newGaugingDataset.getNumberOfColumns() >= 4) {
+                newGaugingDataset.addChangeListener(this);
                 gaugingDataset = newGaugingDataset;
-                updateTable();
+                gaugingsTable.updateTable(gaugingDataset);
+                gaugingEditor.setDataset(gaugingDataset);
+                plotPanel.setGaugingsDataset(gaugingDataset);
+                plotPanel.resetPlotZoom();
+                updateImportedDatasetLabel();
             }
         });
 
-        gaugingsTable.addChangeListener((e) -> {
-            int columnIndex = e.getColumn();
-            Object[] activeGaugingColumn = gaugingsTable.getColumn(columnIndex);
-            // double check that is indeed a boolean column
-            if (activeGaugingColumn instanceof Boolean[]) {
-                gaugingDataset.updateActiveStateValues((Boolean[]) activeGaugingColumn);
+        gaugingsTable.table.getSelectionModel().addListSelectionListener(e -> {
+            if (!e.getValueIsAdjusting()) {
+                int[] rows = gaugingsTable.table.getSelectedRows();
+                gaugingEditor.setSelectedIndices(rows);
             }
-            plotPanel.setGaugingsDataset(gaugingDataset);
-            fireChangeListeners();
         });
 
-        importGaugingsPanel.addChild(importDataButton, false);
-        importGaugingsPanel.addChild(importedDataSetSourceLabel, false);
-        importGaugingsPanel.addChild(gaugingsTable, true);
+        JScrollPane sp = new JScrollPane();
+        sp.setViewportView(gaugingEditor);
+
+        gaugingEditor.setVisible(false);
+        sp.setVisible(false);
+        gaugingsTable.editableGaugingsToggle.setSelected(false);
+        gaugingsTable.editableGaugingsToggle.addActionListener(l -> {
+            gaugingEditor.setVisible(gaugingsTable.editableGaugingsToggle.isSelected());
+            sp.setVisible(gaugingsTable.editableGaugingsToggle.isSelected());
+            leftPanel.updateUI();
+        });
+
+        leftPanel.addChild(importDataButton, false);
+        leftPanel.addChild(importedDataSetSourceLabel, false);
+        leftPanel.addChild(gaugingsTable, 2);
+        leftPanel.addChild(sp, 1);
 
         setContent(content);
 
@@ -108,56 +121,15 @@ public class Gaugings extends BamItem implements ICalibrationData {
         }
     }
 
-    private void updateTable() {
-
-        double[] stagePercentUncertainty = gaugingDataset.getStagePercentUncertainty();
-
-        gaugingsTable.clearColumns();
-        LocalDateTime[] dateTime = gaugingDataset.getDateTime();
-        if (dateTime != null) {
-            gaugingsTable.addColumn(dateTime);
-        }
-        gaugingsTable.addColumn(gaugingDataset.getStageValues());
-        if (stagePercentUncertainty != null) {
-            gaugingsTable.addColumn(stagePercentUncertainty);
-        }
-        gaugingsTable.addColumn(gaugingDataset.getDischargeValues());
-        gaugingsTable.addColumn(gaugingDataset.getDischargePercentUncertainty());
-        gaugingsTable.addColumn(gaugingDataset.getStateAsBoolean(), true);
-
-        gaugingsTable.updateData();
-
-        T.clear(gaugingsTable);
-        T.t(gaugingsTable, () -> {
-            int offset = 0;
-            if (dateTime != null) {
-                gaugingsTable.addColumn(dateTime);
-                gaugingsTable.setHeader(0, T.text("date_time"));
-                offset++;
-            }
-            gaugingsTable.setHeader(0 + offset, T.text("stage"));
-            if (stagePercentUncertainty != null) {
-                offset++;
-                gaugingsTable.setHeader(0 + offset, T.text("stage_uncertainty_percent"));
-            }
-            gaugingsTable.setHeader(1 + offset, T.text("discharge"));
-            gaugingsTable.setHeader(2 + offset, T.text("discharge_uncertainty_percent"));
-            gaugingsTable.setHeader(3 + offset, T.text("active_gauging"));
-            gaugingsTable.updateHeader();
-        });
-
-        updateImportedDatasetLabel();
-
-    }
-
     public GaugingsDataset getGaugingDataset() {
         return gaugingDataset;
     }
 
-    public void setGaugingDataset(GaugingsDataset gaugingsDataset, String sourceName) {
-        this.gaugingDataset = gaugingsDataset;
-        updateTable();
-        // plotPanel.setGaugingsDataset(gaugingsDataset);
+    public void setGaugingDataset(GaugingsDataset gaugingDataset, String sourceName) {
+        this.gaugingDataset = gaugingDataset;
+        gaugingsTable.updateTable(gaugingDataset);
+        gaugingEditor.setDataset(gaugingDataset);
+        plotPanel.setGaugingsDataset(gaugingDataset);
         plotPanel.plotEditor.saveAsDefault(true);
         importedDataSetSourceLabel.setText(T.html("gauging_set_imported_from", sourceName));
     }
@@ -228,7 +200,11 @@ public class Gaugings extends BamItem implements ICalibrationData {
             gaugingDataset = GaugingsDataset.buildGaugingsDataset(
                     gaugingDatasetJson.getString("name"),
                     gaugingDatasetJson.getString("hashString"));
-            updateTable(); // this fires associated listeners which update the plot
+            gaugingDataset.addChangeListener(this);
+            gaugingsTable.updateTable(gaugingDataset);
+            gaugingEditor.setDataset(gaugingDataset);
+            plotPanel.setGaugingsDataset(gaugingDataset);
+            updateImportedDatasetLabel();
         }
 
         if (json.has("plotEditor")) {
@@ -236,6 +212,31 @@ public class Gaugings extends BamItem implements ICalibrationData {
             plotPanel.plotEditor.fromJSON(plotEditorJson);
         }
 
+    }
+
+    @Override
+    public void onGaugingModified(int index, GaugingData g) {
+        gaugingsTable.updateGauging(index, g);
+        plotPanel.setGaugingsDataset(gaugingDataset);
+        gaugingEditor.updateFieldFromGaugings();
+        fireChangeListeners();
+    }
+
+    @Override
+    public void onGaugingAdded(int index, GaugingData g) {
+        gaugingsTable.updateTable(gaugingDataset);
+        plotPanel.setGaugingsDataset(gaugingDataset);
+        gaugingEditor.updateFieldFromGaugings();
+        gaugingsTable.selectRow(index);
+        fireChangeListeners();
+    }
+
+    @Override
+    public void onGaugingsDeleted(List<Integer> indices) {
+        gaugingsTable.updateTable(gaugingDataset);
+        plotPanel.setGaugingsDataset(gaugingDataset);
+        gaugingEditor.updateFieldFromGaugings();
+        fireChangeListeners();
     }
 
 }

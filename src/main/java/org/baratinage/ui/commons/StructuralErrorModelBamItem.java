@@ -13,6 +13,7 @@ import org.baratinage.ui.bam.BamConfig;
 import org.baratinage.ui.bam.BamItemType;
 import org.baratinage.ui.bam.BamProject;
 import org.baratinage.ui.bam.IStructuralErrorModels;
+import org.baratinage.ui.component.EquationLabel;
 import org.baratinage.ui.component.NameSymbolUnit;
 import org.baratinage.ui.component.SimpleSep;
 import org.baratinage.ui.container.SimpleFlowPanel;
@@ -20,9 +21,9 @@ import org.json.JSONArray;
 
 public class StructuralErrorModelBamItem extends BamItem implements IStructuralErrorModels {
 
-    private final int nOutputs;
-    private NameSymbolUnit[] nameSymbolUnits;
-    private final StructuralErrorModelPanel[] strucErrModelPanels;
+    public final int nOutputs;
+    public final NameSymbolUnit[] nameSymbolUnits;
+    public final StructuralErrorModelPanel[] strucErrModelPanels;
 
     private final JLabel parameterNameLabels[];
 
@@ -45,18 +46,20 @@ public class StructuralErrorModelBamItem extends BamItem implements IStructuralE
             parameterNameLabels[k] = new JLabel();
             parameterNameLabels[k].setText(buildNameSymbolString(nameSymbolUnits[k]));
 
-            JLabel infoLabel = new JLabel();
-            infoLabel.setText(
-                    String.format(
-                            "<html><code>N&sim;(&gamma;<sub>1</sub> + &gamma;<sub>2</sub>%s)</code></html>",
-                            nameSymbolUnits[k].symbol()));
+            EquationLabel infoLabel = new EquationLabel();
+            infoLabel.setLatexEquation(
+                    "\\epsilon \\sim \\mathcal{N} (0, | γ_1  + γ_2 \\cdot %s |)"
+                            .formatted(nameSymbolUnits[k].symbol()));
+            // "<html><code>&sim;N(0, | &gamma;<sub>1</sub> + &gamma;<sub>2</sub>%s
+            // |)</code></html>",
+            // nameSymbolUnits[k].symbol()));
 
             // support only linear model, but with fixed gamma2 set to 0, it is equivalent
             // to the constant model
             StructuralErrorModelPanel strucErrModelPanel = new StructuralErrorModelPanel();
-            strucErrModelPanel.addParameter("&gamma;<sub>1</sub>", nameSymbolUnits[k].unit(),
+            strucErrModelPanel.addParameter("γ_1", nameSymbolUnits[k].unit(),
                     DistributionType.UNIFORM, 1, 0, 10000);
-            strucErrModelPanel.addParameter("&gamma;<sub>2</sub>", "-",
+            strucErrModelPanel.addParameter("γ_2", "-",
                     DistributionType.UNIFORM, 0.1, 0, 1);
             strucErrModelPanels[k] = strucErrModelPanel;
 

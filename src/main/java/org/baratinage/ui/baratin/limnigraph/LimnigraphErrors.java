@@ -23,7 +23,9 @@ public class LimnigraphErrors extends SimpleFlowPanel {
         super(true);
 
         errConfigTable = new DataTable();
+        errConfigTable.setDefaultNumberPrecision(3, true);
         errMatrixTable = new DataTable();
+        errMatrixTable.setDefaultNumberPrecision(3, true);
 
         TabContainer tableTabs = new TabContainer();
         tableTabs.addTab("Error configuration", errConfigTable);
@@ -47,7 +49,7 @@ public class LimnigraphErrors extends SimpleFlowPanel {
         });
         T.t(this, showHeaderDescription, false, "table_headers_desc");
 
-        errConfigTable.toolsPanel.addChild(showHeaderDescription, false);
+        errConfigTable.toolsPanel.add(showHeaderDescription);
 
     }
 
@@ -125,7 +127,7 @@ public class LimnigraphErrors extends SimpleFlowPanel {
     private void updateErrMatrixTable() {
         errMatrixTable.clearColumns();
         if (dataset.hasStageErrMatrix()) {
-            List<double[]> matrix = dataset.getStageErrMatrix();
+            List<double[]> matrix = dataset.getStageErrMatrix(false);
             for (int k = 0; k < matrix.size() - 2; k++) {
                 errMatrixTable.addColumn(matrix.get(k));
             }

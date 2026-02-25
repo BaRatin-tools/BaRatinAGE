@@ -20,14 +20,19 @@ public class DistributionField implements ChangeListener {
     public final List<SimpleNumberField> parameterFields;
     public final SimpleComboBox distributionCombobox;
 
+    private final List<DistributionType> supportedDistributionTypes = new ArrayList<>();
     private final DistributionType[] DISTRIBUTION_TYPES = DistributionType.values();
 
     private int currentDistributionIndex;
 
     public DistributionField() {
 
-        allParameterFields = new HashMap<>();
         for (DistributionType d : DISTRIBUTION_TYPES) {
+            supportedDistributionTypes.add(d);
+        }
+
+        allParameterFields = new HashMap<>();
+        for (DistributionType d : supportedDistributionTypes) {
             List<SimpleNumberField> parameterFields = new ArrayList<>();
             for (String pName : d.parameterNames) {
                 SimpleNumberField field = new SimpleNumberField();
@@ -44,11 +49,11 @@ public class DistributionField implements ChangeListener {
         distributionCombobox = new SimpleComboBox();
         distributionCombobox.addChangeListener((chEvt) -> {
             int index = distributionCombobox.getSelectedIndex();
-            if (index == -1) {
+            if (index == -1 || index >= supportedDistributionTypes.size()) {
                 return;
             }
             currentDistributionIndex = index;
-            DistributionType d = DISTRIBUTION_TYPES[index];
+            DistributionType d = supportedDistributionTypes.get(index);
             List<SimpleNumberField> fields = allParameterFields.get(d);
             parameterFieldsPanel.removeAll();
             parameterFields.clear();
@@ -60,7 +65,12 @@ public class DistributionField implements ChangeListener {
             fireChangeListeners();
         });
 
-        T.t(this, this::updateDistributionParameterFields);
+        setSupportedDistribution(DISTRIBUTION_TYPES, false);
+        T.t(this, () -> {
+            setSupportedDistribution(
+                    supportedDistributionTypes.toArray(new DistributionType[supportedDistributionTypes.size()]),
+                    true);
+        });
 
         distributionCombobox.setSelectedItem(0);
         currentDistributionIndex = 0;
@@ -89,7 +99,10 @@ public class DistributionField implements ChangeListener {
     }
 
     public DistributionType getDistributionType() {
-        return currentDistributionIndex < 0 ? null : DISTRIBUTION_TYPES[currentDistributionIndex];
+        if (currentDistributionIndex < 0 || currentDistributionIndex >= supportedDistributionTypes.size()) {
+            return null;
+        }
+        return supportedDistributionTypes.get(currentDistributionIndex);
     }
 
     public Double getParameter(int index) {
@@ -111,19 +124,25 @@ public class DistributionField implements ChangeListener {
     }
 
     public void setDistributionType(DistributionType distributionType) {
-        if (distributionType != null) {
-            int index = -1;
-            for (int k = 0; k < DISTRIBUTION_TYPES.length; k++) {
-                if (DISTRIBUTION_TYPES[k].equals(distributionType)) {
-                    index = k;
-                    break;
-                }
-            }
-            if (index >= 0) {
-                distributionCombobox.setSelectedItem(index, false);
-                currentDistributionIndex = index;
+        setDistributionType(distributionType, false);
+    }
+
+    public void setDistributionType(DistributionType distributionType, boolean silent) {
+        if (distributionType == null) {
+            return;
+        }
+        int index = -1;
+        for (int k = 0; k < supportedDistributionTypes.size(); k++) {
+            if (supportedDistributionTypes.get(k).equals(distributionType)) {
+                index = k;
+                break;
             }
         }
+        if (index >= 0) {
+            distributionCombobox.setSelectedItem(index, silent);
+            currentDistributionIndex = index;
+        }
+
     }
 
     public void setParameter(int index, Double value) {
@@ -190,19 +209,25 @@ public class DistributionField implements ChangeListener {
         fireChangeListeners();
     }
 
-    private void updateDistributionParameterFields() {
-        int n = DISTRIBUTION_TYPES.length;
+    private void setSupportedDistribution(DistributionType[] distributionTypes, boolean silent) {
+        DistributionType selectedDist = getDistributionType();
+        supportedDistributionTypes.clear();
+        int n = distributionTypes.length;
         String[] distribLabels = new String[n];
         for (int k = 0; k < n; k++) {
-            List<SimpleNumberField> parameterFields = allParameterFields.get(DISTRIBUTION_TYPES[k]);
+            supportedDistributionTypes.add(distributionTypes[k]);
+            List<SimpleNumberField> parameterFields = allParameterFields.get(distributionTypes[k]);
             for (int i = 0; i < parameterFields.size(); i++) {
-                parameterFields.get(i).setInnerLabel(T.text(DISTRIBUTION_TYPES[k].parameterNames[i]));
+                parameterFields.get(i).setInnerLabel(T.text(distributionTypes[k].parameterNames[i]));
             }
-            distribLabels[k] = T.text("dist_" + DISTRIBUTION_TYPES[k].bamName);
+            distribLabels[k] = T.text("dist_" + distributionTypes[k].bamName);
         }
-        int selectedIndex = distributionCombobox.getSelectedIndex();
         distributionCombobox.setEmptyItem(null);
         distributionCombobox.setItems(distribLabels, true);
-        distributionCombobox.setSelectedItem(selectedIndex, true);
+        setDistributionType(selectedDist, silent);
+    }
+
+    public void setSupportedDistribution(List<DistributionType> distributionTypes) {
+        setSupportedDistribution(distributionTypes.toArray(new DistributionType[distributionTypes.size()]), false);
     }
 }
