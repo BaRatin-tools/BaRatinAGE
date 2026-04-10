@@ -199,11 +199,11 @@ public class MainFrame extends JFrame {
         ConfirmSaveDialog confirmSaveDialog = new ConfirmSaveDialog(AppSetup.MAIN_FRAME, currentProject);
         confirmSaveDialog.setVisible(true);
         switch (confirmSaveDialog.getResult()) {
-          case ConfirmSaveDialog.Result.SAVE:
+          case SAVE:
             return true;
-          case ConfirmSaveDialog.Result.SAVE_AS:
+          case SAVE_AS:
             return true;
-          case ConfirmSaveDialog.Result.DO_NO_SAVE:
+          case DO_NO_SAVE:
             return true;
           case CANCEL:
             return false;
