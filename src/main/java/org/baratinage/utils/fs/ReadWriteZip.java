@@ -33,28 +33,33 @@ public class ReadWriteZip {
     }
 
     private static void unzip(InputStream is, Path targetDir) throws IOException {
-        // copy/pasted, thanks to: https://stackoverflow.com/a/59581898
-        targetDir = targetDir.toAbsolutePath();
-        try (ZipInputStream zipIn = new ZipInputStream(is)) {
-            for (ZipEntry ze; (ze = zipIn.getNextEntry()) != null;) {
-                Path resolvedPath = targetDir.resolve(ze.getName()).normalize();
-                if (!resolvedPath.startsWith(targetDir)) {
-                    // see: https://snyk.io/research/zip-slip-vulnerability
-                    throw new RuntimeException("Entry with an illegal path: "
-                            + ze.getName());
+    // Convert targetDir to an absolute path
+    targetDir = targetDir.toAbsolutePath();
+    
+    try (ZipInputStream zipIn = new ZipInputStream(is)) {
+        for (ZipEntry ze; (ze = zipIn.getNextEntry()) != null;) {
+            // Normalize path separators to be platform-independent
+            String normalizedPath = ze.getName().replace("\\", "/");
+            Path resolvedPath = targetDir.resolve(normalizedPath).normalize();
+
+            // Ensure the path does not escape the target directory (ZIP Slip vulnerability)
+            if (!resolvedPath.startsWith(targetDir)) {
+                throw new RuntimeException("Entry with an illegal path: " + ze.getName());
+            }
+
+            // Create directories or files as necessary
+            if (ze.isDirectory()) {
+                Files.createDirectories(resolvedPath);
+            } else {
+                Files.createDirectories(resolvedPath.getParent());
+                if (Files.exists(resolvedPath)) {
+                    Files.delete(resolvedPath);
                 }
-                if (ze.isDirectory()) {
-                    Files.createDirectories(resolvedPath);
-                } else {
-                    Files.createDirectories(resolvedPath.getParent());
-                    if (Files.exists(resolvedPath)) {
-                        Files.delete(resolvedPath);
-                    }
-                    Files.copy(zipIn, resolvedPath);
-                }
+                Files.copy(zipIn, resolvedPath);
             }
         }
     }
+}
 
     static public boolean flatZip(String zipFilePath, List<String> sourceDirs) {
         return flatZip(zipFilePath, sourceDirs.toArray(new String[sourceDirs.size()]));
