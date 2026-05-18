@@ -75,12 +75,12 @@ public class LimnigraphErrors extends SimpleFlowPanel {
         });
 
         if (dataset.hasNonSysErr()) {
-            columnsDescription.addColumnDesc("Stage_non_sys_err_std [m]", () -> {
+            columnsDescription.addColumnDesc("Stage_non_sys_err [m]", () -> {
                 return T.text("stage_non_sys_error_uncertainty");
             });
         }
         if (dataset.hasSysErr()) {
-            columnsDescription.addColumnDesc("Stage_sys_err_std [m]", () -> {
+            columnsDescription.addColumnDesc("Stage_sys_err [m]", () -> {
                 return T.text("stage_sys_error_uncertainty");
             });
             columnsDescription.addColumnDesc("Stage_sys_err_indices", () -> {
@@ -106,12 +106,12 @@ public class LimnigraphErrors extends SimpleFlowPanel {
         errConfigTable.setHeader(1, "Stage [m]");
         int colIndex = 2;
         if (dataset.hasNonSysErr()) {
-            errConfigTable.setHeader(colIndex, "Stage_non_sys_err_std [m]");
+            errConfigTable.setHeader(colIndex, "Stage_non_sys_err [m]");
 
             colIndex++;
         }
         if (dataset.hasSysErr()) {
-            errConfigTable.setHeader(colIndex, "Stage_sys_err_std [m]");
+            errConfigTable.setHeader(colIndex, "Stage_sys_err [m]");
             colIndex++;
             errConfigTable.setHeader(colIndex, "Stage_sys_err_indices");
             colIndex++;
