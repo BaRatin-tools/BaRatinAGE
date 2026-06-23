@@ -24,7 +24,7 @@ pom.xml.versionsBackup
 *.bar.zip
 *.bam
 /resources/help/*
-
+TODO.md
 
 # V2 related folder to ignore
 /externalLib
