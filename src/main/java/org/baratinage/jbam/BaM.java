@@ -75,6 +75,10 @@ public class BaM {
             int n = predictionConfigs.length;
             predictionResults = new PredictionResult[n];
             for (int k = 0; k < n; k++) {
+                if (predictionConfigs[k] == null) {
+                    ConsoleLogger.warn("Missing prediction config!");
+                    continue;
+                }
                 predictionResults[k] = new PredictionResult(workspacePath, predictionConfigs[k]);
             }
         }
