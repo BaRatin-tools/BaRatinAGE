@@ -4,6 +4,10 @@ import java.awt.Component;
 import java.awt.Font;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.swing.BorderFactory;
 import javax.swing.JScrollPane;
@@ -104,6 +108,18 @@ public class Explorer extends SimpleFlowPanel {
 
     public ExplorerItem getLastSelectedPathComponent() {
         return (ExplorerItem) explorerTree.getLastSelectedPathComponent();
+    }
+
+    public List<ExplorerItem> getSelectedExplorerItems() {
+        TreePath[] selectedPaths = explorerTree.getSelectionPaths();
+        if (selectedPaths == null) {
+            return Collections.emptyList();
+        }
+        return Arrays.stream(selectedPaths)
+                .map(TreePath::getLastPathComponent)
+                .filter(node -> node instanceof ExplorerItem)
+                .map(node -> (ExplorerItem) node)
+                .collect(Collectors.toList());
     }
 
     public void expandItem(ExplorerItem item) {
