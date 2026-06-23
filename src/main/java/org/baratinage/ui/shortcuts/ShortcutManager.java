@@ -153,7 +153,7 @@ public class ShortcutManager {
     Binding binding = bindings.get(id);
     if (binding == null) {
       String msg = "No binding with id '%s' found".formatted(id);
-      ConsoleLogger.error(msg);
+      ConsoleLogger.warn(msg);
     }
     return binding;
   }
@@ -161,12 +161,12 @@ public class ShortcutManager {
   private Runnable getAction(Binding binding, Object ctx) {
     Map<Object, Runnable> runnables = actions.get(binding.id);
     if (runnables == null) {
-      ConsoleLogger.error("No action found for binding with id '%s'".formatted(binding.id));
+      ConsoleLogger.warn("No action found for binding with id '%s'".formatted(binding.id));
       return null; // should not happend
     }
     Runnable action = runnables.get(ctx == null ? this : ctx);
     if (action == null) {
-      ConsoleLogger.error("No action found for binding with id '%s' in the provided context".formatted(binding.id));
+      ConsoleLogger.warn("No action found for binding with id '%s' in the provided context".formatted(binding.id));
       return null; // should not happend
     }
     return action;
