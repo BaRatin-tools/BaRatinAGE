@@ -59,6 +59,29 @@ public class ShortcutManager {
         Shortcut.of("N", true, false, false));
     registerBinding("global.save_project", false,
         Shortcut.of("S", true, false, false));
+    registerBinding("global.save_project_as", false,
+        Shortcut.of("S", true, true, false));
+    registerBinding("global.close_project", false,
+        Shortcut.of("W", true, false, false));
+    registerBinding("global.import_v2_project", false,
+        Shortcut.of("I", true, false, false));
+    registerBinding("global.export_report", false,
+        Shortcut.of("E", true, false, false));
+    registerBinding("global.exit", false,
+        Shortcut.of("F4", false, false, true));
+    registerBinding("global.help", false,
+        Shortcut.of("F1", false, false, false));
+
+    registerBinding("component.create_hydraulic_config", true,
+        Shortcut.of("C", true, true, false));
+    registerBinding("component.create_gaugings", true,
+        Shortcut.of("G", true, true, false));
+    registerBinding("component.create_rating_curve", true,
+        Shortcut.of("R", true, true, false));
+    registerBinding("component.create_limnigraph", true,
+        Shortcut.of("H", true, true, false));
+    registerBinding("component.create_hydrograph", true,
+        Shortcut.of("Q", true, true, false));
 
     registerBinding(
         "rc_comparator.toggle_item_display",
@@ -191,7 +214,11 @@ public class ShortcutManager {
     if (binding == null) {
       return item;
     }
-    item.setAccelerator(binding.getShortcut().getKeyStroke());
+    Shortcut shortcut = binding.getShortcut();
+    if (shortcut == null) {
+      return item;
+    }
+    item.setAccelerator(shortcut.getKeyStroke());
     Runnable action = getAction(binding, this);
     if (action == null) {
       ConsoleLogger.warn("No action linked to binding '%s' found!".formatted(binding.id));
@@ -238,7 +265,10 @@ public class ShortcutManager {
     JSONObject configuration = new JSONObject();
     for (Binding binding : bindings.values()) {
       if (binding.editable) {
-        configuration.put(binding.id, binding.getShortcut().toJSON());
+        Shortcut shortcut = binding.getShortcut();
+        if (shortcut != null) {
+          configuration.put(binding.id, shortcut.toJSON());
+        }
       }
     }
     return configuration.toString(4);

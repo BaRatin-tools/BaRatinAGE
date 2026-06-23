@@ -1,20 +1,19 @@
 package org.baratinage.ui;
 
 import java.awt.Desktop;
-import java.awt.event.ActionEvent;
-import java.awt.event.KeyEvent;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
-import javax.swing.KeyStroke;
 import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
 
@@ -23,22 +22,18 @@ import org.baratinage.report_exporter.ReportExporter;
 import org.baratinage.translation.T;
 import org.baratinage.ui.component.CommonDialog;
 import org.baratinage.ui.config.ConfigItem;
-import org.baratinage.ui.shortcuts.Binding;
-import org.baratinage.ui.shortcuts.Shortcut;
 import org.baratinage.utils.ConsoleLogger;
 
 public class MainMenuBar extends JMenuBar {
 
-    public final JMenu fileMenu;
+    private final JMenu fileMenu;
     public final JMenu componentMenu;
-    public final JMenu optionMenu;
-    public final JMenu helpMenu;
+    private final JMenu optionMenu;
+    private final JMenu helpMenu;
 
-    public final JMenuItem saveProjectAsMenuItem;
-    public final JMenuItem saveProjectMenuItem;
-    public final JMenuItem closeProjectMenuItem;
+    private final Set<JMenuItem> projectOnlyMenuItems = new HashSet<>();
 
-    public final Map<String, JCheckBoxMenuItem> translationMenuItems;
+    private final Map<String, JCheckBoxMenuItem> translationMenuItems;
 
     private DebugMenu debugMenu;
 
@@ -61,15 +56,13 @@ public class MainMenuBar extends JMenuBar {
             toggleDebugMenu();
         }
 
-        saveProjectAsMenuItem = new JMenuItem();
-        saveProjectMenuItem = new JMenuItem();
-        closeProjectMenuItem = new JMenuItem();
-
         translationMenuItems = new HashMap<>();
 
         initFileMenu();
         initOptionMenu();
         initHelpMenu();
+
+        projectOnlyMenuItems.add(componentMenu);
 
         T.t(this, fileMenu, false, "file");
         T.t(this, componentMenu, false, "components");
@@ -89,8 +82,10 @@ public class MainMenuBar extends JMenuBar {
         updateUI();
     }
 
-    public void updateMenuEnableStates() {
-        componentMenu.setEnabled(componentMenu.getMenuComponentCount() != 0);
+    public void setEnableForProjectOnlyItem(boolean enabled) {
+        for (JMenuItem item : projectOnlyMenuItems) {
+            item.setEnabled(enabled);
+        }
     }
 
     private void initFileMenu() {
@@ -116,35 +111,32 @@ public class MainMenuBar extends JMenuBar {
         T.t(this, saveProjectMenuItem, false, "save_project");
         fileMenu.add(saveProjectMenuItem);
 
-        T.t(this, saveProjectAsMenuItem, false, "save_project_as");
-        saveProjectAsMenuItem
-                .setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, ActionEvent.CTRL_MASK + ActionEvent.ALT_MASK));
-        saveProjectAsMenuItem.addActionListener((e) -> {
+        AppSetup.SHORTCUTS.setBindingAction("global.save_project_as", () -> {
             AppSetup.MAIN_FRAME.saveProject(true);
         });
+        JMenuItem saveProjectAsMenuItem = AppSetup.SHORTCUTS.createMenuItem("global.save_project_as");
+        T.t(this, saveProjectAsMenuItem, false, "save_project_as");
         fileMenu.add(saveProjectAsMenuItem);
 
-        T.t(this, closeProjectMenuItem, false, "close_project");
-        closeProjectMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_W, KeyEvent.CTRL_DOWN_MASK));
-        closeProjectMenuItem.addActionListener((e) -> {
+        AppSetup.SHORTCUTS.setBindingAction("global.close_project", () -> {
             AppSetup.MAIN_FRAME.closeProject();
         });
+        JMenuItem closeProjectMenuItem = AppSetup.SHORTCUTS.createMenuItem("global.close_project");
+        T.t(this, closeProjectMenuItem, false, "close_project");
         fileMenu.add(closeProjectMenuItem);
 
         fileMenu.addSeparator();
-        JMenuItem importBaratinageV2projectMenuItem = new JMenuItem();
-        T.t(this, importBaratinageV2projectMenuItem, false, "import_baratinage_v2_project");
-        importBaratinageV2projectMenuItem.addActionListener((e) -> {
+
+        AppSetup.SHORTCUTS.setBindingAction("global.import_v2_project", () -> {
             AppSetup.MAIN_FRAME.importV2Project();
         });
+        JMenuItem importBaratinageV2projectMenuItem = AppSetup.SHORTCUTS.createMenuItem("global.import_v2_project");
+        T.t(this, importBaratinageV2projectMenuItem, false, "import_baratinage_v2_project");
         fileMenu.add(importBaratinageV2projectMenuItem);
 
         fileMenu.addSeparator();
 
-        JMenuItem exportReportMenuItem = new JMenuItem();
-        T.t(this, exportReportMenuItem, false, "report_exporter");
-        add(exportReportMenuItem);
-        exportReportMenuItem.addActionListener((e) -> {
+        AppSetup.SHORTCUTS.setBindingAction("global.export_report", () -> {
             if (AppSetup.MAIN_FRAME.currentProject == null) {
                 ConsoleLogger.log("No project");
                 return;
@@ -152,17 +144,23 @@ public class MainMenuBar extends JMenuBar {
             ReportExporter reportExport = new ReportExporter(AppSetup.MAIN_FRAME.currentProject);
             reportExport.showDialog();
         });
+        JMenuItem exportReportMenuItem = AppSetup.SHORTCUTS.createMenuItem("global.export_report");
+        T.t(this, exportReportMenuItem, false, "report_exporter");
         fileMenu.add(exportReportMenuItem);
 
         fileMenu.addSeparator();
 
-        JMenuItem closeMenuItem = new JMenuItem();
-        T.t(this, closeMenuItem, false, "exit");
-        closeMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q, KeyEvent.CTRL_DOWN_MASK));
-        closeMenuItem.addActionListener((e) -> {
+        AppSetup.SHORTCUTS.setBindingAction("global.exit", () -> {
             AppSetup.MAIN_FRAME.close();
         });
+        JMenuItem closeMenuItem = AppSetup.SHORTCUTS.createMenuItem("global.exit");
+        T.t(this, closeMenuItem, false, "exit");
         fileMenu.add(closeMenuItem);
+
+        projectOnlyMenuItems.add(saveProjectMenuItem);
+        projectOnlyMenuItems.add(saveProjectAsMenuItem);
+        projectOnlyMenuItems.add(closeProjectMenuItem);
+        projectOnlyMenuItems.add(exportReportMenuItem);
     }
 
     public JMenu createLanguageSwitcherMenu() {
@@ -231,16 +229,16 @@ public class MainMenuBar extends JMenuBar {
     }
 
     private void initHelpMenu() {
-        JMenuItem helpMenuItem = new JMenuItem();
-        T.t(this, helpMenuItem, false, "help");
-        helpMenuItem.addActionListener((e) -> {
 
+        AppSetup.SHORTCUTS.setBindingAction("global.help", () -> {
             try {
                 Desktop.getDesktop().browse(new URI("https://baratin-tools.github.io/"));
             } catch (IOException | URISyntaxException err) {
                 ConsoleLogger.error(err);
             }
         });
+        JMenuItem helpMenuItem = AppSetup.SHORTCUTS.createMenuItem("global.help");
+        T.t(this, helpMenuItem, false, "help");
         helpMenu.add(helpMenuItem);
 
         JMenuItem aboutMenuItem = new JMenuItem();

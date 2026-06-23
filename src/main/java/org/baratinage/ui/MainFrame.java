@@ -173,13 +173,9 @@ public class MainFrame extends JFrame {
       projectPanel.addChild(project, true);
     } else {
       projectPanel.addChild(noProjectPanel, true);
-      mainMenuBar.componentMenu.removeAll();
       mainToolBars.clearBamItemTools();
     }
-    mainMenuBar.saveProjectAsMenuItem.setEnabled(!projectIsNull);
-    mainMenuBar.saveProjectMenuItem.setEnabled(!projectIsNull);
-    mainMenuBar.closeProjectMenuItem.setEnabled(!projectIsNull);
-    mainMenuBar.updateMenuEnableStates();
+    mainMenuBar.setEnableForProjectOnlyItem(!projectIsNull);
 
     updateFrameTitle();
     T.updateTranslations();
