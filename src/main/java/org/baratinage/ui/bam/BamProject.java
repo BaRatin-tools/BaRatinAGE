@@ -2,9 +2,12 @@ package org.baratinage.ui.bam;
 
 import java.nio.file.Path;
 import java.util.HashMap;
+import java.util.List;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 
 import org.baratinage.AppSetup;
 import org.baratinage.translation.T;
@@ -29,6 +32,7 @@ public abstract class BamProject extends SimpleFlowPanel {
     protected final Explorer EXPLORER;
 
     private String projectPath = null;
+    private BamItem currentBamItem = null;
 
     protected final SplitContainer content;
     protected final SimpleFlowPanel currentPanel;
@@ -61,6 +65,7 @@ public abstract class BamProject extends SimpleFlowPanel {
 
         // inialialize last save record
         lastSavedConfig = null;
+
     }
 
     public void setLastSavedConfig() {
@@ -90,6 +95,7 @@ public abstract class BamProject extends SimpleFlowPanel {
             ExplorerItem explorerItem = EXPLORER.getLastSelectedPathComponent();
             if (explorerItem != null) {
                 BamItem bamItem = getBamItem(explorerItem.id);
+                currentBamItem = bamItem;
                 if (bamItem != null) {
                     currentPanel.removeAll();
                     currentPanel.addChild(bamItem, true);
@@ -98,6 +104,38 @@ public abstract class BamProject extends SimpleFlowPanel {
                     currentPanel.removeAll();
                 }
                 updateUI();
+            }
+        });
+
+        AppSetup.SHORTCUTS.setFocusDepedentContext(EXPLORER, EXPLORER);
+
+        AppSetup.SHORTCUTS.setBindingAction("component.delete", EXPLORER, () -> {
+            List<BamItem> selectedBamItems = EXPLORER
+                    .getSelectedExplorerItems()
+                    .stream()
+                    .map(e -> getBamItem(e.id))
+                    .filter(e -> e != null)
+                    .collect(Collectors.toList());
+            if (selectedBamItems.size() > 0) {
+                String bamItemNames = selectedBamItems
+                        .stream()
+                        .map(e -> e.bamItemNameField.getText())
+                        .collect(Collectors.joining("</li><li>", "<ul><li>", "</li></ul>"));
+                int response = JOptionPane.showConfirmDialog(this,
+                        T.html("delete_component_question", bamItemNames),
+                        T.text("warning"),
+                        JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+                if (response == JOptionPane.YES_OPTION) {
+                    for (BamItem bamItem : selectedBamItems) {
+                        deleteBamItem(bamItem);
+                    }
+                }
+            }
+        });
+
+        AppSetup.SHORTCUTS.setBindingAction("component.duplicate", EXPLORER, () -> {
+            if (currentBamItem != null) {
+                currentBamItem.getCloneRunnable().run();
             }
         });
 
@@ -136,6 +174,11 @@ public abstract class BamProject extends SimpleFlowPanel {
 
         projectBamItems.put(itemType, new ProjectBamItem(itemType, categoryId, bamItemBuilder));
 
+        AppSetup.SHORTCUTS.setBindingAction("component.create_%s".formatted(itemType.id),
+                () -> {
+                    addBamItem(itemType);
+                });
+
     }
 
     protected BamItem addBamItem(BamItem bamItem) {
@@ -156,19 +199,15 @@ public abstract class BamProject extends SimpleFlowPanel {
 
         BAM_ITEMS.add(bamItem);
 
-        explorerItem.contextMenu.add(
-                BamItem.getAddBamItemBtn(
-                        new JMenuItem(),
-                        this,
-                        bamItem.TYPE,
-                        true, true));
+        JMenuItem createMenuItem = AppSetup.SHORTCUTS.createMenuItem("component.create_%s".formatted(bamItem.TYPE.id));
+        createMenuItem = BamItem.getAddBamItemBtn(createMenuItem, this, bamItem.TYPE, true, true);
+        explorerItem.contextMenu.add(createMenuItem);
 
-        explorerItem.contextMenu.add(bamItem.getCloneBamItemBtn(
-                new JMenuItem(),
-                true, true));
-        explorerItem.contextMenu.add(bamItem.getDeleteBamItemBtn(
-                new JMenuItem(),
-                true, true));
+        JMenuItem duplicateMenuItem = AppSetup.SHORTCUTS.createMenuItem("component.duplicate");
+        explorerItem.contextMenu.add(bamItem.getCloneBamItemBtn(duplicateMenuItem, true, true));
+
+        JMenuItem deleteMenuItem = AppSetup.SHORTCUTS.createMenuItem("component.delete");
+        explorerItem.contextMenu.add(bamItem.getDeleteBamItemBtn(deleteMenuItem, true, true));
 
         EXPLORER.appendItem(explorerItem);
         EXPLORER.selectItem(explorerItem);

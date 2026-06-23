@@ -2,6 +2,7 @@ package org.baratinage.ui.commons;
 
 import java.awt.Component;
 import java.awt.Font;
+import java.awt.event.FocusListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Arrays;
@@ -197,6 +198,10 @@ public class Explorer extends SimpleFlowPanel {
 
             return this;
         }
+    }
+
+    public void addFocusListener(FocusListener l) {
+        explorerTree.addFocusListener(l);
     }
 
 }

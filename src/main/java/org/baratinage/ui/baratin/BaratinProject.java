@@ -124,10 +124,10 @@ public class BaratinProject extends BamProject {
                         new JButton(), this,
                         itemType,
                         false, true));
-        AppSetup.MAIN_FRAME.mainMenuBar.componentMenu.add(BamItem.getAddBamItemBtn(
-                new JMenuItem(), this,
-                itemType,
-                true, true));
+
+        JMenuItem mainMenuItem = AppSetup.SHORTCUTS.createMenuItem("component.create_%s".formatted(itemType.id));
+        mainMenuItem = BamItem.getAddBamItemBtn(mainMenuItem, this, itemType, true, true);
+        AppSetup.MAIN_FRAME.mainMenuBar.componentMenu.add(mainMenuItem);
 
         for (ExplorerItem explorerItem : EXPLORER.rootNode.getChildrenExplorerItems()) {
             explorerItem.contextMenu.add(BamItem.getAddBamItemBtn(

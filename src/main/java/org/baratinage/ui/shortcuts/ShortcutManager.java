@@ -83,6 +83,11 @@ public class ShortcutManager {
     registerBinding("component.create_hydrograph", true,
         Shortcut.of("Q", true, true, false));
 
+    registerBinding("component.duplicate", true,
+        Shortcut.of("D", true, false, false));
+    registerBinding("component.delete", true,
+        Shortcut.of("DEL", false, false, false));
+
     registerBinding(
         "rc_comparator.toggle_item_display",
         true,
