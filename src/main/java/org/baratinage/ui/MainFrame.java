@@ -307,7 +307,8 @@ public class MainFrame extends JFrame {
   }
 
   public void close() {
-    closeProject();
-    System.exit(0);
+    if (closeProject()) {
+      System.exit(0);
+    }
   }
 }
