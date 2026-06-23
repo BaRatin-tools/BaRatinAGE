@@ -112,7 +112,6 @@ public class GaugingsTable extends DataTable {
     T.t(table, () -> {
       int offset = 0;
       if (dateTime != null) {
-        addColumn(dateTime);
         setHeader(0, T.text("date_time"));
         offset++;
       }

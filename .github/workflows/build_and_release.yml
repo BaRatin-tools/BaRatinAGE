@@ -118,16 +118,14 @@ jobs:
             --jq '.[] | select(.isPrerelease and (.tagName | startswith("examples-"))) 
                   | .tagName' \
             | sort -Vr | head -n1)
-
           echo "Using release tag: $tag"
-
+          tmp=$(mktemp -d)
           gh release download "$tag" \
             --repo BaRatin-tools/BaRatinAGE \
-            --pattern "*.bam"
-
+            --dir "$tmp"
           dest="./${{ matrix.MAIN_DIR }}/${{ env.EXAMPLES_DIR }}"
-            mkdir -p "$dest"
-            mv *.bam "$dest"/
+          mkdir -p "$dest"
+          mv "$tmp"/* "$dest"/
 
       - name: Download BaM executable from latest release
         shell: pwsh

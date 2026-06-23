@@ -2,7 +2,7 @@
   {
     "id": "param_weir",
     "icon_id": "hc_param_weir",
-    "formula": "C_0 / sqrt( 2 ) * k^(k-1) / (k+1/2)^(k+1/2) * B_s / H_s^(k-1) * (ispos( h - b ) * ( h - b )) ^ (k+1/2)",
+    "formula": "C_0 / sqrt( 2 ) * k^(k-1) / (k+1/2)^(k+1/2) * sqrt( 2*g ) * B_s / H_s^(k-1) * (ispos( h - b ) * ( h - b )) ^ (k+1/2)",
     "stage_symbole": "h",
     "parameters": [
       {

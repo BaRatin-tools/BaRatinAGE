@@ -230,6 +230,19 @@ public class LimnigraphImporter extends DataImporter {
     double[] sysStd = stageSysErrColMapper.getParsedColumn();
     int[] sysInd = stageSysIndColMapper.getParsedColumn();
 
+    // convert expanded uncertainties into standard-deviation
+    if (nonSysStd != null) {
+      for (int k = 0; k < nonSysStd.length; k++) {
+        nonSysStd[k] = nonSysStd[k] / 2.0;
+      }
+    }
+    if (sysStd != null) {
+      for (int k = 0; k < sysStd.length; k++) {
+        sysStd[k] = sysStd[k] / 2.0;
+      }
+    }
+
+    // check size of resulting error matrices and files
     int nCol = nonSysStd != null || sysStd != null ? AppSetup.CONFIG.N_SAMPLES_LIMNI_ERRORS.get() + 4
         : 4;
     double size = estimateDoubleMatrixTextFileSizeInKb(stage.length, nCol) / 2; // I devide by 2 to estimate the zip
