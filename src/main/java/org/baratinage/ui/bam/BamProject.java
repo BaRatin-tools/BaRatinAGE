@@ -109,7 +109,7 @@ public abstract class BamProject extends SimpleFlowPanel {
 
         AppSetup.SHORTCUTS.setFocusDepedentContext(EXPLORER, EXPLORER);
 
-        AppSetup.SHORTCUTS.setBindingAction("component.delete", EXPLORER, () -> {
+        AppSetup.SHORTCUTS.setBindingAction("explorer.delete", EXPLORER, () -> {
             List<BamItem> selectedBamItems = EXPLORER
                     .getSelectedExplorerItems()
                     .stream()
@@ -133,7 +133,7 @@ public abstract class BamProject extends SimpleFlowPanel {
             }
         });
 
-        AppSetup.SHORTCUTS.setBindingAction("component.duplicate", EXPLORER, () -> {
+        AppSetup.SHORTCUTS.setBindingAction("explorer.duplicate", EXPLORER, () -> {
             if (currentBamItem != null) {
                 currentBamItem.getCloneRunnable().run();
             }
@@ -174,7 +174,7 @@ public abstract class BamProject extends SimpleFlowPanel {
 
         projectBamItems.put(itemType, new ProjectBamItem(itemType, categoryId, bamItemBuilder));
 
-        AppSetup.SHORTCUTS.setBindingAction("component.create_%s".formatted(itemType.id),
+        AppSetup.SHORTCUTS.setBindingAction("global.create_%s".formatted(itemType.id),
                 () -> {
                     addBamItem(itemType);
                 });

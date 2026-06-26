@@ -9,6 +9,7 @@ import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -32,7 +33,7 @@ public class ShortcutManager {
   // (note: if no context is provided (or null), this is used as a default)
 
   // id -> binding
-  private final Map<String, Binding> bindings = new HashMap<>();
+  public final Map<String, Binding> bindings = new LinkedHashMap<>();
 
   // id -> context object -> action
   private final Map<String, HashMap<Object, Runnable>> actions = new HashMap<>();
@@ -55,7 +56,7 @@ public class ShortcutManager {
 
     registerBinding("global.open_project", false,
         Shortcut.of("O", true, false, false));
-    registerBinding("global.new_project", false,
+    registerBinding("global.create_baratin_project", false,
         Shortcut.of("N", true, false, false));
     registerBinding("global.save_project", false,
         Shortcut.of("S", true, false, false));
@@ -72,28 +73,28 @@ public class ShortcutManager {
     registerBinding("global.help", false,
         Shortcut.of("F1", false, false, false));
 
-    registerBinding("component.create_hydraulic_config", true,
+    registerBinding("global.create_hydraulic_config", true,
         Shortcut.of("C", true, true, false));
-    registerBinding("component.create_gaugings", true,
+    registerBinding("global.create_gaugings", true,
         Shortcut.of("G", true, true, false));
-    registerBinding("component.create_rating_curve", true,
+    registerBinding("global.create_rating_curve", true,
         Shortcut.of("R", true, true, false));
-    registerBinding("component.create_limnigraph", true,
+    registerBinding("global.create_limnigraph", true,
         Shortcut.of("H", true, true, false));
-    registerBinding("component.create_hydrograph", true,
+    registerBinding("global.create_hydrograph", true,
         Shortcut.of("Q", true, true, false));
 
-    registerBinding("component.duplicate", true,
+    registerBinding("explorer.duplicate", true,
         Shortcut.of("D", true, false, false));
-    registerBinding("component.delete", true,
+    registerBinding("explorer.delete", true,
         Shortcut.of("DEL", false, false, false));
 
     registerBinding(
-        "rc_comparator.toggle_item_display",
+        "rc_comp.toggle_plot_item_display",
         true,
         Shortcut.of("D", false, false, true));
     registerBinding(
-        "rc_comparator.toggle_item_lgd_display",
+        "rc_comp.toggle_plot_item_lgd_display",
         true,
         Shortcut.of("L", false, false, true));
 
@@ -181,6 +182,9 @@ public class ShortcutManager {
    * Walk the context stack top-down and fire the first matching action (if any).
    */
   private boolean tryDispatch(Shortcut pressed) {
+    if (!AppSetup.MAIN_FRAME.isFocused()) {
+      return false;
+    }
     for (Object ctx : contextStack) { // for each context, top to bottom
       Set<String> bindingIds = contextBindings.get(ctx);
       if (bindingIds == null) {

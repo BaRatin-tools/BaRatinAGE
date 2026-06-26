@@ -22,6 +22,7 @@ import org.baratinage.report_exporter.ReportExporter;
 import org.baratinage.translation.T;
 import org.baratinage.ui.component.CommonDialog;
 import org.baratinage.ui.config.ConfigItem;
+import org.baratinage.ui.shortcuts.ShortcutDialog;
 import org.baratinage.utils.ConsoleLogger;
 
 public class MainMenuBar extends JMenuBar {
@@ -105,21 +106,27 @@ public class MainMenuBar extends JMenuBar {
         fileMenu.add(openProjectMenuItem);
 
         AppSetup.SHORTCUTS.setBindingAction("global.save_project", () -> {
-            AppSetup.MAIN_FRAME.saveProject(false);
+            if (AppSetup.MAIN_FRAME.currentProject != null) {
+                AppSetup.MAIN_FRAME.saveProject(false);
+            }
         });
         JMenuItem saveProjectMenuItem = AppSetup.SHORTCUTS.createMenuItem("global.save_project");
         T.t(this, saveProjectMenuItem, false, "save_project");
         fileMenu.add(saveProjectMenuItem);
 
         AppSetup.SHORTCUTS.setBindingAction("global.save_project_as", () -> {
-            AppSetup.MAIN_FRAME.saveProject(true);
+            if (AppSetup.MAIN_FRAME.currentProject != null) {
+                AppSetup.MAIN_FRAME.saveProject(true);
+            }
         });
         JMenuItem saveProjectAsMenuItem = AppSetup.SHORTCUTS.createMenuItem("global.save_project_as");
         T.t(this, saveProjectAsMenuItem, false, "save_project_as");
         fileMenu.add(saveProjectAsMenuItem);
 
         AppSetup.SHORTCUTS.setBindingAction("global.close_project", () -> {
-            AppSetup.MAIN_FRAME.closeProject();
+            if (AppSetup.MAIN_FRAME.currentProject != null) {
+                AppSetup.MAIN_FRAME.closeProject();
+            }
         });
         JMenuItem closeProjectMenuItem = AppSetup.SHORTCUTS.createMenuItem("global.close_project");
         T.t(this, closeProjectMenuItem, false, "close_project");
@@ -226,6 +233,14 @@ public class MainMenuBar extends JMenuBar {
             AppSetup.CONFIG.openConfigDialog();
         });
         optionMenu.add(preferenceMenuItem);
+        JMenuItem shortcutsMenuItem = new JMenuItem();
+        T.t(this, shortcutsMenuItem, false, "shortcuts");
+        shortcutsMenuItem.addActionListener(l -> {
+            ShortcutDialog dialog = new ShortcutDialog(AppSetup.MAIN_FRAME, AppSetup.SHORTCUTS);
+            dialog.setVisible(true);
+            System.out.println(dialog);
+        });
+        optionMenu.add(shortcutsMenuItem);
     }
 
     private void initHelpMenu() {

@@ -11,7 +11,8 @@ public class Binding {
 
   public Binding(String id, boolean editable, Shortcut defaultShortcut) {
     this.id = id;
-    this.editable = editable;
+    // this.editable = editable; // disabled for now, all shortcuts are editable
+    this.editable = true;
     this.defaultShortcut = defaultShortcut;
   }
 
