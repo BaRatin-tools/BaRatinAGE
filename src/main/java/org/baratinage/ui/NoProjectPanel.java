@@ -40,7 +40,7 @@ public class NoProjectPanel extends GridPanel {
         });
 
         importV2ProjectButton = new JButton();
-        T.t(AppSetup.MAIN_FRAME, importV2ProjectButton, false, "import_baratinage_v2_project");
+        T.t(AppSetup.MAIN_FRAME, importV2ProjectButton, false, "import_v2_project");
         importV2ProjectButton.addActionListener((e) -> {
             AppSetup.MAIN_FRAME.importV2Project();
         });

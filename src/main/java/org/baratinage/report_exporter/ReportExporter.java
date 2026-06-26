@@ -58,7 +58,7 @@ public class ReportExporter {
     this.project = project;
 
     dialog = new SimpleDialog(AppSetup.MAIN_FRAME, true);
-    dialog.setTitle(T.text("report_exporter"));
+    dialog.setTitle(T.text("export_report"));
     dialog.setSize(700, 400);
 
     reportWriter = new ReportExportWriter("default");
@@ -206,7 +206,7 @@ public class ReportExporter {
       cbLabel.setText(item.bamItemNameField.getText());
       cbLabel.setIcon(item.TYPE.getIcon());
       // cb.addItemListener(l -> {
-      // TimedActions.debounce("report_exporter", 100, () -> {
+      // TimedActions.debounce("export_report", 100, () -> {
       // updateReport();
       // });
       // });
@@ -313,7 +313,7 @@ public class ReportExporter {
     });
 
     JLabel label = new JLabel();
-    label.setText(T.text("report_exporter"));
+    label.setText(T.text("export_report"));
     SimpleFlowPanel actionsPanel = new SimpleFlowPanel(true);
     actionsPanel.setGap(5);
     actionsPanel.addChild(label, false);

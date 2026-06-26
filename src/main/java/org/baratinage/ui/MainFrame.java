@@ -281,7 +281,7 @@ public class MainFrame extends JFrame {
 
   public void importV2Project() {
     if (isClosingConfirmed()) {
-      File f = CommonDialog.openFileDialog(T.text("import_baratinage_v2_project"),
+      File f = CommonDialog.openFileDialog(T.text("import_v2_project"),
           new CommonDialog.CustomFileFilter(
               T.text("bar_zip_file_format"),
               "bar.zip", "BAR.ZIP"));

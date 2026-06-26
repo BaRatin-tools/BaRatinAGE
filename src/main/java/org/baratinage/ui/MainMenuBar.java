@@ -90,10 +90,10 @@ public class MainMenuBar extends JMenuBar {
 
     private void initFileMenu() {
 
-        AppSetup.SHORTCUTS.setBindingAction("global.new_project", () -> {
+        AppSetup.SHORTCUTS.setBindingAction("global.create_baratin_project", () -> {
             AppSetup.MAIN_FRAME.newProject();
         });
-        JMenuItem newProjectMenuItem = AppSetup.SHORTCUTS.createMenuItem("global.new_project");
+        JMenuItem newProjectMenuItem = AppSetup.SHORTCUTS.createMenuItem("global.create_baratin_project");
         T.t(this, newProjectMenuItem, false, "create_baratin_project");
         fileMenu.add(newProjectMenuItem);
 
@@ -131,7 +131,7 @@ public class MainMenuBar extends JMenuBar {
             AppSetup.MAIN_FRAME.importV2Project();
         });
         JMenuItem importBaratinageV2projectMenuItem = AppSetup.SHORTCUTS.createMenuItem("global.import_v2_project");
-        T.t(this, importBaratinageV2projectMenuItem, false, "import_baratinage_v2_project");
+        T.t(this, importBaratinageV2projectMenuItem, false, "import_v2_project");
         fileMenu.add(importBaratinageV2projectMenuItem);
 
         fileMenu.addSeparator();
@@ -145,7 +145,7 @@ public class MainMenuBar extends JMenuBar {
             reportExport.showDialog();
         });
         JMenuItem exportReportMenuItem = AppSetup.SHORTCUTS.createMenuItem("global.export_report");
-        T.t(this, exportReportMenuItem, false, "report_exporter");
+        T.t(this, exportReportMenuItem, false, "export_report");
         fileMenu.add(exportReportMenuItem);
 
         fileMenu.addSeparator();
