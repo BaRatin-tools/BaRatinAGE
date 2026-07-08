@@ -17,7 +17,7 @@ public class Binding {
   }
 
   public Shortcut getShortcut() {
-    return shortcut == null ? defaultShortcut : shortcut;
+    return shortcut;
   }
 
   public void setShortcut(Shortcut shortcut) {
@@ -27,4 +27,9 @@ public class Binding {
       ConsoleLogger.error("Cannot modify not editable Binding '%s'".formatted(id));
     }
   }
+
+  public void resetToDefault() {
+    shortcut = defaultShortcut;
+  }
+
 }

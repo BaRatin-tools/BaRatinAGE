@@ -28,6 +28,7 @@ import com.formdev.flatlaf.FlatClientProperties;
 
 public class ShortcutDialog extends JDialog {
 
+  private final ShortcutManager shortctuManager;
   private final ShortcutTableModel model;
   private final JTable table;
 
@@ -36,6 +37,7 @@ public class ShortcutDialog extends JDialog {
       ShortcutManager shortctuManager) {
     super(owner, T.text("shortcuts"), ModalityType.APPLICATION_MODAL);
 
+    this.shortctuManager = shortctuManager;
     this.model = new ShortcutTableModel(shortctuManager.bindings);
     this.table = new JTable(model);
 
@@ -94,15 +96,17 @@ public class ShortcutDialog extends JDialog {
                   Entry<? extends ShortcutTableModel, ? extends Integer> entry) {
                 ShortcutEntry e = model.getEntry(
                     entry.getIdentifier());
+                Shortcut shortcut = e.binding().getShortcut();
                 return e.id().toLowerCase()
                     .contains(lower)
                     || e.context().toLowerCase()
                         .contains(lower)
                     || e.action().toLowerCase()
                         .contains(lower)
-                    || e.binding().getShortcut().toDisplayString()
-                        .toLowerCase()
-                        .contains(lower);
+                    || (shortcut == null ? false
+                        : shortcut.toDisplayString()
+                            .toLowerCase()
+                            .contains(lower));
               }
             });
           }
@@ -143,9 +147,7 @@ public class ShortcutDialog extends JDialog {
 
     ShortcutEntry entry = model.getEntry(row);
 
-    Binding newBinding = BindingInputDialog.showDialog(
-        this,
-        entry.binding());
+    Binding newBinding = BindingInputDialog.showDialog(this, entry.binding(), shortctuManager.bindings);
 
     if (newBinding == null) {
       return;
@@ -233,10 +235,10 @@ public class ShortcutDialog extends JDialog {
         int rowIndex,
         int columnIndex) {
       ShortcutEntry e = entries.get(rowIndex);
-
+      Shortcut shortcut = e.binding().getShortcut();
       return switch (columnIndex) {
         case 0 -> e.action();
-        case 1 -> e.binding().getShortcut().toDisplayString();
+        case 1 -> shortcut == null ? "" : shortcut.toDisplayString();
         case 2 -> e.context();
         default -> null;
       };

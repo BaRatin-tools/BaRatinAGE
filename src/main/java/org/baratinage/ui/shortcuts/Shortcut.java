@@ -3,6 +3,7 @@ package org.baratinage.ui.shortcuts;
 import java.awt.event.KeyEvent;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.StringJoiner;
 
 import javax.swing.KeyStroke;
@@ -74,6 +75,19 @@ public record Shortcut(int keyCode, int modifiers) {
     NAMED_KEYS.put("NUMPAD-DIVIDE", KeyEvent.VK_DIVIDE);
     NAMED_KEYS.put("NUMPAD-DECIMAL", KeyEvent.VK_DECIMAL);
     NAMED_KEYS.put("NUMPAD-ENTER", KeyEvent.VK_ENTER);
+  }
+
+  private static final Set<Integer> MODIFIER_KEY_CODES = Set.of(
+      KeyEvent.VK_SHIFT,
+      KeyEvent.VK_CONTROL,
+      KeyEvent.VK_ALT,
+      KeyEvent.VK_ALT_GRAPH,
+      KeyEvent.VK_META,
+      KeyEvent.VK_WINDOWS,
+      KeyEvent.VK_CONTEXT_MENU);
+
+  public static boolean isModifierKey(int keyCode) {
+    return MODIFIER_KEY_CODES.contains(keyCode);
   }
 
   public static Shortcut of(int keyCode, int modifiers) {
@@ -156,5 +170,14 @@ public record Shortcut(int keyCode, int modifiers) {
     json.put("shift", shift());
     json.put("alt", alt());
     return json;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (!(obj instanceof Shortcut)) {
+      return false;
+    }
+    Shortcut shortcut = (Shortcut) obj;
+    return shortcut.keyCode == keyCode && shortcut.modifiers == modifiers;
   }
 }
