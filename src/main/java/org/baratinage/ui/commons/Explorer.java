@@ -333,6 +333,9 @@ public class Explorer extends SimpleFlowPanel {
                 return false;
             }
             DropLocationInfo dl = getDropLocation(support);
+            if (draggedExplorerItem.parentItem == null) {
+                return false;
+            }
             return (draggedExplorerItem.parentItem.equals(dl.parentItem));
         }
 
