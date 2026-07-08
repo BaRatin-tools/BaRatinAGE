@@ -5,7 +5,6 @@ import org.baratinage.ui.bam.BamItemList;
 import org.baratinage.ui.bam.BamItemType;
 import org.baratinage.ui.bam.BamProject;
 import org.baratinage.ui.bam.BamProjectType;
-import org.baratinage.ui.commons.ExplorerItem;
 import org.baratinage.ui.commons.StructuralErrorModelBamItem;
 import org.baratinage.ui.component.NameSymbolUnit;
 
@@ -125,16 +124,9 @@ public class BaratinProject extends BamProject {
                         itemType,
                         false, true));
 
-        JMenuItem mainMenuItem = AppSetup.SHORTCUTS.createMenuItem("component.create_%s".formatted(itemType.id));
+        JMenuItem mainMenuItem = AppSetup.SHORTCUTS.createMenuItem("global.create_%s".formatted(itemType.id));
         mainMenuItem = BamItem.getAddBamItemBtn(mainMenuItem, this, itemType, true, true);
         AppSetup.MAIN_FRAME.mainMenuBar.componentMenu.add(mainMenuItem);
-
-        for (ExplorerItem explorerItem : EXPLORER.rootNode.getChildrenExplorerItems()) {
-            explorerItem.contextMenu.add(BamItem.getAddBamItemBtn(
-                    new JMenuItem(), this,
-                    itemType,
-                    true, true));
-        }
     }
 
     public void addDefaultBamItems() {

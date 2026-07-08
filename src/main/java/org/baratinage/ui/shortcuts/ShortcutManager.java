@@ -209,10 +209,11 @@ public class ShortcutManager {
    * helper function to create a menu item which suppress default key binding
    * response to let the shortcut manager be the unique response handler
    * 
-   * @param id action id
+   * @param id      action id
+   * @param context context
    * @return a configured JMenuItem
    */
-  public JMenuItem createMenuItem(String bindingId) {
+  public JMenuItem createMenuItem(String bindingId, Object context) {
     JMenuItem item = new JMenuItem() {
       @Override
       protected boolean processKeyBinding(KeyStroke ks, KeyEvent e, int condition, boolean pressed) {
@@ -228,13 +229,17 @@ public class ShortcutManager {
       return item;
     }
     item.setAccelerator(shortcut.getKeyStroke());
-    Runnable action = getAction(binding, this);
+    Runnable action = getAction(binding, context);
     if (action == null) {
       ConsoleLogger.warn("No action linked to binding '%s' found!".formatted(binding.id));
       return item;
     }
     item.addActionListener(e -> action.run());
     return item;
+  }
+
+  public JMenuItem createMenuItem(String bindingId) {
+    return createMenuItem(bindingId, this);
   }
 
   public void loadShortcuts() {

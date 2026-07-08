@@ -15,6 +15,7 @@ import java.util.stream.Collectors;
 import javax.swing.BorderFactory;
 import javax.swing.DropMode;
 import javax.swing.JComponent;
+import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTree;
 import javax.swing.TransferHandler;
@@ -23,11 +24,13 @@ import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 
+import org.baratinage.AppSetup;
 import org.baratinage.ui.container.SimpleFlowPanel;
 import org.baratinage.utils.Misc;
 
 public class Explorer extends SimpleFlowPanel {
 
+    public final JPopupMenu contextMenu;
     private final JTree explorerTree;
     public final ExplorerItem rootNode;
     private final DefaultTreeModel explorerTreeModel;
@@ -39,6 +42,8 @@ public class Explorer extends SimpleFlowPanel {
         setGap(5);
 
         Misc.setMinimumSize(this, 200, null);
+
+        contextMenu = new JPopupMenu();
 
         explorerTree = new JTree();
         explorerTree.setBorder(BorderFactory.createEmptyBorder());
@@ -69,10 +74,23 @@ public class Explorer extends SimpleFlowPanel {
                 int x = e.getX();
                 int y = e.getY();
                 ExplorerItem clickedItem = getClickedExplorerItem(y);
-                if (clickedItem != null) {
+                List<ExplorerItem> selectedItems = getSelectedExplorerItems();
+                if (selectedItems.size() == 0 || selectedItems.size() == 1) {
                     selectItem(clickedItem);
-                    clickedItem.contextMenu.show(explorerTree, x, y);
+                } else {
+                    boolean clickedSelected = false;
+                    for (ExplorerItem item : selectedItems) {
+                        if (item.equals(clickedItem)) {
+                            clickedSelected = true;
+                            break;
+                        }
+                    }
+                    if (!clickedSelected) {
+                        selectItem(clickedItem);
+                    }
                 }
+                JPopupMenu menu = AppSetup.MAIN_FRAME.currentProject.createExplorerContextMenu();
+                menu.show(explorerTree, x, y);
             }
         });
     }

@@ -28,7 +28,6 @@ import com.formdev.flatlaf.FlatClientProperties;
 
 public class ShortcutDialog extends JDialog {
 
-  private final ShortcutManager shortctuManager;
   private final ShortcutTableModel model;
   private final JTable table;
 
@@ -36,8 +35,6 @@ public class ShortcutDialog extends JDialog {
       Window owner,
       ShortcutManager shortctuManager) {
     super(owner, T.text("shortcuts"), ModalityType.APPLICATION_MODAL);
-
-    this.shortctuManager = shortctuManager;
 
     this.model = new ShortcutTableModel(shortctuManager.bindings);
     this.table = new JTable(model);
