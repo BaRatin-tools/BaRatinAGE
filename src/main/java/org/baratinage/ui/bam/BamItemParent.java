@@ -183,7 +183,7 @@ public class BamItemParent extends SimpleFlowPanel {
         setCurrentBamItem(selectedItem);
     }
 
-    private void setCurrentBamItem(BamItem bamItem) {
+    public void setCurrentBamItem(BamItem bamItem) {
         if (currentBamItem != null) {
             currentBamItem.removeChangeListener(onBamItemContentChange);
         }

@@ -16,6 +16,7 @@ import org.baratinage.ui.bam.BamItemType;
 import org.baratinage.ui.bam.IPlotDataProvider;
 import org.baratinage.ui.baratin.rating_curve.RatingCurvePlotData;
 import org.baratinage.ui.baratin.rating_curve.RatingCurvePlotToolsPanel;
+import org.baratinage.ui.commons.ToasterMessage;
 import org.baratinage.ui.component.SimpleList;
 import org.baratinage.ui.component.SimpleSep;
 import org.baratinage.ui.component.SimpleTextField;
@@ -28,6 +29,7 @@ import org.baratinage.ui.plot.PlotContainer;
 import org.baratinage.ui.plot.PlotItem;
 import org.baratinage.ui.plot.PlotUtils;
 import org.baratinage.ui.plot.PlotItem.LineType;
+import org.baratinage.utils.ConsoleLogger;
 import org.baratinage.utils.Misc;
 import org.jfree.chart.title.LegendTitle;
 import org.jfree.chart.ui.RectangleEdge;
@@ -57,6 +59,8 @@ public class RatingCurveCompare extends BamItem {
     private final SimpleFlowPanel plotItemEditionPanel;
 
     private Plot plot;
+    private BamItem bamItemOne;
+    private BamItem bamItemTwo;
 
     public final HashMap<BamItem, HashMap<String, EditablePlotItem>> knownEditablePlotItems;
     private final HashMap<BamItem, String> knownLabels;
@@ -229,6 +233,14 @@ public class RatingCurveCompare extends BamItem {
         rcOne.addChangeListener(l -> {
 
             BamItem item = rcOne.getCurrentBamItem();
+
+            if (item != null && item.equals(rcTwo.getCurrentBamItem())) {
+                ConsoleLogger.warn("Cannot select the same BamItem!");
+                rcOne.setCurrentBamItem(bamItemOne);
+                ToasterMessage.info(T.text("cannot_select_same_item"), 2000);
+                return;
+            }
+
             updateKnownEditablePlotItems(item, false);
 
             if (item == null) {
@@ -240,13 +252,42 @@ public class RatingCurveCompare extends BamItem {
             }
 
             List<EPI> epis = getPlotItemOrderByRC(false);
+
+            if (bamItemOne != null && item != null) {
+                List<EPI> oldEpis = getEPIs(bamItemOne);
+                List<EPI> newEpis = getEPIs(item);
+                for (EPI nepi : newEpis) {
+                    EPI matchingEpi = null;
+                    for (EPI oepi : oldEpis) {
+                        if (nepi.key.equals(oepi.key)) {
+                            matchingEpi = oepi;
+                            break;
+                        }
+                    }
+                    if (matchingEpi != null) {
+                        EditablePlotItem npi = getEditablePlotItem(nepi);
+                        EditablePlotItem opi = getEditablePlotItem(matchingEpi);
+                        npi.applyState(opi);
+                    }
+                }
+            }
+
             setPlotItemOrder(epis);
             resetPlot();
 
+            bamItemOne = item;
         });
 
         rcTwo.addChangeListener(l -> {
             BamItem item = rcTwo.getCurrentBamItem();
+
+            if (item != null && item.equals(rcOne.getCurrentBamItem())) {
+                ConsoleLogger.warn("Cannot select the same BamItem!");
+                rcTwo.setCurrentBamItem(bamItemTwo);
+                ToasterMessage.info(T.text("cannot_select_same_item"), 2000);
+                return;
+            }
+
             updateKnownEditablePlotItems(item, true);
 
             if (item == null) {
@@ -258,9 +299,29 @@ public class RatingCurveCompare extends BamItem {
             }
 
             List<EPI> epis = getPlotItemOrderByRC(false);
+
+            if (bamItemTwo != null && item != null) {
+                List<EPI> oldEpis = getEPIs(bamItemTwo);
+                List<EPI> newEpis = getEPIs(item);
+                for (EPI nepi : newEpis) {
+                    EPI matchingEpi = null;
+                    for (EPI oepi : oldEpis) {
+                        if (nepi.key.equals(oepi.key)) {
+                            matchingEpi = oepi;
+                            break;
+                        }
+                    }
+                    if (matchingEpi != null) {
+                        EditablePlotItem npi = getEditablePlotItem(nepi);
+                        EditablePlotItem opi = getEditablePlotItem(matchingEpi);
+                        npi.applyState(opi);
+                    }
+                }
+            }
+
             setPlotItemOrder(epis);
             resetPlot();
-
+            bamItemTwo = item;
         });
 
         rcOneNameLabel.addChangeListener(l -> {
@@ -405,9 +466,8 @@ public class RatingCurveCompare extends BamItem {
         }
     }
 
-    private List<EPI> getEPIs(BamItemParent bamItemParent) {
+    private List<EPI> getEPIs(BamItem bamItem) {
         List<EPI> epis = new ArrayList<>();
-        BamItem bamItem = bamItemParent.getCurrentBamItem();
         if (bamItem != null && knownEditablePlotItems.containsKey(bamItem)) {
             for (String key : episKeys) {
                 if (knownEditablePlotItems.get(bamItem).containsKey(key)) {
@@ -422,11 +482,11 @@ public class RatingCurveCompare extends BamItem {
         List<EPI> epis = new ArrayList<>();
 
         if (rc1first) {
-            epis.addAll(getEPIs(rcOne));
-            epis.addAll(getEPIs(rcTwo));
+            epis.addAll(getEPIs(rcOne.getCurrentBamItem()));
+            epis.addAll(getEPIs(rcTwo.getCurrentBamItem()));
         } else {
-            epis.addAll(getEPIs(rcTwo));
-            epis.addAll(getEPIs(rcOne));
+            epis.addAll(getEPIs(rcTwo.getCurrentBamItem()));
+            epis.addAll(getEPIs(rcOne.getCurrentBamItem()));
         }
 
         return epis;
@@ -719,10 +779,12 @@ public class RatingCurveCompare extends BamItem {
 
         if (config.JSON.has("rcOne")) {
             rcOne.fromJSON(config.JSON.getJSONObject("rcOne"), true);
+            bamItemOne = rcOne.getCurrentBamItem();
         }
 
         if (config.JSON.has("rcTwo")) {
             rcTwo.fromJSON(config.JSON.getJSONObject("rcTwo"), true);
+            bamItemTwo = rcTwo.getCurrentBamItem();
         }
 
         // resetPlotItemList();
