@@ -73,6 +73,7 @@ public class Gaugings extends BamItem implements ICalibrationData, GaugingsDatas
                 plotPanel.resetPlotZoom();
                 updateImportedDatasetLabel();
             }
+            fireChangeListeners();
         });
 
         gaugingsTable.table.getSelectionModel().addListSelectionListener(e -> {

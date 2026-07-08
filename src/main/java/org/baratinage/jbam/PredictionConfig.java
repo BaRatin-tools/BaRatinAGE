@@ -169,9 +169,9 @@ public class PredictionConfig {
             // FIXME: for simplicity sake, assuming that data file is in workspace folder!
             Path dataFilePath = BamFilesHelpers.findDataFilePath(inputFilePaths[k], workspace);
             if (dataFilePath == null) {
-                ConsoleLogger.error(
-                        "PredictionConfig Error: Cannot find prediction data file '" + inputFilePaths[k] + "'!");
-                return null;
+                ConsoleLogger
+                        .warn("PredictionConfig : cannot find prediction data file '%s'".formatted(inputFilePaths[k]));
+                continue;
             }
             // String name =
             // BamFilesHelpers.getNameFromFileName(BamFilesHelpers.DATA_PREDICTION,
