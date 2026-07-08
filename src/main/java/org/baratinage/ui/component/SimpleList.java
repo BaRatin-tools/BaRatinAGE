@@ -14,7 +14,6 @@ import java.util.HashMap;
 import java.util.List;
 
 import javax.swing.DefaultListModel;
-// import javax.swing.DefaultListSelectionModel;
 import javax.swing.DropMode;
 import javax.swing.Icon;
 import javax.swing.JComponent;
@@ -60,15 +59,11 @@ public class SimpleList<A> extends JScrollPane {
         model = new DefaultListModel<>();
 
         list.setDragEnabled(true);
-        // list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         list.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         list.setDropMode(DropMode.INSERT);
 
-        SimpleListTransferHandler<A> transferHandler = new SimpleListTransferHandler<A>(
-                this);
-        transferHandler.addTransferDoneListener(l -> {
-            fireOrderChangeListener();
-        });
+        SimpleListTransferHandler<A> transferHandler = new SimpleListTransferHandler<A>(this);
+        transferHandler.addTransferDoneListener(l -> fireOrderChangeListener());
         list.setTransferHandler(transferHandler);
 
         list.setCellRenderer(new SimpleListItemRenderer());

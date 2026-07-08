@@ -1,7 +1,6 @@
 package org.baratinage.ui.commons;
 
 import javax.swing.Icon;
-import javax.swing.JPopupMenu;
 import javax.swing.tree.DefaultMutableTreeNode;
 
 public class ExplorerItem extends DefaultMutableTreeNode {
