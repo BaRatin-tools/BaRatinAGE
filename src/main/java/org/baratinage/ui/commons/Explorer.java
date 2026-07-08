@@ -2,6 +2,8 @@ package org.baratinage.ui.commons;
 
 import java.awt.Component;
 import java.awt.Font;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
 import java.awt.event.FocusListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -11,8 +13,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.swing.BorderFactory;
+import javax.swing.DropMode;
+import javax.swing.JComponent;
 import javax.swing.JScrollPane;
 import javax.swing.JTree;
+import javax.swing.TransferHandler;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
@@ -40,6 +45,9 @@ public class Explorer extends SimpleFlowPanel {
 
         explorerTree.setRootVisible(false);
         explorerTree.setShowsRootHandles(true);
+        explorerTree.setDragEnabled(true);
+        explorerTree.setDropMode(DropMode.INSERT);
+        explorerTree.setTransferHandler(new ExplorerItemTransferHandler(this));
 
         JScrollPane treeViewScrollableArea = new JScrollPane(explorerTree);
         treeViewScrollableArea.setBorder(BorderFactory.createEmptyBorder());
@@ -95,8 +103,24 @@ public class Explorer extends SimpleFlowPanel {
         if (item.parentItem != null) {
             root = item.parentItem;
         }
-        explorerTreeModel.insertNodeInto(item, root, root.getChildCount());
+        insertItem(item, root.getChildCount());
+    }
+
+    public void insertItem(ExplorerItem item, int index) {
+        ExplorerItem root = this.rootNode;
+        if (item.parentItem != null) {
+            root = item.parentItem;
+        }
+        explorerTreeModel.insertNodeInto(item, root, index);
         explorerTreeModel.nodeStructureChanged(root);
+    }
+
+    private int getExplorerItemIndex(ExplorerItem item) {
+        ExplorerItem parent = rootNode;
+        if (item.parentItem != null) {
+            parent = item.parentItem;
+        }
+        return parent.getIndex(item);
     }
 
     public void updateItemView(ExplorerItem item) {
@@ -121,6 +145,18 @@ public class Explorer extends SimpleFlowPanel {
                 .filter(node -> node instanceof ExplorerItem)
                 .map(node -> (ExplorerItem) node)
                 .collect(Collectors.toList());
+    }
+
+    public ExplorerItem getSelectedExplorerItem() {
+        TreePath selectedPath = explorerTree.getSelectionPath();
+        if (selectedPath == null) {
+            return null;
+        }
+        Object obj = selectedPath.getLastPathComponent();
+        if (obj instanceof ExplorerItem) {
+            return (ExplorerItem) obj;
+        }
+        return null;
     }
 
     public void expandItem(ExplorerItem item) {
@@ -202,6 +238,100 @@ public class Explorer extends SimpleFlowPanel {
 
     public void addFocusListener(FocusListener l) {
         explorerTree.addFocusListener(l);
+    }
+
+    private class ExplorerItemTransferHandler extends TransferHandler {
+
+        private record DropLocationInfo(ExplorerItem parentItem, int index) {
+        };
+
+        // safe approach making sure only local objects are handle which
+        // means no serialization need to be implemented
+        private static final DataFlavor NODE_FLAVOR;
+        static {
+            DataFlavor f;
+            try {
+                f = new DataFlavor(DataFlavor.javaJVMLocalObjectMimeType
+                        + ";class=" + ExplorerItem.class.getName());
+            } catch (ClassNotFoundException e) {
+                f = null; // should never happen
+            }
+            NODE_FLAVOR = f;
+        }
+
+        private final Explorer explorer;
+        private ExplorerItem draggedExplorerItem;
+
+        public ExplorerItemTransferHandler(Explorer explorer) {
+            this.explorer = explorer;
+        }
+
+        @Override
+        public int getSourceActions(JComponent c) {
+            return MOVE;
+        }
+
+        @Override
+        protected Transferable createTransferable(JComponent c) {
+
+            draggedExplorerItem = explorer.getSelectedExplorerItem();
+            if (draggedExplorerItem == null) {
+                return null;
+            }
+
+            return new Transferable() {
+                @Override
+                public DataFlavor[] getTransferDataFlavors() {
+                    return new DataFlavor[] { NODE_FLAVOR };
+                }
+
+                @Override
+                public boolean isDataFlavorSupported(DataFlavor flavor) {
+                    return flavor.equals(NODE_FLAVOR);
+                }
+
+                @Override
+                public Object getTransferData(DataFlavor flavor) {
+                    return draggedExplorerItem;
+                }
+            };
+        }
+
+        private DropLocationInfo getDropLocation(TransferSupport support) {
+            JTree.DropLocation dl = (JTree.DropLocation) support.getDropLocation();
+            TreePath parentPath = dl.getPath();
+            ExplorerItem parentItem = null;
+            if (parentPath != null) {
+                parentItem = (ExplorerItem) parentPath.getLastPathComponent();
+            }
+            return new DropLocationInfo(parentItem, dl.getChildIndex());
+        }
+
+        @Override
+        public boolean canImport(TransferSupport support) {
+            if (!support.isDrop()
+                    || draggedExplorerItem == null
+                    || !support.isDataFlavorSupported(NODE_FLAVOR)) {
+                return false;
+            }
+            DropLocationInfo dl = getDropLocation(support);
+            return (draggedExplorerItem.parentItem.equals(dl.parentItem));
+        }
+
+        @Override
+        public boolean importData(TransferSupport support) {
+            if (!canImport(support))
+                return false;
+
+            DropLocationInfo dl = getDropLocation(support);
+            int oldIndex = explorer.getExplorerItemIndex(draggedExplorerItem);
+            explorer.insertItem(draggedExplorerItem, oldIndex < dl.index ? dl.index - 1 : dl.index);
+            explorer.selectItem(draggedExplorerItem);
+            draggedExplorerItem = null;
+
+            return true;
+        }
+
     }
 
 }
