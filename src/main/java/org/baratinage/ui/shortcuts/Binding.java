@@ -14,6 +14,7 @@ public class Binding {
     // this.editable = editable; // disabled for now, all shortcuts are editable
     this.editable = true;
     this.defaultShortcut = defaultShortcut;
+    resetToDefault();
   }
 
   public Shortcut getShortcut() {
@@ -31,5 +32,4 @@ public class Binding {
   public void resetToDefault() {
     shortcut = defaultShortcut;
   }
-
 }
