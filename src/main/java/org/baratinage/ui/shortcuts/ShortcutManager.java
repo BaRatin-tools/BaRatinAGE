@@ -90,11 +90,11 @@ public class ShortcutManager {
         Shortcut.of("DEL", false, false, false));
 
     registerBinding(
-        "rc_comp.toggle_plot_item_display",
+        "rc_comparator.toggle_item_display",
         true,
         Shortcut.of("D", false, false, true));
     registerBinding(
-        "rc_comp.toggle_plot_item_lgd_display",
+        "rc_comparator.toggle_item_lgd_display",
         true,
         Shortcut.of("L", false, false, true));
 
