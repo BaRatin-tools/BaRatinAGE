@@ -1,4 +1,4 @@
-# build and dist 
+# build and dist
 /dist
 /target
 /target-packaged
@@ -13,6 +13,8 @@ pom.xml.versionsBackup
 .classpath
 .project
 /.vscode
+/.zed
+/.agent
 
 # test folder and other stuff to ignore
 /test
