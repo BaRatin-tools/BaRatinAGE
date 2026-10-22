@@ -14,13 +14,13 @@ import org.baratinage.jbam.CalibrationData;
 import org.baratinage.jbam.CalibrationResult;
 import org.baratinage.jbam.Distribution;
 import org.baratinage.jbam.DistributionType;
-import org.baratinage.jbam.EstimatedParameter;
 import org.baratinage.jbam.McmcConfig;
 import org.baratinage.jbam.McmcCookingConfig;
 import org.baratinage.jbam.McmcSummaryConfig;
 import org.baratinage.jbam.Model;
 import org.baratinage.jbam.ModelOutput;
 import org.baratinage.jbam.Parameter;
+import org.baratinage.jbam.ResultColumn;
 import org.baratinage.jbam.StructuralErrorModel;
 import org.baratinage.jbam.UncertainData;
 import org.baratinage.jbam.utils.BamFilesHelpers;
@@ -224,13 +224,13 @@ public class BamSegmentation {
     return results.DIC.containsKey("DIC1") ? results.DIC.get("DIC1") : Double.MAX_VALUE;
   }
 
-  public List<EstimatedParameter> getTauParameters() {
-    List<EstimatedParameter> estimPar = bam
-        .getCalibrationResults().estimatedParameters
+  public List<ResultColumn> getTauParameters() {
+    List<ResultColumn> par = bam
+        .getCalibrationResults().resultColumns
         .stream()
-        .filter(p -> p.name.startsWith("tau"))
+        .filter(p -> p.header.startsWith("tau"))
         .toList();
-    return estimPar;
+    return par;
   }
 
   public void cancel() {

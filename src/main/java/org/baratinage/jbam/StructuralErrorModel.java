@@ -24,7 +24,7 @@ public class StructuralErrorModel {
 
         for (Parameter p : parameters) {
             configFile.addItem(p.name, "Parameter name -----", true);
-            configFile.addItem(p.initalGuess, "Initial guess");
+            configFile.addItem(p.initialGuess, "Initial guess");
             Distribution d = p.distribution;
             configFile.addItem(d.type.bamName, "Prior distribution", true);
             configFile.addItem(d.parameterValues, "Prior parameters");

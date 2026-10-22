@@ -242,7 +242,7 @@ public class BaratinageV2Builders {
             parConfig.put("distributionBamName", parameters[k].distribution.type.bamName);
 
             // > initialGuess
-            parConfig.put("initialGuess", parameters[k].initalGuess);
+            parConfig.put("initialGuess", parameters[k].initialGuess);
 
             // > distributionParameters[]
             int nPars = parameters[k].distribution.parameterValues.length;

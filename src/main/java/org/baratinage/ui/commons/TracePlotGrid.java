@@ -8,8 +8,8 @@ import java.util.List;
 import javax.swing.AbstractButton;
 
 import org.baratinage.AppSetup;
+import org.baratinage.jbam.ResultColumn;
 import org.baratinage.translation.T;
-import org.baratinage.ui.bam.EstimatedParameterWrapper;
 import org.baratinage.ui.container.SimpleFlowPanel;
 import org.baratinage.ui.plot.FixedTextAnnotation;
 import org.baratinage.ui.plot.GridPlotContainer;
@@ -23,11 +23,11 @@ import org.baratinage.utils.Calc;
 public class TracePlotGrid extends SimpleFlowPanel {
 
     GridPlotContainer gridPanel = null;
-    public final List<EstimatedParameterWrapper> estimatedParameters = new ArrayList<>();
+    public final List<ResultColumn> parameters = new ArrayList<>();
     private final List<AbstractButton> actionButtons = new ArrayList<>();
 
-    public void addPlot(EstimatedParameterWrapper estimatedParameter) {
-        estimatedParameters.add(estimatedParameter);
+    public void addPlot(ResultColumn estimatedParameter) {
+        parameters.add(estimatedParameter);
     }
 
     public void addButton(AbstractButton button) {
@@ -35,13 +35,13 @@ public class TracePlotGrid extends SimpleFlowPanel {
     }
 
     public void clearPlots() {
-        estimatedParameters.clear();
+        parameters.clear();
     }
 
     public void updatePlots() {
 
         int nColMax = 4;
-        int nPlots = estimatedParameters.size();
+        int nPlots = parameters.size();
         int nCol = nColMax;
         // since Java 18: int Math.ceilDiv(int, int) could be used
         int nRow = (int) Math.ceil(((double) nPlots) / ((double) nCol));
@@ -55,24 +55,24 @@ public class TracePlotGrid extends SimpleFlowPanel {
         removeAll();
         addChild(gridPanel, true);
 
-        int nMcmc = estimatedParameters.get(0).parameter.mcmc.length;
+        int nMcmc = parameters.get(0).samples.length;
         double[] x = Calc.sequence(0, nMcmc, nMcmc);
-        for (int k = 0; k < estimatedParameters.size(); k++) {
+        for (int k = 0; k < parameters.size(); k++) {
 
-            EstimatedParameterWrapper estimParam = estimatedParameters.get(k);
+            ResultColumn p = parameters.get(k);
 
             Plot plot = new Plot(false, false);
 
-            FixedTextAnnotation title = new FixedTextAnnotation(estimParam.htmlName, 5, 5);
+            FixedTextAnnotation title = new FixedTextAnnotation(p.symbol.toHtml(), 5, 5);
             title.setFont(title.getFont().deriveFont(Font.BOLD, 16f));
             plot.plot.addAnnotation(title);
 
             plot.setBufferPercentage(0.1, 0, 0.05, 0.05);
 
-            PlotLine trace = new PlotLine("", x, estimParam.parameter.mcmc,
+            PlotLine trace = new PlotLine("", x, p.samples,
                     AppSetup.COLORS.PLOT_LINE, 1);
             PlotInfiniteLine mp = new PlotInfiniteLine("",
-                    estimParam.parameter.maxpostIndex,
+                    p.maxpostIndex,
                     AppSetup.COLORS.POSTERIOR_LINE,
                     2);
 

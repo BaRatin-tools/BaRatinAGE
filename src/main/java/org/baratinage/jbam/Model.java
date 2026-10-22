@@ -16,7 +16,7 @@ public class Model {
     public final String modelId;
     public final int nInput;
     public final int nOutput;
-    public final Parameter[] parameters;
+    public final AbstractParameter[] parameters;
     public final String xTra;
     public final String xTraFileName;
 
@@ -25,7 +25,7 @@ public class Model {
             String modelId,
             int nInput,
             int nOutput,
-            Parameter[] parameters,
+            AbstractParameter[] parameters,
             String xTra,
             String xTraFileName) {
         this.fileName = fileName;
@@ -36,7 +36,7 @@ public class Model {
         this.xTra = xTra;
         this.xTraFileName = xTraFileName;
 
-        for (Parameter p : parameters) {
+        for (AbstractParameter p : parameters) {
             if (p.name.equals("LogPost")) {
                 throw new IllegalArgumentException("No parameters can be named LogPost, it is reserved by BaM!");
             }
@@ -50,12 +50,8 @@ public class Model {
         configFile.addItem(nOutput, "nY: number of output variables");
         configFile.addItem(parameters.length, "nPar: number of parameters theta");
 
-        for (Parameter p : parameters) {
-            configFile.addItem(p.name, "Parameter name -----", true);
-            configFile.addItem(p.initalGuess, "Initial guess");
-            Distribution d = p.distribution;
-            configFile.addItem(d.type.bamName, "Prior distribution", true);
-            configFile.addItem(d.parameterValues, "Prior parameters");
+        for (AbstractParameter p : parameters) {
+            p.toFile(configFile, workspace);
         }
 
         configFile.writeToFile(workspace, fileName);
@@ -75,7 +71,7 @@ public class Model {
 
         str.add(String.format("Model '%s' with %d inputs and %d outputs and the following parameters:",
                 modelId, nInput, nOutput));
-        for (Parameter p : parameters) {
+        for (AbstractParameter p : parameters) {
             str.add(p.toString());
         }
         str.add("\nxTra content associated with the model is:");
@@ -94,17 +90,27 @@ public class Model {
         int nY = configFile.getInt(2);
         int nPar = configFile.getInt(3);
 
-        Parameter[] parameters = new Parameter[nPar];
+        AbstractParameter[] parameters = new AbstractParameter[nPar];
         for (int k = 0; k < nPar; k++) {
+
             String distribName = configFile.getString(3 + k * 4 + 3);
-            double[] distribParams = configFile.getDoubleArray(3 + k * 4 + 4);
-            Distribution distribution = new Distribution(
-                    DistributionType.getDistribFromBamName(distribName),
-                    distribParams);
-            parameters[k] = new Parameter(
-                    configFile.getString(3 + k * 4 + 1),
-                    configFile.getDouble(3 + k * 4 + 2),
-                    distribution);
+
+            if (distribName.equals("VAR")) {
+                throw new UnsupportedOperationException("'VAR' parameter are not supported");
+            } else {
+                DistributionType distType = DistributionType.getDistribFromBamName(distribName);
+                if (distType == null) {
+                    throw new UnsupportedOperationException("Unknown '%s' distribution".formatted(distribName));
+                }
+                double[] distribParams = configFile.getDoubleArray(3 + k * 4 + 4);
+                Distribution distribution = new Distribution(
+                        DistributionType.getDistribFromBamName(distribName),
+                        distribParams);
+                parameters[k] = new Parameter(
+                        configFile.getString(3 + k * 4 + 1),
+                        configFile.getDouble(3 + k * 4 + 2),
+                        distribution);
+            }
         }
 
         String xTraString;

@@ -8,8 +8,8 @@ import java.util.List;
 import javax.swing.JButton;
 
 import org.baratinage.AppSetup;
+import org.baratinage.jbam.ResultColumn;
 import org.baratinage.translation.T;
-import org.baratinage.ui.bam.EstimatedParameterWrapper;
 import org.baratinage.ui.bam.BamProject;
 import org.baratinage.ui.component.CommonDialog;
 import org.baratinage.ui.container.SimpleFlowPanel;
@@ -20,7 +20,7 @@ public class McmcTraceResultsPanel extends SimpleFlowPanel {
     public final TracePlotGrid paramTracePlots;
     private final BamProject project;
 
-    private List<EstimatedParameterWrapper> parameters;
+    private List<ResultColumn> parameters;
 
     public McmcTraceResultsPanel(BamProject project) {
         super(true);
@@ -43,7 +43,7 @@ public class McmcTraceResultsPanel extends SimpleFlowPanel {
         T.updateHierarchy(this, paramTracePlots);
     }
 
-    public void updateResults(List<EstimatedParameterWrapper> parameters) {
+    public void updateResults(List<ResultColumn> parameters) {
         this.parameters = parameters;
         updatePlots();
     }
@@ -51,7 +51,7 @@ public class McmcTraceResultsPanel extends SimpleFlowPanel {
     private void updatePlots() {
         // update trace plots
         paramTracePlots.clearPlots();
-        for (EstimatedParameterWrapper p : parameters) {
+        for (ResultColumn p : parameters) {
             paramTracePlots.addPlot(p);
         }
         paramTracePlots.updatePlots();
@@ -65,14 +65,13 @@ public class McmcTraceResultsPanel extends SimpleFlowPanel {
                 new CommonDialog.CustomFileFilter(T.text("csv_format"), "csv", "CSV"));
 
         if (f != null) {
-            // int n = parameters.size() + gammas.size() + 1;
             int n = parameters.size();
             List<double[]> matrix = new ArrayList<>(n);
             List<String> headers = new ArrayList<>();
 
-            for (EstimatedParameterWrapper p : parameters) {
-                matrix.add(p.parameter.mcmc);
-                headers.add(p.symbol);
+            for (ResultColumn p : parameters) {
+                matrix.add(p.samples);
+                headers.add(p.header);
             }
 
             try {

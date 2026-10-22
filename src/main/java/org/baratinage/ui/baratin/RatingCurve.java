@@ -41,7 +41,7 @@ import org.baratinage.ui.bam.PredExpSet;
 import org.baratinage.ui.bam.RunConfigAndRes;
 import org.baratinage.ui.bam.RunBam;
 import org.baratinage.ui.baratin.gaugings.GaugingsDataset;
-import org.baratinage.ui.baratin.rating_curve.RatingCurveCalibrationResults;
+import org.baratinage.ui.baratin.rating_curve.RatingCurveParameters;
 import org.baratinage.ui.baratin.rating_curve.RatingCurvePlotData;
 import org.baratinage.ui.baratin.rating_curve.RatingCurveResults;
 import org.baratinage.ui.baratin.rating_curve.RatingCurveStageGrid;
@@ -628,9 +628,7 @@ public class RatingCurve extends BamItem
         // **********************************************************
         // Parameters
         double[] rc_stage = predResults[0].predictionConfig.inputs[0].dataColumns.get(0);
-        RatingCurveCalibrationResults ratingCurveParameterSet = new RatingCurveCalibrationResults(
-                calibrationResults,
-                rc_stage[0], rc_stage[rc_stage.length - 1]);
+        RatingCurveParameters rcParameters = new RatingCurveParameters(calibrationResults);
 
         // **********************************************************
         // Rating Curve Plot Data
@@ -639,10 +637,10 @@ public class RatingCurve extends BamItem
                 predResults[0].outputResults.get(0).spag().get(0), // discharge
                 predResults[1].outputResults.get(0).get95UncertaintyInterval(), // parametric uncertainty
                 predResults[2].outputResults.get(0).get95UncertaintyInterval(), // total uncertainty
-                ratingCurveParameterSet.getStageTransitions(), // stage transition
+                rcParameters.getStageTransitions(false), // stage transition
                 gaugings // gaugings
         );
-        resultsPanel.updateResults(ratingCurvePlotData, ratingCurveParameterSet);
+        resultsPanel.updateResults(ratingCurvePlotData, rcParameters);
     }
 
     public RatingCurvePlotData getRatingCurvePlotData() {
@@ -650,11 +648,7 @@ public class RatingCurve extends BamItem
 
         CalibrationResult calibrationResults = bamRunConfigAndRes.getCalibrationResults();
 
-        double[] rc_stage = bamRunConfigAndRes.getPredictionResults()[0].predictionConfig.inputs[0].dataColumns.get(0);
-        RatingCurveCalibrationResults ratingCurveParameterSet = new RatingCurveCalibrationResults(
-                calibrationResults,
-                rc_stage[0],
-                rc_stage[rc_stage.length - 1]);
+        RatingCurveParameters rcParameters = new RatingCurveParameters(calibrationResults);
 
         CalibrationConfig calibrationConfig = bamRunConfigAndRes.getCalibrationConfig();
         double[] stage = calibrationConfig.calibrationData.inputs[0].values;
@@ -681,7 +675,7 @@ public class RatingCurve extends BamItem
                 predResults[0].outputResults.get(0).spag().get(0), // discharge
                 predResults[1].outputResults.get(0).get95UncertaintyInterval(), // parametric uncertainty
                 predResults[2].outputResults.get(0).get95UncertaintyInterval(), // total uncertainty
-                ratingCurveParameterSet.getStageTransitions(), // stage transition
+                rcParameters.getStageTransitions(false), // stage transition
                 gaugings // gaugings
         );
 

@@ -3,11 +3,9 @@ package org.baratinage.ui.baratin.rating_curve;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
-
 import javax.swing.JButton;
 import javax.swing.JTextArea;
 import javax.swing.JToolBar;
-
 import org.baratinage.AppSetup;
 import org.baratinage.translation.T;
 import org.baratinage.ui.component.EquationLabel;
@@ -15,6 +13,7 @@ import org.baratinage.ui.component.SimpleSep;
 import org.baratinage.ui.container.SimpleFlowPanel;
 
 public class RatingCurveEquation extends SimpleFlowPanel {
+
     private final JTextArea plainEqLbl;
     public final EquationLabel niceEqLbl;
     private final SimpleFlowPanel latexPanel;
@@ -28,9 +27,11 @@ public class RatingCurveEquation extends SimpleFlowPanel {
         plainEqLbl.setEditable(false);
         JButton plainEqCopyBtn = new JButton();
         plainEqCopyBtn.setIcon(AppSetup.ICONS.COPY);
-        plainEqCopyBtn.addActionListener((e) -> {
+        plainEqCopyBtn.addActionListener(e -> {
             Clipboard systemClipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-            systemClipboard.setContents(new StringSelection(plainEqLbl.getText()), null);
+            systemClipboard.setContents(
+                    new StringSelection(plainEqLbl.getText()),
+                    null);
         });
         JToolBar plainEqToolbar = new JToolBar();
         plainEqToolbar.add(plainEqCopyBtn, false);
@@ -52,7 +53,8 @@ public class RatingCurveEquation extends SimpleFlowPanel {
         });
     }
 
-    public void updateEquation(String equationString) {
+    public void updateEquation(String equationString, Double hMin, Double hMax) {
+        equationString = RatingCurveEquationBuilder.appendStageBounds(equationString, hMin, hMax);
         plainEqLbl.setText(equationString);
     }
 

@@ -6,7 +6,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.baratinage.jbam.EstimatedParameter;
+import org.baratinage.jbam.ResultColumn;
 import org.baratinage.ui.baratin.gaugings.GaugingsDataset;
 import org.baratinage.ui.baratin.rating_shifts_happens.BamSegmentation;
 import org.baratinage.ui.plot.ColorPalette;
@@ -41,25 +41,25 @@ public class ShiftDetectionResults {
       segs = new ArrayList<>();
       segs = rcShiftsDetectionRun.getAllBestSegmentation();
     }
-    List<EstimatedParameter> shiftsUnordered = new ArrayList<>();
+    List<ResultColumn> shiftsUnordered = new ArrayList<>();
     for (BamSegmentation seg : segs) {
-      for (EstimatedParameter p : seg.getTauParameters()) {
+      for (ResultColumn p : seg.getTauParameters()) {
         shiftsUnordered.add(p);
       }
     }
-    List<EstimatedParameter> shiftsOrdered = shiftsUnordered.stream().sorted((p1, p2) -> {
+    List<ResultColumn> shiftsOrdered = shiftsUnordered.stream().sorted((p1, p2) -> {
       return p1.getMaxpost() > p2.getMaxpost() ? 1 : -1;
     }).toList();
 
     double optimBinWidth = PlotBar.computeOptimalBinwidth(
-        shiftsOrdered.stream().map(p -> p.mcmc).toList(), 50);
+        shiftsOrdered.stream().map(p -> p.samples).toList(), 50);
 
     Color[] palette = ColorPalette.getColors(shiftsOrdered.size() + 1, ColorPalette.VIRIDIS);
 
     shifts = new ArrayList<>();
 
     for (int k = 0; k < shiftsOrdered.size(); k++) {
-      EstimatedParameter p = shiftsOrdered.get(k);
+      ResultColumn p = shiftsOrdered.get(k);
       double maxpost = p.getMaxpost();
       LocalDateTime date = DateTime.doubleToDateTime(maxpost);
       double[] u95 = p.get95interval();
@@ -82,7 +82,7 @@ public class ShiftDetectionResults {
           u95[0] * 1000,
           u95[1] * 1000);
 
-      double[][] densities = PlotBar.densityEstimate(p.mcmc, optimBinWidth);
+      double[][] densities = PlotBar.densityEstimate(p.samples, optimBinWidth);
       PlotBar dist = new PlotBar(
           dateStr,
           DateTime.dateTimeDoubleToSecondsDouble(densities[0]),
@@ -272,7 +272,7 @@ public class ShiftDetectionResults {
   public static record ResultShift(
       LocalDateTime date,
       LocalDateTime[] u95date,
-      EstimatedParameter parameter,
+      ResultColumn parameter,
       String name,
       Color color,
       PlotInfiniteLine line,

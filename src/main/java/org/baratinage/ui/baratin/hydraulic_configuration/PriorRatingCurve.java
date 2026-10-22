@@ -24,7 +24,7 @@ import org.baratinage.ui.bam.PredExp;
 import org.baratinage.ui.bam.PredExpSet;
 import org.baratinage.ui.bam.RunBam;
 import org.baratinage.ui.bam.RunConfigAndRes;
-import org.baratinage.ui.baratin.rating_curve.RatingCurveCalibrationResults;
+import org.baratinage.ui.baratin.rating_curve.RatingCurveParameters;
 import org.baratinage.ui.baratin.rating_curve.RatingCurvePlotData;
 import org.baratinage.ui.baratin.rating_curve.RatingCurveResults;
 import org.baratinage.ui.baratin.rating_curve.RatingCurveStageGrid;
@@ -187,7 +187,7 @@ public class PriorRatingCurve<HCT extends BamItem & IModelDefinition & IPriors> 
 
     private void buildPlot() {
 
-        RatingCurveCalibrationResults rcParameters = getRatingCurveCalibrationResults();
+        RatingCurveParameters rcParameters = getRatingCurveParameters();
         RatingCurvePlotData rcPlotData = getRatingCurvePlotData();
 
         resultsPanel.updateResults(
@@ -266,14 +266,9 @@ public class PriorRatingCurve<HCT extends BamItem & IModelDefinition & IPriors> 
         }
     }
 
-    private RatingCurveCalibrationResults getRatingCurveCalibrationResults() {
+    private RatingCurveParameters getRatingCurveParameters() {
         CalibrationResult calResults = bamRunConfigAndRes.getCalibrationResults();
-        double[] stage = bamRunConfigAndRes.getPredictionResults()[0].predictionConfig.inputs[0].dataColumns.get(0);
-        RatingCurveCalibrationResults rcParameters = new RatingCurveCalibrationResults(
-                calResults,
-                stage[0],
-                stage[stage.length - 1]);
-        return rcParameters;
+        return new RatingCurveParameters(calResults);
     }
 
     public RatingCurvePlotData getRatingCurvePlotData() {
@@ -282,9 +277,9 @@ public class PriorRatingCurve<HCT extends BamItem & IModelDefinition & IPriors> 
         }
         PredictionResult[] predResults = bamRunConfigAndRes.getPredictionResults();
 
-        RatingCurveCalibrationResults rcParameters = getRatingCurveCalibrationResults();
+        RatingCurveParameters rcParameters = getRatingCurveParameters();
 
-        List<double[]> stageTransitions = rcParameters.getPriorStageTransitions();
+        List<double[]> stageTransitions = rcParameters.getStageTransitions(true);
 
         double[] stage = predResults[0].predictionConfig.inputs[0].dataColumns.get(0);
         double[] dischargeMaxpost = predResults[0].outputResults.get(0).spag().get(0);

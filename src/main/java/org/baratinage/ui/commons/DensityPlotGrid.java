@@ -7,7 +7,7 @@ import java.util.List;
 
 import org.baratinage.AppSetup;
 import org.baratinage.jbam.DistributionType;
-import org.baratinage.ui.bam.EstimatedParameterWrapper;
+import org.baratinage.jbam.ResultColumn;
 import org.baratinage.ui.container.SimpleFlowPanel;
 import org.baratinage.ui.plot.Legend;
 import org.baratinage.ui.plot.FixedTextAnnotation;
@@ -24,22 +24,22 @@ import org.baratinage.translation.T;
 public class DensityPlotGrid extends SimpleFlowPanel {
 
     private GridPlotContainer gridPanel;
-    public final List<EstimatedParameterWrapper> estimatedParameters = new ArrayList<>();
+    public final List<ResultColumn> parameters = new ArrayList<>();
 
     public boolean isTimeSeries = false;
 
-    public void addPlot(EstimatedParameterWrapper estimatedParameter) {
-        estimatedParameters.add(estimatedParameter);
+    public void addPlot(ResultColumn p) {
+        parameters.add(p);
     }
 
     public void clearPlots() {
-        estimatedParameters.clear();
+        parameters.clear();
     }
 
     public void updatePlots() {
 
         int nColMax = 4;
-        int nPlots = estimatedParameters.size();
+        int nPlots = parameters.size();
         int nCol = nColMax;
         // since Java 18: int Math.ceilDiv(int, int) could be used
         int nRow = (int) Math.ceil(((double) nPlots) / ((double) nCol));
@@ -52,20 +52,20 @@ public class DensityPlotGrid extends SimpleFlowPanel {
 
         boolean anyPriorCurve = false;
 
-        for (int k = 0; k < estimatedParameters.size(); k++) {
+        for (int k = 0; k < parameters.size(); k++) {
 
-            EstimatedParameterWrapper estimParam = estimatedParameters.get(k);
+            ResultColumn p = parameters.get(k);
 
             Plot plot = new Plot(false, isTimeSeries);
 
-            FixedTextAnnotation title = new FixedTextAnnotation(estimParam.htmlName, 5, 5);
+            FixedTextAnnotation title = new FixedTextAnnotation(p.symbol.toHtml(), 5, 5);
             title.setFont(title.getFont().deriveFont(Font.BOLD, 16f));
             plot.plot.addAnnotation(title);
 
             plot.setBufferPercentage(0.1, 0, 0.05, 0.05);
 
-            if (estimParam.shouldDisplayPrior()) {
-                List<double[]> priorDensityData = estimParam.parameter.getPriorDensity();
+            if (p.shouldDisplayPrior()) {
+                List<double[]> priorDensityData = p.getPriorDensity();
                 if (priorDensityData != null) {
                     int nData = priorDensityData.get(0).length;
                     PlotBand priorDensity = new PlotBand(
@@ -81,7 +81,7 @@ public class DensityPlotGrid extends SimpleFlowPanel {
                 }
             }
 
-            double maxpost = estimParam.parameter.getMaxpost();
+            double maxpost = p.getMaxpost();
             PlotInfiniteLine maxpostLine = new PlotInfiniteLine(
                     "",
                     maxpost,
@@ -90,13 +90,13 @@ public class DensityPlotGrid extends SimpleFlowPanel {
 
             PlotBar postDensity = new PlotBar(
                     "",
-                    estimParam.parameter.mcmc,
+                    p.samples,
                     20,
                     AppSetup.COLORS.POSTERIOR_ENVELOP,
                     0.7f);
 
-            if (estimParam.parameter.parameterConfig != null) {
-                if (estimParam.parameter.parameterConfig.distribution.type == DistributionType.FIXED) {
+            if (p.parameter != null) {
+                if (p.parameter.distribution.type == DistributionType.FIXED) {
                     plot.plot.getRangeAxis().setVisible(false);
                 }
             }

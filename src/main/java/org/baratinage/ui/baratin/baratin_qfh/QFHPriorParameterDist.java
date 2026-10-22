@@ -89,7 +89,7 @@ public class QFHPriorParameterDist extends ParameterPriorDist {
             convertedPar[k] = Math.toRadians(d.parameterValues[k]);
         }
         Distribution dConverted = new Distribution(d.type, convertedPar);
-        return new Parameter(p.name, Math.toRadians(p.initalGuess), dConverted);
+        return new Parameter(p.name, Math.toRadians(p.initialGuess), dConverted);
     }
 
     @Override

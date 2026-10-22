@@ -7,8 +7,8 @@ import java.util.List;
 import java.util.function.Consumer;
 
 import org.baratinage.jbam.CalibrationConfig;
-import org.baratinage.jbam.EstimatedParameter;
 import org.baratinage.jbam.Model;
+import org.baratinage.jbam.ResultColumn;
 import org.baratinage.ui.bam.run.BamRun;
 import org.baratinage.ui.baratin.rating_shifts_happens.BamSegmentation;
 import org.baratinage.utils.ConsoleLogger;
@@ -322,7 +322,7 @@ public class ShiftDetectionIteration {
         if (se == null) {
             return shifts;
         }
-        for (EstimatedParameter p : se.getTauParameters()) {
+        for (ResultColumn p : se.getTauParameters()) {
             shifts.add(p.getMaxpost());
         }
         if (children != null) {
@@ -344,7 +344,7 @@ public class ShiftDetectionIteration {
 
         int startIndex = 0;
         for (int i = 0; i < bestSegmention.nSegment; i++) {
-            List<EstimatedParameter> tauParameters = bestSegmention.getTauParameters();
+            List<ResultColumn> tauParameters = bestSegmention.getTauParameters();
             double tau = i == bestSegmention.nSegment - 1
                     ? ratingCurveEstimation.time[ratingCurveEstimation.time.length - 1] + 1
                     : tauParameters.get(i).getMaxpost();

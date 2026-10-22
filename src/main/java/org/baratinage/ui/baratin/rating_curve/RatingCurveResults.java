@@ -1,13 +1,13 @@
 package org.baratinage.ui.baratin.rating_curve;
 
-// import java.util.List;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.Icon;
 import javax.swing.JButton;
 
 import org.baratinage.AppSetup;
-// import org.baratinage.jbam.EstimatedParameter;
-import org.baratinage.ui.bam.EstimatedParameterWrapper;
+import org.baratinage.jbam.ResultColumn;
 import org.baratinage.ui.bam.BamProject;
 import org.baratinage.ui.commons.DensityPlotGrid;
 import org.baratinage.ui.commons.McmcTraceResultsPanel;
@@ -127,11 +127,12 @@ public class RatingCurveResults extends TabContainer {
     }
 
     private RatingCurvePlotData rcPlotData;
-    private RatingCurveCalibrationResults parameters;
+    // private RatingCurveCalibrationResults parameters;
+    private RatingCurveParameters parameters;
 
     public void updateResults(
             RatingCurvePlotData rcPlotData,
-            RatingCurveCalibrationResults parameters) {
+            RatingCurveParameters parameters) {
 
         this.rcPlotData = rcPlotData;
         this.parameters = parameters;
@@ -151,16 +152,29 @@ public class RatingCurveResults extends TabContainer {
 
         baremeExporter.updateRatingCurveValues(rcPlotDataModified);
 
-        rcEquation.updateEquation(parameters.getEquationString());
+        Double hMin = null, hMax = null;
+        if (rcPlotDataModified.stage != null && rcPlotDataModified.stage.length >= 2) {
+            hMin = rcPlotDataModified.stage[0];
+            hMax = rcPlotDataModified.stage[rcPlotDataModified.stage.length - 1];
+        }
+        rcEquation.updateEquation(parameters.getEquationString(), hMin, hMax);
         rcEquation.updateEquationLatex(parameters.getEquationLatex());
 
+        // model parameters
+        List<ResultColumn> modelParameters = parameters.getModelParameters();
+        List<ResultColumn> gammaParameters = parameters.getGammaParameters();
+        ResultColumn logPost = parameters.getLogPost();
+        List<ResultColumn> allParameters = new ArrayList<>();
+        allParameters.addAll(modelParameters);
+        allParameters.addAll(gammaParameters);
+        allParameters.add(logPost);
         paramDensityPlots.clearPlots();
-        for (EstimatedParameterWrapper p : parameters.getAllParameters()) {
+        for (ResultColumn p : allParameters) {
             paramDensityPlots.addPlot(p);
         }
         paramDensityPlots.updatePlots();
 
-        paramSummaryTable.updateResults(parameters.getModelAndDerivedParameters());
+        paramSummaryTable.updateResults(modelParameters);
 
         if (rcPlotData.gaugings != null) {
             rcResiduals.updateResults(parameters.getResiduals(),
@@ -169,7 +183,7 @@ public class RatingCurveResults extends TabContainer {
                             : null);
         }
 
-        mcmcResultPanel.updateResults(parameters.getAllParameters());
+        mcmcResultPanel.updateResults(allParameters);
 
     }
 }

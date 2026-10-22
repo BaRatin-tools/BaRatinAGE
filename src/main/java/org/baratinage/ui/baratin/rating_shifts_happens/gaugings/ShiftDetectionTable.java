@@ -5,7 +5,7 @@ import java.util.List;
 
 import javax.swing.JButton;
 
-import org.baratinage.jbam.EstimatedParameter;
+import org.baratinage.jbam.ResultColumn;
 import org.baratinage.translation.T;
 import org.baratinage.ui.baratin.rating_shifts_happens.gaugings.ShiftDetectionResults.ResultShift;
 import org.baratinage.ui.commons.ColumnHeaderDescription;
@@ -40,7 +40,6 @@ public class ShiftDetectionTable extends SimpleFlowPanel {
   private static final ColumnHeaderDescription resultsColumnsDescritption = buildColumnDescs();
 
   public ShiftDetectionTable(List<ResultShift> shifts) {
-    // int n = shiftsOld.size();
     int n = shifts.size();
     String[] names = new String[n];
     LocalDateTime[] postMaxpost = new LocalDateTime[n];
@@ -48,7 +47,7 @@ public class ShiftDetectionTable extends SimpleFlowPanel {
     LocalDateTime[] postHight = new LocalDateTime[n];
     for (int k = 0; k < n; k++) {
       ResultShift shift = shifts.get(k);
-      EstimatedParameter p = shift.parameter();
+      ResultColumn p = shift.parameter();
       names[k] = String.format("tau_%d", k);
       postMaxpost[k] = DateTime.doubleToDateTime(p.getMaxpost());
       double[] interval = p.get95interval();

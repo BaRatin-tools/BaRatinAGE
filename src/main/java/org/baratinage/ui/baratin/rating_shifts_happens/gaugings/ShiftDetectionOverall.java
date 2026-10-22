@@ -8,9 +8,8 @@ import java.util.function.Consumer;
 
 import javax.swing.SwingWorker;
 
-import org.baratinage.jbam.EstimatedParameter;
 import org.baratinage.jbam.Model;
-import org.baratinage.ui.bam.EstimatedParameterWrapper;
+import org.baratinage.jbam.ResultColumn;
 import org.baratinage.ui.baratin.rating_shifts_happens.BamSegmentation;
 import org.baratinage.ui.commons.DensityPlotGrid;
 import org.baratinage.ui.container.SimpleFlowPanel;
@@ -20,6 +19,7 @@ import org.baratinage.ui.plot.PlotContainer;
 import org.baratinage.ui.plot.PlotInfiniteLine;
 import org.baratinage.ui.plot.PlotLine;
 import org.baratinage.utils.DateTime;
+import org.baratinage.utils.ParameterSymbol;
 
 public class ShiftDetectionOverall {
 
@@ -170,20 +170,16 @@ public class ShiftDetectionOverall {
     worker.execute();
   }
 
-  private static EstimatedParameterWrapper buildTauParameters(EstimatedParameter parameter, int mainIndex,
-      int secIndex) {
-    EstimatedParameter p = new EstimatedParameter(
-        parameter.name,
-        DateTime.dateTimeDoubleToSecondsDouble(parameter.mcmc),
-        parameter.summary,
-        parameter.maxpostIndex,
-        parameter.parameterConfig);
-    EstimatedParameterWrapper epw = new EstimatedParameterWrapper(
-        p,
-        String.format("Tau_%d_%d", mainIndex, secIndex),
-        String.format("<html>&tau;<sub>%d, %d</sub></html>", mainIndex, secIndex),
-        EstimatedParameterWrapper.TYPE.MODEL);
-    return epw;
+  private static ResultColumn builtTauResultColumn(ResultColumn rc, int mainIndex, int secIndex) {
+    String newName = "tau_%d_%d".formatted(mainIndex, secIndex);
+    return new ResultColumn(
+        ResultColumn.KIND.ESTIMATED,
+        newName,
+        DateTime.dateTimeDoubleToSecondsDouble(rc.samples),
+        null, // stats are no longer in the proper unit
+        rc.maxpostIndex,
+        rc.parameter,
+        ParameterSymbol.ofIndices("τ", mainIndex, secIndex));
   }
 
   public SimpleFlowPanel getShiftsDensitiesPlots() {
@@ -194,13 +190,12 @@ public class ShiftDetectionOverall {
 
     int i = 0;
     for (BamSegmentation se : segmentations) {
-      List<EstimatedParameter> parameters = se.getTauParameters();
+      List<ResultColumn> parameters = se.getTauParameters();
       i++;
       int j = 0;
-      for (EstimatedParameter p : parameters) {
+      for (ResultColumn p : parameters) {
         j++;
-        EstimatedParameterWrapper epw = buildTauParameters(p, i, j);
-        densityPlotGrid.addPlot(epw);
+        densityPlotGrid.addPlot(builtTauResultColumn(p, i, j));
       }
     }
     densityPlotGrid.updatePlots();
@@ -214,10 +209,10 @@ public class ShiftDetectionOverall {
     List<double[]> allData = new ArrayList<>();
     for (BamSegmentation se : segmentations) {
 
-      List<EstimatedParameter> tauParameters = se.getTauParameters();
+      List<ResultColumn> tauParameters = se.getTauParameters();
 
-      for (EstimatedParameter ep : tauParameters) {
-        allData.add(ep.mcmc);
+      for (ResultColumn ep : tauParameters) {
+        allData.add(ep.samples);
       }
     }
 
@@ -230,12 +225,11 @@ public class ShiftDetectionOverall {
     int k = 0;
     for (BamSegmentation se : segmentations) {
 
-      List<EstimatedParameter> tauParameters = se.getTauParameters();
+      List<ResultColumn> tauParameters = se.getTauParameters();
 
-      for (EstimatedParameter ep : tauParameters) {
+      for (ResultColumn ep : tauParameters) {
 
-        // double[][] density = densityEstimate(ep.mcmc, 30);
-        double[][] density = PlotBar.densityEstimate(ep.mcmc, optimalBinWidth);
+        double[][] density = PlotBar.densityEstimate(ep.samples, optimalBinWidth);
 
         PlotLine line = new PlotLine("",
             DateTime.dateTimeDoubleToSecondsDouble(density[0]),

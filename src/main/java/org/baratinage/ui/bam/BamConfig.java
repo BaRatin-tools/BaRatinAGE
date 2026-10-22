@@ -115,7 +115,7 @@ public class BamConfig {
     private static JSONObject getConfig(Parameter parameter) {
         JSONObject json = new JSONObject();
         json.put("name", parameter.name);
-        json.put("initalGuess", parameter.initalGuess);
+        json.put("initalGuess", parameter.initialGuess); // FIXME: typo in key
         json.put("distribution", getConfig(parameter.distribution));
         return json;
     }

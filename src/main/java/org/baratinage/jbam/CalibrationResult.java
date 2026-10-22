@@ -3,14 +3,17 @@ package org.baratinage.jbam;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
-import java.util.stream.Stream;
+import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.Set;
 
 import org.baratinage.jbam.utils.BamFilesHelpers;
 import org.baratinage.utils.Arr;
 import org.baratinage.utils.ConsoleLogger;
+import org.baratinage.utils.ParameterSymbol;
 import org.baratinage.utils.fs.ReadFile;
 import org.baratinage.utils.fs.WriteFile;
 
@@ -18,13 +21,19 @@ public class CalibrationResult {
 
     public final CalibrationConfig calibrationConfig;
     public final List<double[]> mcmcValues;
+    private final List<double[]> mcmcSummaryValues;
     public final String[] mcmcHeaders;
-    public final List<EstimatedParameter> estimatedParameters;
+
+    public final List<ResultColumn> resultColumns;
+
     public final CalibrationDataResiduals calibrationDataResiduals;
     public final int maxpostIndex;
+    public final int nSamples;
     public final HashMap<String, Double> DIC;
 
     public CalibrationResult(String workspace, CalibrationConfig calibConfig, RunOptions runOptions) {
+
+        resultColumns = new ArrayList<>();
 
         calibrationConfig = calibConfig;
 
@@ -49,39 +58,128 @@ public class CalibrationResult {
         if (logPostColIndex == -1) {
             ConsoleLogger.error("CalibrationResult Error: Cannot find 'LogPost' column in MCMC results!");
             maxpostIndex = -1;
-            estimatedParameters = null;
             calibrationDataResiduals = null;
+            mcmcSummaryValues = null;
+            nSamples = 0;
             return;
         }
 
         maxpostIndex = retrieveMaxPostIndex(mcmcValues.get(logPostColIndex));
+        nSamples = mcmcValues.get(logPostColIndex).length;
 
-        List<double[]> mcmcSummaryValues = readMcmcSummaryValues(summaryMcmcFilePath);
+        mcmcSummaryValues = readMcmcSummaryValues(summaryMcmcFilePath);
 
-        Parameter[] allParameterConfigs = calibConfig.model.parameters;
-        for (ModelOutput mo : calibConfig.modelOutputs) {
-            allParameterConfigs = Stream
-                    .concat(
-                            Arrays.stream(allParameterConfigs),
-                            Arrays.stream(mo.structuralErrorModel.parameters).map(p -> {
-                                return new Parameter(
-                                        mo.name + "_" + p.name,
-                                        p.initalGuess,
-                                        p.distribution);
-                            }))
-                    .toArray(Parameter[]::new);
+        // make header maps for quick lookups
+        Map<String, Integer> headerLookup = new HashMap<>();
+        Set<String> unmatchedHeaders = new HashSet<>();
+        for (int k = 0; k < mcmcHeaders.length; k++) {
+            headerLookup.put(mcmcHeaders[k], k);
+            unmatchedHeaders.add(mcmcHeaders[k]);
         }
 
-        estimatedParameters = buildEstimatedParameters(
-                mcmcHeaders,
-                mcmcValues,
-                mcmcSummaryValues,
+        // get LogPost
+        unmatchedHeaders.remove("LogPost");
+        resultColumns.add(new ResultColumn(
+                ResultColumn.KIND.LOGPOST,
+                "LogPost",
+                mcmcValues.get(logPostColIndex),
+                null,
                 maxpostIndex,
-                allParameterConfigs);
+                null));
+
+        // retrieve simple parameters and sub parameters of variable parameters
+        for (AbstractParameter ap : calibConfig.model.parameters) {
+            switch (ap) {
+                case Parameter p:
+                    if (p.distribution.type.equals(DistributionType.FIXED)) {
+                        resultColumns.add(new ResultColumn(
+                                ResultColumn.KIND.SYNTHETIC,
+                                p.name,
+                                Arr.makeDoubleArray(nSamples, p.initialGuess),
+                                null,
+                                maxpostIndex,
+                                p));
+                    } else {
+                        if (headerLookup.containsKey(p.name)) {
+                            unmatchedHeaders.remove(p.name);
+                            int index = headerLookup.get(p.name);
+                            resultColumns.add(new ResultColumn(
+                                    ResultColumn.KIND.ESTIMATED,
+                                    p.name,
+                                    mcmcValues.get(index),
+                                    mcmcSummaryValues == null ? null : mcmcSummaryValues.get(index),
+                                    maxpostIndex,
+                                    p));
+                        } else {
+                            ConsoleLogger.error(
+                                    "Parameter '%s' not found in MCMC results. Should not happen.".formatted(p.name));
+
+                        }
+                    }
+                    // case VariableParameter vp: // FIXME: to implement
+            }
+        }
+
+        // retrieve parameters of the structural error models
+        for (int outputIndex = 0; outputIndex < calibConfig.modelOutputs.length; outputIndex++) {
+            ModelOutput mo = calibConfig.modelOutputs[outputIndex];
+            for (Integer gammaIndex = 0; gammaIndex < mo.structuralErrorModel.parameters.length; gammaIndex++) {
+                Parameter p = mo.structuralErrorModel.parameters[gammaIndex];
+                String gammaName = mo.name + "_" + p.name;
+                ParameterSymbol pSymbol = ParameterSymbol.ofIndices("γ", mo.outputIndex + 1, gammaIndex + 1);
+                Parameter renamedParamater = p.getRenamedClone(gammaName);
+                if (p.distribution.type.equals(DistributionType.FIXED)) {
+                    ConsoleLogger.error("Structural error parameter do not support FIX distribution!");
+                    continue; // should not happend
+                }
+                if (headerLookup.containsKey(gammaName)) {
+                    unmatchedHeaders.remove(gammaName);
+                    int index = headerLookup.get(gammaName);
+                    resultColumns.add(new ResultColumn(
+                            ResultColumn.KIND.GAMMA,
+                            gammaName,
+                            mcmcValues.get(index),
+                            mcmcSummaryValues == null ? null : mcmcSummaryValues.get(index),
+                            maxpostIndex,
+                            renamedParamater,
+                            pSymbol));
+                } else {
+                    String msg = "Parameter '%s' not found in MCMC results. Should not happen.".formatted(gammaName);
+                    ConsoleLogger.error(msg);
+                }
+            }
+        }
+
+        // unmatched columns are derived parameters
+        for (String h : mcmcHeaders) {
+            if (!unmatchedHeaders.contains(h)) {
+                continue;
+            }
+            int index = headerLookup.get(h);
+            resultColumns.add(new ResultColumn(
+                    ResultColumn.KIND.DERIVED,
+                    h,
+                    mcmcValues.get(index),
+                    // compensate lack of LogPost column in summary table
+                    mcmcSummaryValues == null ? null : mcmcSummaryValues.get(index - 1),
+                    maxpostIndex,
+                    null));
+
+        }
 
         calibrationDataResiduals = readCalibrationDataResiduals(calDatResidulatFilePath,
                 calibrationConfig.calibrationData);
 
+    }
+
+    public ResultColumn getResultColumn(String header) {
+        return resultColumns.stream()
+                .filter(rc -> rc.header.equals(header))
+                .findFirst()
+                .orElseThrow(() -> {
+                    return new NoSuchElementException(
+                            String.format("Result column named \"%s\" not found!", header));
+                });
     }
 
     private String[] readMcmcHeaders(Path filePath) {
@@ -168,53 +266,6 @@ public class CalibrationResult {
         return results;
     }
 
-    private List<EstimatedParameter> buildEstimatedParameters(
-            String[] headers, List<double[]> mcmc, List<double[]> mcmcSummary, int maxpostIndex,
-            Parameter[] parameters) {
-
-        if (mcmcSummary != null && mcmcSummary.size() != mcmc.size() - 1) {
-            ConsoleLogger.error(
-                    "CalibrationResult Error: Inconsistent sizes between MCMC matrix and MCMC summary matrix!");
-        }
-
-        List<EstimatedParameter> estimatedParameters = new ArrayList<>();
-
-        int nSamples = 1;
-        for (int k = 0; k < headers.length; k++) {
-            double[] summary = mcmcSummary == null || k >= mcmcSummary.size() ? null : mcmcSummary.get(k);
-            Parameter parameterConfig = null;
-            for (Parameter p : parameters) {
-                if (p.name.equals(headers[k])) {
-                    parameterConfig = p;
-                    break;
-                }
-            }
-            double[] mcmcValues = mcmc.get(k);
-            nSamples = mcmcValues.length;
-            estimatedParameters.add(new EstimatedParameter(
-                    headers[k],
-                    mcmcValues,
-                    summary,
-                    maxpostIndex,
-                    parameterConfig));
-
-        }
-
-        // handle special FIX distribution case
-        for (Parameter p : parameters) {
-            if (p.distribution.type != DistributionType.FIXED) {
-                continue;
-            }
-            estimatedParameters.add(new EstimatedParameter(
-                    p.name,
-                    Arr.makeDoubleArray(nSamples, p.initalGuess),
-                    null,
-                    maxpostIndex,
-                    p));
-        }
-        return estimatedParameters;
-    }
-
     private int retrieveMaxPostIndex(double[] logPost) {
         double maxLogPost = Double.NEGATIVE_INFINITY;
         int index = -1;
@@ -283,10 +334,10 @@ public class CalibrationResult {
     @Override
     public String toString() {
         String str = "Calibration results: \n";
-        if (estimatedParameters != null) {
-            str += "- Estimated Parameters: \n";
-            for (EstimatedParameter p : estimatedParameters) {
-                str += "   > " + p.toString() + "\n";
+        if (resultColumns != null) {
+            str += "- Result Columns: \n";
+            for (ResultColumn rc : resultColumns) {
+                str += " > " + rc.toString() + "\n";
             }
         }
         str += " - MaxpostIndex: " + maxpostIndex + "\n";
