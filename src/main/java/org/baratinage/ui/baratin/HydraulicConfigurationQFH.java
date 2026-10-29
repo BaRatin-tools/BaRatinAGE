@@ -1,6 +1,7 @@
 package org.baratinage.ui.baratin;
 
 import javax.swing.Icon;
+import javax.swing.JButton;
 
 import org.baratinage.AppSetup;
 import org.baratinage.jbam.Parameter;
@@ -15,8 +16,8 @@ import org.baratinage.ui.baratin.baratin_qfh.QFHModelDefinition;
 import org.baratinage.ui.baratin.baratin_qfh.QFHPriors;
 import org.baratinage.ui.baratin.hydraulic_configuration.PriorRatingCurve;
 import org.baratinage.ui.container.SimpleFlowPanel;
+import org.baratinage.ui.container.SplitContainer;
 import org.baratinage.ui.container.TitledPanel;
-import org.baratinage.ui.container.TitledPanelSplitTabContainer;
 import org.baratinage.utils.ConsoleLogger;
 import org.json.JSONObject;
 
@@ -36,6 +37,8 @@ public class HydraulicConfigurationQFH extends BamItem
 
     private final QFHModelDefinition modelDefinition;
     private QFHPriors priors;
+
+    private boolean priorRatingCurveMode = false;
 
     public HydraulicConfigurationQFH(String uuid, BamProject project) {
         super(BamItemType.HYDRAULIC_CONFIG_QFH, uuid, project);
@@ -71,13 +74,32 @@ public class HydraulicConfigurationQFH extends BamItem
         TitledPanel priorSpecificationTitledPanel = new TitledPanel(priorsPanel);
         priorSpecificationTitledPanel.setIcon(priorSpecificationIcon);
 
-        TitledPanelSplitTabContainer mainContainer = TitledPanelSplitTabContainer
-                .build2Left1Right(this,
-                        eqTitledPanel,
-                        priorRatingCurveTitledPanel,
-                        priorSpecificationTitledPanel,
-                        0.33f, 0.5f);
-        mainContainer.setBreakpoints(1100, 800);
+        SplitContainer modelAndPriorsPanel = new SplitContainer(
+                eqTitledPanel.getTitledPanel(),
+                priorSpecificationTitledPanel.getTitledPanel(),
+                true,
+                0.30f);
+
+        SimpleFlowPanel priorRatingCurvePanel = priorRatingCurveTitledPanel.getTitledPanel();
+        priorRatingCurvePanel.setVisible(false);
+
+        SimpleFlowPanel contentPanel = new SimpleFlowPanel(true);
+        contentPanel.addChild(modelAndPriorsPanel, true);
+        contentPanel.addChild(priorRatingCurvePanel, true);
+
+        JButton modeToggleButton = new JButton();
+        modeToggleButton.addActionListener((e) -> {
+            priorRatingCurveMode = !priorRatingCurveMode;
+            modelAndPriorsPanel.setVisible(!priorRatingCurveMode);
+            priorRatingCurvePanel.setVisible(priorRatingCurveMode);
+            updateModeToggleButton(modeToggleButton);
+            contentPanel.revalidate();
+            contentPanel.repaint();
+        });
+
+        SimpleFlowPanel mainContainer = new SimpleFlowPanel(true);
+        mainContainer.addChild(modeToggleButton, 0, 5, 5, SimpleFlowPanel.ALIGN.START);
+        mainContainer.addChild(contentPanel, true);
         setContent(mainContainer);
 
         T.updateHierarchy(this, priors);
@@ -87,8 +109,19 @@ public class HydraulicConfigurationQFH extends BamItem
             eqTitledPanel.setText(T.html("rating_curve_equation"));
             priorSpecificationTitledPanel.setText(T.html("prior_parameter_specification"));
             priorRatingCurveTitledPanel.setText(T.html("prior_rating_curve"));
+            updateModeToggleButton(modeToggleButton);
         });
 
+    }
+
+    private void updateModeToggleButton(JButton button) {
+        if (priorRatingCurveMode) {
+            button.setText(T.html("hydraulic_config_qfh"));
+            button.setIcon(BamItemType.HYDRAULIC_CONFIG_QFH.getIcon());
+        } else {
+            button.setText(T.html("prior_rating_curve"));
+            button.setIcon(priorRatingCurveIcon);
+        }
     }
 
     @Override

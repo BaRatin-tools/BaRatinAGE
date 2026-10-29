@@ -127,7 +127,6 @@ public class RatingCurveResults extends TabContainer {
     }
 
     private RatingCurvePlotData rcPlotData;
-    // private RatingCurveCalibrationResults parameters;
     private RatingCurveParameters parameters;
 
     public void updateResults(

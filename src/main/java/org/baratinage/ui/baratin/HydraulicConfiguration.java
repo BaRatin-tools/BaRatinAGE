@@ -1,6 +1,7 @@
 package org.baratinage.ui.baratin;
 
 import javax.swing.Icon;
+import javax.swing.JButton;
 import org.baratinage.AppSetup;
 import org.baratinage.jbam.Parameter;
 import org.baratinage.translation.T;
@@ -16,8 +17,9 @@ import org.baratinage.ui.baratin.hydraulic_configuration.PriorRatingCurve;
 import org.baratinage.ui.baratin.hydraulic_control.ControlMatrix;
 import org.baratinage.ui.baratin.hydraulic_control.HydraulicControlPanels;
 
+import org.baratinage.ui.container.SimpleFlowPanel;
+import org.baratinage.ui.container.SplitContainer;
 import org.baratinage.ui.container.TitledPanel;
-import org.baratinage.ui.container.TitledPanelSplitTabContainer;
 import org.baratinage.utils.ConsoleLogger;
 import org.baratinage.utils.json.JSONFilter;
 import org.baratinage.utils.perf.TimedActions;
@@ -30,6 +32,8 @@ public class HydraulicConfiguration
     private final TitledPanel controlMatrixTitledPanel;
     private final TitledPanel hydraulicControlsTitledPanel;
     private final TitledPanel priorRatingCurveTitledPanel;
+
+    private boolean priorRatingCurveMode = false;
 
     public final ControlMatrix controlMatrix;
     public final HydraulicControlPanels hydraulicControls;
@@ -75,13 +79,32 @@ public class HydraulicConfiguration
         priorRatingCurveTitledPanel = new TitledPanel(priorRatingCurve);
         priorRatingCurveTitledPanel.setIcon(priorRatingCurveIcon);
 
-        TitledPanelSplitTabContainer mainContainer = TitledPanelSplitTabContainer
-                .build2Left1Right(this,
-                        controlMatrixTitledPanel,
-                        priorRatingCurveTitledPanel,
-                        hydraulicControlsTitledPanel,
-                        0.33f, 0.5f);
-        mainContainer.setBreakpoints(1100, 800);
+        SplitContainer modelAndPriorsPanel = new SplitContainer(
+                controlMatrixTitledPanel.getTitledPanel(),
+                hydraulicControlsTitledPanel.getTitledPanel(),
+                true,
+                0.30f);
+
+        SimpleFlowPanel priorRatingCurvePanel = priorRatingCurveTitledPanel.getTitledPanel();
+        priorRatingCurvePanel.setVisible(false);
+
+        SimpleFlowPanel contentPanel = new SimpleFlowPanel(true);
+        contentPanel.addChild(modelAndPriorsPanel, true);
+        contentPanel.addChild(priorRatingCurvePanel, true);
+
+        JButton modeToggleButton = new JButton();
+        modeToggleButton.addActionListener((e) -> {
+            priorRatingCurveMode = !priorRatingCurveMode;
+            modelAndPriorsPanel.setVisible(!priorRatingCurveMode);
+            priorRatingCurvePanel.setVisible(priorRatingCurveMode);
+            updateModeToggleButton(modeToggleButton);
+            contentPanel.revalidate();
+            contentPanel.repaint();
+        });
+
+        SimpleFlowPanel mainContainer = new SimpleFlowPanel(true);
+        mainContainer.addChild(modeToggleButton, 0, 5, 5, SimpleFlowPanel.ALIGN.START);
+        mainContainer.addChild(contentPanel, true);
         setContent(mainContainer);
 
         boolean[][] mat = controlMatrix.getControlMatrix();
@@ -94,7 +117,18 @@ public class HydraulicConfiguration
             controlMatrixTitledPanel.setText(T.html("control_matrix"));
             hydraulicControlsTitledPanel.setText(T.html("prior_parameter_specification"));
             priorRatingCurveTitledPanel.setText(T.html("prior_rating_curve"));
+            updateModeToggleButton(modeToggleButton);
         });
+    }
+
+    private void updateModeToggleButton(JButton button) {
+        if (priorRatingCurveMode) {
+            button.setText(T.html("hydraulic_config"));
+            button.setIcon(BamItemType.HYDRAULIC_CONFIG.getIcon());
+        } else {
+            button.setText(T.html("prior_rating_curve"));
+            button.setIcon(priorRatingCurveIcon);
+        }
     }
 
     @Override
