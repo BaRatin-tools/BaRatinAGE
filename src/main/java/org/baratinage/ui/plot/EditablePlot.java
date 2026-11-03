@@ -89,9 +89,8 @@ public class EditablePlot implements LegendItemSource {
         titleField.setText(
             id);
         titleField.addChangeListener(e -> {
-          legendItemsOrder.modifyItemLabel(index, titleField.getText());
-          legendItemsOrder.modifyItemValue(index, titleField.getText());
-          legendItemsOrder.updateUI(); // ???
+          legendItemsOrder.setItemLabel(index, titleField.getText());
+          legendItemsOrder.setItemValue(index, titleField.getText());
           update();
         });
 
@@ -158,7 +157,7 @@ public class EditablePlot implements LegendItemSource {
         } else {
           Icon icon = PlotUtils.getPlotItemIcon(epi.plotItem, 30, 30);
           int index = legendItemsOrder.getFirstIndex(id);
-          legendItemsOrder.modifyItemLabel(index, epi.getLabel(), icon);
+          legendItemsOrder.setItemLabel(index, epi.getLabel(), icon);
         }
       } else {
         if (epi.showLegend()) {

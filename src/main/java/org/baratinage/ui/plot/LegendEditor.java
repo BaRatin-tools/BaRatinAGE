@@ -118,9 +118,7 @@ public class LegendEditor extends SimpleFlowPanel implements LegendItemSource {
 
   private void updateLegendItemExplorer() {
     for (int k = 0; k < legendItemExporer.getItemCount(); k++) {
-      legendItemExporer.modifyItemLabel(
-          k,
-          legendItemExporer.getObject(k).editablePlotItem.plotItem.getLabel());
+      legendItemExporer.setItemLabel(k, legendItemExporer.getObject(k).editablePlotItem.plotItem.getLabel());
     }
   }
 
@@ -137,22 +135,6 @@ public class LegendEditor extends SimpleFlowPanel implements LegendItemSource {
     }
     updatePlot();
   }
-
-  // }
-  // public void resetPlotLegend() {
-  // List<PlotItem> plotItems = plot.items;
-  // legendItemExporer.clearList();
-  // for (int k = 0; k < plotItems.size(); k++) {
-  // PlotItem item = plotItems.get(k);
-  // if (item.visible && item.legend) {
-  // Icon icon = PlotUtils.getPlotItemIcon(item, 30, 30);
-  // legendItemExporer.addItem(
-  // item.label,
-  // icon,
-  // new LegendItemConfig(item));
-  // }
-  // }
-  // }
 
   @Override
   public LegendItemCollection getLegendItems() {

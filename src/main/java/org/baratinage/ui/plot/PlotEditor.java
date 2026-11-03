@@ -177,7 +177,7 @@ public class PlotEditor extends SimpleFlowPanel {
     if (index < 0) {
       itemExplorer.addItem(title, icon, id);
     } else {
-      itemExplorer.modifyItemLabel(index, title, icon);
+      itemExplorer.setItemLabel(index, title, icon);
     }
     editablePlotItems.put(id, editablePlotItem);
 
@@ -206,7 +206,7 @@ public class PlotEditor extends SimpleFlowPanel {
     Icon icon = PlotUtils.getPlotItemIcon(epi.plotItem, 30, 30);
     int index = itemExplorer.getFirstIndex(epiId);
     if (index >= 0) {
-      itemExplorer.modifyItemLabel(index, label, icon);
+      itemExplorer.setItemLabel(index, label, icon);
     }
   }
 
