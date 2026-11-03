@@ -637,8 +637,7 @@ public class RatingCurveCompare extends BamItem {
             resetPlot();
             int index = episList.getFirstIndex(new EPI(bamItem, key));
             if (index >= 0) {
-                episList.modifyItemLabel(
-                        index,
+                episList.setItemLabel(index,
                         bamItem.bamItemNameField.getText() + " > " + ePltItem.plotItem.getLabel(),
                         PlotUtils.getPlotItemIcon(ePltItem.plotItem, 30, 30));
             }

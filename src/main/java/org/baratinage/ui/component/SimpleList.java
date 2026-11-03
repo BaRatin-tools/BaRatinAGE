@@ -186,20 +186,6 @@ public class SimpleList<A> extends JScrollPane {
         return -1;
     }
 
-    @Deprecated
-    public void modifyItemLabel(int index, String label) {
-        if (index < 0 || index >= model.getSize()) {
-            System.err.println("Trying to modify an item at an invalid index '" + index + "'!");
-            return;
-        }
-        SimpleListItem<A> item = model.getElementAt(index);
-        if (item == null) {
-            System.err.println("No item found at index '" + index + "'!");
-            return;
-        }
-        item.label.setText(label);
-    }
-
     public void setItemLabel(int index, String label) {
         setItemLabel(index, label, null);
     }
@@ -222,30 +208,6 @@ public class SimpleList<A> extends JScrollPane {
             item.label.setIcon(icon);
         }
         model.setElementAt(item, index);
-    }
-
-    @Deprecated
-    public void modifyItemLabel(int index, String label, Icon icon) {
-
-        if (index < 0 || index >= model.getSize()) {
-            System.err.println("Trying to modify an item at an invalid index '" + index + "'!");
-            return;
-        }
-        SimpleListItem<A> item = model.getElementAt(index);
-        if (item == null) {
-            System.err.println("No item found at index '" + index + "'!");
-            return;
-        }
-
-        if (label != null) {
-            item.label.setText(label);
-        }
-
-        if (icon != null) {
-            item.label.setIcon(icon);
-        }
-
-        repaint();
     }
 
     public void setItemValue(int index, A value) {
