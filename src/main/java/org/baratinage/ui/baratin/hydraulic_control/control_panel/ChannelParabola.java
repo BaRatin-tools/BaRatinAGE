@@ -24,7 +24,7 @@ public class ChannelParabola extends ChannelPriorControlPanel {
         width = CommonParameterDistSimplified.getParabolaWidth();
         height = CommonParameterDistSimplified.getHeight("p");
         slope = CommonParameterDistSimplified.getSlope();
-        exponent = CommonParameterDistSimplified.getActivationHeight();
+        exponent = CommonParameterDistSimplified.getExponent();
         exponent.setLock(true);
         exponent.setDefaultValues(2.17, 0.05);
         manningCoef = CommonParameterDistSimplified.getManningCoeff();
