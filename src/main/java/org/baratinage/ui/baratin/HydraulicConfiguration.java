@@ -5,18 +5,16 @@ import javax.swing.JButton;
 import org.baratinage.AppSetup;
 import org.baratinage.jbam.Parameter;
 import org.baratinage.translation.T;
-
-import org.baratinage.ui.bam.BamItem;
 import org.baratinage.ui.bam.BamConfig;
+import org.baratinage.ui.bam.BamItem;
 import org.baratinage.ui.bam.BamItemType;
 import org.baratinage.ui.bam.IModelDefinition;
 import org.baratinage.ui.bam.IPriors;
 import org.baratinage.ui.bam.RunBam;
-
+import org.baratinage.ui.baratin.baratin_spd.PeriodSetsPanel;
 import org.baratinage.ui.baratin.hydraulic_configuration.PriorRatingCurve;
 import org.baratinage.ui.baratin.hydraulic_control.ControlMatrix;
 import org.baratinage.ui.baratin.hydraulic_control.HydraulicControlPanels;
-
 import org.baratinage.ui.container.SimpleFlowPanel;
 import org.baratinage.ui.container.SplitContainer;
 import org.baratinage.ui.container.TitledPanel;
@@ -30,11 +28,13 @@ public class HydraulicConfiguration
         implements IModelDefinition, IPriors {
 
     private final TitledPanel controlMatrixTitledPanel;
+    private final TitledPanel periodSetTitledPanel;
     private final TitledPanel hydraulicControlsTitledPanel;
     private final TitledPanel priorRatingCurveTitledPanel;
 
     private boolean priorRatingCurveMode = false;
 
+    public final PeriodSetsPanel periodSetsPanel;
     public final ControlMatrix controlMatrix;
     public final HydraulicControlPanels hydraulicControls;
     public final PriorRatingCurve<HydraulicConfiguration> priorRatingCurve;
@@ -47,9 +47,13 @@ public class HydraulicConfiguration
             .getCustomAppImageIcon("prior_densities.svg");
     public static final Icon priorRatingCurveIcon = AppSetup.ICONS
             .getCustomAppImageIcon("prior_rating_curve.svg");
+    public static final Icon periodSetIcon = AppSetup.ICONS
+            .getCustomAppImageIcon("period_set.svg");
 
     public HydraulicConfiguration(String uuid, BaratinProject project) {
         super(BamItemType.HYDRAULIC_CONFIG, uuid, project);
+
+        periodSetsPanel = new PeriodSetsPanel();
 
         hydraulicControls = new HydraulicControlPanels();
         hydraulicControls.addChangeListener((e) -> {
@@ -74,13 +78,19 @@ public class HydraulicConfiguration
 
         controlMatrixTitledPanel = new TitledPanel(controlMatrix);
         controlMatrixTitledPanel.setIcon(controlMatrixIcon);
+        periodSetTitledPanel = new TitledPanel(periodSetsPanel);
+        periodSetTitledPanel.setIcon(periodSetIcon);
         hydraulicControlsTitledPanel = new TitledPanel(hydraulicControls);
         hydraulicControlsTitledPanel.setIcon(priorSpecificationIcon);
         priorRatingCurveTitledPanel = new TitledPanel(priorRatingCurve);
         priorRatingCurveTitledPanel.setIcon(priorRatingCurveIcon);
 
+        SimpleFlowPanel leftSide = new SimpleFlowPanel(true);
+        leftSide.addChild(controlMatrixTitledPanel.getTitledPanel(), true);
+        leftSide.addChild(periodSetTitledPanel.getTitledPanel(), true);
+
         SplitContainer modelAndPriorsPanel = new SplitContainer(
-                controlMatrixTitledPanel.getTitledPanel(),
+                leftSide,
                 hydraulicControlsTitledPanel.getTitledPanel(),
                 true,
                 0.30f);
@@ -111,10 +121,12 @@ public class HydraulicConfiguration
         hydraulicControls.setHydraulicControls(mat.length);
 
         T.updateHierarchy(this, controlMatrix);
+        T.updateHierarchy(this, periodSetsPanel);
         T.updateHierarchy(this, hydraulicControls);
         T.updateHierarchy(this, priorRatingCurve);
         T.t(this, () -> {
             controlMatrixTitledPanel.setText(T.html("control_matrix"));
+            periodSetTitledPanel.setText(T.html("period_sets_title"));
             hydraulicControlsTitledPanel.setText(T.html("prior_parameter_specification"));
             priorRatingCurveTitledPanel.setText(T.html("prior_rating_curve"));
             updateModeToggleButton(modeToggleButton);

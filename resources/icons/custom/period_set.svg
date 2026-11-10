@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- placeholder icon for a period set: a timeline of three periods -->
+
+<svg
+   width="24"
+   height="24"
+   fill="none"
+   stroke="currentColor"
+   stroke-linecap="round"
+   stroke-linejoin="round"
+   stroke-width="1.5"
+   version="1.1"
+   viewBox="0 0 24 24"
+   xml:space="preserve"
+   id="svg5"
+   sodipodi:docname="period_set.svg"
+   inkscape:version="1.4 (86a8ad7, 2024-10-11)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"><defs
+   id="defs5" /><sodipodi:namedview
+   id="namedview5"
+   pagecolor="#ffffff"
+   bordercolor="#000000"
+   borderopacity="0.25"
+   inkscape:showpageshadow="2"
+   inkscape:pageopacity="0.0"
+   inkscape:pagecheckerboard="0"
+   inkscape:deskcolor="#d1d1d1"
+   inkscape:zoom="17.645833"
+   inkscape:cx="3.8819362"
+   inkscape:cy="10.909091"
+   inkscape:window-width="2560"
+   inkscape:window-height="1369"
+   inkscape:window-x="2512"
+   inkscape:window-y="-8"
+   inkscape:window-maximized="1"
+   inkscape:current-layer="svg5" />
+    
+    
+    
+    
+    
+    
+<path
+   style="fill:#fffe20;fill-opacity:1;stroke-width:1.5"
+   d="M 9.6469898,13.954112 16.3691,1.1995277 22.97571,13.954112 H 16.3691 Z"
+   id="path5-1"
+   sodipodi:nodetypes="ccccc" /><path
+   style="fill:#ff0000;fill-opacity:1;stroke-width:1.5"
+   d="M 5.4043608,18.353673 12.126471,5.5990889 18.733081,18.353673 h -6.60661 z"
+   id="path5-7"
+   sodipodi:nodetypes="ccccc" /><path
+   style="fill:#4fd057;fill-opacity:1;stroke-width:1.5"
+   d="M 1.1617321,22.753234 7.8838418,9.9986498 14.490452,22.753234 H 7.8838418 Z"
+   id="path5"
+   sodipodi:nodetypes="ccccc" /></svg>
