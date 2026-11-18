@@ -1,217 +1,33 @@
 package org.baratinage.ui.commons;
 
-import java.awt.Font;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.swing.Icon;
-import javax.swing.JButton;
-import javax.swing.JCheckBoxMenuItem;
-import javax.swing.JLabel;
-import javax.swing.JPopupMenu;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
-
-import org.baratinage.AppSetup;
 import org.baratinage.jbam.Distribution;
-import org.baratinage.jbam.DistributionType;
 import org.baratinage.jbam.Parameter;
-import org.baratinage.translation.T;
-import org.baratinage.ui.component.EquationLabel;
-import org.baratinage.ui.component.SimpleNumberField;
+import org.baratinage.ui.commons.variable_parameter.ParameterLabelsAndFields;
+import org.baratinage.ui.container.SimpleGridPanel;
 import org.json.JSONObject;
 
-public class ParameterPriorDist extends AbstractParameterPriorDist implements ChangeListener {
+public class ParameterPriorDist extends AbstractParameterPriorDist {
+
     public final String bamName;
-    public final JLabel iconLabel;
-    public final EquationLabel symbolUnitLabel;
-    public final JLabel nameLabel;
-    public final SimpleNumberField initialGuessField;
-    public final DistributionField distributionField;
-
-    public final JButton menuButton = new JButton();
-    public final JPopupMenu contextMenu = new JPopupMenu();
-    public final JCheckBoxMenuItem lockAllValuesBtn = new JCheckBoxMenuItem();
-    public final JCheckBoxMenuItem autoInitialValueBtn = new JCheckBoxMenuItem();
-
-    private boolean isEnabled = true;
-    private boolean isLocked = false;
-
-    private static final Font MONOSPACE_FONT = new Font(Font.MONOSPACED, Font.PLAIN, 14);
 
     public ParameterPriorDist(String bamName) {
         this.bamName = bamName;
 
-        iconLabel = new JLabel();
-        symbolUnitLabel = new EquationLabel();
-        nameLabel = new JLabel();
-        symbolUnitLabel.setFont(MONOSPACE_FONT);
-        initialGuessField = new SimpleNumberField();
-        initialGuessField.addChangeListener(this);
-
-        distributionField = new DistributionField();
-        distributionField.addChangeListener(this);
-
-        menuButton.setIcon(AppSetup.ICONS.MORE_DOTS);
-
+        contextMenu.add(variableParameterBtn);
         contextMenu.add(lockAllValuesBtn);
         contextMenu.add(autoInitialValueBtn);
-
-        menuButton.addActionListener((l) -> {
-            contextMenu.show(menuButton, 0, menuButton.getHeight());
-        });
-
-        lockAllValuesBtn.addItemListener(l -> {
-            isLocked = lockAllValuesBtn.isSelected();
-            updateEnabledStates();
-        });
-        autoInitialValueBtn.addItemListener(l -> {
-            updateEnabledStates();
-            updateInitialGuessField();
-        });
-
-        distributionField.addChangeListener((l) -> {
-            updateInitialGuessField();
-        });
-
-        T.updateHierarchy(this, initialGuessField);
-        T.updateHierarchy(this, distributionField);
-
-        T.t(this, () -> {
-            lockAllValuesBtn.setText(T.text("parameter_dist_lock"));
-            autoInitialValueBtn.setText(T.text("parameter_dist_auto_initial"));
-        });
-
-        autoInitialValueBtn.setSelected(true);
-    }
-
-    private void updateEnabledStates() {
-        boolean globallyLocked = !isEnabled;
-        boolean allValuesLocked = isLocked;
-        boolean initialValueLocked = autoInitialValueBtn.isSelected();
-
-        distributionField.setEnabled(!globallyLocked && !allValuesLocked);
-        initialGuessField.setEnabled(!globallyLocked && !allValuesLocked && !initialValueLocked);
-        menuButton.setEnabled(!globallyLocked);
-        autoInitialValueBtn.setEnabled(!allValuesLocked);
-    }
-
-    private void updateInitialGuessField() {
-        if (!autoInitialValueBtn.isSelected()) {
-            return;
-        }
-        Distribution dist = distributionField.getDistribution();
-        if (dist != null) {
-            Double median = dist.getMedian();
-            if (median != null) {
-                initialGuessField.setValue(median);
-            }
-        } else {
-            initialGuessField.setValue(Double.NaN);
-        }
-    }
-
-    @Override
-    public void setIcon(Icon icon) {
-        iconLabel.setIcon(icon);
-    }
-
-    @Override
-    public void setSymbolUnitLabels(String symbol, String unit) {
-        symbolUnitLabel.setLatexEquation(
-                "%s \\quad [%s]".formatted(
-                        EquationLabel.convertToLatex(symbol),
-                        EquationLabel.convertToLatex(unit)));
-    }
-
-    public void setNameLabel(String name) {
-        nameLabel.setText(name);
-    }
-
-    @Override
-    public void setEnabled(boolean enabled) {
-        isEnabled = enabled;
-        updateEnabledStates();
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return isEnabled;
-    }
-
-    @Override
-    public void setLock(boolean locked) {
-        isLocked = locked;
-        lockAllValuesBtn.setSelected(locked);
-        updateEnabledStates();
-    }
-
-    @Override
-    public boolean isLocked() {
-        return isLocked;
     }
 
     @Override
     public Parameter getParameter() {
-        Distribution distribution = distributionField.getDistribution();
+        Distribution distribution = constantParameter.field.getDistribution();
         if (distribution == null) {
             return null;
         }
-        if (!initialGuessField.isValueValid()) {
+        if (!constantParameter.initialGuess.isValueValid()) {
             return null;
         }
-        return new Parameter(bamName, initialGuessField.getDoubleValue(), distribution);
-    }
-
-    @Override
-    public DistributionType getDistributionType() {
-        return distributionField.getDistributionType();
-    }
-
-    @Override
-    public Double[] getDistributionParameters() {
-        return distributionField.getParameters();
-    }
-
-    @Override
-    public Double getInitialGuess() {
-        return initialGuessField.getDoubleValue();
-    }
-
-    @Override
-    public void setDistributionType(DistributionType distributionType) {
-        distributionField.setDistributionType(distributionType);
-    }
-
-    @Override
-    public void setDistributionParameters(Double[] values) {
-        distributionField.setParameters(values);
-    }
-
-    @Override
-    public void setInitialGuess(Double value) {
-        initialGuessField.setValue(value);
-    }
-
-    private final List<ChangeListener> changeListeners = new ArrayList<>();
-
-    public void addChangeListener(ChangeListener l) {
-        changeListeners.add(l);
-    }
-
-    public void removeChangeListener(ChangeListener l) {
-        changeListeners.remove(l);
-    }
-
-    public void fireChangeListeners() {
-        for (ChangeListener l : changeListeners) {
-            l.stateChanged(new ChangeEvent(this));
-        }
-    }
-
-    @Override
-    public void stateChanged(ChangeEvent e) {
-        fireChangeListeners();
+        return new Parameter(bamName, constantParameter.initialGuess.getDoubleValue(), distribution);
     }
 
     @Override
@@ -225,5 +41,45 @@ public class ParameterPriorDist extends AbstractParameterPriorDist implements Ch
         super.fromJSON(json);
         boolean autoInitialValue = json.optBoolean("autoInitialValue", false);
         autoInitialValueBtn.setSelected(autoInitialValue);
+    }
+
+    /*
+     * the grid is expecting 7 columns
+     * - icon
+     * - label
+     * - symbol + unit
+     * - distribution type
+     * - distribution parameters
+     * - initial guess field
+     * - menu
+     */
+    @Override
+    public int addToGrid(SimpleGridPanel grid, int firstRow) {
+
+        grid.add(constantParameter.icon, SimpleGridPanel.cell(0, firstRow));
+        grid.add(constantParameter.label, SimpleGridPanel.cell(1, firstRow));
+        grid.add(constantParameter.symbolAndUnit, SimpleGridPanel.cell(2, firstRow));
+        grid.add(
+                constantParameter.field.distributionCombobox,
+                SimpleGridPanel.cell(3, firstRow));
+        grid.add(menuButton, SimpleGridPanel.cell(6, firstRow));
+        if (!isVariable()) {
+            grid.add(
+                    constantParameter.field.parameterFieldsPanel,
+                    SimpleGridPanel.cell(4, firstRow));
+            grid.add(constantParameter.initialGuess, SimpleGridPanel.cell(5, firstRow));
+        } else {
+            grid.add(periodSetCombobox, SimpleGridPanel.cell(4, firstRow).span(2, 1));
+            if (currentPeriodSet != null) {
+                for (int k = 0; k < currentPeriodSet.getNumberOfPeriods(); k++) {
+                    firstRow++;
+                    ParameterLabelsAndFields psf = variableSubParameters.get(k);
+                    grid.add(psf.label, SimpleGridPanel.cell(3, firstRow));
+                    grid.add(psf.field.parameterFieldsPanel, SimpleGridPanel.cell(4, firstRow));
+                    grid.add(psf.initialGuess, SimpleGridPanel.cell(5, firstRow));
+                }
+            }
+        }
+        return firstRow + 1;
     }
 }

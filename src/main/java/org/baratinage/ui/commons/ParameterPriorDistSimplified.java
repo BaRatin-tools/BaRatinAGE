@@ -1,50 +1,19 @@
 package org.baratinage.ui.commons;
 
-import java.awt.Font;
-
 import javax.swing.Icon;
-import javax.swing.JCheckBox;
-import javax.swing.JLabel;
 
 import org.baratinage.jbam.Distribution;
 import org.baratinage.jbam.DistributionType;
 import org.baratinage.jbam.Parameter;
-import org.baratinage.translation.T;
-import org.baratinage.ui.component.EquationLabel;
-import org.baratinage.ui.component.SimpleNumberField;
+import org.baratinage.ui.commons.variable_parameter.ParameterLabelsAndFields;
+import org.baratinage.ui.container.SimpleGridPanel;
 
 public class ParameterPriorDistSimplified extends AbstractParameterPriorDist {
 
-    public final JLabel iconLabel;
-    public final EquationLabel symbolUnitLabel;
-    public final JLabel nameLabel;
-    public final SimpleNumberField meanValueField;
-    public final SimpleNumberField uncertaintyValueField;
-    public final JCheckBox lockCheckbox;
-
-    private static final Font MONOSPACE_FONT = new Font(Font.MONOSPACED, Font.PLAIN, 14);
-
-    private boolean isEnabled = true;
-    private boolean isLocked = false;
-
     public ParameterPriorDistSimplified() {
 
-        iconLabel = new JLabel();
-        symbolUnitLabel = new EquationLabel();
-        nameLabel = new JLabel();
-        symbolUnitLabel.setFont(MONOSPACE_FONT);
-
-        meanValueField = new SimpleNumberField();
-        uncertaintyValueField = new SimpleNumberField();
-
-        lockCheckbox = new JCheckBox();
-        lockCheckbox.addItemListener((chEvt) -> {
-            isLocked = lockCheckbox.isSelected();
-            updateEnabledStates();
-        });
-
-        T.updateHierarchy(this, meanValueField);
-        T.updateHierarchy(this, uncertaintyValueField);
+        contextMenu.add(variableParameterBtn);
+        contextMenu.add(lockAllValuesBtn);
     }
 
     public ParameterPriorDistSimplified(Icon icon, String symbol, String unit) {
@@ -53,109 +22,93 @@ public class ParameterPriorDistSimplified extends AbstractParameterPriorDist {
         setSymbolUnitLabels(symbol, unit);
     }
 
-    @Override
-    public void setIcon(Icon icon) {
-        iconLabel.setIcon(icon);
-    }
-
-    @Override
-    public void setSymbolUnitLabels(String symbol, String unit) {
-        symbolUnitLabel.setLatexEquation(
-                "%s \\quad [%s]".formatted(
-                        EquationLabel.convertToLatex(symbol),
-                        EquationLabel.convertToLatex(unit)));
-    }
-
-    @Override
-    public void setNameLabel(String name) {
-        nameLabel.setText(name);
-    }
-
-    @Override
-    public void setEnabled(boolean enabled) {
-        isEnabled = enabled;
-        updateEnabledStates();
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return isEnabled;
-    }
-
-    @Override
-    public void setLock(boolean locked) {
-        isLocked = locked;
-        lockCheckbox.setSelected(locked);
-        updateEnabledStates();
-    }
-
-    @Override
-    public boolean isLocked() {
-        return isLocked;
-    }
-
-    private void updateEnabledStates() {
-        boolean globallyLocked = !isEnabled;
-        boolean locallyLocked = isLocked;
-        meanValueField.setEnabled(!globallyLocked && !locallyLocked);
-        uncertaintyValueField.setEnabled(!globallyLocked && !locallyLocked);
-        // lockCheckbox.setEnabled(!globallyLocked);
-    }
-
     public void setDefaultValues(double mean, double uncertainty) {
-        meanValueField.setValue(mean);
-        uncertaintyValueField.setValue(uncertainty);
+        constantParameter.meanField.setValue(mean);
+        constantParameter.uncertaintyField.setValue(uncertainty);
     }
 
     @Override
     public Parameter getParameter() {
-        if (!meanValueField.isValueValid() || !uncertaintyValueField.isValueValid()) {
+        if (!constantParameter.meanField.isValueValid() || !constantParameter.uncertaintyField.isValueValid()) {
             return null;
         }
-        double mean = meanValueField.getDoubleValue();
-        double std = uncertaintyValueField.getDoubleValue() / 2;
+        double mean = constantParameter.meanField.getDoubleValue();
+        double std = constantParameter.uncertaintyField.getDoubleValue() / 2;
         Distribution d = new Distribution(DistributionType.GAUSSIAN, mean, std);
-        return new Parameter(nameLabel.getText(), mean, d);
+        return new Parameter(constantParameter.label.getText(), mean, d);
     }
 
-    @Override
-    public DistributionType getDistributionType() {
-        return DistributionType.GAUSSIAN;
-    }
-
-    @Override
-    public Double[] getDistributionParameters() {
-        Double uncertainty = uncertaintyValueField.getDoubleValue();
-
-        return new Double[] {
-                meanValueField.getDoubleValue(),
-                uncertainty == null ? null : uncertainty / 2
-        };
-    }
-
-    @Override
-    public Double getInitialGuess() {
-        return meanValueField.getDoubleValue();
-    }
-
-    @Override
-    public void setDistributionType(DistributionType distributionType) {
-        // ignored since always gaussian...
-    }
-
-    @Override
-    public void setDistributionParameters(Double[] values) {
-        if (values.length == 2) {
-            meanValueField.setValue(values[0]);
-            uncertaintyValueField.setValue(values[1] == null ? null : values[1] * 2);
-            // needed if there are dependent fields (e.g. Manning/Strickler fields)
-            meanValueField.fireChangeListeners();
-            uncertaintyValueField.fireChangeListeners();
+    public Double[] getMeanValues() {
+        if (currentPeriodSet == null) {
+            return new Double[0];
         }
+        int n = currentPeriodSet.getNumberOfPeriods();
+        Double[] means = new Double[n];
+        for (int k = 0; k < n; k++) {
+            ParameterLabelsAndFields psf = variableSubParameters.get(k);
+            means[k] = psf.meanField.isValueValid() ? psf.meanField.getDoubleValue() : null;
+        }
+        return means;
     }
 
+    public Double[] getStdValues() {
+        if (currentPeriodSet == null) {
+            return new Double[0];
+        }
+        int n = currentPeriodSet.getNumberOfPeriods();
+        Double[] stds = new Double[n];
+        for (int k = 0; k < n; k++) {
+            ParameterLabelsAndFields psf = variableSubParameters.get(k);
+            stds[k] = psf.uncertaintyField.isValueValid() ? psf.uncertaintyField.getDoubleValue() / 2.0 : null;
+        }
+        return stds;
+    }
+
+    public Double getMeanValue() {
+        return constantParameter.meanField.isValueValid() ? constantParameter.meanField.getDoubleValue() : null;
+    }
+
+    public Double getUncertaintyValue() {
+        return constantParameter.uncertaintyField.isValueValid()
+                ? constantParameter.uncertaintyField.getDoubleValue()
+                : null;
+    }
+
+    public Double getStdValue() {
+        Double uncertainty = getUncertaintyValue();
+        return uncertainty == null ? null : uncertainty / 2.0;
+    }
+
+    /*
+     * The grid is expecting 6 columns:
+     * - icon
+     * - label
+     * - symbol+unit
+     * - mean
+     * - uncertainty
+     * - lock/menu
+     */
     @Override
-    public void setInitialGuess(Double value) {
-        // ignored
+    public int addToGrid(SimpleGridPanel grid, int firstRow) {
+        grid.add(constantParameter.icon, SimpleGridPanel.cell(0, firstRow));
+        grid.add(constantParameter.label, SimpleGridPanel.cell(1, firstRow));
+        grid.add(constantParameter.symbolAndUnit, SimpleGridPanel.cell(2, firstRow));
+        grid.add(menuButton, SimpleGridPanel.cell(5, firstRow));
+        if (!isVariable()) {
+            grid.add(constantParameter.meanField, SimpleGridPanel.cell(3, firstRow));
+            grid.add(constantParameter.uncertaintyField, SimpleGridPanel.cell(4, firstRow));
+        } else {
+            grid.add(periodSetCombobox, SimpleGridPanel.cell(3, firstRow).span(2, 1));
+            if (currentPeriodSet != null) {
+                for (int k = 0; k < currentPeriodSet.getNumberOfPeriods(); k++) {
+                    firstRow++;
+                    ParameterLabelsAndFields psf = variableSubParameters.get(k);
+                    grid.add(psf.label, SimpleGridPanel.cell(1, firstRow).span(2, 1));
+                    grid.add(psf.meanField, SimpleGridPanel.cell(3, firstRow));
+                    grid.add(psf.uncertaintyField, SimpleGridPanel.cell(4, firstRow));
+                }
+            }
+        }
+        return firstRow + 1;
     }
 }

@@ -1,8 +1,8 @@
 package org.baratinage.ui.baratin.hydraulic_control.control_panel;
 
+import org.baratinage.translation.T;
 import org.baratinage.ui.commons.CommonParameterDistSimplified;
 import org.baratinage.ui.commons.ParameterPriorDistSimplified;
-import org.baratinage.translation.T;
 
 public class ChannelRect extends ChannelPriorControlPanel {
 
@@ -18,11 +18,14 @@ public class ChannelRect extends ChannelPriorControlPanel {
     }
 
     public ChannelRect(boolean kMode) {
-        super(2, 5,
+        super(
+                2,
+                5,
                 "Q = K_s * B_w * sqrt(S) * (h-b) ^ c",
                 "Q = 1 / n * B_w * sqrt(S) * (h-b) ^ c");
 
-        kb = kMode ? CommonParameterDistSimplified.getActivationHeight()
+        kb = kMode
+                ? CommonParameterDistSimplified.getActivationHeight()
                 : CommonParameterDistSimplified.getOffsetHeight();
         stricklerCoef = CommonParameterDistSimplified.getStricklerCoeff();
         width = CommonParameterDistSimplified.getRectWidth();
@@ -42,9 +45,7 @@ public class ChannelRect extends ChannelPriorControlPanel {
         display();
 
         T.t(this, () -> {
-            setHeaders(
-                    T.html("mean_value"),
-                    T.html("uncertainty_value"));
+            setHeaders(T.html("mean_value"), T.html("uncertainty_value"));
             kb.setNameLabel(kMode ? T.html("activation_stage") : "Offset");
             stricklerCoef.setNameLabel(T.html("strickler_coef"));
             manningCoef.setNameLabel(T.html("manning_coef"));
@@ -54,29 +55,23 @@ public class ChannelRect extends ChannelPriorControlPanel {
         });
     }
 
-    private Double[] toAMeanAndStd() {
+    @Override
+    protected Double[] toAMeanAndStd() {
+        Double N = manningCoef.getMeanValue();
+        Double K = stricklerCoef.getMeanValue();
+        Double S = slope.getMeanValue();
+        Double B = width.getMeanValue();
 
-        Double N = manningCoef.meanValueField.isValueValid() ? manningCoef.meanValueField.getDoubleValue() : null;
-        Double K = stricklerCoef.meanValueField.isValueValid() ? stricklerCoef.meanValueField.getDoubleValue() : null;
-        Double S = slope.meanValueField.isValueValid() ? slope.meanValueField.getDoubleValue() : null;
-        Double B = width.meanValueField.isValueValid() ? width.meanValueField.getDoubleValue() : null;
-        Double Nstd = manningCoef.uncertaintyValueField.isValueValid()
-                ? manningCoef.uncertaintyValueField.getDoubleValue() / 2.0
-                : null;
-        Double Kstd = stricklerCoef.uncertaintyValueField.isValueValid()
-                ? stricklerCoef.uncertaintyValueField.getDoubleValue() / 2.0
-                : null;
-        Double Sstd = slope.uncertaintyValueField.isValueValid() ? slope.uncertaintyValueField.getDoubleValue() / 2.0
-                : null;
-        Double Bstd = width.uncertaintyValueField.isValueValid() ? width.uncertaintyValueField.getDoubleValue() / 2.0
-                : null;
+        Double Nstd = manningCoef.getStdValue();
+        Double Kstd = stricklerCoef.getStdValue();
+        Double Sstd = slope.getStdValue();
+        Double Bstd = width.getStdValue();
 
         if (useManning()) {
             return getAandAstdManning(N, S, B, Nstd, Sstd, Bstd);
         } else {
             return getAandAstdStrickler(K, S, B, Kstd, Sstd, Bstd);
         }
-
     }
 
     private static Double[] getAandAstdStrickler(
@@ -86,7 +81,6 @@ public class ChannelRect extends ChannelPriorControlPanel {
             Double Kstd,
             Double Sstd,
             Double Bstd) {
-
         if (B == null || S == null || K == null) {
             return new Double[] { null, null };
         }
@@ -104,11 +98,10 @@ public class ChannelRect extends ChannelPriorControlPanel {
         Double dAdB = A / B;
 
         // std
-        Double Astd = Math.sqrt(Math.pow(dAdK * Kstd, 2)
-                + Math.pow(dAdS * Sstd, 2)
-                + Math.pow(dAdB * Bstd, 2)
-
-        );
+        Double Astd = Math.sqrt(
+                Math.pow(dAdK * Kstd, 2) +
+                        Math.pow(dAdS * Sstd, 2) +
+                        Math.pow(dAdB * Bstd, 2));
 
         return new Double[] { A, Astd };
     }
@@ -120,13 +113,12 @@ public class ChannelRect extends ChannelPriorControlPanel {
             Double Nstd,
             Double Sstd,
             Double Bstd) {
-
         if (B == null || S == null || N == null) {
             return new Double[] { null, null };
         }
 
         // mean value
-        Double A = 1 / N * Math.sqrt(S) * B;
+        Double A = (1 / N) * Math.sqrt(S) * B;
 
         if (Bstd == null || Sstd == null || Nstd == null) {
             return new Double[] { A, null };
@@ -138,28 +130,21 @@ public class ChannelRect extends ChannelPriorControlPanel {
         Double dAdB = A / B;
 
         // std
-        Double Astd = Math.sqrt(Math.pow(dAdN * Nstd, 2)
-                + Math.pow(dAdS * Sstd, 2)
-                + Math.pow(dAdB * Bstd, 2)
-
-        );
+        Double Astd = Math.sqrt(
+                Math.pow(dAdN * Nstd, 2) +
+                        Math.pow(dAdS * Sstd, 2) +
+                        Math.pow(dAdB * Bstd, 2));
 
         return new Double[] { A, Astd };
     }
 
     @Override
-    public KBACGaussianConfig toKACGaussianConfig() {
+    protected ParameterPriorDistSimplified getKB() {
+        return kb;
+    }
 
-        Double[] AGaussianConfig = toAMeanAndStd();
-
-        Double kMean = kb.meanValueField.getDoubleValue();
-        Double kStd = kb.uncertaintyValueField.getDoubleValue();
-        Double cMean = exponent.meanValueField.getDoubleValue();
-        Double cStd = exponent.uncertaintyValueField.getDoubleValue();
-
-        return new KBACGaussianConfig(
-                kMean, kStd == null ? null : kStd / 2.0,
-                AGaussianConfig[0], AGaussianConfig[1],
-                cMean, cStd == null ? null : cStd / 2.0);
+    @Override
+    protected ParameterPriorDistSimplified getExponent() {
+        return exponent;
     }
 }

@@ -17,12 +17,8 @@ import org.baratinage.jbam.Parameter;
 import org.baratinage.translation.T;
 import org.baratinage.ui.bam.IPriors;
 import org.baratinage.ui.baratin.baratin_qfh.QFHPreset.QFHPresetParameter;
-import org.baratinage.ui.commons.CommonParameterDist;
-import org.baratinage.ui.commons.ParameterPriorDist;
-import org.baratinage.ui.commons.CommonParameterDist.CommonParameterType;
-import org.baratinage.ui.component.EquationLabel;
 import org.baratinage.ui.component.SimpleSep;
-import org.baratinage.ui.container.GridPanel;
+import org.baratinage.ui.container.SimpleGridPanel;
 import org.baratinage.utils.ConsoleLogger;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -32,25 +28,24 @@ public class QFHPriors extends JScrollPane implements IPriors, ChangeListener {
     private final HashMap<String, QFHPriorParameterDist> priorParDists;
     private final Set<String> usedParNames;
 
-    private final GridPanel mainPanel;
+    private final SimpleGridPanel mainPanel;
     private final List<JLabel> headers;
 
     public QFHPriors() {
         super();
 
         setBorder(new EmptyBorder(0, 0, 0, 0));
-        mainPanel = new GridPanel();
-        mainPanel.setAnchor(GridPanel.ANCHOR.N);
+        mainPanel = new SimpleGridPanel();
+        mainPanel.setColumns(6);
+        mainPanel.setColumn(3, SimpleGridPanel.grow());
+        mainPanel.setColumn(4, SimpleGridPanel.grow());
         setViewportView(mainPanel);
 
         priorParDists = new HashMap<>();
         usedParNames = new LinkedHashSet<>();
 
-        mainPanel.setColWeight(3, 2);
-        mainPanel.setColWeight(4, 1);
-
         mainPanel.setPadding(5);
-        mainPanel.setGap(5);
+        mainPanel.setGaps(5);
 
         headers = new ArrayList<>();
         // setting up headers
@@ -69,13 +64,6 @@ public class QFHPriors extends JScrollPane implements IPriors, ChangeListener {
 
     private void addHeaderItem(JLabel label) {
         headers.add(label);
-    }
-
-    private void insertHeaders() {
-        for (int k = 0; k < headers.size(); k++) {
-            mainPanel.insertChild(headers.get(k), k, 0);
-            mainPanel.insertChild(new SimpleSep(), k, 1);
-        }
     }
 
     public void setFromPreset(QFHPreset preset) {
@@ -113,60 +101,19 @@ public class QFHPriors extends JScrollPane implements IPriors, ChangeListener {
     }
 
     private void updatePanel() {
-        mainPanel.clear();
-        insertHeaders();
+        mainPanel.removeAll();
+        for (int k = 0; k < headers.size(); k++) {
+            mainPanel.add(headers.get(k), SimpleGridPanel.cell(k, 0));
+            mainPanel.add(new SimpleSep(), SimpleGridPanel.cell(k, 1));
+        }
         int rowIndex = 2;
         for (String parName : usedParNames) {
-            int colIndex = 0;
             QFHPriorParameterDist p = priorParDists.get(parName);
             if (p == null) {
                 ConsoleLogger.error("QFHPriorParameterDist not found though it should exist!");
                 continue;
             }
-            if (p.knownParameterType.isEnabled()) {
-                mainPanel.insertChild(p.knownParameterType, colIndex, rowIndex, 1, 1);
-                // mainPanel.insertChild(p.knownParameterType, colIndex, rowIndex, 2, 1);
-                // colIndex++;
-                CommonParameterType cpt = p.getSelectedParameterType();
-                String unit = "";
-                if (cpt != null) {
-                    unit = EquationLabel.convertToLatex(cpt.unit);
-                }
-                String symbol = EquationLabel.convertToLatex(p.bamName);
-                String unitAndSymbol = unit == "" ? symbol : "%s \\quad \\left[%s\\right]".formatted(symbol, unit);
-                EquationLabel eq = new EquationLabel();
-                eq.setLatexEquation(unitAndSymbol);
-                colIndex++;
-                mainPanel.insertChild(eq, colIndex, rowIndex,
-                        1, 1,
-                        GridPanel.ANCHOR.C, GridPanel.FILL.BOTH,
-                        0, 20, 0, 5);
-                colIndex++;
-            } else {
-                JLabel label = p.knownParameterType.getSelectedItemLabel();
-                if (label == null) {
-                    ConsoleLogger.warn("Label is null when it shouldn't (" + p.bamName + ")");
-                }
-                // mainPanel.insertChild(label != null ? label : p.knownParameterType, colIndex,
-                // rowIndex);
-                CommonParameterType cpt = p.getSelectedParameterType();
-                if (cpt != null) {
-                    ParameterPriorDist ppd = CommonParameterDist.buildParameterPriorDist(cpt, p.bamName);
-                    ppd.iconLabel.setText(T.text(cpt.id));
-                    mainPanel.insertChild(ppd.iconLabel, colIndex, rowIndex);
-                    colIndex++;
-                    mainPanel.insertChild(ppd.symbolUnitLabel, colIndex, rowIndex);
-                    colIndex++;
-                }
-            }
-
-            mainPanel.insertChild(p.distributionField.distributionCombobox, colIndex, rowIndex);
-            colIndex++;
-            mainPanel.insertChild(p.distributionField.parameterFieldsPanel, colIndex, rowIndex);
-            colIndex++;
-            mainPanel.insertChild(p.initialGuessField, colIndex, rowIndex);
-            colIndex++;
-            mainPanel.insertChild(p.menuButton, colIndex, rowIndex);
+            p.addToGrid(mainPanel, rowIndex);
             rowIndex++;
         }
         updateUI();

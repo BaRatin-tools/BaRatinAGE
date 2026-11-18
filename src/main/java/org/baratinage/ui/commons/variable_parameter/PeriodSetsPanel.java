@@ -1,8 +1,13 @@
-package org.baratinage.ui.baratin.baratin_spd;
+package org.baratinage.ui.commons.variable_parameter;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import org.baratinage.AppSetup;
 import org.baratinage.translation.T;
@@ -12,7 +17,7 @@ import org.baratinage.ui.component.SimpleList;
 import org.baratinage.ui.component.SimpleTextField;
 import org.baratinage.ui.container.SimpleFlowPanel;
 
-public class PeriodSetsPanel extends SimpleFlowPanel {
+public class PeriodSetsPanel extends SimpleFlowPanel implements PeriodSetsSource {
 
   private static final Icon periodSetIcon = AppSetup.ICONS
       .getCustomAppImageIcon("period_set.svg");
@@ -23,7 +28,6 @@ public class PeriodSetsPanel extends SimpleFlowPanel {
   public PeriodSetsPanel() {
 
     setGap(5);
-    // setPadding(5);
 
     periodSetList = new SimpleList<>();
     periodSetConfigPanel = new SimpleFlowPanel(true);
@@ -38,9 +42,10 @@ public class PeriodSetsPanel extends SimpleFlowPanel {
     addBtn.addActionListener(e -> {
       int n = periodSetList.getItemCount();
       PeriodSet ps = new PeriodSet(T.text("period_set_name", n + 1), 2);
-      periodSetList.addItem(ps.name, periodSetIcon, ps);
+      periodSetList.addItem(ps.getName(), periodSetIcon, ps);
       periodSetList.setSelected(ps);
       updatePeriodSetLabel(ps);
+      fireChangeListeners();
     });
 
     SimpleFlowPanel left = new SimpleFlowPanel(true);
@@ -60,6 +65,7 @@ public class PeriodSetsPanel extends SimpleFlowPanel {
   private void updateConfigPanel() {
     PeriodSet ps = periodSetList.getSelectedObject();
     T.clear(periodSetConfigPanel);
+    T.updateHierarchy(this, periodSetConfigPanel); // FIXME: should not be needed, see T.clear()
     periodSetConfigPanel.removeAll();
     if (ps == null) {
       return;
@@ -75,21 +81,22 @@ public class PeriodSetsPanel extends SimpleFlowPanel {
       boolean yes = CommonDialog.confirmDialog(T.html("delete_period_set"));
       if (yes) {
         periodSetList.removeItem(ps);
+        fireChangeListeners();
       }
-
     });
 
-    nameField.setText(ps.name);
-    nPeriodsField.setValue(ps.nPeriods);
+    nameField.setText(ps.getName());
+    nPeriodsField.setValue(ps.getNumberOfPeriods());
 
     nameField.addChangeListener(e -> {
-      ps.name = nameField.getText();
+      ps.setName(nameField.getText());
       updatePeriodSetLabel(ps);
-
+      fireChangeListeners();
     });
     nPeriodsField.addChangeListener(e -> {
-      ps.nPeriods = nPeriodsField.getIntValue();
+      ps.setNumberOfPeriod(nPeriodsField.getIntValue());
       updatePeriodSetLabel(ps);
+      fireChangeListeners();
     });
 
     JLabel nameLabel = new JLabel();
@@ -111,6 +118,30 @@ public class PeriodSetsPanel extends SimpleFlowPanel {
     if (psIndex == -1) {
       return;
     }
-    periodSetList.setItemLabel(psIndex, "%s (%d)".formatted(ps.name, ps.nPeriods));
+    periodSetList.setItemLabel(psIndex, "%s (%d)".formatted(ps.getName(), ps.getNumberOfPeriods()));
   }
+
+  private final List<ChangeListener> changeListeners = new ArrayList<>();
+
+  @Override
+  public void addChangeListener(ChangeListener l) {
+    changeListeners.add(l);
+  }
+
+  @Override
+  public void removeChangeListener(ChangeListener l) {
+    changeListeners.remove(l);
+  }
+
+  protected void fireChangeListeners() {
+    for (ChangeListener l : changeListeners) {
+      l.stateChanged(new ChangeEvent(this));
+    }
+  }
+
+  @Override
+  public List<PeriodSet> getPeriodSets() {
+    return periodSetList.getAllObjects();
+  }
+
 }

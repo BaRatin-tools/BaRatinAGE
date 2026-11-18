@@ -1,10 +1,10 @@
 package org.baratinage.ui.baratin.hydraulic_control.control_panel;
 
+import org.baratinage.translation.T;
 import org.baratinage.ui.commons.CommonParameterDistSimplified;
 import org.baratinage.ui.commons.ParameterPriorDistSimplified;
-import org.baratinage.translation.T;
 
-public class WeirOrifice extends PriorControlPanel {
+public class WeirOrifice extends PhysicalPriorControlPanel {
 
     private final ParameterPriorDistSimplified activationHeight;
     private final ParameterPriorDistSimplified weirCoef;
@@ -13,7 +13,7 @@ public class WeirOrifice extends PriorControlPanel {
     private final ParameterPriorDistSimplified exponent;
 
     public WeirOrifice() {
-        super(2, 5, "Q=C_o * A_o * sqrt(2 * g) * (h-b) ^ c");// \\quad (h > κ)");
+        super(2, 5, "Q=C_o * A_o * sqrt(2 * g) * (h-b) ^ c"); // \\quad (h > κ)");
         // "Q=C<sub>o</sub>A<sub>o</sub>(2g)<sup>1/2</sup>(h-b)<sup>c</sup>&nbsp;(h>\u03BA)");
 
         activationHeight = CommonParameterDistSimplified.getActivationHeight();
@@ -35,43 +35,35 @@ public class WeirOrifice extends PriorControlPanel {
         display();
 
         T.t(this, () -> {
-            setHeaders(
-                    T.html("mean_value"),
-                    T.html("uncertainty_value"));
+            setHeaders(T.html("mean_value"), T.html("uncertainty_value"));
             activationHeight.setNameLabel(T.html("activation_stage"));
             weirCoef.setNameLabel(T.html("weir_coefficient"));
             area.setNameLabel(T.html("orifice_area"));
             gravity.setNameLabel(T.html("gravity_acceleration"));
             exponent.setNameLabel(T.html("exponent"));
         });
-
     }
 
-    private Double[] toAMeanAndStd() {
+    @Override
+    protected Double[] toAMeanAndStd() {
+        Double C = weirCoef.getMeanValue();
+        Double AR = area.getMeanValue();
+        Double G = gravity.getMeanValue();
 
-        if (!weirCoef.meanValueField.isValueValid() ||
-                !area.meanValueField.isValueValid() ||
-                !gravity.meanValueField.isValueValid()) {
+        if (C == null || AR == null || G == null) {
             return new Double[] { null, null };
         }
 
-        double C = weirCoef.meanValueField.getDoubleValue();
-        double AR = area.meanValueField.getDoubleValue();
-        double G = gravity.meanValueField.getDoubleValue();
-
         double sqrtOfTwoG = Math.sqrt(2 * G);
-
         double A = C * AR * sqrtOfTwoG;
 
-        if (!weirCoef.uncertaintyValueField.isValueValid() ||
-                !area.uncertaintyValueField.isValueValid() ||
-                !gravity.uncertaintyValueField.isValueValid()) {
+        Double Cstd = weirCoef.getStdValue();
+        Double ARstd = area.getStdValue();
+        Double Gstd = gravity.getStdValue();
+
+        if (Cstd == null || ARstd == null || Gstd == null) {
             return new Double[] { A, null };
         }
-
-        double Cstd = weirCoef.uncertaintyValueField.getDoubleValue() / 2.0;
-        double ARstd = area.uncertaintyValueField.getDoubleValue() / 2.0;
-        double Gstd = gravity.uncertaintyValueField.getDoubleValue() / 2.0;
 
         double Astd = Math.sqrt(
                 Math.pow(Cstd, 2) * Math.pow(AR * sqrtOfTwoG, 2) +
@@ -79,23 +71,15 @@ public class WeirOrifice extends PriorControlPanel {
                         Math.pow(Gstd, 2) * Math.pow(AR * C * Math.pow(2 * G, -1.0 / 2.0), 2));
 
         return new Double[] { A, Astd };
-
     }
 
     @Override
-    public KBACGaussianConfig toKACGaussianConfig() {
-
-        Double[] AGaussianConfig = toAMeanAndStd();
-
-        Double kMean = activationHeight.meanValueField.getDoubleValue();
-        Double kStd = activationHeight.uncertaintyValueField.getDoubleValue();
-        Double cMean = exponent.meanValueField.getDoubleValue();
-        Double cStd = exponent.uncertaintyValueField.getDoubleValue();
-
-        return new KBACGaussianConfig(
-                kMean, kStd == null ? null : kStd / 2.0,
-                AGaussianConfig[0], AGaussianConfig[1],
-                cMean, cStd == null ? null : cStd / 2.0);
+    protected ParameterPriorDistSimplified getKB() {
+        return activationHeight;
     }
 
+    @Override
+    protected ParameterPriorDistSimplified getExponent() {
+        return exponent;
+    }
 }

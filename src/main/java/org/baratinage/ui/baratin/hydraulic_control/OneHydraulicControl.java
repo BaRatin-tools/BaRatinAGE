@@ -17,7 +17,7 @@ import org.baratinage.AppSetup;
 import org.baratinage.jbam.Parameter;
 
 import org.baratinage.ui.baratin.hydraulic_control.control_panel.KBAC;
-import org.baratinage.ui.baratin.hydraulic_control.control_panel.PriorControlPanel;
+import org.baratinage.ui.baratin.hydraulic_control.control_panel.PhysicalPriorControlPanel;
 import org.baratinage.ui.baratin.hydraulic_control.control_panel.WeirOrifice;
 import org.baratinage.ui.baratin.hydraulic_control.control_panel.WeirParabola;
 import org.baratinage.ui.baratin.hydraulic_control.control_panel.WeirRect;
@@ -25,6 +25,7 @@ import org.baratinage.ui.baratin.hydraulic_control.control_panel.WeirTriangle;
 import org.baratinage.ui.commons.AbstractParameterPriorDist;
 import org.baratinage.ui.commons.ParameterPriorDist;
 import org.baratinage.ui.commons.ParameterPriorDistSimplified;
+import org.baratinage.ui.commons.variable_parameter.PeriodSetsSource;
 import org.baratinage.ui.baratin.hydraulic_control.control_panel.ChannelParabola;
 import org.baratinage.ui.baratin.hydraulic_control.control_panel.ChannelRect;
 import org.baratinage.ui.baratin.hydraulic_control.control_panel.ChannelTriangle;
@@ -83,7 +84,7 @@ public class OneHydraulicControl extends JScrollPane {
     private record HydraulicControlOption(
             String lgKey,
             Icon icon,
-            PriorControlPanel panel) {
+            PhysicalPriorControlPanel panel) {
     };
 
     private final List<HydraulicControlOption> allControlOptions;
@@ -273,8 +274,8 @@ public class OneHydraulicControl extends JScrollPane {
         if (index < 0) {
             return;
         }
-        PriorControlPanel panel = allControlOptions.get(index).panel;
-        kbacControlPanel.setFromKACGaussianConfig(panel.toKACGaussianConfig());
+        PhysicalPriorControlPanel panel = allControlOptions.get(index).panel;
+        kbacControlPanel.setFromPhysicalParameter(panel);
     }
 
     private void updateMode() {
@@ -309,6 +310,17 @@ public class OneHydraulicControl extends JScrollPane {
         }
     }
 
+    public void setPeriodSetSource(PeriodSetsSource periodSetsSource) {
+        kbacControlPanel.kb.setPeriodSetSource(periodSetsSource);
+        kbacControlPanel.a.setPeriodSetSource(periodSetsSource);
+        kbacControlPanel.c.setPeriodSetSource(periodSetsSource);
+        for (HydraulicControlOption hco : allControlOptions) {
+            for (AbstractParameterPriorDist p : hco.panel.parameters) {
+                p.setPeriodSetSource(periodSetsSource);
+            }
+        }
+    }
+
     public Parameter[] getParameters() {
         return kbacControlPanel.getParameters();
     }
@@ -331,7 +343,6 @@ public class OneHydraulicControl extends JScrollPane {
             return null;
         }
         HydraulicControlOption option = allControlOptions.get(index);
-        // List<AbstractParameterPriorDist> parameters =;
         List<ParameterPriorDistSimplified> parameters = new ArrayList<>();
         for (AbstractParameterPriorDist par : option.panel.parameters) {
             if (par instanceof ParameterPriorDistSimplified) {

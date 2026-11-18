@@ -1,8 +1,8 @@
 package org.baratinage.ui.baratin.hydraulic_control.control_panel;
 
 import org.baratinage.AppSetup;
-import org.baratinage.jbam.DistributionType;
 import org.baratinage.ui.commons.ParameterPriorDist;
+import org.baratinage.ui.commons.ParameterPriorDistSimplified;
 import org.baratinage.ui.component.SvgIcon;
 import org.baratinage.translation.T;
 
@@ -42,8 +42,6 @@ public class KBAC extends PriorControlPanel {
 
         display();
 
-        lockLabel.setIcon(null);
-
         T.t(this, () -> {
             setHeaders(
                     T.html("distribution"),
@@ -52,29 +50,19 @@ public class KBAC extends PriorControlPanel {
         });
     }
 
-    public void setAToGaussian(Double mean, Double std) {
-        a.distributionField.setDistributionType(DistributionType.GAUSSIAN);
-        a.distributionField.setParameters(mean, std);
-    }
+    public void setFromPhysicalParameter(PhysicalPriorControlPanel physicalParameter) {
 
-    public void setFromKACGaussianConfig(KBACGaussianConfig kbacCongig) { // FIXME: rename method and parameter
-        kb.distributionField.setDistributionType(DistributionType.GAUSSIAN);
-        kb.distributionField.setParameters(kbacCongig.kbMean(), kbacCongig.kbStd());
-        kb.initialGuessField.setValue(kbacCongig.kbMean());
-        a.distributionField.setDistributionType(DistributionType.GAUSSIAN);
-        a.distributionField.setParameters(kbacCongig.aMean(), kbacCongig.aStd());
-        a.initialGuessField.setValue(kbacCongig.aMean());
-        c.distributionField.setDistributionType(DistributionType.GAUSSIAN);
-        c.distributionField.setParameters(kbacCongig.cMean(), kbacCongig.cStd());
-        c.initialGuessField.setValue(kbacCongig.cMean());
-
+        ParameterPriorDistSimplified ppdKB = physicalParameter.getKB();
+        if (!ppdKB.isVariable()) {
+            kb.fromGaussian(ppdKB.getMeanValue(), ppdKB.getStdValue());
+        } else {
+            kb.fromGaussian(ppdKB.getPeriodSet(), ppdKB.getMeanValues(), ppdKB.getStdValues());
+        }
+        Double[] parA = physicalParameter.toAMeanAndStd();
+        a.fromGaussian(parA[0], parA[1]);
+        ParameterPriorDistSimplified ppdC = physicalParameter.getExponent();
+        c.fromGaussian(ppdC.getMeanValue(), ppdC.getStdValue());
         fireChangeListeners();
-    }
-
-    @Override
-    public KBACGaussianConfig toKACGaussianConfig() {
-        // irrelevant
-        return null;
     }
 
 }

@@ -10,20 +10,24 @@ import javax.swing.event.ChangeListener;
 import org.baratinage.jbam.DistributionType;
 import org.baratinage.jbam.Parameter;
 import org.baratinage.ui.component.SimpleSep;
-import org.baratinage.ui.container.GridPanel;
+import org.baratinage.ui.container.SimpleGridPanel;
 import org.baratinage.utils.ConsoleLogger;
 import org.baratinage.translation.T;
 
 import org.json.JSONArray;
 
-public class StructuralErrorModelPanel extends GridPanel implements ChangeListener {
+public class StructuralErrorModelPanel extends SimpleGridPanel implements ChangeListener {
 
     public final List<ParameterPriorDist> parameters;
 
     public StructuralErrorModelPanel() {
-        setColWeight(3, 1);
-        setGap(5);
+
         setPadding(5);
+        setGaps(5);
+
+        setColumns(7);
+        setColumn(4, SimpleGridPanel.grow(2));
+        setColumn(5, SimpleGridPanel.grow(1));
 
         JLabel initialGuessLabel = new JLabel();
         initialGuessLabel.setText("Valeure initiale");
@@ -34,17 +38,14 @@ public class StructuralErrorModelPanel extends GridPanel implements ChangeListen
         JLabel distributionParametersLabel = new JLabel();
         distributionParametersLabel.setText("Paramètres de la distribution");
 
-        int colIndex = 2;
-        insertChild(distributionLabel, colIndex, 0);
-        colIndex++;
-        insertChild(distributionParametersLabel, colIndex, 0);
-        colIndex++;
-        insertChild(initialGuessLabel, colIndex, 0);
+        add(distributionLabel, SimpleGridPanel.cell(3, 0));
+        add(distributionParametersLabel, SimpleGridPanel.cell(4, 0));
+        add(initialGuessLabel, SimpleGridPanel.cell(5, 0));
 
-        insertChild(new SimpleSep(), 2, 1);
-        insertChild(new SimpleSep(), 3, 1);
-        insertChild(new SimpleSep(), 4, 1);
-        insertChild(new SimpleSep(), 5, 1);
+        add(new SimpleSep(), SimpleGridPanel.cell(3, 1));
+        add(new SimpleSep(), SimpleGridPanel.cell(4, 1));
+        add(new SimpleSep(), SimpleGridPanel.cell(5, 1));
+        add(new SimpleSep(), SimpleGridPanel.cell(6, 1));
 
         T.t(this, initialGuessLabel, false, "initial_guess");
         T.t(this, distributionLabel, false, "distribution");
@@ -71,7 +72,7 @@ public class StructuralErrorModelPanel extends GridPanel implements ChangeListen
         validDistributions.add(DistributionType.FLAT_POSITIVE);
 
         ParameterPriorDist gamma = new ParameterPriorDist("gamma_" + parameters.size());
-        gamma.distributionField.setSupportedDistribution(validDistributions);
+        gamma.setSupportedDistribution(validDistributions);
         gamma.autoInitialValueBtn.setSelected(false);
         gamma.setNameLabel("");
         gamma.setSymbolUnitLabels(symbol, unit);
@@ -92,21 +93,10 @@ public class StructuralErrorModelPanel extends GridPanel implements ChangeListen
     }
 
     private void addParameter(ParameterPriorDist parameter) {
-        int index = parameters.size() + 2;
-        parameters.add(parameter);
-        int colIndex = 1;
-        insertChild(parameter.symbolUnitLabel, colIndex, index);
-        colIndex++;
-        insertChild(parameter.distributionField.distributionCombobox, colIndex, index);
-        colIndex++;
-        insertChild(parameter.distributionField.parameterFieldsPanel, colIndex, index);
-        colIndex++;
-        insertChild(parameter.initialGuessField, colIndex, index);
-        colIndex++;
-        insertChild(parameter.menuButton, colIndex, index);
-
+        // WARNING: current implementation does not support variable parameter
+        parameter.addToGrid(this, parameters.size() + 2);
         parameter.addChangeListener(this);
-
+        parameters.add(parameter);
         T.updateHierarchy(this, parameter);
     }
 

@@ -9,6 +9,7 @@ import javax.swing.event.ChangeListener;
 import org.baratinage.jbam.Parameter;
 import org.baratinage.ui.bam.BamItemType;
 import org.baratinage.ui.bam.IPriors;
+import org.baratinage.ui.commons.variable_parameter.PeriodSetsSource;
 import org.baratinage.ui.container.TabContainer;
 import org.baratinage.ui.container.SimpleFlowPanel;
 import org.baratinage.translation.T;
@@ -31,6 +32,7 @@ public class HydraulicControlPanels extends SimpleFlowPanel implements IPriors {
         tabs = new TabContainer(TabContainer.SIDE.TOP);
 
         addChild(tabs, true);
+        setPadding(5, 0);
 
         T.t(this, () -> {
             int n = tabs.getTabCount();
@@ -63,6 +65,7 @@ public class HydraulicControlPanels extends SimpleFlowPanel implements IPriors {
     private void addHydraulicControl() {
         int n = controls.size() + 1;
         OneHydraulicControl ohc = new OneHydraulicControl(kMode, n);
+        ohc.setPeriodSetSource(periodSetsSource);
         ohc.addChangeListener((chEvt) -> {
             fireChangeListeners();
         });
@@ -90,6 +93,15 @@ public class HydraulicControlPanels extends SimpleFlowPanel implements IPriors {
 
     public List<OneHydraulicControl> getHydraulicControls() {
         return controls;
+    }
+
+    private PeriodSetsSource periodSetsSource = null;
+
+    public void setPeriodSetSource(PeriodSetsSource periodSetsSource) {
+        this.periodSetsSource = periodSetsSource;
+        for (OneHydraulicControl ohc : controls) {
+            ohc.setPeriodSetSource(periodSetsSource);
+        }
     }
 
     @Override

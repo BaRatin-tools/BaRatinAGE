@@ -3,12 +3,10 @@ package org.baratinage.ui.baratin.hydraulic_control.control_panel;
 import java.awt.Insets;
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.swing.JButton;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JLabel;
 import javax.swing.JPopupMenu;
-
 import org.baratinage.AppSetup;
 import org.baratinage.translation.T;
 import org.baratinage.ui.commons.AbstractParameterPriorDist;
@@ -18,7 +16,10 @@ import org.baratinage.ui.container.SimpleGridPanel;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-public abstract class ChannelPriorControlPanel extends PriorControlPanel {
+public abstract class ChannelPriorControlPanel
+  extends PhysicalPriorControlPanel
+{
+
   private boolean useManningCoefficient = false;
 
   private final JLabel equationLabelStrickler;
@@ -30,10 +31,11 @@ public abstract class ChannelPriorControlPanel extends PriorControlPanel {
   private boolean doNotUpdateBtn = false;
 
   public ChannelPriorControlPanel(
-      int nColumns,
-      int nRows,
-      String equationStrickler,
-      String equationManning) {
+    int nColumns,
+    int nRows,
+    String equationStrickler,
+    String equationManning
+  ) {
     super(nColumns, nRows, equationStrickler);
 
     contextMenu = new JPopupMenu();
@@ -53,7 +55,9 @@ public abstract class ChannelPriorControlPanel extends PriorControlPanel {
     menuBtn.setIconTextGap(0);
     menuBtn.setMargin(new Insets(2, 2, 2, 2));
     menuBtn.setIcon(AppSetup.ICONS.CONFIG);
-    menuBtn.addActionListener(l -> contextMenu.show(menuBtn, 0, menuBtn.getHeight()));
+    menuBtn.addActionListener(l ->
+      contextMenu.show(menuBtn, 0, menuBtn.getHeight())
+    );
     equationLabelStrickler = equationLabel;
     equationLabelManning = new EquationLabel(equationManning);
 
@@ -63,10 +67,12 @@ public abstract class ChannelPriorControlPanel extends PriorControlPanel {
     equationPanel.addChild(menuBtn, false);
     equationPanel.addChild(equationLabelStrickler, false);
     equationPanel.addChild(equationLabelManning, false);
-    add(equationPanel, SimpleGridPanel
-        .cell(0, 0)
+    add(
+      equationPanel,
+      SimpleGridPanel.cell(0, 0)
         .span(nColumns + 4, 1)
-        .align(SimpleGridPanel.Align.CENTER, SimpleGridPanel.Align.CENTER));
+        .align(SimpleGridPanel.Align.CENTER, SimpleGridPanel.Align.CENTER)
+    );
 
     setUseManning(AppSetup.CONFIG.USE_MANNING_COEF.get());
   }
@@ -93,7 +99,6 @@ public abstract class ChannelPriorControlPanel extends PriorControlPanel {
 
     equationLabelManning.setVisible(useManningCoefficient);
     equationLabelStrickler.setVisible(!useManningCoefficient);
-
   }
 
   private void setUseManning(boolean useManning) {
@@ -129,5 +134,4 @@ public abstract class ChannelPriorControlPanel extends PriorControlPanel {
     super.fromJSON(json);
     display();
   }
-
 }

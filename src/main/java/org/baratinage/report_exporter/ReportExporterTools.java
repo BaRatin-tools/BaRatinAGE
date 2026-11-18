@@ -25,12 +25,12 @@ public class ReportExporterTools {
           "", T.text("mean_value"), T.text("uncertainty_value")
       });
       for (ParameterPriorDistSimplified par : parameters) {
+        Double mean = par.getMeanValue();
+        Double uncertainty = par.getUncertaintyValue();
         parTable.add(new String[] {
-            par.nameLabel.getText()
-                .replace("<html>", "")
-                .replace("</html>", ""),
-            par.meanValueField.getText(),
-            par.uncertaintyValueField.getText()
+            par.getNameLabel().replace("<html>", "").replace("</html>", ""),
+            mean == null ? "" : Misc.formatNumber(mean, 4, false, 0.001, 10000),
+            uncertainty == null ? "" : Misc.formatNumber(uncertainty, 4, false, 0.001, 10000),
         });
       }
       return parTable;
@@ -50,13 +50,13 @@ public class ReportExporterTools {
 
       List<String> distParametersStr = new ArrayList<>();
       for (Double d : distParameters) {
-        distParametersStr.add(Misc.formatNumber(d, 4, false, 0.001, 10000));
+        distParametersStr.add(d == null ? "" : Misc.formatNumber(d, 4, false, 0.001, 10000));
       }
       String priorDistString = T.text("dist_" + distType.bamName) + "(" + String.join(", ", distParametersStr) + ")";
       parTable.add(new String[] {
           par.getParameter().name == "k" ? "&kappa;" : par.getParameter().name,
           priorDistString,
-          Misc.formatNumber(initialValue, 4, false, 0.001, 10000)
+          initialValue == null ? "" : Misc.formatNumber(initialValue, 4, false, 0.001, 10000)
       });
     }
     return parTable;

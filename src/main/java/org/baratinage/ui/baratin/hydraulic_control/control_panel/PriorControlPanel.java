@@ -4,16 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JLabel;
-import javax.swing.JPanel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import org.baratinage.AppSetup;
 import org.baratinage.jbam.Parameter;
 import org.baratinage.translation.T;
 import org.baratinage.ui.commons.AbstractParameterPriorDist;
-import org.baratinage.ui.commons.ParameterPriorDist;
-import org.baratinage.ui.commons.ParameterPriorDistSimplified;
 import org.baratinage.ui.component.EquationLabel;
 import org.baratinage.ui.component.SimpleSep;
 import org.baratinage.ui.container.SimpleGridPanel;
@@ -22,18 +18,13 @@ import org.json.JSONObject;
 
 public abstract class PriorControlPanel extends SimpleGridPanel implements ChangeListener {
 
-  protected record KBACGaussianConfig(
-      Double kbMean, Double kbStd,
-      Double aMean, Double aStd,
-      Double cMean, Double cStd) {
-  };
-
   protected final JLabel equationLabel;
-  protected final JLabel lockLabel;
 
   private final List<JLabel> columnHeaders;
   public final List<AbstractParameterPriorDist> parameters = new ArrayList<>();
 
+  // FIXME: the number of column should be fixed (7 or 5, to match addToGrid)
+  // FIXME: the number of rows should not be needed
   public PriorControlPanel(int nColumns, int nRows, String equation) {
     setColumns(nColumns + 4);
     setColumn(3, SimpleGridPanel.grow());
@@ -49,11 +40,7 @@ public abstract class PriorControlPanel extends SimpleGridPanel implements Chang
         .align(SimpleGridPanel.Align.CENTER, SimpleGridPanel.Align.CENTER));
 
     // to fill the empty space;
-    add(new JPanel(), SimpleGridPanel.cell(0, 1).span(3, 2));
 
-    lockLabel = new JLabel();
-    lockLabel.setIcon(AppSetup.ICONS.LOCK);
-    add(lockLabel, SimpleGridPanel.cell(3 + nColumns, 1));
     add(new SimpleSep(), SimpleGridPanel.cell(3 + nColumns, 2));
 
     columnHeaders = new ArrayList<>();
@@ -78,18 +65,11 @@ public abstract class PriorControlPanel extends SimpleGridPanel implements Chang
     revalidate();
   }
 
-  protected void addParameter(ParameterPriorDistSimplified parameter) {
-    parameter.meanValueField.addChangeListener(this);
-    parameter.uncertaintyValueField.addChangeListener(this);
+  protected void addParameter(AbstractParameterPriorDist parameter) {
+    parameter.addChangeListener(this);
+    parameter.addLayoutChangeListener(l -> display());
     parameters.add(parameter);
-    T.updateHierarchy(this, parameter);
-  }
-
-  protected void addParameter(ParameterPriorDist parameter) {
-    parameter.initialGuessField.addChangeListener(this);
-    parameter.distributionField.distributionCombobox.addChangeListener(this);
-    parameters.add(parameter);
-    T.updateHierarchy(this, parameter);
+    T.updateHierarchy(this, parameter); // CHECK: memory leak?
   }
 
   public void display() {
@@ -103,35 +83,12 @@ public abstract class PriorControlPanel extends SimpleGridPanel implements Chang
 
   public void display(List<AbstractParameterPriorDist> parameters) {
     removeRows(3, getRowCount());
+    int firstRow = 3;
     for (AbstractParameterPriorDist par : parameters) {
-      if (par instanceof ParameterPriorDistSimplified p) {
-        addParameterRow(p);
-      } else if (par instanceof ParameterPriorDist p) {
-        addParameterRow(p);
-      }
+      firstRow = par.addToGrid(this, firstRow);
     }
-
     revalidate();
     repaint();
-  }
-
-  protected void addParameterRow(ParameterPriorDistSimplified parameter) {
-    add(parameter.iconLabel);
-    add(parameter.nameLabel);
-    add(parameter.symbolUnitLabel);
-    add(parameter.meanValueField);
-    add(parameter.uncertaintyValueField);
-    add(parameter.lockCheckbox);
-  }
-
-  protected void addParameterRow(ParameterPriorDist parameter) {
-    add(parameter.iconLabel);
-    add(parameter.nameLabel);
-    add(parameter.symbolUnitLabel);
-    add(parameter.distributionField.distributionCombobox);
-    add(parameter.distributionField.parameterFieldsPanel);
-    add(parameter.initialGuessField);
-    add(parameter.menuButton);
   }
 
   public Parameter[] getParameters() {
@@ -199,7 +156,5 @@ public abstract class PriorControlPanel extends SimpleGridPanel implements Chang
   public void stateChanged(ChangeEvent chEvt) {
     fireChangeListeners();
   }
-
-  public abstract KBACGaussianConfig toKACGaussianConfig();
 
 }

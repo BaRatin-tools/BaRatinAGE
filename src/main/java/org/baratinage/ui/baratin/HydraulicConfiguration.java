@@ -11,10 +11,10 @@ import org.baratinage.ui.bam.BamItemType;
 import org.baratinage.ui.bam.IModelDefinition;
 import org.baratinage.ui.bam.IPriors;
 import org.baratinage.ui.bam.RunBam;
-import org.baratinage.ui.baratin.baratin_spd.PeriodSetsPanel;
 import org.baratinage.ui.baratin.hydraulic_configuration.PriorRatingCurve;
 import org.baratinage.ui.baratin.hydraulic_control.ControlMatrix;
 import org.baratinage.ui.baratin.hydraulic_control.HydraulicControlPanels;
+import org.baratinage.ui.commons.variable_parameter.PeriodSetsPanel;
 import org.baratinage.ui.container.SimpleFlowPanel;
 import org.baratinage.ui.container.SplitContainer;
 import org.baratinage.ui.container.TitledPanel;
@@ -68,6 +68,8 @@ public class HydraulicConfiguration
 
         priorRatingCurve = new PriorRatingCurve<>(this);
         runBam = priorRatingCurve.runBam;
+
+        hydraulicControls.setPeriodSetSource(periodSetsPanel);
 
         controlMatrix.addChangeListener((e) -> {
             priorRatingCurve.checkSync();
